@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/miniplayer"
+    android:layout_width="fill_parent"
+    android:layout_height="@dimen/now_playing_ticker_height"
+    android:background="?android:attr/selectableItemBackgroundBorderless"
+    android:clickable="true"
+    android:onClick="onClick">
+
+    <ImageView
+        android:id="@+id/imageArtwork"
+        android:layout_width="@dimen/now_playing_ticker_height"
+        android:layout_height="@dimen/now_playing_ticker_height"
+        android:background="@android:color/black"
+        android:contentDescription="@string/album_art"
+        android:src="@drawable/art_default" />
+
+    <ImageButton
+        android:id="@+id/skipButton"
+        android:layout_width="@dimen/now_playing_ticker_height"
+        android:layout_height="@dimen/now_playing_ticker_height"
+        android:layout_alignParentEnd="true"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:contentDescription="@string/button_skip_description"
+        android:onClick="onClick"
+        android:src="@drawable/ic_skip_next" />
+
+    <ImageButton
+        android:id="@+id/playButton"
+        android:layout_width="@dimen/now_playing_ticker_height"
+        android:layout_height="@dimen/now_playing_ticker_height"
+        android:layout_toStartOf="@id/skipButton"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:contentDescription="@string/button_play_description"
+        android:onClick="onClick"
+        android:src="@drawable/ic_play" />
+
+    <TextView
+        android:id="@+id/textNowPlayingTitle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/now_playing_ticker_height"
+        android:layout_marginTop="6dp"
+        android:layout_toStartOf="@id/playButton"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:text="@string/nothing_playing"
+        android:textColor="@color/player_text_main"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/textNowPlayingDetail"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textNowPlayingTitle"
+        android:layout_marginStart="@dimen/now_playing_ticker_height"
+        android:layout_toStartOf="@id/playButton"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:text="@string/no_artist"
+        android:textColor="@color/player_text_detail"
+        android:textSize="20sp" />
+
+</RelativeLayout>

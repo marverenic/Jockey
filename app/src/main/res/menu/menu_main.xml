@@ -1,0 +1,25 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.marverenic.music.LibraryActivity">
+
+    <item
+        android:id="@+id/search"
+        android:actionViewClass="android.widget.SearchView"
+        android:icon="@android:drawable/ic_menu_search"
+        android:title="@string/header_search"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_refresh_library"
+        android:title="@string/action_refresh" />
+
+    <item
+        android:id="@+id/action_settings"
+        android:title="@string/action_settings" />
+
+    <item
+        android:id="@+id/action_about"
+        android:title="@string/header_about" />
+
+</menu>

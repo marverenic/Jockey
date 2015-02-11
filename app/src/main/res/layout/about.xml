@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:id="@+id/aboutScroll"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/primary_black"
+        android:padding="8dp">
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center_horizontal">
+
+            <ImageView
+                android:id="@+id/aboutAppIcon"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:src="@drawable/ic_launcher_black" />
+
+            <TextView
+                android:id="@+id/aboutAppName"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutAppIcon"
+                android:gravity="center"
+                android:text="@string/app_name"
+                android:textColor="@color/ui_text_black"
+                android:textSize="32sp" />
+
+            <TextView
+                android:id="@+id/aboutVersion"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutAppName"
+                android:gravity="center"
+                android:text="Version"
+                android:textColor="@color/ui_detail_text_black"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/aboutDescription"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutVersion"
+                android:layout_marginTop="16dp"
+                android:text="Jockey is a music player for Android 4.1 and higher designed with Google's Material Design guidelines in mind."
+                android:textColor="@color/ui_detail_text_black"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/aboutLicense"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutDescription"
+                android:layout_marginTop="16dp"
+                android:text="Jockey is distributed under an Apache 2.0 license"
+                android:textColor="@color/ui_detail_text_black"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/lastFmHeader"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutLicense"
+                android:layout_marginTop="16dp"
+                android:text="Artist information is provided by"
+                android:textColor="@color/ui_text_black"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/lastFmDetail"
+                android:layout_width="fill_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/lastFmHeader"
+                android:src="@drawable/last_fm_logo"
+                android:textColor="@color/ui_detail_text_black"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/aboutUsesHeader"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/lastFmDetail"
+                android:layout_marginTop="16dp"
+                android:text="Jockey also uses the following open-source libraries:"
+                android:textColor="@color/ui_detail_text_black"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/aboutAOSPHeader"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutUsesHeader"
+                android:layout_marginTop="16dp"
+                android:text="Android Support Libraries"
+                android:textColor="@color/ui_text_black"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/aboutAOSPDetail"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutAOSPHeader"
+                android:text="Support-v4 version 21.0.2, Appcompat-v7 version 21.0.2, Palette version 21.0.2; distributed by the Android Open Source Project under an Apache License, Version 2.0"
+                android:textColor="@color/ui_detail_text_black"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/aboutAOSPTabsHeader"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutAOSPDetail"
+                android:layout_marginTop="16dp"
+                android:text="Android Color Tab Example"
+                android:textColor="@color/ui_text_black"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/aboutAOSPTabsDetail"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutAOSPTabsHeader"
+                android:text="Distributed by the Android Open Source Project under an Apache License, Version 2.0"
+                android:textColor="@color/ui_detail_text_black"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/aboutUILHeader"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutAOSPTabsDetail"
+                android:layout_marginTop="16dp"
+                android:text="Universal Image Loader"
+                android:textColor="@color/ui_text_black"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/aboutUILDetail"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutUILHeader"
+                android:text="Version 1.9.3; distributed by Sergey Tarasevich under an Apache License, Version 2.0"
+                android:textColor="@color/ui_detail_text_black"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/aboutStackOverflowHeader"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutUILDetail"
+                android:layout_marginTop="16dp"
+                android:text="And code from many helpful Stack Overflow users who are better at programming than I am."
+                android:textColor="@color/ui_text_black"
+                android:textSize="20sp" />
+
+        </RelativeLayout>
+
+    </ScrollView>
+</LinearLayout>

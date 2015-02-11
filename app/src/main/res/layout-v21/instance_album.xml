@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/albumInstance"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/grid_padding"
+    android:background="@color/grid_background_default"
+    android:elevation="2dp"
+    android:foreground="@drawable/touch_blue">
+
+    <LinearLayout
+        android:id="@+id/albumBackground"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/grid_background_default"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <com.marverenic.music.utils.SquareImageViewH
+            android:id="@+id/imageAlbumArt"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_margin="0dp"
+            android:contentDescription="@string/album_art"
+            android:scaleType="fitXY"
+            android:src="@drawable/art_default" />
+
+        <TextView
+            android:id="@+id/textAlbumTitle"
+            style="@style/gridTitleText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_marginLeft="@dimen/grid_padding"
+            android:layout_marginRight="@dimen/grid_padding"
+            android:layout_marginTop="@dimen/grid_padding"
+            android:ellipsize="end"
+            android:singleLine="true" />
+
+        <TextView
+            android:id="@+id/textAlbumArtist"
+            style="@style/gridDetailText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/grid_padding"
+            android:layout_marginLeft="@dimen/grid_padding"
+            android:layout_marginRight="@dimen/grid_padding"
+            android:layout_marginTop="0dp"
+            android:ellipsize="end"
+            android:singleLine="true" />
+
+    </LinearLayout>
+</FrameLayout>

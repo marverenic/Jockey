@@ -1,0 +1,28 @@
+<resources>
+
+    <dimen name="navigation_height">56dp</dimen>
+    <dimen name="tab_padding_v">8dp</dimen>
+    <dimen name="tab_selector_height">4dp</dimen>
+    <dimen name="list_text_header_size">24sp</dimen>
+    <dimen name="list_text_detail_size">16sp</dimen>
+    <dimen name="grid_text_header_size">22sp</dimen>
+    <dimen name="grid_text_detail_size">14sp</dimen>
+    <dimen name="header_elevation">4dp</dimen>
+    <dimen name="window_elevation">2dp</dimen>
+    <dimen name="miniplayer_elevation">8dp</dimen>
+    <dimen name="tablet_padding">100dp</dimen>
+    <dimen name="tablet_padding_min">23dp</dimen>
+    <dimen name="phone_padding">8dp</dimen>
+    <dimen name="list_height">72dp</dimen>
+    <dimen name="list_padding_h">16dp</dimen>
+    <dimen name="list_margin">6dp</dimen>
+    <dimen name="list_extended_padding_h">56dp</dimen>
+    <dimen name="list_image_size">48dp</dimen>
+    <dimen name="grid_width">120dp</dimen>
+    <dimen name="grid_width_tablet">170dp</dimen>
+    <dimen name="grid_art_size">162dp</dimen>
+    <dimen name="grid_padding">6dp</dimen>
+    <dimen name="settings_header_text_size">18sp</dimen>
+    <dimen name="now_playing_ticker_height">64dp</dimen>
+
+</resources>

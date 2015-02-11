@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:name="ic_pause_circle_fill"
+    android:width="72dp"
+    android:height="72dp"
+    android:tint="@color/player_control_tint"
+    android:viewportHeight="72"
+    android:viewportWidth="72">
+
+    <group
+        android:scaleX="1.5"
+        android:scaleY="1.5">
+
+        <path
+            android:fillColor="#000000"
+            android:pathData="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm-2 28h-4V16h4v16zm8 0h-4V16h4v16z" />
+
+    </group>
+</vector>

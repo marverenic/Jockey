@@ -1,0 +1,147 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Theme Colors -->
+    <color name="primary">#00838F</color>
+    <color name="primary_dark">#006064</color>
+    <color name="accent">#40C4FF</color>
+    <color name="ui_text">#E0F7FA</color>
+    <color name="ui_detail_text">#80DEEA</color>
+
+    <!-- Base Colors -->
+    <color name="list_text">#E0E0E0</color>
+    <color name="detail_text">#BDBDBD</color>
+    <color name="divider">#424242</color>
+    <color name="background">#212121</color>
+    <color name="background_elevated">#333333</color>
+
+    <!-- Static Colors -->
+    <color name="transparent_ui_text">#FAFAFA</color>
+    <color name="transparent_ui_off">#75FAFAFA</color>
+    <color name="grid_background_default">#ffb0bec5</color>
+    <color name="grid_text">#77000000</color>
+    <color name="grid_detail_text">#97000000</color>
+    <color name="player_control_background">#263238</color>
+    <color name="player_text_main">#ECEFF1</color>
+    <color name="player_text_detail">#B0BEC5</color>
+    <color name="player_control_tint">#ECEFF1</color>
+
+    <!-- Custom Theme Colors-->
+    <!-- Light Base -->
+    <color name="list_text_light">#212121</color>
+    <color name="detail_text_light">#424242</color>
+    <color name="divider_light">#E0E0E0</color>
+    <color name="background_light">#F5F5F5</color>
+    <color name="background_elevated_light">#fafafa</color>
+
+    <!-- Black -->
+    <color name="primary_black">#212121</color>
+    <color name="primary_dark_black">#000000</color>
+    <color name="accent_black">#B0BEC5</color>
+    <color name="ui_text_black">#FAFAFA</color>
+    <color name="ui_detail_text_black">#BDBDBD</color>
+
+    <!-- Red -->
+    <color name="primary_red">#C62828</color>
+    <color name="primary_dark_red">#B71C1C</color>
+    <color name="accent_red">#FF5252</color>
+    <color name="ui_text_red">#FFEBEE</color>
+    <color name="ui_detail_text_red">#EF9A9A</color>
+
+    <!-- Orange -->
+    <color name="primary_orange">#EF6C00</color>
+    <color name="primary_dark_orange">#E65100</color>
+    <color name="accent_orange">#FFAB40</color>
+    <color name="ui_text_orange">#FFF3E0</color>
+    <color name="ui_detail_text_orange">#FFCC80</color>
+
+    <!-- Yellow -->
+    <color name="primary_amber">#FF8F00</color>
+    <color name="primary_dark_amber">#FF6F00</color>
+    <color name="accent_amber">#FFD740</color>
+    <color name="ui_text_amber">#FFF8E1</color>
+    <color name="ui_detail_text_amber">#FFE082</color>
+
+    <!-- Green -->
+    <color name="primary_green">#2E7D32</color>
+    <color name="primary_dark_green">#1B5E20</color>
+    <color name="accent_green">#69F0AE</color>
+    <color name="ui_text_green">#E8F5E9</color>
+    <color name="ui_detail_text_green">#A5D6A7</color>
+
+    <!-- Purple -->
+    <color name="primary_purple">#4527A0</color>
+    <color name="primary_dark_purple">#311B92</color>
+    <color name="accent_purple">#7C4DFF</color>
+    <color name="ui_text_purple">#EDE7F6</color>
+    <color name="ui_detail_text_purple">#B39DDB</color>
+
+
+    <style name="AppTheme" parent="android:Theme.Holo">
+        <item name="android:actionBarStyle">@style/actionbar_style</item>
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="AppThemeLight" parent="android:Theme.Holo.Light">
+        <item name="android:actionBarStyle">@style/actionbar_style</item>
+        <item name="android:windowBackground">@color/background_light</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="NowPlayingTheme" parent="AppTheme">
+        <item name="android:actionBarStyle">@style/transparent_actionbar</item>
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:windowActionBarOverlay">true</item>
+    </style>
+
+    <style name="actionbar_style" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@color/primary</item>
+        <item name="android:textColor">@color/ui_text</item>
+    </style>
+
+    <style name="transparent_actionbar" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:textColor">@color/transparent_ui_text</item>
+        <item name="android:background">@drawable/skrim_now_playing</item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:selectableItemBackground">
+            ?android:attr/selectableItemBackgroundBorderless
+        </item>
+    </style>
+
+    <style name="list">
+        <item name="android:layout_height">@dimen/list_height</item>
+        <item name="android:background">@color/background_elevated</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="listTitleText">
+        <item name="android:textColor">@color/list_text</item>
+        <item name="android:textSize">@dimen/list_text_header_size</item>
+        <item name="android:paddingLeft">@dimen/list_padding_h</item>
+        <item name="android:paddingRight">@dimen/list_padding_h</item>
+    </style>
+
+    <style name="listDetailText">
+        <item name="android:textColor">@color/detail_text</item>
+        <item name="android:textSize">@dimen/list_text_detail_size</item>
+        <item name="android:paddingLeft">@dimen/list_padding_h</item>
+        <item name="android:paddingRight">@dimen/list_padding_h</item>
+    </style>
+
+    <style name="gridTitleText">
+        <item name="android:textColor">@color/grid_text</item>
+        <item name="android:textSize">@dimen/grid_text_header_size</item>
+    </style>
+
+    <style name="gridDetailText">
+        <item name="android:textColor">@color/grid_detail_text</item>
+        <item name="android:textSize">@dimen/grid_text_detail_size</item>
+    </style>
+
+    <style name="settingsHeader">
+        <item name="android:textColor">@color/ui_text</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">@dimen/settings_header_text_size</item>
+    </style>
+
+</resources>

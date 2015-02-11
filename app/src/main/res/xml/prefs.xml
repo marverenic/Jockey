@@ -1,0 +1,40 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="Appearance">
+        <ListPreference
+            android:defaultValue="1"
+            android:dialogTitle="@string/default_page_pref"
+            android:entries="@array/pages"
+            android:entryValues="@array/page_values"
+            android:key="prefDefaultPage"
+            android:title="Default Page" />
+        <ListPreference
+            android:defaultValue="5"
+            android:dialogTitle="@string/theme_primary"
+            android:entries="@array/colors"
+            android:entryValues="@array/color_values"
+            android:key="prefColorPrimary"
+            android:summary="@string/theme_primary_description"
+            android:title="Primary Color" />
+        <ListPreference
+            android:defaultValue="1"
+            android:dialogTitle="@string/theme_base"
+            android:entries="@array/themes"
+            android:entryValues="@array/theme_values"
+            android:key="prefBaseTheme"
+            android:summary="@string/theme_base_description"
+            android:title="Theme" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="prefAddShortcut"
+            android:summary="@string/add_shortcut_description"
+            android:title="@string/add_shortcut" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/playback_header">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="switchToNowPlaying"
+            android:title="@string/switch_to_now_playing" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

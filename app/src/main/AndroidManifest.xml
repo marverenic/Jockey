@@ -1,0 +1,133 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.marverenic.music"
+    android:versionCode="21618"
+    android:versionName="0.2-α.r0m16s">
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
+    <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT" />
+
+    <permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name">
+
+        <activity
+            android:name="com.marverenic.music.LibraryActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="fullUser">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="com.anddoes.launcher.THEME" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".SearchActivity" />
+        </activity>
+
+        <activity
+            android:name="com.marverenic.music.SearchActivity"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/search" />
+        </activity>
+
+        <activity
+            android:name="com.marverenic.music.LibraryPageActivity"
+            android:label=""
+            android:parentActivityName="com.marverenic.music.LibraryActivity"
+            android:screenOrientation="fullUser"></activity>
+
+        <activity
+            android:name="com.marverenic.music.NowPlayingActivity"
+            android:label="@string/header_now_playing"
+            android:launchMode="singleTop"
+            android:parentActivityName="com.marverenic.music.LibraryActivity"
+            android:screenOrientation="fullUser"
+            android:theme="@style/NowPlayingTheme"></activity>
+
+        <activity-alias
+            android:name=".PlayWithJockey"
+            android:label="@string/app_name"
+            android:targetActivity="com.marverenic.music.NowPlayingActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="file" />
+                <data android:mimeType="audio/*" />
+                <data android:mimeType="application/ogg" />
+                <data android:mimeType="application/x-ogg" />
+                <data android:mimeType="application/itunes" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="http" />
+                <data android:mimeType="audio/*" />
+                <data android:mimeType="application/ogg" />
+                <data android:mimeType="application/x-ogg" />
+                <data android:mimeType="application/itunes" />
+            </intent-filter>
+            <intent-filter android:priority="-1">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="content" />
+                <data android:mimeType="audio/*" />
+                <data android:mimeType="application/ogg" />
+                <data android:mimeType="application/x-ogg" />
+                <data android:mimeType="application/itunes" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity
+            android:name="com.marverenic.music.QueueActivity"
+            android:label="@string/header_now_playing"
+            android:parentActivityName="com.marverenic.music.NowPlayingActivity"
+            android:screenOrientation="fullUser"></activity>
+
+        <activity
+            android:name="com.marverenic.music.SettingsActivity"
+            android:label="@string/header_settings"
+            android:launchMode="singleInstance"
+            android:parentActivityName="com.marverenic.music.LibraryActivity"
+            android:screenOrientation="fullUser">
+            <intent-filter>
+                <action android:name=".PREFERENCES" />
+                <category android:name="android.intent.category.preference" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.marverenic.music.AboutActivity"
+            android:label="@string/header_about"
+            android:parentActivityName="com.marverenic.music.LibraryActivity"
+            android:screenOrientation="fullUser"></activity>
+
+        <service android:name="com.marverenic.music.Player"></service>
+    </application>
+
+</manifest>

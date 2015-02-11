@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <!-- Defines icon resources for third party launchers -->
+    <item
+        component="ComponentInfo{com.marverenic.music/.LibraryActivity"
+        drawable="ic_launcher" />
+</resources>

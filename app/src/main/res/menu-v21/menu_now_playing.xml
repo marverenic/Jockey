@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.marverenic.music.NowPlayingActivity">
+
+    <item
+        android:id="@+id/action_shuffle"
+        android:icon="@drawable/ic_vector_shuffle"
+        android:showAsAction="ifRoom"
+        android:title="@string/shuffle" />
+
+    <item
+        android:id="@+id/action_repeat"
+        android:icon="@drawable/ic_vector_repeat"
+        android:showAsAction="ifRoom"
+        android:title="@string/repeat" />
+
+    <item
+        android:id="@+id/action_queue"
+        android:icon="@drawable/ic_vector_queue_music"
+        android:showAsAction="ifRoom"
+        android:title="@string/queue" />
+
+</menu>

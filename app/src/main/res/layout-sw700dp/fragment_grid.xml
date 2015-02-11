@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:paddingLeft="@dimen/tablet_padding"
+    android:paddingRight="@dimen/tablet_padding"
+    android:paddingTop="@dimen/phone_padding">
+
+    <GridView
+        android:id="@+id/albumGrid"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/background_elevated"
+        android:clipToPadding="false"
+        android:columnWidth="@dimen/grid_width_tablet"
+        android:elevation="@dimen/window_elevation"
+        android:gravity="center"
+        android:horizontalSpacing="@dimen/grid_padding"
+        android:numColumns="auto_fit"
+        android:padding="@dimen/grid_padding"
+        android:saveEnabled="true"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="@dimen/grid_padding"></GridView>
+
+</FrameLayout>

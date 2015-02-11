@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/status_bar_latest_event_content"
+    android:layout_width="match_parent"
+    android:layout_height="128dp"
+    android:background="@color/player_control_background"
+    tools:ignore="ContentDescription">
+
+    <ImageView
+        android:id="@+id/notificationIcon"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/art_default" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_toEndOf="@id/notificationIcon"
+        android:layout_toRightOf="@id/notificationIcon"
+        android:minHeight="@android:dimen/notification_large_icon_height"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/notificationContentTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/player_text_main" />
+
+        <TextView
+            android:id="@+id/notificationContentText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/player_text_detail" />
+
+        <TextView
+            android:id="@+id/notificationSubText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/player_text_detail" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/media_actions"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_toEndOf="@id/notificationIcon"
+        android:layout_toRightOf="@id/notificationIcon"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/notificationSkipPrevious"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:src="@drawable/ic_skip_previous_notification" />
+
+        <ImageView
+            android:id="@+id/notificationPause"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:src="@drawable/ic_pause" />
+
+        <ImageView
+            android:id="@+id/notificationSkipNext"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:src="@drawable/ic_skip_next_notification" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/action_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_above="@id/media_actions"
+        android:layout_toEndOf="@id/notificationIcon"
+        android:layout_toRightOf="@id/notificationIcon"
+        android:background="#29ffffff" />
+</RelativeLayout>

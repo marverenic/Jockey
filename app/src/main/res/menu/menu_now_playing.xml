@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.marverenic.music.NowPlayingActivity">
+
+    <item
+        android:id="@+id/action_shuffle"
+        android:title="@string/shuffle"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_repeat"
+        android:title="@string/repeat"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_queue"
+        android:title="@string/queue"
+        app:showAsAction="ifRoom" />
+
+</menu>

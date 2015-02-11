@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name" translatable="false">Jockey</string>
+    <string name="header_playlists">Playlists</string>
+    <string name="header_songs">Songs</string>
+    <string name="header_artists">Artists</string>
+    <string name="header_albums">Albums</string>
+    <string name="header_genres">Genres</string>
+    <string name="header_now_playing">Now Playing</string>
+    <string name="header_about">About</string>
+    <string name="action_settings">Settings</string>
+    <string name="header_library">Library</string>
+    <string name="header_settings">Settings</string>
+    <string name="header_search">Search</string>
+    <string name="settings_category_general">General</string>
+    <string name="action_refresh">Refresh Library</string>
+    <string name="action_skip">Skip</string>
+    <string name="action_play">Play</string>
+    <string name="action_pause">Pause</string>
+    <string name="action_previous">Previous</string>
+    <string name="album_art">Album Art</string>
+    <string name="shuffle">Shuffle</string>
+    <string name="repeat">Repeat</string>
+    <string name="repeat_one">Repeat One</string>
+    <string name="queue">Queue</string>
+    <string name="search_hint">Search Library</string>
+
+    <string name="nothing_playing">Nothing is playing</string>
+    <string name="no_artist">unknown artist</string>
+    <string name="no_album">unknown album</string>
+
+    <!-- Accessibility Content Descriptions -->
+    <string name="button_play_description">Play Button</string>
+    <string name="button_pause_description">Pause Button</string>
+    <string name="button_previous_description">Previous Song Button</string>
+    <string name="button_skip_description">Next Song Button</string>
+    <string name="seek_player_description">Music Seek</string>
+    <string name="art_description">Album Art</string>
+
+    <!-- Preference Strings -->
+    <string name="appearance_header">Appearance</string>
+    <string name="playback_header">Playback</string>
+    <string name="default_page_pref">Default Page</string>
+    <string name="theme_primary">Primary Color</string>
+    <string name="theme_primary_description">Controls the accent color. Takes effect when you leave this page</string>
+    <string name="theme_base">Primary Color</string>
+    <string name="theme_base_description">Controls the background color. Takes effect when you leave this page</string>
+    <string name="add_shortcut">Add themed icon to launcher</string>
+    <string name="add_shortcut_description">Place a new shortcut to Jockey on your home screen to match your theme. Happens when you close this page</string>
+    <string name="switch_to_now_playing">Automatically Switch to Now Playing</string>
+
+    <!-- Arrays -->
+    <string-array name="queue_options_song">
+        <item>Queue this song next</item>
+        <item>Queue this song last</item>
+        <item>Go to artist</item>
+        <item>Go to album</item>
+    </string-array>
+    <string-array name="queue_options_album">
+        <item>Queue this album next</item>
+        <item>Queue this album last</item>
+        <item>Go to artist</item>
+    </string-array>
+    <string-array name="queue_options_artist_page">
+        <item>Queue this song next</item>
+        <item>Queue this song last</item>
+        <item>Go to album</item>
+    </string-array>
+    <string-array name="queue_options_artist">
+        <item>Queue all songs by this artist next</item>
+        <item>Queue all songs by this artist last</item>
+    </string-array>
+    <string-array name="queue_options_genre">
+        <item>Queue all songs in this genre next</item>
+        <item>Queue all songs in this genre last</item>
+    </string-array>
+    <string-array name="queue_options_playlist">
+        <item>Queue all songs in this playlist next</item>
+        <item>Queue all songs in this playlist last</item>
+    </string-array>
+
+    <!-- String Arrays for Settings -->
+    <string-array name="pages">
+        <item name="0">Playlists</item>
+        <item name="1">Songs</item>
+        <item name="2">Artists</item>
+        <item name="3">Albums</item>
+        <item name="4">Genres</item>
+    </string-array>
+    <string-array name="page_values">
+        <item name="0">0</item>
+        <item name="1">1</item>
+        <item name="2">2</item>
+        <item name="3">3</item>
+        <item name="4">4</item>
+    </string-array>
+    <string-array name="colors">
+        <item name="0">Black</item>
+        <item name="1">Red</item>
+        <item name="2">Orange</item>
+        <item name="3">Yellow</item>
+        <item name="4">Green</item>
+        <item name="5">Blue</item>
+        <item name="6">Purple</item>
+    </string-array>
+    <string-array name="color_values">
+        <item name="0">0</item>
+        <item name="1">1</item>
+        <item name="2">2</item>
+        <item name="3">3</item>
+        <item name="4">4</item>
+        <item name="5">5</item>
+        <item name="6">6</item>
+    </string-array>
+    <string-array name="themes">
+        <item name="0">Dark</item>
+        <item name="1">Light</item>
+    </string-array>
+    <string-array name="theme_values">
+        <item name="0">0</item>
+        <item name="1">1</item>
+    </string-array>
+
+    <!-- Basic theme information -->
+    <string name="theme_title">Jockey Alternate Icons</string>
+    <string name="developer_name">ensiluxrum</string>
+    <string name="theme_description">This theme has themed icons for Jockey.\n\nDon\'t set this as your launcher\'s theme. You should manually change Jockey\'s icon to your preference if desired.</string>
+
+    <!-- Theme settings -->
+    <bool name="config_iconpack">true</bool>
+    <bool name="config_apexskin">false</bool>
+
+    <!-- The feature graphic will appear above the theme description -->
+    <string name="theme_feature">ic_launcher_black</string>
+
+    <!-- Each theme may have up to 5 preview images -->
+    <string name="theme_preview1">ic_launcher_red</string>
+    <string name="theme_preview2">ic_launcher_amber</string>
+
+</resources>
