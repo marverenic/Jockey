@@ -5,10 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
@@ -16,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -26,15 +22,14 @@ import com.marverenic.music.Player;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.utils.ArtGrabber;
 import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Themes;
 
 import java.util.ArrayList;
 
 public class ArtistPageAdapter extends BaseAdapter implements AdapterView.OnItemLongClickListener, AdapterView.OnItemClickListener {
-    private ArrayList<Song> songs;
-    private ArrayList<Album> albums;
+    public ArrayList<Song> songs;
+    public ArrayList<Album> albums;
     private Context context;
 
     @SuppressWarnings("unchecked")
@@ -165,26 +160,5 @@ public class ArtistPageAdapter extends BaseAdapter implements AdapterView.OnItem
                 });
         dialog.show();
         return true;
-    }
-
-    public void initializeHeader(final View parent) {
-        final View infoHeader = View.inflate(context, R.layout.page_songs_header, null);
-
-        final Handler handler = new Handler(Looper.getMainLooper());
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final Bitmap art = ArtGrabber.grabArtistArt(context, songs.get(0).artistName);
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        ((ImageView) infoHeader).setImageBitmap(art);
-                    }
-                });
-            }
-        }).start();
-
-        ((ListView) parent).addHeaderView(infoHeader, null, false);
     }
 }

@@ -1,5 +1,6 @@
 package com.marverenic.music;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,16 +10,21 @@ import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
-import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.marverenic.music.adapters.AlbumGridAdapter;
 import com.marverenic.music.adapters.ArtistPageAdapter;
 import com.marverenic.music.adapters.SongListAdapter;
 import com.marverenic.music.instances.Album;
@@ -36,7 +42,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
 
-public class LibraryPageActivity extends FragmentActivity implements View.OnClickListener {
+public class LibraryPageActivity extends Activity implements View.OnClickListener {
 
     public static final byte PLAYLIST = 0;
     public static final byte ARTIST = 1;
@@ -51,6 +57,7 @@ public class LibraryPageActivity extends FragmentActivity implements View.OnClic
             update();
         }
     };
+    private int albumCount = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -198,7 +205,7 @@ public class LibraryPageActivity extends FragmentActivity implements View.OnClic
         Bitmap art = ArtGrabber.grabAlbumArtLocal(this, ((Album) parent).albumId);
 
         if (art != null) {
-            View artView = View.inflate(this, R.layout.page_songs_header, null);
+            View artView = View.inflate(this, R.layout.album_header, null);
             songListView.addHeaderView(artView, null, false);
             ((ImageView) findViewById(R.id.header)).setImageBitmap(art);
         }
@@ -294,7 +301,7 @@ public class LibraryPageActivity extends FragmentActivity implements View.OnClic
                     o2c = o2c.substring(2);
                 }
                 if (!o1c.matches("[a-z]") && o2c.matches("[a-z]")) {
-                    return o2c.compareTo(o1c);
+                    return o1c.compareTo(o2c);
                 }
                 return o1c.compareTo(o2c);
             }
@@ -302,11 +309,77 @@ public class LibraryPageActivity extends FragmentActivity implements View.OnClic
         Collections.sort(songs, songComparator);
 
         ListView list = (ListView) findViewById(R.id.list);
+        initializeArtistHeader(list, albums);
         ArtistPageAdapter adapter = new ArtistPageAdapter(this, songs, albums);
         list.setAdapter(adapter);
         list.setOnItemClickListener(adapter);
         list.setOnItemLongClickListener(adapter);
-        adapter.initializeHeader(list);
+    }
+
+    public void initializeArtistHeader(final View parent, final ArrayList<Album> albums) {
+        final Context context = this;
+        final View infoHeader = View.inflate(this, R.layout.artist_header_info, null);
+
+        ((TextView) infoHeader.findViewById(R.id.artist_name)).setText(albums.get(0).artistName);
+
+        final Handler handler = new Handler(Looper.getMainLooper());
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final Bitmap art = ArtGrabber.grabArtistArt(context, albums.get(0).artistName);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        ((ImageView) infoHeader.findViewById(R.id.artist_image)).setImageBitmap(art);
+                    }
+                });
+            }
+        }).start();
+
+        ((ListView) parent).addHeaderView(infoHeader, null, false);
+
+        final View albumHeader = View.inflate(this, R.layout.artist_header_albums, null);
+        final GridView albumGrid = (GridView) albumHeader.findViewById(R.id.albumGrid);
+        AlbumGridAdapter gridAdapter = new AlbumGridAdapter(albums, context);
+        albumGrid.setAdapter(gridAdapter);
+
+        //updateArtistGridLayout(albumGrid, albums.size());
+        albumCount = albums.size();
+
+        ((ListView) parent).addHeaderView(albumHeader, null, false);
+    }
+
+    public void updateArtistGridLayout(GridView albumGrid, int albumCount) {
+        final long screenWidth = getResources().getConfiguration().screenWidthDp;
+        final float density = getResources().getDisplayMetrics().density;
+        final long globalPadding = (long) (getResources().getDimension(R.dimen.global_padding) / density);
+        final long gridPadding = (long) (getResources().getDimension(R.dimen.grid_padding) / density);
+        final long extraHeight = 60;
+        final long minWidth = (long) (getResources().getDimension(R.dimen.grid_width) / density);
+
+        long availableWidth = screenWidth - 2 * (globalPadding + gridPadding);
+        double numColumns = (availableWidth + gridPadding) / (minWidth + gridPadding);
+
+        long columnWidth = (long) Math.floor(availableWidth / numColumns);
+        long rowHeight = columnWidth + extraHeight;
+
+        long numRows = (long) Math.ceil(albumCount / numColumns);
+
+        long gridHeight = rowHeight * numRows + 2 * gridPadding;
+
+        int height = (int) ((gridHeight * density));
+
+        ViewGroup.LayoutParams albumParams = albumGrid.getLayoutParams();
+        albumParams.height = height;
+        albumGrid.setLayoutParams(albumParams);
+
+        Log.d("LibraryPageActivity", "screenWidth = " + screenWidth
+                + ", globalPadding = " + globalPadding + ", gridPadding = " + gridPadding
+                + ", availableWidth = " + availableWidth + ", numColumns = " + numColumns
+                + ", columnWidth = " + columnWidth + ", rowHeight = " + rowHeight
+                + ", numRows = " + numRows + ", gridHeight = " + gridHeight
+                + ", height = " + height + ", dpiScale = " + getResources().getDisplayMetrics().density);
     }
 
     @Override
@@ -330,6 +403,9 @@ public class LibraryPageActivity extends FragmentActivity implements View.OnClic
     @Override
     public void onResume() {
         Themes.setApplicationIcon(this);
+        if (type == ARTIST) {
+            updateArtistGridLayout((GridView) findViewById(R.id.albumGrid), albumCount);
+        }
         super.onResume();
     }
 

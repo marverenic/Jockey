@@ -10,13 +10,13 @@
     <dimen name="header_elevation">4dp</dimen>
     <dimen name="window_elevation">2dp</dimen>
     <dimen name="miniplayer_elevation">8dp</dimen>
-    <dimen name="global_padding">8dp</dimen>
+    <dimen name="global_padding">100dp</dimen>
     <dimen name="list_height">72dp</dimen>
     <dimen name="list_padding_h">16dp</dimen>
     <dimen name="list_margin">6dp</dimen>
     <dimen name="list_extended_padding_h">56dp</dimen>
     <dimen name="list_image_size">48dp</dimen>
-    <dimen name="grid_width">120dp</dimen>
+    <dimen name="grid_width">170dp</dimen>
     <dimen name="grid_art_size">162dp</dimen>
     <dimen name="grid_padding">6dp</dimen>
     <dimen name="settings_header_text_size">18sp</dimen>

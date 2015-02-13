@@ -1,10 +1,14 @@
 # Jockey
 Jockey is a music player for Android based on Google's Material Design standards. The point of Jockey is to be a simple, lightweight media player for the average user.
 
+
+![Default library view](https://a.fsdn.com/con/app/proj/jockey-player/screenshots/Screenshot_2015-02-12-22-44-24.png)
+![Designed for tablets](https://a.fsdn.com/con/app/proj/jockey-player/screenshots/Screenshot_2015-02-12-22-49-56.png)
+
 Also, Jockey was coded by a college student with only one semester of Computer Science. That being said, if you decide to modify Jockey, I apologize in advance.
 
 ### Downloads
-No builds of Jockey are currently available for download. To install Jockey at the moment, you will need to compile it.
+To download compiled versions of Jockey, visit Jockey's [SourceForge] page.
 
 ### Setting up the project
  - Download, install and launch [Android Studio]
@@ -28,3 +32,4 @@ No builds of Jockey are currently available for download. To install Jockey at t
 Jockey is licensed under an Apache 2.0 license
 
 [Android Studio]:http://developer.android.com/sdk/index.html
+[SourceForge]:https://sourceforge.net/projects/jockey-player/

@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
     android:clipToPadding="false"
-    android:paddingLeft="@dimen/phone_padding"
-    android:paddingRight="@dimen/phone_padding"
-    android:paddingTop="@dimen/phone_padding">
+    android:paddingLeft="@dimen/global_padding"
+    android:paddingRight="@dimen/global_padding"
+    android:paddingTop="@dimen/list_margin">
 
     <ListView
         android:id="@+id/list"

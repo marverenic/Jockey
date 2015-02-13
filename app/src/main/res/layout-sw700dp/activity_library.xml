@@ -10,8 +10,8 @@
         android:layout_gravity="top"
         android:background="@color/primary"
         android:elevation="@dimen/header_elevation"
-        android:paddingLeft="@dimen/tablet_padding_min"
-        android:paddingRight="@dimen/tablet_padding_min" />
+        android:paddingLeft="@dimen/global_padding"
+        android:paddingRight="@dimen/global_padding" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
