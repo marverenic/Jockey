@@ -1,18 +1,14 @@
 package com.marverenic.music;
 
-import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.media.AudioManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -40,6 +36,7 @@ import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.SlidingTabLayout;
 import com.marverenic.music.utils.Themes;
+import com.marverenic.music.utils.Updater;
 
 public class LibraryActivity extends FragmentActivity implements View.OnClickListener {
 
@@ -58,34 +55,7 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
 
         Themes.setTheme(this);
 
-        // Check for versions of Jockey published by ensiluxrum
-        PackageManager pm = getPackageManager();
-        boolean hasOldVersion;
-        try {
-            pm.getPackageInfo("com.ensiluxrum.music", PackageManager.GET_ACTIVITIES);
-            hasOldVersion = true;
-        } catch (PackageManager.NameNotFoundException e) {
-            hasOldVersion = false;
-        }
-
-        if (hasOldVersion)
-            new AlertDialog.Builder(this)
-                    .setTitle("An old version of Jockey was found")
-                    .setMessage("You should uninstall it to avoid conflicts and general confusion.")
-                    .setPositiveButton("Uninstall it for me", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent intent = new Intent(Intent.ACTION_DELETE);
-                            intent.setData(Uri.parse("package:com.ensiluxrum.music"));
-                            startActivity(intent);
-                        }
-                    })
-                    .setNeutralButton("Maybe later", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    })
-                    .show();
+        new Thread(new Updater(this)).start();
 
         if (!isTaskRoot()) {
             finish();
