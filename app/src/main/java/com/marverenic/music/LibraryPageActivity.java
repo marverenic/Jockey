@@ -95,28 +95,30 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
             }
 
             if (type != ARTIST) {
-                Comparator<Song> songComparator = new Comparator<Song>() {
-                    @Override
-                    public int compare(Song o1, Song o2) {
-                        String o1c = o1.songName.toLowerCase(Locale.ENGLISH);
-                        String o2c = o2.songName.toLowerCase(Locale.ENGLISH);
-                        if (o1c.startsWith("the ")) {
-                            o1c = o1c.substring(4);
-                        } else if (o1c.startsWith("a ")) {
-                            o1c = o1c.substring(2);
+                if (type != ALBUM) {
+                    Comparator<Song> songComparator = new Comparator<Song>() {
+                        @Override
+                        public int compare(Song o1, Song o2) {
+                            String o1c = o1.songName.toLowerCase(Locale.ENGLISH);
+                            String o2c = o2.songName.toLowerCase(Locale.ENGLISH);
+                            if (o1c.startsWith("the ")) {
+                                o1c = o1c.substring(4);
+                            } else if (o1c.startsWith("a ")) {
+                                o1c = o1c.substring(2);
+                            }
+                            if (o2c.startsWith("the ")) {
+                                o2c = o2c.substring(4);
+                            } else if (o2c.startsWith("a ")) {
+                                o2c = o2c.substring(2);
+                            }
+                            if (!o1c.matches("[a-z]") && o2c.matches("[a-z]")) {
+                                return o2c.compareTo(o1c);
+                            }
+                            return o1c.compareTo(o2c);
                         }
-                        if (o2c.startsWith("the ")) {
-                            o2c = o2c.substring(4);
-                        } else if (o2c.startsWith("a ")) {
-                            o2c = o2c.substring(2);
-                        }
-                        if (!o1c.matches("[a-z]") && o2c.matches("[a-z]")) {
-                            return o2c.compareTo(o1c);
-                        }
-                        return o1c.compareTo(o2c);
-                    }
-                };
-                Collections.sort(songEntries, songComparator);
+                    };
+                    Collections.sort(songEntries, songComparator);
+                }
 
                 SongListAdapter adapter = new SongListAdapter(songEntries, this);
                 songListView.setAdapter(adapter);
@@ -328,12 +330,14 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
             @Override
             public void run() {
                 final Bitmap art = ArtGrabber.grabArtistArt(context, albums.get(0).artistName);
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        ((ImageView) infoHeader.findViewById(R.id.artist_image)).setImageBitmap(art);
-                    }
-                });
+                if (art != null) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            ((ImageView) infoHeader.findViewById(R.id.artist_image)).setImageBitmap(art);
+                        }
+                    });
+                }
             }
         }).start();
 

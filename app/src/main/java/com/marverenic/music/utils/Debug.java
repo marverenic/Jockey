@@ -14,11 +14,11 @@ public class Debug {
     public static final byte VERBOSE = 0;
     public static final byte INFO = 1;
     public static final byte DEBUG = 2;
+    public static byte debugLevel = DEBUG;
     public static final byte WARNING = 3;
     public static final byte ERROR = 4;
     public static final byte WTF = 5;
     private static final String FILENAME = "jockey.log";
-    public static byte debugLevel = 0;
 
     public static void log(String tag, String message, Context context) {
         // The default level is info
@@ -37,7 +37,6 @@ public class Debug {
                     .setPositiveButton("Okay", null)
                     .show();
         }
-        //else if (level >= debugLevel && !(!BuildConfig.DEBUG && debugLevel == VERBOSE)) {
         else if (level >= debugLevel) {
             String line;
 

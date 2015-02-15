@@ -8,9 +8,9 @@ import android.os.Environment;
 import android.provider.MediaStore;
 
 import com.marverenic.music.BuildConfig;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.io.File;
-import java.net.URL;
 
 import de.umass.lastfm.Artist;
 import de.umass.lastfm.Caller;
@@ -53,8 +53,7 @@ public class ArtGrabber {
         Artist artist = Artist.getInfo(artistName, API_KEY);
         if (artist != null) {
             try {
-                URL url = new URL(artist.getImageURL(ImageSize.MEGA));
-                return BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                return ImageLoader.getInstance().loadImageSync(artist.getImageURL(ImageSize.MEGA));
             } catch (Exception e) {
                 e.printStackTrace();
             }

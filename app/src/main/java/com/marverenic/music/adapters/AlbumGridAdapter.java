@@ -37,9 +37,9 @@ import java.util.HashMap;
 
 public class AlbumGridAdapter extends BaseAdapter implements ImageLoadingListener, View.OnClickListener, View.OnLongClickListener {
 
+    private static HashMap<String, int[]> colorTable = new HashMap<>();
     private ArrayList<Album> data;
     private Context mContext;
-    private HashMap<String, int[]> colorTable = new HashMap<>();
 
     public AlbumGridAdapter(ArrayList<Album> data, Context context) {
         this.data = data;
