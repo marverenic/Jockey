@@ -1,4 +1,4 @@
-package com.marverenic.music.utils;
+package com.marverenic.music.view;
 
 import android.annotation.TargetApi;
 import android.content.Context;

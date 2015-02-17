@@ -110,6 +110,8 @@ public class AlbumGridAdapter extends BaseAdapter implements ImageLoadingListene
         viewHolder.title.setText(a.albumName);
         viewHolder.detail.setText(a.artistName);
 
+        // TODO This should probably fade in
+
         if (a.artUri != null) {
             if (colorTable.get("file://" + a.artUri) != null) {
                 viewHolder.art.setImageDrawable(new ColorDrawable(colorTable.get("file://" + a.artUri)[0]));

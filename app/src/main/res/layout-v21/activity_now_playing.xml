@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.marverenic.music.utils.SquareImageViewH
+    <com.marverenic.music.view.SquareImageViewH
         android:id="@+id/imageArtwork"
         android:layout_width="match_parent"
         android:layout_height="0dp"

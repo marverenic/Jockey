@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.marverenic.music.utils;
+package com.marverenic.music.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -24,6 +24,8 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import com.marverenic.music.utils.Themes;
 
 class SlidingTabStrip extends LinearLayout {
 

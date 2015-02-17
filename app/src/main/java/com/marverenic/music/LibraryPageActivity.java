@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,8 +31,8 @@ import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Genre;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.utils.ArtGrabber;
 import com.marverenic.music.utils.Debug;
+import com.marverenic.music.utils.Fetch;
 import com.marverenic.music.utils.Themes;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -204,7 +203,7 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
 
         cur.close();
 
-        Bitmap art = ArtGrabber.grabAlbumArtLocal(this, ((Album) parent).albumId);
+        Bitmap art = Fetch.fetchAlbumArtLocal(this, ((Album) parent).albumId);
 
         if (art != null) {
             View artView = View.inflate(this, R.layout.album_header, null);
@@ -322,19 +321,35 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
         final Context context = this;
         final View infoHeader = View.inflate(this, R.layout.artist_header_info, null);
 
-        ((TextView) infoHeader.findViewById(R.id.artist_name)).setText(albums.get(0).artistName);
-
         final Handler handler = new Handler(Looper.getMainLooper());
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final Bitmap art = ArtGrabber.grabArtistArt(context, albums.get(0).artistName);
-                if (art != null) {
+                final Fetch.ArtistBio bio = Fetch.fetchArtistBio(context, albums.get(0).artistName);
+                if (bio != null) {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            ((ImageView) infoHeader.findViewById(R.id.artist_image)).setImageBitmap(art);
+                            ((ImageView) infoHeader.findViewById(R.id.artist_image)).setImageBitmap(bio.art);
+
+                            String bioText;
+                            if (!bio.tags[0].equals("")) {
+                                bioText = bio.tags[0].toUpperCase().charAt(0) + bio.tags[0].substring(1);
+                                if (!bio.summary.equals("")) {
+                                    bioText = bioText + " - " + bio.summary;
+                                }
+                            } else bioText = bio.summary;
+
+                            ((TextView) infoHeader.findViewById(R.id.artist_bio)).setText(bioText);
+                        }
+                    });
+                } else {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            //TODO This should probably fade out
+                            ((ListView) parent).removeHeaderView(infoHeader);
                         }
                     });
                 }
@@ -352,6 +367,9 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
         albumCount = albums.size();
 
         ((ListView) parent).addHeaderView(albumHeader, null, false);
+
+        updateArtistGridLayout((GridView) findViewById(R.id.albumGrid), albumCount);
+        updateArtistHeader((ViewGroup) findViewById(R.id.artist_bio).getParent());
     }
 
     public void updateArtistGridLayout(GridView albumGrid, int albumCount) {
@@ -377,13 +395,18 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
         ViewGroup.LayoutParams albumParams = albumGrid.getLayoutParams();
         albumParams.height = height;
         albumGrid.setLayoutParams(albumParams);
+    }
 
-        Log.d("LibraryPageActivity", "screenWidth = " + screenWidth
-                + ", globalPadding = " + globalPadding + ", gridPadding = " + gridPadding
-                + ", availableWidth = " + availableWidth + ", numColumns = " + numColumns
-                + ", columnWidth = " + columnWidth + ", rowHeight = " + rowHeight
-                + ", numRows = " + numRows + ", gridHeight = " + gridHeight
-                + ", height = " + height + ", dpiScale = " + getResources().getDisplayMetrics().density);
+    public void updateArtistHeader(final ViewGroup bioHolder) {
+        final TextView bioText = (TextView) bioHolder.findViewById(R.id.artist_bio);
+
+        final long viewHeight = (long) (getResources().getDimension(R.dimen.artist_image_height));
+        final long padding = (long) (getResources().getDimension(R.dimen.list_margin));
+
+        final long availableHeight = (long) Math.floor(viewHeight - 2 * padding);
+
+        long maxLines = (long) Math.floor(availableHeight / (bioText.getLineHeight()));
+        bioText.setMaxLines((int) maxLines);
     }
 
     @Override
@@ -402,15 +425,6 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
                 update();
                 break;
         }
-    }
-
-    @Override
-    public void onResume() {
-        Themes.setApplicationIcon(this);
-        if (type == ARTIST) {
-            updateArtistGridLayout((GridView) findViewById(R.id.albumGrid), albumCount);
-        }
-        super.onResume();
     }
 
     @Override

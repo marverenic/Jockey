@@ -29,7 +29,7 @@ import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
-import com.marverenic.music.utils.SlidingTabLayout;
+import com.marverenic.music.view.SlidingTabLayout;
 
 import java.util.ArrayList;
 

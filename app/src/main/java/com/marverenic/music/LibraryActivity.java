@@ -34,9 +34,9 @@ import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
-import com.marverenic.music.utils.SlidingTabLayout;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.utils.Updater;
+import com.marverenic.music.view.SlidingTabLayout;
 
 public class LibraryActivity extends FragmentActivity implements View.OnClickListener {
 
@@ -144,7 +144,8 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
                 Toast.makeText(this, "Library refreshed.", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.search:
-                startActivity(new Intent(LibraryActivity.this, SearchActivity.class));
+                //Search is horribly broken. The only thing this method does is leak a window
+                //startActivity(new Intent(LibraryActivity.this, SearchActivity.class));
                 return true;
             case R.id.action_about:
                 startActivity(new Intent(LibraryActivity.this, AboutActivity.class));

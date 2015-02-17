@@ -16,7 +16,7 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <com.marverenic.music.utils.SquareImageViewH
+        <com.marverenic.music.view.SquareImageViewH
             android:id="@+id/imageAlbumArt"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"

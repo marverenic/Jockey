@@ -29,8 +29,8 @@ import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.utils.ArtGrabber;
 import com.marverenic.music.utils.Debug;
+import com.marverenic.music.utils.Fetch;
 import com.marverenic.music.utils.ManagedMediaPlayer;
 import com.marverenic.music.utils.MediaReceiver;
 import com.marverenic.music.utils.Themes;
@@ -353,7 +353,7 @@ public class Player extends Service implements MediaPlayer.OnCompletionListener,
         Debug.log(Debug.VERBOSE, TAG, "On Prepared called", context);
         mp.start();
 
-        art = ArtGrabber.grabAlbumArtLocal(context, getNowPlaying().albumId);
+        art = Fetch.fetchAlbumArtLocal(context, getNowPlaying().albumId);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mediaSession.setPlaybackState(new PlaybackState.Builder().setState(PlaybackState.STATE_PLAYING, (long) Player.instance.mediaPlayer.getCurrentPosition(), 1f).build());
@@ -462,7 +462,7 @@ public class Player extends Service implements MediaPlayer.OnCompletionListener,
                         .setSmallIcon(R.drawable.ic_pause_notification)
                         .setWhen(System.currentTimeMillis())
                         .setOnlyAlertOnce(true)
-                        .setPriority(NotificationCompat.PRIORITY_LOW)
+                        .setPriority(NotificationCompat.PRIORITY_MIN)
                         .setContentIntent(PendingIntent.getActivity(context, 0, new Intent(context, NowPlayingActivity.class).setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT), PendingIntent.FLAG_CANCEL_CURRENT))
                         .build();
             }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.marverenic.music.utils;
+package com.marverenic.music.view;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -30,6 +30,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 
 import com.marverenic.music.R;
+import com.marverenic.music.utils.Themes;
 
 /**
  * To be used with ViewPager to provide a tab indicator component which give constant feedback as to
