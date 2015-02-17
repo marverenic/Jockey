@@ -229,7 +229,7 @@ public class Player extends Service implements MediaPlayer.OnCompletionListener,
                     .setState(PlaybackState.STATE_NONE, 0, 0f);
             mediaSession.setPlaybackState(state.build());
             mediaSession.setActive(true);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             // For KitKat, use a RemoteController
 
             getFocus();
