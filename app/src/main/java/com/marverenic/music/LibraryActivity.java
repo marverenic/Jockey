@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -205,6 +206,13 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
                     }
                 }
             }
+
+            if (Player.getInstance().getArt() != null) {
+                ((ImageView) findViewById(R.id.imageArtwork)).setImageBitmap(Player.getInstance().getArt());
+            } else {
+                ((ImageView) findViewById(R.id.imageArtwork)).setImageResource(R.drawable.art_default);
+            }
+
             RelativeLayout.LayoutParams pagerLayoutParams = (RelativeLayout.LayoutParams) (findViewById(R.id.pager)).getLayoutParams();
             pagerLayoutParams.bottomMargin = getResources().getDimensionPixelSize(R.dimen.now_playing_ticker_height);
             (findViewById(R.id.pager)).setLayoutParams(pagerLayoutParams);

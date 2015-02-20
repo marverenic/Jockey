@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.marverenic.music"
-    android:versionCode="21625"
-    android:versionName="0.2-α.r0m16z">
+    android:versionCode="21626"
+    android:versionName="0.2-α.r0m16aa">
 
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
