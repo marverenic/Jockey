@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
@@ -416,7 +417,7 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.miniplayer:
-                startActivity(new Intent(LibraryPageActivity.this, NowPlayingActivity.class));
+                Navigate.to(this, NowPlayingActivity.class);
                 update();
                 break;
             case R.id.playButton:
@@ -450,23 +451,33 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
                 artistName.setText(Player.getNowPlaying().artistName);
 
                 if (!Player.getInstance().isPlaying()) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_vector_play);
-                    else
-                        ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play);
+                        ((ImageButton) findViewById(R.id.playButton)).setImageTintList(ColorStateList.valueOf(Themes.getListText()));
+                    } else {
+                        if (Themes.isLight(this)) {
+                            ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_miniplayer_light);
+                        } else {
+                            ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_miniplayer);
+                        }
+                    }
                 } else {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_vector_pause);
-                    else
-                        ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_pause);
+                        ((ImageButton) findViewById(R.id.playButton)).setImageTintList(ColorStateList.valueOf(Themes.getListText()));
+                    } else {
+                        if (Themes.isLight(this)) {
+                            ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_pause_miniplayer_light);
+                        } else {
+                            ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_pause_miniplayer);
+                        }
+                    }
                 }
 
                 if (Player.getInstance().getArt() != null) {
                     ((ImageView) findViewById(R.id.imageArtwork)).setImageBitmap(Player.getInstance().getArt());
                 } else {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        ((ImageView) findViewById(R.id.imageArtwork)).setImageResource(R.drawable.art_default);
-                    }
+                    ((ImageView) findViewById(R.id.imageArtwork)).setImageResource(R.drawable.art_default);
                 }
 
                 FrameLayout.LayoutParams listLayoutParams = (FrameLayout.LayoutParams) (findViewById(R.id.list)).getLayoutParams();

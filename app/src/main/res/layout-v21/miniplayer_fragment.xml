@@ -24,7 +24,8 @@
         android:clickable="true"
         android:contentDescription="@string/button_skip_description"
         android:onClick="onClick"
-        android:src="@drawable/ic_skip_next" />
+        android:src="@drawable/ic_skip_next"
+        android:tint="@color/list_text" />
 
     <ImageButton
         android:id="@+id/playButton"
@@ -35,7 +36,8 @@
         android:clickable="true"
         android:contentDescription="@string/button_play_description"
         android:onClick="onClick"
-        android:src="@drawable/ic_play" />
+        android:src="@drawable/ic_play"
+        android:tint="@color/list_text" />
 
     <TextView
         android:id="@+id/textNowPlayingTitle"
@@ -49,7 +51,7 @@
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:text="@string/nothing_playing"
-        android:textColor="@color/player_text_main"
+        android:textColor="@color/list_text"
         android:textSize="20sp" />
 
     <TextView
@@ -64,7 +66,7 @@
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:text="@string/no_artist"
-        android:textColor="@color/player_text_detail"
+        android:textColor="@color/detail_text"
         android:textSize="20sp" />
 
 </RelativeLayout>

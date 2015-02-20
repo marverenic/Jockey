@@ -12,7 +12,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@color/player_control_background"
+        android:background="@color/background_miniplayer"
         android:elevation="@dimen/miniplayer_elevation">
 
         <include

@@ -5,6 +5,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -21,6 +22,7 @@ import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SeekBar;
@@ -42,6 +44,7 @@ public class Themes {
     private static int divider;
     private static int background;
     private static int backgroundElevated;
+    private static int backgroundMiniplayer;
 
     // Get Methods
     public static int getPrimary() {
@@ -79,6 +82,10 @@ public class Themes {
         updateColors(context);
 
         return oldPrimary != primary || oldBackground != background;
+    }
+
+    public static boolean isLight(Context context) {
+        return background == context.getResources().getColor(R.color.background_light);
     }
 
     // Update method
@@ -146,6 +153,7 @@ public class Themes {
                 background = resources.getColor(R.color.background_light);
                 divider = resources.getColor(R.color.divider_light);
                 backgroundElevated = resources.getColor(R.color.background_elevated_light);
+                backgroundMiniplayer = resources.getColor(R.color.background_miniplayer_light);
                 break;
             default: // Material Dark
                 listText = resources.getColor(R.color.list_text);
@@ -153,6 +161,7 @@ public class Themes {
                 background = resources.getColor(R.color.background);
                 divider = resources.getColor(R.color.divider);
                 backgroundElevated = resources.getColor(R.color.background_elevated);
+                backgroundMiniplayer = resources.getColor(R.color.background_miniplayer);
                 break;
         }
     }
@@ -351,7 +360,6 @@ public class Themes {
 
         switch (layoutId) {
             case R.layout.activity_library:
-            case R.layout.page_artist:
                 themeLibraryActivity(contentView, activity);
                 break;
             case R.layout.activity_now_playing:
@@ -371,6 +379,10 @@ public class Themes {
                 break;
         }
         contentView.setBackgroundColor(background);
+
+        if (contentView.findViewById(R.id.miniplayer) != null) {
+            themeMiniplayer(contentView.findViewById(R.id.miniplayer), activity);
+        }
     }
 
     public static void themeFragment(int layoutId, View contentView, Fragment fragment) {
@@ -509,6 +521,25 @@ public class Themes {
 
     private static void themeGridFragment(View contentView, Fragment fragment) {
         contentView.findViewById(R.id.albumGrid).setBackgroundColor(backgroundElevated);
+    }
+
+    private static void themeMiniplayer(View miniplayer, Context context) {
+        ((View) miniplayer.getParent()).setBackgroundColor(backgroundMiniplayer);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ((ImageButton) miniplayer.findViewById(R.id.skipButton)).setImageTintList(ColorStateList.valueOf(listText));
+            ((ImageButton) miniplayer.findViewById(R.id.playButton)).setImageTintList(ColorStateList.valueOf(listText));
+        } else {
+            if (!isLight(context)) {
+                ((ImageButton) miniplayer.findViewById(R.id.skipButton)).setImageResource(R.drawable.ic_skip_next_miniplayer);
+                ((ImageButton) miniplayer.findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_miniplayer);
+            } else {
+                ((ImageButton) miniplayer.findViewById(R.id.skipButton)).setImageResource(R.drawable.ic_skip_next_miniplayer_light);
+                ((ImageButton) miniplayer.findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_miniplayer_light);
+            }
+        }
+
+        ((TextView) miniplayer.findViewById(R.id.textNowPlayingTitle)).setTextColor(listText);
+        ((TextView) miniplayer.findViewById(R.id.textNowPlayingDetail)).setTextColor(detailText);
     }
 
 }

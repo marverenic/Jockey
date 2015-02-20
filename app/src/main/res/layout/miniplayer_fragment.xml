@@ -53,7 +53,7 @@
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:text="@string/nothing_playing"
-        android:textColor="@color/player_text_main"
+        android:textColor="@color/list_text"
         android:textSize="20sp" />
 
     <TextView
@@ -70,7 +70,7 @@
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:text="@string/no_artist"
-        android:textColor="@color/player_text_detail"
+        android:textColor="@color/detail_text"
         android:textSize="20sp" />
 
 </RelativeLayout>
