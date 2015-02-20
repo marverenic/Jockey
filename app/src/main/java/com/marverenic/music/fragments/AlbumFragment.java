@@ -47,19 +47,4 @@ public class AlbumFragment extends Fragment {
 
         return view;
     }
-
-	/*public void libraryRefresh () {
-        AlbumGridAdapter adapter = (AlbumGridAdapter) ((GridView) getView().findViewById(R.id.albumGrid)).getAdapter();
-		adapter.refresh(Library.getAlbums());
-	}*/
-
-    /*@Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Album item = ((Album) (((GridView) getView().findViewById(R.id.albumGrid)).getAdapter()).getItem(position));
-
-        Intent intent = new Intent(getActivity(), LibraryPageActivity.class);
-        intent.putExtra("entry", item);
-
-        startActivity(intent);
-    }*/
 }

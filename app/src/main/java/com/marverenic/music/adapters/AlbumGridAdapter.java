@@ -3,7 +3,6 @@ package com.marverenic.music.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
@@ -25,6 +24,7 @@ import com.marverenic.music.Player;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Song;
+import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -203,11 +203,7 @@ public class AlbumGridAdapter extends BaseAdapter implements ImageLoadingListene
     public void onClick(View v) {
         int position = ((GridView) v.getParent()).getPositionForView(v);
         Album album = data.get(position);
-
-        Intent intent = new Intent(mContext, LibraryPageActivity.class);
-        intent.putExtra("entry", album);
-
-        mContext.startActivity(intent);
+        Navigate.to(mContext, LibraryPageActivity.class, "entry", album);
     }
 
     @Override

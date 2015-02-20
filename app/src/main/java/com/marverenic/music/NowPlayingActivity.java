@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.marverenic.music.utils.Debug;
+import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 
 public class NowPlayingActivity extends Activity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
@@ -120,8 +121,9 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            //case android.R.id.home:
-
+            case android.R.id.home:
+                Navigate.up(this);
+                return true;
             case R.id.action_shuffle:
                 Player.getInstance().toggleShuffle();
                 if (Player.isShuffle()) {
@@ -173,7 +175,7 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
                 }
                 return true;
             case R.id.action_queue:
-                startActivity(new Intent(this, QueueActivity.class));
+                Navigate.to(this, QueueActivity.class);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -213,6 +215,12 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
             Player.getInstance().previous();
         }
         update();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Navigate.back(this);
     }
 
     public void update() {

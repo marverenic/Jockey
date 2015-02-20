@@ -1,9 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.marverenic.music"
-    android:versionCode="21623"
-    android:versionName="0.2-α.r0m16x">
+    android:versionCode="21624"
+    android:versionName="0.2-α.r0m16y">
 
-<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -53,15 +53,14 @@
             android:name="com.marverenic.music.LibraryPageActivity"
             android:label=""
             android:parentActivityName="com.marverenic.music.LibraryActivity"
-            android:screenOrientation="fullUser"></activity>
+            android:screenOrientation="fullUser" />
 
         <activity
             android:name="com.marverenic.music.NowPlayingActivity"
             android:label="@string/header_now_playing"
-            android:launchMode="singleTop"
             android:parentActivityName="com.marverenic.music.LibraryActivity"
             android:screenOrientation="fullUser"
-            android:theme="@style/NowPlayingTheme"></activity>
+            android:theme="@style/NowPlayingTheme" />
 
         <activity-alias
             android:name=".PlayWithJockey"
@@ -107,7 +106,7 @@
             android:name="com.marverenic.music.QueueActivity"
             android:label="@string/header_now_playing"
             android:parentActivityName="com.marverenic.music.NowPlayingActivity"
-            android:screenOrientation="fullUser"></activity>
+            android:screenOrientation="fullUser" />
 
         <activity
             android:name="com.marverenic.music.SettingsActivity"
@@ -125,9 +124,9 @@
             android:name="com.marverenic.music.AboutActivity"
             android:label="@string/header_about"
             android:parentActivityName="com.marverenic.music.LibraryActivity"
-            android:screenOrientation="fullUser"></activity>
+            android:screenOrientation="fullUser" />
 
-        <service android:name="com.marverenic.music.Player"></service>
+        <service android:name="com.marverenic.music.Player" />
     </application>
 
 </manifest>

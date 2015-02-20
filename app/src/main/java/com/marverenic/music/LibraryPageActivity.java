@@ -33,6 +33,7 @@ import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Fetch;
+import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -61,6 +62,8 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // TODO: Split these into separate classes
 
         Themes.setTheme(this);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -490,9 +493,17 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                break;
+                Navigate.up(this);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Navigate.back(this);
     }
 
     @Override

@@ -34,6 +34,7 @@ import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
+import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.utils.Updater;
 import com.marverenic.music.view.SlidingTabLayout;
@@ -136,7 +137,7 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case R.id.action_settings:
-                startActivity(new Intent(LibraryActivity.this, SettingsActivity.class));
+                Navigate.to(this, SettingsActivity.class);
                 return true;
             case R.id.action_refresh_library:
                 Library.resetAll();
@@ -145,10 +146,10 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
                 return true;
             case R.id.search:
                 //Search is horribly broken. The only thing this method does is leak a window
-                //startActivity(new Intent(LibraryActivity.this, SearchActivity.class));
+                //Navigate.to(this, SearchActivity.class);
                 return true;
             case R.id.action_about:
-                startActivity(new Intent(LibraryActivity.this, AboutActivity.class));
+                Navigate.to(this, AboutActivity.class);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -159,7 +160,7 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.miniplayer:
-                startActivity(new Intent(LibraryActivity.this, NowPlayingActivity.class));
+                Navigate.to(this, NowPlayingActivity.class);
                 update();
                 break;
             case R.id.playButton:

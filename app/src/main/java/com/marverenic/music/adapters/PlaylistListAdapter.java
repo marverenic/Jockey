@@ -3,7 +3,6 @@ package com.marverenic.music.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Build;
 import android.provider.MediaStore;
@@ -22,6 +21,7 @@ import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
+import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 
 import java.util.ArrayList;
@@ -84,11 +84,7 @@ public class PlaylistListAdapter extends BaseAdapter implements AdapterView.OnIt
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Playlist item = data.get(position);
-
-        Intent intent = new Intent(context, LibraryPageActivity.class);
-        intent.putExtra("entry", item);
-
-        context.startActivity(intent);
+        Navigate.to(context, LibraryPageActivity.class, "entry", item);
     }
 
     @Override

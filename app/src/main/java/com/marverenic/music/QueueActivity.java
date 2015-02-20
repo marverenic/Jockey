@@ -3,11 +3,13 @@ package com.marverenic.music;
 import android.app.Activity;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.marverenic.music.adapters.SongListAdapter;
+import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 
 public class QueueActivity extends Activity implements AdapterView.OnItemClickListener, View.OnClickListener {
@@ -35,12 +37,29 @@ public class QueueActivity extends Activity implements AdapterView.OnItemClickLi
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Navigate.up(this);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Navigate.back(this);
+    }
+
+    @Override
     public void onClick(View v) {
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Player.getInstance().changeSong(position);
-        finish();
+        Navigate.up(this);
     }
 }

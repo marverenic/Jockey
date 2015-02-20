@@ -183,7 +183,7 @@ public class Player extends Service implements MediaPlayer.OnCompletionListener,
             mediaSession.setCallback(new MediaSession.Callback() {
                 @Override
                 public void onPlay() {
-                    if (mediaPlayer.getState() != ManagedMediaPlayer.STATE_STARTED) {
+                    if (mediaPlayer.getState() != ManagedMediaPlayer.status.STARTED) {
                         Player.instance.pause();
                     }
                 }
@@ -195,7 +195,7 @@ public class Player extends Service implements MediaPlayer.OnCompletionListener,
 
                 @Override
                 public void onPause() {
-                    if (mediaPlayer.getState() != ManagedMediaPlayer.STATE_PAUSED) {
+                    if (mediaPlayer.getState() != ManagedMediaPlayer.status.PAUSED) {
                         Player.instance.pause();
                     }
                 }
@@ -560,13 +560,13 @@ public class Player extends Service implements MediaPlayer.OnCompletionListener,
                         PlaybackState.ACTION_SKIP_TO_NEXT | PlaybackState.ACTION_SKIP_TO_PREVIOUS);
 
                 switch (mediaPlayer.getState()) {
-                    case ManagedMediaPlayer.STATE_STARTED:
+                    case STARTED:
                         state.setState(PlaybackState.STATE_PLAYING, getPosition(), 1f);
                         break;
-                    case ManagedMediaPlayer.STATE_PAUSED:
+                    case PAUSED:
                         state.setState(PlaybackState.STATE_PAUSED, getPosition(), 1f);
                         break;
-                    case ManagedMediaPlayer.STATE_STOPPED:
+                    case STOPPED:
                         state.setState(PlaybackState.STATE_STOPPED, getPosition(), 1f);
                         break;
                     default:

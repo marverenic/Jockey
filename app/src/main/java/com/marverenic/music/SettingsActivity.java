@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.view.MenuItem;
 
+import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 
 public class SettingsActivity extends PreferenceActivity {
@@ -37,6 +39,23 @@ public class SettingsActivity extends PreferenceActivity {
             Themes.updateLauncherIcon(this);
             prefs.edit().putBoolean("prefAddShortcut", false).apply();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Navigate.home(this);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Navigate.back(this);
     }
 
     public static class PrefFragment extends PreferenceFragment {

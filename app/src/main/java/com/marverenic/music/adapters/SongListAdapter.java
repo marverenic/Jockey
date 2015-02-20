@@ -25,6 +25,7 @@ import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
+import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 
 import java.util.ArrayList;
@@ -103,7 +104,7 @@ public class SongListAdapter extends BaseAdapter implements AdapterView.OnItemLo
 
         context.startService(new Intent(context, Player.class));
         if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("switchToNowPlaying", true)) {
-            context.startActivity(new Intent(context, NowPlayingActivity.class));
+            Navigate.to(context, NowPlayingActivity.class);
         }
     }
 
@@ -151,10 +152,7 @@ public class SongListAdapter extends BaseAdapter implements AdapterView.OnItemLo
 
                                 curArtist.close();
 
-                                Intent artistIntent = new Intent(context, LibraryPageActivity.class);
-                                artistIntent.putExtra("entry", artist);
-
-                                context.startActivity(artistIntent);
+                                Navigate.to(context, LibraryPageActivity.class, "entry", artist);
                                 break;
                             case 3: //Go to album
                                 Album album;
@@ -176,10 +174,7 @@ public class SongListAdapter extends BaseAdapter implements AdapterView.OnItemLo
 
                                 curAlbum.close();
 
-                                Intent albumIntent = new Intent(context, LibraryPageActivity.class);
-                                albumIntent.putExtra("entry", album);
-
-                                context.startActivity(albumIntent);
+                                Navigate.to(context, LibraryPageActivity.class, "entry", album);
                                 break;
                             default:
                                 break;

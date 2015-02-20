@@ -23,6 +23,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
+import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 
 import java.util.ArrayList;
@@ -97,7 +98,7 @@ public class ArtistPageAdapter extends BaseAdapter implements AdapterView.OnItem
 
         context.startService(new Intent(context, Player.class));
         if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("switchToNowPlaying", true)) {
-            context.startActivity(new Intent(context, NowPlayingActivity.class));
+            Navigate.to(context, NowPlayingActivity.class);
         }
     }
 
@@ -148,10 +149,7 @@ public class ArtistPageAdapter extends BaseAdapter implements AdapterView.OnItem
 
                                 curAlbum.close();
 
-                                Intent albumIntent = new Intent(context, LibraryPageActivity.class);
-                                albumIntent.putExtra("entry", album);
-
-                                context.startActivity(albumIntent);
+                                Navigate.to(context, LibraryPageActivity.class, "entry", album);
                                 break;
                             default:
                                 break;
