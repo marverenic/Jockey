@@ -101,7 +101,7 @@ public class SongListAdapter extends BaseAdapter implements AdapterView.OnItemLo
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         PlayerService.setQueue(context, data, position - ((ListView) parent).getHeaderViewsCount());
-        PlayerService.begin(context);
+        PlayerService.begin();
 
         context.startService(new Intent(context, Player.class));
         if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("switchToNowPlaying", true)) {

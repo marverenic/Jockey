@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
@@ -33,37 +32,45 @@ import java.util.Random;
 @SuppressWarnings("deprecation")
 public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener, AudioManager.OnAudioFocusChangeListener {
 
-    public static final String UPDATE_BROADCAST = "marverenic.jockey.player.REFRESH";
+    public static final String UPDATE_BROADCAST = "marverenic.jockey.player.REFRESH"; // Sent to refresh views that use up-to-date player information
     private static final String TAG = "Player";
-    private static Player instance;
-    private PlayerService parent;
+
+    // Instance variables
     private ManagedMediaPlayer mediaPlayer;
+    private Context context;
     private MediaSession mediaSession;
     private RemoteControlClient remoteControlClient;
-    private Context context;
+
+    // Queue information
     private ArrayList<Song> queue;
     private ArrayList<Song> queueShuffled = new ArrayList<>();
     private int position;
     private int positionShuffled;
-    private boolean active = false;
-    private boolean shuffle;
-    private repeatOption repeat;
-    private Bitmap art;
+
+    // Shuffle & Repeat status
+    private boolean active = false; // If we currently have audio focus
+    private boolean shuffle; // Shuffle status
+    public static enum repeatOption {NONE, ONE, ALL}
+    private repeatOption repeat; // Repeat status
+
+    private Bitmap art; // The art for the current song
 
     public Player(Context context) {
         this.context = context;
-        if (context == null) {
-            Log.wtf("Player", "context is null");
-        }
+
+        // Initialize the media player
         mediaPlayer = new ManagedMediaPlayer(context);
 
         mediaPlayer.setWakeMode(context, PowerManager.PARTIAL_WAKE_LOCK);
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.setOnPreparedListener(this);
         mediaPlayer.setOnCompletionListener(this);
+
+        // Initialize the queue
         queue = new ArrayList<>();
         position = 0;
 
+        // Update shuffle and repeat settings
         shuffle = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("prefShuffle", false);
         boolean repeatAll = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("prefRepeat", false);
         boolean repeatOne = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("prefRepeatOne", false);
@@ -79,22 +86,12 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             else repeat = repeatOption.NONE;
         }
 
-        IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
-        filter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-
+        // Initialize the relevant media controller
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             initMediaSession();
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             initRemoteController();
         }
-    }
-
-    public void initialize(PlayerService context) {
-        instance = new Player(context);
-    }
-
-    public void attach(PlayerService parent) {
-        //this.parent = parent;
     }
 
     @TargetApi(21)
@@ -253,65 +250,71 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         }
     }
 
+    // Update external information for the current track
     public void updateNowPlaying() {
         PlayerService.getInstance().notifyNowPlaying();
         context.sendBroadcast(new Intent(UPDATE_BROADCAST));
+
+        // Update the relevant media controller
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             updateMediaSession();
         }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            updateRemoteController();
+        }
     }
 
+    @TargetApi(21)
     public void updateMediaSession() {
-        Debug.log(Debug.VERBOSE, TAG, "Updating media session", context);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && getNowPlaying() != null) {
-                MediaMetadata.Builder metadataBuilder = new MediaMetadata.Builder();
-                metadataBuilder
-                        .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, getNowPlaying().songName)
-                        .putString(MediaMetadata.METADATA_KEY_TITLE, getNowPlaying().songName)
-                        .putString(MediaMetadata.METADATA_KEY_ALBUM, getNowPlaying().albumName)
-                        .putString(MediaMetadata.METADATA_KEY_ARTIST, getNowPlaying().artistName);
-                mediaSession.setMetadata(metadataBuilder.build());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && getNowPlaying() != null) {
+            MediaMetadata.Builder metadataBuilder = new MediaMetadata.Builder();
+            metadataBuilder
+                    .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, getNowPlaying().songName)
+                    .putString(MediaMetadata.METADATA_KEY_TITLE, getNowPlaying().songName)
+                    .putString(MediaMetadata.METADATA_KEY_ALBUM, getNowPlaying().albumName)
+                    .putString(MediaMetadata.METADATA_KEY_ARTIST, getNowPlaying().artistName);
+            mediaSession.setMetadata(metadataBuilder.build());
 
-                PlaybackState.Builder state = new PlaybackState.Builder().setActions(PlaybackState.ACTION_PLAY | PlaybackState.ACTION_PLAY_PAUSE |
-                        PlaybackState.ACTION_PLAY_FROM_MEDIA_ID | PlaybackState.ACTION_PAUSE |
-                        PlaybackState.ACTION_SKIP_TO_NEXT | PlaybackState.ACTION_SKIP_TO_PREVIOUS);
+            PlaybackState.Builder state = new PlaybackState.Builder().setActions(PlaybackState.ACTION_PLAY | PlaybackState.ACTION_PLAY_PAUSE |
+                    PlaybackState.ACTION_PLAY_FROM_MEDIA_ID | PlaybackState.ACTION_PAUSE |
+                    PlaybackState.ACTION_SKIP_TO_NEXT | PlaybackState.ACTION_SKIP_TO_PREVIOUS);
 
-                switch (mediaPlayer.getState()) {
-                    case STARTED:
-                        state.setState(PlaybackState.STATE_PLAYING, getPosition(), 1f);
-                        break;
-                    case PAUSED:
-                        state.setState(PlaybackState.STATE_PAUSED, getPosition(), 1f);
-                        break;
-                    case STOPPED:
-                        state.setState(PlaybackState.STATE_STOPPED, getPosition(), 1f);
-                        break;
-                    default:
-                        state.setState(PlaybackState.STATE_NONE, getPosition(), 1f);
-                }
-                mediaSession.setPlaybackState(state.build());
-                mediaSession.setActive(true);
+            switch (mediaPlayer.getState()) {
+                case STARTED:
+                    state.setState(PlaybackState.STATE_PLAYING, getPosition(), 1f);
+                    break;
+                case PAUSED:
+                    state.setState(PlaybackState.STATE_PAUSED, getPosition(), 1f);
+                    break;
+                case STOPPED:
+                    state.setState(PlaybackState.STATE_STOPPED, getPosition(), 1f);
+                    break;
+                default:
+                    state.setState(PlaybackState.STATE_NONE, getPosition(), 1f);
             }
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            remoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
-
-            remoteControlClient.setTransportControlFlags(
-                    RemoteControlClient.FLAG_KEY_MEDIA_PLAY |
-                            RemoteControlClient.FLAG_KEY_MEDIA_PAUSE |
-                            RemoteControlClient.FLAG_KEY_MEDIA_NEXT |
-                            RemoteControlClient.FLAG_KEY_MEDIA_STOP);
-
-            // Update the remote controls
-            remoteControlClient.editMetadata(true)
-                    .putString(MediaMetadataRetriever.METADATA_KEY_ARTIST, getNowPlaying().artistName)
-                    .putString(MediaMetadataRetriever.METADATA_KEY_ALBUM, getNowPlaying().albumName)
-                    .putString(MediaMetadataRetriever.METADATA_KEY_TITLE, getNowPlaying().songName)
-                    .putLong(MediaMetadataRetriever.METADATA_KEY_DURATION, getNowPlaying().songDuration)
-                    .putBitmap(RemoteControlClient.MetadataEditor.BITMAP_KEY_ARTWORK, getArt())
-                    .apply();
+            mediaSession.setPlaybackState(state.build());
+            mediaSession.setActive(true);
         }
-        Debug.log(Debug.VERBOSE, TAG, "Media session updated", context);
+    }
+
+    @TargetApi(18)
+    public void updateRemoteController (){
+        remoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
+
+        remoteControlClient.setTransportControlFlags(
+                RemoteControlClient.FLAG_KEY_MEDIA_PLAY |
+                        RemoteControlClient.FLAG_KEY_MEDIA_PAUSE |
+                        RemoteControlClient.FLAG_KEY_MEDIA_NEXT |
+                        RemoteControlClient.FLAG_KEY_MEDIA_STOP);
+
+        // Update the remote controls
+        remoteControlClient.editMetadata(true)
+                .putString(MediaMetadataRetriever.METADATA_KEY_ARTIST, getNowPlaying().artistName)
+                .putString(MediaMetadataRetriever.METADATA_KEY_ALBUM, getNowPlaying().albumName)
+                .putString(MediaMetadataRetriever.METADATA_KEY_TITLE, getNowPlaying().songName)
+                .putLong(MediaMetadataRetriever.METADATA_KEY_DURATION, getNowPlaying().songDuration)
+                .putBitmap(RemoteControlClient.MetadataEditor.BITMAP_KEY_ARTWORK, getArt())
+                .apply();
     }
 
     public Song getNowPlaying() {
@@ -326,6 +329,10 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         }
         return queue.get(position);
     }
+
+    //
+    //      MEDIA CONTROL METHODS
+    //
 
     public void togglePlay() {
         if (mediaPlayer.isPlaying()) {
@@ -465,6 +472,10 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         updateNowPlaying();
     }
 
+    //
+    //      QUEUE METHODS
+    //
+
     public void queueNext(final Song song) {
         if (queue.size() != 0) {
             if (shuffle) {
@@ -530,6 +541,10 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         }
     }
 
+    //
+    //      SHUFFLE & REPEAT METHODS
+    //
+
     public void toggleShuffle() {
         shuffle = !shuffle;
         SharedPreferences.Editor prefs = PreferenceManager.getDefaultSharedPreferences(context).edit();
@@ -584,6 +599,10 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         prefs.apply();
     }
 
+    //
+    //      ACCESSOR METHODS
+    //
+
     public Bitmap getArt() {
         return art;
     }
@@ -617,7 +636,5 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         if (shuffle) return positionShuffled;
         return position;
     }
-
-    public static enum repeatOption {NONE, ONE, ALL}
 }
 

@@ -95,7 +95,7 @@ public class ArtistPageAdapter extends BaseAdapter implements AdapterView.OnItem
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         PlayerService.setQueue(context, songs, position - ((ListView) parent).getHeaderViewsCount());
-        PlayerService.begin(context);
+        PlayerService.begin();
 
         context.startService(new Intent(context, Player.class));
         if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("switchToNowPlaying", true)) {
