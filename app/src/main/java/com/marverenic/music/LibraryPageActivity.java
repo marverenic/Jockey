@@ -421,11 +421,11 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
                 update();
                 break;
             case R.id.playButton:
-                Player.getInstance().pause();
+                PlayerService.togglePlay();
                 update();
                 break;
             case R.id.skipButton:
-                Player.getInstance().skip();
+                PlayerService.skip();
                 update();
                 break;
         }
@@ -443,14 +443,14 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
 
     public void update() {
         if (type != -1) {
-            if (Player.getInstance() != null && Player.getNowPlaying() != null) {
+            if (PlayerService.isInitialized() && PlayerService.getNowPlaying() != null) {
                 final TextView songTitle = (TextView) findViewById(R.id.textNowPlayingTitle);
                 final TextView artistName = (TextView) findViewById(R.id.textNowPlayingDetail);
 
-                songTitle.setText(Player.getNowPlaying().songName);
-                artistName.setText(Player.getNowPlaying().artistName);
+                songTitle.setText(PlayerService.getNowPlaying().songName);
+                artistName.setText(PlayerService.getNowPlaying().artistName);
 
-                if (!Player.getInstance().isPlaying()) {
+                if (!PlayerService.isPlaying()) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_vector_play);
                         ((ImageButton) findViewById(R.id.playButton)).setImageTintList(ColorStateList.valueOf(Themes.getListText()));
@@ -474,8 +474,8 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
                     }
                 }
 
-                if (Player.getInstance().getArt() != null) {
-                    ((ImageView) findViewById(R.id.imageArtwork)).setImageBitmap(Player.getInstance().getArt());
+                if (PlayerService.getArt() != null) {
+                    ((ImageView) findViewById(R.id.imageArtwork)).setImageBitmap(PlayerService.getArt());
                 } else {
                     ((ImageView) findViewById(R.id.imageArtwork)).setImageResource(R.drawable.art_default);
                 }

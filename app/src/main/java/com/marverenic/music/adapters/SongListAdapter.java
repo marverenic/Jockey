@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.marverenic.music.LibraryPageActivity;
 import com.marverenic.music.NowPlayingActivity;
 import com.marverenic.music.Player;
+import com.marverenic.music.PlayerService;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
@@ -99,8 +100,8 @@ public class SongListAdapter extends BaseAdapter implements AdapterView.OnItemLo
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Player.setQueue(data, position - ((ListView) parent).getHeaderViewsCount());
-        Player.begin();
+        PlayerService.setQueue(context, data, position - ((ListView) parent).getHeaderViewsCount());
+        PlayerService.begin(context);
 
         context.startService(new Intent(context, Player.class));
         if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("switchToNowPlaying", true)) {
@@ -126,14 +127,14 @@ public class SongListAdapter extends BaseAdapter implements AdapterView.OnItemLo
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case 0: //Queue this song next
-                                if (!Player.initialized())
+                                if (!PlayerService.isInitialized())
                                     context.startService(new Intent(context, Player.class));
-                                Player.getInstance().queueNext(item);
+                                PlayerService.queueNext(context, item);
                                 break;
                             case 1: //Queue this song last
-                                if (!Player.initialized())
+                                if (!PlayerService.isInitialized())
                                     context.startService(new Intent(context, Player.class));
-                                Player.getInstance().queueLast(item);
+                                PlayerService.queueLast(context, item);
                                 break;
                             case 2: //Go to artist
                                 Artist artist;

@@ -15,7 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.marverenic.music.LibraryPageActivity;
-import com.marverenic.music.Player;
+import com.marverenic.music.PlayerService;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Library;
@@ -130,10 +130,10 @@ public class ArtistListAdapter extends BaseAdapter implements AdapterView.OnItem
                         }
                         switch (which) {
                             case 0: //Queue this artist next
-                                Player.getInstance().queueNext(contents);
+                                PlayerService.queueNext(context, contents);
                                 break;
                             case 1: //Queue this artist last
-                                Player.getInstance().queueLast(contents);
+                                PlayerService.queueLast(context, contents);
                                 break;
                             default:
                                 break;

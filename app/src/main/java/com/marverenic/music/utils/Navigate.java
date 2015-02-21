@@ -47,6 +47,7 @@ public class Navigate {
         } else {
             Navigate.home(parent);
         }
+        parent.finish();
     }
 
     public static void back(Activity parent) {

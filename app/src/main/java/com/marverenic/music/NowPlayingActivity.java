@@ -73,7 +73,7 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
         observer = new MediaObserver(this);
         new Thread(observer).start();
 
-        if (Player.getInstance() != null) {
+        if (PlayerService.isInitialized()) {
             update();
         }
 
@@ -85,7 +85,7 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_now_playing, menu);
 
-        if (Player.isShuffle()) {
+        if (PlayerService.isShuffle()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 menu.getItem(0).setIcon(R.drawable.ic_vector_shuffle);
             }
@@ -97,13 +97,13 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
             menu.getItem(0).setTitle("Enable Shuffle");
         }
 
-        if (Player.isRepeat()) {
+        if (PlayerService.isRepeat()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 menu.getItem(1).setIcon(R.drawable.ic_vector_repeat);
             }
             menu.getItem(1).setTitle("Enable Repeat One");
         } else {
-            if (Player.isRepeatOne()) {
+            if (PlayerService.isRepeatOne()) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     menu.getItem(1).setIcon(R.drawable.ic_vector_repeat_one);
                 }
@@ -125,8 +125,8 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
                 Navigate.up(this);
                 return true;
             case R.id.action_shuffle:
-                Player.getInstance().toggleShuffle();
-                if (Player.isShuffle()) {
+                PlayerService.toggleShuffle();
+                if (PlayerService.isShuffle()) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         item.setIcon(R.drawable.ic_vector_shuffle);
                     }
@@ -145,8 +145,8 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
                 }
                 return true;
             case R.id.action_repeat:
-                Player.getInstance().toggleRepeat();
-                if (Player.isRepeat()) {
+                PlayerService.toggleRepeat();
+                if (PlayerService.isRepeat()) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         item.setIcon(R.drawable.ic_vector_repeat);
                     }
@@ -155,7 +155,7 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
                 } else {
-                    if (Player.isRepeatOne()) {
+                    if (PlayerService.isRepeatOne()) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             item.setIcon(R.drawable.ic_vector_repeat_one);
                         }
@@ -206,13 +206,13 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.playButton) {
-            if (Player.getNowPlaying() != null) {
-                Player.getInstance().pause();
+            if (PlayerService.getNowPlaying() != null) {
+                PlayerService.togglePlay();
             }
         } else if (v.getId() == R.id.nextButton) {
-            Player.getInstance().skip();
+            PlayerService.skip();
         } else if (v.getId() == R.id.previousButton) {
-            Player.getInstance().previous();
+            PlayerService.previous();
         }
         update();
     }
@@ -224,7 +224,7 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
     }
 
     public void update() {
-        if (Player.getNowPlaying() != null) {
+        if (PlayerService.getNowPlaying() != null) {
 
             //final ViewGroup background = (ViewGroup) findViewById(R.id.playerControlFrame);
             final TextView songTitle = (TextView) findViewById(R.id.textSongTitle);
@@ -232,54 +232,13 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
             final TextView albumTitle = (TextView) findViewById(R.id.textAlbumTitle);
             final SeekBar seekBar = ((SeekBar) findViewById(R.id.songSeekBar));
 
-            songTitle.setText(Player.getNowPlaying().songName);
-            artistName.setText(Player.getNowPlaying().artistName);
-            albumTitle.setText(Player.getNowPlaying().albumName);
-            seekBar.setMax(Player.getNowPlaying().songDuration);
+            songTitle.setText(PlayerService.getNowPlaying().songName);
+            artistName.setText(PlayerService.getNowPlaying().artistName);
+            albumTitle.setText(PlayerService.getNowPlaying().albumName);
+            seekBar.setMax(PlayerService.getNowPlaying().songDuration);
 
-            if (Player.getInstance().getArt() != null) {
-                ((ImageView) findViewById(R.id.imageArtwork)).setImageBitmap(Player.getInstance().getArt());
-
-                /*Palette.generateAsync(Player.s.getArt(), new Palette.PaletteAsyncListener() {
-                    @Override
-                    public void onGenerated(Palette palette) {
-                        int backgroundColor = getResources().getColor(R.color.grid_background_default);
-                        int titleTextColor = getResources().getColor(R.color.grid_text);
-                        int detailTextColor = getResources().getColor(R.color.grid_detail_text);
-
-
-                        if (palette.getVibrantSwatch() != null && palette.getVibrantColor(-1) != -1) {
-                            backgroundColor = palette.getVibrantColor(0);
-                            titleTextColor = palette.getVibrantSwatch().getTitleTextColor();
-                            detailTextColor = palette.getVibrantSwatch().getBodyTextColor();
-                        }
-                        else if (palette.getDarkVibrantSwatch() != null && palette.getDarkVibrantColor(-1) != -1) {
-                            backgroundColor = palette.getDarkVibrantColor(0);
-                            titleTextColor = palette.getDarkVibrantSwatch().getTitleTextColor();
-                            detailTextColor = palette.getDarkVibrantSwatch().getBodyTextColor();
-                        }
-                        else if (palette.getLightVibrantSwatch() != null && palette.getLightVibrantColor(-1) != -1){
-                            backgroundColor = palette.getLightVibrantColor(0);
-                            titleTextColor = palette.getLightVibrantSwatch().getTitleTextColor();
-                            detailTextColor = palette.getLightVibrantSwatch().getBodyTextColor();
-                        }
-                        else if (palette.getDarkMutedSwatch() != null && palette.getDarkMutedColor(-1) != -1) {
-                            backgroundColor = palette.getDarkMutedColor(0);
-                            titleTextColor = palette.getDarkMutedSwatch().getTitleTextColor();
-                            detailTextColor = palette.getDarkMutedSwatch().getBodyTextColor();
-                        }
-                        else if (palette.getLightMutedSwatch() != null && palette.getLightMutedColor(-1) != -1) {
-                            backgroundColor = palette.getLightMutedColor(0);
-                            titleTextColor = palette.getLightMutedSwatch().getTitleTextColor();
-                            detailTextColor = palette.getLightMutedSwatch().getBodyTextColor();
-                        }
-
-                        background.setBackgroundColor(backgroundColor);
-                        songTitle.setTextColor(titleTextColor);
-                        artistName.setTextColor(detailTextColor);
-                        albumTitle.setTextColor(detailTextColor);
-                    }
-                });*/
+            if (PlayerService.getArt() != null) {
+                ((ImageView) findViewById(R.id.imageArtwork)).setImageBitmap(PlayerService.getArt());
             } else {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     if (getResources().getConfiguration().smallestScreenWidthDp >= 700) {
@@ -290,7 +249,7 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
                 }
             }
         }
-        if (Player.getInstance().isPlaying()) {
+        if (PlayerService.isPlaying()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_vector_pause_circle_fill);
             } else {
@@ -324,7 +283,7 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        Player.getInstance().seek(seekBar.getProgress());
+        PlayerService.seek(seekBar.getProgress());
         observer = new MediaObserver(this);
         new Thread(observer).start();
         userTouchingProgressBar = false;
@@ -352,7 +311,7 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        progress.setProgress(Player.getInstance().getCurrentPosition());
+                        progress.setProgress(PlayerService.getCurrentPosition());
                     }
                 });
                 try {

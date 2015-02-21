@@ -23,7 +23,7 @@ public class QueueActivity extends Activity implements AdapterView.OnItemClickLi
         setContentView(R.layout.page_editable_list);
 
         ListView songListView = (ListView) findViewById(R.id.list);
-        songListView.setAdapter(new SongListAdapter(Player.getInstance().getQueue(), this));
+        songListView.setAdapter(new SongListAdapter(PlayerService.getQueue(), this));
         songListView.setOnItemClickListener(this);
 
         Themes.themeActivity(R.layout.page_editable_list, getWindow().findViewById(android.R.id.content), this);
@@ -59,7 +59,7 @@ public class QueueActivity extends Activity implements AdapterView.OnItemClickLi
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Player.getInstance().changeSong(position);
+        PlayerService.changeSong(position);
         Navigate.up(this);
     }
 }
