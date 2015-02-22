@@ -151,12 +151,22 @@
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/aboutStackOverflowHeader"
+                android:id="@+id/aboutApolloHeader"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/aboutUILDetail"
                 android:layout_marginTop="16dp"
-                android:text="And code from many helpful Stack Overflow users who are better at programming than I am."
+                android:text="Jockey also gratefully uses code from Cyanogenmod's Apollo music player; licensed under an Apache License, version 2.0"
+                android:textColor="@color/ui_text_black"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/aboutStackOverflowHeader"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutApolloHeader"
+                android:layout_marginTop="16dp"
+                android:text="Additional thanks to many helpful Stack Overflow users who are better at programming than I am."
                 android:textColor="@color/ui_text_black"
                 android:textSize="20sp" />
 

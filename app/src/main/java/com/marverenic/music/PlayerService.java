@@ -7,19 +7,15 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.AudioManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
-import com.marverenic.music.utils.MediaReceiver;
 
 import java.util.ArrayList;
 
@@ -28,16 +24,17 @@ public class PlayerService extends Service {
 
     // Constants
     public static final int NOTIFICATION_ID = 1;
-    private static final String ACTION_TOGGLE_PLAY = "toggle";
-    private static final String ACTION_PREV = "previous";
-    private static final String ACTION_NEXT = "next";
-    private static final String ACTION_STOP = "stop";
+    public static final String ACTION_TOGGLE_PLAY = "toggle";
+    public static final String ACTION_PAUSE = "pause";
+    public static final String ACTION_PLAY = "play";
+    public static final String ACTION_PREV = "previous";
+    public static final String ACTION_NEXT = "next";
+    public static final String ACTION_STOP = "stop";
     private static final String TAG = "PlayerService";
 
     // Global instance values
     private static PlayerService instance; // The service instance in use
     private static Player player; // The player for the service
-    private static MediaReceiver mediaReceiver = new MediaReceiver();
     private static Context context;
     private NotificationManager notificationManager;
 
@@ -46,16 +43,9 @@ public class PlayerService extends Service {
         if (instance == null || this.equals(instance)) {
             instance = this;
 
-            notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-
             if (player == null) {
                 player = new Player(this);
             }
-
-            IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
-            filter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-
-            context.registerReceiver(mediaReceiver, filter);
         }
         else {
             // If the service has already started, kill this instance.
@@ -66,6 +56,8 @@ public class PlayerService extends Service {
 
     @Override
     public void onCreate() {
+        context = getApplicationContext();
+        notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         // When the service is started, move it to the foreground
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             startForeground(NOTIFICATION_ID, getNotification());
@@ -88,13 +80,9 @@ public class PlayerService extends Service {
     public void onDestroy() {
         super.onDestroy();
         if (this.equals(instance)) {
-            player.stop();
+            player.finish();
+            player = null;
             notificationManager.cancel(NOTIFICATION_ID);
-            try {
-                unregisterReceiver(mediaReceiver);
-            } catch (Exception e) {
-                Log.d("mediaReceiver", "Unable to unregister mediaReceiver", e);
-            }
         }
     }
 
@@ -102,7 +90,6 @@ public class PlayerService extends Service {
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         stopSelf();
-        onDestroy();
     }
 
     // Listens for commands from the notification

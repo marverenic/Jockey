@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.marverenic.music"
-    android:versionCode="21628"
-    android:versionName="0.2-α.r0m16ac">
+    android:versionCode="21700"
+    android:versionName="0.2-α.r0m17a">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -127,6 +127,13 @@
             android:screenOrientation="fullUser" />
 
         <service android:name="com.marverenic.music.PlayerService" />
+
+        <receiver android:name=".utils.MediaReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+                <action android:name="android.media.AUDIO_BECOMING_NOISY" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

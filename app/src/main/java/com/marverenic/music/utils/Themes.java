@@ -227,10 +227,6 @@ public class Themes {
         }
     }
 
-    /*public static boolean isLightTheme (Context context){
-        return Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("prefBaseTheme", "0")) == 1;
-    }*/
-
     public static Bitmap getIcon(Context context) {
         switch (Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("prefColorPrimary", "5"))) {
             case 0:
@@ -478,7 +474,7 @@ public class Themes {
 
         contentView.findViewById(R.id.aboutScroll).setBackgroundColor(primary);
 
-        int[] primaryText = {R.id.aboutAppName, R.id.lastFmHeader, R.id.aboutAOSPHeader, R.id.aboutAOSPTabsHeader, R.id.aboutUILHeader, R.id.aboutStackOverflowHeader};
+        int[] primaryText = {R.id.aboutAppName, R.id.lastFmHeader, R.id.aboutAOSPHeader, R.id.aboutAOSPTabsHeader, R.id.aboutUILHeader, R.id.aboutApolloHeader, R.id.aboutStackOverflowHeader};
         int[] detailText = {R.id.aboutDescription, R.id.aboutLicense, R.id.aboutUsesHeader, R.id.aboutVersion, R.id.aboutAOSPDetail, R.id.aboutAOSPTabsDetail, R.id.aboutUILDetail};
 
         for (int aPrimaryText : primaryText)
@@ -524,7 +520,7 @@ public class Themes {
     }
 
     private static void themeMiniplayer(View miniplayer, Context context) {
-        ((View) miniplayer.getParent()).setBackgroundColor(backgroundMiniplayer);
+        ((View) miniplayer.findViewById(R.id.miniplayer)).setBackgroundColor(backgroundMiniplayer);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ((ImageButton) miniplayer.findViewById(R.id.skipButton)).setImageTintList(ColorStateList.valueOf(listText));
             ((ImageButton) miniplayer.findViewById(R.id.playButton)).setImageTintList(ColorStateList.valueOf(listText));

@@ -24,6 +24,7 @@ import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Fetch;
 import com.marverenic.music.utils.ManagedMediaPlayer;
+import com.marverenic.music.utils.MediaReceiver;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,6 +41,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     private Context context;
     private MediaSession mediaSession;
     private RemoteControlClient remoteControlClient;
+    private static MediaReceiver mediaReceiver = new MediaReceiver();
 
     // Queue information
     private ArrayList<Song> queue;
@@ -94,16 +96,18 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         }
     }
 
+    public void finish (){
+        mediaPlayer.stop();
+        mediaPlayer.release();
+        mediaPlayer = null;
+    }
+
     @TargetApi(21)
     private void initMediaSession() {
         mediaSession = new MediaSession(context, TAG);
         mediaSession.setCallback(new MediaSession.Callback() {
             @Override
-            public void onPlay() {
-                if (mediaPlayer.getState() != ManagedMediaPlayer.status.STARTED) {
-                    play();
-                }
-            }
+            public void onPlay() { play(); }
 
             @Override
             public void onSkipToQueueItem(long id) {
@@ -112,9 +116,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
             @Override
             public void onPause() {
-                if (mediaPlayer.getState() != ManagedMediaPlayer.status.PAUSED) {
-                    pause();
-                }
+                pause();
             }
 
             @Override
@@ -152,11 +154,17 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     private void initRemoteController() {
         getFocus();
 
-        Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
-        mediaButtonIntent.setComponent(new ComponentName(context.getPackageName(), this.getClass().toString()));
-        remoteControlClient = new RemoteControlClient(PendingIntent.getBroadcast(context, 0, mediaButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT));
-        ((AudioManager) context.getSystemService(Context.AUDIO_SERVICE)).registerRemoteControlClient(remoteControlClient);
+        ComponentName eventReceiver = new ComponentName(context.getPackageName(), MediaReceiver.class.getName());
+        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        audioManager.registerMediaButtonEventReceiver(eventReceiver);
 
+        // build the PendingIntent for the remote control client
+        Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
+        mediaButtonIntent.setComponent(eventReceiver);
+        PendingIntent mediaPendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, mediaButtonIntent, 0);
+
+        // create and register the remote control client
+        remoteControlClient = new RemoteControlClient(mediaPendingIntent);
         // Flags for the media transport control that this client supports.
         int flags = RemoteControlClient.FLAG_KEY_MEDIA_PREVIOUS
                 | RemoteControlClient.FLAG_KEY_MEDIA_NEXT
@@ -165,25 +173,8 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                 | RemoteControlClient.FLAG_KEY_MEDIA_PLAY_PAUSE
                 | RemoteControlClient.FLAG_KEY_MEDIA_STOP;
 
-        flags |= RemoteControlClient.FLAG_KEY_MEDIA_POSITION_UPDATE;
-
-        remoteControlClient.setOnGetPlaybackPositionListener(
-                new RemoteControlClient.OnGetPlaybackPositionListener() {
-                    @Override
-                    public long onGetPlaybackPosition() {
-                        return getCurrentPosition();
-                    }
-                });
-        remoteControlClient.setPlaybackPositionUpdateListener(
-                new RemoteControlClient.OnPlaybackPositionUpdateListener() {
-                    @Override
-                    public void onPlaybackPositionUpdate(long newPositionMs) {
-                        seek((int) newPositionMs);
-                    }
-                });
-
-
         remoteControlClient.setTransportControlFlags(flags);
+        audioManager.registerRemoteControlClient(remoteControlClient);
     }
 
     @Override
@@ -213,13 +204,9 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        mp.start();
+        mediaPlayer.start();
 
         art = Fetch.fetchAlbumArtLocal(context, getNowPlaying().albumId);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mediaSession.setPlaybackState(new PlaybackState.Builder().setState(PlaybackState.STATE_PLAYING, (long) mediaPlayer.getCurrentPosition(), 1f).build());
-        }
 
         updateNowPlaying();
     }
@@ -233,9 +220,6 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     // Start playing a new song
     public void begin() {
         if (getFocus()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                updateMediaSession();
-            }
             mediaPlayer.stop();
             mediaPlayer.reset();
             try {
@@ -266,7 +250,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     @TargetApi(21)
     public void updateMediaSession() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && getNowPlaying() != null) {
+        if (getNowPlaying() != null) {
             MediaMetadata.Builder metadataBuilder = new MediaMetadata.Builder();
             metadataBuilder
                     .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, getNowPlaying().songName)
@@ -299,15 +283,14 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     @TargetApi(18)
     public void updateRemoteController (){
-        remoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
+        if (isPlaying()) {
+            remoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
+        }
+        else{
+            remoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_PAUSED);
+        }
 
-        remoteControlClient.setTransportControlFlags(
-                RemoteControlClient.FLAG_KEY_MEDIA_PLAY |
-                        RemoteControlClient.FLAG_KEY_MEDIA_PAUSE |
-                        RemoteControlClient.FLAG_KEY_MEDIA_NEXT |
-                        RemoteControlClient.FLAG_KEY_MEDIA_STOP);
-
-        // Update the remote controls
+        // Update the metadata
         remoteControlClient.editMetadata(true)
                 .putString(MediaMetadataRetriever.METADATA_KEY_ARTIST, getNowPlaying().artistName)
                 .putString(MediaMetadataRetriever.METADATA_KEY_ALBUM, getNowPlaying().albumName)
@@ -319,12 +302,12 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     public Song getNowPlaying() {
         if (shuffle) {
-            if (positionShuffled >= queueShuffled.size() || positionShuffled < 0 || queueShuffled.size() == 0) {
+            if (queueShuffled.size() == 0 || positionShuffled >= queueShuffled.size() || positionShuffled < 0) {
                 return null;
             }
             return queueShuffled.get(positionShuffled);
         }
-        if (position >= queue.size() || position < 0 || queue.size() == 0) {
+        if (queue.size() == 0 || position >= queue.size() || position < 0) {
             return null;
         }
         return queue.get(position);
@@ -335,7 +318,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     //
 
     public void togglePlay() {
-        if (mediaPlayer.isPlaying()) {
+        if (isPlaying()) {
             pause();
         } else {
             play();
@@ -379,10 +362,6 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         }
         ((AudioManager) context.getSystemService(Context.AUDIO_SERVICE)).abandonAudioFocus(this);
         active = false;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mediaSession.release();
-        }
     }
 
     public boolean getFocus() {
