@@ -377,7 +377,7 @@ public class Themes {
         contentView.setBackgroundColor(background);
 
         if (contentView.findViewById(R.id.miniplayer) != null) {
-            themeMiniplayer(contentView.findViewById(R.id.miniplayer), activity);
+            themeMiniplayer((View) contentView.findViewById(R.id.miniplayer).getParent(), activity);
         }
     }
 
@@ -520,7 +520,7 @@ public class Themes {
     }
 
     private static void themeMiniplayer(View miniplayer, Context context) {
-        ((View) miniplayer.findViewById(R.id.miniplayer)).setBackgroundColor(backgroundMiniplayer);
+        miniplayer.setBackgroundColor(backgroundMiniplayer);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ((ImageButton) miniplayer.findViewById(R.id.skipButton)).setImageTintList(ColorStateList.valueOf(listText));
             ((ImageButton) miniplayer.findViewById(R.id.playButton)).setImageTintList(ColorStateList.valueOf(listText));
