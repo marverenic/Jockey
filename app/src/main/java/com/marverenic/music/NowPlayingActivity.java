@@ -318,7 +318,7 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
                     Thread.sleep(200);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Debug.log(Debug.WTF, "NowPlayingActivity/MediaObserver", "Some horrible thread exception has occurred", parent);
+                    Debug.log(Debug.LogLevel.WTF, "NowPlayingActivity/MediaObserver", "Some horrible thread exception has occurred", parent);
                 }
             }
         }

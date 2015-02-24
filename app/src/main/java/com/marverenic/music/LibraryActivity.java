@@ -53,8 +53,6 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Debug.log(Debug.VERBOSE, "LibraryActivity", "Jockey has started", this);
-
         Themes.setTheme(this);
 
         new Thread(new Updater(this)).start();
@@ -113,7 +111,7 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
         try {
             unregisterReceiver(updateReceiver);
         } catch (Exception e) {
-            Debug.log(Debug.ERROR, "LibraryActivity", "Unable to unregister receiver", this);
+            Debug.log(Debug.LogLevel.ERROR, "LibraryActivity", "Unable to unregister receiver", this);
         }
         super.onPause();
     }

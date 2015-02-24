@@ -38,7 +38,7 @@ public class SearchActivity extends FragmentActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Debug.log(Debug.WTF, "SearchActivity", "The search activity was created.", this);
+        Debug.log(Debug.LogLevel.WTF, "SearchActivity", "The search activity was created.", this);
 
         if (!isTaskRoot()) {
             finish();

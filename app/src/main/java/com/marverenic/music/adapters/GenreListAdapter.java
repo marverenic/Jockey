@@ -51,7 +51,7 @@ public class GenreListAdapter extends BaseAdapter implements AdapterView.OnItemC
                 tt.setTextColor(Themes.getListText());
             }
         } else {
-            Debug.log(Debug.WTF, "GenreListAdapter", "The requested entry is null", context);
+            Debug.log(Debug.LogLevel.WTF, "GenreListAdapter", "The requested entry is null", context);
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

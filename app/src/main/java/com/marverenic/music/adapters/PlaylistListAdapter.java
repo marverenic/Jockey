@@ -51,7 +51,7 @@ public class PlaylistListAdapter extends BaseAdapter implements AdapterView.OnIt
                 tt.setTextColor(Themes.getListText());
             }
         } else {
-            Debug.log(Debug.WTF, "PlaylistListAdapter", "The requested entry is null", context);
+            Debug.log(Debug.LogLevel.WTF, "PlaylistListAdapter", "The requested entry is null", context);
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

@@ -12,7 +12,6 @@ import com.marverenic.music.adapters.PlaylistListAdapter;
 import com.marverenic.music.utils.Themes;
 
 public class PlaylistFragment extends Fragment {
-    private ListView playlistListView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -22,7 +21,7 @@ public class PlaylistFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
-        playlistListView = (ListView) view.findViewById(R.id.list);
+        ListView playlistListView = (ListView) view.findViewById(R.id.list);
 
         PlaylistListAdapter adapter = new PlaylistListAdapter(getActivity());
 

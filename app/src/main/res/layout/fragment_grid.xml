@@ -9,6 +9,7 @@
 
     <GridView
         android:id="@+id/albumGrid"
+        style="@style/list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="@color/background_elevated"
@@ -21,6 +22,6 @@
         android:padding="@dimen/grid_padding"
         android:saveEnabled="true"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="@dimen/grid_padding" />
+        android:verticalSpacing="@dimen/grid_padding"/>
 
 </FrameLayout>

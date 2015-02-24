@@ -16,5 +16,5 @@
         android:clipToPadding="false"
         android:elevation="@dimen/window_elevation"
         android:saveEnabled="true"
-        android:scrollbars="vertical"></ListView>
+        android:scrollbars="vertical"/>
 </FrameLayout>

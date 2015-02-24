@@ -41,7 +41,6 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     private Context context;
     private MediaSession mediaSession;
     private RemoteControlClient remoteControlClient;
-    private static MediaReceiver mediaReceiver = new MediaReceiver();
 
     // Queue information
     private ArrayList<Song> queue;
@@ -227,7 +226,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             } catch (Exception e) {
                 Log.e("MUSIC SERVICE", "Error setting data source", e);
                 Toast.makeText(context, "There was an error playing this song", Toast.LENGTH_SHORT).show();
-                Debug.log(Debug.VERBOSE, TAG, "There was an error setting the data source", context);
+                Debug.log(Debug.LogLevel.WARNING, TAG, "There was an error setting the data source", context);
                 return;
             }
             mediaPlayer.prepareAsync();
@@ -475,10 +474,8 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         if (queue.size() != 0) {
             if (shuffle) {
                 queueShuffled.add(queueShuffled.size(), song);
-                queue.add(queueShuffled.size(), song);
-            } else {
-                queue.add(queue.size(), song);
             }
+            queue.add(queue.size(), song);
         } else {
             ArrayList<Song> newQueue = new ArrayList<>();
             newQueue.add(song);

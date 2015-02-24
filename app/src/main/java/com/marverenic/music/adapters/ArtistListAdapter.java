@@ -51,7 +51,7 @@ public class ArtistListAdapter extends BaseAdapter implements AdapterView.OnItem
                 tt.setTextColor(Themes.getListText());
             }
         } else {
-            Debug.log(Debug.WTF, "ArtistListAdapter", "The requested entry is null", context);
+            Debug.log(Debug.LogLevel.WTF, "ArtistListAdapter", "The requested entry is null", context);
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

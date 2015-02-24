@@ -47,7 +47,7 @@ public class Album implements Parcelable {
             return false;
         }
         final Album other = (Album) obj;
-        return albumId == other.albumId
+        return TextUtils.equals(albumId, other.albumId)
                 && TextUtils.equals(albumName, other.albumName)
                 && TextUtils.equals(artistName, other.artistName)
                 && TextUtils.equals(year, other.year)

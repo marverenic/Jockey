@@ -68,7 +68,7 @@ public class SongListAdapter extends BaseAdapter implements AdapterView.OnItemLo
                 tt1.setTextColor(Themes.getDetailText());
             }
         } else {
-            Debug.log(Debug.WTF, "SongListAdapter", "The requested entry is null", context);
+            Debug.log(Debug.LogLevel.WTF, "SongListAdapter", "The requested entry is null", context);
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

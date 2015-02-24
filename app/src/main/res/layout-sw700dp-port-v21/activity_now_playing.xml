@@ -43,7 +43,6 @@
             android:layout_alignParentStart="true"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:layout_marginTop="16dp"
             android:ellipsize="end"
             android:lines="1"
             android:text="@string/nothing_playing"
@@ -69,52 +68,67 @@
             android:layout_height="wrap_content"
             android:layout_alignStart="@+id/textSongTitle"
             android:layout_below="@+id/textArtistName"
-            android:layout_marginBottom="16dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
             android:ellipsize="end"
             android:lines="1"
             android:text="@string/no_album"
             android:textColor="@color/player_text_detail"
             android:textSize="22sp" />
 
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="100dp"
+        <LinearLayout
+            android:layout_width="@dimen/now_playing_max_control_width"
+            android:layout_height="@dimen/now_playing_button_size"
             android:layout_below="@+id/textAlbumTitle"
-            android:gravity="center">
+            android:baselineAligned="false"
+            android:layout_centerInParent="true"
+            android:orientation="horizontal">
 
-            <ImageButton
-                android:id="@+id/playButton"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="48dp"
-                android:layout_marginRight="48dp"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/button_play_description"
-                android:src="@drawable/ic_vector_play_circle_fill" />
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="@dimen/now_playing_button_size"
+                android:layout_weight="1">
+                <ImageButton
+                    android:id="@+id/previousButton"
+                    android:layout_width="@dimen/now_playing_button_size"
+                    android:layout_height="@dimen/now_playing_button_size"
+                    android:layout_alignParentStart="true"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/button_previous_description"
+                    android:src="@drawable/ic_vector_skip_previous" />
+            </RelativeLayout>
 
-            <ImageButton
-                android:id="@+id/nextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_alignBottom="@+id/playButton"
-                android:layout_toEndOf="@+id/playButton"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/button_skip_description"
-                android:src="@drawable/ic_vector_skip_next" />
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="@dimen/now_playing_button_size"
+                android:layout_gravity="center"
+                android:layout_weight="1">
+                <ImageButton
+                    android:id="@+id/playButton"
+                    android:layout_width="@dimen/now_playing_button_size"
+                    android:layout_height="@dimen/now_playing_button_size"
+                    android:layout_centerInParent="true"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/button_play_description"
+                    android:src="@drawable/ic_vector_play_circle_fill" />
+            </RelativeLayout>
 
-            <ImageButton
-                android:id="@+id/previousButton"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_alignBottom="@+id/playButton"
-                android:layout_toStartOf="@+id/playButton"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/button_previous_description"
-                android:src="@drawable/ic_vector_skip_previous" />
-        </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="@dimen/now_playing_button_size"
+                android:layout_gravity="center"
+                android:layout_weight="1">
+                <ImageButton
+                    android:id="@+id/nextButton"
+                    android:layout_width="@dimen/now_playing_button_size"
+                    android:layout_height="@dimen/now_playing_button_size"
+                    android:layout_alignParentEnd="true"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/button_skip_description"
+                    android:src="@drawable/ic_vector_skip_next" />
+            </RelativeLayout>
+
+        </LinearLayout>
 
     </RelativeLayout>
 </RelativeLayout>

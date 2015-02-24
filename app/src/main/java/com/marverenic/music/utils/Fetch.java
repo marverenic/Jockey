@@ -70,7 +70,7 @@ public class Fetch {
                 e.printStackTrace();
             }
         } else {
-            Debug.log(Debug.VERBOSE, TAG, "Unable to find the artist " + artistName, context);
+            Debug.log(Debug.LogLevel.INFO, TAG, "Unable to find the artist " + artistName, context);
         }
         return null;
     }

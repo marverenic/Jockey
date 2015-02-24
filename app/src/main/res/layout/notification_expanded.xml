@@ -4,7 +4,7 @@
     android:id="@+id/status_bar_latest_event_content"
     android:layout_width="match_parent"
     android:layout_height="128dp"
-    android:background="@color/player_control_background"
+    android:background="#181818"
     tools:ignore="ContentDescription">
 
     <ImageView
@@ -32,7 +32,7 @@
             android:layout_margin="0dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="@color/player_text_main" />
+            android:textColor="@android:color/white" />
 
         <TextView
             android:id="@+id/notificationContentText"
@@ -41,7 +41,7 @@
             android:layout_margin="0dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="@color/player_text_detail" />
+            android:textColor="@android:color/darker_gray" />
 
         <TextView
             android:id="@+id/notificationSubText"
@@ -50,7 +50,7 @@
             android:layout_margin="0dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="@color/player_text_detail" />
+            android:textColor="@android:color/darker_gray" />
 
     </LinearLayout>
 
@@ -98,5 +98,5 @@
         android:layout_above="@id/media_actions"
         android:layout_toEndOf="@id/notificationIcon"
         android:layout_toRightOf="@id/notificationIcon"
-        android:background="#29ffffff" />
+        android:background="#3a3a3a" />
 </RelativeLayout>

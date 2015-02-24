@@ -79,45 +79,60 @@
             android:progressTint="@color/accent"
             android:thumbTint="@color/accent" />
 
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="100dp"
-            android:layout_below="@id/songSeekBar"
-            android:layout_marginTop="100dp"
-            android:gravity="center">
+            <LinearLayout
+                android:layout_width="@dimen/now_playing_max_control_width"
+                android:layout_height="@dimen/now_playing_button_size"
+                android:layout_centerInParent="true"
+                android:layout_below="@id/songSeekBar"
+                android:layout_marginTop="100dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
 
-            <ImageButton
-                android:id="@+id/playButton"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="48dp"
-                android:layout_marginRight="48dp"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/button_play_description"
-                android:src="@drawable/ic_vector_play_circle_fill" />
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/now_playing_button_size"
+                    android:layout_weight="1">
+                    <ImageButton
+                        android:id="@+id/previousButton"
+                        android:layout_width="@dimen/now_playing_button_size"
+                        android:layout_height="@dimen/now_playing_button_size"
+                        android:layout_centerInParent="true"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/button_previous_description"
+                        android:src="@drawable/ic_vector_skip_previous" />
+                </RelativeLayout>
 
-            <ImageButton
-                android:id="@+id/nextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_alignBottom="@+id/playButton"
-                android:layout_toEndOf="@+id/playButton"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/button_skip_description"
-                android:src="@drawable/ic_vector_skip_next" />
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/now_playing_button_size"
+                    android:layout_gravity="center"
+                    android:layout_weight="1">
+                    <ImageButton
+                        android:id="@+id/playButton"
+                        android:layout_width="@dimen/now_playing_button_size"
+                        android:layout_height="@dimen/now_playing_button_size"
+                        android:layout_centerInParent="true"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/button_play_description"
+                        android:src="@drawable/ic_vector_play_circle_fill" />
+                </RelativeLayout>
 
-            <ImageButton
-                android:id="@+id/previousButton"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_alignBottom="@+id/playButton"
-                android:layout_toStartOf="@+id/playButton"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/button_previous_description"
-                android:src="@drawable/ic_vector_skip_previous" />
-        </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/now_playing_button_size"
+                    android:layout_gravity="center"
+                    android:layout_weight="1">
+                    <ImageButton
+                        android:id="@+id/nextButton"
+                        android:layout_width="@dimen/now_playing_button_size"
+                        android:layout_height="@dimen/now_playing_button_size"
+                        android:layout_centerInParent="true"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/button_skip_description"
+                        android:src="@drawable/ic_vector_skip_next" />
+                </RelativeLayout>
+
+            </LinearLayout>
 
     </RelativeLayout>
 </RelativeLayout>

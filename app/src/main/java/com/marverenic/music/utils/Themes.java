@@ -168,6 +168,16 @@ public class Themes {
 
     public static int getTheme(Context context) {
         int base = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("prefBaseTheme", "1"));
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
+            if (base == 1){
+                return R.style.AppThemeLight;
+            }
+            else{
+                return R.style.AppTheme;
+            }
+        }
+
         int primary = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("prefColorPrimary", "5"));
         if (base == 1) {
             // Light Base
@@ -353,6 +363,7 @@ public class Themes {
     public static void themeActivity(int layoutId, View contentView, Activity activity) {
         updateColors(activity);
         setApplicationIcon(activity);
+        contentView.setBackgroundColor(background);
 
         switch (layoutId) {
             case R.layout.activity_library:
@@ -374,7 +385,6 @@ public class Themes {
                 themePreferenceActivity(contentView, activity);
                 break;
         }
-        contentView.setBackgroundColor(background);
 
         if (contentView.findViewById(R.id.miniplayer) != null) {
             themeMiniplayer((View) contentView.findViewById(R.id.miniplayer).getParent(), activity);
@@ -413,7 +423,7 @@ public class Themes {
             if (activity.getActionBar() != null) {
                 activity.getActionBar().setBackgroundDrawable(new ColorDrawable(primary));
             } else {
-                Debug.log(Debug.WTF, "Themes", "Couldn't find the action bar", activity);
+                Debug.log(Debug.LogLevel.WTF, "Themes", "Couldn't find the action bar", activity);
             }
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -428,10 +438,12 @@ public class Themes {
             seekBar.setThumb(thumb);
             seekBar.setProgressDrawable(progress);
         } else {
+            // For whatever reason, the control frame seems to need a reminder as to what color it should be
+            contentView.findViewById(R.id.playerControlFrame).setBackgroundColor(activity.getResources().getColor(R.color.player_control_background));
             if (activity.getActionBar() != null) {
                 activity.getActionBar().setIcon(new ColorDrawable(activity.getResources().getColor(android.R.color.transparent)));
             } else {
-                Debug.log(Debug.WTF, "Themes", "Couldn't find the action bar", activity);
+                Debug.log(Debug.LogLevel.WTF, "Themes", "Couldn't find the action bar", activity);
             }
         }
     }
@@ -493,7 +505,7 @@ public class Themes {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (activity.getActionBar() != null)
                 activity.getActionBar().setElevation(activity.getResources().getDimension(R.dimen.header_elevation));
-            else Debug.log(Debug.WTF, "Themes", "Couldn't find the action bar", activity);
+            else Debug.log(Debug.LogLevel.WTF, "Themes", "Couldn't find the action bar", activity);
 
             contentView.findViewById(android.R.id.list).setBackground(getTouchRipple(activity));
         }

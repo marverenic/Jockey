@@ -84,7 +84,7 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
-    <style name="AppThemeLight" parent="android:Theme.Holo.Light">
+    <style name="AppThemeLight" parent="android:Theme.Holo.Light.DarkActionBar">
         <item name="android:actionBarStyle">@style/actionbar_style</item>
         <item name="android:windowBackground">@color/background_light</item>
         <item name="android:windowContentOverlay">@null</item>
@@ -92,7 +92,6 @@
 
     <style name="NowPlayingTheme" parent="AppTheme">
         <item name="android:actionBarStyle">@style/transparent_actionbar</item>
-        <item name="android:windowBackground">@color/background</item>
         <item name="android:windowActionBarOverlay">true</item>
     </style>
 
@@ -114,6 +113,8 @@
         <item name="android:layout_height">@dimen/list_height</item>
         <item name="android:background">@color/background_elevated</item>
         <item name="android:gravity">center</item>
+        <item name="android:fastScrollEnabled">true</item>
+        <item name="android:scrollbarStyle">insideOverlay</item>
     </style>
 
     <style name="listTitleText">

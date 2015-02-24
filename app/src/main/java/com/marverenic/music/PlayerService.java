@@ -49,7 +49,7 @@ public class PlayerService extends Service {
         }
         else {
             // If the service has already started, kill this instance.
-            Debug.log(Debug.WARNING, TAG, "Attempted to create a second player service", getApplicationContext());
+            Debug.log(Debug.LogLevel.WARNING, TAG, "Attempted to create a second player service", getApplicationContext());
             stopSelf();
         }
     }

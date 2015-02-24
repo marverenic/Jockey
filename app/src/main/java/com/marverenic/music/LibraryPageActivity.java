@@ -133,14 +133,14 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
                 if (getActionBar() != null)
                     getActionBar().setElevation(getResources().getDimension(R.dimen.header_elevation));
                 else
-                    Debug.log(Debug.WTF, "LibraryPageActivity", "Couldn't find the action bar", this);
+                    Debug.log(Debug.LogLevel.WTF, "LibraryPageActivity", "Couldn't find the action bar", this);
             }
 
             Themes.themeActivity(R.layout.fragment_list, getWindow().findViewById(android.R.id.content), this);
         } else {
             type = -1;
             setContentView(R.layout.page_error);
-            Debug.log(Debug.WTF, "LibraryPageActivity", "An invalid item was passed as the parent object", this);
+            Debug.log(Debug.LogLevel.WTF, "LibraryPageActivity", "An invalid item was passed as the parent object", this);
         }
         registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
         update();
@@ -149,7 +149,7 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
     private void initPlaylist(Object parent, ArrayList<Song> songEntries) {
         type = PLAYLIST;
         if (getActionBar() != null) getActionBar().setTitle(((Playlist) parent).playlistName);
-        else Debug.log(Debug.WTF, "LibraryPageActivity", "Couldn't find the action bar", this);
+        else Debug.log(Debug.LogLevel.WTF, "LibraryPageActivity", "Couldn't find the action bar", this);
 
         Cursor cur = getContentResolver().query(
                 MediaStore.Audio.Playlists.Members.getContentUri("external", ((Playlist) parent).playlistId),
@@ -178,7 +178,7 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
     private void initAlbum(Object parent, ArrayList<Song> songEntries, ListView songListView) {
         type = ALBUM;
         if (getActionBar() != null) getActionBar().setTitle(((Album) parent).albumName);
-        else Debug.log(Debug.WTF, "LibraryPageActivity", "Couldn't find the action bar", this);
+        else Debug.log(Debug.LogLevel.WTF, "LibraryPageActivity", "Couldn't find the action bar", this);
 
         Cursor cur = getContentResolver().query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -219,7 +219,7 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
     private void initGenre(Object parent, ArrayList<Song> songEntries) {
         type = GENRE;
         if (getActionBar() != null) getActionBar().setTitle(((Genre) parent).genreName);
-        else Debug.log(Debug.WTF, "LibraryPageActivity", "Couldn't find the action bar", this);
+        else Debug.log(Debug.LogLevel.WTF, "LibraryPageActivity", "Couldn't find the action bar", this);
 
         Cursor cur = getContentResolver().query(
                 MediaStore.Audio.Genres.Members.getContentUri("external", ((Genre) parent).genreId),
@@ -249,7 +249,7 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
     private void initArtist(Object parent) {
         type = ARTIST;
         if (getActionBar() != null) getActionBar().setTitle(((Artist) parent).artistName);
-        else Debug.log(Debug.WTF, "LibraryPageActivity", "Couldn't find the action bar", this);
+        else Debug.log(Debug.LogLevel.WTF, "LibraryPageActivity", "Couldn't find the action bar", this);
 
         ArrayList<Song> songs = new ArrayList<>();
         ArrayList<Album> albums = new ArrayList<>();
