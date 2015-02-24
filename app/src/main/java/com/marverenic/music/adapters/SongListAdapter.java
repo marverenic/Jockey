@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.marverenic.music.LibraryPageActivity;
@@ -31,14 +32,15 @@ import com.marverenic.music.utils.Themes;
 
 import java.util.ArrayList;
 
-public class SongListAdapter extends BaseAdapter implements AdapterView.OnItemLongClickListener, AdapterView.OnItemClickListener {
+public class SongListAdapter extends BaseAdapter implements SectionIndexer, AdapterView.OnItemLongClickListener, AdapterView.OnItemClickListener {
     private ArrayList<Song> data;
     private Context context;
+    private ArrayList<Character> sectionCharacter = new ArrayList<>();
+    private ArrayList<Integer> sectionStartingPosition = new ArrayList<>();
+    private ArrayList<Integer> sectionAtPosition = new ArrayList<>();
 
     public SongListAdapter(Context context) {
-        super();
-        this.data = Library.getSongs();
-        this.context = context;
+        this(Library.getSongs(), context);
     }
 
     @SuppressWarnings("unchecked")
@@ -46,6 +48,30 @@ public class SongListAdapter extends BaseAdapter implements AdapterView.OnItemLo
         super();
         this.data = (ArrayList<Song>) data.clone();
         this.context = context;
+
+        String name;
+        char thisChar;
+        int sectionIndex = -1;
+        for(int i = 0; i < data.size(); i++){
+            name = data.get(i).songName.toUpperCase();
+
+            if (name.startsWith("THE ")){
+                thisChar = name.charAt(4);
+            }
+            else if (name.startsWith("A ")){
+                thisChar = name.charAt(2);
+            }
+            else{
+                thisChar = name.charAt(0);
+            }
+
+            if(sectionCharacter.size() == 0 || !sectionCharacter.get(sectionCharacter.size() - 1).equals(thisChar)) {
+                sectionIndex++;
+                sectionCharacter.add(thisChar);
+                sectionStartingPosition.add(i);
+            }
+            sectionAtPosition.add(sectionIndex);
+        }
     }
 
     @Override
@@ -189,5 +215,20 @@ public class SongListAdapter extends BaseAdapter implements AdapterView.OnItemLo
     public void updateData(ArrayList<Song> data) {
         this.data = data;
         notifyDataSetChanged();
+    }
+
+    @Override
+    public Object[] getSections() {
+        return sectionCharacter.toArray();
+    }
+
+    @Override
+    public int getPositionForSection(int sectionNumber) {
+        return sectionStartingPosition.get(sectionNumber);
+    }
+
+    @Override
+    public int getSectionForPosition(int itemPosition) {
+        return sectionAtPosition.get(itemPosition);
     }
 }

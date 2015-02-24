@@ -115,6 +115,7 @@
         <item name="android:gravity">center</item>
         <item name="android:fastScrollEnabled">true</item>
         <item name="android:scrollbarStyle">insideOverlay</item>
+        <item name="android:fastScrollOverlayPosition">atThumb</item>
     </style>
 
     <style name="listTitleText">

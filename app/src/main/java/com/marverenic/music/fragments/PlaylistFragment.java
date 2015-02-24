@@ -23,6 +23,9 @@ public class PlaylistFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
         ListView playlistListView = (ListView) view.findViewById(R.id.list);
 
+        // Most people probably don't have enough playlists to warrant fast scrolling...
+        playlistListView.setFastScrollEnabled(false);
+
         PlaylistListAdapter adapter = new PlaylistListAdapter(getActivity());
 
         playlistListView.setAdapter(adapter);

@@ -203,6 +203,7 @@
         <item name="android:dividerHeight">1dp</item>
         <item name="android:fastScrollEnabled">true</item>
         <item name="android:scrollbarStyle">outsideOverlay</item>
+        <item name="android:fastScrollOverlayPosition">atThumb</item>
     </style>
 
     <style name="listTitleText">

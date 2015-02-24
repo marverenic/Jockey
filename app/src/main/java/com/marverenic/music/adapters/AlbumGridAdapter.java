@@ -17,6 +17,7 @@ import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.marverenic.music.LibraryPageActivity;
@@ -35,11 +36,14 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class AlbumGridAdapter extends BaseAdapter implements ImageLoadingListener, View.OnClickListener, View.OnLongClickListener {
+public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, ImageLoadingListener, View.OnClickListener, View.OnLongClickListener {
 
     private static HashMap<String, int[]> colorTable = new HashMap<>();
     private ArrayList<Album> data;
     private Context mContext;
+    private ArrayList<Character> sectionCharacter = new ArrayList<>();
+    private ArrayList<Integer> sectionStartingPosition = new ArrayList<>();
+    private ArrayList<Integer> sectionAtPosition = new ArrayList<>();
 
     public AlbumGridAdapter(ArrayList<Album> data, Context context) {
         this.data = data;
@@ -61,6 +65,29 @@ public class AlbumGridAdapter extends BaseAdapter implements ImageLoadingListene
             ImageLoader.getInstance().init(config);
         }
 
+        String name;
+        char thisChar;
+        int sectionIndex = -1;
+        for(int i = 0; i < data.size(); i++){
+            name = data.get(i).albumName.toUpperCase();
+
+            if (name.startsWith("THE ")){
+                thisChar = name.charAt(4);
+            }
+            else if (name.startsWith("A ")){
+                thisChar = name.charAt(2);
+            }
+            else{
+                thisChar = name.charAt(0);
+            }
+
+            if(sectionCharacter.size() == 0 || !sectionCharacter.get(sectionCharacter.size() - 1).equals(thisChar)) {
+                sectionIndex++;
+                sectionCharacter.add(thisChar);
+                sectionStartingPosition.add(i);
+            }
+            sectionAtPosition.add(sectionIndex);
+        }
     }
 
     @Override
@@ -264,6 +291,21 @@ public class AlbumGridAdapter extends BaseAdapter implements ImageLoadingListene
 
         dialog.create().show();
         return true;
+    }
+
+    @Override
+    public Object[] getSections() {
+        return sectionCharacter.toArray();
+    }
+
+    @Override
+    public int getPositionForSection(int sectionNumber) {
+        return sectionStartingPosition.get(sectionNumber);
+    }
+
+    @Override
+    public int getSectionForPosition(int itemPosition) {
+        return sectionAtPosition.get(itemPosition);
     }
 
     public void updateData(ArrayList<Album> data) {
