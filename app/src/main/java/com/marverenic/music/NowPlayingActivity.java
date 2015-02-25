@@ -2,15 +2,20 @@ package com.marverenic.music;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,6 +26,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.marverenic.music.instances.Album;
+import com.marverenic.music.instances.Artist;
+import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
@@ -213,6 +221,79 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
             PlayerService.skip();
         } else if (v.getId() == R.id.previousButton) {
             PlayerService.previous();
+        }
+        else if (v.getId() == R.id.songInfo){
+            final Context context = this;
+            final Song nowPlaying = PlayerService.getNowPlaying();
+
+            if (nowPlaying != null) {
+                AlertDialog.Builder alert;
+                if (Themes.isLight(this)){
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        alert = new AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_Alert);
+                    }
+                    else{
+                        alert = new AlertDialog.Builder(new ContextThemeWrapper(this, android.R.style.Theme_Holo_Light));
+                    }
+                }
+                else{
+                    alert = new AlertDialog.Builder(this);
+                }
+                alert
+                    .setTitle(nowPlaying.songName)
+                    .setNegativeButton("Cancel", null)
+                    .setItems(R.array.now_playing_options, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case 0: //Go to artist
+                                    Artist artist;
+
+                                    Cursor curArtist = getContentResolver().query(
+                                            MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
+                                            null,
+                                            MediaStore.Audio.Media.ARTIST + " =?",
+                                            new String[]{nowPlaying.artistName},
+                                            MediaStore.Audio.Artists.ARTIST + " ASC");
+                                    curArtist.moveToFirst();
+
+                                    artist = new Artist(
+                                            curArtist.getLong(curArtist.getColumnIndex(MediaStore.Audio.Artists._ID)),
+                                            curArtist.getString(curArtist.getColumnIndex(MediaStore.Audio.Artists.ARTIST)));
+
+                                    curArtist.close();
+
+                                    Navigate.to(context, LibraryPageActivity.class, "entry", artist);
+                                    break;
+                                case 1: //Go to album
+                                    Album album;
+
+                                    Cursor curAlbum = getContentResolver().query(
+                                            MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                                            null,
+                                            MediaStore.Audio.Media.ALBUM + " =? AND " + MediaStore.Audio.Media.ARTIST + " =?",
+                                            new String[]{nowPlaying.albumName, nowPlaying.artistName},
+                                            MediaStore.Audio.Albums.ALBUM + " ASC");
+                                    curAlbum.moveToFirst();
+
+                                    album = new Album(
+                                            curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums._ID)),
+                                            curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.ALBUM)),
+                                            curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
+                                            curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.LAST_YEAR)),
+                                            curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART)));
+
+                                    curAlbum.close();
+
+                                    Navigate.to(context, LibraryPageActivity.class, "entry", album);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    });
+                alert.show();
+            }
         }
         update();
     }

@@ -34,52 +34,54 @@
         android:elevation="8dp"
         android:gravity="center">
 
-        <TextView
-            android:id="@+id/textSongTitle"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/songInfo"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentStart="true"
+            android:orientation="vertical"
             android:layout_marginTop="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:ellipsize="end"
-            android:lines="1"
-            android:text="@string/nothing_playing"
-            android:textColor="@color/player_text_main"
-            android:textSize="22sp" />
-
-        <TextView
-            android:id="@+id/textArtistName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/textSongTitle"
-            android:layout_below="@+id/textSongTitle"
-            android:layout_marginEnd="16dp"
-            android:ellipsize="end"
-            android:lines="1"
-            android:text="@string/no_artist"
-            android:textColor="@color/player_text_detail"
-            android:textSize="22sp" />
-
-        <TextView
-            android:id="@+id/textAlbumTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/textSongTitle"
-            android:layout_below="@+id/textArtistName"
-            android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
-            android:ellipsize="end"
-            android:lines="1"
-            android:text="@string/no_album"
-            android:textColor="@color/player_text_detail"
-            android:textSize="22sp" />
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:clickable="true"
+            android:onClick="onClick"
+            android:background="?android:attr/selectableItemBackground">
+
+            <TextView
+                android:id="@+id/textSongTitle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:lines="1"
+                android:text="@string/nothing_playing"
+                android:textColor="@color/player_text_main"
+                android:textSize="22sp" />
+
+            <TextView
+                android:id="@+id/textArtistName"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:lines="1"
+                android:text="@string/no_artist"
+                android:textColor="@color/player_text_detail"
+                android:textSize="22sp" />
+
+            <TextView
+                android:id="@+id/textAlbumTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:lines="1"
+                android:text="@string/no_album"
+                android:textColor="@color/player_text_detail"
+                android:textSize="22sp" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="@dimen/now_playing_max_control_width"
             android:layout_height="fill_parent"
-            android:layout_below="@+id/textAlbumTitle"
+            android:layout_below="@id/songInfo"
             android:layout_marginLeft="@dimen/now_playing_control_padding"
             android:layout_marginRight="@dimen/now_playing_control_padding"
             android:baselineAligned="false"

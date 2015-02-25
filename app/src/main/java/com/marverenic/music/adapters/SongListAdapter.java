@@ -43,10 +43,9 @@ public class SongListAdapter extends BaseAdapter implements SectionIndexer, Adap
         this(Library.getSongs(), context);
     }
 
-    @SuppressWarnings("unchecked")
     public SongListAdapter(ArrayList<Song> data, Context context) {
         super();
-        this.data = (ArrayList<Song>) data.clone();
+        this.data = new ArrayList<>(data);
         this.context = context;
 
         String name;
@@ -210,11 +209,6 @@ public class SongListAdapter extends BaseAdapter implements SectionIndexer, Adap
                 });
         dialog.show();
         return true;
-    }
-
-    public void updateData(ArrayList<Song> data) {
-        this.data = data;
-        notifyDataSetChanged();
     }
 
     @Override

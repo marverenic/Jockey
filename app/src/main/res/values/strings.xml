@@ -79,6 +79,10 @@
         <item>Queue all songs in this playlist next</item>
         <item>Queue all songs in this playlist last</item>
     </string-array>
+    <string-array name="now_playing_options">
+        <item>Go to artist</item>
+        <item>Go to album</item>
+    </string-array>
 
     <!-- String Arrays for Settings -->
     <string-array name="pages">
