@@ -35,12 +35,12 @@
     <color name="background_elevated_light">#F5F5F5</color>
     <color name="background_miniplayer_light">#FAFAFA</color>
 
-    <!-- Black -->
-    <color name="primary_black">#212121</color>
-    <color name="primary_dark_black">#000000</color>
-    <color name="accent_black">#B0BEC5</color>
-    <color name="ui_text_black">#FAFAFA</color>
-    <color name="ui_detail_text_black">#BDBDBD</color>
+    <!-- Grey -->
+    <color name="primary_grey">#37474F</color>
+    <color name="primary_dark_grey">#263238</color>
+    <color name="accent_grey">#90A4AE</color>
+    <color name="ui_text_grey">#FAFAFA</color>
+    <color name="ui_detail_text_grey">#BDBDBD</color>
 
     <!-- Red -->
     <color name="primary_red">#C62828</color>
@@ -87,9 +87,9 @@
 
     <!-- More themes -->
     <style name="AppTheme.Black" parent="AppTheme">
-        <item name="android:colorPrimary">@color/primary_black</item>
-        <item name="android:colorPrimaryDark">@color/primary_dark_black</item>
-        <item name="android:colorAccent">@color/accent_black</item>
+        <item name="android:colorPrimary">@color/primary_grey</item>
+        <item name="android:colorPrimaryDark">@color/primary_dark_grey</item>
+        <item name="android:colorAccent">@color/accent_grey</item>
     </style>
 
     <style name="AppTheme.Red" parent="AppTheme">
@@ -132,9 +132,9 @@
 
     <!-- More themes -->
     <style name="AppThemeLight.Black" parent="AppThemeLight">
-        <item name="android:colorPrimary">@color/primary_black</item>
-        <item name="android:colorPrimaryDark">@color/primary_dark_black</item>
-        <item name="android:colorAccent">@color/accent_black</item>
+        <item name="android:colorPrimary">@color/primary_grey</item>
+        <item name="android:colorPrimaryDark">@color/primary_dark_grey</item>
+        <item name="android:colorAccent">@color/accent_grey</item>
     </style>
 
     <style name="AppThemeLight.Red" parent="AppThemeLight">
@@ -169,8 +169,8 @@
 
     <style name="NowPlayingTheme" parent="AppTheme">
         <item name="android:actionBarStyle">@style/transparent_actionbar</item>
-        <item name="android:colorPrimary">@color/primary_black</item>
-        <item name="android:colorPrimaryDark">@color/primary_dark_black</item>
+        <item name="android:colorPrimary">@color/primary_grey</item>
+        <item name="android:colorPrimaryDark">@color/primary_dark_grey</item>
         <item name="android:windowBackground">@android:color/black</item>
         <item name="android:windowActionBarOverlay">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">false</item>
@@ -179,7 +179,7 @@
 
     <style name="actionbar_style" parent="@android:style/Widget.Material.Light.ActionBar.Solid">
         <item name="android:elevation">0dp</item>
-        <item name="android:textColor">@color/ui_text_black</item>
+        <item name="android:textColor">@color/ui_text_grey</item>
         <item name="android:selectableItemBackground">
             ?android:attr/selectableItemBackgroundBorderless
         </item>

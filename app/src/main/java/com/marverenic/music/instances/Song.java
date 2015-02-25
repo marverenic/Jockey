@@ -1,8 +1,10 @@
 package com.marverenic.music.instances;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.TextUtils;
 
-public class Song {
+public class Song implements Parcelable {
     public String songName;
     public String artistName;
     public String albumName;
@@ -17,6 +19,15 @@ public class Song {
         this.songDuration = songDuration;
         this.location = location;
         this.albumId = albumId;
+    }
+
+    private Song(Parcel in) {
+        albumId = in.readString();
+        albumName = in.readString();
+        artistName = in.readString();
+        songDuration = in.readInt();
+        location = in.readString();
+        albumId = in.readString();
     }
 
     public boolean equals(final Object obj) {
@@ -35,5 +46,20 @@ public class Song {
 
     public String toString() {
         return songName;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(albumId);
+        dest.writeString(albumName);
+        dest.writeString(artistName);
+        dest.writeInt(songDuration);
+        dest.writeString(location);
+        dest.writeString(albumId);
     }
 }

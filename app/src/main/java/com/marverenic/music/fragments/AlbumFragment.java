@@ -1,6 +1,7 @@
 package com.marverenic.music.fragments;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,19 +10,25 @@ import android.widget.GridView;
 
 import com.marverenic.music.R;
 import com.marverenic.music.adapters.AlbumGridAdapter;
+import com.marverenic.music.adapters.SearchPagerAdapter;
 import com.marverenic.music.instances.Album;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.utils.Themes;
 
 import java.util.ArrayList;
 
 public class AlbumFragment extends Fragment {
 
-    public ArrayList<Album> albumLibrary;
+    private ArrayList<Album> albumLibrary;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null && getArguments().getParcelableArrayList(SearchPagerAdapter.DATA_KEY) != null){
+            albumLibrary = new ArrayList<>();
+            for (Parcelable p : getArguments().getParcelableArrayList(SearchPagerAdapter.DATA_KEY)){
+                albumLibrary.add((Album) p);
+            }
+        }
     }
 
     @Override
@@ -29,11 +36,10 @@ public class AlbumFragment extends Fragment {
         // inflate the root view of the fragment
         View view = inflater.inflate(R.layout.fragment_grid, container, false);
 
-
         // initialize the adapter
         AlbumGridAdapter adapter;
         if (albumLibrary == null) {
-            adapter = new AlbumGridAdapter(Library.getAlbums(), getActivity());
+            adapter = new AlbumGridAdapter(getActivity());
         } else {
             adapter = new AlbumGridAdapter(albumLibrary, getActivity());
         }

@@ -96,11 +96,11 @@ public class Themes {
 
         switch (Integer.parseInt(prefs.getString("prefColorPrimary", "5"))) {
             case 0: //Black
-                primary = resources.getColor(R.color.primary_black);
-                primaryDark = resources.getColor(R.color.primary_dark_black);
-                accent = resources.getColor(R.color.accent_black);
-                uiText = resources.getColor(R.color.ui_text_black);
-                uiDetailText = resources.getColor(R.color.ui_detail_text_black);
+                primary = resources.getColor(R.color.primary_grey);
+                primaryDark = resources.getColor(R.color.primary_dark_grey);
+                accent = resources.getColor(R.color.accent_grey);
+                uiText = resources.getColor(R.color.ui_text_grey);
+                uiDetailText = resources.getColor(R.color.ui_detail_text_grey);
                 break;
             case 1: //Red
                 primary = resources.getColor(R.color.primary_red);

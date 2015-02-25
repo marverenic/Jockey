@@ -31,8 +31,12 @@ public class GenreListAdapter extends BaseAdapter implements AdapterView.OnItemC
     private Context context;
 
     public GenreListAdapter(Context context) {
+        this(Library.getGenres(), context);
+    }
+
+    public GenreListAdapter(ArrayList<Genre> data, Context context) {
         super();
-        this.data = Library.getGenres();
+        this.data = data;
         this.context = context;
     }
 

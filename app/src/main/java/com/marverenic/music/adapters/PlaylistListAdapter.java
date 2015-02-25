@@ -31,8 +31,12 @@ public class PlaylistListAdapter extends BaseAdapter implements AdapterView.OnIt
     private Context context;
 
     public PlaylistListAdapter(Context context) {
+        this(Library.getPlaylists(), context);
+    }
+
+    public PlaylistListAdapter(ArrayList<Playlist> data, Context context){
         super();
-        this.data = Library.getPlaylists();
+        this.data = data;
         this.context = context;
     }
 

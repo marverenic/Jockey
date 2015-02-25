@@ -35,12 +35,12 @@
     <color name="background_elevated_light">#F5F5F5</color>
     <color name="background_miniplayer_light">#FAFAFA</color>
 
-    <!-- Black -->
-    <color name="primary_black">#212121</color>
-    <color name="primary_dark_black">#000000</color>
-    <color name="accent_black">#B0BEC5</color>
-    <color name="ui_text_black">#FAFAFA</color>
-    <color name="ui_detail_text_black">#BDBDBD</color>
+    <!-- Grey -->
+    <color name="primary_grey">#37474F</color>
+    <color name="primary_dark_grey">#263238</color>
+    <color name="accent_grey">#90A4AE</color>
+    <color name="ui_text_grey">#FAFAFA</color>
+    <color name="ui_detail_text_grey">#BDBDBD</color>
 
     <!-- Red -->
     <color name="primary_red">#C62828</color>

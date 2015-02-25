@@ -8,7 +8,7 @@
         android:actionViewClass="android.widget.SearchView"
         android:icon="@android:drawable/ic_menu_search"
         android:title="@string/header_search"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="collapseActionView|ifRoom" />
 
     <item
         android:id="@+id/action_refresh_library"

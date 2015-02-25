@@ -58,7 +58,6 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
             update();
         }
     };
-    private int albumCount = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -367,8 +366,7 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
         AlbumGridAdapter gridAdapter = new AlbumGridAdapter(albums, context);
         albumGrid.setAdapter(gridAdapter);
 
-        //updateArtistGridLayout(albumGrid, albums.size());
-        albumCount = albums.size();
+        int albumCount = albums.size();
 
         ((ListView) parent).addHeaderView(albumHeader, null, false);
 

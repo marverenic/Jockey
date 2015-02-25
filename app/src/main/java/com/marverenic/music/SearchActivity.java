@@ -1,27 +1,30 @@
 package com.marverenic.music;
 
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.GridView;
-import android.widget.ListView;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
+import android.widget.TextView;
 
-import com.marverenic.music.adapters.AlbumGridAdapter;
-import com.marverenic.music.adapters.ArtistListAdapter;
-import com.marverenic.music.adapters.GenreListAdapter;
-import com.marverenic.music.adapters.LibraryPagerAdapter;
-import com.marverenic.music.adapters.PlaylistListAdapter;
-import com.marverenic.music.adapters.SongListAdapter;
+import com.marverenic.music.adapters.SearchPagerAdapter;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Genre;
@@ -29,35 +32,78 @@ import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
+import com.marverenic.music.utils.Navigate;
+import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.SlidingTabLayout;
 
 import java.util.ArrayList;
 
-public class SearchActivity extends FragmentActivity {
+public class SearchActivity extends FragmentActivity implements View.OnClickListener {
+
+    private SearchView searchView;
+    private BroadcastReceiver updateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            update();
+        }
+    };
+
+    private ArrayList<Album> albumResults = new ArrayList<>();
+    private ArrayList<Artist> artistResults = new ArrayList<>();
+    private ArrayList<Genre> genreResults = new ArrayList<>();
+    private ArrayList<Playlist> playlistResults = new ArrayList<>();
+    private ArrayList<Song> songResults = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Debug.log(Debug.LogLevel.WTF, "SearchActivity", "The search activity was created.", this);
 
-        if (!isTaskRoot()) {
-            finish();
-            return;
-        }
+        Themes.setTheme(this);
+        setContentView(R.layout.activity_library);
+        search(getIntent());
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        int page = Integer.parseInt(prefs.getString("prefDefaultPage", "1"));
 
-
-        setContentView(R.layout.activity_library);
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
-        LibraryPagerAdapter adapter = new LibraryPagerAdapter(this);
+        SearchPagerAdapter adapter = new SearchPagerAdapter(this, playlistResults, songResults, artistResults, albumResults, genreResults);
         pager.setAdapter(adapter);
-        pager.setCurrentItem(Integer.parseInt(prefs.getString("prefDefaultPage", "1")));
+        pager.setCurrentItem(page);
 
         SlidingTabLayout tabs = ((SlidingTabLayout) findViewById(R.id.pagerSlidingTabs));
         tabs.setViewPager(pager);
-        tabs.setActivePage(Integer.parseInt(prefs.getString("prefDefaultPage", "1")));
+        tabs.setActivePage(page);
+
+        if (getResources().getConfiguration().smallestScreenWidthDp < 700 && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            tabs.setMini(true);
+        } else {
+            tabs.setMini(false);
+        }
+
+        Themes.themeActivity(R.layout.activity_library, getWindow().getDecorView().findViewById(android.R.id.content), this);
+
+        startService(new Intent(this, Player.class));
+        registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
+
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
+    }
+
+    @Override
+    public void onResume() {
+        update();
+        Themes.setApplicationIcon(this);
+        registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        try {
+            unregisterReceiver(updateReceiver);
+        } catch (Exception e) {
+            Debug.log(Debug.LogLevel.ERROR, "LibraryActivity", "Unable to unregister receiver", this);
+        }
+        super.onPause();
     }
 
     @Override
@@ -66,24 +112,29 @@ public class SearchActivity extends FragmentActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
         // Associate searchable configuration with the SearchView
+        MenuItem searchItem = menu.findItem(R.id.search);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView = (SearchView) searchItem.getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setIconifiedByDefault(false);
+        if (getIntent().getStringExtra(SearchManager.QUERY) != null) {
+            searchView.setQuery(getIntent().getStringExtra(SearchManager.QUERY), false);
+        }
 
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
+            case R.id.home:
+                Navigate.home(this);
+                return true;
             case R.id.action_settings:
-                startActivity(new Intent(this, SettingsActivity.class));
+                Navigate.to(this, SettingsActivity.class);
                 return true;
             case R.id.search:
-                super.onSearchRequested();
+                onSearchRequested();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -91,84 +142,131 @@ public class SearchActivity extends FragmentActivity {
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        handleIntent(intent);
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.miniplayer:
+                Navigate.to(this, NowPlayingActivity.class);
+                update();
+                break;
+            case R.id.playButton:
+                PlayerService.togglePlay();
+                update();
+                break;
+            case R.id.skipButton:
+                PlayerService.skip();
+                update();
+                break;
+        }
     }
 
-    private void handleIntent(Intent intent) {
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+    public void update() {
+        if (PlayerService.isInitialized() && PlayerService.getNowPlaying() != null) {
+            final TextView songTitle = (TextView) findViewById(R.id.textNowPlayingTitle);
+            final TextView artistName = (TextView) findViewById(R.id.textNowPlayingDetail);
 
-            // THIS IS HORRENDOUSLY BROKEN
+            songTitle.setText(PlayerService.getNowPlaying().songName);
+            artistName.setText(PlayerService.getNowPlaying().artistName);
 
-            ArrayList<Album> albumResults = Library.getAlbums();
-            ArrayList<Artist> artistResults = Library.getArtists();
-            ArrayList<Genre> genreResults = Library.getGenres();
-            ArrayList<Playlist> playlistResults = Library.getPlaylists();
-            ArrayList<Song> songResults = Library.getSongs();
-
-            String query = intent.getStringExtra(SearchManager.QUERY);
-
-            if (!query.equals("")) {
-
-                albumResults = new ArrayList<>();
-                artistResults = new ArrayList<>();
-                genreResults = new ArrayList<>();
-                playlistResults = new ArrayList<>();
-                songResults = new ArrayList<>();
-
-                for (int i = 0; i < Library.getAlbums().size(); i++) {
-                    Log.i("SEARCH", "Looking at album " + Library.getAlbums().get(i));
-                    if (Library.getAlbums().get(i).albumName.contains(query) || Library.getAlbums().get(i).artistName.contains(query)) {
-                        albumResults.add(Library.getAlbums().get(i));
-                        Log.i("SEARCH", "Added album " + Library.getAlbums().get(i));
+            if (!PlayerService.isPlaying()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_vector_play);
+                    ((ImageButton) findViewById(R.id.playButton)).setImageTintList(ColorStateList.valueOf(Themes.getListText()));
+                } else {
+                    if (Themes.isLight(this)) {
+                        ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_miniplayer_light);
+                    } else {
+                        ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_miniplayer);
                     }
                 }
-
-                for (int i = 0; i < Library.getArtists().size(); i++) {
-                    Log.i("SEARCH", "Looking at artist " + Library.getArtists().get(i));
-                    if (Library.getArtists().get(i).artistName.contains(query)) {
-                        artistResults.add(Library.getArtists().get(i));
-                        Log.i("SEARCH", "Added artist " + Library.getArtists().get(i));
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_vector_pause);
+                    ((ImageButton) findViewById(R.id.playButton)).setImageTintList(ColorStateList.valueOf(Themes.getListText()));
+                } else {
+                    if (Themes.isLight(this)) {
+                        ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_pause_miniplayer_light);
+                    } else {
+                        ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_pause_miniplayer);
                     }
                 }
-
-                for (int i = 0; i < Library.getGenres().size(); i++) {
-                    Log.i("SEARCH", "Looking at genre " + Library.getGenres().get(i));
-                    if (Library.getGenres().get(i).genreName.contains(query)) {
-                        genreResults.add(Library.getGenres().get(i));
-                        Log.i("SEARCH", "Added genre " + Library.getGenres().get(i));
-                    }
-                }
-
-                for (int i = 0; i < Library.getPlaylists().size(); i++) {
-                    Log.i("SEARCH", "Looking at playlist " + Library.getPlaylists().get(i));
-                    if (Library.getPlaylists().get(i).playlistName.contains(query)) {
-                        playlistResults.add(Library.getPlaylists().get(i));
-                        Log.i("SEARCH", "Added genre " + Library.getPlaylists().get(i));
-                    }
-                }
-
-                for (int i = 0; i < Library.getSongs().size(); i++) {
-                    Log.i("SEARCH", "Looking at song " + Library.getSongs().get(i));
-                    if (Library.getSongs().get(i).songName.contains(query) ||
-                            Library.getSongs().get(i).artistName.contains(query) ||
-                            Library.getSongs().get(i).albumName.contains(query)) {
-                        songResults.add(Library.getSongs().get(i));
-                        Log.i("SEARCH", "Added song " + Library.getSongs().get(i));
-                    }
-                }
-
             }
 
-            LibraryPagerAdapter adapter = (LibraryPagerAdapter) ((ViewPager) findViewById(R.id.pager)).getAdapter();
+            if (PlayerService.getArt() != null) {
+                ((ImageView) findViewById(R.id.imageArtwork)).setImageBitmap(PlayerService.getArt());
+            } else {
+                ((ImageView) findViewById(R.id.imageArtwork)).setImageResource(R.drawable.art_default);
+            }
 
+            RelativeLayout.LayoutParams pagerLayoutParams = (RelativeLayout.LayoutParams) (findViewById(R.id.pager)).getLayoutParams();
+            pagerLayoutParams.bottomMargin = getResources().getDimensionPixelSize(R.dimen.now_playing_ticker_height);
+            (findViewById(R.id.pager)).setLayoutParams(pagerLayoutParams);
 
-            ((PlaylistListAdapter) ((ListView) (adapter.getItem(0)).getView().findViewById(R.id.list)).getAdapter()).updateData(playlistResults);
-            ((SongListAdapter) ((ListView) (adapter.getItem(1)).getView().findViewById(R.id.list)).getAdapter()).updateData(songResults);
-            ((ArtistListAdapter) ((ListView) (adapter.getItem(2)).getView().findViewById(R.id.list)).getAdapter()).updateData(artistResults);
-            ((AlbumGridAdapter) ((GridView) (adapter.getItem(3)).getView().findViewById(R.id.albumGrid)).getAdapter()).updateData(albumResults);
-            ((GenreListAdapter) ((ListView) (adapter.getItem(4)).getView().findViewById(R.id.list)).getAdapter()).updateData(genreResults);
+            FrameLayout.LayoutParams playerLayoutParams = (FrameLayout.LayoutParams) (findViewById(R.id.miniplayer)).getLayoutParams();
+            playerLayoutParams.height = getResources().getDimensionPixelSize(R.dimen.now_playing_ticker_height);
+            (findViewById(R.id.miniplayer)).setLayoutParams(playerLayoutParams);
+        } else {
+            RelativeLayout.LayoutParams pagerLayoutParams = (RelativeLayout.LayoutParams) (findViewById(R.id.pager)).getLayoutParams();
+            pagerLayoutParams.bottomMargin = 0;
+            (findViewById(R.id.pager)).setLayoutParams(pagerLayoutParams);
+
+            FrameLayout.LayoutParams playerLayoutParams = (FrameLayout.LayoutParams) (findViewById(R.id.miniplayer)).getLayoutParams();
+            playerLayoutParams.height = 0;
+            (findViewById(R.id.miniplayer)).setLayoutParams(playerLayoutParams);
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        search(intent);
+    }
+
+    private void search(Intent intent){
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            search(intent.getStringExtra(SearchManager.QUERY).toLowerCase());
+        }
+    }
+
+    private void search(CharSequence query) {
+        if (!query.equals("")) {
+
+            albumResults = new ArrayList<>();
+            artistResults = new ArrayList<>();
+            genreResults = new ArrayList<>();
+            playlistResults = new ArrayList<>();
+            songResults = new ArrayList<>();
+
+            for(Album a : Library.getAlbums()){
+                if (a.albumName.toLowerCase().contains(query) || a.artistName.toLowerCase().contains(query)) {
+                    albumResults.add(a);
+                }
+            }
+
+            for(Artist a : Library.getArtists()){
+                if (a.artistName.toLowerCase().contains(query)) {
+                    artistResults.add(a);
+                }
+            }
+
+            for(Genre g : Library.getGenres()){
+                if (g.genreName.toLowerCase().contains(query)) {
+                    genreResults.add(g);
+                }
+            }
+
+            for(Playlist p : Library.getPlaylists()){
+                if (p.playlistName.toLowerCase().contains(query)) {
+                    playlistResults.add(p);
+                }
+            }
+
+            for(Song s : Library.getSongs()){
+                if (s.songName.toLowerCase().contains(query)
+                        || s.artistName.toLowerCase().contains(query)
+                        || s.albumName.toLowerCase().contains(query)) {
+                    songResults.add(s);
+                }
+            }
         }
     }
 }

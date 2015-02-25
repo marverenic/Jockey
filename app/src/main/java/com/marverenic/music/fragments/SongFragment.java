@@ -1,6 +1,7 @@
 package com.marverenic.music.fragments;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.marverenic.music.R;
+import com.marverenic.music.adapters.SearchPagerAdapter;
 import com.marverenic.music.adapters.SongListAdapter;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Themes;
@@ -16,11 +18,17 @@ import java.util.ArrayList;
 
 public class SongFragment extends Fragment {
 
-    public ArrayList<Song> songLibrary;
+    private ArrayList<Song> songLibrary;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null && getArguments().getParcelableArrayList(SearchPagerAdapter.DATA_KEY) != null){
+            songLibrary = new ArrayList<>();
+            for (Parcelable p : getArguments().getParcelableArrayList(SearchPagerAdapter.DATA_KEY)){
+                songLibrary.add((Song) p);
+            }
+        }
     }
 
     @Override

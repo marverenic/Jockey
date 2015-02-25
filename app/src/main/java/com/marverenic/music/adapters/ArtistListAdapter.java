@@ -34,26 +34,19 @@ public class ArtistListAdapter extends BaseAdapter implements SectionIndexer, Ad
     private ArrayList<Integer> sectionStartingPosition = new ArrayList<>();
     private ArrayList<Integer> sectionAtPosition = new ArrayList<>();
 
-    public ArtistListAdapter(Context context) {
+    public ArtistListAdapter(Context context){
+        this(Library.getArtists(), context);
+    }
+
+    public ArtistListAdapter(ArrayList<Artist> data, Context context) {
         super();
-        this.data = Library.getArtists();
+        this.data = data;
         this.context = context;
 
-        String name;
         char thisChar;
         int sectionIndex = -1;
         for(int i = 0; i < data.size(); i++){
-            name = data.get(i).artistName.toUpperCase();
-
-            if (name.startsWith("THE ")){
-                thisChar = name.charAt(4);
-            }
-            else if (name.startsWith("A ")){
-                thisChar = name.charAt(2);
-            }
-            else{
-                thisChar = name.charAt(0);
-            }
+            thisChar = data.get(i).artistName.toUpperCase().charAt(0);
 
             if(sectionCharacter.size() == 0 || !sectionCharacter.get(sectionCharacter.size() - 1).equals(thisChar)) {
                 sectionIndex++;
@@ -107,11 +100,6 @@ public class ArtistListAdapter extends BaseAdapter implements SectionIndexer, Ad
     @Override
     public long getItemId(int position) {
         return (long) position;
-    }
-
-    public void updateData(ArrayList<Artist> data) {
-        this.data = data;
-        notifyDataSetChanged();
     }
 
     @Override

@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.marverenic.music"
-    android:versionCode="21703"
-    android:versionName="0.2-α.r0m17d">
+    android:versionCode="21704"
+    android:versionName="0.2-α.r0m17e">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -36,7 +36,8 @@
 
         <activity
             android:name="com.marverenic.music.SearchActivity"
-            android:launchMode="singleTop">
+            android:label="Search"
+            android:parentActivityName=".LibraryActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>

@@ -57,11 +57,6 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
 
         new Thread(new Updater(this)).start();
 
-        if (!isTaskRoot()) {
-            finish();
-            return;
-        }
-
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         int page = Integer.parseInt(prefs.getString("prefDefaultPage", "1"));
@@ -97,23 +92,23 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
 
     @Override
     public void onResume() {
+        super.onResume();
         if (Themes.hasChanged(this)) {
             recreate();
         }
         update();
         Themes.setApplicationIcon(this);
         registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
-        super.onResume();
     }
 
     @Override
     public void onPause() {
+        super.onPause();
         try {
             unregisterReceiver(updateReceiver);
         } catch (Exception e) {
             Debug.log(Debug.LogLevel.ERROR, "LibraryActivity", "Unable to unregister receiver", this);
         }
-        super.onPause();
     }
 
     @Override
@@ -144,8 +139,7 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
                 Toast.makeText(this, "Library refreshed.", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.search:
-                //Search is horribly broken. The only thing this method does is leak a window
-                //Navigate.to(this, SearchActivity.class);
+                onSearchRequested();
                 return true;
             case R.id.action_about:
                 Navigate.to(this, AboutActivity.class);

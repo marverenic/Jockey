@@ -25,8 +25,8 @@ public class SettingsActivity extends PreferenceActivity {
 
     @Override
     public void onResume() {
-        Themes.setApplicationIcon(this);
         super.onResume();
+        Themes.setApplicationIcon(this);
     }
 
     @Override
@@ -39,6 +39,7 @@ public class SettingsActivity extends PreferenceActivity {
             Themes.updateLauncherIcon(this);
             prefs.edit().putBoolean("prefAddShortcut", false).apply();
         }
+        finish();
     }
 
     @Override
@@ -46,6 +47,7 @@ public class SettingsActivity extends PreferenceActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 Navigate.home(this);
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -56,6 +58,7 @@ public class SettingsActivity extends PreferenceActivity {
     public void onBackPressed() {
         super.onBackPressed();
         Navigate.back(this);
+        finish();
     }
 
     public static class PrefFragment extends PreferenceFragment {

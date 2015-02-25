@@ -24,6 +24,7 @@ import com.marverenic.music.LibraryPageActivity;
 import com.marverenic.music.PlayerService;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Album;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
@@ -44,6 +45,10 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Ima
     private ArrayList<Character> sectionCharacter = new ArrayList<>();
     private ArrayList<Integer> sectionStartingPosition = new ArrayList<>();
     private ArrayList<Integer> sectionAtPosition = new ArrayList<>();
+
+    public AlbumGridAdapter(Context context){
+        this(Library.getAlbums(), context);
+    }
 
     public AlbumGridAdapter(ArrayList<Album> data, Context context) {
         this.data = data;
@@ -275,6 +280,7 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Ima
                                         cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA)),
                                         cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID))));
                             }
+                            cur.close();
                         }
                         switch (which) {
                             case 0: //Queue this artist next
@@ -306,11 +312,6 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Ima
     @Override
     public int getSectionForPosition(int itemPosition) {
         return sectionAtPosition.get(itemPosition);
-    }
-
-    public void updateData(ArrayList<Album> data) {
-        this.data = data;
-        notifyDataSetChanged();
     }
 
     public class AlbumViewHolder {
