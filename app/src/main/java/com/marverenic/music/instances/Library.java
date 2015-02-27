@@ -12,6 +12,11 @@ public class Library {
     private static ArrayList<Playlist> playlistLib = new ArrayList<>();
     private static ArrayList<Genre> genreLib = new ArrayList<>();
 
+    //
+    //      Add methods
+    //
+    // Add instances to the library array
+
     public static void add(Song s) {
         songLib.add(s);
     }
@@ -31,6 +36,13 @@ public class Library {
     public static void add(Genre g) {
         genreLib.add(g);
     }
+
+    //
+    //      Sorting methods
+    //
+    // Pass an array of instance objects and a sorted one will be returned
+    // In general they're sorted alphabetically by name
+    // For songs and albums, "a" and "the" are ignored when sorting
 
     public static ArrayList<Song> sortSongList(final ArrayList<Song> songs){
         ArrayList<Song> sortedSongs = new ArrayList<>(songs);
@@ -137,27 +149,61 @@ public class Library {
         return sortedArtists;
     }
 
+    public static void sort (){
+        songLib = sortSongList(songLib);
+        albumLib = sortAlbumList(albumLib);
+        artistLib = sortArtistList(artistLib);
+        playlistLib = sortPlaylistList(playlistLib);
+        genreLib = sortGenreList(genreLib);
+    }
 
+    //
+    //      Get methods for libraries
+    //
     public static ArrayList<Song> getSongs() {
-        return sortSongList(songLib);
+        return songLib;
     }
 
     public static ArrayList<Album> getAlbums() {
-        return sortAlbumList(albumLib);
+        return albumLib;
     }
 
     public static ArrayList<Artist> getArtists() {
-        return sortArtistList(artistLib);
+        return artistLib;
     }
 
     public static ArrayList<Playlist> getPlaylists() {
-        return sortPlaylistList(playlistLib);
+        return playlistLib;
     }
 
     public static ArrayList<Genre> getGenres() {
-        return sortGenreList(genreLib);
+        return genreLib;
     }
 
+    //
+    //      Set methods for libraries
+    //
+    public static void setSongLib(ArrayList<Song> songLib) {
+        Library.songLib = songLib;
+    }
+
+    public static void setAlbumLib(ArrayList<Album> albumLib) {
+        Library.albumLib = albumLib;
+    }
+
+    public static void setArtistLib(ArrayList<Artist> artistLib) {
+        Library.artistLib = artistLib;
+    }
+
+    public static void setPlaylistLib(ArrayList<Playlist> playlistLib) {
+        Library.playlistLib = playlistLib;
+    }
+
+    public static void setGenreLib(ArrayList<Genre> genreLib) {
+        Library.genreLib = genreLib;
+    }
+
+    // Clears all the libraries
     public static void resetAll() {
         songLib = new ArrayList<>();
         albumLib = new ArrayList<>();
@@ -166,8 +212,9 @@ public class Library {
         genreLib = new ArrayList<>();
     }
 
+    // Returns true if the libraries have no entries or aren't initialized
     public static boolean isEmpty() {
-        return (songLib == null || albumLib == null || artistLib == null || playlistLib == null || genreLib == null) ||
-                (songLib.size() == 0 && albumLib.size() == 0 && artistLib.size() == 0 && playlistLib.size() == 0 && genreLib.size() == 0);
+        return (songLib == null || albumLib == null || artistLib == null || playlistLib == null || genreLib == null)
+               || (songLib.size() == 0 && albumLib.size() == 0 && artistLib.size() == 0 && playlistLib.size() == 0 && genreLib.size() == 0);
     }
 }

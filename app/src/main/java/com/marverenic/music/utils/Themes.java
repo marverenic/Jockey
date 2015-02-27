@@ -341,7 +341,7 @@ public class Themes {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             switch (Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("prefColorPrimary", "5"))) {
                 case 0:
-                    return context.getDrawable(R.drawable.touch_black);
+                    return context.getDrawable(R.drawable.touch_grey);
                 case 1:
                     return context.getDrawable(R.drawable.touch_red);
                 case 2:

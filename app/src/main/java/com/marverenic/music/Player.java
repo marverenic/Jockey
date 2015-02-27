@@ -221,6 +221,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         if (getFocus()) {
             mediaPlayer.stop();
             mediaPlayer.reset();
+            art = null;
             try {
                 mediaPlayer.setDataSource((getNowPlaying()).location);
             } catch (Exception e) {

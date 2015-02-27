@@ -206,30 +206,6 @@
         <item name="android:fastScrollOverlayPosition">atThumb</item>
     </style>
 
-    <style name="listTitleText">
-        <item name="android:textColor">@color/list_text</item>
-        <item name="android:textSize">@dimen/list_text_header_size</item>
-        <item name="android:paddingLeft">@dimen/list_padding_h</item>
-        <item name="android:paddingRight">@dimen/list_padding_h</item>
-    </style>
-
-    <style name="listDetailText">
-        <item name="android:textColor">@color/detail_text</item>
-        <item name="android:textSize">@dimen/list_text_detail_size</item>
-        <item name="android:paddingLeft">@dimen/list_padding_h</item>
-        <item name="android:paddingRight">@dimen/list_padding_h</item>
-    </style>
-
-    <style name="gridTitleText">
-        <item name="android:textColor">@color/grid_text</item>
-        <item name="android:textSize">@dimen/grid_text_header_size</item>
-    </style>
-
-    <style name="gridDetailText">
-        <item name="android:textColor">@color/grid_detail_text</item>
-        <item name="android:textSize">@dimen/grid_text_detail_size</item>
-    </style>
-
     <style name="settingsHeader">
         <item name="android:textColor">@color/ui_text</item>
         <item name="android:textAllCaps">true</item>

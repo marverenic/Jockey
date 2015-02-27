@@ -26,11 +26,10 @@ import com.marverenic.music.R;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
+import com.marverenic.music.utils.Fetch;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
@@ -41,7 +40,7 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Ima
 
     private static HashMap<String, int[]> colorTable = new HashMap<>();
     private ArrayList<Album> data;
-    private Context mContext;
+    private Context context;
     private ArrayList<Character> sectionCharacter = new ArrayList<>();
     private ArrayList<Integer> sectionStartingPosition = new ArrayList<>();
     private ArrayList<Integer> sectionAtPosition = new ArrayList<>();
@@ -52,23 +51,9 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Ima
 
     public AlbumGridAdapter(ArrayList<Album> data, Context context) {
         this.data = data;
-        mContext = context;
+        this.context = context;
 
-        if (!ImageLoader.getInstance().isInited()) {
-            int albumSizePx = 100 * (int) context.getResources().getDisplayMetrics().density;
-            ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
-                    .defaultDisplayImageOptions((
-                            new DisplayImageOptions.Builder()
-                                    .cacheInMemory(true)
-                                    .cacheOnDisk(true)
-                    ).build())
-                    .memoryCacheSizePercentage(20)
-                    .diskCacheSize(20 * 1024 * 1024)
-                    .memoryCacheExtraOptions(albumSizePx, albumSizePx)
-                    .diskCacheExtraOptions(albumSizePx, albumSizePx, null)
-                    .build();
-            ImageLoader.getInstance().init(config);
-        }
+        Fetch.initImageCache(context);
 
         String name;
         char thisChar;
@@ -117,13 +102,13 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Ima
 
         if (convertView == null) {
             // inflate the GridView item layout
-            LayoutInflater inflater = LayoutInflater.from(mContext);
+            LayoutInflater inflater = LayoutInflater.from(context);
             convertView = inflater.inflate(R.layout.instance_album, parent, false);
             convertView.findViewById(R.id.albumInstance).setOnClickListener(this);
             convertView.findViewById(R.id.albumInstance).setOnLongClickListener(this);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                ((FrameLayout) convertView).setForeground(Themes.getTouchRipple(mContext));
+                ((FrameLayout) convertView).setForeground(Themes.getTouchRipple(context));
             }
 
             // initialize the view holder
@@ -152,16 +137,16 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Ima
                 viewHolder.detail.setTextColor(colorTable.get("file://" + a.artUri)[2]);
             } else {
                 viewHolder.art.setImageResource(R.color.grid_background_default);
-                viewHolder.parent.setBackgroundColor(mContext.getResources().getColor(R.color.grid_background_default));
-                viewHolder.title.setTextColor(mContext.getResources().getColor(R.color.grid_text));
-                viewHolder.detail.setTextColor(mContext.getResources().getColor(R.color.grid_detail_text));
+                viewHolder.parent.setBackgroundColor(context.getResources().getColor(R.color.grid_background_default));
+                viewHolder.title.setTextColor(context.getResources().getColor(R.color.grid_text));
+                viewHolder.detail.setTextColor(context.getResources().getColor(R.color.grid_detail_text));
             }
             ImageLoader.getInstance().displayImage("file://" + a.artUri, viewHolder.art, this);
         } else {
             viewHolder.art.setImageResource(R.drawable.art_default);
-            viewHolder.parent.setBackgroundColor(mContext.getResources().getColor(R.color.grid_background_default));
-            viewHolder.title.setTextColor(mContext.getResources().getColor(R.color.grid_text));
-            viewHolder.detail.setTextColor(mContext.getResources().getColor(R.color.grid_detail_text));
+            viewHolder.parent.setBackgroundColor(context.getResources().getColor(R.color.grid_background_default));
+            viewHolder.title.setTextColor(context.getResources().getColor(R.color.grid_text));
+            viewHolder.detail.setTextColor(context.getResources().getColor(R.color.grid_detail_text));
         }
 
         return convertView;
@@ -190,9 +175,9 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Ima
             Palette.generateAsync(loadedImage, new Palette.PaletteAsyncListener() {
                 @Override
                 public void onGenerated(Palette palette) {
-                    int backgroundColor = mContext.getResources().getColor(R.color.grid_background_default);
-                    int titleTextColor = mContext.getResources().getColor(R.color.grid_text);
-                    int detailTextColor = mContext.getResources().getColor(R.color.grid_detail_text);
+                    int backgroundColor = context.getResources().getColor(R.color.grid_background_default);
+                    int titleTextColor = context.getResources().getColor(R.color.grid_text);
+                    int detailTextColor = context.getResources().getColor(R.color.grid_detail_text);
 
 
                     if (palette.getVibrantSwatch() != null && palette.getVibrantColor(-1) != -1) {
@@ -235,7 +220,7 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Ima
     public void onClick(View v) {
         int position = ((GridView) v.getParent()).getPositionForView(v);
         Album album = data.get(position);
-        Navigate.to(mContext, LibraryPageActivity.class, "entry", album);
+        Navigate.to(context, LibraryPageActivity.class, "entry", album);
     }
 
     @Override
@@ -243,7 +228,7 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Ima
         final Album item = data.get(((GridView) view.getParent()).getPositionForView(view));
         final ArrayList<Song> contents = new ArrayList<>();
 
-        AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(context);
 
         dialog.setTitle(item.albumName)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -256,7 +241,7 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Ima
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0 || which == 1) {
-                            Cursor cur = mContext.getContentResolver().query(
+                            Cursor cur = context.getContentResolver().query(
                                     MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                                     new String[]{
                                             MediaStore.Audio.Media.TITLE,
@@ -284,10 +269,10 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Ima
                         }
                         switch (which) {
                             case 0: //Queue this artist next
-                                PlayerService.queueNext(mContext, contents);
+                                PlayerService.queueNext(context, contents);
                                 break;
                             case 1: //Queue this artist last
-                                PlayerService.queueLast(mContext, contents);
+                                PlayerService.queueLast(context, contents);
                                 break;
                             default:
                                 break;

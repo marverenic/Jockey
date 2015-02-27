@@ -23,7 +23,7 @@ public class QueueActivity extends Activity implements AdapterView.OnItemClickLi
         setContentView(R.layout.page_editable_list);
 
         ListView songListView = (ListView) findViewById(R.id.list);
-        songListView.setAdapter(new SongListAdapter(PlayerService.getQueue(), this));
+        songListView.setAdapter(new SongListAdapter(PlayerService.getQueue(), this, false));
         songListView.setOnItemClickListener(this);
 
         Themes.themeActivity(R.layout.page_editable_list, getWindow().findViewById(android.R.id.content), this);

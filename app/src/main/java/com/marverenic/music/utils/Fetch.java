@@ -9,7 +9,9 @@ import android.provider.MediaStore;
 import android.text.Html;
 
 import com.marverenic.music.BuildConfig;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.io.File;
 
@@ -24,6 +26,24 @@ public class Fetch {
     // API key for Last.fm. Please use your own.
     private static final String API_KEY = "a9fc65293034b84b83d20c6e2ecda4b5";
     private static boolean lastFmInitialized = false;
+
+    public static void initImageCache (Context context) {
+        if (!ImageLoader.getInstance().isInited()) {
+            int albumSizePx = 100 * (int) context.getResources().getDisplayMetrics().density;
+            ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
+                    .defaultDisplayImageOptions((
+                            new DisplayImageOptions.Builder()
+                                    .cacheInMemory(true)
+                                    .cacheOnDisk(true)
+                    ).build())
+                    .memoryCacheSizePercentage(20)
+                    .diskCacheSize(20 * 1024 * 1024)
+                    .memoryCacheExtraOptions(albumSizePx, albumSizePx)
+                    .diskCacheExtraOptions(albumSizePx, albumSizePx, null)
+                    .build();
+            ImageLoader.getInstance().init(config);
+        }
+    }
 
     public static void initLastFm() {
         Caller.getInstance().setCache(new FileSystemCache(new File(Environment.getExternalStorageDirectory() + "/.lastfm")));
@@ -54,6 +74,8 @@ public class Fetch {
         Artist artist = Artist.getInfo(artistName, API_KEY);
         if (artist != null) {
             try {
+                initImageCache(context);
+
                 Bitmap art = ImageLoader.getInstance().loadImageSync(artist.getImageURL(ImageSize.MEGA));
                 String summary = Html.fromHtml(artist.getWikiSummary()).toString();
                 // This probably violates something in the Last.fm API license

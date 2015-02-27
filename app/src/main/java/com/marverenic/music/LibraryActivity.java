@@ -32,6 +32,7 @@ import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Genre;
 import com.marverenic.music.instances.Library;
+import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
@@ -57,6 +58,10 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
 
         new Thread(new Updater(this)).start();
 
+        if (Library.isEmpty()) {
+            LibraryScanner.scanAll(this, false);
+        }
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         int page = Integer.parseInt(prefs.getString("prefDefaultPage", "1"));
@@ -72,10 +77,6 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
         SlidingTabLayout tabs = ((SlidingTabLayout) findViewById(R.id.pagerSlidingTabs));
         tabs.setViewPager(pager);
         tabs.setActivePage(page);
-
-        if (Library.isEmpty()) {
-            libraryScanAll();
-        }
 
         startService(new Intent(this, Player.class));
 

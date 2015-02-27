@@ -39,37 +39,37 @@ public class SongListAdapter extends BaseAdapter implements SectionIndexer, Adap
     private ArrayList<Integer> sectionStartingPosition = new ArrayList<>();
     private ArrayList<Integer> sectionAtPosition = new ArrayList<>();
 
-    public SongListAdapter(Context context) {
-        this(Library.getSongs(), context);
+    public SongListAdapter(Context context, boolean enableSectionHeader) {
+        this(Library.getSongs(), context, enableSectionHeader);
     }
 
-    public SongListAdapter(ArrayList<Song> data, Context context) {
+    public SongListAdapter(ArrayList<Song> data, Context context, boolean enableSectionHeader) {
         super();
         this.data = new ArrayList<>(data);
         this.context = context;
 
-        String name;
-        char thisChar;
-        int sectionIndex = -1;
-        for(int i = 0; i < data.size(); i++){
-            name = data.get(i).songName.toUpperCase();
+        if(enableSectionHeader) {
+            String name;
+            char thisChar;
+            int sectionIndex = -1;
+            for (int i = 0; i < data.size(); i++) {
+                name = data.get(i).songName.toUpperCase();
 
-            if (name.startsWith("THE ")){
-                thisChar = name.charAt(4);
-            }
-            else if (name.startsWith("A ")){
-                thisChar = name.charAt(2);
-            }
-            else{
-                thisChar = name.charAt(0);
-            }
+                if (name.startsWith("THE ")) {
+                    thisChar = name.charAt(4);
+                } else if (name.startsWith("A ")) {
+                    thisChar = name.charAt(2);
+                } else {
+                    thisChar = name.charAt(0);
+                }
 
-            if(sectionCharacter.size() == 0 || !sectionCharacter.get(sectionCharacter.size() - 1).equals(thisChar)) {
-                sectionIndex++;
-                sectionCharacter.add(thisChar);
-                sectionStartingPosition.add(i);
+                if (sectionCharacter.size() == 0 || !sectionCharacter.get(sectionCharacter.size() - 1).equals(thisChar)) {
+                    sectionIndex++;
+                    sectionCharacter.add(thisChar);
+                    sectionStartingPosition.add(i);
+                }
+                sectionAtPosition.add(sectionIndex);
             }
-            sectionAtPosition.add(sectionIndex);
         }
     }
 

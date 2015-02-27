@@ -38,9 +38,9 @@ public class SongFragment extends Fragment {
 
         SongListAdapter adapter;
         if (songLibrary == null) {
-            adapter = new SongListAdapter(getActivity());
+            adapter = new SongListAdapter(getActivity(), true);
         } else {
-            adapter = new SongListAdapter(songLibrary, getActivity());
+            adapter = new SongListAdapter(songLibrary, getActivity(), true);
         }
 
         songListView.setAdapter(adapter);

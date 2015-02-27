@@ -240,58 +240,58 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
                     alert = new AlertDialog.Builder(this);
                 }
                 alert
-                    .setTitle(nowPlaying.songName)
-                    .setNegativeButton("Cancel", null)
-                    .setItems(R.array.now_playing_options, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case 0: //Go to artist
-                                    Artist artist;
+                        .setTitle(nowPlaying.songName)
+                        .setNegativeButton("Cancel", null)
+                        .setItems(R.array.now_playing_options, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which) {
+                                    case 0: //Go to artist
+                                        Artist artist;
 
-                                    Cursor curArtist = getContentResolver().query(
-                                            MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
-                                            null,
-                                            MediaStore.Audio.Media.ARTIST + " =?",
-                                            new String[]{nowPlaying.artistName},
-                                            MediaStore.Audio.Artists.ARTIST + " ASC");
-                                    curArtist.moveToFirst();
+                                        Cursor curArtist = getContentResolver().query(
+                                                MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
+                                                null,
+                                                MediaStore.Audio.Media.ARTIST + " =?",
+                                                new String[]{nowPlaying.artistName},
+                                                MediaStore.Audio.Artists.ARTIST + " ASC");
+                                        curArtist.moveToFirst();
 
-                                    artist = new Artist(
-                                            curArtist.getLong(curArtist.getColumnIndex(MediaStore.Audio.Artists._ID)),
-                                            curArtist.getString(curArtist.getColumnIndex(MediaStore.Audio.Artists.ARTIST)));
+                                        artist = new Artist(
+                                                curArtist.getLong(curArtist.getColumnIndex(MediaStore.Audio.Artists._ID)),
+                                                curArtist.getString(curArtist.getColumnIndex(MediaStore.Audio.Artists.ARTIST)));
 
-                                    curArtist.close();
+                                        curArtist.close();
 
-                                    Navigate.to(context, LibraryPageActivity.class, "entry", artist);
-                                    break;
-                                case 1: //Go to album
-                                    Album album;
+                                        Navigate.to(context, LibraryPageActivity.class, "entry", artist);
+                                        break;
+                                    case 1: //Go to album
+                                        Album album;
 
-                                    Cursor curAlbum = getContentResolver().query(
-                                            MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                                            null,
-                                            MediaStore.Audio.Media.ALBUM + " =? AND " + MediaStore.Audio.Media.ARTIST + " =?",
-                                            new String[]{nowPlaying.albumName, nowPlaying.artistName},
-                                            MediaStore.Audio.Albums.ALBUM + " ASC");
-                                    curAlbum.moveToFirst();
+                                        Cursor curAlbum = getContentResolver().query(
+                                                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                                                null,
+                                                MediaStore.Audio.Media.ALBUM + " =? AND " + MediaStore.Audio.Media.ARTIST + " =?",
+                                                new String[]{nowPlaying.albumName, nowPlaying.artistName},
+                                                MediaStore.Audio.Albums.ALBUM + " ASC");
+                                        curAlbum.moveToFirst();
 
-                                    album = new Album(
-                                            curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums._ID)),
-                                            curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.ALBUM)),
-                                            curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
-                                            curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.LAST_YEAR)),
-                                            curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART)));
+                                        album = new Album(
+                                                curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums._ID)),
+                                                curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.ALBUM)),
+                                                curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
+                                                curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.LAST_YEAR)),
+                                                curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART)));
 
-                                    curAlbum.close();
+                                        curAlbum.close();
 
-                                    Navigate.to(context, LibraryPageActivity.class, "entry", album);
-                                    break;
-                                default:
-                                    break;
+                                        Navigate.to(context, LibraryPageActivity.class, "entry", album);
+                                        break;
+                                    default:
+                                        break;
+                                }
                             }
-                        }
-                    });
+                        });
                 alert.show();
             }
         }
@@ -321,12 +321,10 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
             if (PlayerService.getArt() != null) {
                 ((ImageView) findViewById(R.id.imageArtwork)).setImageBitmap(PlayerService.getArt());
             } else {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    if (getResources().getConfiguration().smallestScreenWidthDp >= 700) {
-                        ((ImageView) findViewById(R.id.imageArtwork)).setImageResource(R.drawable.art_default_xxl);
-                    } else {
-                        ((ImageView) findViewById(R.id.imageArtwork)).setImageResource(R.drawable.art_default_xl);
-                    }
+                if (getResources().getConfiguration().smallestScreenWidthDp >= 700) {
+                    ((ImageView) findViewById(R.id.imageArtwork)).setImageResource(R.drawable.art_default_xxl);
+                } else {
+                    ((ImageView) findViewById(R.id.imageArtwork)).setImageResource(R.drawable.art_default_xl);
                 }
             }
         }
