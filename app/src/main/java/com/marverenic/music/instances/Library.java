@@ -6,11 +6,11 @@ import java.util.Comparator;
 import java.util.Locale;
 
 public class Library {
-    private static ArrayList<Song> songLib = new ArrayList<>();
-    private static ArrayList<Album> albumLib = new ArrayList<>();
-    private static ArrayList<Artist> artistLib = new ArrayList<>();
-    private static ArrayList<Playlist> playlistLib = new ArrayList<>();
-    private static ArrayList<Genre> genreLib = new ArrayList<>();
+    private static final ArrayList<Song> songLib = new ArrayList<>();
+    private static final ArrayList<Album> albumLib = new ArrayList<>();
+    private static final ArrayList<Artist> artistLib = new ArrayList<>();
+    private static final ArrayList<Playlist> playlistLib = new ArrayList<>();
+    private static final ArrayList<Genre> genreLib = new ArrayList<>();
 
     //
     //      Add methods
@@ -44,8 +44,7 @@ public class Library {
     // In general they're sorted alphabetically by name
     // For songs and albums, "a" and "the" are ignored when sorting
 
-    public static ArrayList<Song> sortSongList(final ArrayList<Song> songs){
-        ArrayList<Song> sortedSongs = new ArrayList<>(songs);
+    public static void sortSongList(final ArrayList<Song> songs){
         Comparator<Song> songComparator = new Comparator<Song>() {
             @Override
             public int compare(Song o1, Song o2) {
@@ -67,12 +66,10 @@ public class Library {
                 return o1c.compareTo(o2c);
             }
         };
-        Collections.sort(sortedSongs, songComparator);
-        return sortedSongs;
+        Collections.sort(songs, songComparator);
     }
 
-    public static ArrayList<Album> sortAlbumList (final ArrayList<Album> albums){
-        ArrayList<Album> sortedAlbums = new ArrayList<>(albums);
+    public static void sortAlbumList (final ArrayList<Album> albums){
         Comparator<Album> albumComparator = new Comparator<Album>() {
             @Override
             public int compare(Album o1, Album o2) {
@@ -94,12 +91,10 @@ public class Library {
                 return o1c.compareTo(o2c);
             }
         };
-        Collections.sort(sortedAlbums, albumComparator);
-        return sortedAlbums;
+        Collections.sort(albums, albumComparator);
     }
 
-    public static ArrayList<Artist> sortArtistList (final ArrayList<Artist> artists){
-        ArrayList<Artist> sortedArtists = new ArrayList<>(artists);
+    public static void sortArtistList (final ArrayList<Artist> artists){
         Comparator<Artist> artistComparator = new Comparator<Artist>() {
             @Override
             public int compare(Artist o1, Artist o2) {
@@ -111,12 +106,10 @@ public class Library {
                 return o1c.compareTo(o2c);
             }
         };
-        Collections.sort(sortedArtists, artistComparator);
-        return sortedArtists;
+        Collections.sort(artists, artistComparator);
     }
 
-    public static ArrayList<Playlist> sortPlaylistList (final ArrayList<Playlist> playlists){
-        ArrayList<Playlist> sortedPlaylists = new ArrayList<>(playlists);
+    public static void sortPlaylistList (final ArrayList<Playlist> playlists){
         Comparator<Playlist> playlistComparator = new Comparator<Playlist>() {
             @Override
             public int compare(Playlist o1, Playlist o2) {
@@ -128,12 +121,10 @@ public class Library {
                 return o1c.compareTo(o2c);
             }
         };
-        Collections.sort(sortedPlaylists, playlistComparator);
-        return sortedPlaylists;
+        Collections.sort(playlists, playlistComparator);
     }
 
-    public static ArrayList<Genre> sortGenreList (final ArrayList<Genre> genres){
-        ArrayList<Genre> sortedArtists = new ArrayList<>(genres);
+    public static void sortGenreList (final ArrayList<Genre> genres){
         Comparator<Genre> genreComparator = new Comparator<Genre>() {
             @Override
             public int compare(Genre o1, Genre o2) {
@@ -145,16 +136,15 @@ public class Library {
                 return o1c.compareTo(o2c);
             }
         };
-        Collections.sort(sortedArtists, genreComparator);
-        return sortedArtists;
+        Collections.sort(genres, genreComparator);
     }
 
     public static void sort (){
-        songLib = sortSongList(songLib);
-        albumLib = sortAlbumList(albumLib);
-        artistLib = sortArtistList(artistLib);
-        playlistLib = sortPlaylistList(playlistLib);
-        genreLib = sortGenreList(genreLib);
+        sortSongList(songLib);
+        sortAlbumList(albumLib);
+        sortArtistList(artistLib);
+        sortPlaylistList(playlistLib);
+        sortGenreList(genreLib);
     }
 
     //
@@ -184,37 +174,41 @@ public class Library {
     //      Set methods for libraries
     //
     public static void setSongLib(ArrayList<Song> songLib) {
-        Library.songLib = songLib;
+        Library.songLib.clear();
+        Library.songLib.addAll(songLib);
     }
 
     public static void setAlbumLib(ArrayList<Album> albumLib) {
-        Library.albumLib = albumLib;
+        Library.albumLib.clear();
+        Library.albumLib.addAll(albumLib);
     }
 
     public static void setArtistLib(ArrayList<Artist> artistLib) {
-        Library.artistLib = artistLib;
+        Library.artistLib.clear();
+        Library.artistLib.addAll(artistLib);
     }
 
     public static void setPlaylistLib(ArrayList<Playlist> playlistLib) {
-        Library.playlistLib = playlistLib;
+        Library.playlistLib.clear();
+        Library.playlistLib.addAll(playlistLib);
     }
 
     public static void setGenreLib(ArrayList<Genre> genreLib) {
-        Library.genreLib = genreLib;
+        Library.genreLib.clear();
+        Library.genreLib.addAll(genreLib);
     }
 
     // Clears all the libraries
     public static void resetAll() {
-        songLib = new ArrayList<>();
-        albumLib = new ArrayList<>();
-        artistLib = new ArrayList<>();
-        playlistLib = new ArrayList<>();
-        genreLib = new ArrayList<>();
+        songLib.clear();
+        albumLib.clear();
+        artistLib.clear();
+        playlistLib.clear();
+        genreLib.clear();
     }
 
     // Returns true if the libraries have no entries or aren't initialized
     public static boolean isEmpty() {
-        return (songLib == null || albumLib == null || artistLib == null || playlistLib == null || genreLib == null)
-               || (songLib.size() == 0 && albumLib.size() == 0 && artistLib.size() == 0 && playlistLib.size() == 0 && genreLib.size() == 0);
+        return (songLib.size() == 0 && albumLib.size() == 0 && artistLib.size() == 0 && playlistLib.size() == 0 && genreLib.size() == 0);
     }
 }

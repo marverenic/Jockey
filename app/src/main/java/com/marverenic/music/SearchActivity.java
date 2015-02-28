@@ -40,7 +40,6 @@ import java.util.ArrayList;
 
 public class SearchActivity extends FragmentActivity implements View.OnClickListener {
 
-    private SearchView searchView;
     private BroadcastReceiver updateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -114,7 +113,7 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
         // Associate searchable configuration with the SearchView
         MenuItem searchItem = menu.findItem(R.id.search);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView = (SearchView) searchItem.getActionView();
+        SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setIconifiedByDefault(false);
         if (getIntent().getStringExtra(SearchManager.QUERY) != null) {

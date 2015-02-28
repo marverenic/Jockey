@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 
 public class Playlist implements Parcelable {
+
     public static final Parcelable.Creator<Playlist> CREATOR = new Parcelable.Creator<Playlist>() {
         public Playlist createFromParcel(Parcel in) {
             return new Playlist(in);
@@ -14,6 +15,7 @@ public class Playlist implements Parcelable {
             return new Playlist[size];
         }
     };
+
     public long playlistId;
     public String playlistName;
 

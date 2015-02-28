@@ -4,10 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +20,8 @@ import com.marverenic.music.NowPlayingActivity;
 import com.marverenic.music.Player;
 import com.marverenic.music.PlayerService;
 import com.marverenic.music.R;
-import com.marverenic.music.instances.Album;
-import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Library;
+import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Navigate;
@@ -162,45 +159,10 @@ public class SongListAdapter extends BaseAdapter implements SectionIndexer, Adap
                                 PlayerService.queueLast(context, item);
                                 break;
                             case 2: //Go to artist
-                                Artist artist;
-
-                                Cursor curArtist = context.getContentResolver().query(
-                                        MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
-                                        null,
-                                        MediaStore.Audio.Media.ARTIST + " =?",
-                                        new String[]{item.artistName},
-                                        MediaStore.Audio.Artists.ARTIST + " ASC");
-                                curArtist.moveToFirst();
-
-                                artist = new Artist(
-                                        curArtist.getLong(curArtist.getColumnIndex(MediaStore.Audio.Artists._ID)),
-                                        curArtist.getString(curArtist.getColumnIndex(MediaStore.Audio.Artists.ARTIST)));
-
-                                curArtist.close();
-
-                                Navigate.to(context, LibraryPageActivity.class, "entry", artist);
+                                Navigate.to(context, LibraryPageActivity.class, "entry", LibraryScanner.findArtistById(item.artistId));
                                 break;
                             case 3: //Go to album
-                                Album album;
-
-                                Cursor curAlbum = context.getContentResolver().query(
-                                        MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                                        null,
-                                        MediaStore.Audio.Media.ALBUM + " =? AND " + MediaStore.Audio.Media.ARTIST + " =?",
-                                        new String[]{item.albumName, item.artistName},
-                                        MediaStore.Audio.Albums.ALBUM + " ASC");
-                                curAlbum.moveToFirst();
-
-                                album = new Album(
-                                        curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums._ID)),
-                                        curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.ALBUM)),
-                                        curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
-                                        curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.LAST_YEAR)),
-                                        curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART)));
-
-                                curAlbum.close();
-
-                                Navigate.to(context, LibraryPageActivity.class, "entry", album);
+                                Navigate.to(context, LibraryPageActivity.class, "entry", LibraryScanner.findAlbumById(item.albumId));
                                 break;
                             default:
                                 break;

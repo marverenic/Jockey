@@ -5,29 +5,42 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 
 public class Song implements Parcelable {
+
+    public static final Parcelable.Creator<Song> CREATOR = new Parcelable.Creator<Song>() {
+        public Song createFromParcel(Parcel in) {
+            return new Song(in);
+        }
+
+        public Song[] newArray(int size) {
+            return new Song[size];
+        }
+    };
+
     public String songName;
     public String artistName;
     public String albumName;
     public int songDuration;
     public String location;
-    public String albumId;
+    public long albumId;
+    public long artistId;
 
-    public Song(final String songName, final String artistName, final String albumName, final int songDuration, final String location, final String albumId) {
+    public Song(final String songName, final String artistName, final String albumName, final int songDuration, final String location, final long albumId, final long artistId) {
         this.songName = songName;
         this.artistName = artistName;
         this.albumName = albumName;
         this.songDuration = songDuration;
         this.location = location;
         this.albumId = albumId;
+        this.artistId = artistId;
     }
 
     private Song(Parcel in) {
-        albumId = in.readString();
         albumName = in.readString();
         artistName = in.readString();
         songDuration = in.readInt();
         location = in.readString();
-        albumId = in.readString();
+        albumId = in.readLong();
+        artistId = in.readLong();
     }
 
     public boolean equals(final Object obj) {
@@ -55,11 +68,11 @@ public class Song implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(albumId);
         dest.writeString(albumName);
         dest.writeString(artistName);
         dest.writeInt(songDuration);
         dest.writeString(location);
-        dest.writeString(albumId);
+        dest.writeLong(albumId);
+        dest.writeLong(artistId);
     }
 }

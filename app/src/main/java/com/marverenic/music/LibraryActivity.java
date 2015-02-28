@@ -8,12 +8,10 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
@@ -28,13 +26,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.marverenic.music.adapters.LibraryPagerAdapter;
-import com.marverenic.music.instances.Album;
-import com.marverenic.music.instances.Artist;
-import com.marverenic.music.instances.Genre;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.LibraryScanner;
-import com.marverenic.music.instances.Playlist;
-import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
@@ -136,7 +129,7 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
                 return true;
             case R.id.action_refresh_library:
                 Library.resetAll();
-                libraryScanAll();
+                LibraryScanner.scanAll(this, false);
                 Toast.makeText(this, "Library refreshed.", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.search:
@@ -222,105 +215,5 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
             playerLayoutParams.height = 0;
             (findViewById(R.id.miniplayer)).setLayoutParams(playerLayoutParams);
         }
-    }
-
-    private void libraryScanAll() {
-        songLibraryScan();
-        artistLibraryScan();
-        albumLibraryScan();
-        playlistLibraryScan();
-        genreLibraryScan();
-    }
-
-    private void songLibraryScan() {
-        Cursor cur = getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                null,
-                MediaStore.Audio.Media.IS_MUSIC + "!= 0",
-                null,
-                MediaStore.Audio.Media.TITLE + " ASC");
-
-        for (int i = 0; i < cur.getCount(); i++) {
-            cur.moveToPosition(i);
-            Library.add(new Song(
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)),
-                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DURATION)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID))));
-        }
-        cur.close();
-        ((LibraryPagerAdapter) ((ViewPager) findViewById(R.id.pager)).getAdapter()).refreshLibrary();
-    }
-
-    private void artistLibraryScan() {
-        Cursor cur = getContentResolver().query(
-                MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
-                null,
-                null,
-                null,
-                MediaStore.Audio.Artists.ARTIST + " ASC");
-
-        for (int i = 0; i < cur.getCount(); i++) {
-            cur.moveToPosition(i);
-            Library.add(new Artist(
-                    cur.getLong(cur.getColumnIndex(MediaStore.Audio.Artists._ID)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Artists.ARTIST))));
-        }
-        cur.close();
-        ((LibraryPagerAdapter) ((ViewPager) findViewById(R.id.pager)).getAdapter()).refreshLibrary();
-    }
-
-    private void albumLibraryScan() {
-        Cursor cur = getContentResolver().query(
-                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                null,
-                null,
-                null,
-                MediaStore.Audio.Albums.ALBUM + " ASC");
-        for (int i = 0; i < cur.getCount(); i++) {
-            cur.moveToPosition(i);
-            Library.add(new Album(
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums._ID)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.LAST_YEAR)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART))));
-        }
-        cur.close();
-        ((LibraryPagerAdapter) ((ViewPager) findViewById(R.id.pager)).getAdapter()).refreshLibrary();
-    }
-
-    private void playlistLibraryScan() {
-        Cursor cur = getContentResolver().query(
-                MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
-                null, null, null,
-                MediaStore.Audio.Playlists.NAME + " ASC");
-
-        for (int i = 0; i < cur.getCount(); i++) {
-            cur.moveToPosition(i);
-            Library.add(new Playlist(
-                    cur.getLong(cur.getColumnIndex(MediaStore.Audio.Playlists._ID)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.NAME))));
-        }
-        cur.close();
-        ((LibraryPagerAdapter) ((ViewPager) findViewById(R.id.pager)).getAdapter()).refreshLibrary();
-    }
-
-    private void genreLibraryScan() {
-        Cursor cur = getContentResolver().query(
-                MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI,
-                null, null, null,
-                MediaStore.Audio.Genres.NAME + " ASC");
-
-        for (int i = 0; i < cur.getCount(); i++) {
-            cur.moveToPosition(i);
-            Library.add(new Genre(
-                    cur.getLong(cur.getColumnIndex(MediaStore.Audio.Genres._ID)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Genres.NAME))));
-        }
-        cur.close();
-        ((LibraryPagerAdapter) ((ViewPager) findViewById(R.id.pager)).getAdapter()).refreshLibrary();
     }
 }

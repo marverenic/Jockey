@@ -205,7 +205,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     public void onPrepared(MediaPlayer mp) {
         mediaPlayer.start();
 
-        art = Fetch.fetchAlbumArtLocal(context, getNowPlaying().albumId);
+        art = Fetch.fetchAlbumArtLocal(getNowPlaying().albumId);
 
         updateNowPlaying();
     }

@@ -3,13 +3,12 @@ package com.marverenic.music.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
-import android.provider.MediaStore;
-import android.support.v7.graphics.Palette;
-import android.util.Log;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,20 +24,17 @@ import com.marverenic.music.PlayerService;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Library;
-import com.marverenic.music.instances.Song;
+import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.utils.Fetch;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, ImageLoadingListener, View.OnClickListener, View.OnLongClickListener {
+public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, View.OnClickListener, View.OnLongClickListener {
 
-    private static HashMap<String, int[]> colorTable = new HashMap<>();
     private ArrayList<Album> data;
     private Context context;
     private ArrayList<Character> sectionCharacter = new ArrayList<>();
@@ -97,8 +93,8 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Ima
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        AlbumViewHolder viewHolder;
-        Album a = data.get(position);
+        final AlbumViewHolder viewHolder;
+        final Album a = data.get(position);
 
         if (convertView == null) {
             // inflate the GridView item layout
@@ -121,99 +117,75 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Ima
         } else {
             // recycle the already inflated view
             viewHolder = (AlbumViewHolder) convertView.getTag();
-            ImageLoader.getInstance().cancelDisplayTask(viewHolder.art);
         }
 
         viewHolder.title.setText(a.albumName);
         viewHolder.detail.setText(a.artistName);
 
-        // TODO This should probably fade in
+        // Cancel any previous Picasso requests on this view
+        Picasso.with(context).cancelRequest(viewHolder.art);
 
-        if (a.artUri != null) {
-            if (colorTable.get("file://" + a.artUri) != null) {
-                viewHolder.art.setImageDrawable(new ColorDrawable(colorTable.get("file://" + a.artUri)[0]));
-                viewHolder.parent.setBackgroundColor(colorTable.get("file://" + a.artUri)[0]);
-                viewHolder.title.setTextColor(colorTable.get("file://" + a.artUri)[1]);
-                viewHolder.detail.setTextColor(colorTable.get("file://" + a.artUri)[2]);
-            } else {
-                viewHolder.art.setImageResource(R.color.grid_background_default);
+        // Load the album art into the layout's ImageView if this album art has a cover
+        if (a.artUri != null && !a.artUri.equals("")) {
+            // If the album's palette has already been generated, update the view's colors and begin to load the image
+            if (a.artPrimaryPalette != 0 &&  a.artPrimaryTextPalette != 0 && a.artDetailTextPalette != 0) {
+                Picasso.with(context).load("file://" + a.artUri).placeholder(new ColorDrawable(a.artPrimaryPalette)).resizeDimen(R.dimen.grid_art_size, R.dimen.grid_art_size).into(viewHolder.art);
+                viewHolder.parent.setBackgroundColor(a.artPrimaryPalette);
+                viewHolder.title.setTextColor(a.artPrimaryTextPalette);
+                viewHolder.detail.setTextColor(a.artDetailTextPalette);
+            }
+            // If the album's palette hasn't already been generated, set the view's colors to the default,
+            // load the image, find the colors, save the colors to the album, then update the view's colors the generated ones
+            else {
                 viewHolder.parent.setBackgroundColor(context.getResources().getColor(R.color.grid_background_default));
                 viewHolder.title.setTextColor(context.getResources().getColor(R.color.grid_text));
                 viewHolder.detail.setTextColor(context.getResources().getColor(R.color.grid_detail_text));
+                Picasso.with(context).load("file://" + a.artUri).placeholder(R.drawable.art_default).resizeDimen(R.dimen.grid_art_size, R.dimen.grid_art_size).into(viewHolder.art, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Bitmap loadedImage = ((BitmapDrawable) viewHolder.art.getDrawable()).getBitmap();
+                                if (loadedImage != null) {
+                                    Fetch.buildAlbumPalette(loadedImage,
+                                            context.getResources().getColor(R.color.grid_background_default),
+                                            context.getResources().getColor(R.color.grid_background_default),
+                                            context.getResources().getColor(R.color.grid_background_default),
+                                            a);
+
+                                    Handler handler = new Handler(Looper.getMainLooper());
+
+                                    handler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            // TODO This should probably fade in
+                                            viewHolder.parent.setBackgroundColor(a.artPrimaryPalette);
+                                            viewHolder.title.setTextColor(a.artPrimaryTextPalette);
+                                            viewHolder.detail.setTextColor(a.artDetailTextPalette);
+                                        }
+                                    });
+                                }
+                            }
+                        }).start();
+                    }
+
+                    @Override
+                    public void onError() {
+
+                    }
+                });
             }
-            ImageLoader.getInstance().displayImage("file://" + a.artUri, viewHolder.art, this);
-        } else {
-            viewHolder.art.setImageResource(R.drawable.art_default);
+        }
+        else {
+            // if there isn't any art, just load the placeholder image into the view and reset the colors
+            Picasso.with(context).load(R.drawable.art_default).into(viewHolder.art);
             viewHolder.parent.setBackgroundColor(context.getResources().getColor(R.color.grid_background_default));
             viewHolder.title.setTextColor(context.getResources().getColor(R.color.grid_text));
             viewHolder.detail.setTextColor(context.getResources().getColor(R.color.grid_detail_text));
         }
 
         return convertView;
-    }
-
-    @Override
-    public void onLoadingStarted(String imageUri, View view) {
-    }
-
-    @Override
-    public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-        Log.e("AlbumGridAdapter", "Failed to load image from URI: " + imageUri + "\nReason: " + failReason);
-    }
-
-    @Override
-    public void onLoadingComplete(final String imageUri, final View view, final Bitmap loadedImage) {
-        AlbumViewHolder viewHolder = new AlbumViewHolder();
-        viewHolder.art = (ImageView) view;
-        viewHolder.parent = (ViewGroup) view.getParent();
-        viewHolder.title = (TextView) viewHolder.parent.getChildAt(1);
-        viewHolder.detail = (TextView) viewHolder.parent.getChildAt(2);
-
-        if (colorTable.get(imageUri) == null) {
-            final AlbumViewHolder vh = viewHolder;
-
-            Palette.generateAsync(loadedImage, new Palette.PaletteAsyncListener() {
-                @Override
-                public void onGenerated(Palette palette) {
-                    int backgroundColor = context.getResources().getColor(R.color.grid_background_default);
-                    int titleTextColor = context.getResources().getColor(R.color.grid_text);
-                    int detailTextColor = context.getResources().getColor(R.color.grid_detail_text);
-
-
-                    if (palette.getVibrantSwatch() != null && palette.getVibrantColor(-1) != -1) {
-                        backgroundColor = palette.getVibrantColor(0);
-                        titleTextColor = palette.getVibrantSwatch().getTitleTextColor();
-                        detailTextColor = palette.getVibrantSwatch().getBodyTextColor();
-                    } else if (palette.getLightVibrantSwatch() != null && palette.getLightVibrantColor(-1) != -1) {
-                        backgroundColor = palette.getLightVibrantColor(0);
-                        titleTextColor = palette.getLightVibrantSwatch().getTitleTextColor();
-                        detailTextColor = palette.getLightVibrantSwatch().getBodyTextColor();
-                    } else if (palette.getDarkVibrantSwatch() != null && palette.getDarkVibrantColor(-1) != -1) {
-                        backgroundColor = palette.getDarkVibrantColor(0);
-                        titleTextColor = palette.getDarkVibrantSwatch().getTitleTextColor();
-                        detailTextColor = palette.getDarkVibrantSwatch().getBodyTextColor();
-                    } else if (palette.getLightMutedSwatch() != null && palette.getLightMutedColor(-1) != -1) {
-                        backgroundColor = palette.getLightMutedColor(0);
-                        titleTextColor = palette.getLightMutedSwatch().getTitleTextColor();
-                        detailTextColor = palette.getLightMutedSwatch().getBodyTextColor();
-                    } else if (palette.getDarkMutedSwatch() != null && palette.getDarkMutedColor(-1) != -1) {
-                        backgroundColor = palette.getDarkMutedColor(0);
-                        titleTextColor = palette.getDarkMutedSwatch().getTitleTextColor();
-                        detailTextColor = palette.getDarkMutedSwatch().getBodyTextColor();
-                    }
-
-                    colorTable.put(imageUri, new int[]{backgroundColor, titleTextColor, detailTextColor});
-
-                    vh.parent.setBackgroundColor(backgroundColor);
-                    vh.title.setTextColor(titleTextColor);
-                    vh.detail.setTextColor(detailTextColor);
-                }
-            });
-        }
-    }
-
-    @Override
-    public void onLoadingCancelled(String imageUri, View view) {
     }
 
     @Override
@@ -226,7 +198,6 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Ima
     @Override
     public boolean onLongClick(View view) {
         final Album item = data.get(((GridView) view.getParent()).getPositionForView(view));
-        final ArrayList<Song> contents = new ArrayList<>();
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(context);
 
@@ -240,39 +211,12 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Ima
                 .setItems(R.array.queue_options_album, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (which == 0 || which == 1) {
-                            Cursor cur = context.getContentResolver().query(
-                                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                                    new String[]{
-                                            MediaStore.Audio.Media.TITLE,
-                                            MediaStore.Audio.Media.ARTIST,
-                                            MediaStore.Audio.Media.ALBUM,
-                                            MediaStore.Audio.Media.DURATION,
-                                            MediaStore.Audio.Media.DATA,
-                                            MediaStore.Audio.Media.ALBUM_ID},
-                                    MediaStore.Audio.Media.IS_MUSIC + "!= 0 AND " + MediaStore.Audio.Media.ALBUM_ID + "=?",
-                                    new String[]{(item).albumId + ""},
-                                    MediaStore.Audio.Media.TRACK);
-                            cur.moveToFirst();
-
-                            for (int i = 0; i < cur.getCount(); i++) {
-                                cur.moveToPosition(i);
-                                contents.add(new Song(
-                                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)),
-                                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST)),
-                                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)),
-                                        cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DURATION)),
-                                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA)),
-                                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID))));
-                            }
-                            cur.close();
-                        }
                         switch (which) {
                             case 0: //Queue this artist next
-                                PlayerService.queueNext(context, contents);
+                                PlayerService.queueNext(context, LibraryScanner.getAlbumEntries(item));
                                 break;
                             case 1: //Queue this artist last
-                                PlayerService.queueLast(context, contents);
+                                PlayerService.queueLast(context, LibraryScanner.getAlbumEntries(item));
                                 break;
                             default:
                                 break;

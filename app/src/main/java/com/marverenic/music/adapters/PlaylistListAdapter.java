@@ -3,9 +3,7 @@ package com.marverenic.music.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.database.Cursor;
 import android.os.Build;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +16,8 @@ import com.marverenic.music.LibraryPageActivity;
 import com.marverenic.music.PlayerService;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Library;
+import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.instances.Playlist;
-import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
@@ -94,7 +92,6 @@ public class PlaylistListAdapter extends BaseAdapter implements AdapterView.OnIt
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         final Playlist item = data.get(position);
-        final ArrayList<Song> contents = new ArrayList<>();
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(context);
 
@@ -109,37 +106,12 @@ public class PlaylistListAdapter extends BaseAdapter implements AdapterView.OnIt
                 .setItems(R.array.queue_options_playlist, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (which == 0 || which == 1) {
-                            Cursor cur = context.getContentResolver().query(
-                                    MediaStore.Audio.Playlists.Members.getContentUri("external", item.playlistId),
-                                    new String[]{
-                                            MediaStore.Audio.Playlists.Members.TITLE,
-                                            MediaStore.Audio.Playlists.Members.ARTIST,
-                                            MediaStore.Audio.Playlists.Members.ALBUM,
-                                            MediaStore.Audio.Playlists.Members.DURATION,
-                                            MediaStore.Audio.Playlists.Members.DATA,
-                                            MediaStore.Audio.Playlists.Members.ALBUM_ID},
-                                    MediaStore.Audio.Media.IS_MUSIC + " != 0", null, null);
-
-                            for (int i = 0; i < cur.getCount(); i++) {
-                                cur.moveToPosition(i);
-                                contents.add(new Song(
-                                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.TITLE)),
-                                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.ARTIST)),
-                                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.ALBUM)),
-                                        cur.getInt(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.DURATION)),
-                                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.DATA)),
-                                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.ALBUM_ID))));
-                            }
-
-                            cur.close();
-                        }
                         switch (which) {
                             case 0: //Queue this playlist next
-                                PlayerService.queueNext(context, contents);
+                                PlayerService.queueNext(context, LibraryScanner.getPlaylistEntries(context, item));
                                 break;
                             case 1: //Queue this playlist last
-                                PlayerService.queueLast(context, contents);
+                                PlayerService.queueLast(context, LibraryScanner.getPlaylistEntries(context, item));
                                 break;
                             default:
                                 break;
@@ -148,10 +120,5 @@ public class PlaylistListAdapter extends BaseAdapter implements AdapterView.OnIt
                 });
         dialog.create().show();
         return true;
-    }
-
-    public void updateData(ArrayList<Playlist> data) {
-        this.data = data;
-        notifyDataSetChanged();
     }
 }

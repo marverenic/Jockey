@@ -19,6 +19,7 @@ import java.util.ArrayList;
 public class SongFragment extends Fragment {
 
     private ArrayList<Song> songLibrary;
+    SongListAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,19 +30,18 @@ public class SongFragment extends Fragment {
                 songLibrary.add((Song) p);
             }
         }
+
+        if (songLibrary == null) {
+            adapter = new SongListAdapter(getActivity(), true);
+        } else {
+            adapter = new SongListAdapter(songLibrary, getActivity(), true);
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
         ListView songListView = (ListView) view.findViewById(R.id.list);
-
-        SongListAdapter adapter;
-        if (songLibrary == null) {
-            adapter = new SongListAdapter(getActivity(), true);
-        } else {
-            adapter = new SongListAdapter(songLibrary, getActivity(), true);
-        }
 
         songListView.setAdapter(adapter);
         songListView.setOnItemClickListener(adapter);

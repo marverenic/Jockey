@@ -277,8 +277,9 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
                                         curAlbum.moveToFirst();
 
                                         album = new Album(
-                                                curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums._ID)),
+                                                curAlbum.getLong(curAlbum.getColumnIndex(MediaStore.Audio.Albums._ID)),
                                                 curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.ALBUM)),
+                                                curAlbum.getLong(curAlbum.getColumnIndex(MediaStore.Audio.Artists._ID)),
                                                 curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
                                                 curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.LAST_YEAR)),
                                                 curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART)));

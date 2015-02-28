@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 
 public class Album implements Parcelable {
+
     public static final Parcelable.Creator<Album> CREATOR = new Parcelable.Creator<Album>() {
         public Album createFromParcel(Parcel in) {
             return new Album(in);
@@ -14,22 +15,29 @@ public class Album implements Parcelable {
             return new Album[size];
         }
     };
-    public String albumId;
+
+    public long albumId;
     public String albumName;
+    public long artistId;
     public String artistName;
     public String year;
     public String artUri;
+    // Transparent colors are uninitialized
+    public int artPrimaryPalette = 0;
+    public int artPrimaryTextPalette = 0;
+    public int artDetailTextPalette = 0;
 
-    public Album(final String albumId, final String albumName, final String artistName, final String year, final String artUri) {
+    public Album(final long albumId, final String albumName, final long artistId, final String artistName, final String year, final String artUri) {
         this.albumId = albumId;
         this.albumName = albumName;
+        this.artistId = artistId;
         this.artistName = artistName;
         this.year = year;
         this.artUri = artUri;
     }
 
     private Album(Parcel in) {
-        albumId = in.readString();
+        albumId = in.readLong();
         albumName = in.readString();
         artistName = in.readString();
         year = in.readString();
@@ -47,7 +55,7 @@ public class Album implements Parcelable {
             return false;
         }
         final Album other = (Album) obj;
-        return TextUtils.equals(albumId, other.albumId)
+        return albumId == other.albumId
                 && TextUtils.equals(albumName, other.albumName)
                 && TextUtils.equals(artistName, other.artistName)
                 && TextUtils.equals(year, other.year)
@@ -65,7 +73,7 @@ public class Album implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(albumId);
+        dest.writeLong(albumId);
         dest.writeString(albumName);
         dest.writeString(artistName);
         dest.writeString(year);

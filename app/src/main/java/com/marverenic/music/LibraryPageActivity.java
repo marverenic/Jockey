@@ -36,7 +36,7 @@ import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Fetch;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -81,9 +81,9 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
             }
             else if (parent instanceof Album) {
                 type = Type.ALBUM;
-                songEntries = LibraryScanner.getAlbumEntries(this, (Album) parent);
+                songEntries = LibraryScanner.getAlbumEntries((Album) parent);
 
-                Bitmap art = Fetch.fetchAlbumArtLocal(this, ((Album) parent).albumId);
+                Bitmap art = Fetch.fetchAlbumArtLocal(((Album) parent).albumId);
 
                 if (art != null) {
                     View artView = View.inflate(this, R.layout.album_header, null);
@@ -97,8 +97,10 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
             }
             else if (parent.getClass().equals(Artist.class)) {
                 type = Type.ARTIST;
-                songEntries = Library.sortSongList(LibraryScanner.getArtistSongEntries(this, (Artist) parent));
-                albumEntries = LibraryScanner.getArtistAlbumEntries(this, (Artist) parent);
+                songEntries = LibraryScanner.getArtistSongEntries((Artist) parent);
+                Library.sortSongList(songEntries);
+                albumEntries = LibraryScanner.getArtistAlbumEntries((Artist) parent);
+                Library.sortAlbumList(albumEntries);
 
                 ListView list = (ListView) findViewById(R.id.list);
                 initializeArtistHeader(list, albumEntries, this);
@@ -113,7 +115,7 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
 
                 // Don't sort album or playlist entries
                 if (type != Type.ALBUM && type != Type.PLAYLIST) {
-                    songEntries = Library.sortSongList(songEntries);
+                    Library.sortSongList(songEntries);
                     adapter = new SongListAdapter(songEntries, this, true);
                 }
                 else {
@@ -156,7 +158,10 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            ((ImageView) infoHeader.findViewById(R.id.artist_image)).setImageBitmap(bio.art);
+                            if(bio.artURL != null && !bio.artURL.equals(""))
+                                Picasso.with(context).load(bio.artURL).placeholder(R.drawable.art_default)
+                                        .resizeDimen(R.dimen.grid_art_size, R.dimen.grid_art_size)
+                                        .into(((ImageView) infoHeader.findViewById(R.id.artist_image)));
 
                             String bioText;
                             if (!bio.tags[0].equals("")) {
@@ -335,13 +340,5 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
     public void onBackPressed() {
         super.onBackPressed();
         Navigate.back(this);
-    }
-
-    @Override
-    public void onPause() {
-        if (ImageLoader.getInstance().isInited()) {
-            ImageLoader.getInstance().clearMemoryCache();
-        }
-        super.onPause();
     }
 }

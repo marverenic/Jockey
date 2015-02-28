@@ -3,9 +3,7 @@ package com.marverenic.music.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.database.Cursor;
 import android.os.Build;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +18,7 @@ import com.marverenic.music.PlayerService;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Library;
-import com.marverenic.music.instances.Song;
+import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
@@ -111,7 +109,6 @@ public class ArtistListAdapter extends BaseAdapter implements SectionIndexer, Ad
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         final Artist item = data.get(position);
-        final ArrayList<Song> contents = new ArrayList<>();
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(context);
 
@@ -125,31 +122,12 @@ public class ArtistListAdapter extends BaseAdapter implements SectionIndexer, Ad
                 .setItems(R.array.queue_options_artist, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (which == 0 || which == 1) {
-                            Cursor cur = context.getContentResolver().query(
-                                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                                    null,
-                                    MediaStore.Audio.Media.IS_MUSIC + "!= 0 AND " + MediaStore.Audio.Media.ARTIST_ID + "=?",
-                                    new String[]{item.artistId + ""},
-                                    MediaStore.Audio.Media.TITLE + " ASC");
-                            for (int i = 0; i < cur.getCount(); i++) {
-                                cur.moveToPosition(i);
-                                contents.add(new Song(
-                                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)),
-                                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST)),
-                                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)),
-                                        cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DURATION)),
-                                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA)),
-                                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID))));
-                            }
-                            cur.close();
-                        }
                         switch (which) {
                             case 0: //Queue this artist next
-                                PlayerService.queueNext(context, contents);
+                                PlayerService.queueNext(context, LibraryScanner.getArtistSongEntries(item));
                                 break;
                             case 1: //Queue this artist last
-                                PlayerService.queueLast(context, contents);
+                                PlayerService.queueLast(context, LibraryScanner.getArtistSongEntries(item));
                                 break;
                             default:
                                 break;

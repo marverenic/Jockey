@@ -19,6 +19,7 @@ import java.util.ArrayList;
 public class GenreFragment extends Fragment {
 
     private ArrayList<Genre> genreLibrary;
+    private GenreListAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,6 +30,12 @@ public class GenreFragment extends Fragment {
                 genreLibrary.add((Genre) p);
             }
         }
+
+        if (genreLibrary == null) {
+            adapter = new GenreListAdapter(getActivity());
+        } else {
+            adapter = new GenreListAdapter(genreLibrary, getActivity());
+        }
     }
 
     @Override
@@ -38,13 +45,6 @@ public class GenreFragment extends Fragment {
 
         // Most people probably don't have enough genres to warrant fast scrolling...
         genreListView.setFastScrollEnabled(false);
-
-        GenreListAdapter adapter;
-        if (genreLibrary == null) {
-            adapter = new GenreListAdapter(getActivity());
-        } else {
-            adapter = new GenreListAdapter(genreLibrary, getActivity());
-        }
 
         genreListView.setAdapter(adapter);
         genreListView.setOnItemClickListener(adapter);

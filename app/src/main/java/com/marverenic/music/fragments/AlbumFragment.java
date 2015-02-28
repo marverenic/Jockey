@@ -19,6 +19,7 @@ import java.util.ArrayList;
 public class AlbumFragment extends Fragment {
 
     private ArrayList<Album> albumLibrary;
+    private AlbumGridAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,20 +30,19 @@ public class AlbumFragment extends Fragment {
                 albumLibrary.add((Album) p);
             }
         }
+
+        // initialize the adapter
+        if (albumLibrary == null) {
+            adapter = new AlbumGridAdapter(getActivity());
+        } else {
+            adapter = new AlbumGridAdapter(albumLibrary, getActivity());
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // inflate the root view of the fragment
         View view = inflater.inflate(R.layout.fragment_grid, container, false);
-
-        // initialize the adapter
-        AlbumGridAdapter adapter;
-        if (albumLibrary == null) {
-            adapter = new AlbumGridAdapter(getActivity());
-        } else {
-            adapter = new AlbumGridAdapter(albumLibrary, getActivity());
-        }
 
         // initialize the GridView
         GridView gridView = (GridView) view.findViewById(R.id.albumGrid);

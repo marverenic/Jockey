@@ -1,17 +1,15 @@
 package com.marverenic.music.utils;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Environment;
-import android.provider.MediaStore;
+import android.support.v7.graphics.Palette;
 import android.text.Html;
+import android.util.Log;
 
 import com.marverenic.music.BuildConfig;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.marverenic.music.instances.Album;
+import com.marverenic.music.instances.LibraryScanner;
 
 import java.io.File;
 
@@ -28,7 +26,7 @@ public class Fetch {
     private static boolean lastFmInitialized = false;
 
     public static void initImageCache (Context context) {
-        if (!ImageLoader.getInstance().isInited()) {
+        /*if (!ImageLoader.getInstance().isInited()) {
             int albumSizePx = 100 * (int) context.getResources().getDisplayMetrics().density;
             ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
                     .defaultDisplayImageOptions((
@@ -42,41 +40,71 @@ public class Fetch {
                     .diskCacheExtraOptions(albumSizePx, albumSizePx, null)
                     .build();
             ImageLoader.getInstance().init(config);
-        }
+        }*/
     }
 
-    public static void initLastFm() {
-        Caller.getInstance().setCache(new FileSystemCache(new File(Environment.getExternalStorageDirectory() + "/.lastfm")));
+    public static void initLastFm(Context context) {
+        Caller.getInstance().setCache(new FileSystemCache(new File(context.getExternalCacheDir() + "/lastfm/")));
         Caller.getInstance().setUserAgent("Jockey/" + BuildConfig.VERSION_NAME);
 
         lastFmInitialized = true;
     }
 
-    public static Bitmap fetchAlbumArtLocal(Context context, String albumId) {
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
-                MediaStore.Audio.Albums._ID + "=?",
-                new String[]{String.valueOf(albumId)},
-                null);
-        cur.moveToFirst();
-        String location = cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
-        cur.close();
-        if (location != null) {
-            return BitmapFactory.decodeFile(location);
+    public static Bitmap fetchAlbumArtLocal(long albumId) {
+        Album album = LibraryScanner.findAlbumById(albumId);
+        if (album.artUri != null) {
+            return BitmapFactory.decodeFile(album.artUri);
         }
         return null;
     }
 
+    public static void buildAlbumPalette (Bitmap bitmap, int defaultPrimary, int defaultTitleText,
+                                              int defaultBodyText, Album album){
+
+        Log.i("Fetch", "Building palette for album " + album + " (Primary: " + album.artPrimaryPalette + ", Main text: " + album.artPrimaryTextPalette + ", Detail text: " + album.artDetailTextPalette + ")");
+
+        Palette palette = Palette.generate(bitmap);
+
+        int primary = defaultPrimary;
+        int titleText = defaultTitleText;
+        int bodyText = defaultBodyText;
+
+        if (palette.getVibrantSwatch() != null && palette.getVibrantColor(-1) != -1) {
+            primary = palette.getVibrantColor(0);
+            titleText = palette.getVibrantSwatch().getTitleTextColor();
+            bodyText = palette.getVibrantSwatch().getBodyTextColor();
+        } else if (palette.getLightVibrantSwatch() != null && palette.getLightVibrantColor(-1) != -1) {
+            primary = palette.getLightVibrantColor(0);
+            titleText = palette.getLightVibrantSwatch().getTitleTextColor();
+            bodyText = palette.getLightVibrantSwatch().getBodyTextColor();
+        } else if (palette.getDarkVibrantSwatch() != null && palette.getDarkVibrantColor(-1) != -1) {
+            primary = palette.getDarkVibrantColor(0);
+            titleText = palette.getDarkVibrantSwatch().getTitleTextColor();
+            bodyText = palette.getDarkVibrantSwatch().getBodyTextColor();
+        } else if (palette.getLightMutedSwatch() != null && palette.getLightMutedColor(-1) != -1) {
+            primary = palette.getLightMutedColor(0);
+            titleText = palette.getLightMutedSwatch().getTitleTextColor();
+            bodyText = palette.getLightMutedSwatch().getBodyTextColor();
+        } else if (palette.getDarkMutedSwatch() != null && palette.getDarkMutedColor(-1) != -1) {
+            primary = palette.getDarkMutedColor(0);
+            titleText = palette.getDarkMutedSwatch().getTitleTextColor();
+            bodyText = palette.getDarkMutedSwatch().getBodyTextColor();
+        }
+
+        album.artPrimaryPalette = primary;
+        album.artPrimaryTextPalette = titleText;
+        album.artDetailTextPalette = bodyText;
+    }
+
     public static ArtistBio fetchArtistBio(Context context, String artistName) {
-        if (!lastFmInitialized) initLastFm();
+        if (!lastFmInitialized) initLastFm(context);
 
         Artist artist = Artist.getInfo(artistName, API_KEY);
         if (artist != null) {
             try {
                 initImageCache(context);
 
-                Bitmap art = ImageLoader.getInstance().loadImageSync(artist.getImageURL(ImageSize.MEGA));
+                String art = artist.getImageURL(ImageSize.MEGA);
                 String summary = Html.fromHtml(artist.getWikiSummary()).toString();
                 // This probably violates something in the Last.fm API license
                 if (summary.length() > 0)
@@ -98,12 +126,12 @@ public class Fetch {
     }
 
     public static class ArtistBio {
-        public Bitmap art;
+        public String artURL;
         public String summary;
         public String[] tags;
 
-        public ArtistBio(Bitmap art, String summary, String[] tags) {
-            this.art = art;
+        public ArtistBio(String artURL, String summary, String[] tags) {
+            this.artURL = artURL;
             this.summary = summary;
             this.tags = tags;
         }

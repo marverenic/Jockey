@@ -19,6 +19,7 @@ import java.util.ArrayList;
 public class PlaylistFragment extends Fragment {
 
     private ArrayList<Playlist> playlistLibrary;
+    private PlaylistListAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,6 +30,13 @@ public class PlaylistFragment extends Fragment {
                 playlistLibrary.add((Playlist) p);
             }
         }
+
+        if (playlistLibrary == null) {
+            adapter = new PlaylistListAdapter(getActivity());
+        } else{
+            adapter = new PlaylistListAdapter(playlistLibrary, getActivity());
+        }
+
     }
 
     @Override
@@ -38,13 +46,6 @@ public class PlaylistFragment extends Fragment {
 
         // Most people probably don't have enough playlists to warrant fast scrolling...
         playlistListView.setFastScrollEnabled(false);
-
-        PlaylistListAdapter adapter;
-        if (playlistLibrary == null) {
-            adapter = new PlaylistListAdapter(getActivity());
-        } else{
-            adapter = new PlaylistListAdapter(playlistLibrary, getActivity());
-        }
 
         playlistListView.setAdapter(adapter);
         playlistListView.setOnItemClickListener(adapter);

@@ -80,12 +80,4 @@ public class LibraryPagerAdapter extends FragmentPagerAdapter {
                 return "Page " + position;
         }
     }
-
-    public void refreshLibrary() {
-        playlistFragment = null;
-        songFragment = null;
-        artistFragment = null;
-        albumFragment = null;
-        genreFragment = null;
-    }
 }
