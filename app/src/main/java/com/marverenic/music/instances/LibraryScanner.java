@@ -172,7 +172,7 @@ public class LibraryScanner {
     public static Album findAlbumById (long albumId){
         // Returns the first Artist object in the library with a matching id
         for (Album a : Library.getAlbums()){
-            if (a.artistId == albumId){
+            if (a.albumId == albumId){
                 return a;
             }
         }
