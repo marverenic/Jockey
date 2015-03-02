@@ -44,7 +44,7 @@
     <string name="default_page_pref">Default Page</string>
     <string name="theme_primary">Primary Color</string>
     <string name="theme_primary_description">Controls the accent color. Takes effect when you leave this page</string>
-    <string name="theme_base">Primary Color</string>
+    <string name="theme_base">Base Theme</string>
     <string name="theme_base_description">Controls the background color. Takes effect when you leave this page</string>
     <string name="add_shortcut">Add themed icon to launcher</string>
     <string name="add_shortcut_description">Place a new shortcut to Jockey on your home screen to match your theme. Happens when you close this page</string>

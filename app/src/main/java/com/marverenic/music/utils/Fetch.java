@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.graphics.Palette;
 import android.text.Html;
-import android.util.Log;
 
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.instances.Album;
@@ -60,8 +59,6 @@ public class Fetch {
 
     public static void buildAlbumPalette (Bitmap bitmap, int defaultPrimary, int defaultTitleText,
                                               int defaultBodyText, Album album){
-
-        Log.i("Fetch", "Building palette for album " + album + " (Primary: " + album.artPrimaryPalette + ", Main text: " + album.artPrimaryTextPalette + ", Detail text: " + album.artDetailTextPalette + ")");
 
         Palette palette = Palette.generate(bitmap);
 

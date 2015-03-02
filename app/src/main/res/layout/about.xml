@@ -132,12 +132,12 @@
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/aboutUILHeader"
+                android:id="@+id/aboutPicassoHeader"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/aboutAOSPTabsDetail"
                 android:layout_marginTop="16dp"
-                android:text="Universal Image Loader"
+                android:text="Picasso"
                 android:textColor="@color/ui_text_grey"
                 android:textSize="20sp" />
 
@@ -145,8 +145,8 @@
                 android:id="@+id/aboutUILDetail"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutUILHeader"
-                android:text="Version 1.9.3; distributed by Sergey Tarasevich under an Apache License, Version 2.0"
+                android:layout_below="@id/aboutPicassoHeader"
+                android:text="Version 2.5.0; distributed by Square, Inc. under an Apache License, Version 2.0"
                 android:textColor="@color/ui_detail_text_grey"
                 android:textSize="20sp" />
 

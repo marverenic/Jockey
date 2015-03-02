@@ -9,8 +9,7 @@
 
     <!-- Base Colors -->
     <color name="list_text">#E0E0E0</color>
-    <color name="detail_text">#BDBDBD</color>
-    <color name="divider">#424242</color>
+    <color name="detail_text">#9E9E9E</color>
     <color name="background">#212121</color>
     <color name="background_elevated">#333333</color>
     <color name="background_miniplayer">#424242</color>
@@ -29,8 +28,7 @@
     <!-- Custom Theme Colors-->
     <!-- Light Base -->
     <color name="list_text_light">#212121</color>
-    <color name="detail_text_light">#424242</color>
-    <color name="divider_light">#E0E0E0</color>
+    <color name="detail_text_light">#757575</color>
     <color name="background_light">#EEEEEE</color>
     <color name="background_elevated_light">#F5F5F5</color>
     <color name="background_miniplayer_light">#FAFAFA</color>

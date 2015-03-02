@@ -2,7 +2,10 @@ package com.marverenic.music.instances;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -26,28 +29,52 @@ public class LibraryScanner {
     private static final String FILENAME_ALBUMS = "library-albums.json";
     private static final String FILENAME_GENRES = "library-genres.json";
 
+    private static boolean loaded = false;
+
     //
     //          LIBRARY BUILDING METHODS
     //
 
     // Refresh the entire library
-    public static void scanAll (final Context context, final boolean attemptReload){
+    public static void scanAll (final Context context, final boolean attemptReload,
+                                @Nullable final onScanCompleteListener listener){
+
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (!(attemptReload && readLibrary(context))) {
+                Library.resetAll();
+                if (!attemptReload || !readLibrary(context)) {
                     scanPlaylists(context);
                     scanSongs(context);
                     scanArtists(context);
                     scanAlbums(context);
                     scanGenres(context);
-
-                    Library.sort();
-
-                    writeLibrary(context);
                 }
+                Library.sort();
+
+                loaded = true;
+
+                if (listener != null){
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onScanComplete();
+                        }
+                    });
+                }
+
+                writeLibrary(context);
             }
         }).start();
+    }
+
+    public static boolean isLoaded (){
+        return loaded;
+    }
+
+    public static interface onScanCompleteListener {
+        public void onScanComplete();
     }
 
     // Scan the MediaStore for songs
@@ -195,7 +222,8 @@ public class LibraryScanner {
                         MediaStore.Audio.Playlists.Members.ALBUM,
                         MediaStore.Audio.Playlists.Members.DURATION,
                         MediaStore.Audio.Playlists.Members.DATA,
-                        MediaStore.Audio.Playlists.Members.ALBUM_ID},
+                        MediaStore.Audio.Playlists.Members.ALBUM_ID,
+                        MediaStore.Audio.Playlists.Members.ARTIST_ID},
                 MediaStore.Audio.Media.IS_MUSIC + " != 0", null, null);
 
         for (int i = 0; i < cur.getCount(); i++) {
@@ -331,6 +359,8 @@ public class LibraryScanner {
         catch (Exception e) {
             e.printStackTrace();
         }
+
+        Log.i("LibraryScanner", "Saved library");
     }
 
     // Try to reload the library if it was saved previously
@@ -350,23 +380,18 @@ public class LibraryScanner {
 
             FileInputStream playlistIn = new FileInputStream(playlistJSON);
             String playlistGSON = convertStreamToString(playlistIn);
-            Log.i("LibraryScanner", playlistGSON);
 
             FileInputStream songIn = new FileInputStream(songJSON);
             String songGSON = convertStreamToString(songIn);
-            Log.i("LibraryScanner", songGSON);
 
             FileInputStream artistIn = new FileInputStream(artistJSON);
             String artistGSON = convertStreamToString(artistIn);
-            Log.i("LibraryScanner", artistGSON);
 
             FileInputStream albumIn = new FileInputStream(albumJSON);
             String albumGSON = convertStreamToString(albumIn);
-            Log.i("LibraryScanner", albumGSON);
 
             FileInputStream genreIn = new FileInputStream(genreJSON);
             String genreGSON = convertStreamToString(genreIn);
-            Log.i("LibraryScanner", genreGSON);
 
             Gson gson = new Gson();
 

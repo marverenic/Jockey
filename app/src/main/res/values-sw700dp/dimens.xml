@@ -4,7 +4,7 @@
     <dimen name="tab_padding_v">8dp</dimen>
     <dimen name="tab_selector_height">4dp</dimen>
     <dimen name="list_text_header_size">24sp</dimen>
-    <dimen name="list_text_detail_size">16sp</dimen>
+    <dimen name="list_text_detail_size">14sp</dimen>
     <dimen name="grid_text_header_size">22sp</dimen>
     <dimen name="grid_text_detail_size">14sp</dimen>
     <dimen name="header_elevation">4dp</dimen>

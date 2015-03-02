@@ -51,8 +51,7 @@
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:text="@string/nothing_playing"
-        android:textColor="@color/list_text"
-        android:textSize="20sp" />
+        android:theme="@style/listTitleText" />
 
     <TextView
         android:id="@+id/textNowPlayingDetail"
@@ -66,7 +65,6 @@
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:text="@string/no_artist"
-        android:textColor="@color/detail_text"
-        android:textSize="20sp" />
+        android:theme="@style/listDetailText" />
 
 </RelativeLayout>

@@ -14,9 +14,11 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -48,39 +50,57 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
 
         Themes.setTheme(this);
+        setContentView(R.layout.activity_library);
+        findViewById(R.id.pagerSlidingTabs).setVisibility(View.INVISIBLE);
+        findViewById(R.id.pagerSlidingTabs).setVisibility(View.INVISIBLE);
 
         new Thread(new Updater(this)).start();
 
-        if (Library.isEmpty()) {
-            LibraryScanner.scanAll(this, false);
+        startService(new Intent(this, Player.class));
+        registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
+
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+
+        if (!LibraryScanner.isLoaded()) {
+            LibraryScanner.scanAll(this, true, new LibraryScanner.onScanCompleteListener() {
+                @Override
+                public void onScanComplete() {
+                    Log.i("Library Adapter", "Loaded the library");
+                    createPages(true);
+                }
+            });
         }
+        else{
+            createPages(false);
+        }
+    }
+
+    private void createPages(boolean fade) {
+        Themes.themeActivity(R.layout.activity_library, getWindow().getDecorView().findViewById(android.R.id.content), this);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
         int page = Integer.parseInt(prefs.getString("prefDefaultPage", "1"));
 
-        setContentView(R.layout.activity_library);
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
         LibraryPagerAdapter adapter = new LibraryPagerAdapter(this);
         pager.setAdapter(adapter);
         pager.setCurrentItem(page);
-
-        Themes.themeActivity(R.layout.activity_library, getWindow().getDecorView().findViewById(android.R.id.content), this);
+        pager.setVisibility(View.VISIBLE);
 
         SlidingTabLayout tabs = ((SlidingTabLayout) findViewById(R.id.pagerSlidingTabs));
         tabs.setViewPager(pager);
         tabs.setActivePage(page);
-
-        startService(new Intent(this, Player.class));
-
-        registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
-
-        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        tabs.setVisibility(View.VISIBLE);
 
         if (getResources().getConfiguration().smallestScreenWidthDp < 700 && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             tabs.setMini(true);
         } else {
             tabs.setMini(false);
+        }
+
+        if (fade) {
+            pager.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
+            tabs.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
         }
     }
 
@@ -98,6 +118,7 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
     @Override
     public void onPause() {
         super.onPause();
+        LibraryScanner.saveLibrary(this);
         try {
             unregisterReceiver(updateReceiver);
         } catch (Exception e) {
@@ -129,8 +150,14 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
                 return true;
             case R.id.action_refresh_library:
                 Library.resetAll();
-                LibraryScanner.scanAll(this, false);
-                Toast.makeText(this, "Library refreshed.", Toast.LENGTH_SHORT).show();
+                final LibraryActivity activity = this;
+                LibraryScanner.scanAll(this, false, new LibraryScanner.onScanCompleteListener() {
+                    @Override
+                    public void onScanComplete() {
+                        Toast.makeText(activity, "Library refreshed.", Toast.LENGTH_SHORT).show();
+                        recreate();
+                    }
+                });
                 return true;
             case R.id.search:
                 onSearchRequested();

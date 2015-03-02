@@ -41,7 +41,6 @@ public class Themes {
 
     private static int listText;
     private static int detailText;
-    private static int divider;
     private static int background;
     private static int backgroundElevated;
     private static int backgroundMiniplayer;
@@ -151,7 +150,6 @@ public class Themes {
                 listText = resources.getColor(R.color.list_text_light);
                 detailText = resources.getColor(R.color.detail_text_light);
                 background = resources.getColor(R.color.background_light);
-                divider = resources.getColor(R.color.divider_light);
                 backgroundElevated = resources.getColor(R.color.background_elevated_light);
                 backgroundMiniplayer = resources.getColor(R.color.background_miniplayer_light);
                 break;
@@ -159,7 +157,6 @@ public class Themes {
                 listText = resources.getColor(R.color.list_text);
                 detailText = resources.getColor(R.color.detail_text);
                 background = resources.getColor(R.color.background);
-                divider = resources.getColor(R.color.divider);
                 backgroundElevated = resources.getColor(R.color.background_elevated);
                 backgroundMiniplayer = resources.getColor(R.color.background_miniplayer);
                 break;
@@ -456,7 +453,6 @@ public class Themes {
         }
 
         ListView list = (ListView) contentView.findViewById(R.id.list);
-        list.setDivider(new ColorDrawable(divider));
         list.setDividerHeight((int) activity.getResources().getDisplayMetrics().density);
 
         LayerDrawable backgroundDrawable = (LayerDrawable) activity.getResources().getDrawable(R.drawable.header_frame);
@@ -471,7 +467,6 @@ public class Themes {
         contentView.findViewById(R.id.list).setBackgroundColor(backgroundElevated);
 
         ListView list = (ListView) contentView.findViewById(R.id.list);
-        list.setDivider(new ColorDrawable(divider));
         list.setDividerHeight((int) activity.getResources().getDisplayMetrics().density);
 
         LayerDrawable backgroundDrawable = (LayerDrawable) activity.getResources().getDrawable(R.drawable.header_frame);
@@ -486,7 +481,7 @@ public class Themes {
 
         contentView.findViewById(R.id.aboutScroll).setBackgroundColor(primary);
 
-        int[] primaryText = {R.id.aboutAppName, R.id.lastFmHeader, R.id.aboutAOSPHeader, R.id.aboutAOSPTabsHeader, R.id.aboutUILHeader, R.id.aboutApolloHeader, R.id.aboutStackOverflowHeader};
+        int[] primaryText = {R.id.aboutAppName, R.id.lastFmHeader, R.id.aboutAOSPHeader, R.id.aboutAOSPTabsHeader, R.id.aboutPicassoHeader, R.id.aboutApolloHeader, R.id.aboutStackOverflowHeader};
         int[] detailText = {R.id.aboutDescription, R.id.aboutLicense, R.id.aboutUsesHeader, R.id.aboutVersion, R.id.aboutAOSPDetail, R.id.aboutAOSPTabsDetail, R.id.aboutUILDetail};
 
         for (int aPrimaryText : primaryText)
@@ -523,7 +518,6 @@ public class Themes {
         contentView.findViewById(R.id.list).setBackgroundColor(backgroundElevated);
 
         ListView list = (ListView) contentView.findViewById(R.id.list);
-        list.setDivider(new ColorDrawable(divider));
         list.setDividerHeight((int) fragment.getResources().getDisplayMetrics().density);
     }
 

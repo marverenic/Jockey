@@ -1,11 +1,12 @@
 package com.marverenic.music.adapters;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -125,11 +126,20 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Vie
         // Cancel any previous Picasso requests on this view
         Picasso.with(context).cancelRequest(viewHolder.art);
 
+        // Cancel any previous color animations
+        if (viewHolder.backgroundColorFade != null) viewHolder.backgroundColorFade.cancel();
+        if (viewHolder.titleColorFade != null) viewHolder.titleColorFade.cancel();
+        if (viewHolder.detailColorFade != null) viewHolder.detailColorFade.cancel();
+
+        viewHolder.backgroundColorFade = null;
+        viewHolder.titleColorFade = null;
+        viewHolder.detailColorFade = null;
+
         // Load the album art into the layout's ImageView if this album art has a cover
         if (a.artUri != null && !a.artUri.equals("")) {
             // If the album's palette has already been generated, update the view's colors and begin to load the image
             if (a.artPrimaryPalette != 0 &&  a.artPrimaryTextPalette != 0 && a.artDetailTextPalette != 0) {
-                Picasso.with(context).load("file://" + a.artUri).placeholder(new ColorDrawable(a.artPrimaryPalette)).resizeDimen(R.dimen.grid_art_size, R.dimen.grid_art_size).into(viewHolder.art);
+                Picasso.with(context).load("file://" + a.artUri).placeholder(R.drawable.art_default).resizeDimen(R.dimen.grid_art_size, R.dimen.grid_art_size).into(viewHolder.art);
                 viewHolder.parent.setBackgroundColor(a.artPrimaryPalette);
                 viewHolder.title.setTextColor(a.artPrimaryTextPalette);
                 viewHolder.detail.setTextColor(a.artDetailTextPalette);
@@ -159,10 +169,26 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Vie
                                     handler.post(new Runnable() {
                                         @Override
                                         public void run() {
-                                            // TODO This should probably fade in
-                                            viewHolder.parent.setBackgroundColor(a.artPrimaryPalette);
-                                            viewHolder.title.setTextColor(a.artPrimaryTextPalette);
-                                            viewHolder.detail.setTextColor(a.artDetailTextPalette);
+                                            viewHolder.backgroundColorFade = ObjectAnimator.ofObject(viewHolder.parent,
+                                                    "backgroundColor",
+                                                    new ArgbEvaluator(),
+                                                    context.getResources().getColor(R.color.grid_background_default),
+                                                    a.artPrimaryPalette);
+                                            viewHolder.backgroundColorFade.setDuration(300).start();
+
+                                            viewHolder.titleColorFade = ObjectAnimator.ofObject(viewHolder.title,
+                                                    "textColor",
+                                                    new ArgbEvaluator(),
+                                                    context.getResources().getColor(R.color.grid_text),
+                                                    a.artPrimaryTextPalette);
+                                            viewHolder.titleColorFade.setDuration(300).start();
+
+                                            viewHolder.detailColorFade = ObjectAnimator.ofObject(viewHolder.detail,
+                                                    "textColor",
+                                                    new ArgbEvaluator(),
+                                                    context.getResources().getColor(R.color.grid_detail_text),
+                                                    a.artDetailTextPalette);
+                                            viewHolder.detailColorFade.setDuration(300).start();
                                         }
                                     });
                                 }
@@ -248,5 +274,9 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Vie
         public TextView title;
         public TextView detail;
         public ViewGroup parent;
+
+        public ObjectAnimator backgroundColorFade;
+        public ObjectAnimator titleColorFade;
+        public ObjectAnimator detailColorFade;
     }
 }
