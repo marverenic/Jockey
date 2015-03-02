@@ -152,4 +152,9 @@ public class ArtistListAdapter extends BaseAdapter implements SectionIndexer, Ad
     public int getSectionForPosition(int itemPosition) {
         return sectionAtPosition.get(itemPosition);
     }
+
+    public void updateData(ArrayList<Artist> artistLibrary) {
+        this.data = artistLibrary;
+        notifyDataSetChanged();
+    }
 }

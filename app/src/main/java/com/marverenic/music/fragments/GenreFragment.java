@@ -54,4 +54,9 @@ public class GenreFragment extends Fragment {
 
         return view;
     }
+
+    public void updateData(ArrayList<Genre> genreLibrary) {
+        this.genreLibrary = genreLibrary;
+        adapter.updateData(genreLibrary);
+    }
 }

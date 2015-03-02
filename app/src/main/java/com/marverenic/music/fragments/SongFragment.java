@@ -51,4 +51,9 @@ public class SongFragment extends Fragment {
 
         return view;
     }
+
+    public void updateData(ArrayList<Song> songLibrary) {
+        this.songLibrary = songLibrary;
+        adapter.updateData(songLibrary);
+    }
 }

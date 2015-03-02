@@ -53,4 +53,9 @@ public class AlbumFragment extends Fragment {
 
         return view;
     }
+
+    public void updateData(ArrayList<Album> albumLibrary) {
+        this.albumLibrary = albumLibrary;
+        adapter.updateData(albumLibrary);
+    }
 }

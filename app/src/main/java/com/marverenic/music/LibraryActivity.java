@@ -1,6 +1,5 @@
 package com.marverenic.music;
 
-import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -23,7 +22,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -131,11 +129,6 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
-        // Associate searchable configuration with the SearchView
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-
         return true;
     }
 
@@ -160,7 +153,7 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
                 });
                 return true;
             case R.id.search:
-                onSearchRequested();
+                Navigate.to(this, SearchActivity.class);
                 return true;
             case R.id.action_about:
                 Navigate.to(this, AboutActivity.class);

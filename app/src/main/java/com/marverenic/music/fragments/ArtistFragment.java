@@ -51,4 +51,9 @@ public class ArtistFragment extends Fragment {
 
         return view;
     }
+
+    public void updateData(ArrayList<Artist> artistLibrary) {
+        this.artistLibrary = artistLibrary;
+        adapter.updateData(artistLibrary);
+    }
 }

@@ -121,4 +121,9 @@ public class PlaylistListAdapter extends BaseAdapter implements AdapterView.OnIt
         dialog.create().show();
         return true;
     }
+
+    public void updateData(ArrayList<Playlist> playlistLibrary) {
+        this.data = playlistLibrary;
+        notifyDataSetChanged();
+    }
 }

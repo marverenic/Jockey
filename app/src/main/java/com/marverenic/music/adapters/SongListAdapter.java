@@ -187,4 +187,9 @@ public class SongListAdapter extends BaseAdapter implements SectionIndexer, Adap
     public int getSectionForPosition(int itemPosition) {
         return sectionAtPosition.get(itemPosition);
     }
+
+    public void updateData(ArrayList<Song> songLibrary) {
+        this.data = songLibrary;
+        notifyDataSetChanged();
+    }
 }

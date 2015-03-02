@@ -55,4 +55,9 @@ public class PlaylistFragment extends Fragment {
 
         return view;
     }
+
+    public void updateData(ArrayList<Playlist> playlistLibrary) {
+        this.playlistLibrary = playlistLibrary;
+        adapter.updateData(playlistLibrary);
+    }
 }

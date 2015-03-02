@@ -269,6 +269,11 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Vie
         return sectionAtPosition.get(itemPosition);
     }
 
+    public void updateData(ArrayList<Album> albumLibrary) {
+        this.data = albumLibrary;
+        notifyDataSetChanged();
+    }
+
     public class AlbumViewHolder {
         public ImageView art;
         public TextView title;

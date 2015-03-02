@@ -1,6 +1,7 @@
 package com.marverenic.music.adapters;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -47,6 +48,32 @@ public class SearchPagerAdapter extends FragmentPagerAdapter {
         this.artistResults = artistResults;
         this.albumResults = albumResults;
         this.genreResults = genreResults;
+    }
+
+    public void updateData(@Nullable ArrayList<Playlist> playlistResults, @Nullable ArrayList<Song> songResults,
+                           @Nullable ArrayList<Artist> artistResults, @Nullable ArrayList<Album> albumResults,
+                           @Nullable ArrayList<Genre> genreResults){
+
+        if (playlistResults != null){
+            this.playlistResults = playlistResults;
+            if (playlistFragment != null) playlistFragment.updateData(playlistResults);
+        }
+        if (songResults != null){
+            this.songResults = songResults;
+            if (songFragment != null) songFragment.updateData(songResults);
+        }
+        if (artistResults != null){
+            this.artistResults = artistResults;
+            if (artistFragment != null) artistFragment.updateData(artistResults);
+        }
+        if (albumResults != null){
+            this.albumResults = albumResults;
+            if (albumFragment != null) albumFragment.updateData(albumResults);
+        }
+        if (genreResults != null){
+            this.genreResults = genreResults;
+            if (genreFragment != null) genreFragment.updateData(genreResults);
+        }
     }
 
     @Override
