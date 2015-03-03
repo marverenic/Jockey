@@ -4,7 +4,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Artist implements Parcelable {
+
     public static final Parcelable.Creator<Artist> CREATOR = new Parcelable.Creator<Artist>() {
         public Artist createFromParcel(Parcel in) {
             return new Artist(in);
@@ -14,7 +17,10 @@ public class Artist implements Parcelable {
             return new Artist[size];
         }
     };
+
+    @SerializedName("artistId")
     public long artistId;
+    @SerializedName("artistName")
     public String artistName;
 
     public Artist(final long artistId, final String artistName) {

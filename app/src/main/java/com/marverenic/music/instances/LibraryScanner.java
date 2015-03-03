@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -359,8 +358,6 @@ public class LibraryScanner {
         catch (Exception e) {
             e.printStackTrace();
         }
-
-        Log.i("LibraryScanner", "Saved library");
     }
 
     // Try to reload the library if it was saved previously
@@ -422,7 +419,6 @@ public class LibraryScanner {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return false;
     }
 

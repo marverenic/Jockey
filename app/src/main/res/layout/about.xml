@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/aboutAppName"
                 android:gravity="center"
-                android:text="Version"
+                android:text="@string/about_version"
                 android:textColor="@color/ui_detail_text_grey"
                 android:textSize="24sp" />
 
@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/aboutVersion"
                 android:layout_marginTop="16dp"
-                android:text="Jockey is a music player for Android 4.1 and higher designed with Google's Material Design guidelines in mind."
+                android:text="@string/about_description"
                 android:textColor="@color/ui_detail_text_grey"
                 android:textSize="20sp" />
 
@@ -60,7 +60,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/aboutDescription"
                 android:layout_marginTop="16dp"
-                android:text="Jockey is distributed under an Apache 2.0 license"
+                android:text="@string/about_license"
                 android:textColor="@color/ui_detail_text_grey"
                 android:textSize="20sp" />
 
@@ -70,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/aboutLicense"
                 android:layout_marginTop="16dp"
-                android:text="Artist information is provided by"
+                android:text="@string/lastfm_header"
                 android:textColor="@color/ui_text_grey"
                 android:textSize="20sp" />
 
@@ -81,6 +81,7 @@
                 android:layout_below="@id/lastFmHeader"
                 android:src="@drawable/last_fm_logo"
                 android:textColor="@color/ui_detail_text_grey"
+                android:contentDescription="@string/lastfm_description"
                 android:textSize="20sp" />
 
             <TextView
@@ -89,7 +90,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/lastFmDetail"
                 android:layout_marginTop="16dp"
-                android:text="Jockey also uses the following open-source libraries:"
+                android:text="@string/uses_header"
                 android:textColor="@color/ui_detail_text_grey"
                 android:textSize="20sp" />
 
@@ -99,7 +100,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/aboutUsesHeader"
                 android:layout_marginTop="16dp"
-                android:text="Android Support Libraries"
+                android:text="@string/uses_aosp_header"
                 android:textColor="@color/ui_text_grey"
                 android:textSize="20sp" />
 
@@ -108,7 +109,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/aboutAOSPHeader"
-                android:text="Support-v4 version 21.0.2, Appcompat-v7 version 21.0.2, Palette version 21.0.2; distributed by the Android Open Source Project under an Apache License, Version 2.0"
+                android:text="@string/uses_aosp_detail"
                 android:textColor="@color/ui_detail_text_grey"
                 android:textSize="20sp" />
 
@@ -118,7 +119,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/aboutAOSPDetail"
                 android:layout_marginTop="16dp"
-                android:text="Android Color Tab Example"
+                android:text="@string/uses_aosp_tabs_header"
                 android:textColor="@color/ui_text_grey"
                 android:textSize="20sp" />
 
@@ -127,7 +128,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/aboutAOSPTabsHeader"
-                android:text="Distributed by the Android Open Source Project under an Apache License, Version 2.0"
+                android:text="@string/uses_aosp_tabs_detail"
                 android:textColor="@color/ui_detail_text_grey"
                 android:textSize="20sp" />
 
@@ -137,7 +138,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/aboutAOSPTabsDetail"
                 android:layout_marginTop="16dp"
-                android:text="Picasso"
+                android:text="@string/uses_picasso_header"
                 android:textColor="@color/ui_text_grey"
                 android:textSize="20sp" />
 
@@ -146,7 +147,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/aboutPicassoHeader"
-                android:text="Version 2.5.0; distributed by Square, Inc. under an Apache License, Version 2.0"
+                android:text="@string/uses_picasso_detail"
                 android:textColor="@color/ui_detail_text_grey"
                 android:textSize="20sp" />
 
@@ -156,7 +157,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/aboutUILDetail"
                 android:layout_marginTop="16dp"
-                android:text="Jockey also gratefully uses code from Cyanogenmod's Apollo music player; licensed under an Apache License, version 2.0"
+                android:text="@string/uses_apollo"
                 android:textColor="@color/ui_text_grey"
                 android:textSize="20sp" />
 
@@ -166,7 +167,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/aboutApolloHeader"
                 android:layout_marginTop="16dp"
-                android:text="Additional thanks to many helpful Stack Overflow users who are better at programming than I am."
+                android:text="@string/uses_stackoverflow"
                 android:textColor="@color/ui_text_grey"
                 android:textSize="20sp" />
 

@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Song implements Parcelable {
 
     public static final Parcelable.Creator<Song> CREATOR = new Parcelable.Creator<Song>() {
@@ -16,12 +18,19 @@ public class Song implements Parcelable {
         }
     };
 
+    @SerializedName("songName")
     public String songName;
+    @SerializedName("artistName")
     public String artistName;
+    @SerializedName("albumName")
     public String albumName;
+    @SerializedName("songDuration")
     public int songDuration;
+    @SerializedName("location")
     public String location;
+    @SerializedName("albumId")
     public long albumId;
+    @SerializedName("artistId")
     public long artistId;
 
     public Song(final String songName, final String artistName, final String albumName, final int songDuration, final String location, final long albumId, final long artistId) {

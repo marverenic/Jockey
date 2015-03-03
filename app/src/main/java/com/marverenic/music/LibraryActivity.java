@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -63,7 +62,6 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
             LibraryScanner.scanAll(this, true, new LibraryScanner.onScanCompleteListener() {
                 @Override
                 public void onScanComplete() {
-                    Log.i("Library Adapter", "Loaded the library");
                     createPages(true);
                 }
             });
@@ -127,7 +125,7 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.main, menu);
 
         return true;
     }

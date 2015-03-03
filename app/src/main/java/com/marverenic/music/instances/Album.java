@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Album implements Parcelable {
 
     public static final Parcelable.Creator<Album> CREATOR = new Parcelable.Creator<Album>() {
@@ -16,15 +18,24 @@ public class Album implements Parcelable {
         }
     };
 
+    @SerializedName("albumId")
     public long albumId;
+    @SerializedName("albumName")
     public String albumName;
+    @SerializedName("artistId")
     public long artistId;
+    @SerializedName("artistName")
     public String artistName;
+    @SerializedName("year")
     public String year;
+    @SerializedName("artUri")
     public String artUri;
     // Transparent colors are uninitialized
+    @SerializedName("artPrimaryPalette")
     public int artPrimaryPalette = 0;
+    @SerializedName("artPrimaryTextPalette")
     public int artPrimaryTextPalette = 0;
+    @SerializedName("artDetailTextPalette")
     public int artDetailTextPalette = 0;
 
     public Album(final long albumId, final String albumName, final long artistId, final String artistName, final String year, final String artUri) {

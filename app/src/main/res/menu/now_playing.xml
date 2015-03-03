@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_shuffle"
+        android:title="@string/shuffle"
+        android:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_repeat"
+        android:title="@string/repeat"
+        android:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_queue"
+        android:title="@string/queue"
+        android:showAsAction="never"/>
+
+</menu>

@@ -91,7 +91,7 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_now_playing, menu);
+        getMenuInflater().inflate(R.menu.now_playing, menu);
 
         if (PlayerService.isShuffle()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

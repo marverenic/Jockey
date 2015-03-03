@@ -14,13 +14,13 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            zipAlignEnabled true
         }
     }
 }
 
 dependencies {
     compile 'com.android.support:support-v4:21.0.2'
-    compile 'com.android.support:appcompat-v7:21.0.2'
     compile 'com.android.support:palette-v7:21.0.2'
     compile 'com.squareup.picasso:picasso:2.5.0'
     compile 'de.u-mass:lastfm-java:0.1.2'

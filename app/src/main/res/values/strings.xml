@@ -30,6 +30,13 @@
     <string name="no_artist">unknown artist</string>
     <string name="no_album">unknown album</string>
 
+    <!-- About Activity Strings -->
+    <string name="about_version">Version</string>
+    <string name="about_description">Jockey is a music player for Android 4.1 and higher designed with Google\'s Material Design guidelines in mind.</string>
+    <string name="about_license">Jockey is distributed under an Apache 2.0 license</string>
+    <string name="lastfm_header">Artist information is provided by</string>
+    <string name="lastfm_description">Last.fm</string>
+
     <!-- Accessibility Content Descriptions -->
     <string name="button_play_description">Play Button</string>
     <string name="button_pause_description">Pause Button</string>
@@ -37,6 +44,15 @@
     <string name="button_skip_description">Next Song Button</string>
     <string name="seek_player_description">Music Seek</string>
     <string name="art_description">Album Art</string>
+    <string name="uses_header">Jockey also uses the following open-source libraries:</string>
+    <string name="uses_aosp_header">Android Support Libraries</string>
+    <string name="uses_aosp_detail">Support-v4 version 21.0.2, Palette version 21.0.2; distributed by the Android Open Source Project under an Apache License, Version 2.0</string>
+    <string name="uses_aosp_tabs_header">Android Color Tab Example</string>
+    <string name="uses_aosp_tabs_detail">Distributed by the Android Open Source Project under an Apache License, Version 2.0</string>
+    <string name="uses_picasso_header">Picasso</string>
+    <string name="uses_picasso_detail">Version 2.5.0; distributed by Square, Inc. under an Apache License, Version 2.0</string>
+    <string name="uses_apollo">Jockey also gratefully uses code from Cyanogenmod\'s Apollo music player; licensed under an Apache License, version 2.0</string>
+    <string name="uses_stackoverflow">Additional thanks to many helpful Stack Overflow users who are better at programming than I am.</string>
 
     <!-- Preference Strings -->
     <string name="appearance_header">Appearance</string>

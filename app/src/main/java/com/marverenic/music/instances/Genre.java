@@ -4,7 +4,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Genre implements Parcelable {
+
     public static final Parcelable.Creator<Genre> CREATOR = new Parcelable.Creator<Genre>() {
         public Genre createFromParcel(Parcel in) {
             return new Genre(in);
@@ -14,7 +17,10 @@ public class Genre implements Parcelable {
             return new Genre[size];
         }
     };
+
+    @SerializedName("genreId")
     public long genreId;
+    @SerializedName("genreName")
     public String genreName;
 
     public Genre(final long genreId, final String genreName) {

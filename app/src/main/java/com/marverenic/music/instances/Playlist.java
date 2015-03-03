@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Playlist implements Parcelable {
 
     public static final Parcelable.Creator<Playlist> CREATOR = new Parcelable.Creator<Playlist>() {
@@ -16,7 +18,9 @@ public class Playlist implements Parcelable {
         }
     };
 
+    @SerializedName("playlistId")
     public long playlistId;
+    @SerializedName("playlistName")
     public String playlistName;
 
     public Playlist(final long playlistId, final String playlistName) {
