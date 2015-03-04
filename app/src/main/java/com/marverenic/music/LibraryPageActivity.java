@@ -93,7 +93,7 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
             }
             else if (parent instanceof Genre) {
                 type = Type.GENRE;
-                songEntries = LibraryScanner.getGenreEntries(this, (Genre) parent);
+                songEntries = LibraryScanner.getGenreEntries((Genre) parent);
             }
             else if (parent.getClass().equals(Artist.class)) {
                 type = Type.ARTIST;

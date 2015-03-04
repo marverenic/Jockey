@@ -29,6 +29,7 @@ import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Genre;
 import com.marverenic.music.instances.Library;
+import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
@@ -254,8 +255,8 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
         albumResults = new ArrayList<>();
         artistResults = new ArrayList<>();
         genreResults = new ArrayList<>();
-        playlistResults = new ArrayList<>();
         songResults = new ArrayList<>();
+        playlistResults = new ArrayList<>();
 
         if (!query.equals("")) {
             for(Album a : Library.getAlbums()){
@@ -276,19 +277,39 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
                 }
             }
 
-            for(Playlist p : Library.getPlaylists()){
-                if (p.playlistName.toLowerCase().contains(query)) {
-                    playlistResults.add(p);
-                }
-            }
-
             for(Song s : Library.getSongs()){
                 if (s.songName.toLowerCase().contains(query)
                         || s.artistName.toLowerCase().contains(query)
                         || s.albumName.toLowerCase().contains(query)) {
                     songResults.add(s);
+
+                    if (s.genreId != -1) {
+                        Genre g = LibraryScanner.findGenreById(s.genreId);
+                        if (!genreResults.contains(g)) genreResults.add(g);
+                    }
+
+                    Album thisAlbum = LibraryScanner.findAlbumById(s.albumId);
+                    if(!albumResults.contains(thisAlbum)) albumResults.add(thisAlbum);
+
+                    Artist thisArtist = LibraryScanner.findArtistById(s.artistId);
+                    if(!artistResults.contains(thisArtist)) artistResults.add(thisArtist);
                 }
             }
+
+            for(Playlist p : Library.getPlaylists()){
+                if (p.playlistName.toLowerCase().contains(query)) {
+                    playlistResults.add(p);
+                }
+                else{
+                    for (Song s : LibraryScanner.getPlaylistEntries(this, p)){
+                        if (songResults.contains(s)){
+                            if (!playlistResults.contains(p)) playlistResults.add(p);
+                        }
+                    }
+                }
+            }
+
+            Library.sortGenreList(genreResults);
         }
 
         adapter.updateData(playlistResults, songResults, artistResults, albumResults, genreResults);

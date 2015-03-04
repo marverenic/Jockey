@@ -107,10 +107,10 @@ public class GenreListAdapter extends BaseAdapter implements AdapterView.OnItemC
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case 0: //Queue this playlist next
-                                PlayerService.queueNext(context, LibraryScanner.getGenreEntries(context, item));
+                                PlayerService.queueNext(context, LibraryScanner.getGenreEntries(item));
                                 break;
                             case 1: //Queue this playlist last
-                                PlayerService.queueLast(context, LibraryScanner.getGenreEntries(context, item));
+                                PlayerService.queueLast(context, LibraryScanner.getGenreEntries(item));
                                 break;
                             default:
                                 break;

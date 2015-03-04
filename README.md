@@ -1,5 +1,5 @@
 # Jockey
-Jockey is a music player for Android based on Google's Material Design standards. The point of Jockey is to be a simple, lightweight media player for the average user.
+Jockey is a music player for Android based on Google's Material Design standards. The point of Jockey is to be a simple, lightweight media player designed for normal people (meaning that if you need an EQ, gapless playback, crossfade, or replay gain, Jockey probably isn't for you).
 
 
 ![Default library view](https://a.fsdn.com/con/app/proj/jockey-player/screenshots/Screenshot_2015-02-12-22-44-24.png)
@@ -18,18 +18,16 @@ To download compiled versions of Jockey, visit Jockey's [SourceForge] page.
  - Wait while Gradle begins to build the project (Android Studio may need to restart)
 
 ### Todo
- - Implement RemoteController
  - Queue & Playlist Editor
- - Library Search
- - Artist & Album information
- 
-### Known Bugs
- - When running Jockey in the background, songs are often cut off
- - Up and back navigation don't work like they should
- - Probably a lot more
+ - Activity transitions
+ - Clean up a few classes and refactor the mess that is drawables for pre-Lollipop devices
+
+### Bugs & contributing
+Feel free to post suggestions, crashes, or just anything that isn't as smooth as it should be to the bug tracker -- I want Jockey to be as seamless as it possibly can. Additionally, don't hesitate to fork Jockey or submit a pull request -- especially if it's a bug fix or cleans up code that's doing mischevious, devious or otherwise bad things that I'm not aware of.
 
 ### License
 Jockey is licensed under an Apache 2.0 license
 
 [Android Studio]:http://developer.android.com/sdk/index.html
 [SourceForge]:https://sourceforge.net/projects/jockey-player/
+[issues page]:https://github.com/marverenic/Jockey/issues

@@ -89,6 +89,7 @@ public class LibraryScanner {
             cur.moveToPosition(i);
             Library.add(new Song(
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)),
+                    cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media._ID)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)),
                     cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DURATION)),
@@ -157,6 +158,7 @@ public class LibraryScanner {
 
     // Scan the MediaStore for Genres
     public static void scanGenres (Context context){
+
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI,
                 null, null, null,
@@ -164,9 +166,23 @@ public class LibraryScanner {
 
         for (int i = 0; i < cur.getCount(); i++) {
             cur.moveToPosition(i);
+            long thisGenreId = cur.getLong(cur.getColumnIndex(MediaStore.Audio.Genres._ID));
+
             Library.add(new Genre(
-                    cur.getLong(cur.getColumnIndex(MediaStore.Audio.Genres._ID)),
+                    thisGenreId,
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Genres.NAME))));
+
+            Cursor genreCur = context.getContentResolver().query(
+                    MediaStore.Audio.Genres.Members.getContentUri("external", thisGenreId),
+                    new String[]{MediaStore.Audio.Media._ID},
+                    MediaStore.Audio.Media.IS_MUSIC + " != 0 ", null, null);
+            genreCur.moveToFirst();
+
+            for (int j = 0; j < genreCur.getCount(); j++) {
+                genreCur.moveToPosition(j);
+                findSongById(genreCur.getLong(genreCur.getColumnIndex(MediaStore.Audio.Media._ID))).genreId = thisGenreId;
+            }
+            genreCur.close();
         }
         cur.close();
     }
@@ -178,7 +194,7 @@ public class LibraryScanner {
     public static Song findSongById (long songId){
         // Returns the first Artist object in the library with a matching id
         for (Song s : Library.getSongs()){
-            if (s.artistId == songId){
+            if (s.songId == songId){
                 return s;
             }
         }
@@ -205,6 +221,16 @@ public class LibraryScanner {
         return null;
     }
 
+    public static Genre findGenreById (long genreId){
+        // Returns the first Genre object in the library with a matching id
+        for (Genre g : Library.getGenres()){
+            if (g.genreId == genreId){
+                return g;
+            }
+        }
+        return null;
+    }
+
     //
     //          CONTENTS QUERY METHODS
     //
@@ -217,6 +243,7 @@ public class LibraryScanner {
                 MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId),
                 new String[]{
                         MediaStore.Audio.Playlists.Members.TITLE,
+                        MediaStore.Audio.Playlists.Members._ID,
                         MediaStore.Audio.Playlists.Members.ARTIST,
                         MediaStore.Audio.Playlists.Members.ALBUM,
                         MediaStore.Audio.Playlists.Members.DURATION,
@@ -229,6 +256,7 @@ public class LibraryScanner {
             cur.moveToPosition(i);
             songEntries.add(new Song(
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.TITLE)),
+                    cur.getLong(cur.getColumnIndex(MediaStore.Audio.Playlists.Members._ID)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.ARTIST)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.ALBUM)),
                     cur.getInt(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.DURATION)),
@@ -281,34 +309,14 @@ public class LibraryScanner {
     }
 
     // Return a list of song entries for a genre
-    public static ArrayList<Song> getGenreEntries (Context context, Genre genre){
+    public static ArrayList<Song> getGenreEntries (Genre genre){
         ArrayList<Song> songEntries = new ArrayList<>();
 
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Genres.Members.getContentUri("external", genre.genreId),
-                new String[]{
-                        MediaStore.Audio.Genres.Members.TITLE,
-                        MediaStore.Audio.Genres.Members.ARTIST,
-                        MediaStore.Audio.Genres.Members.ALBUM,
-                        MediaStore.Audio.Genres.Members.DURATION,
-                        MediaStore.Audio.Genres.Members.DATA,
-                        MediaStore.Audio.Genres.Members.ALBUM_ID,
-                        MediaStore.Audio.Genres.Members.ARTIST_ID},
-                MediaStore.Audio.Media.IS_MUSIC + " != 0 ", null, null);
-        cur.moveToFirst();
-
-        for (int i = 0; i < cur.getCount(); i++) {
-            cur.moveToPosition(i);
-            songEntries.add(new Song(
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Genres.Members.TITLE)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Genres.Members.ARTIST)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Genres.Members.ALBUM)),
-                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Genres.Members.DURATION)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Genres.Members.DATA)),
-                    cur.getLong(cur.getColumnIndex(MediaStore.Audio.Genres.Members.ALBUM_ID)),
-                    cur.getLong(cur.getColumnIndex(MediaStore.Audio.Genres.Members.ARTIST_ID))));
+        for(Song s : Library.getSongs()){
+            if (s.genreId == genre.genreId){
+                songEntries.add(s);
+            }
         }
-        cur.close();
 
         return songEntries;
     }

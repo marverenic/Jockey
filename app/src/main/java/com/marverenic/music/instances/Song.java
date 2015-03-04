@@ -8,18 +8,10 @@ import com.google.gson.annotations.SerializedName;
 
 public class Song implements Parcelable {
 
-    public static final Parcelable.Creator<Song> CREATOR = new Parcelable.Creator<Song>() {
-        public Song createFromParcel(Parcel in) {
-            return new Song(in);
-        }
-
-        public Song[] newArray(int size) {
-            return new Song[size];
-        }
-    };
-
     @SerializedName("songName")
     public String songName;
+    @SerializedName("songId")
+    public long songId;
     @SerializedName("artistName")
     public String artistName;
     @SerializedName("albumName")
@@ -32,9 +24,15 @@ public class Song implements Parcelable {
     public long albumId;
     @SerializedName("artistId")
     public long artistId;
+    @SerializedName("genreId")
+    public long genreId = -1;
 
-    public Song(final String songName, final String artistName, final String albumName, final int songDuration, final String location, final long albumId, final long artistId) {
+    public Song(final String songName, final long songId, final String artistName,
+                final String albumName, final int songDuration, final String location,
+                final long albumId, final long artistId) {
+
         this.songName = songName;
+        this.songId = songId;
         this.artistName = artistName;
         this.albumName = albumName;
         this.songDuration = songDuration;
@@ -50,6 +48,7 @@ public class Song implements Parcelable {
         location = in.readString();
         albumId = in.readLong();
         artistId = in.readLong();
+        genreId = in.readLong();
     }
 
     public boolean equals(final Object obj) {
@@ -63,12 +62,27 @@ public class Song implements Parcelable {
             return false;
         }
         final Song other = (Song) obj;
-        return TextUtils.equals(albumName, other.albumName) && TextUtils.equals(artistName, other.artistName) && songDuration != other.songDuration && TextUtils.equals(songName, other.songName);
+        return  artistId == other.artistId && albumId == other.albumId &&
+                songDuration == other.songDuration &&
+                TextUtils.equals(albumName, other.albumName) &&
+                TextUtils.equals(artistName, other.artistName) &&
+                TextUtils.equals(songName, other.songName) &&
+                TextUtils.equals(location, other.location);
     }
 
     public String toString() {
         return songName;
     }
+
+    public static final Parcelable.Creator<Song> CREATOR = new Parcelable.Creator<Song>() {
+        public Song createFromParcel(Parcel in) {
+            return new Song(in);
+        }
+
+        public Song[] newArray(int size) {
+            return new Song[size];
+        }
+    };
 
     @Override
     public int describeContents() {
@@ -83,5 +97,6 @@ public class Song implements Parcelable {
         dest.writeString(location);
         dest.writeLong(albumId);
         dest.writeLong(artistId);
+        dest.writeLong(genreId);
     }
 }
