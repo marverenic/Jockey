@@ -43,11 +43,21 @@ public class QueueEditAdapter extends BaseAdapter {
             TextView tt1 = (TextView) v.findViewById(R.id.textSongDetail);
             if (tt != null) {
                 tt.setText(s.songName);
-                tt.setTextColor(Themes.getListText());
+                if (position == PlayerService.getPosition()){
+                    tt.setTextColor(Themes.getPrimary());
+                }
+                else{
+                    tt.setTextColor(Themes.getListText());
+                }
             }
             if (tt1 != null) {
                 tt1.setText(s.artistName + " - " + s.albumName);
-                tt1.setTextColor(Themes.getDetailText());
+                if (position == PlayerService.getPosition()){
+                    tt1.setTextColor(Themes.getAccent());
+                }
+                else{
+                    tt1.setTextColor(Themes.getDetailText());
+                }
             }
         } else {
             Debug.log(Debug.LogLevel.WTF, "SongListAdapter", "The requested entry is null", context);

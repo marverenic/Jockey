@@ -1,12 +1,16 @@
 package com.marverenic.music;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ListView;
 
 import com.marverenic.music.adapters.QueueEditAdapter;
 import com.marverenic.music.instances.Song;
@@ -18,6 +22,13 @@ import com.mobeta.android.dslv.DragSortListView;
 import java.util.ArrayList;
 
 public class QueueActivity extends Activity implements AdapterView.OnItemClickListener, View.OnClickListener {
+
+    private BroadcastReceiver updateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            update();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,18 +62,35 @@ public class QueueActivity extends Activity implements AdapterView.OnItemClickLi
                     PlayerService.changeQueue(context, data, to);
                 }
                 else if (PlayerService.getPosition() < from && PlayerService.getPosition() >= to){
-                    // If a song that was before the current playing song was moved to a position after the current song...
+                    // If a song that was after the current playing song was moved to a position before the current song...
                     PlayerService.changeQueue(context, data, PlayerService.getPosition() + 1);
                 }
                 else if (PlayerService.getPosition() > from && PlayerService.getPosition() <= to){
-                    // If a song that was after the current playing song was moved to a position before the current song...
+                    // If a song that was before the current playing song was moved to a position after the current song...
                     PlayerService.changeQueue(context, data, PlayerService.getPosition() - 1);
                 }
                 else{
+                    // If the number of songs before and after the currently playing song hasn't changed...
                     PlayerService.changeQueue(context, data, PlayerService.getPosition());
                 }
             }
         });
+
+        registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
+    }
+
+    private void update (){
+        ((ListView) findViewById(R.id.list)).invalidateViews();
+    }
+
+    @Override
+    public void onDestroy() {
+        try {
+            unregisterReceiver(updateReceiver);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        super.onDestroy();
     }
 
     @Override

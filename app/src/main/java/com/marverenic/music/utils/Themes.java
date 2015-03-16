@@ -54,6 +54,10 @@ public class Themes {
         return primaryDark;
     }
 
+    public static int getAccent() {
+        return accent;
+    }
+
     public static int getUiText() {
         return uiText;
     }
@@ -525,5 +529,4 @@ public class Themes {
         ((TextView) miniplayer.findViewById(R.id.textNowPlayingTitle)).setTextColor(listText);
         ((TextView) miniplayer.findViewById(R.id.textNowPlayingDetail)).setTextColor(detailText);
     }
-
 }
