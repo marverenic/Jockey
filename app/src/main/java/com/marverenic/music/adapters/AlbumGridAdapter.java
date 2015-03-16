@@ -7,14 +7,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.SectionIndexer;
@@ -28,7 +26,6 @@ import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.utils.Fetch;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.utils.Themes;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -103,10 +100,6 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Vie
             convertView = inflater.inflate(R.layout.instance_album, parent, false);
             convertView.findViewById(R.id.albumInstance).setOnClickListener(this);
             convertView.findViewById(R.id.albumInstance).setOnLongClickListener(this);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                ((FrameLayout) convertView).setForeground(Themes.getTouchRipple(context));
-            }
 
             // initialize the view holder
             viewHolder = new AlbumViewHolder();

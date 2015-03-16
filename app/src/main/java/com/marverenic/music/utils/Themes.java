@@ -74,6 +74,10 @@ public class Themes {
         return background;
     }
 
+    public static int getBackgroundElevated(){
+        return backgroundElevated;
+    }
+
     public static boolean hasChanged(Context context) {
         final int oldPrimary = primary;
         final int oldBackground = background;
@@ -237,7 +241,7 @@ public class Themes {
     public static Bitmap getIcon(Context context) {
         switch (Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("prefColorPrimary", "5"))) {
             case 0:
-                return BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher_black);
+                return BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher_grey);
             case 1:
                 return BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher_red);
             case 2:
@@ -278,7 +282,7 @@ public class Themes {
 
             switch (Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("prefColorPrimary", "5"))) {
                 case 0:
-                    return ((BitmapDrawable) context.getResources().getDrawableForDensity(R.drawable.ic_launcher_black, density)).getBitmap();
+                    return ((BitmapDrawable) context.getResources().getDrawableForDensity(R.drawable.ic_launcher_grey, density)).getBitmap();
                 case 1:
                     return ((BitmapDrawable) context.getResources().getDrawableForDensity(R.drawable.ic_launcher_red, density)).getBitmap();
                 case 2:
@@ -300,7 +304,7 @@ public class Themes {
     public static int getIconId(Context context) {
         switch (Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("prefColorPrimary", "5"))) {
             case 0:
-                return R.drawable.ic_launcher_black;
+                return R.drawable.ic_launcher_grey;
             case 1:
                 return R.drawable.ic_launcher_red;
             case 2:
@@ -332,28 +336,6 @@ public class Themes {
 
         //context.sendBroadcast(delIntent);
         context.sendBroadcast(addIntent);
-    }
-
-    public static Drawable getTouchRipple(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            switch (Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("prefColorPrimary", "5"))) {
-                case 0:
-                    return context.getDrawable(R.drawable.touch_grey);
-                case 1:
-                    return context.getDrawable(R.drawable.touch_red);
-                case 2:
-                    return context.getDrawable(R.drawable.touch_orange);
-                case 3:
-                    return context.getDrawable(R.drawable.touch_yellow);
-                case 4:
-                    return context.getDrawable(R.drawable.touch_green);
-                case 6:
-                    return context.getDrawable(R.drawable.touch_purple);
-                default:
-                    return context.getDrawable(R.drawable.touch_blue);
-            }
-        }
-        return null;
     }
 
     // Public Theme Methods
@@ -481,8 +463,10 @@ public class Themes {
 
         contentView.findViewById(R.id.aboutScroll).setBackgroundColor(primary);
 
-        int[] primaryText = {R.id.aboutAppName, R.id.lastFmHeader, R.id.aboutAOSPHeader, R.id.aboutAOSPTabsHeader, R.id.aboutPicassoHeader, R.id.aboutApolloHeader, R.id.aboutStackOverflowHeader};
-        int[] detailText = {R.id.aboutDescription, R.id.aboutLicense, R.id.aboutUsesHeader, R.id.aboutVersion, R.id.aboutAOSPDetail, R.id.aboutAOSPTabsDetail, R.id.aboutUILDetail};
+        int[] primaryText = {R.id.aboutAppName, R.id.lastFmHeader, R.id.aboutAOSPHeader, R.id.aboutAOSPTabsHeader,
+                R.id.aboutPicassoHeader, R.id.aboutDSLVHeader, R.id.aboutApolloHeader, R.id.aboutStackOverflowHeader};
+        int[] detailText = {R.id.aboutDescription, R.id.aboutLicense, R.id.aboutUsesHeader,
+                R.id.aboutVersion, R.id.aboutAOSPDetail, R.id.aboutAOSPTabsDetail, R.id.aboutUILDetail, R.id.aboutDSLVDetail};
 
         for (int aPrimaryText : primaryText)
             ((TextView) contentView.findViewById(aPrimaryText)).setTextColor(uiText);
@@ -501,8 +485,6 @@ public class Themes {
             if (activity.getActionBar() != null)
                 activity.getActionBar().setElevation(activity.getResources().getDimension(R.dimen.header_elevation));
             else Debug.log(Debug.LogLevel.WTF, "Themes", "Couldn't find the action bar", activity);
-
-            contentView.findViewById(android.R.id.list).setBackground(getTouchRipple(activity));
         }
     }
 

@@ -205,7 +205,6 @@ public class SlidingTabLayout extends HorizontalScrollView {
                 tabTitleView.setTypeface(null, Typeface.NORMAL);
                 tabTitleView.setAllCaps(true);
                 tabView.setOnClickListener(tabClickListener);
-                tabView.setBackground(Themes.getTouchRipple(getContext()));
             }
 
             mTabStrip.addView(tabView);

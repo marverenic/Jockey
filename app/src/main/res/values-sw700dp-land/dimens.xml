@@ -24,5 +24,7 @@
     <dimen name="now_playing_ticker_height">64dp</dimen>
     <dimen name="now_playing_button_size">100dp</dimen>
     <dimen name="now_playing_max_control_width">400dp</dimen>
+    <dimen name="drag_handle_size">40dp</dimen>
+    <dimen name="drag_handle_padding">8dp</dimen>
 
 </resources>

@@ -1,5 +1,7 @@
 package com.marverenic.music;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,11 +9,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +34,6 @@ import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Genre;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.LibraryScanner;
-import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Fetch;
@@ -42,7 +45,7 @@ import java.util.ArrayList;
 
 public class LibraryPageActivity extends Activity implements View.OnClickListener {
 
-    public enum Type { PLAYLIST, ARTIST, ALBUM, GENRE, UNKNOWN }
+    public enum Type { ARTIST, ALBUM, GENRE, UNKNOWN }
 
     private Type type;
 
@@ -75,11 +78,7 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
                 Debug.log(Debug.LogLevel.WTF, "LibraryPageActivity", "Couldn't find the action bar", this);
             }
 
-            if (parent instanceof Playlist) {
-                type = Type.PLAYLIST;
-                songEntries = LibraryScanner.getPlaylistEntries(this, (Playlist) parent);
-            }
-            else if (parent instanceof Album) {
+            if (parent instanceof Album) {
                 type = Type.ALBUM;
                 songEntries = LibraryScanner.getAlbumEntries((Album) parent);
 
@@ -113,8 +112,8 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
             if (type != Type.ARTIST && songEntries != null) {
                 SongListAdapter adapter;
 
-                // Don't sort album or playlist entries
-                if (type != Type.ALBUM && type != Type.PLAYLIST) {
+                // Don't sort album entries
+                if (type != Type.ALBUM) {
                     Library.sortSongList(songEntries);
                     adapter = new SongListAdapter(songEntries, this, true);
                 }
@@ -144,6 +143,11 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
         update();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
+    }
+
     private static void initializeArtistHeader(final View parent, final ArrayList<Album> albums, Activity activity) {
         final Context context = activity;
         final View infoHeader = View.inflate(activity, R.layout.artist_header_info, null);
@@ -161,6 +165,7 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
                             if(bio.artURL != null && !bio.artURL.equals(""))
                                 Picasso.with(context).load(bio.artURL).placeholder(R.drawable.art_default)
                                         .resizeDimen(R.dimen.grid_art_size, R.dimen.grid_art_size)
+                                        .centerCrop()
                                         .into(((ImageView) infoHeader.findViewById(R.id.artist_image)));
 
                             String bioText;
@@ -171,7 +176,14 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
                                 }
                             } else bioText = bio.summary;
 
-                            ((TextView) infoHeader.findViewById(R.id.artist_bio)).setText(bioText);
+                            TextView bioTextView = ((TextView) infoHeader.findViewById(R.id.artist_bio));
+                            bioTextView.setText(bioText);
+                            ObjectAnimator bioTextAnimator = ObjectAnimator.ofObject(bioTextView,
+                                    "textColor",
+                                    new ArgbEvaluator(),
+                                    Color.TRANSPARENT,
+                                    Themes.getDetailText());
+                            bioTextAnimator.setDuration(300).start();
                         }
                     });
                 } else {

@@ -3,13 +3,11 @@ package com.marverenic.music.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.marverenic.music.LibraryPageActivity;
@@ -54,10 +52,6 @@ public class GenreListAdapter extends BaseAdapter implements AdapterView.OnItemC
             }
         } else {
             Debug.log(Debug.LogLevel.WTF, "GenreListAdapter", "The requested entry is null", context);
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ((ListView) parent).setSelector(Themes.getTouchRipple(context));
         }
 
         return v;

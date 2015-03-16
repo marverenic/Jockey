@@ -3,6 +3,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/fragment_list" />
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/list_container"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:clipToPadding="false"
+        android:paddingLeft="@dimen/global_padding"
+        android:paddingRight="@dimen/global_padding"
+        android:paddingTop="@dimen/list_margin">
+
+        <com.mobeta.android.dslv.DragSortListView
+            android:id="@+id/list"
+            style="@style/list"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:clipToPadding="false"
+            android:elevation="@dimen/window_elevation"
+            android:saveEnabled="true"
+            android:scrollbars="vertical"/>
+    </FrameLayout>
 
 </FrameLayout>

@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -90,10 +89,6 @@ public class ArtistPageAdapter extends BaseAdapter implements SectionIndexer, Ad
             }
         } else {
             Debug.log(Debug.LogLevel.WTF, "SongListAdapter", "The requested entry is null", context);
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ((ListView) parent).setSelector(Themes.getTouchRipple(context));
         }
 
         return v;

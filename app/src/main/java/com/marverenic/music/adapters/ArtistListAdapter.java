@@ -3,13 +3,11 @@ package com.marverenic.music.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.ListView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
@@ -71,10 +69,6 @@ public class ArtistListAdapter extends BaseAdapter implements SectionIndexer, Ad
             }
         } else {
             Debug.log(Debug.LogLevel.WTF, "ArtistListAdapter", "The requested entry is null", context);
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ((ListView) parent).setSelector(Themes.getTouchRipple(context));
         }
 
         return v;

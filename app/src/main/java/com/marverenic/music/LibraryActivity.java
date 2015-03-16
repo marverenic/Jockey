@@ -1,7 +1,9 @@
 package com.marverenic.music;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -13,10 +15,12 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -152,6 +156,29 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
                 return true;
             case R.id.search:
                 Navigate.to(this, SearchActivity.class);
+                return true;
+            case R.id.action_new_playlist:
+                final EditText input = new EditText(this);
+                input.setInputType(InputType.TYPE_CLASS_TEXT);
+                input.setHint("Playlist name");
+
+                final Context context = this;
+
+                new AlertDialog.Builder(this)
+                        .setTitle("Create Playlist")
+                        .setView(input)
+                        .setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                LibraryScanner.createPlaylist(context, input.getText().toString(), null);
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        }).show();
                 return true;
             case R.id.action_about:
                 Navigate.to(this, AboutActivity.class);

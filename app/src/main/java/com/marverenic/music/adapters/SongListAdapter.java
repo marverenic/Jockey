@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +21,7 @@ import com.marverenic.music.PlayerService;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.LibraryScanner;
+import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Navigate;
@@ -93,10 +93,6 @@ public class SongListAdapter extends BaseAdapter implements SectionIndexer, Adap
             Debug.log(Debug.LogLevel.WTF, "SongListAdapter", "The requested entry is null", context);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ((ListView) parent).setSelector(Themes.getTouchRipple(context));
-        }
-
         return v;
     }
 
@@ -164,6 +160,23 @@ public class SongListAdapter extends BaseAdapter implements SectionIndexer, Adap
                             case 3: //Go to album
                                 Navigate.to(context, LibraryPageActivity.class, "entry", LibraryScanner.findAlbumById(item.albumId));
                                 break;
+                            case 4: //Add to playlist...
+                                ArrayList<Playlist> playlists = Library.getPlaylists();
+                                String[] playlistNames = new String[playlists.size()];
+
+                                for (int i = 0; i < playlists.size(); i++ ){
+                                    playlistNames[i] = playlists.get(i).toString();
+                                }
+
+                                new AlertDialog.Builder(context).setTitle("Add \"" + item.songName + "\" to playlist")
+                                        .setItems(playlistNames, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                LibraryScanner.addPlaylistEntry(context, Library.getPlaylists().get(which), item);
+                                            }
+                                        })
+                                        .setNeutralButton("Cancel", null)
+                                        .show();
                             default:
                                 break;
                         }

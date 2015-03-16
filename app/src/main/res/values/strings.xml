@@ -36,6 +36,17 @@
     <string name="about_license">Jockey is distributed under an Apache 2.0 license</string>
     <string name="lastfm_header">Artist information is provided by</string>
     <string name="lastfm_description">Last.fm</string>
+    <string name="uses_header">Jockey also uses the following open-source libraries:</string>
+    <string name="uses_aosp_header">Android Support Libraries</string>
+    <string name="uses_aosp_detail">Support-v4 version 21.0.2, Palette version 21.0.2; distributed by the Android Open Source Project under an Apache License, Version 2.0</string>
+    <string name="uses_aosp_tabs_header">Android Color Tab Example</string>
+    <string name="uses_aosp_tabs_detail">Distributed by the Android Open Source Project under an Apache License, Version 2.0</string>
+    <string name="uses_picasso_header">Picasso</string>
+    <string name="uses_picasso_detail">Version 2.5.0; distributed by Square, Inc. under an Apache License, Version 2.0</string>
+    <string name="uses_dslv_header">DragSortListView</string>
+    <string name="uses_dslv_detail">Version 0.6.0; distributed by Carl Bauer under an Apache License, Version 2.0</string>
+    <string name="uses_apollo">Jockey also gratefully uses code from Cyanogenmod\'s Apollo music player; licensed under an Apache License, version 2.0</string>
+    <string name="uses_stackoverflow">Additional thanks to many helpful Stack Overflow users who are better at programming than I am.</string>
 
     <!-- Accessibility Content Descriptions -->
     <string name="button_play_description">Play Button</string>
@@ -44,15 +55,6 @@
     <string name="button_skip_description">Next Song Button</string>
     <string name="seek_player_description">Music Seek</string>
     <string name="art_description">Album Art</string>
-    <string name="uses_header">Jockey also uses the following open-source libraries:</string>
-    <string name="uses_aosp_header">Android Support Libraries</string>
-    <string name="uses_aosp_detail">Support-v4 version 21.0.2, Palette version 21.0.2; distributed by the Android Open Source Project under an Apache License, Version 2.0</string>
-    <string name="uses_aosp_tabs_header">Android Color Tab Example</string>
-    <string name="uses_aosp_tabs_detail">Distributed by the Android Open Source Project under an Apache License, Version 2.0</string>
-    <string name="uses_picasso_header">Picasso</string>
-    <string name="uses_picasso_detail">Version 2.5.0; distributed by Square, Inc. under an Apache License, Version 2.0</string>
-    <string name="uses_apollo">Jockey also gratefully uses code from Cyanogenmod\'s Apollo music player; licensed under an Apache License, version 2.0</string>
-    <string name="uses_stackoverflow">Additional thanks to many helpful Stack Overflow users who are better at programming than I am.</string>
 
     <!-- Preference Strings -->
     <string name="appearance_header">Appearance</string>
@@ -72,6 +74,7 @@
         <item>Queue this song last</item>
         <item>Go to artist</item>
         <item>Go to album</item>
+        <item>Add to playlist&#8230;</item>
     </string-array>
     <string-array name="queue_options_album">
         <item>Queue this album next</item>
@@ -94,10 +97,19 @@
     <string-array name="queue_options_playlist">
         <item>Queue all songs in this playlist next</item>
         <item>Queue all songs in this playlist last</item>
+        <item>Delete this playlist</item>
     </string-array>
     <string-array name="now_playing_options">
         <item>Go to artist</item>
         <item>Go to album</item>
+    </string-array>
+    <string-array name="edit_playlist_options">
+        <item>Queue this song next</item>
+        <item>Queue this song last</item>
+        <item>Go to artist</item>
+        <item>Go to album</item>
+        <item>Add to playlist&#8230;</item>
+        <item>Remove from playlist</item>
     </string-array>
 
     <!-- String Arrays for Settings -->
@@ -157,5 +169,6 @@
     <!-- Each theme may have up to 5 preview images -->
     <string name="theme_preview1">ic_launcher_red</string>
     <string name="theme_preview2">ic_launcher_amber</string>
+    <string name="action_edit">Edit</string>
 
 </resources>

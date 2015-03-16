@@ -51,10 +51,12 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     // Shuffle & Repeat status
     private boolean active = false; // If we currently have audio focus
     private boolean shuffle; // Shuffle status
+
     public static enum repeatOption {NONE, ONE, ALL}
     private repeatOption repeat; // Repeat status
 
     private Bitmap art; // The art for the current song
+    private Bitmap artFullRes; // The full resolution artwork for the current song
 
     public Player(Context context) {
         this.context = context;
@@ -204,9 +206,6 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     @Override
     public void onPrepared(MediaPlayer mp) {
         mediaPlayer.start();
-
-        art = Fetch.fetchAlbumArtLocal(getNowPlaying().albumId);
-
         updateNowPlaying();
     }
 
@@ -216,22 +215,52 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         if (shuffle) shuffleQueue();
     }
 
+    public void changeQueue(ArrayList<Song> newQueue, int newPosition) {
+        if (newPosition < 0) throw new NegativeArraySizeException("newPosition cannot be negative");
+
+        if (shuffle){
+            queueShuffled = newQueue;
+            positionShuffled = newPosition;
+        }
+        else{
+            queue = newQueue;
+            position = newPosition;
+        }
+    }
+
     // Start playing a new song
     public void begin() {
-        if (getFocus()) {
-            mediaPlayer.stop();
-            mediaPlayer.reset();
-            art = null;
-            try {
-                mediaPlayer.setDataSource((getNowPlaying()).location);
-            } catch (Exception e) {
-                Log.e("MUSIC SERVICE", "Error setting data source", e);
-                Toast.makeText(context, "There was an error playing this song", Toast.LENGTH_SHORT).show();
-                Debug.log(Debug.LogLevel.WARNING, TAG, "There was an error setting the data source", context);
-                return;
+        final Player player = this;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (getFocus()) {
+                    mediaPlayer.stop();
+                    mediaPlayer.reset();
+                    // Fetch a low resolution art bitmap initially...
+                    art = Fetch.fetchAlbumArtLocal(getNowPlaying().albumId);
+                    artFullRes = null;
+                    // ... And a high resolution version
+                    Fetch.fetchFullResolutionArt(getNowPlaying(), context, new Fetch.fullResolutionArtCallback() {
+                        @Override
+                        public void onArtFetched(Bitmap art) {
+                            player.artFullRes = art;
+                            player.updateNowPlaying();
+                        }
+                    });
+
+                    try {
+                        mediaPlayer.setDataSource((getNowPlaying()).location);
+                    } catch (Exception e) {
+                        Log.e("MUSIC SERVICE", "Error setting data source", e);
+                        Toast.makeText(context, "There was an error playing this song", Toast.LENGTH_SHORT).show();
+                        Debug.log(Debug.LogLevel.WARNING, TAG, "There was an error setting the data source", context);
+                        return;
+                    }
+                    mediaPlayer.prepareAsync();
+                }
             }
-            mediaPlayer.prepareAsync();
-        }
+        }).start();
     }
 
     // Update external information for the current track
@@ -256,7 +285,8 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                     .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, getNowPlaying().songName)
                     .putString(MediaMetadata.METADATA_KEY_TITLE, getNowPlaying().songName)
                     .putString(MediaMetadata.METADATA_KEY_ALBUM, getNowPlaying().albumName)
-                    .putString(MediaMetadata.METADATA_KEY_ARTIST, getNowPlaying().artistName);
+                    .putString(MediaMetadata.METADATA_KEY_ARTIST, getNowPlaying().artistName)
+                    .putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, art);
             mediaSession.setMetadata(metadataBuilder.build());
 
             PlaybackState.Builder state = new PlaybackState.Builder().setActions(PlaybackState.ACTION_PLAY | PlaybackState.ACTION_PLAY_PAUSE |
@@ -583,6 +613,9 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     public Bitmap getArt() {
         return art;
     }
+    public Bitmap getFullArt() {
+        return artFullRes;
+    }
 
     public boolean isPlaying() {
         return mediaPlayer.isPlaying();
@@ -605,7 +638,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     }
 
     public ArrayList<Song> getQueue() {
-        if (shuffle) return queueShuffled;
+        if (shuffle) return new ArrayList<>(queueShuffled);
         return queue;
     }
 

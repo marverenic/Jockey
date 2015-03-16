@@ -80,6 +80,7 @@
         <item name="android:colorPrimary">@color/primary</item>
         <item name="android:colorPrimaryDark">@color/primary_dark</item>
         <item name="android:colorAccent">@color/accent</item>
+        <item name="android:colorControlHighlight">@color/accent</item>
         <item name="android:windowBackground">@color/background</item>
     </style>
 
@@ -88,36 +89,42 @@
         <item name="android:colorPrimary">@color/primary_grey</item>
         <item name="android:colorPrimaryDark">@color/primary_dark_grey</item>
         <item name="android:colorAccent">@color/accent_grey</item>
+        <item name="android:colorControlHighlight">@color/accent_grey</item>
     </style>
 
     <style name="AppTheme.Red" parent="AppTheme">
         <item name="android:colorPrimary">@color/primary_red</item>
         <item name="android:colorPrimaryDark">@color/primary_dark_red</item>
         <item name="android:colorAccent">@color/accent_red</item>
+        <item name="android:colorControlHighlight">@color/accent_red</item>
     </style>
 
     <style name="AppTheme.Orange" parent="AppTheme">
         <item name="android:colorPrimary">@color/primary_orange</item>
         <item name="android:colorPrimaryDark">@color/primary_dark_orange</item>
         <item name="android:colorAccent">@color/accent_orange</item>
+        <item name="android:colorControlHighlight">@color/accent_orange</item>
     </style>
 
     <style name="AppTheme.Yellow" parent="AppTheme">
         <item name="android:colorPrimary">@color/primary_amber</item>
         <item name="android:colorPrimaryDark">@color/primary_dark_amber</item>
         <item name="android:colorAccent">@color/accent_amber</item>
+        <item name="android:colorControlHighlight">@color/accent_amber</item>
     </style>
 
     <style name="AppTheme.Green" parent="AppTheme">
         <item name="android:colorPrimary">@color/primary_green</item>
         <item name="android:colorPrimaryDark">@color/primary_dark_green</item>
         <item name="android:colorAccent">@color/accent_green</item>
+        <item name="android:colorControlHighlight">@color/accent_green</item>
     </style>
 
     <style name="AppTheme.Purple" parent="AppTheme">
         <item name="android:colorPrimary">@color/primary_purple</item>
         <item name="android:colorPrimaryDark">@color/primary_dark_purple</item>
         <item name="android:colorAccent">@color/accent_purple</item>
+        <item name="android:colorControlHighlight">@color/accent_purple</item>
     </style>
 
     <style name="AppThemeLight" parent="android:Theme.Material.Light.DarkActionBar">
@@ -125,6 +132,7 @@
         <item name="android:colorPrimary">@color/primary</item>
         <item name="android:colorPrimaryDark">@color/primary_dark</item>
         <item name="android:colorAccent">@color/accent</item>
+        <item name="android:colorControlHighlight">@color/accent</item>
         <item name="android:windowBackground">@color/background_light</item>
     </style>
 
@@ -133,39 +141,46 @@
         <item name="android:colorPrimary">@color/primary_grey</item>
         <item name="android:colorPrimaryDark">@color/primary_dark_grey</item>
         <item name="android:colorAccent">@color/accent_grey</item>
+        <item name="android:colorControlHighlight">@color/accent_grey</item>
     </style>
 
     <style name="AppThemeLight.Red" parent="AppThemeLight">
         <item name="android:colorPrimary">@color/primary_red</item>
         <item name="android:colorPrimaryDark">@color/primary_dark_red</item>
         <item name="android:colorAccent">@color/accent_red</item>
+        <item name="android:colorControlHighlight">@color/accent_red</item>
     </style>
 
     <style name="AppThemeLight.Orange" parent="AppThemeLight">
         <item name="android:colorPrimary">@color/primary_orange</item>
         <item name="android:colorPrimaryDark">@color/primary_dark_orange</item>
         <item name="android:colorAccent">@color/accent_orange</item>
+        <item name="android:colorControlHighlight">@color/accent_orange</item>
     </style>
 
     <style name="AppThemeLight.Yellow" parent="AppThemeLight">
         <item name="android:colorPrimary">@color/primary_amber</item>
         <item name="android:colorPrimaryDark">@color/primary_dark_amber</item>
         <item name="android:colorAccent">@color/accent_amber</item>
+        <item name="android:colorControlHighlight">@color/accent_amber</item>
     </style>
 
     <style name="AppThemeLight.Green" parent="AppThemeLight">
         <item name="android:colorPrimary">@color/primary_green</item>
         <item name="android:colorPrimaryDark">@color/primary_dark_green</item>
         <item name="android:colorAccent">@color/accent_green</item>
+        <item name="android:colorControlHighlight">@color/accent_green</item>
     </style>
 
     <style name="AppThemeLight.Purple" parent="AppThemeLight">
         <item name="android:colorPrimary">@color/primary_purple</item>
         <item name="android:colorPrimaryDark">@color/primary_dark_purple</item>
         <item name="android:colorAccent">@color/accent_purple</item>
+        <item name="android:colorControlHighlight">@color/accent_purple</item>
     </style>
 
-    <style name="NowPlayingTheme" parent="AppTheme">
+
+    <style name="NowPlayingTheme" parent="@android:style/Theme.Material">
         <item name="android:actionBarStyle">@style/transparent_actionbar</item>
         <item name="android:colorPrimary">@color/primary_grey</item>
         <item name="android:colorPrimaryDark">@color/primary_dark_grey</item>

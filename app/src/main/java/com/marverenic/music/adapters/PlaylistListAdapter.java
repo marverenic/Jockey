@@ -3,17 +3,15 @@ package com.marverenic.music.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import com.marverenic.music.LibraryPageActivity;
 import com.marverenic.music.PlayerService;
+import com.marverenic.music.PlaylistActivity;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.LibraryScanner;
@@ -56,10 +54,6 @@ public class PlaylistListAdapter extends BaseAdapter implements AdapterView.OnIt
             Debug.log(Debug.LogLevel.WTF, "PlaylistListAdapter", "The requested entry is null", context);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ((ListView) parent).setSelector(Themes.getTouchRipple(context));
-        }
-
         return v;
     }
 
@@ -86,7 +80,7 @@ public class PlaylistListAdapter extends BaseAdapter implements AdapterView.OnIt
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Playlist item = data.get(position);
-        Navigate.to(context, LibraryPageActivity.class, "entry", item);
+        Navigate.to(context, PlaylistActivity.class, PlaylistActivity.PLAYLIST_ENTRY, item);
     }
 
     @Override
@@ -112,6 +106,20 @@ public class PlaylistListAdapter extends BaseAdapter implements AdapterView.OnIt
                                 break;
                             case 1: //Queue this playlist last
                                 PlayerService.queueLast(context, LibraryScanner.getPlaylistEntries(context, item));
+                                break;
+                            case 2: //Delete this playlist
+                                new AlertDialog.Builder(context)
+                                        .setTitle("Delete \"" + item.playlistName + "\"?")
+                                        .setMessage("Deleting this playlist will permanently remove it from your device")
+                                        .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                LibraryScanner.removePlaylist(context, item);
+                                                notifyDataSetChanged();
+                                            }
+                                        })
+                                        .setNegativeButton("Cancel", null)
+                                        .show();
                                 break;
                             default:
                                 break;

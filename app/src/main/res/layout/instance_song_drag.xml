@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/list_height">
+
+    <RelativeLayout
+        android:id="@+id/songInstance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <ImageView
+            android:id="@+id/handle"
+            android:layout_width="@dimen/drag_handle_size"
+            android:layout_height="@dimen/drag_handle_size"
+            android:layout_marginStart="@dimen/drag_handle_padding"
+            android:layout_marginEnd="@dimen/drag_handle_padding"
+            android:src="@drawable/ic_drag_handle"
+            android:layout_centerInParent="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+
+        <TextView
+            android:id="@+id/textSongTitle"
+            android:text="song title"
+            android:textColor="@color/list_text"
+            android:textSize="@dimen/list_text_header_size"
+            android:layout_marginRight="@dimen/list_padding_h"
+            android:layout_marginEnd="@dimen/list_padding_h"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/handle"
+            android:layout_toEndOf="@id/handle"
+            android:ellipsize="end"
+            android:singleLine="true"/>
+
+        <TextView
+            android:id="@+id/textSongDetail"
+            android:text="artist - album"
+            android:textColor="@color/detail_text"
+            android:textSize="@dimen/list_text_detail_size"
+            android:layout_marginRight="@dimen/list_padding_h"
+            android:layout_marginEnd="@dimen/list_padding_h"
+            android:layout_below="@id/textSongTitle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/handle"
+            android:layout_toEndOf="@id/handle"
+            android:ellipsize="end"
+            android:singleLine="true" />
+
+    </RelativeLayout>
+</FrameLayout>

@@ -22,7 +22,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:src="@drawable/ic_launcher_black" />
+                android:src="@drawable/ic_launcher_grey" />
 
             <TextView
                 android:id="@+id/aboutAppName"
@@ -152,10 +152,29 @@
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/aboutApolloHeader"
+                android:id="@+id/aboutDSLVHeader"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/aboutUILDetail"
+                android:layout_marginTop="16dp"
+                android:text="@string/uses_dslv_header"
+                android:textColor="@color/ui_text_grey"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/aboutDSLVDetail"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutDSLVHeader"
+                android:text="@string/uses_dslv_detail"
+                android:textColor="@color/ui_detail_text_grey"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/aboutApolloHeader"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutDSLVDetail"
                 android:layout_marginTop="16dp"
                 android:text="@string/uses_apollo"
                 android:textColor="@color/ui_text_grey"

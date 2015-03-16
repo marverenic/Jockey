@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.marverenic.music"
-    android:versionCode="21712"
-    android:versionName="0.2-α.r0m17m">
+    android:versionCode="21800"
+    android:versionName="0.2-α.r0m18a">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -109,6 +109,9 @@
             android:label="@string/header_now_playing"
             android:parentActivityName="com.marverenic.music.NowPlayingActivity"
             android:screenOrientation="fullUser" />
+
+        <activity android:name=".PlaylistActivity"
+            android:parentActivityName=".LibraryActivity"/>
 
         <activity
             android:name="com.marverenic.music.SettingsActivity"

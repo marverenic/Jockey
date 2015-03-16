@@ -1,16 +1,21 @@
 package com.marverenic.music;
 
 import android.app.Activity;
+import android.content.Context;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
 
-import com.marverenic.music.adapters.SongListAdapter;
+import com.marverenic.music.adapters.QueueEditAdapter;
+import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
+import com.mobeta.android.dslv.DragSortController;
+import com.mobeta.android.dslv.DragSortListView;
+
+import java.util.ArrayList;
 
 public class QueueActivity extends Activity implements AdapterView.OnItemClickListener, View.OnClickListener {
 
@@ -22,12 +27,42 @@ public class QueueActivity extends Activity implements AdapterView.OnItemClickLi
 
         setContentView(R.layout.page_editable_list);
 
-        ListView songListView = (ListView) findViewById(R.id.list);
-        songListView.setAdapter(new SongListAdapter(PlayerService.getQueue(), this, false));
-        songListView.setOnItemClickListener(this);
-
         Themes.themeActivity(R.layout.page_editable_list, getWindow().findViewById(android.R.id.content), this);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
+
+        final Context context = this;
+        final QueueEditAdapter adapter = new QueueEditAdapter(this);
+        final DragSortListView listView = (DragSortListView) findViewById(R.id.list);
+        DragSortController controller = new QueueEditAdapter.dragSortController(listView, adapter, R.id.handle);
+        listView.setOnItemClickListener(this);
+        listView.setAdapter(adapter);
+        listView.setFloatViewManager(controller);
+        listView.setOnTouchListener(controller);
+        listView.setDragEnabled(true);
+        listView.setDropListener(new DragSortListView.DropListener() {
+            @Override
+            public void drop(int from, int to) {
+                ArrayList<Song> data = adapter.move(from, to);
+                adapter.notifyDataSetChanged();
+                listView.invalidateViews();
+
+                if (PlayerService.getPosition() == from){
+                    // If the current song was moved in the queue
+                    PlayerService.changeQueue(context, data, to);
+                }
+                else if (PlayerService.getPosition() < from && PlayerService.getPosition() >= to){
+                    // If a song that was before the current playing song was moved to a position after the current song...
+                    PlayerService.changeQueue(context, data, PlayerService.getPosition() + 1);
+                }
+                else if (PlayerService.getPosition() > from && PlayerService.getPosition() <= to){
+                    // If a song that was after the current playing song was moved to a position before the current song...
+                    PlayerService.changeQueue(context, data, PlayerService.getPosition() - 1);
+                }
+                else{
+                    PlayerService.changeQueue(context, data, PlayerService.getPosition());
+                }
+            }
+        });
     }
 
     @Override

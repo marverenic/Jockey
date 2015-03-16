@@ -319,13 +319,18 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
             albumTitle.setText(PlayerService.getNowPlaying().albumName);
             seekBar.setMax(PlayerService.getNowPlaying().songDuration);
 
-            if (PlayerService.getArt() != null) {
-                ((ImageView) findViewById(R.id.imageArtwork)).setImageBitmap(PlayerService.getArt());
-            } else {
+            ImageView artImageView = (ImageView) findViewById(R.id.imageArtwork);
+            if (PlayerService.getFullArt() != null) {
+                artImageView.setImageBitmap(PlayerService.getFullArt());
+            }
+            else if (PlayerService.getArt() != null){
+                artImageView.setImageBitmap(PlayerService.getArt());
+            }
+            else {
                 if (getResources().getConfiguration().smallestScreenWidthDp >= 700) {
-                    ((ImageView) findViewById(R.id.imageArtwork)).setImageResource(R.drawable.art_default_xxl);
+                    artImageView.setImageResource(R.drawable.art_default_xxl);
                 } else {
-                    ((ImageView) findViewById(R.id.imageArtwork)).setImageResource(R.drawable.art_default_xl);
+                    artImageView.setImageResource(R.drawable.art_default_xl);
                 }
             }
         }

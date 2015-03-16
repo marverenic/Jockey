@@ -26,6 +26,8 @@ public class Song implements Parcelable {
     public long artistId;
     @SerializedName("genreId")
     public long genreId = -1;
+    @SerializedName("trackNumber")
+    public long trackNumber = 0;
 
     public Song(final String songName, final long songId, final String artistName,
                 final String albumName, final int songDuration, final String location,

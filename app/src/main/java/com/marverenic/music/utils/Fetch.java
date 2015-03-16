@@ -3,12 +3,16 @@ package com.marverenic.music.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
+import android.os.AsyncTask;
 import android.support.v7.graphics.Palette;
 import android.text.Html;
+import android.util.Log;
 
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.LibraryScanner;
+import com.marverenic.music.instances.Song;
 
 import java.io.File;
 
@@ -24,22 +28,9 @@ public class Fetch {
     private static final String API_KEY = "a9fc65293034b84b83d20c6e2ecda4b5";
     private static boolean lastFmInitialized = false;
 
+    @Deprecated
     public static void initImageCache (Context context) {
-        /*if (!ImageLoader.getInstance().isInited()) {
-            int albumSizePx = 100 * (int) context.getResources().getDisplayMetrics().density;
-            ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
-                    .defaultDisplayImageOptions((
-                            new DisplayImageOptions.Builder()
-                                    .cacheInMemory(true)
-                                    .cacheOnDisk(true)
-                    ).build())
-                    .memoryCacheSizePercentage(20)
-                    .diskCacheSize(20 * 1024 * 1024)
-                    .memoryCacheExtraOptions(albumSizePx, albumSizePx)
-                    .diskCacheExtraOptions(albumSizePx, albumSizePx, null)
-                    .build();
-            ImageLoader.getInstance().init(config);
-        }*/
+        // Currently unused
     }
 
     public static void initLastFm(Context context) {
@@ -49,6 +40,7 @@ public class Fetch {
         lastFmInitialized = true;
     }
 
+    // Returns the album art thumbnail from MediaStore
     public static Bitmap fetchAlbumArtLocal(long albumId) {
         Album album = LibraryScanner.findAlbumById(albumId);
         if (album.artUri != null) {
@@ -57,8 +49,58 @@ public class Fetch {
         return null;
     }
 
+    // Loads the full resolution art into memory
+    public static void fetchFullResolutionArt(final Song song, final Context context, final fullResolutionArtCallback callback){
+        if (callback == null){
+            Log.w(TAG, "No callback was provided. Aborting fetchFullResolutionArt");
+            return;
+        }
+
+        new AsyncTask<Void, Void, Void>(){
+            Bitmap art;
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                art = null;
+                try {
+                    retriever.setDataSource(song.location);
+                    byte[] stream = retriever.getEmbeddedPicture();
+                    if (stream != null) art = BitmapFactory.decodeByteArray(stream, 0, stream.length);
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                    return null;
+                }
+
+                if (art != null) {
+                    // Resize the art so that it is no taller than the device's screen
+                    // and preserve its original aspect ratio
+                    final int displayHeight = context.getResources().getDisplayMetrics().heightPixels;
+                    if (art.getHeight() > displayHeight) {
+                        art = Bitmap.createScaledBitmap(art, (int) (displayHeight * ((float) art.getWidth() / (float) art.getHeight())), displayHeight, true);
+                    }
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void v){
+                if (art != null) {
+                    // Then do whatever the method wanted to do with this bitmap
+                    callback.onArtFetched(art);
+                }
+            }
+        }.execute();
+    }
+
+    // Because fetching full resolution art can be slow, do it
+    public interface fullResolutionArtCallback{
+        public void onArtFetched(Bitmap art);
+    }
+
     public static void buildAlbumPalette (Bitmap bitmap, int defaultPrimary, int defaultTitleText,
-                                              int defaultBodyText, Album album){
+                                          int defaultBodyText, Album album){
 
         Palette palette = Palette.generate(bitmap);
 

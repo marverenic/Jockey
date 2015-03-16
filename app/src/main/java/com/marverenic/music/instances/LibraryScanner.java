@@ -1,11 +1,15 @@
 package com.marverenic.music.instances;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -18,6 +22,8 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class LibraryScanner {
@@ -87,7 +93,7 @@ public class LibraryScanner {
 
         for (int i = 0; i < cur.getCount(); i++) {
             cur.moveToPosition(i);
-            Library.add(new Song(
+            Song s = new Song(
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)),
                     cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media._ID)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST)),
@@ -95,7 +101,10 @@ public class LibraryScanner {
                     cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DURATION)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA)),
                     cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)),
-                    cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID))));
+                    cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID)));
+
+            s.trackNumber = cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media.TRACK));
+            Library.add(s);
         }
         cur.close();
     }
@@ -279,6 +288,13 @@ public class LibraryScanner {
             }
         }
 
+        Collections.sort(songEntries, new Comparator<Song>() {
+            @Override
+            public int compare(Song o1, Song o2) {
+                return ((Long) o1.trackNumber).compareTo(o2.trackNumber);
+            }
+        });
+
         return songEntries;
     }
 
@@ -319,6 +335,97 @@ public class LibraryScanner {
         }
 
         return songEntries;
+    }
+
+    //
+    //          PLAYLIST WRITING METHOD
+    //
+
+    public static void swapPlaylistEntries(final Context context, final Playlist playlist, final int from, final int to){
+        MediaStore.Audio.Playlists.Members.moveItem(context.getContentResolver(), playlist.playlistId, from, to);
+    }
+
+    public static void removePlaylistEntry(final Context context, final Playlist playlist, final int position){
+        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId);
+        ContentResolver resolver = context.getContentResolver();
+        resolver.delete(uri, MediaStore.Audio.Playlists.Members.TRACK + "=?", new String[]{position + ""});
+    }
+
+    public static void addPlaylistEntry(final Context context, final Playlist playlist, final Song song){
+        Cursor cur = context.getContentResolver().query(
+                MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId),
+                null, null, null,
+                MediaStore.Audio.Playlists.Members.TRACK + " ASC");
+
+        long count = 0;
+        if (cur.moveToLast()) count = cur.getLong(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.TRACK));
+        cur.close();
+
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, count + 1);
+        values.put(MediaStore.Audio.Playlists.Members.AUDIO_ID, song.songId);
+
+        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId);
+        ContentResolver resolver = context.getContentResolver();
+        resolver.insert(uri, values);
+        resolver.notifyChange(Uri.parse("content://media"), null);
+    }
+
+    public static void createPlaylist(final Context context, final String playlistName, final ArrayList<Song> songList){
+        // Add the playlist to the MediaStore
+        ContentValues mInserts = new ContentValues();
+        mInserts.put(MediaStore.Audio.Playlists.NAME, playlistName);
+        mInserts.put(MediaStore.Audio.Playlists.DATE_ADDED, System.currentTimeMillis());
+        mInserts.put(MediaStore.Audio.Playlists.DATE_MODIFIED, System.currentTimeMillis());
+
+        Uri newPlaylistUri = context.getContentResolver().insert(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, mInserts);
+
+        // Update the playlist library & resort it
+        Library.getPlaylists().clear();
+        scanPlaylists(context);
+        Library.sortPlaylistList(Library.getPlaylists());
+
+        // Get the id of the new playlist
+        Cursor cursor = context.getContentResolver().query(
+                newPlaylistUri,
+                new String[] {MediaStore.Audio.Playlists._ID},
+                null, null, null);
+
+        cursor.moveToFirst();
+        Playlist playlist = new Playlist(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID)), playlistName);
+        cursor.close();
+
+        // If we have a list of songs, associate it with the playlist
+        if(songList != null) {
+            ContentValues[] values = new ContentValues[songList.size()];
+
+            for (int i = 0; i < songList.size(); i++) {
+                values[i].put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, i);
+                values[i].put(MediaStore.Audio.Playlists.Members.AUDIO_ID, songList.get(i).songId);
+            }
+
+            Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId);
+            ContentResolver resolver = context.getContentResolver();
+
+            resolver.bulkInsert(uri, values);
+            resolver.notifyChange(Uri.parse("content://media"), null);
+        }
+    }
+
+    public static void removePlaylist(final Context context, final Playlist playlist){
+        // Remove the playlist from the MediaStore
+        context.getContentResolver().delete(
+                MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
+                MediaStore.Audio.Playlists._ID + "=?",
+                new String[] {playlist.playlistId + ""});
+
+        // Update the playlist library & resort it
+        Library.getPlaylists().clear();
+        scanPlaylists(context);
+        Library.sortPlaylistList(Library.getPlaylists());
+
+        Toast toast = Toast.makeText(context, "\"" + playlist.toString() + "\" has been deleted", Toast.LENGTH_SHORT);
+        toast.show();
     }
 
     //

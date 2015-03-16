@@ -299,6 +299,7 @@ public class PlayerService extends Service {
     // They will pass the commands to the Player, creating the service if necessary
     // These methods CAN (and should) be used to initialize the service
     public static void setQueue(Context context, ArrayList<Song> newQueue, int newPosition) { getPlayer(context).setQueue(newQueue, newPosition); }
+    public static void changeQueue(Context context, ArrayList<Song> newQueue, int newPosition) { getPlayer(context).changeQueue(newQueue, newPosition); }
     public static void queueNext(Context context, Song song) { getPlayer(context).queueNext(song); }
     public static void queueLast(Context context, Song song) { getPlayer(context).queueLast(song); }
     public static void queueNext(Context context, ArrayList<Song> songs) {getPlayer(context).queueNext(songs); }
@@ -319,6 +320,7 @@ public class PlayerService extends Service {
     public static void toggleShuffle() { player.toggleShuffle(); }
     public static void toggleRepeat() { player.toggleRepeat(); }
     public static Bitmap getArt() { return player.getArt(); }
+    public static Bitmap getFullArt() { return player.getFullArt(); }
     public static boolean isPlaying() { return player.isPlaying(); }
     public static int getCurrentPosition() { return player.getCurrentPosition(); }
     public static boolean isShuffle() {return player.isShuffle();}
