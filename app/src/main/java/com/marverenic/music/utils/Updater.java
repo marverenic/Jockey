@@ -4,10 +4,13 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -62,39 +65,46 @@ public class Updater implements Runnable {
 
 
         // Check with a URL to see if Jockey has an update
-        try {
-            URL versionUrl = new URL("https://raw.githubusercontent.com/marverenic/Jockey/master/VERSION");
-            BufferedReader in = new BufferedReader(new InputStreamReader(versionUrl.openStream()));
+        ConnectivityManager network = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-            final String code = in.readLine();
-            final String name = in.readLine();
+        // Only check for an update if a valid network is present
+        if(network.getActiveNetworkInfo().isAvailable() && !network.getActiveNetworkInfo().isRoaming()
+                && (prefs.getBoolean("prefUseMobileData", true) || network.getActiveNetworkInfo().getType() != ConnectivityManager.TYPE_MOBILE)) {
+            try {
+                URL versionUrl = new URL("https://raw.githubusercontent.com/marverenic/Jockey/master/VERSION");
+                BufferedReader in = new BufferedReader(new InputStreamReader(versionUrl.openStream()));
 
-            if (Integer.parseInt(code) > context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode) {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        AlertDialog.Builder alert = new AlertDialog.Builder(context);
-                        alert.setTitle("Update available")
-                                .setMessage("A new version of Jockey (version " + name + ") is available to download and install.")
-                                .setPositiveButton("Download now", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        String downloadUrl = "https://sourceforge.net/projects/jockey-player/files/latest/download";
-                                        Intent downloadIntent = new Intent(Intent.ACTION_VIEW);
-                                        downloadIntent.setData(Uri.parse(downloadUrl));
-                                        context.startActivity(downloadIntent);
-                                    }
-                                })
-                                .setNegativeButton("Remind me later", null)
-                                .show();
-                    }
-                });
+                final String code = in.readLine();
+                final String name = in.readLine();
 
+                if (Integer.parseInt(code) > context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            AlertDialog.Builder alert = new AlertDialog.Builder(context);
+                            alert.setTitle("Update available")
+                                    .setMessage("A new version of Jockey (version " + name + ") is available to download and install.")
+                                    .setPositiveButton("Download now", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            String downloadUrl = "https://sourceforge.net/projects/jockey-player/files/latest/download";
+                                            Intent downloadIntent = new Intent(Intent.ACTION_VIEW);
+                                            downloadIntent.setData(Uri.parse(downloadUrl));
+                                            context.startActivity(downloadIntent);
+                                        }
+                                    })
+                                    .setNegativeButton("Remind me later", null)
+                                    .show();
+                        }
+                    });
+
+                }
+                in.close();
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            in.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }

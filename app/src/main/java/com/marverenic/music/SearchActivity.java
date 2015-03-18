@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.os.Build;
@@ -17,14 +16,10 @@ import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.SearchView;
-import android.widget.TextView;
 
 import com.marverenic.music.adapters.SearchPagerAdapter;
+import com.marverenic.music.fragments.MiniplayerManager;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Genre;
@@ -180,59 +175,7 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
     }
 
     public void update() {
-        if (PlayerService.isInitialized() && PlayerService.getNowPlaying() != null) {
-            final TextView songTitle = (TextView) findViewById(R.id.textNowPlayingTitle);
-            final TextView artistName = (TextView) findViewById(R.id.textNowPlayingDetail);
-
-            songTitle.setText(PlayerService.getNowPlaying().songName);
-            artistName.setText(PlayerService.getNowPlaying().artistName);
-
-            if (!PlayerService.isPlaying()) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_vector_play);
-                    ((ImageButton) findViewById(R.id.playButton)).setImageTintList(ColorStateList.valueOf(Themes.getListText()));
-                } else {
-                    if (Themes.isLight(this)) {
-                        ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_miniplayer_light);
-                    } else {
-                        ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_miniplayer);
-                    }
-                }
-            } else {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_vector_pause);
-                    ((ImageButton) findViewById(R.id.playButton)).setImageTintList(ColorStateList.valueOf(Themes.getListText()));
-                } else {
-                    if (Themes.isLight(this)) {
-                        ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_pause_miniplayer_light);
-                    } else {
-                        ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_pause_miniplayer);
-                    }
-                }
-            }
-
-            if (PlayerService.getArt() != null) {
-                ((ImageView) findViewById(R.id.imageArtwork)).setImageBitmap(PlayerService.getArt());
-            } else {
-                ((ImageView) findViewById(R.id.imageArtwork)).setImageResource(R.drawable.art_default);
-            }
-
-            RelativeLayout.LayoutParams pagerLayoutParams = (RelativeLayout.LayoutParams) (findViewById(R.id.pager)).getLayoutParams();
-            pagerLayoutParams.bottomMargin = getResources().getDimensionPixelSize(R.dimen.now_playing_ticker_height);
-            (findViewById(R.id.pager)).setLayoutParams(pagerLayoutParams);
-
-            FrameLayout.LayoutParams playerLayoutParams = (FrameLayout.LayoutParams) (findViewById(R.id.miniplayer)).getLayoutParams();
-            playerLayoutParams.height = getResources().getDimensionPixelSize(R.dimen.now_playing_ticker_height);
-            (findViewById(R.id.miniplayer)).setLayoutParams(playerLayoutParams);
-        } else {
-            RelativeLayout.LayoutParams pagerLayoutParams = (RelativeLayout.LayoutParams) (findViewById(R.id.pager)).getLayoutParams();
-            pagerLayoutParams.bottomMargin = 0;
-            (findViewById(R.id.pager)).setLayoutParams(pagerLayoutParams);
-
-            FrameLayout.LayoutParams playerLayoutParams = (FrameLayout.LayoutParams) (findViewById(R.id.miniplayer)).getLayoutParams();
-            playerLayoutParams.height = 0;
-            (findViewById(R.id.miniplayer)).setLayoutParams(playerLayoutParams);
-        }
+        MiniplayerManager.update(this, R.id.pager);
     }
 
     @Override

@@ -19,6 +19,7 @@
     <string name="action_play">Play</string>
     <string name="action_pause">Pause</string>
     <string name="action_previous">Previous</string>
+    <string name="action_edit">Edit</string>
     <string name="album_art">Album Art</string>
     <string name="shuffle">Shuffle</string>
     <string name="repeat">Repeat</string>
@@ -67,6 +68,8 @@
     <string name="add_shortcut">Add themed icon to launcher</string>
     <string name="add_shortcut_description">Place a new shortcut to Jockey on your home screen to match your theme. Happens when you close this page</string>
     <string name="switch_to_now_playing">Automatically Switch to Now Playing</string>
+    <string name="use_mobile_description">Allow Jockey to download artist information and thumbnails while on mobile networks</string>
+    <string name="use_mobile">Use mobile data</string>
 
     <!-- Arrays -->
     <string-array name="queue_options_song">
@@ -169,6 +172,5 @@
     <!-- Each theme may have up to 5 preview images -->
     <string name="theme_preview1">ic_launcher_red</string>
     <string name="theme_preview2">ic_launcher_amber</string>
-    <string name="action_edit">Edit</string>
 
 </resources>

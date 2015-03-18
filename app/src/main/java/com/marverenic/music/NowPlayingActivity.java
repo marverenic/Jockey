@@ -302,7 +302,7 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Navigate.back(this);
+        finish();
     }
 
     public void update() {
@@ -334,7 +334,7 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
                 }
             }
         }
-        if (PlayerService.isPlaying()) {
+        if ((PlayerService.isPlaying() || PlayerService.isPreparing())) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_vector_pause_circle_fill);
             } else {

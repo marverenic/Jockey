@@ -205,8 +205,10 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        mediaPlayer.start();
-        updateNowPlaying();
+        if(!isPreparing()) {
+            mediaPlayer.start();
+            updateNowPlaying();
+        }
     }
 
     public void setQueue(final ArrayList<Song> newQueue, final int newPosition) {
@@ -230,38 +232,38 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     // Start playing a new song
     public void begin() {
-        final Player player = this;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (getFocus()) {
-                    mediaPlayer.stop();
-                    mediaPlayer.reset();
-                    // Fetch a low resolution art bitmap initially...
-                    art = Fetch.fetchAlbumArtLocal(getNowPlaying().albumId);
-                    artFullRes = null;
-                    // ... And a high resolution version
-                    Fetch.fetchFullResolutionArt(getNowPlaying(), context, new Fetch.fullResolutionArtCallback() {
-                        @Override
-                        public void onArtFetched(Bitmap art) {
-                            player.artFullRes = art;
-                            player.updateNowPlaying();
-                        }
-                    });
-
-                    try {
-                        mediaPlayer.setDataSource((getNowPlaying()).location);
-                    } catch (Exception e) {
-                        Log.e("MUSIC SERVICE", "Error setting data source", e);
-                        Toast.makeText(context, "There was an error playing this song", Toast.LENGTH_SHORT).show();
-                        Debug.log(Debug.LogLevel.WARNING, TAG, "There was an error setting the data source", context);
-                        return;
-                    }
-                    mediaPlayer.prepareAsync();
+        if (getFocus()) {
+            mediaPlayer.stop();
+            mediaPlayer.reset();
+            // Fetch a low resolution art bitmap initially...
+            art = Fetch.fetchAlbumArtLocal(getNowPlaying().albumId);
+            artFullRes = null;
+            // ... And a high resolution version
+            Fetch.fetchFullResolutionArt(getNowPlaying(), context, new Fetch.fullResolutionArtCallback() {
+                @Override
+                public void onArtFetched(Bitmap art) {
+                    artFullRes = art;
+                    updateNowPlaying();
                 }
+            });
+
+            try {
+                mediaPlayer.setDataSource((getNowPlaying()).location);
+            } catch (Exception e) {
+                Log.e("MUSIC SERVICE", "Error setting data source", e);
+                Toast.makeText(context, "There was an error playing this song", Toast.LENGTH_SHORT).show();
+                Debug.log(Debug.LogLevel.WARNING, TAG, "There was an error setting the data source", context);
+                return;
             }
-        }).start();
+            try {
+                mediaPlayer.prepare();
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+        }
     }
+
 
     // Update external information for the current track
     public void updateNowPlaying() {
@@ -403,54 +405,58 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     }
 
     public void previous() {
-        if (shuffle) {
-            if (mediaPlayer.getCurrentPosition() > 5000 || positionShuffled < 1) {
-                mediaPlayer.seekTo(0);
+        if (!isPreparing()) {
+            if (shuffle) {
+                if (mediaPlayer.getCurrentPosition() > 5000 || positionShuffled < 1) {
+                    mediaPlayer.seekTo(0);
+                } else {
+                    positionShuffled--;
+                    begin();
+                }
             } else {
-                positionShuffled--;
-                begin();
+                if (mediaPlayer.getCurrentPosition() > 5000 || position < 1) {
+                    mediaPlayer.seekTo(0);
+                } else {
+                    position--;
+                    begin();
+                }
             }
-        } else {
-            if (mediaPlayer.getCurrentPosition() > 5000 || position < 1) {
-                mediaPlayer.seekTo(0);
-            } else {
-                position--;
-                begin();
-            }
+            updateNowPlaying();
         }
-        updateNowPlaying();
     }
 
     public void skip() {
-        if (shuffle) {
-            if (positionShuffled + 1 < queueShuffled.size()) {
-                positionShuffled++;
-                begin();
-            } else {
-                if (repeat == repeatOption.ALL) {
-                    positionShuffled = 0;
+        if (!isPreparing()) {
+            if (shuffle) {
+                if (positionShuffled + 1 < queueShuffled.size()) {
+                    positionShuffled++;
                     begin();
                 } else {
-                    mediaPlayer.pause();
-                    mediaPlayer.seekTo(mediaPlayer.getDuration());
+                    if (repeat == repeatOption.ALL) {
+                        positionShuffled = 0;
+                        begin();
+                    } else {
+                        mediaPlayer.pause();
+                        mediaPlayer.seekTo(mediaPlayer.getDuration());
+                    }
                 }
-            }
-        } else {
-            if (position + 1 < queue.size()) {
-                position++;
-                begin();
             } else {
-                if (repeat == repeatOption.ALL) {
-                    position = 0;
+                if (position + 1 < queue.size()) {
+                    position++;
                     begin();
                 } else {
-                    mediaPlayer.pause();
-                    mediaPlayer.seekTo(mediaPlayer.getDuration());
-                }
+                    if (repeat == repeatOption.ALL) {
+                        position = 0;
+                        begin();
+                    } else {
+                        mediaPlayer.pause();
+                        mediaPlayer.seekTo(mediaPlayer.getDuration());
+                    }
 
+                }
             }
+            updateNowPlaying();
         }
-        updateNowPlaying();
     }
 
     public void seek(int position) {
@@ -619,6 +625,10 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     public boolean isPlaying() {
         return mediaPlayer.isPlaying();
+    }
+
+    public boolean isPreparing() {
+        return mediaPlayer.getState() == ManagedMediaPlayer.status.PREPARING;
     }
 
     public int getCurrentPosition() {

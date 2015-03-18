@@ -183,7 +183,7 @@ public class PlayerService extends Service {
         }
 
         // Update the play/pause button icon to reflect the player status
-        if (!isPlaying()) {
+        if (!(PlayerService.isPlaying() || PlayerService.isPreparing())) {
             notificationView.setImageViewResource(R.id.notificationPause, R.drawable.ic_play);
             notificationViewExpanded.setImageViewResource(R.id.notificationPause, R.drawable.ic_play);
         } else{
@@ -197,7 +197,11 @@ public class PlayerService extends Service {
                 .setSmallIcon(R.drawable.ic_play_notification)
                 .setOnlyAlertOnce(true)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setContentIntent(PendingIntent.getActivity(context, 0, new Intent(context, NowPlayingActivity.class).setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT), PendingIntent.FLAG_CANCEL_CURRENT))
+                .setContentIntent(PendingIntent.getActivity(
+                        getInstance(),
+                        0,
+                        new Intent(context, LibraryActivity.class),
+                        PendingIntent.FLAG_UPDATE_CURRENT))
                 .build();
 
         // Manually set the expanded and compact views
@@ -207,7 +211,7 @@ public class PlayerService extends Service {
         return notification;
     }
 
-    // Build a notification on API >21 devices
+    // Build a notification on API >= 21 devices
     @TargetApi(21)
     public static Notification getNotification() {
         // Builds a notification on Lollipop and higher devices
@@ -216,7 +220,7 @@ public class PlayerService extends Service {
         Notification.Builder notification = new Notification.Builder(context);
 
         // The intent for buttons
-        Intent intent = new Intent(context, PlayerService.class);
+        Intent intent = new Intent(getInstance(), PlayerService.class);
 
         notification
                 .setStyle(new Notification.MediaStyle().setShowActionsInCompactView(1, 2))
@@ -226,7 +230,11 @@ public class PlayerService extends Service {
                 .setOnlyAlertOnce(true)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setVisibility(Notification.VISIBILITY_PUBLIC)
-                .setContentIntent(PendingIntent.getActivity(context, 0, new Intent(context, NowPlayingActivity.class).setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT), PendingIntent.FLAG_CANCEL_CURRENT));
+                .setContentIntent(PendingIntent.getActivity(
+                        getInstance(),
+                        0,
+                        new Intent(context, LibraryActivity.class),
+                        PendingIntent.FLAG_UPDATE_CURRENT));
 
         // Set the album artwork
         if (getArt() == null) {
@@ -240,7 +248,7 @@ public class PlayerService extends Service {
         notification.addAction(R.drawable.ic_vector_skip_previous_notification, context.getResources().getString(R.string.action_previous), PendingIntent.getService(context, 1, intent.setAction(ACTION_PREV), 0));
         // Add the play/pause button next
         // Also set the notification's icon to reflect the player's status
-        if (isPlaying()) {
+        if (PlayerService.isPlaying() || PlayerService.isPreparing()) {
             notification
                     .addAction(R.drawable.ic_vector_pause, context.getResources().getString(R.string.action_pause), PendingIntent.getService(context, 1, intent.setAction(ACTION_TOGGLE_PLAY), 0))
                     .setSmallIcon(R.drawable.ic_vector_play_notification);
@@ -322,6 +330,9 @@ public class PlayerService extends Service {
     public static Bitmap getArt() { return player.getArt(); }
     public static Bitmap getFullArt() { return player.getFullArt(); }
     public static boolean isPlaying() { return player.isPlaying(); }
+    public static boolean isPreparing() {
+        return player.isPreparing();
+    }
     public static int getCurrentPosition() { return player.getCurrentPosition(); }
     public static boolean isShuffle() {return player.isShuffle();}
     public static boolean isRepeat() { return player.isRepeat();}

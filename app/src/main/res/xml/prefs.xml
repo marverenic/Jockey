@@ -30,6 +30,13 @@
             android:summary="@string/add_shortcut_description"
             android:title="@string/add_shortcut" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="General">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="prefUseMobileData"
+            android:summary="@string/use_mobile_description"
+            android:title="@string/use_mobile"/>
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/playback_header">
         <CheckBoxPreference
             android:defaultValue="true"

@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.marverenic.music.adapters.QueueEditAdapter;
+import com.marverenic.music.fragments.MiniplayerManager;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
@@ -76,6 +77,7 @@ public class QueueActivity extends Activity implements AdapterView.OnItemClickLi
             }
         });
 
+        MiniplayerManager.hide(this, R.id.list);
         registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
     }
 
@@ -123,6 +125,6 @@ public class QueueActivity extends Activity implements AdapterView.OnItemClickLi
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         PlayerService.changeSong(position);
-        Navigate.up(this);
+        Navigate.back(this);
     }
 }

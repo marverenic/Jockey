@@ -7,7 +7,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.AudioManager;
@@ -19,9 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.GridView;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -29,6 +26,7 @@ import android.widget.TextView;
 import com.marverenic.music.adapters.AlbumGridAdapter;
 import com.marverenic.music.adapters.ArtistPageAdapter;
 import com.marverenic.music.adapters.SongListAdapter;
+import com.marverenic.music.fragments.MiniplayerManager;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Genre;
@@ -63,6 +61,8 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
         Themes.setTheme(this);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         Object parent = getIntent().getParcelableExtra("entry");
+
+        if(getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (parent != null) {
 
@@ -252,20 +252,7 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.miniplayer:
-                Navigate.to(this, NowPlayingActivity.class);
-                update();
-                break;
-            case R.id.playButton:
-                PlayerService.togglePlay();
-                update();
-                break;
-            case R.id.skipButton:
-                PlayerService.skip();
-                update();
-                break;
-        }
+        MiniplayerManager.onClick(v.getId(), this, R.id.list_container);
     }
 
     @Override
@@ -280,72 +267,17 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
 
     public void update() {
         if (type != Type.UNKNOWN) {
-            if (PlayerService.isInitialized() && PlayerService.getNowPlaying() != null) {
-                final TextView songTitle = (TextView) findViewById(R.id.textNowPlayingTitle);
-                final TextView artistName = (TextView) findViewById(R.id.textNowPlayingDetail);
-
-                songTitle.setText(PlayerService.getNowPlaying().songName);
-                artistName.setText(PlayerService.getNowPlaying().artistName);
-
-                if (!PlayerService.isPlaying()) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play);
-                        ((ImageButton) findViewById(R.id.playButton)).setImageTintList(ColorStateList.valueOf(Themes.getListText()));
-                    } else {
-                        if (Themes.isLight(this)) {
-                            ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_miniplayer_light);
-                        } else {
-                            ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_miniplayer);
-                        }
-                    }
-                } else {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_pause);
-                        ((ImageButton) findViewById(R.id.playButton)).setImageTintList(ColorStateList.valueOf(Themes.getListText()));
-                    } else {
-                        if (Themes.isLight(this)) {
-                            ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_pause_miniplayer_light);
-                        } else {
-                            ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_pause_miniplayer);
-                        }
-                    }
-                }
-
-                if (PlayerService.getArt() != null) {
-                    ((ImageView) findViewById(R.id.imageArtwork)).setImageBitmap(PlayerService.getArt());
-                } else {
-                    ((ImageView) findViewById(R.id.imageArtwork)).setImageResource(R.drawable.art_default);
-                }
-
-                FrameLayout.LayoutParams listLayoutParams = (FrameLayout.LayoutParams) (findViewById(R.id.list)).getLayoutParams();
-                listLayoutParams.bottomMargin = getResources().getDimensionPixelSize(R.dimen.now_playing_ticker_height);
-                (findViewById(R.id.list)).setLayoutParams(listLayoutParams);
-
-                FrameLayout.LayoutParams playerLayoutParams = (FrameLayout.LayoutParams) (findViewById(R.id.miniplayer)).getLayoutParams();
-                playerLayoutParams.height = getResources().getDimensionPixelSize(R.dimen.now_playing_ticker_height);
-                (findViewById(R.id.miniplayer)).setLayoutParams(playerLayoutParams);
-            } else {
-                FrameLayout.LayoutParams listLayoutParams = (FrameLayout.LayoutParams) (findViewById(R.id.list)).getLayoutParams();
-                listLayoutParams.bottomMargin = 0;
-                (findViewById(R.id.list)).setLayoutParams(listLayoutParams);
-
-                FrameLayout.LayoutParams playerLayoutParams = (FrameLayout.LayoutParams) (findViewById(R.id.miniplayer)).getLayoutParams();
-                playerLayoutParams.height = 0;
-                (findViewById(R.id.miniplayer)).setLayoutParams(playerLayoutParams);
-            }
+            MiniplayerManager.update(this, R.id.list_container);
         }
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                Navigate.up(this);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            Navigate.up(this);
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

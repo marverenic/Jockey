@@ -1,10 +1,13 @@
 package com.marverenic.music.utils;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.graphics.Palette;
 import android.text.Html;
 import android.util.Log;
@@ -138,28 +141,34 @@ public class Fetch {
     public static ArtistBio fetchArtistBio(Context context, String artistName) {
         if (!lastFmInitialized) initLastFm(context);
 
-        Artist artist = Artist.getInfo(artistName, API_KEY);
-        if (artist != null) {
-            try {
-                initImageCache(context);
+        ConnectivityManager network = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-                String art = artist.getImageURL(ImageSize.MEGA);
-                String summary = Html.fromHtml(artist.getWikiSummary()).toString();
-                // This probably violates something in the Last.fm API license
-                if (summary.length() > 0)
-                    summary = summary.substring(0, summary.length() - " Read more about  on Last.fm.".length() - artist.getName().length() - 1);
-                String[] tags;
-                if (artist.getTags().size() > 0) {
-                    tags = artist.getTags().toArray(new String[artist.getTags().size()]);
-                } else {
-                    tags = new String[]{""};
+        // Only get the bio if a valid network is present
+        if(network.getActiveNetworkInfo().isAvailable() && !network.getActiveNetworkInfo().isRoaming()
+                && (prefs.getBoolean("prefUseMobileData", true) || network.getActiveNetworkInfo().getType() != ConnectivityManager.TYPE_MOBILE)) {
+
+            Artist artist = Artist.getInfo(artistName, API_KEY);
+            if (artist != null) {
+                try {
+                    String art = artist.getImageURL(ImageSize.MEGA);
+                    String summary = Html.fromHtml(artist.getWikiSummary()).toString();
+                    // This probably violates something in the Last.fm API license
+                    if (summary.length() > 0)
+                        summary = summary.substring(0, summary.length() - " Read more about  on Last.fm.".length() - artist.getName().length() - 1);
+                    String[] tags;
+                    if (artist.getTags().size() > 0) {
+                        tags = artist.getTags().toArray(new String[artist.getTags().size()]);
+                    } else {
+                        tags = new String[]{""};
+                    }
+                    return new ArtistBio(art, summary, tags);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                return new ArtistBio(art, summary, tags);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } else {
+                Debug.log(Debug.LogLevel.INFO, TAG, "Unable to find the artist " + artistName, context);
             }
-        } else {
-            Debug.log(Debug.LogLevel.INFO, TAG, "Unable to find the artist " + artistName, context);
         }
         return null;
     }

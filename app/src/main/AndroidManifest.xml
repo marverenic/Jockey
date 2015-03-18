@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.marverenic.music"
-    android:versionCode="21801"
-    android:versionName="0.2-α.r0m18b">
+    android:versionCode="21802"
+    android:versionName="0.2-α.r0m18c">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
     <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
 
@@ -54,13 +55,11 @@
         <activity
             android:name="com.marverenic.music.LibraryPageActivity"
             android:label=""
-            android:parentActivityName="com.marverenic.music.LibraryActivity"
             android:screenOrientation="fullUser" />
 
         <activity
             android:name="com.marverenic.music.NowPlayingActivity"
             android:label="@string/header_now_playing"
-            android:parentActivityName="com.marverenic.music.LibraryActivity"
             android:screenOrientation="fullUser"
             android:theme="@style/NowPlayingTheme" />
 

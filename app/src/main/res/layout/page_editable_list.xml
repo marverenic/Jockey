@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/list_container"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
@@ -21,6 +21,19 @@
             android:elevation="@dimen/window_elevation"
             android:saveEnabled="true"
             android:scrollbars="vertical"/>
-    </FrameLayout>
+    </RelativeLayout>
 
-</FrameLayout>
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/background_miniplayer"
+        android:elevation="@dimen/miniplayer_elevation">
+
+        <include
+            layout="@layout/miniplayer_fragment"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+
+    </FrameLayout>
+</RelativeLayout>

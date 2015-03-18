@@ -28,11 +28,6 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
     }
 
     @Override
-    public boolean isPlaying (){
-        return state == status.PREPARING || super.isPlaying();
-    }
-
-    @Override
     public void reset() {
         super.reset();
         state = status.IDLE;
@@ -111,9 +106,8 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
-        if (onErrorListener != null && onErrorListener.onError(mp, what, extra)) {
-            return true;
-        }
+        if (onErrorListener != null) return onErrorListener.onError(mp, what, extra);
+
         Debug.log(Debug.LogLevel.ERROR, TAG, "An error occurred and the player was reset", context);
         reset();
         return true;
