@@ -16,6 +16,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.instances.Genre;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.LibraryScanner;
+import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
@@ -100,11 +101,32 @@ public class GenreListAdapter extends BaseAdapter implements AdapterView.OnItemC
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
-                            case 0: //Queue this playlist next
+                            case 0: //Queue this genre next
                                 PlayerService.queueNext(context, LibraryScanner.getGenreEntries(item));
                                 break;
-                            case 1: //Queue this playlist last
+                            case 1: //Queue this genre last
                                 PlayerService.queueLast(context, LibraryScanner.getGenreEntries(item));
+                                break;
+                            case 2: //Add to playlist
+                                ArrayList<Playlist> playlists = Library.getPlaylists();
+                                String[] playlistNames = new String[playlists.size()];
+
+                                for (int i = 0; i < playlists.size(); i++ ){
+                                    playlistNames[i] = playlists.get(i).toString();
+                                }
+
+                                new AlertDialog.Builder(context).setTitle("Add \"" + item.genreName + "\" to playlist")
+                                        .setItems(playlistNames, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                LibraryScanner.addPlaylistEntries(
+                                                        context,
+                                                        Library.getPlaylists().get(which),
+                                                        LibraryScanner.getGenreEntries(item));
+                                            }
+                                        })
+                                        .setNeutralButton("Cancel", null)
+                                        .show();
                                 break;
                             default:
                                 break;

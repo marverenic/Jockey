@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -43,11 +45,18 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
     // Set the intent's action to this to avoid automatically going to the Now Playing page
     public static final String ACTION_LIBRARY = "com.marverenic.music.LibraryActivity.LIBRARY";
 
+    // Used to tell if the activity has already been created
+    // If this activity was just initiated, switch to the now playing page
+    // If this activity wasn't just created, then don't do any special navigation
+    private boolean startPlayer = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         onNewIntent(getIntent());
         Themes.setTheme(this);
+
+        if (getActionBar() != null) getActionBar().setIcon(new ColorDrawable(Color.TRANSPARENT));
 
         setContentView(R.layout.activity_library);
         findViewById(R.id.pagerSlidingTabs).setVisibility(View.INVISIBLE);
@@ -77,10 +86,11 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
     public void onNewIntent (Intent intent){
         super.onNewIntent(intent);
         // If the player is playing, go to the Now Playing page
-        if (!(intent.getAction() != null && intent.getAction().equals(ACTION_LIBRARY))
+        if (startPlayer && !(intent.getAction() != null && intent.getAction().equals(ACTION_LIBRARY))
                 && PlayerService.isInitialized() && PlayerService.isPlaying()){
             Navigate.to(this, NowPlayingActivity.class);
             intent.setAction(null);
+            startPlayer = false;
         }
     }
 

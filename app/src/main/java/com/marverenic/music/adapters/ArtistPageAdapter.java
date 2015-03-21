@@ -20,7 +20,9 @@ import com.marverenic.music.Player;
 import com.marverenic.music.PlayerService;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Album;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.LibraryScanner;
+import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Navigate;
@@ -154,6 +156,24 @@ public class ArtistPageAdapter extends BaseAdapter implements SectionIndexer, Ad
                                 break;
                             case 2: //Go to album
                                 Navigate.to(context, LibraryPageActivity.class, "entry", LibraryScanner.findAlbumById(item.albumId));
+                                break;
+                            case 3: //Add to playlist...
+                                ArrayList<Playlist> playlists = Library.getPlaylists();
+                                String[] playlistNames = new String[playlists.size()];
+
+                                for (int i = 0; i < playlists.size(); i++ ){
+                                    playlistNames[i] = playlists.get(i).toString();
+                                }
+
+                                new AlertDialog.Builder(context).setTitle("Add \"" + item.songName + "\" to playlist")
+                                        .setItems(playlistNames, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                LibraryScanner.addPlaylistEntry(context, Library.getPlaylists().get(which), item);
+                                            }
+                                        })
+                                        .setNeutralButton("Cancel", null)
+                                        .show();
                                 break;
                             default:
                                 break;

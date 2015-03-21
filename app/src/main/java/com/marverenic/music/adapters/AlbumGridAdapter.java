@@ -24,6 +24,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.LibraryScanner;
+import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.utils.Fetch;
 import com.marverenic.music.utils.Navigate;
 import com.squareup.picasso.Callback;
@@ -46,8 +47,6 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Vie
     public AlbumGridAdapter(ArrayList<Album> data, Context context) {
         this.data = data;
         this.context = context;
-
-        Fetch.initImageCache(context);
 
         String name;
         char thisChar;
@@ -236,6 +235,30 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Vie
                                 break;
                             case 1: //Queue this artist last
                                 PlayerService.queueLast(context, LibraryScanner.getAlbumEntries(item));
+                                break;
+                            case 2: //Go to artist
+                                Navigate.to(context, LibraryPageActivity.class, "entry", LibraryScanner.findArtistById(item.artistId));
+                                break;
+                            case 3: //Add to playlist...
+                                ArrayList<Playlist> playlists = Library.getPlaylists();
+                                String[] playlistNames = new String[playlists.size()];
+
+                                for (int i = 0; i < playlists.size(); i++ ){
+                                    playlistNames[i] = playlists.get(i).toString();
+                                }
+
+                                new AlertDialog.Builder(context).setTitle("Add songs by \"" + item.artistName + "\" to playlist")
+                                        .setItems(playlistNames, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                LibraryScanner.addPlaylistEntries(
+                                                        context,
+                                                        Library.getPlaylists().get(which),
+                                                        LibraryScanner.getAlbumEntries(item));
+                                            }
+                                        })
+                                        .setNeutralButton("Cancel", null)
+                                        .show();
                                 break;
                             default:
                                 break;

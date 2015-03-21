@@ -83,19 +83,23 @@
         <item>Queue this album next</item>
         <item>Queue this album last</item>
         <item>Go to artist</item>
+        <item>Add to playlist&#8230;</item>
     </string-array>
     <string-array name="queue_options_artist_page">
         <item>Queue this song next</item>
         <item>Queue this song last</item>
         <item>Go to album</item>
+        <item>Add to playlist&#8230;</item>
     </string-array>
     <string-array name="queue_options_artist">
         <item>Queue all songs by this artist next</item>
         <item>Queue all songs by this artist last</item>
+        <item>Add all songs to playlist&#8230;</item>
     </string-array>
     <string-array name="queue_options_genre">
         <item>Queue all songs in this genre next</item>
         <item>Queue all songs in this genre last</item>
+        <item>Add all songs to playlist&#8230;</item>
     </string-array>
     <string-array name="queue_options_playlist">
         <item>Queue all songs in this playlist next</item>
@@ -105,6 +109,7 @@
     <string-array name="now_playing_options">
         <item>Go to artist</item>
         <item>Go to album</item>
+        <item>Add to playlist&#8230;</item>
     </string-array>
     <string-array name="edit_playlist_options">
         <item>Queue this song next</item>
@@ -172,5 +177,7 @@
     <!-- Each theme may have up to 5 preview images -->
     <string name="theme_preview1">ic_launcher_red</string>
     <string name="theme_preview2">ic_launcher_amber</string>
+    <string name="export_playlist">Save as playlist</string>
+    <string name="action_new_playlist">New Playlist</string>
 
 </resources>

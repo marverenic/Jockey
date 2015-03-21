@@ -252,7 +252,7 @@ public class LibraryScanner {
                 MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId),
                 new String[]{
                         MediaStore.Audio.Playlists.Members.TITLE,
-                        MediaStore.Audio.Playlists.Members._ID,
+                        MediaStore.Audio.Playlists.Members.AUDIO_ID,
                         MediaStore.Audio.Playlists.Members.ARTIST,
                         MediaStore.Audio.Playlists.Members.ALBUM,
                         MediaStore.Audio.Playlists.Members.DURATION,
@@ -265,7 +265,7 @@ public class LibraryScanner {
             cur.moveToPosition(i);
             songEntries.add(new Song(
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.TITLE)),
-                    cur.getLong(cur.getColumnIndex(MediaStore.Audio.Playlists.Members._ID)),
+                    cur.getLong(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.AUDIO_ID)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.ARTIST)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.ALBUM)),
                     cur.getInt(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.DURATION)),
@@ -341,14 +341,27 @@ public class LibraryScanner {
     //          PLAYLIST WRITING METHOD
     //
 
-    public static void swapPlaylistEntries(final Context context, final Playlist playlist, final int from, final int to){
-        MediaStore.Audio.Playlists.Members.moveItem(context.getContentResolver(), playlist.playlistId, from, to);
+    public static void editPlaylist(final Context context, final Playlist playlist, final ArrayList<Song> newSongList){
+        // Clear the playlist...
+        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId);
+        ContentResolver resolver = context.getContentResolver();
+        resolver.delete(uri, null, null);
+
+        // Then add all of the songs to it
+        ContentValues[] values = new ContentValues[newSongList.size()];
+        for (int i = 0; i < newSongList.size(); i++) {
+            values[i] = new ContentValues();
+            values[i].put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, i + 1);
+            values[i].put(MediaStore.Audio.Playlists.Members.AUDIO_ID, newSongList.get(i).songId);
+        }
+        resolver.bulkInsert(uri, values);
+        resolver.notifyChange(Uri.parse("content://media"), null);
     }
 
     public static void removePlaylistEntry(final Context context, final Playlist playlist, final int position){
         Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId);
         ContentResolver resolver = context.getContentResolver();
-        resolver.delete(uri, MediaStore.Audio.Playlists.Members.TRACK + "=?", new String[]{position + ""});
+        resolver.delete(uri, MediaStore.Audio.Playlists.Members.PLAY_ORDER + "=?", new String[]{position + ""});
     }
 
     public static void addPlaylistEntry(final Context context, final Playlist playlist, final Song song){
@@ -371,7 +384,30 @@ public class LibraryScanner {
         resolver.notifyChange(Uri.parse("content://media"), null);
     }
 
-    public static void createPlaylist(final Context context, final String playlistName, final ArrayList<Song> songList){
+    public static void addPlaylistEntries(final Context context, final Playlist playlist, final ArrayList<Song> songs){
+        Cursor cur = context.getContentResolver().query(
+                MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId),
+                null, null, null,
+                MediaStore.Audio.Playlists.Members.TRACK + " ASC");
+
+        long count = 0;
+        if (cur.moveToLast()) count = cur.getLong(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.TRACK));
+        cur.close();
+
+        ContentValues[] values = new ContentValues[songs.size()];
+        for (int i = 0; i < songs.size(); i++) {
+            values[i] = new ContentValues();
+            values[i].put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, count + 1);
+            values[i].put(MediaStore.Audio.Playlists.Members.AUDIO_ID, songs.get(i).songId);
+        }
+
+        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId);
+        ContentResolver resolver = context.getContentResolver();
+        resolver.bulkInsert(uri, values);
+        resolver.notifyChange(Uri.parse("content://media"), null);
+    }
+
+    public static Playlist createPlaylist(final Context context, final String playlistName, final ArrayList<Song> songList){
         // Add the playlist to the MediaStore
         ContentValues mInserts = new ContentValues();
         mInserts.put(MediaStore.Audio.Playlists.NAME, playlistName);
@@ -410,6 +446,8 @@ public class LibraryScanner {
             resolver.bulkInsert(uri, values);
             resolver.notifyChange(Uri.parse("content://media"), null);
         }
+
+        return playlist;
     }
 
     public static void removePlaylist(final Context context, final Playlist playlist){

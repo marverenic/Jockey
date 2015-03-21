@@ -1,19 +1,25 @@
 package com.marverenic.music;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.text.InputType;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import com.marverenic.music.adapters.QueueEditAdapter;
 import com.marverenic.music.fragments.MiniplayerManager;
+import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
@@ -86,6 +92,50 @@ public class QueueActivity extends Activity implements AdapterView.OnItemClickLi
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.queue, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Navigate.up(this);
+                return true;
+            case R.id.save:
+                final EditText input = new EditText(this);
+                input.setInputType(InputType.TYPE_CLASS_TEXT);
+                input.setHint("Playlist name");
+
+                final Context context = this;
+
+                new AlertDialog.Builder(this)
+                        .setTitle("Save queue as playlist")
+                        .setView(input)
+                        .setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                LibraryScanner.editPlaylist(
+                                        context,
+                                        LibraryScanner.createPlaylist(context, input.getText().toString(), null),
+                                        PlayerService.getQueue());
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        }).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     public void onDestroy() {
         try {
             unregisterReceiver(updateReceiver);
@@ -99,17 +149,6 @@ public class QueueActivity extends Activity implements AdapterView.OnItemClickLi
     public void onResume() {
         Themes.setApplicationIcon(this);
         super.onResume();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                Navigate.up(this);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     @Override

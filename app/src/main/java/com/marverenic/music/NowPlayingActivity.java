@@ -28,10 +28,15 @@ import android.widget.Toast;
 
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
+import com.marverenic.music.instances.Library;
+import com.marverenic.music.instances.LibraryScanner;
+import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
+
+import java.util.ArrayList;
 
 public class NowPlayingActivity extends Activity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
@@ -94,32 +99,40 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
         getMenuInflater().inflate(R.menu.now_playing, menu);
 
         if (PlayerService.isShuffle()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                 menu.getItem(0).setIcon(R.drawable.ic_vector_shuffle);
-            }
+            else
+                menu.getItem(0).setIcon(R.drawable.ic_shuffle);
+
             menu.getItem(0).setTitle("Disable Shuffle");
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                 menu.getItem(0).setIcon(R.drawable.ic_vector_shuffle_off);
-            }
+            else
+                menu.getItem(0).setIcon(R.drawable.ic_shuffle_off);
+
             menu.getItem(0).setTitle("Enable Shuffle");
         }
 
         if (PlayerService.isRepeat()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                 menu.getItem(1).setIcon(R.drawable.ic_vector_repeat);
-            }
+            else
+                menu.getItem(1).setIcon(R.drawable.ic_repeat);
+
             menu.getItem(1).setTitle("Enable Repeat One");
         } else {
             if (PlayerService.isRepeatOne()) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                     menu.getItem(1).setIcon(R.drawable.ic_vector_repeat_one);
-                }
+                else
+                    menu.getItem(1).setIcon(R.drawable.ic_repeat_one);
                 menu.getItem(1).setTitle("Disable Repeat");
             } else {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                     menu.getItem(1).setIcon(R.drawable.ic_vector_repeat_off);
-                }
+                else
+                    menu.getItem(1).setIcon(R.drawable.ic_repeat_off);
                 menu.getItem(1).setTitle("Enable Repeat");
             }
         }
@@ -135,17 +148,21 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
             case R.id.action_shuffle:
                 PlayerService.toggleShuffle();
                 if (PlayerService.isShuffle()) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                         item.setIcon(R.drawable.ic_vector_shuffle);
-                    }
+                    else
+                        item.setIcon(R.drawable.ic_shuffle);
+
                     item.setTitle("Disable Shuffle");
                     Toast toast = Toast.makeText(this, "Shuffle Enabled", Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
                 } else {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                         item.setIcon(R.drawable.ic_vector_shuffle_off);
-                    }
+                    else
+                        item.setIcon(R.drawable.ic_shuffle_off);
+
                     item.setTitle("Enable Shuffle");
                     Toast toast = Toast.makeText(this, "Shuffle Disabled", Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER, 0, 0);
@@ -155,26 +172,32 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
             case R.id.action_repeat:
                 PlayerService.toggleRepeat();
                 if (PlayerService.isRepeat()) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                         item.setIcon(R.drawable.ic_vector_repeat);
-                    }
+                    else
+                        item.setIcon(R.drawable.ic_repeat);
+
                     item.setTitle("Enable Repeat One");
                     Toast toast = Toast.makeText(this, "Repeat Enabled", Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
                 } else {
                     if (PlayerService.isRepeatOne()) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                             item.setIcon(R.drawable.ic_vector_repeat_one);
-                        }
+                        else
+                            item.setIcon(R.drawable.ic_repeat_one);
+
                         item.setTitle("Disable Repeat");
                         Toast toast = Toast.makeText(this, "Repeat One Enabled", Toast.LENGTH_SHORT);
                         toast.setGravity(Gravity.CENTER, 0, 0);
                         toast.show();
                     } else {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                             item.setIcon(R.drawable.ic_vector_repeat_off);
-                        }
+                        else
+                            item.setIcon(R.drawable.ic_repeat_off);
+
                         item.setTitle("Enable Repeat");
                         Toast toast = Toast.makeText(this, "Repeat Disabled", Toast.LENGTH_SHORT);
                         toast.setGravity(Gravity.CENTER, 0, 0);
@@ -288,6 +311,23 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
 
                                         Navigate.to(context, LibraryPageActivity.class, "entry", album);
                                         break;
+                                    case 3: //Add to playlist
+                                        ArrayList<Playlist> playlists = Library.getPlaylists();
+                                        String[] playlistNames = new String[playlists.size()];
+
+                                        for (int i = 0; i < playlists.size(); i++ ){
+                                            playlistNames[i] = playlists.get(i).toString();
+                                        }
+
+                                        new AlertDialog.Builder(context).setTitle("Add \"" + nowPlaying.songName + "\" to playlist")
+                                                .setItems(playlistNames, new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        LibraryScanner.addPlaylistEntry(context, Library.getPlaylists().get(which), nowPlaying);
+                                                    }
+                                                })
+                                                .setNeutralButton("Cancel", null)
+                                                .show();
                                     default:
                                         break;
                                 }

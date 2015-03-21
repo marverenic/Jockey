@@ -3,17 +3,20 @@
 
     <item
         android:id="@+id/action_shuffle"
+        android:icon="@drawable/ic_shuffle"
         android:title="@string/shuffle"
-        android:showAsAction="never"/>
+        android:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/action_repeat"
+        android:icon="@drawable/ic_repeat"
         android:title="@string/repeat"
-        android:showAsAction="never"/>
+        android:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/action_queue"
+        android:icon="@drawable/ic_queue"
         android:title="@string/queue"
-        android:showAsAction="never"/>
+        android:showAsAction="ifRoom"/>
 
 </menu>

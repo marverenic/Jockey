@@ -32,23 +32,44 @@ import com.mobeta.android.dslv.DragSortListView;
 
 import java.util.ArrayList;
 
-public class PlaylistEditAdapter extends BaseAdapter implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+public class PlaylistEditAdapter extends BaseAdapter implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, DragSortListView.DropListener {
 
     private ArrayList<Song> data;
     private Playlist playlist;
     private Context context;
-    private OnDataRemoveListener listener;
+    private DragSortListView listView;
 
-    public PlaylistEditAdapter(ArrayList<Song> data, Playlist playlist, Context context, OnDataRemoveListener listener) {
+    public PlaylistEditAdapter(ArrayList<Song> data, Playlist playlist, Context context, DragSortListView listView) {
         super();
         this.data = new ArrayList<>(data);
         this.playlist = playlist;
         this.context = context;
-        this.listener = listener;
+        this.listView = listView;
+
+        DragSortController controller = new PlaylistEditAdapter.dragSortController(listView, this, R.id.handle);
+        listView.setOnItemClickListener(this);
+        listView.setOnItemLongClickListener(this);
+        listView.setAdapter(this);
+        listView.setDropListener(this);
+        listView.setFloatViewManager(controller);
+        listView.setOnTouchListener(controller);
     }
 
-    public interface OnDataRemoveListener {
-        public void onRowRemoved(int row);
+    @Override
+    public void drop(int from, int to) {
+        if (from != to) {
+            data.add(to, data.remove(from));
+            LibraryScanner.editPlaylist(context, playlist, data);
+            notifyDataSetChanged();
+            listView.invalidateViews();
+        }
+    }
+
+    public void onRemoved(int row){
+        LibraryScanner.removePlaylistEntry(context, playlist, row);
+        data.remove(row);
+        notifyDataSetChanged();
+        listView.invalidateViews();
     }
 
     @Override
@@ -190,7 +211,7 @@ public class PlaylistEditAdapter extends BaseAdapter implements AdapterView.OnIt
                                         .setPositiveButton("Remove", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
-                                                if (listener != null) listener.onRowRemoved(position - ((ListView) parent).getHeaderViewsCount());
+                                                onRemoved(position - ((ListView) parent).getHeaderViewsCount());
                                             }
                                         })
                                         .setNegativeButton("Cancel", null)

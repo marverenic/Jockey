@@ -31,11 +31,6 @@ public class Fetch {
     private static final String API_KEY = "a9fc65293034b84b83d20c6e2ecda4b5";
     private static boolean lastFmInitialized = false;
 
-    @Deprecated
-    public static void initImageCache (Context context) {
-        // Currently unused
-    }
-
     public static void initLastFm(Context context) {
         Caller.getInstance().setCache(new FileSystemCache(new File(context.getExternalCacheDir() + "/lastfm/")));
         Caller.getInstance().setUserAgent("Jockey/" + BuildConfig.VERSION_NAME);

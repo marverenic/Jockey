@@ -17,6 +17,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.LibraryScanner;
+import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
@@ -122,6 +123,27 @@ public class ArtistListAdapter extends BaseAdapter implements SectionIndexer, Ad
                                 break;
                             case 1: //Queue this artist last
                                 PlayerService.queueLast(context, LibraryScanner.getArtistSongEntries(item));
+                                break;
+                            case 2: //Add to playlist...
+                                ArrayList<Playlist> playlists = Library.getPlaylists();
+                                String[] playlistNames = new String[playlists.size()];
+
+                                for (int i = 0; i < playlists.size(); i++ ){
+                                    playlistNames[i] = playlists.get(i).toString();
+                                }
+
+                                new AlertDialog.Builder(context).setTitle("Add \"" + item.artistName + "\" to playlist")
+                                        .setItems(playlistNames, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                LibraryScanner.addPlaylistEntries(
+                                                        context,
+                                                        Library.getPlaylists().get(which),
+                                                        LibraryScanner.getArtistSongEntries(item));
+                                            }
+                                        })
+                                        .setNeutralButton("Cancel", null)
+                                        .show();
                                 break;
                             default:
                                 break;
