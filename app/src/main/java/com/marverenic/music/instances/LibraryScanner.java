@@ -1,8 +1,10 @@
 package com.marverenic.music.instances;
 
+import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
@@ -14,6 +16,8 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.marverenic.music.R;
+import com.marverenic.music.utils.Themes;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -338,7 +342,7 @@ public class LibraryScanner {
     }
 
     //
-    //          PLAYLIST WRITING METHOD
+    //          PLAYLIST WRITING METHODS
     //
 
     public static void editPlaylist(final Context context, final Playlist playlist, final ArrayList<Song> newSongList){
@@ -358,13 +362,30 @@ public class LibraryScanner {
         resolver.notifyChange(Uri.parse("content://media"), null);
     }
 
-    public static void removePlaylistEntry(final Context context, final Playlist playlist, final int position){
-        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId);
-        ContentResolver resolver = context.getContentResolver();
-        resolver.delete(uri, MediaStore.Audio.Playlists.Members.PLAY_ORDER + "=?", new String[]{position + ""});
+    public static void addPlaylistEntry(final Context context, final Playlist playlist, final Song song){
+        // Public method to add a song to a playlist
+        // Checks the playlist for duplicate entries
+        if (getPlaylistEntries(context, playlist).contains(song)){
+            new AlertDialog.Builder(context, Themes.getAlertTheme(context))
+                    .setTitle("Add duplicate song")
+                    .setMessage("Playlist \"" + playlist +"\" already contains song \"" + song + "\". Do you want to add a duplicate entry?")
+                    .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            addSongToEndOfPlaylist(context, playlist, song);
+                        }
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+        }
+        else{
+            addSongToEndOfPlaylist(context, playlist, song);
+        }
     }
 
-    public static void addPlaylistEntry(final Context context, final Playlist playlist, final Song song){
+    private static void addSongToEndOfPlaylist (final Context context, final Playlist playlist, final Song song){
+        // Private method to add a song to a playlist
+        // This method does the actual operation to the MediaStore
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId),
                 null, null, null,
@@ -382,9 +403,71 @@ public class LibraryScanner {
         ContentResolver resolver = context.getContentResolver();
         resolver.insert(uri, values);
         resolver.notifyChange(Uri.parse("content://media"), null);
+
+        Toast.makeText(
+                context,
+                String.format(context.getResources().getString(R.string.message_added_song), song, playlist),
+                Toast.LENGTH_SHORT)
+                .show();
+
     }
 
     public static void addPlaylistEntries(final Context context, final Playlist playlist, final ArrayList<Song> songs){
+        // Public method to add songs to a playlist
+        // Checks the playlist for duplicate entries
+
+        int duplicateCount = 0;
+        ArrayList<Song> currentEntries = getPlaylistEntries(context, playlist);
+        final ArrayList<Song> newEntries = new ArrayList<>();
+
+        for (Song s : songs){
+            if (currentEntries.contains(s))duplicateCount++;
+            else newEntries.add(s);
+        }
+
+        if (duplicateCount > 0){
+            AlertDialog.Builder alert = new AlertDialog.Builder(context, Themes.getAlertTheme(context))
+                    .setTitle("Add duplicate entries?");
+
+            if (duplicateCount == songs.size()) {
+                alert
+                        .setMessage("This playlist already contains all of these songs. Adding them again will result in duplicates.")
+                        .setPositiveButton("Add duplicates", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                addSongsToEndOfPlaylist(context, playlist, songs);
+                            }
+                        })
+                        .setNeutralButton("Cancel", null);
+            }
+            else{
+                alert
+                        .setMessage(context.getResources().getQuantityString(R.plurals.playlistConfirmSomeDuplicates, duplicateCount, duplicateCount))
+                        .setPositiveButton("Add new", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                addSongsToEndOfPlaylist(context, playlist, newEntries);
+                            }
+                        })
+                        .setNegativeButton("Add all", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                addSongsToEndOfPlaylist(context, playlist, songs);
+                            }
+                        })
+                        .setNeutralButton("Cancel", null);
+            }
+
+            alert.show();
+        }
+        else{
+            addSongsToEndOfPlaylist(context, playlist, songs);
+        }
+    }
+
+    private static void addSongsToEndOfPlaylist(final Context context, final Playlist playlist, final ArrayList<Song> songs){
+        // Private method to add a song to a playlist
+        // This method does the actual operation to the MediaStore
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId),
                 null, null, null,
@@ -405,6 +488,12 @@ public class LibraryScanner {
         ContentResolver resolver = context.getContentResolver();
         resolver.bulkInsert(uri, values);
         resolver.notifyChange(Uri.parse("content://media"), null);
+
+        Toast.makeText(
+                context,
+                String.format(context.getResources().getQuantityString(R.plurals.message_added_songs, songs.size()), songs.size(), playlist),
+                Toast.LENGTH_SHORT)
+                .show();
     }
 
     public static Playlist createPlaylist(final Context context, final String playlistName, final ArrayList<Song> songList){
@@ -447,6 +536,12 @@ public class LibraryScanner {
             resolver.notifyChange(Uri.parse("content://media"), null);
         }
 
+        Toast.makeText(
+                context,
+                String.format(context.getResources().getString(R.string.message_created_playlist), playlistName),
+                Toast.LENGTH_SHORT)
+                .show();
+
         return playlist;
     }
 
@@ -462,8 +557,11 @@ public class LibraryScanner {
         scanPlaylists(context);
         Library.sortPlaylistList(Library.getPlaylists());
 
-        Toast toast = Toast.makeText(context, "\"" + playlist.toString() + "\" has been deleted", Toast.LENGTH_SHORT);
-        toast.show();
+        Toast.makeText(
+                context,
+                String.format(context.getResources().getString(R.string.message_removed_playlist), playlist),
+                Toast.LENGTH_SHORT)
+                .show();
     }
 
     //

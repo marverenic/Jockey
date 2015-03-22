@@ -223,6 +223,17 @@ public class Themes {
         }
     }
 
+    public static int getAlertTheme (Context context){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (isLight(context)) return android.R.style.Theme_Material_Light_Dialog_Alert;
+            else return android.R.style.Theme_Material_Dialog_Alert;
+        }
+        else{
+            if (isLight(context)) return android.R.style.Theme_Holo_Light;
+            else return android.R.style.Theme_Holo;
+        }
+    }
+
     public static void setTheme(Activity activity) {
         updateColors(activity);
 

@@ -181,15 +181,13 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
                 input.setInputType(InputType.TYPE_CLASS_TEXT);
                 input.setHint("Playlist name");
 
-                final Context context = this;
-
                 new AlertDialog.Builder(this)
                         .setTitle("Create Playlist")
                         .setView(input)
                         .setPositiveButton("Create", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                LibraryScanner.createPlaylist(context, input.getText().toString(), null);
+                                LibraryScanner.createPlaylist(getApplicationContext(), input.getText().toString(), null);
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

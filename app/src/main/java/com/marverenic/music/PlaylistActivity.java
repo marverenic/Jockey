@@ -29,6 +29,7 @@ public class PlaylistActivity extends Activity implements View.OnClickListener{
     };
 
     public static final String PLAYLIST_ENTRY = "playlist_entry";
+    private Playlist playlist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,17 +42,9 @@ public class PlaylistActivity extends Activity implements View.OnClickListener{
         final Object parent = getIntent().getParcelableExtra(PLAYLIST_ENTRY);
 
         if (parent instanceof Playlist) {
-            Playlist playlist = (Playlist) parent;
+            playlist = (Playlist) parent;
 
             if (getActionBar() != null) getActionBar().setTitle(playlist.playlistName);
-
-            // The adapter will initialize attach itself and all necessary controllers in its constructor
-            // There is no need to create a variable for it
-            new PlaylistEditAdapter(
-                    LibraryScanner.getPlaylistEntries(this, playlist),
-                    playlist,
-                    this,
-                    (DragSortListView) findViewById(R.id.list));
 
             registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
         }
@@ -63,6 +56,16 @@ public class PlaylistActivity extends Activity implements View.OnClickListener{
     public void onResume() {
         update();
         Themes.setApplicationIcon(this);
+
+        // Recreate the adapter in case the playlist has been edited since this activity was paused
+        // The adapter will initialize attach itself and all necessary controllers in its constructor
+        // There is no need to create a variable for it
+        if (playlist != null) new PlaylistEditAdapter(
+                LibraryScanner.getPlaylistEntries(this, playlist),
+                playlist,
+                this,
+                (DragSortListView) findViewById(R.id.list));
+
         registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
         super.onResume();
     }

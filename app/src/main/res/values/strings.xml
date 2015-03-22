@@ -20,6 +20,7 @@
     <string name="action_pause">Pause</string>
     <string name="action_previous">Previous</string>
     <string name="action_edit">Edit</string>
+    <string name="action_new_playlist">New Playlist</string>
     <string name="album_art">Album Art</string>
     <string name="shuffle">Shuffle</string>
     <string name="repeat">Repeat</string>
@@ -119,6 +120,27 @@
         <item>Add to playlist&#8230;</item>
         <item>Remove from playlist</item>
     </string-array>
+    <string-array name="edit_queue_options">
+        <item>Go to artist</item>
+        <item>Go to album</item>
+        <item>Add to playlist&#8230;</item>
+        <item>Remove from queue</item>
+    </string-array>
+
+    <!-- Plurals -->
+    <plurals name="playlistConfirmSomeDuplicates">
+        <item quantity="one">This playlist already contains one of these songs. Adding it again will result in this playlist having a duplicated entry.</item>
+        <item quantity="other">This playlist already contains some of these songs. Adding them again will result in this playlist having %d duplicated entries.</item>
+    </plurals>
+    <plurals name="message_added_songs">
+        <item quantity="one" >Added 1 song to \"%2$s\"</item>
+        <item quantity="other">Added %1$d songs to \"%2$s\"</item>
+    </plurals>
+
+    <!-- Formatted Strings -->
+    <string name="message_added_song">Added \"%1$s\" to \"%2$s\"</string>
+    <string name="message_created_playlist">Created playlist \"%1$s\"</string>
+    <string name="message_removed_playlist">Deleted playlist \"%1$s\"</string>
 
     <!-- String Arrays for Settings -->
     <string-array name="pages">
@@ -164,7 +186,7 @@
 
     <!-- Basic theme information -->
     <string name="theme_title">Jockey Alternate Icons</string>
-    <string name="developer_name">ensiluxrum</string>
+    <string name="developer_name">marverenic</string>
     <string name="theme_description">This theme has themed icons for Jockey.\n\nDon\'t set this as your launcher\'s theme. You should manually change Jockey\'s icon to your preference if desired.</string>
 
     <!-- Theme settings -->
@@ -178,6 +200,5 @@
     <string name="theme_preview1">ic_launcher_red</string>
     <string name="theme_preview2">ic_launcher_amber</string>
     <string name="export_playlist">Save as playlist</string>
-    <string name="action_new_playlist">New Playlist</string>
 
 </resources>

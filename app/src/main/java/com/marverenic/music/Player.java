@@ -192,6 +192,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                 break;
             case AudioManager.AUDIOFOCUS_GAIN:
                 mediaPlayer.setVolume(1f, 1f);
+                if (!mediaPlayer.isPlaying()) play();
                 break;
             default:
                 break;

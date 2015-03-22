@@ -12,23 +12,17 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 
 import com.marverenic.music.adapters.QueueEditAdapter;
 import com.marverenic.music.fragments.MiniplayerManager;
 import com.marverenic.music.instances.LibraryScanner;
-import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
-import com.mobeta.android.dslv.DragSortController;
 import com.mobeta.android.dslv.DragSortListView;
 
-import java.util.ArrayList;
-
-public class QueueActivity extends Activity implements AdapterView.OnItemClickListener, View.OnClickListener {
+public class QueueActivity extends Activity {
 
     private BroadcastReceiver updateReceiver = new BroadcastReceiver() {
         @Override
@@ -48,40 +42,9 @@ public class QueueActivity extends Activity implements AdapterView.OnItemClickLi
         Themes.themeActivity(R.layout.page_editable_list, getWindow().findViewById(android.R.id.content), this);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-        final Context context = this;
-        final QueueEditAdapter adapter = new QueueEditAdapter(this);
-        final DragSortListView listView = (DragSortListView) findViewById(R.id.list);
-        DragSortController controller = new QueueEditAdapter.dragSortController(listView, adapter, R.id.handle);
-        listView.setOnItemClickListener(this);
-        listView.setAdapter(adapter);
-        listView.setFloatViewManager(controller);
-        listView.setOnTouchListener(controller);
-        listView.setDragEnabled(true);
-        listView.setDropListener(new DragSortListView.DropListener() {
-            @Override
-            public void drop(int from, int to) {
-                ArrayList<Song> data = adapter.move(from, to);
-                adapter.notifyDataSetChanged();
-                listView.invalidateViews();
-
-                if (PlayerService.getPosition() == from){
-                    // If the current song was moved in the queue
-                    PlayerService.changeQueue(context, data, to);
-                }
-                else if (PlayerService.getPosition() < from && PlayerService.getPosition() >= to){
-                    // If a song that was after the current playing song was moved to a position before the current song...
-                    PlayerService.changeQueue(context, data, PlayerService.getPosition() + 1);
-                }
-                else if (PlayerService.getPosition() > from && PlayerService.getPosition() <= to){
-                    // If a song that was before the current playing song was moved to a position after the current song...
-                    PlayerService.changeQueue(context, data, PlayerService.getPosition() - 1);
-                }
-                else{
-                    // If the number of songs before and after the currently playing song hasn't changed...
-                    PlayerService.changeQueue(context, data, PlayerService.getPosition());
-                }
-            }
-        });
+        // The adapter will initialize attach itself and all necessary controllers in its constructor
+        // There is no need to create a variable for it
+        new QueueEditAdapter(this, (DragSortListView) findViewById(R.id.list));
 
         MiniplayerManager.hide(this, R.id.list);
         registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
@@ -154,16 +117,6 @@ public class QueueActivity extends Activity implements AdapterView.OnItemClickLi
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Navigate.back(this);
-    }
-
-    @Override
-    public void onClick(View v) {
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        PlayerService.changeSong(position);
         Navigate.back(this);
     }
 }

@@ -66,8 +66,8 @@ public class PlaylistEditAdapter extends BaseAdapter implements AdapterView.OnIt
     }
 
     public void onRemoved(int row){
-        LibraryScanner.removePlaylistEntry(context, playlist, row);
         data.remove(row);
+        LibraryScanner.editPlaylist(context, playlist, data);
         notifyDataSetChanged();
         listView.invalidateViews();
     }

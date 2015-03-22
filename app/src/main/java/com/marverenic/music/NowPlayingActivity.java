@@ -15,7 +15,6 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -54,7 +53,7 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
     public void onCreate(Bundle savedInstanceState) {
         if (getResources().getConfiguration().smallestScreenWidthDp >= 700) {
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                setTheme(R.style.AppTheme);
+                Themes.setTheme(this);
                 getWindow().setStatusBarColor(Themes.getPrimaryDark());
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && getActionBar() != null) {
                     getActionBar().setElevation(getResources().getDimension(R.dimen.header_elevation));
@@ -250,19 +249,7 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
             final Song nowPlaying = PlayerService.getNowPlaying();
 
             if (nowPlaying != null) {
-                AlertDialog.Builder alert;
-                if (Themes.isLight(this)){
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        alert = new AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_Alert);
-                    }
-                    else{
-                        alert = new AlertDialog.Builder(new ContextThemeWrapper(this, android.R.style.Theme_Holo_Light));
-                    }
-                }
-                else{
-                    alert = new AlertDialog.Builder(this);
-                }
-                alert
+                new AlertDialog.Builder(context, Themes.getAlertTheme(context))
                         .setTitle(nowPlaying.songName)
                         .setNegativeButton("Cancel", null)
                         .setItems(R.array.now_playing_options, new DialogInterface.OnClickListener() {
@@ -311,7 +298,7 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
 
                                         Navigate.to(context, LibraryPageActivity.class, "entry", album);
                                         break;
-                                    case 3: //Add to playlist
+                                    case 2: //Add to playlist
                                         ArrayList<Playlist> playlists = Library.getPlaylists();
                                         String[] playlistNames = new String[playlists.size()];
 
@@ -319,7 +306,8 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
                                             playlistNames[i] = playlists.get(i).toString();
                                         }
 
-                                        new AlertDialog.Builder(context).setTitle("Add \"" + nowPlaying.songName + "\" to playlist")
+                                        new AlertDialog.Builder(context, Themes.getAlertTheme(context))
+                                                .setTitle("Add \"" + nowPlaying.songName + "\" to playlist")
                                                 .setItems(playlistNames, new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
@@ -328,12 +316,13 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
                                                 })
                                                 .setNeutralButton("Cancel", null)
                                                 .show();
+                                        break;
                                     default:
                                         break;
                                 }
                             }
-                        });
-                alert.show();
+                        })
+                        .show();
             }
         }
         update();
