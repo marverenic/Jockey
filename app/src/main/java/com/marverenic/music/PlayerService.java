@@ -14,6 +14,7 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
 
+import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
 
@@ -80,6 +81,7 @@ public class PlayerService extends Service {
     public void onDestroy() {
         super.onDestroy();
         if (this.equals(instance)) {
+            LibraryScanner.saveLibrary(context);
             player.finish();
             player = null;
             notificationManager.cancel(NOTIFICATION_ID);

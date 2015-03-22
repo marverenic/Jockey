@@ -8,6 +8,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.view.MenuItem;
 
+import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 
@@ -68,5 +69,11 @@ public class SettingsActivity extends PreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.prefs);
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LibraryScanner.saveLibrary(this);
     }
 }

@@ -20,6 +20,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Fetch;
@@ -428,6 +429,14 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     public void skip() {
         if (!isPreparing()) {
+            // Update the play count
+            if (getCurrentPosition() < 20000) {
+                LibraryScanner.findSongById(getNowPlaying().songId).skipCount++;
+            } else if (getCurrentPosition() > 24000 || getCurrentPosition() > mediaPlayer.getDuration() / 2) {
+                LibraryScanner.findSongById(getNowPlaying().songId).playCount++;
+            }
+
+            // Change the media source
             if (shuffle) {
                 if (positionShuffled + 1 < queueShuffled.size()) {
                     positionShuffled++;
@@ -474,6 +483,13 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     }
 
     public void changeSong(int newPosition) {
+        // Update the play count
+        if (getCurrentPosition() < 20000) {
+            LibraryScanner.findSongById(getNowPlaying().songId).skipCount++;
+        } else if (getCurrentPosition() > 24000 || getCurrentPosition() > mediaPlayer.getDuration() / 2) {
+            LibraryScanner.findSongById(getNowPlaying().songId).playCount++;
+        }
+
         if (shuffle) {
             if (newPosition < queueShuffled.size() && newPosition != positionShuffled) {
                 positionShuffled = newPosition;

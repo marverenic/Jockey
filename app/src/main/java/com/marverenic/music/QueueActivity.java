@@ -18,6 +18,7 @@ import android.widget.ListView;
 import com.marverenic.music.adapters.QueueEditAdapter;
 import com.marverenic.music.fragments.MiniplayerManager;
 import com.marverenic.music.instances.LibraryScanner;
+import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 import com.mobeta.android.dslv.DragSortListView;
@@ -118,5 +119,16 @@ public class QueueActivity extends Activity {
     public void onBackPressed() {
         super.onBackPressed();
         Navigate.back(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LibraryScanner.saveLibrary(this);
+        try {
+            unregisterReceiver(updateReceiver);
+        } catch (Exception e) {
+            Debug.log(Debug.LogLevel.ERROR, "LibraryActivity", "Unable to unregister receiver", this);
+        }
     }
 }

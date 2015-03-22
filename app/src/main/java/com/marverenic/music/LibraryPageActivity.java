@@ -285,4 +285,15 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
         super.onBackPressed();
         Navigate.back(this);
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LibraryScanner.saveLibrary(this);
+        try {
+            unregisterReceiver(updateReceiver);
+        } catch (Exception e) {
+            Debug.log(Debug.LogLevel.ERROR, "LibraryActivity", "Unable to unregister receiver", this);
+        }
+    }
 }

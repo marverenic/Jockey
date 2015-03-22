@@ -222,6 +222,7 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
     public void onPause() {
         observer.stop();
         unregisterReceiver(updateReceiver);
+        LibraryScanner.saveLibrary(this);
         super.onPause();
     }
 

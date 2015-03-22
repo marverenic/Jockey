@@ -25,7 +25,6 @@ import android.widget.Toast;
 
 import com.marverenic.music.adapters.LibraryPagerAdapter;
 import com.marverenic.music.fragments.MiniplayerManager;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Navigate;
@@ -70,7 +69,7 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         if (!LibraryScanner.isLoaded()) {
-            LibraryScanner.scanAll(this, true, new LibraryScanner.onScanCompleteListener() {
+            LibraryScanner.scanAll(this, true, true, new LibraryScanner.onScanCompleteListener() {
                 @Override
                 public void onScanComplete() {
                     createPages(true);
@@ -163,9 +162,8 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
                 Navigate.to(this, SettingsActivity.class);
                 return true;
             case R.id.action_refresh_library:
-                Library.resetAll();
                 final LibraryActivity activity = this;
-                LibraryScanner.scanAll(this, false, new LibraryScanner.onScanCompleteListener() {
+                LibraryScanner.refresh(this, true, true, new LibraryScanner.onScanCompleteListener() {
                     @Override
                     public void onScanComplete() {
                         Toast.makeText(activity, "Library refreshed.", Toast.LENGTH_SHORT).show();

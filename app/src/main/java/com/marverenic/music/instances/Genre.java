@@ -2,7 +2,6 @@ package com.marverenic.music.instances;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -35,17 +34,8 @@ public class Genre implements Parcelable {
     }
 
     public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Genre other = (Genre) obj;
-        return genreId == other.genreId && TextUtils.equals(genreName, other.genreName);
+        return this == obj ||
+                (obj != null && obj instanceof Genre && genreId == ((Genre) obj).genreId);
     }
 
     public String toString() {

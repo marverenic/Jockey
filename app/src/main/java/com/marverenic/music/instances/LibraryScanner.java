@@ -45,19 +45,53 @@ public class LibraryScanner {
     //
 
     // Refresh the entire library
-    public static void scanAll (final Context context, final boolean attemptReload,
+    public static void scanAll (final Context context, final boolean attemptReload, final boolean mergeWithMediaStore,
                                 @Nullable final onScanCompleteListener listener){
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 Library.resetAll();
-                if (!attemptReload || !readLibrary(context)) {
-                    scanPlaylists(context);
-                    scanSongs(context);
-                    scanArtists(context);
-                    scanAlbums(context);
-                    scanGenres(context);
+                if (!attemptReload || !readLibrary(context, mergeWithMediaStore)) {
+                    Library.setPlaylistLib(scanPlaylists(context));
+                    Library.setSongLib(scanSongs(context));
+                    Library.setArtistLib(scanArtists(context));
+                    Library.setAlbumLib(scanAlbums(context));
+                    Library.setGenreLib(scanGenres(context));
+                }
+                Library.sort();
+
+                loaded = true;
+
+                if (listener != null){
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onScanComplete();
+                        }
+                    });
+                }
+
+                writeLibrary(context);
+            }
+        }).start();
+    }
+
+    public static void refresh(final Context context, final boolean attemptReload, final boolean mergeWithMediaStore,
+                               @Nullable final onScanCompleteListener listener){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                writeLibrary(context);
+                Library.resetAll();
+
+                if (!attemptReload || !readLibrary(context, mergeWithMediaStore)) {
+                    Library.setPlaylistLib(scanPlaylists(context));
+                    Library.setSongLib(scanSongs(context));
+                    Library.setArtistLib(scanArtists(context));
+                    Library.setAlbumLib(scanAlbums(context));
+                    Library.setGenreLib(scanGenres(context));
                 }
                 Library.sort();
 
@@ -87,7 +121,9 @@ public class LibraryScanner {
     }
 
     // Scan the MediaStore for songs
-    public static void scanSongs (Context context){
+    public static ArrayList<Song> scanSongs (Context context){
+        ArrayList<Song> songs = new ArrayList<>();
+
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 null,
@@ -108,13 +144,17 @@ public class LibraryScanner {
                     cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID)));
 
             s.trackNumber = cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media.TRACK));
-            Library.add(s);
+            songs.add(s);
         }
         cur.close();
+
+        return songs;
     }
 
     // Scan the MediaStore for artists
-    public static void scanArtists (Context context){
+    public static ArrayList<Artist> scanArtists (Context context){
+        ArrayList<Artist> artists = new ArrayList<>();
+
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
                 null,
@@ -124,16 +164,19 @@ public class LibraryScanner {
 
         for (int i = 0; i < cur.getCount(); i++) {
             cur.moveToPosition(i);
-            Library.add(new Artist(
+            artists.add(new Artist(
                     cur.getLong(cur.getColumnIndex(MediaStore.Audio.Artists._ID)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Artists.ARTIST))));
         }
         cur.close();
 
+        return artists;
     }
 
     // Scan the MediaStore for albums
-    public static void scanAlbums (Context context){
+    public static ArrayList<Album> scanAlbums (Context context){
+        ArrayList<Album> albums = new ArrayList<>();
+
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                 null,
@@ -142,7 +185,7 @@ public class LibraryScanner {
                 MediaStore.Audio.Albums.ALBUM + " ASC");
         for (int i = 0; i < cur.getCount(); i++) {
             cur.moveToPosition(i);
-            Library.add(new Album(
+            albums.add(new Album(
                     cur.getLong(cur.getColumnIndex(MediaStore.Audio.Albums._ID)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM)),
                     cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID)),
@@ -151,10 +194,14 @@ public class LibraryScanner {
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART))));
         }
         cur.close();
+
+        return albums;
     }
 
     // Scan the MediaStore for playlists
-    public static void scanPlaylists (Context context){
+    public static ArrayList<Playlist> scanPlaylists (Context context){
+        ArrayList<Playlist> playlists = new ArrayList<>();
+
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
                 null, null, null,
@@ -162,15 +209,17 @@ public class LibraryScanner {
 
         for (int i = 0; i < cur.getCount(); i++) {
             cur.moveToPosition(i);
-            Library.add(new Playlist(
+            playlists.add(new Playlist(
                     cur.getLong(cur.getColumnIndex(MediaStore.Audio.Playlists._ID)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.NAME))));
         }
         cur.close();
+        return playlists;
     }
 
     // Scan the MediaStore for Genres
-    public static void scanGenres (Context context){
+    public static ArrayList<Genre> scanGenres (Context context){
+        ArrayList<Genre> genres = new ArrayList<>();
 
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI,
@@ -181,7 +230,7 @@ public class LibraryScanner {
             cur.moveToPosition(i);
             long thisGenreId = cur.getLong(cur.getColumnIndex(MediaStore.Audio.Genres._ID));
 
-            Library.add(new Genre(
+            genres.add(new Genre(
                     thisGenreId,
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Genres.NAME))));
 
@@ -198,6 +247,8 @@ public class LibraryScanner {
             genreCur.close();
         }
         cur.close();
+
+        return genres;
     }
 
     //
@@ -613,7 +664,7 @@ public class LibraryScanner {
 
     // Try to reload the library if it was saved previously
     // Returns false if it couldn't be reloaded
-    private static boolean readLibrary (Context context) {
+    private static boolean readLibrary (Context context, boolean mergeWithMediaStore) {
         try {
             File playlistJSON = new File(context.getExternalFilesDir(null), FILENAME_PLAYLISTS);
             File songJSON = new File(context.getExternalFilesDir(null), FILENAME_SONGS);
@@ -650,19 +701,61 @@ public class LibraryScanner {
             ArrayList<Genre> genreLibrary = gson.fromJson(genreGSON, new TypeToken<List<Genre>>() {}.getType());
 
             if (playlistLibrary != null && songLibrary != null && artistLibrary != null && albumLibrary != null && genreLibrary != null) {
-                if (!playlistLibrary.isEmpty()) {
+                if (mergeWithMediaStore) {
+                    // Scan the MediaStore and find differences between the device's library and the saved library
+                    // If an entry in the MediaStore isn't in the saved library, add it
+                    // If an entry in the saved library isn't in the MediaStore, remove it
+
+                    ArrayList<Playlist> mediaStorePlaylists = scanPlaylists(context);
+                    for (Playlist p : playlistLibrary){
+                        if (!mediaStorePlaylists.contains(p)) playlistLibrary.remove(p);
+                    }
+                    for (Playlist p : mediaStorePlaylists){
+                        if (!playlistLibrary.contains(p)) playlistLibrary.add(p);
+                    }
                     Library.setPlaylistLib(playlistLibrary);
-                }
-                if (!songLibrary.isEmpty()) {
+
+                    ArrayList<Song> mediaStoreSongs = scanSongs(context);
+                    for (Song s : songLibrary){
+                        if (!mediaStoreSongs.contains(s)) songLibrary.remove(s);
+                    }
+                    for (Song s : mediaStoreSongs){
+                        if (!songLibrary.contains(s)) songLibrary.add(s);
+                    }
                     Library.setSongLib(songLibrary);
-                }
-                if (!artistLibrary.isEmpty()) {
+
+                    ArrayList<Artist> mediaStoreArtists = scanArtists(context);
+                    for (Artist a : artistLibrary){
+                        if (!mediaStoreArtists.contains(a)) artistLibrary.remove(a);
+                    }
+                    for (Artist a : mediaStoreArtists){
+                        if (!artistLibrary.contains(a)) artistLibrary.add(a);
+                    }
                     Library.setArtistLib(artistLibrary);
-                }
-                if (!albumLibrary.isEmpty()) {
+
+                    ArrayList<Album> mediaStoreAlbums = scanAlbums(context);
+                    for (Album a : albumLibrary){
+                        if (!mediaStoreAlbums.contains(a)) albumLibrary.remove(a);
+                    }
+                    for (Album a : mediaStoreAlbums){
+                        if (!albumLibrary.contains(a)) albumLibrary.add(a);
+                    }
                     Library.setAlbumLib(albumLibrary);
+
+                    ArrayList<Genre> mediaStoreGenres = scanGenres(context);
+                    for (Genre g : genreLibrary){
+                        if (!mediaStoreGenres.contains(g)) genreLibrary.remove(g);
+                    }
+                    for (Genre g : mediaStoreGenres){
+                        if (!genreLibrary.contains(g)) genreLibrary.add(g);
+                    }
+                    Library.setGenreLib(genreLibrary);
                 }
-                if (!genreLibrary.isEmpty()) {
+                else {
+                    Library.setPlaylistLib(playlistLibrary);
+                    Library.setSongLib(songLibrary);
+                    Library.setArtistLib(artistLibrary);
+                    Library.setAlbumLib(albumLibrary);
                     Library.setGenreLib(genreLibrary);
                 }
                 return true;

@@ -72,6 +72,7 @@ public class PlaylistActivity extends Activity implements View.OnClickListener{
 
     @Override
     public void onPause() {
+        LibraryScanner.saveLibrary(this);
         try {
             unregisterReceiver(updateReceiver);
         } catch (Exception e) {

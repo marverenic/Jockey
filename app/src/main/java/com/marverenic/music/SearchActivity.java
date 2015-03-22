@@ -97,6 +97,7 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
 
     @Override
     public void onPause() {
+        LibraryScanner.saveLibrary(this);
         try {
             unregisterReceiver(updateReceiver);
         } catch (Exception e) {

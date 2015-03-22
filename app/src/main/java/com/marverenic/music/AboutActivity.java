@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 
@@ -41,6 +42,12 @@ public class AboutActivity extends Activity {
     public void onBackPressed() {
         super.onBackPressed();
         Navigate.back(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LibraryScanner.saveLibrary(this);
     }
 
     @Override
