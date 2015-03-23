@@ -134,6 +134,7 @@ public class Fetch {
     }
 
     public static ArtistBio fetchArtistBio(Context context, String artistName) {
+        if (artistName.equalsIgnoreCase("Unknown Artist")) return null;
         if (!lastFmInitialized) initLastFm(context);
 
         ConnectivityManager network = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

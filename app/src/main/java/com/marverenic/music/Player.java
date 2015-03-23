@@ -49,10 +49,12 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     private int position;
     private int positionShuffled;
 
-    // Shuffle & Repeat status
+    // MediaFocus variables
     private boolean active = false; // If we currently have audio focus
-    private boolean shuffle; // Shuffle status
+    private boolean shouldResumeOnFocusGained = false; // If we should play music when focus is returned
 
+    // Shufle & Repeat options
+    private boolean shuffle; // Shuffle status
     public static enum repeatOption {NONE, ONE, ALL}
     private repeatOption repeat; // Repeat status
 
@@ -181,6 +183,8 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     @Override
     public void onAudioFocusChange(int focusChange) {
+        shouldResumeOnFocusGained = isPlaying();
+
         switch (focusChange) {
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                 pause();
@@ -193,7 +197,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                 break;
             case AudioManager.AUDIOFOCUS_GAIN:
                 mediaPlayer.setVolume(1f, 1f);
-                if (!mediaPlayer.isPlaying()) play();
+                if (shouldResumeOnFocusGained) play();
                 break;
             default:
                 break;
@@ -430,10 +434,11 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     public void skip() {
         if (!isPreparing()) {
             // Update the play count
-            if (getCurrentPosition() < 20000) {
-                LibraryScanner.findSongById(getNowPlaying().songId).skipCount++;
-            } else if (getCurrentPosition() > 24000 || getCurrentPosition() > mediaPlayer.getDuration() / 2) {
+            if (getCurrentPosition() > 24000 || getCurrentPosition() > mediaPlayer.getDuration() / 2) {
                 LibraryScanner.findSongById(getNowPlaying().songId).playCount++;
+            }
+            else if (getCurrentPosition() < 20000) {
+                LibraryScanner.findSongById(getNowPlaying().songId).skipCount++;
             }
 
             // Change the media source
@@ -484,10 +489,11 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     public void changeSong(int newPosition) {
         // Update the play count
-        if (getCurrentPosition() < 20000) {
-            LibraryScanner.findSongById(getNowPlaying().songId).skipCount++;
-        } else if (getCurrentPosition() > 24000 || getCurrentPosition() > mediaPlayer.getDuration() / 2) {
+        if (getCurrentPosition() > 24000 || getCurrentPosition() > mediaPlayer.getDuration() / 2) {
             LibraryScanner.findSongById(getNowPlaying().songId).playCount++;
+        }
+        else if (getCurrentPosition() < 20000) {
+            LibraryScanner.findSongById(getNowPlaying().songId).skipCount++;
         }
 
         if (shuffle) {

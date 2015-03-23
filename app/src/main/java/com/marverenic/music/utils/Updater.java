@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Handler;
@@ -27,42 +26,6 @@ public class Updater implements Runnable {
     @Override
     public void run() {
         final Handler handler = new Handler(Looper.getMainLooper());
-
-        // Check for versions of Jockey published by ensiluxrum
-        PackageManager pm = context.getPackageManager();
-        boolean hasOldVersion;
-        try {
-            pm.getPackageInfo("com.ensiluxrum.music", PackageManager.GET_ACTIVITIES);
-            hasOldVersion = true;
-        } catch (PackageManager.NameNotFoundException e) {
-            hasOldVersion = false;
-        }
-
-        if (hasOldVersion) {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    new AlertDialog.Builder(context)
-                            .setTitle("An old version of Jockey was found")
-                            .setMessage("You should uninstall it to avoid conflicts and general confusion.")
-                            .setPositiveButton("Uninstall it for me", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Intent intent = new Intent(Intent.ACTION_DELETE);
-                                    intent.setData(Uri.parse("package:com.ensiluxrum.music"));
-                                    context.startActivity(intent);
-                                }
-                            })
-                            .setNeutralButton("Maybe later", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                }
-                            })
-                            .show();
-                }
-            });
-        }
-
 
         // Check with a URL to see if Jockey has an update
         ConnectivityManager network = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
