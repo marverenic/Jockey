@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -30,10 +31,11 @@ public class Updater implements Runnable {
         // Check with a URL to see if Jockey has an update
         ConnectivityManager network = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        NetworkInfo info = network.getActiveNetworkInfo();
 
         // Only check for an update if a valid network is present
-        if(network.getActiveNetworkInfo().isAvailable() && !network.getActiveNetworkInfo().isRoaming()
-                && (prefs.getBoolean("prefUseMobileData", true) || network.getActiveNetworkInfo().getType() != ConnectivityManager.TYPE_MOBILE)) {
+        if(info != null && info.isAvailable() && !info.isRoaming()
+                && (prefs.getBoolean("prefUseMobileData", true) || info.getType() != ConnectivityManager.TYPE_MOBILE)) {
             try {
                 URL versionUrl = new URL("https://raw.githubusercontent.com/marverenic/Jockey/master/VERSION");
                 BufferedReader in = new BufferedReader(new InputStreamReader(versionUrl.openStream()));
