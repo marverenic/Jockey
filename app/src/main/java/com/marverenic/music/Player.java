@@ -183,7 +183,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     @Override
     public void onAudioFocusChange(int focusChange) {
-        shouldResumeOnFocusGained = isPlaying();
+        shouldResumeOnFocusGained = isPlaying() || shouldResumeOnFocusGained;
 
         switch (focusChange) {
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
@@ -198,6 +198,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             case AudioManager.AUDIOFOCUS_GAIN:
                 mediaPlayer.setVolume(1f, 1f);
                 if (shouldResumeOnFocusGained) play();
+                shouldResumeOnFocusGained = false;
                 break;
             default:
                 break;
