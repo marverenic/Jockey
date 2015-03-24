@@ -202,7 +202,7 @@ public class PlayerService extends Service {
                 .setContentIntent(PendingIntent.getActivity(
                         getInstance(),
                         0,
-                        new Intent(context, LibraryActivity.class),
+                        new Intent(context, LibraryActivity.class).putExtra(LibraryActivity.START_NOW_PLAYING, true),
                         PendingIntent.FLAG_UPDATE_CURRENT))
                 .build();
 
@@ -235,7 +235,7 @@ public class PlayerService extends Service {
                 .setContentIntent(PendingIntent.getActivity(
                         getInstance(),
                         0,
-                        new Intent(context, LibraryActivity.class),
+                        new Intent(context, LibraryActivity.class).putExtra(LibraryActivity.START_NOW_PLAYING, true),
                         PendingIntent.FLAG_UPDATE_CURRENT));
 
         // Set the album artwork

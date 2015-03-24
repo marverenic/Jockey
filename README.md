@@ -18,9 +18,9 @@ To download compiled versions of Jockey, visit Jockey's [SourceForge] page.
  - Wait while Gradle begins to build the project (Android Studio may need to restart)
 
 ### Todo
- - Queue & Playlist Editor
+ - Performance enhancements
  - Activity transitions
- - Clean up a few classes and refactor the mess that is drawables for pre-Lollipop devices
+ - Clean up a few classes and refactor the mess that is the drawables directory
 
 ### Bugs & contributing
 Feel free to post suggestions, crashes, or just anything that isn't as smooth as it should be to the bug tracker -- I want Jockey to be as seamless as it possibly can. Additionally, don't hesitate to fork Jockey or submit a pull request -- especially if it's a bug fix or cleans up code that's doing mischevious, devious or otherwise bad things that I'm not aware of.

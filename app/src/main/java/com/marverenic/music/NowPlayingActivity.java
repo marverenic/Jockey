@@ -52,20 +52,31 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
     @Override
     public void onCreate(Bundle savedInstanceState) {
         if (getResources().getConfiguration().smallestScreenWidthDp >= 700) {
+            // If the activity is landscape on a tablet, use a different theme
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 Themes.setTheme(this);
                 getWindow().setStatusBarColor(Themes.getPrimaryDark());
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && getActionBar() != null) {
-                    getActionBar().setElevation(getResources().getDimension(R.dimen.header_elevation));
+                if (getActionBar() != null) {
+                    getActionBar().setDisplayHomeAsUpEnabled(true);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) getActionBar().setElevation(getResources().getDimension(R.dimen.header_elevation));
                 }
-            } else {
+            }
+            else {
+                // If the activity is in portrait, use the default theme
                 setTheme(R.style.NowPlayingTheme);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && getActionBar() != null) {
-                    getActionBar().setElevation(0);
+                if (getActionBar() != null) {
+                    getActionBar().setDisplayHomeAsUpEnabled(true);
+                    getActionBar().setTitle("");
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) getActionBar().setElevation(0);
                 }
             }
         } else {
+            // For devices that aren't tablets
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            if (getActionBar() != null) {
+                getActionBar().setDisplayHomeAsUpEnabled(true);
+                getActionBar().setTitle("");
+            }
         }
 
         super.onCreate(savedInstanceState);
@@ -73,21 +84,12 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
 
         Themes.themeActivity(R.layout.activity_now_playing, getWindow().getDecorView().findViewById(android.R.id.content), this);
 
-        if (getActionBar() != null) {
-            getActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-
         findViewById(R.id.playButton).setOnClickListener(this);
         findViewById(R.id.nextButton).setOnClickListener(this);
         findViewById(R.id.previousButton).setOnClickListener(this);
         ((SeekBar) findViewById(R.id.songSeekBar)).setOnSeekBarChangeListener(this);
 
         observer = new MediaObserver(this);
-        new Thread(observer).start();
-
-        if (PlayerService.isInitialized()) {
-            update();
-        }
 
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
@@ -213,12 +215,6 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
-    }
-
-    @Override
     public void onPause() {
         observer.stop();
         unregisterReceiver(updateReceiver);
@@ -228,10 +224,10 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
 
     @Override
     public void onResume() {
+        super.onResume();
         new Thread(observer).start();
         update();
         registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
-        super.onResume();
     }
 
     @Override
@@ -347,7 +343,6 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
             songTitle.setText(PlayerService.getNowPlaying().songName);
             artistName.setText(PlayerService.getNowPlaying().artistName);
             albumTitle.setText(PlayerService.getNowPlaying().albumName);
-            seekBar.setMax(PlayerService.getNowPlaying().songDuration);
 
             ImageView artImageView = (ImageView) findViewById(R.id.imageArtwork);
             if (PlayerService.getFullArt() != null) {
@@ -363,21 +358,30 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
                     artImageView.setImageResource(R.drawable.art_default_xl);
                 }
             }
-        }
-        if ((PlayerService.isPlaying() || PlayerService.isPreparing())) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_vector_pause_circle_fill);
-            } else {
-                ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_pause_circle_fill);
+
+            if ((PlayerService.isPlaying() || PlayerService.isPreparing())) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_vector_pause_circle_fill);
+                } else {
+                    ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_pause_circle_fill);
+                }
+                if (!PlayerService.isPreparing()) {
+                    if (!observer.isRunning()) new Thread(observer).start();
+                    seekBar.setMax(PlayerService.getNowPlaying().songDuration);
+                }
+                else{
+                    observer.stop();
+                    seekBar.setProgress(0);
+                    seekBar.setMax(Integer.MAX_VALUE);
+                }
             }
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_vector_play_circle_fill);
-            } else {
-                ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_circle_fill);
+            else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_vector_play_circle_fill);
+                } else {
+                    ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_circle_fill);
+                }
             }
-            observer.stop();
-            new Thread(observer).start();
         }
     }
 
@@ -436,6 +440,10 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
                     Debug.log(Debug.LogLevel.WTF, "NowPlayingActivity/MediaObserver", "Some horrible thread exception has occurred", parent);
                 }
             }
+        }
+
+        public boolean isRunning() {
+            return !stop;
         }
     }
 }

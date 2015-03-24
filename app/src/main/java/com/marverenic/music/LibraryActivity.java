@@ -44,10 +44,8 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
     // Set the intent's action to this to avoid automatically going to the Now Playing page
     public static final String ACTION_LIBRARY = "com.marverenic.music.LibraryActivity.LIBRARY";
 
-    // Used to tell if the activity has already been created
-    // If this activity was just initiated, switch to the now playing page
-    // If this activity wasn't just created, then don't do any special navigation
-    private boolean startPlayer = true;
+    // Intent flag used to determine whether to open the now playing activity or not
+    public static final String START_NOW_PLAYING = "com.marverernic.music.LibraryActivity.GOTOPLAYING";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,11 +83,9 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
     public void onNewIntent (Intent intent){
         super.onNewIntent(intent);
         // If the player is playing, go to the Now Playing page
-        if (startPlayer && !(intent.getAction() != null && intent.getAction().equals(ACTION_LIBRARY))
-                && PlayerService.isInitialized() && PlayerService.isPlaying()){
+        if (intent.getBooleanExtra(START_NOW_PLAYING, false)){
             Navigate.to(this, NowPlayingActivity.class);
-            intent.setAction(null);
-            startPlayer = false;
+            intent.removeExtra(START_NOW_PLAYING);
         }
     }
 

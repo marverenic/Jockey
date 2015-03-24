@@ -214,7 +214,6 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     public void onPrepared(MediaPlayer mp) {
         if(!isPreparing()) {
             mediaPlayer.start();
-            updateNowPlaying();
         }
     }
 
@@ -263,7 +262,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                 return;
             }
             try {
-                mediaPlayer.prepare();
+                mediaPlayer.prepareAsync();
             }
             catch (Exception e){
                 e.printStackTrace();
@@ -372,6 +371,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                     begin();
                 } else {
                     mediaPlayer.start();
+                    updateNowPlaying();
                 }
             } else {
                 if (position + 1 == queue.size() && mediaPlayer.getDuration() - mediaPlayer.getCurrentPosition() < 100) {
@@ -379,17 +379,17 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                     begin();
                 } else {
                     mediaPlayer.start();
+                    updateNowPlaying();
                 }
             }
         }
-        updateNowPlaying();
     }
 
     public void pause() {
         if (isPlaying()) {
             mediaPlayer.pause();
+            updateNowPlaying();
         }
-        updateNowPlaying();
     }
 
     public void stop() {
@@ -428,7 +428,6 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                     begin();
                 }
             }
-            updateNowPlaying();
         }
     }
 
@@ -471,7 +470,6 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
                 }
             }
-            updateNowPlaying();
         }
     }
 
@@ -508,7 +506,6 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                 begin();
             }
         }
-        updateNowPlaying();
     }
 
     //
@@ -673,7 +670,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     public ArrayList<Song> getQueue() {
         if (shuffle) return new ArrayList<>(queueShuffled);
-        return queue;
+        return new ArrayList<>(queue);
     }
 
     public int getPosition() {
