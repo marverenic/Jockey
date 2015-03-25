@@ -20,13 +20,16 @@
     <string name="action_pause">Pause</string>
     <string name="action_previous">Previous</string>
     <string name="action_edit">Edit</string>
-    <string name="action_new_playlist">New Playlist</string>
+    <string name="action_new_playlist">New Playlist&#8230;</string>
     <string name="album_art">Album Art</string>
     <string name="shuffle">Shuffle</string>
     <string name="repeat">Repeat</string>
     <string name="repeat_one">Repeat One</string>
     <string name="queue">Queue</string>
     <string name="search_hint">Search Library</string>
+    <string name="export_playlist">Save as playlist&#8230;</string>
+    <string name="action_import_playlist">Import Playlist&#8230;</string>
+    <string name="message_create_playlist_error_no_name">Can\'t create a playlist with no name</string>
 
     <string name="nothing_playing">Nothing is playing</string>
     <string name="no_artist">unknown artist</string>
@@ -141,6 +144,7 @@
     <string name="message_added_song">Added \"%1$s\" to \"%2$s\"</string>
     <string name="message_created_playlist">Created playlist \"%1$s\"</string>
     <string name="message_removed_playlist">Deleted playlist \"%1$s\"</string>
+    <string name="message_create_playlist_error_exists">Couldn\'t create playlist \"%1$s\" because it already exists</string>
 
     <!-- String Arrays for Settings -->
     <string-array name="pages">
@@ -199,6 +203,5 @@
     <!-- Each theme may have up to 5 preview images -->
     <string name="theme_preview1">ic_launcher_red</string>
     <string name="theme_preview2">ic_launcher_amber</string>
-    <string name="export_playlist">Save as playlist</string>
 
 </resources>

@@ -8,10 +8,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -93,6 +95,12 @@ public class QueueActivity extends Activity {
                                 dialog.cancel();
                             }
                         }).show();
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    input.setPadding(0, input.getPaddingTop(), 0, input.getPaddingBottom());
+                    int padding = (int) getResources().getDimension(R.dimen.alert_padding);
+                    ((View) input.getParent()).setPadding(padding, 0, padding, 0);
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

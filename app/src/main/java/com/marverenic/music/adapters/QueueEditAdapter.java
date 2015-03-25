@@ -63,7 +63,8 @@ public class QueueEditAdapter extends BaseAdapter implements AdapterView.OnItemC
             if (tt != null) {
                 tt.setText(s.songName);
                 if (position == PlayerService.getPosition()){
-                    tt.setTextColor(Themes.getPrimary());
+                    if (Themes.isLight(activity)) tt.setTextColor(Themes.getPrimary());
+                    else tt.setTextColor(Themes.getAccent());
                 }
                 else{
                     tt.setTextColor(Themes.getListText());
@@ -72,7 +73,8 @@ public class QueueEditAdapter extends BaseAdapter implements AdapterView.OnItemC
             if (tt1 != null) {
                 tt1.setText(s.artistName + " - " + s.albumName);
                 if (position == PlayerService.getPosition()){
-                    tt1.setTextColor(Themes.getAccent());
+                    if (Themes.isLight(activity)) tt1.setTextColor(Themes.getAccent());
+                    else tt1.setTextColor(Themes.getPrimary());
                 }
                 else{
                     tt1.setTextColor(Themes.getDetailText());

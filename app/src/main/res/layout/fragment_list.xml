@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/list_container"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
@@ -17,4 +17,5 @@
         android:elevation="@dimen/window_elevation"
         android:saveEnabled="true"
         android:scrollbars="vertical"/>
-</FrameLayout>
+    
+</RelativeLayout>

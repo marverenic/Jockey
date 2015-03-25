@@ -1,9 +1,7 @@
 package com.marverenic.music;
 
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -15,12 +13,10 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.marverenic.music.adapters.LibraryPagerAdapter;
@@ -150,9 +146,6 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case R.id.action_settings:
                 Navigate.to(this, SettingsActivity.class);
@@ -169,27 +162,6 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
                 return true;
             case R.id.search:
                 Navigate.to(this, SearchActivity.class);
-                return true;
-            case R.id.action_new_playlist:
-                final EditText input = new EditText(this);
-                input.setInputType(InputType.TYPE_CLASS_TEXT);
-                input.setHint("Playlist name");
-
-                new AlertDialog.Builder(this)
-                        .setTitle("Create Playlist")
-                        .setView(input)
-                        .setPositiveButton("Create", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                LibraryScanner.createPlaylist(getApplicationContext(), input.getText().toString(), null);
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        }).show();
                 return true;
             case R.id.action_about:
                 Navigate.to(this, AboutActivity.class);

@@ -564,9 +564,32 @@ public class LibraryScanner {
     }
 
     public static Playlist createPlaylist(final Context context, final String playlistName, final ArrayList<Song> songList){
+
+        String trimmedName = playlistName.trim();
+
+        if (trimmedName.length() == 0){
+            Toast.makeText(
+                    context,
+                    context.getResources().getString(R.string.message_create_playlist_error_no_name),
+                    Toast.LENGTH_SHORT)
+                    .show();
+            return null;
+        }
+
+        for (Playlist p : Library.getPlaylists()){
+            if (p.playlistName.equalsIgnoreCase(trimmedName)){
+                Toast.makeText(
+                        context,
+                        String.format(context.getResources().getString(R.string.message_create_playlist_error_exists), trimmedName),
+                        Toast.LENGTH_SHORT)
+                        .show();
+                return null;
+            }
+        }
+
         // Add the playlist to the MediaStore
         ContentValues mInserts = new ContentValues();
-        mInserts.put(MediaStore.Audio.Playlists.NAME, playlistName);
+        mInserts.put(MediaStore.Audio.Playlists.NAME, trimmedName);
         mInserts.put(MediaStore.Audio.Playlists.DATE_ADDED, System.currentTimeMillis());
         mInserts.put(MediaStore.Audio.Playlists.DATE_MODIFIED, System.currentTimeMillis());
 
@@ -574,7 +597,7 @@ public class LibraryScanner {
 
         // Update the playlist library & resort it
         Library.getPlaylists().clear();
-        scanPlaylists(context);
+        Library.setPlaylistLib(scanPlaylists(context));
         Library.sortPlaylistList(Library.getPlaylists());
 
         // Get the id of the new playlist
@@ -621,7 +644,7 @@ public class LibraryScanner {
 
         // Update the playlist library & resort it
         Library.getPlaylists().clear();
-        scanPlaylists(context);
+        Library.setPlaylistLib(scanPlaylists(context));
         Library.sortPlaylistList(Library.getPlaylists());
 
         Toast.makeText(

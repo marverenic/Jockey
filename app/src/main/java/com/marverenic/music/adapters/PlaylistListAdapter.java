@@ -115,7 +115,7 @@ public class PlaylistListAdapter extends BaseAdapter implements AdapterView.OnIt
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 LibraryScanner.removePlaylist(context, item);
-                                                notifyDataSetChanged();
+                                                updateData(Library.getPlaylists());
                                             }
                                         })
                                         .setNegativeButton("Cancel", null)
@@ -131,7 +131,7 @@ public class PlaylistListAdapter extends BaseAdapter implements AdapterView.OnIt
     }
 
     public void updateData(ArrayList<Playlist> playlistLibrary) {
-        this.data = playlistLibrary;
+        this.data = new ArrayList<>(playlistLibrary);
         notifyDataSetChanged();
     }
 }
