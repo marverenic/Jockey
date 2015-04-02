@@ -18,11 +18,7 @@ public class AboutActivity extends Activity {
 
         setContentView(R.layout.about);
 
-        try {
-            ((TextView) findViewById(R.id.aboutVersion)).setText(getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        ((TextView) findViewById(R.id.aboutVersion)).setText(BuildConfig.VERSION_NAME);
 
         Themes.themeActivity(R.layout.about, getWindow().findViewById(android.R.id.content), this);
     }

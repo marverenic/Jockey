@@ -55,11 +55,11 @@
     <color name="ui_detail_text_orange">#FFCC80</color>
 
     <!-- Yellow -->
-    <color name="primary_amber">#FF8F00</color>
-    <color name="primary_dark_amber">#FF6F00</color>
-    <color name="accent_amber">#FFD740</color>
-    <color name="ui_text_amber">#FFF8E1</color>
-    <color name="ui_detail_text_amber">#FFE082</color>
+    <color name="primary_yellow">#FF8F00</color>
+    <color name="primary_dark_yellow">#FF6F00</color>
+    <color name="accent_yellow">#FFD740</color>
+    <color name="ui_text_yellow">#FFF8E1</color>
+    <color name="ui_detail_text_yellow">#FFE082</color>
 
     <!-- Green -->
     <color name="primary_green">#2E7D32</color>

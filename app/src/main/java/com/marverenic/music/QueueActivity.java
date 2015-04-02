@@ -83,10 +83,7 @@ public class QueueActivity extends Activity {
                         .setPositiveButton("Create", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                LibraryScanner.editPlaylist(
-                                        context,
-                                        LibraryScanner.createPlaylist(context, input.getText().toString(), null),
-                                        PlayerService.getQueue());
+                                LibraryScanner.createPlaylist(context, input.getText().toString(), PlayerService.getQueue());
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -97,9 +94,12 @@ public class QueueActivity extends Activity {
                         }).show();
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    input.setPadding(0, input.getPaddingTop(), 0, input.getPaddingBottom());
                     int padding = (int) getResources().getDimension(R.dimen.alert_padding);
-                    ((View) input.getParent()).setPadding(padding, 0, padding, 0);
+                    ((View) input.getParent()).setPadding(
+                            padding - input.getPaddingLeft(),
+                            padding,
+                            padding - input.getPaddingRight(),
+                            input.getPaddingBottom());
                 }
                 return true;
             default:

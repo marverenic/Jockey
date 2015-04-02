@@ -8,7 +8,20 @@ Jockey is a music player for Android based on Google's Material Design standards
 Also, Jockey was coded by a college student with only one semester of Computer Science. That being said, if you decide to modify Jockey, I apologize in advance.
 
 ### Downloads
-To download compiled versions of Jockey, visit Jockey's [SourceForge] page.
+To download compiled versions of Jockey, visit Jockey's [SourceForge] page.  
+In order to install comiled APK's, you will need to enable installation of applications from third party sources if you haven't already done so, and then sideload the APK. There are many guides available online that demonstrate this process in detail.
+
+### Permissions
+** Read and write to external storage **  
+Used to save local data; primarily used for Last.fm cache, library storage, and other small miscellaneous files.  
+** Internet **  
+Used to retrieve information and thumbnails for artists from Last.fm  
+** Network State **  
+Used to prevent Jockey from using mobile data (if this preference is enabled)  
+** Keep awake **  
+Used to play music while the device's screen is off  
+** Install and Uninstall shortcuts **  
+Allows Jockey to (optionally) add shortcuts to Jockey to the launcher. This is only done when explicitly requested from the settings page and is intended so that the launcher icon matches the chosen theme
 
 ### Setting up the project
  - Download, install and launch [Android Studio]

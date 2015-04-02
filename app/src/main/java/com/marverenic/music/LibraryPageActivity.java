@@ -139,8 +139,14 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
             setContentView(R.layout.page_error);
             Debug.log(Debug.LogLevel.WTF, "LibraryPageActivity", "An invalid item was passed as the parent object", this);
         }
-        registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
         update();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        update();
+        registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
     }
 
     @Override

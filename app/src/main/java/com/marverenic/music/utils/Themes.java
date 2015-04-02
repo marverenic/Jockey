@@ -124,11 +124,11 @@ public class Themes {
                 uiDetailText = resources.getColor(R.color.ui_detail_text_orange);
                 break;
             case 3: //Yellow
-                primary = resources.getColor(R.color.primary_amber);
-                primaryDark = resources.getColor(R.color.primary_dark_amber);
-                accent = resources.getColor(R.color.accent_amber);
-                uiText = resources.getColor(R.color.ui_text_amber);
-                uiDetailText = resources.getColor(R.color.ui_detail_text_amber);
+                primary = resources.getColor(R.color.primary_yellow);
+                primaryDark = resources.getColor(R.color.primary_dark_yellow);
+                accent = resources.getColor(R.color.accent_yellow);
+                uiText = resources.getColor(R.color.ui_text_yellow);
+                uiDetailText = resources.getColor(R.color.ui_detail_text_yellow);
                 break;
             case 4: //Green
                 primary = resources.getColor(R.color.primary_green);
@@ -262,7 +262,7 @@ public class Themes {
             case 2:
                 return BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher_orange);
             case 3:
-                return BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher_amber);
+                return BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher_yellow);
             case 4:
                 return BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher_green);
             case 6:
@@ -303,7 +303,7 @@ public class Themes {
                 case 2:
                     return ((BitmapDrawable) context.getResources().getDrawableForDensity(R.drawable.ic_launcher_orange, density)).getBitmap();
                 case 3:
-                    return ((BitmapDrawable) context.getResources().getDrawableForDensity(R.drawable.ic_launcher_amber, density)).getBitmap();
+                    return ((BitmapDrawable) context.getResources().getDrawableForDensity(R.drawable.ic_launcher_yellow, density)).getBitmap();
                 case 4:
                     return ((BitmapDrawable) context.getResources().getDrawableForDensity(R.drawable.ic_launcher_green, density)).getBitmap();
                 case 6:
@@ -325,7 +325,7 @@ public class Themes {
             case 2:
                 return R.drawable.ic_launcher_orange;
             case 3:
-                return R.drawable.ic_launcher_amber;
+                return R.drawable.ic_launcher_yellow;
             case 4:
                 return R.drawable.ic_launcher_green;
             case 6:

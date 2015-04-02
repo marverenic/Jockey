@@ -42,7 +42,7 @@ public class SongListAdapter extends BaseAdapter implements SectionIndexer, Adap
 
     public SongListAdapter(ArrayList<Song> data, Context context, boolean enableSectionHeader) {
         super();
-        this.data = new ArrayList<>(data);
+        this.data = data;
         this.context = context;
 
         if(enableSectionHeader) {

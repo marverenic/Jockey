@@ -1,5 +1,6 @@
 package com.marverenic.music;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
@@ -27,6 +29,8 @@ import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.utils.Updater;
 import com.marverenic.music.view.SlidingTabLayout;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.PicassoUtils;
 
 public class LibraryActivity extends FragmentActivity implements View.OnClickListener {
 
@@ -57,18 +61,24 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
 
         new Thread(new Updater(this)).start();
 
-        startService(new Intent(this, Player.class));
-        registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
-
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         if (!LibraryScanner.isLoaded()) {
-            LibraryScanner.scanAll(this, true, true, new LibraryScanner.onScanCompleteListener() {
+            final Activity activity = this;
+            new AsyncTask<Void, Void, Void>(){
+
                 @Override
-                public void onScanComplete() {
+                public Void doInBackground(Void... voids){
+                    LibraryScanner.scanAll(activity, true, true);
+                    return null;
+                }
+
+                @Override
+                protected void onPostExecute(Void results){
                     createPages(true);
                 }
-            });
+
+            }.execute();
         }
         else{
             createPages(false);
@@ -134,6 +144,18 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
         } catch (Exception e) {
             Debug.log(Debug.LogLevel.ERROR, "LibraryActivity", "Unable to unregister receiver", this);
         }
+    }
+
+    @Override
+    public void onTrimMemory(int level){
+        super.onTrimMemory(level);
+        PicassoUtils.clearCache(Picasso.with(this));
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        PicassoUtils.clearCache(Picasso.with(this));
     }
 
     @Override

@@ -23,12 +23,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Scanner;
 
 public class LibraryScanner {
 
@@ -45,37 +47,21 @@ public class LibraryScanner {
     //
 
     // Refresh the entire library
-    public static void scanAll (final Context context, final boolean attemptReload, final boolean mergeWithMediaStore,
-                                @Nullable final onScanCompleteListener listener){
+    public static void scanAll (final Context context, final boolean attemptReload, final boolean mergeWithMediaStore){
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Library.resetAll();
-                if (!attemptReload || !readLibrary(context, mergeWithMediaStore)) {
-                    Library.setPlaylistLib(scanPlaylists(context));
-                    Library.setSongLib(scanSongs(context));
-                    Library.setArtistLib(scanArtists(context));
-                    Library.setAlbumLib(scanAlbums(context));
-                    Library.setGenreLib(scanGenres(context));
-                }
-                Library.sort();
+        Library.resetAll();
+        if (!attemptReload || !readLibrary(context, mergeWithMediaStore)) {
+            Library.setPlaylistLib(scanPlaylists(context));
+            Library.setSongLib(scanSongs(context));
+            Library.setArtistLib(scanArtists(context));
+            Library.setAlbumLib(scanAlbums(context));
+            Library.setGenreLib(scanGenres(context));
+        }
+        Library.sort();
 
-                loaded = true;
+        loaded = true;
 
-                if (listener != null){
-                    Handler handler = new Handler(Looper.getMainLooper());
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onScanComplete();
-                        }
-                    });
-                }
-
-                writeLibrary(context);
-            }
-        }).start();
+        writeLibrary(context);
     }
 
     public static void refresh(final Context context, final boolean attemptReload, final boolean mergeWithMediaStore,
@@ -563,7 +549,7 @@ public class LibraryScanner {
                 .show();
     }
 
-    public static Playlist createPlaylist(final Context context, final String playlistName, final ArrayList<Song> songList){
+    public static void createPlaylist(final Context context, final String playlistName, final ArrayList<Song> songList){
 
         String trimmedName = playlistName.trim();
 
@@ -573,7 +559,7 @@ public class LibraryScanner {
                     context.getResources().getString(R.string.message_create_playlist_error_no_name),
                     Toast.LENGTH_SHORT)
                     .show();
-            return null;
+            return;
         }
 
         for (Playlist p : Library.getPlaylists()){
@@ -583,7 +569,7 @@ public class LibraryScanner {
                         String.format(context.getResources().getString(R.string.message_create_playlist_error_exists), trimmedName),
                         Toast.LENGTH_SHORT)
                         .show();
-                return null;
+                return;
             }
         }
 
@@ -631,8 +617,6 @@ public class LibraryScanner {
                 String.format(context.getResources().getString(R.string.message_created_playlist), playlistName),
                 Toast.LENGTH_SHORT)
                 .show();
-
-        return playlist;
     }
 
     public static void removePlaylist(final Context context, final Playlist playlist){
@@ -652,6 +636,82 @@ public class LibraryScanner {
                 String.format(context.getResources().getString(R.string.message_removed_playlist), playlist),
                 Toast.LENGTH_SHORT)
                 .show();
+    }
+
+    //
+    //          Media file open method
+    //
+
+    public static ArrayList<Song> getSongListFromFile(Context context, String path, String type) throws IOException{
+        // A somewhat convoluted method for getting a list of songs from a path
+
+        ArrayList<Song> queue = new ArrayList<>();
+
+        if (Library.isEmpty()){
+            scanAll(context, true, true);
+        }
+
+        // PLAYLISTS
+        if (type.equals("audio/x-mpegurl") || type.equals("audio/x-scpls") || type.equals("application/vnd.ms-wpl")){
+            // If a playlist was opened, try to find and play its entry from the MediaStore
+            Cursor cur = context.getContentResolver().query(
+                    MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
+                    null,
+                    MediaStore.Audio.Playlists.DATA + "=?",
+                    new String[] {path},
+                    MediaStore.Audio.Playlists.NAME + " ASC");
+
+            // If the media store contains this playlist, play it like a regular playlist
+            if (cur.getCount() > 0){
+                cur.moveToFirst();
+                queue = getPlaylistEntries(context, new Playlist(
+                                cur.getLong(cur.getColumnIndex(MediaStore.Audio.Playlists._ID)),
+                                cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.NAME))));
+            }
+            else{
+                // If the MediaStore doesn't contain this playlist, attempt to read it manually
+                Scanner sc = new Scanner(new File(path));
+                ArrayList<String> lines = new ArrayList<>();
+                while (sc.hasNextLine()) {
+                    lines.add(sc.nextLine());
+                }
+
+                if (lines.size() > 0){
+                    //TODO Attempt to read common playlist writing schemes
+                }
+
+            }
+            cur.close();
+        }
+        // ALL OTHER TYPES OF MEDIA
+        else {
+            // If the file isn't a playlist, use a content resolver to find the song and play it
+            Cursor cur = context.getContentResolver().query(
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                    null,
+                    MediaStore.Audio.Media.DATA + "=?",
+                    new String[] {path},
+                    MediaStore.Audio.Media.TITLE + " ASC");
+
+            for (int i = 0; i < cur.getCount(); i++) {
+                cur.moveToPosition(i);
+                queue.add(new Song(
+                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)),
+                        cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media._ID)),
+                        (cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)).equals(MediaStore.UNKNOWN_STRING))
+                                ? "Unknown Artist"
+                                : cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
+                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)),
+                        cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DURATION)),
+                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA)),
+                        cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)),
+                        cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID))));
+            }
+            cur.close();
+        }
+
+        if (queue.size() == 0) return null;
+        else return queue;
     }
 
     //

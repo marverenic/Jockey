@@ -55,11 +55,11 @@
     <color name="ui_detail_text_orange">#FFCC80</color>
 
     <!-- Yellow -->
-    <color name="primary_amber">#FF8F00</color>
-    <color name="primary_dark_amber">#FF6F00</color>
-    <color name="accent_amber">#FFD740</color>
-    <color name="ui_text_amber">#FFF8E1</color>
-    <color name="ui_detail_text_amber">#FFE082</color>
+    <color name="primary_yellow">#F9A825</color>
+    <color name="primary_dark_yellow">#F57F17</color>
+    <color name="accent_yellow">#FFD600</color>
+    <color name="ui_text_yellow">#FFFDE7</color>
+    <color name="ui_detail_text_yellow">#FFF59D</color>
 
     <!-- Green -->
     <color name="primary_green">#2E7D32</color>
@@ -107,10 +107,10 @@
     </style>
 
     <style name="AppTheme.Yellow" parent="AppTheme">
-        <item name="android:colorPrimary">@color/primary_amber</item>
-        <item name="android:colorPrimaryDark">@color/primary_dark_amber</item>
-        <item name="android:colorAccent">@color/accent_amber</item>
-        <item name="android:colorControlHighlight">@color/accent_amber</item>
+        <item name="android:colorPrimary">@color/primary_yellow</item>
+        <item name="android:colorPrimaryDark">@color/primary_dark_yellow</item>
+        <item name="android:colorAccent">@color/accent_yellow</item>
+        <item name="android:colorControlHighlight">@color/accent_yellow</item>
     </style>
 
     <style name="AppTheme.Green" parent="AppTheme">
@@ -159,10 +159,10 @@
     </style>
 
     <style name="AppThemeLight.Yellow" parent="AppThemeLight">
-        <item name="android:colorPrimary">@color/primary_amber</item>
-        <item name="android:colorPrimaryDark">@color/primary_dark_amber</item>
-        <item name="android:colorAccent">@color/accent_amber</item>
-        <item name="android:colorControlHighlight">@color/accent_amber</item>
+        <item name="android:colorPrimary">@color/primary_yellow</item>
+        <item name="android:colorPrimaryDark">@color/primary_dark_yellow</item>
+        <item name="android:colorAccent">@color/accent_yellow</item>
+        <item name="android:colorControlHighlight">@color/accent_yellow</item>
     </style>
 
     <style name="AppThemeLight.Green" parent="AppThemeLight">

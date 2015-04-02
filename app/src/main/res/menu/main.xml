@@ -12,11 +12,6 @@
         android:title="@string/action_refresh" />
 
     <item
-        android:id="@+id/action_import_playlist"
-        android:enabled="false"
-        android:title="@string/action_import_playlist" />
-
-    <item
         android:id="@+id/action_settings"
         android:title="@string/action_settings" />
 

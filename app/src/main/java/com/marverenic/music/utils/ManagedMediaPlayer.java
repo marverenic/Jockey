@@ -1,7 +1,7 @@
 package com.marverenic.music.utils;
 
-import android.content.Context;
 import android.media.MediaPlayer;
+import android.util.Log;
 
 import java.io.IOException;
 
@@ -12,19 +12,17 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
     }
 
     private static final String TAG = "ManagedMediaPlayer";
-    private Context context;
     private status state;
     private OnPreparedListener onPreparedListener;
     private OnCompletionListener onCompletionListener;
     private OnErrorListener onErrorListener;
 
-    public ManagedMediaPlayer(Context context) {
+    public ManagedMediaPlayer() {
         super();
         super.setOnCompletionListener(this);
         super.setOnPreparedListener(this);
         super.setOnErrorListener(this);
         state = status.IDLE;
-        this.context = context;
     }
 
     @Override
@@ -39,7 +37,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
             super.setDataSource(path);
             state = status.INITIALIZED;
         } else {
-            Debug.log(Debug.LogLevel.INFO, TAG, "Attempted to set data source, but media player was in state " + state, context);
+            Log.i(TAG, "Attempted to set data source, but media player was in state " + state);
         }
     }
 
@@ -49,7 +47,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
             super.prepareAsync();
             state = status.PREPARING;
         } else {
-            Debug.log(Debug.LogLevel.INFO, TAG, "Attempted to prepare async, but media player was in state " + state, context);
+            Log.i(TAG, "Attempted to prepare async, but media player was in state " + state);
         }
     }
 
@@ -59,7 +57,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
             super.prepare();
             state = status.PREPARING;
         } else {
-            Debug.log(Debug.LogLevel.INFO, TAG, "Attempted to prepare, but media player was in state " + state, context);
+            Log.i(TAG, "Attempted to prepare, but media player was in state " + state);
         }
     }
 
@@ -82,7 +80,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
             super.start();
             state = status.STARTED;
         } else {
-            Debug.log(Debug.LogLevel.INFO, TAG, "Attempted to start, but media player was in state " + state, context);
+            Log.i(TAG, "Attempted to start, but media player was in state " + state);
         }
     }
 
@@ -108,7 +106,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
     public boolean onError(MediaPlayer mp, int what, int extra) {
         if (onErrorListener != null) return onErrorListener.onError(mp, what, extra);
 
-        Debug.log(Debug.LogLevel.ERROR, TAG, "An error occurred and the player was reset", context);
+        Log.i(TAG, "An error occurred and the player was reset");
         reset();
         return true;
     }
@@ -118,7 +116,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
         if (state == status.PREPARED || state == status.STARTED || state == status.PAUSED || state == status.COMPLETED) {
             super.seekTo(mSec);
         } else {
-            Debug.log(Debug.LogLevel.INFO, TAG, "Attempted to set seek, but media player was in state " + state, context);
+            Log.i(TAG, "Attempted to set seek, but media player was in state " + state);
         }
     }
 
@@ -128,7 +126,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
             super.stop();
             state = status.STOPPED;
         } else {
-            Debug.log(Debug.LogLevel.INFO, TAG, "Attempted to stop, but media player was in state " + state, context);
+            Log.i(TAG, "Attempted to stop, but media player was in state " + state);
         }
     }
 
@@ -138,7 +136,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
             super.pause();
             state = status.PAUSED;
         } else {
-            Debug.log(Debug.LogLevel.INFO, TAG, "Attempted to pause, but media player was in state " + state, context);
+            Log.i(TAG, "Attempted to pause, but media player was in state " + state);
         }
     }
 

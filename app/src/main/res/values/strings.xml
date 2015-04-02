@@ -28,12 +28,28 @@
     <string name="queue">Queue</string>
     <string name="search_hint">Search Library</string>
     <string name="export_playlist">Save as playlist&#8230;</string>
-    <string name="action_import_playlist">Import Playlist&#8230;</string>
     <string name="message_create_playlist_error_no_name">Can\'t create a playlist with no name</string>
+    <string name="message_play_error_not_found">This song couldn\'t be played</string>
 
     <string name="nothing_playing">Nothing is playing</string>
     <string name="no_artist">unknown artist</string>
     <string name="no_album">unknown album</string>
+
+    <!-- Plurals -->
+    <plurals name="playlistConfirmSomeDuplicates">
+        <item quantity="one">This playlist already contains one of these songs. Adding it again will result in this playlist having a duplicated entry.</item>
+        <item quantity="other">This playlist already contains some of these songs. Adding them again will result in this playlist having %d duplicated entries.</item>
+    </plurals>
+    <plurals name="message_added_songs">
+        <item quantity="one" >Added 1 song to \"%2$s\"</item>
+        <item quantity="other">Added %1$d songs to \"%2$s\"</item>
+    </plurals>
+
+    <!-- Formatted Strings -->
+    <string name="message_added_song">Added \"%1$s\" to \"%2$s\"</string>
+    <string name="message_created_playlist">Created playlist \"%1$s\"</string>
+    <string name="message_removed_playlist">Deleted playlist \"%1$s\"</string>
+    <string name="message_create_playlist_error_exists">Couldn\'t create playlist \"%1$s\" because it already exists</string>
 
     <!-- About Activity Strings -->
     <string name="about_version">Version</string>
@@ -44,8 +60,8 @@
     <string name="uses_header">Jockey also uses the following open-source libraries:</string>
     <string name="uses_aosp_header">Android Support Libraries</string>
     <string name="uses_aosp_detail">Support-v4 version 21.0.2, Palette version 21.0.2; distributed by the Android Open Source Project under an Apache License, Version 2.0</string>
-    <string name="uses_aosp_tabs_header">Android Color Tab Example</string>
-    <string name="uses_aosp_tabs_detail">Distributed by the Android Open Source Project under an Apache License, Version 2.0</string>
+    <string name="uses_aosp_demos_header">Android API Demos</string>
+    <string name="uses_aosp_demos_detail">Color Tab Example, Floating Action Button Example; distributed by the Android Open Source Project under an Apache License, Version 2.0</string>
     <string name="uses_picasso_header">Picasso</string>
     <string name="uses_picasso_detail">Version 2.5.0; distributed by Square, Inc. under an Apache License, Version 2.0</string>
     <string name="uses_dslv_header">DragSortListView</string>
@@ -72,8 +88,12 @@
     <string name="add_shortcut">Add themed icon to launcher</string>
     <string name="add_shortcut_description">Place a new shortcut to Jockey on your home screen to match your theme. Happens when you close this page</string>
     <string name="switch_to_now_playing">Automatically Switch to Now Playing</string>
-    <string name="use_mobile_description">Allow Jockey to download artist information and thumbnails while on mobile networks</string>
     <string name="use_mobile">Use mobile data</string>
+    <string name="use_mobile_description_on">Album artwork and other data will be downloaded on mobile networks</string>
+    <string name="use_mobile_description_off">Album artwork and other data will only be downloaded on Wi-Fi networks</string>
+    <string name="keep_alive">Continue playback in background</string>
+    <string name="keep_alive_description_on">Jockey will stop playing music when you remove it from the overview page</string>
+    <string name="keep_alive_description_off">Jockey will continue to play music when you remove it from the overview page</string>
 
     <!-- Arrays -->
     <string-array name="queue_options_song">
@@ -130,22 +150,6 @@
         <item>Remove from queue</item>
     </string-array>
 
-    <!-- Plurals -->
-    <plurals name="playlistConfirmSomeDuplicates">
-        <item quantity="one">This playlist already contains one of these songs. Adding it again will result in this playlist having a duplicated entry.</item>
-        <item quantity="other">This playlist already contains some of these songs. Adding them again will result in this playlist having %d duplicated entries.</item>
-    </plurals>
-    <plurals name="message_added_songs">
-        <item quantity="one" >Added 1 song to \"%2$s\"</item>
-        <item quantity="other">Added %1$d songs to \"%2$s\"</item>
-    </plurals>
-
-    <!-- Formatted Strings -->
-    <string name="message_added_song">Added \"%1$s\" to \"%2$s\"</string>
-    <string name="message_created_playlist">Created playlist \"%1$s\"</string>
-    <string name="message_removed_playlist">Deleted playlist \"%1$s\"</string>
-    <string name="message_create_playlist_error_exists">Couldn\'t create playlist \"%1$s\" because it already exists</string>
-
     <!-- String Arrays for Settings -->
     <string-array name="pages">
         <item name="0">Playlists</item>
@@ -188,10 +192,18 @@
         <item name="1">1</item>
     </string-array>
 
+    <!--
+            Jockey contains a theme for Apex and Nova launchers
+            This theme is intended to be used to manually select an icon for Jockey that
+            matches the chosen theme
+
+            These strings provide information to Apex & Nova
+    -->
+
     <!-- Basic theme information -->
     <string name="theme_title">Jockey Alternate Icons</string>
     <string name="developer_name">marverenic</string>
-    <string name="theme_description">This theme has themed icons for Jockey.\n\nDon\'t set this as your launcher\'s theme. You should manually change Jockey\'s icon to your preference if desired.</string>
+    <string name="theme_description">This theme contains alternate icons for Jockey.\n\nDon\'t set this as your launcher\'s theme. You should manually change Jockey\'s icon to your preference if desired.</string>
 
     <!-- Theme settings -->
     <bool name="config_iconpack">true</bool>

@@ -1,7 +1,11 @@
 package com.marverenic.music.utils;
 
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.util.Log;
 
 import com.marverenic.music.BuildConfig;
@@ -9,12 +13,15 @@ import com.marverenic.music.BuildConfig;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Calendar;
+import java.util.Locale;
 
 public class Debug {
 
     public static enum LogLevel {VERBOSE, INFO, DEBUG, WARNING, ERROR, WTF, WTSF }
-    private static final String FILENAME = "jockey.log";
+    public static final String FILENAME = "jockey.log";
 
     public static void log(String tag, String message, Context context) {
         // The default level is info
@@ -79,6 +86,13 @@ public class Debug {
         }
     }
 
+    public static void log(Throwable t, Context context) {
+        StringWriter stackTrace = new StringWriter();
+        t.printStackTrace(new PrintWriter(stackTrace));
+
+        amend(stackTrace.toString() + getHeader(context), context);
+    }
+
     private static void amend(String line, Context context) {
         File logFile = new File(context.getExternalFilesDir(null), FILENAME);
 
@@ -91,6 +105,27 @@ public class Debug {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static String getHeader(Context context){
+        ConnectivityManager network = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = network.getActiveNetworkInfo();
+
+        ActivityManager actManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
+        actManager.getMemoryInfo(memInfo);
+
+        return  "\n" +
+                "[DEVICE INFO]" + "\n" +
+                "Jockey " + BuildConfig.VERSION_NAME + " (build " + BuildConfig.VERSION_CODE + ")" + "\n" +
+                Build.BRAND + " " + Build.MODEL + "\n" +
+                "Android version " + Build.VERSION.RELEASE + "\n" +
+                "Java max heap size: " + Runtime.getRuntime().maxMemory()/1048576 + "MB\n" +
+                "Device memory: " + memInfo.totalMem/1048576 + " MB\n" +
+                "Locale: " + Locale.getDefault() + "\n" +
+                "Network Status: " + ((info == null)
+                    ? "Unavailable"
+                    : "type: " + info.getTypeName() + ", state: " + info.getState());
     }
 
 }

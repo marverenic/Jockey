@@ -52,7 +52,7 @@ public class FloatingActionButton extends FrameLayout {
             });
 
             // Finally, enable clipping to the outline, using the provider we set above
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) setClipToOutline(true);
+            setClipToOutline(true);
         }
     }
 

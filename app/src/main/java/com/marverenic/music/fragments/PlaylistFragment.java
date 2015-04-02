@@ -80,17 +80,15 @@ public class PlaylistFragment extends Fragment {
         FAB.setLayoutParams(fabParams);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             FAB.setElevation(getResources().getDimension(R.dimen.window_elevation) + 1);
-            FAB.setBackground(getActivity().getDrawable(R.drawable.fab_background));
         }
-        else{
-            FAB.setBackground(getActivity().getResources().getDrawable(R.drawable.fab_background));
-        }
+        FAB.setBackgroundResource(R.drawable.fab_background);
+
         // Set the FAB's icon by adding an imageView child
         ImageView icon = new ImageView(getActivity());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            icon.setImageDrawable(getResources().getDrawable(R.drawable.ic_vector_add, getActivity().getTheme()));
+            icon.setImageResource(R.drawable.ic_vector_add);
         else
-            icon.setImageDrawable(getResources().getDrawable(R.drawable.ic_add));
+            icon.setImageResource(R.drawable.ic_add);
 
         icon.setLayoutParams(new FrameLayout.LayoutParams(
                 (int) getActivity().getResources().getDimension(R.dimen.fab_icon_size),

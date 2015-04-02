@@ -376,6 +376,8 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
                 }
             }
             else {
+                seekBar.setMax(PlayerService.getNowPlaying().songDuration);
+                seekBar.setProgress(PlayerService.getCurrentPosition());
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_vector_play_circle_fill);
                 } else {

@@ -12,6 +12,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 
+import com.marverenic.music.BuildConfig;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -43,7 +45,7 @@ public class Updater implements Runnable {
                 final String code = in.readLine();
                 final String name = in.readLine();
 
-                if (Integer.parseInt(code) > context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode) {
+                if (Integer.parseInt(code) > BuildConfig.VERSION_CODE) {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {

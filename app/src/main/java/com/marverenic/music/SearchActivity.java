@@ -152,20 +152,7 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.miniplayer:
-                Navigate.to(this, NowPlayingActivity.class);
-                update();
-                break;
-            case R.id.playButton:
-                PlayerService.togglePlay();
-                update();
-                break;
-            case R.id.skipButton:
-                PlayerService.skip();
-                update();
-                break;
-        }
+        MiniplayerManager.onClick(v.getId(), this, R.id.pager);
     }
 
     @Override

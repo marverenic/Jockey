@@ -65,7 +65,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         this.context = context;
 
         // Initialize the media player
-        mediaPlayer = new ManagedMediaPlayer(context);
+        mediaPlayer = new ManagedMediaPlayer();
 
         mediaPlayer.setWakeMode(context, PowerManager.PARTIAL_WAKE_LOCK);
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -104,6 +104,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         mediaPlayer.stop();
         mediaPlayer.release();
         mediaPlayer = null;
+        context = null;
     }
 
     @TargetApi(21)
@@ -243,6 +244,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             mediaPlayer.reset();
             // Fetch a low resolution art bitmap initially...
             art = Fetch.fetchAlbumArtLocal(getNowPlaying().albumId);
+            if (artFullRes != null) artFullRes.recycle();
             artFullRes = null;
             // ... And a high resolution version
             Fetch.fetchFullResolutionArt(getNowPlaying(), context, new Fetch.fullResolutionArtCallback() {
