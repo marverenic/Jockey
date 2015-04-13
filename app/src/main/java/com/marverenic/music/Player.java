@@ -20,13 +20,17 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.marverenic.music.instances.LibraryScanner;
+import com.google.gson.annotations.SerializedName;
+import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Fetch;
 import com.marverenic.music.utils.ManagedMediaPlayer;
 import com.marverenic.music.utils.MediaReceiver;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -35,6 +39,7 @@ import java.util.Random;
 public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener, AudioManager.OnAudioFocusChangeListener {
 
     public static final String UPDATE_BROADCAST = "marverenic.jockey.player.REFRESH"; // Sent to refresh views that use up-to-date player information
+    public static final String TEMP_COUNT_LOG_FILE = ".count-tmp";
     private static final String TAG = "Player";
 
     // Instance variables
@@ -55,7 +60,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     // Shufle & Repeat options
     private boolean shuffle; // Shuffle status
-    public static enum repeatOption {NONE, ONE, ALL}
+    public enum repeatOption {NONE, ONE, ALL}
     private repeatOption repeat; // Repeat status
 
     private Bitmap art; // The art for the current song
@@ -67,8 +72,8 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         // Initialize the media player
         mediaPlayer = new ManagedMediaPlayer();
 
-        mediaPlayer.setWakeMode(context, PowerManager.PARTIAL_WAKE_LOCK);
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mediaPlayer.setWakeMode(context, PowerManager.PARTIAL_WAKE_LOCK);
         mediaPlayer.setOnPreparedListener(this);
         mediaPlayer.setOnCompletionListener(this);
 
@@ -101,6 +106,9 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     }
 
     public void finish (){
+        ((AudioManager) context.getSystemService(Context.AUDIO_SERVICE)).abandonAudioFocus(this);
+
+        active = false;
         mediaPlayer.stop();
         mediaPlayer.release();
         mediaPlayer = null;
@@ -243,17 +251,24 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             mediaPlayer.stop();
             mediaPlayer.reset();
             // Fetch a low resolution art bitmap initially...
-            art = Fetch.fetchAlbumArtLocal(getNowPlaying().albumId);
+            art = Fetch.fetchAlbumArtLocal(context, getNowPlaying().albumId);
             if (artFullRes != null) artFullRes.recycle();
             artFullRes = null;
             // ... And a high resolution version
-            Fetch.fetchFullResolutionArt(getNowPlaying(), context, new Fetch.fullResolutionArtCallback() {
-                @Override
-                public void onArtFetched(Bitmap art) {
-                    artFullRes = art;
-                    updateNowPlaying();
-                }
-            });
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                Fetch.fetchFullResolutionArt(getNowPlaying(), context, new Fetch.fullResolutionArtCallback() {
+                    @Override
+                    public void onArtFetched(Bitmap art) {
+                        artFullRes = art;
+                        updateNowPlaying();
+                    }
+                });
+            }
+            else{
+                // On ICS, calling Fetch.fetchFullResolutionArt(...) here throws a Remote Exception
+                // As a result, ICS won't use full resolution album artwork
+                artFullRes = art;
+            }
 
             try {
                 mediaPlayer.setDataSource((getNowPlaying()).location);
@@ -272,11 +287,10 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         }
     }
 
-
     // Update external information for the current track
     public void updateNowPlaying() {
         PlayerService.getInstance().notifyNowPlaying();
-        context.sendBroadcast(new Intent(UPDATE_BROADCAST));
+        context.sendOrderedBroadcast(new Intent(UPDATE_BROADCAST), null);
 
         // Update the relevant media controller
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -398,11 +412,11 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         if (isPlaying()) {
             pause();
         }
+        ((AudioManager) context.getSystemService(Context.AUDIO_SERVICE)).abandonAudioFocus(this);
+        active = false;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             updateMediaSession();
         }
-        ((AudioManager) context.getSystemService(Context.AUDIO_SERVICE)).abandonAudioFocus(this);
-        active = false;
     }
 
     public boolean getFocus() {
@@ -435,12 +449,11 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     public void skip() {
         if (!isPreparing()) {
-            // Update the play count
             if (getCurrentPosition() > 24000 || getCurrentPosition() > mediaPlayer.getDuration() / 2) {
-                LibraryScanner.findSongById(getNowPlaying().songId).playCount++;
+                logPlayCount(getNowPlaying().songId, false);
             }
             else if (getCurrentPosition() < 20000) {
-                LibraryScanner.findSongById(getNowPlaying().songId).skipCount++;
+                logPlayCount(getNowPlaying().songId, true);
             }
 
             // Change the media source
@@ -455,6 +468,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                     } else {
                         mediaPlayer.pause();
                         mediaPlayer.seekTo(mediaPlayer.getDuration());
+                        updateNowPlaying();
                     }
                 }
             } else {
@@ -468,6 +482,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                     } else {
                         mediaPlayer.pause();
                         mediaPlayer.seekTo(mediaPlayer.getDuration());
+                        updateNowPlaying();
                     }
 
                 }
@@ -489,12 +504,11 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     }
 
     public void changeSong(int newPosition) {
-        // Update the play count
         if (getCurrentPosition() > 24000 || getCurrentPosition() > mediaPlayer.getDuration() / 2) {
-            LibraryScanner.findSongById(getNowPlaying().songId).playCount++;
+            logPlayCount(getNowPlaying().songId, false);
         }
         else if (getCurrentPosition() < 20000) {
-            LibraryScanner.findSongById(getNowPlaying().songId).skipCount++;
+            logPlayCount(getNowPlaying().songId, true);
         }
 
         if (shuffle) {
@@ -636,6 +650,34 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     }
 
     //
+    //      PLAY & SKIP COUNT LOGGING
+    //
+
+    public void logPlayCount(long songId, boolean skip){
+        /*
+         * Because LibraryScanner is in another process, save play and skip counts temporarily
+         * to a file that LibraryScanner can read when an UPDATE broadcast is sent or the
+         * library is reloaded.
+         *
+         * This prevents duplicating data, keeping data in sync across processes, convoluted
+         * intent broadcasts, or other interprocess communication that wouldn't log any counts
+         * when the main process has stopped.
+         */
+
+        File countFile = new File(context.getExternalFilesDir(null), TEMP_COUNT_LOG_FILE);
+
+        try {
+            FileOutputStream outputStream = new FileOutputStream(countFile, true);
+            OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+            writer.write(songId + " " + skip + " ");
+            writer.flush();
+            writer.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //
     //      ACCESSOR METHODS
     //
 
@@ -658,6 +700,10 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         return mediaPlayer.getCurrentPosition();
     }
 
+    public int getDuration() {
+        return mediaPlayer.getDuration();
+    }
+
     public boolean isShuffle() {
         return shuffle;
     }
@@ -678,6 +724,97 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     public int getPosition() {
         if (shuffle) return positionShuffled;
         return position;
+    }
+
+    //
+    //      STATE SAVING & READING METHODS
+    //
+
+    public PlayerHolder getSaveState(){
+        PlayerHolder playerHolder = new PlayerHolder();
+        playerHolder.queue = queue;
+        playerHolder.position = position;
+        if (shuffle) {
+            playerHolder.queueShuffled = queueShuffled;
+            playerHolder.positionShuffled = positionShuffled;
+        } else {
+            playerHolder.queueShuffled = new ArrayList<>();
+            playerHolder.positionShuffled = 0;
+        }
+        playerHolder.currentPosition = mediaPlayer.getCurrentPosition();
+        return playerHolder;
+    }
+
+    public void restoreState(final PlayerHolder playerHolder) {
+        this.queue = playerHolder.queue;
+        this.position = playerHolder.position;
+        if (shuffle) {
+            this.queueShuffled = playerHolder.queueShuffled;
+            this.positionShuffled = playerHolder.positionShuffled;
+        } else {
+            this.queueShuffled = new ArrayList<>();
+            this.positionShuffled = 0;
+        }
+
+        //If there isn't any music in the queue, then don't proceed.
+        if (queue.isEmpty()) return;
+
+        final MediaPlayer.OnPreparedListener defaultListener = this;
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mp.seekTo(playerHolder.currentPosition);
+                mp.setOnPreparedListener(defaultListener);
+            }
+        });
+
+        // Perform most of the same tasks as begin(), but don't acquire the audio focus yet
+        art = Fetch.fetchAlbumArtLocal(context, getNowPlaying().albumId);
+        if (artFullRes != null) artFullRes.recycle();
+        artFullRes = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            Fetch.fetchFullResolutionArt(getNowPlaying(), context, new Fetch.fullResolutionArtCallback() {
+                @Override
+                public void onArtFetched(Bitmap art) {
+                    artFullRes = art;
+                    updateNowPlaying();
+                }
+            });
+        }
+        else{
+            artFullRes = art;
+        }
+
+        try {
+            mediaPlayer.setDataSource((getNowPlaying()).location);
+        } catch (Exception e) {
+            Log.e("MUSIC SERVICE", "Error setting data source", e);
+            Toast.makeText(context, "There was an error playing this song", Toast.LENGTH_SHORT).show();
+            Debug.log(Debug.LogLevel.WARNING, TAG, "There was an error setting the data source", context);
+            return;
+        }
+        try {
+            mediaPlayer.prepareAsync();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static final class PlayerHolder{
+        // Holds info to save and restore the player's state
+
+        // Queue information
+        @SerializedName("queue")
+        public ArrayList<Song> queue;
+        @SerializedName("queueShuffled")
+        public ArrayList<Song> queueShuffled;
+        @SerializedName("position")
+        public int position;
+        @SerializedName("positionShuffled")
+        public int positionShuffled;
+        @SerializedName("currentPosition")
+        public int currentPosition;
     }
 }
 

@@ -1,4 +1,4 @@
-package com.marverenic.music;
+package com.marverenic.music.activity;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
@@ -23,6 +23,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.marverenic.music.Player;
+import com.marverenic.music.R;
 import com.marverenic.music.adapters.AlbumGridAdapter;
 import com.marverenic.music.adapters.ArtistPageAdapter;
 import com.marverenic.music.adapters.SongListAdapter;
@@ -94,7 +96,7 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
                 type = Type.GENRE;
                 songEntries = LibraryScanner.getGenreEntries((Genre) parent);
             }
-            else if (parent.getClass().equals(Artist.class)) {
+            else if (parent instanceof Artist) {
                 type = Type.ARTIST;
                 songEntries = LibraryScanner.getArtistSongEntries((Artist) parent);
                 Library.sortSongList(songEntries);
@@ -102,7 +104,7 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
                 Library.sortAlbumList(albumEntries);
 
                 ListView list = (ListView) findViewById(R.id.list);
-                initializeArtistHeader(list, albumEntries, this);
+                initializeArtistHeader(list, albumEntries, ((Artist)parent).artistName, this);
                 ArtistPageAdapter adapter = new ArtistPageAdapter(this, songEntries, albumEntries);
                 list.setAdapter(adapter);
                 list.setOnItemClickListener(adapter);
@@ -154,7 +156,7 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
         return super.onCreateOptionsMenu(menu);
     }
 
-    private static void initializeArtistHeader(final View parent, final ArrayList<Album> albums, Activity activity) {
+    private static void initializeArtistHeader(final View parent, ArrayList<Album> albums, final String artistName, Activity activity) {
         final Context context = activity;
         final View infoHeader = View.inflate(activity, R.layout.artist_header_info, null);
 
@@ -163,7 +165,7 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final Fetch.ArtistBio bio = Fetch.fetchArtistBio(context, albums.get(0).artistName);
+                final Fetch.ArtistBio bio = Fetch.fetchArtistBio(context, artistName);
                 if (bio != null) {
                     handler.post(new Runnable() {
                         @Override
@@ -259,16 +261,6 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
     @Override
     public void onClick(View v) {
         MiniplayerManager.onClick(v.getId(), this, R.id.list_container);
-    }
-
-    @Override
-    public void onDestroy() {
-        try {
-            unregisterReceiver(updateReceiver);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        super.onDestroy();
     }
 
     public void update() {

@@ -12,10 +12,10 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.marverenic.music.LibraryPageActivity;
-import com.marverenic.music.PlayerService;
-import com.marverenic.music.QueueActivity;
+import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
+import com.marverenic.music.activity.LibraryPageActivity;
+import com.marverenic.music.activity.QueueActivity;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.instances.Playlist;
@@ -36,7 +36,7 @@ public class QueueEditAdapter extends BaseAdapter implements AdapterView.OnItemC
 
     public QueueEditAdapter(QueueActivity activity, DragSortListView listView) {
         super();
-        this.data = new ArrayList<>(PlayerService.getQueue());
+        this.data = new ArrayList<>(PlayerController.getQueue());
         this.activity = activity;
         this.listView = listView;
 
@@ -62,7 +62,7 @@ public class QueueEditAdapter extends BaseAdapter implements AdapterView.OnItemC
             TextView tt1 = (TextView) v.findViewById(R.id.textSongDetail);
             if (tt != null) {
                 tt.setText(s.songName);
-                if (position == PlayerService.getPosition()){
+                if (position == PlayerController.getPosition()){
                     if (Themes.isLight(activity)) tt.setTextColor(Themes.getPrimary());
                     else tt.setTextColor(Themes.getAccent());
                 }
@@ -72,7 +72,7 @@ public class QueueEditAdapter extends BaseAdapter implements AdapterView.OnItemC
             }
             if (tt1 != null) {
                 tt1.setText(s.artistName + " - " + s.albumName);
-                if (position == PlayerService.getPosition()){
+                if (position == PlayerController.getPosition()){
                     if (Themes.isLight(activity)) tt1.setTextColor(Themes.getAccent());
                     else tt1.setTextColor(Themes.getPrimary());
                 }
@@ -149,7 +149,7 @@ public class QueueEditAdapter extends BaseAdapter implements AdapterView.OnItemC
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        PlayerService.changeSong(position);
+        PlayerController.changeSong(position);
         Navigate.back(activity);
     }
 
@@ -200,17 +200,17 @@ public class QueueEditAdapter extends BaseAdapter implements AdapterView.OnItemC
 
                                                 listView.invalidateViews();
 
-                                                if (PlayerService.getPosition() == position){
+                                                if (PlayerController.getPosition() == position){
                                                     // If the current song was removed
-                                                    PlayerService.changeQueue(activity, data, position);
+                                                    PlayerController.changeQueue(data, position);
                                                 }
-                                                else if (PlayerService.getPosition() > position){
+                                                else if (PlayerController.getPosition() > position){
                                                     // If a song that was before the current playing song was removed...
-                                                    PlayerService.changeQueue(activity, data, PlayerService.getPosition() - 1);
+                                                    PlayerController.changeQueue(data, PlayerController.getPosition() - 1);
                                                 }
                                                 else {
                                                     // If a song that was after the current playing song was removed...
-                                                    PlayerService.changeQueue(activity, data, PlayerService.getPosition());
+                                                    PlayerController.changeQueue(data, PlayerController.getPosition());
                                                 }
                                             }
                                         })
@@ -234,21 +234,21 @@ public class QueueEditAdapter extends BaseAdapter implements AdapterView.OnItemC
         notifyDataSetChanged();
         listView.invalidateViews();
 
-        if (PlayerService.getPosition() == from){
+        if (PlayerController.getPosition() == from){
             // If the current song was moved in the queue
-            PlayerService.changeQueue(activity, data, to);
+            PlayerController.changeQueue(data, to);
         }
-        else if (PlayerService.getPosition() < from && PlayerService.getPosition() >= to){
+        else if (PlayerController.getPosition() < from && PlayerController.getPosition() >= to){
             // If a song that was after the current playing song was moved to a position before the current song...
-            PlayerService.changeQueue(activity, data, PlayerService.getPosition() + 1);
+            PlayerController.changeQueue(data, PlayerController.getPosition() + 1);
         }
-        else if (PlayerService.getPosition() > from && PlayerService.getPosition() <= to){
+        else if (PlayerController.getPosition() > from && PlayerController.getPosition() <= to){
             // If a song that was before the current playing song was moved to a position after the current song...
-            PlayerService.changeQueue(activity, data, PlayerService.getPosition() - 1);
+            PlayerController.changeQueue(data, PlayerController.getPosition() - 1);
         }
         else{
             // If the number of songs before and after the currently playing song hasn't changed...
-            PlayerService.changeQueue(activity, data, PlayerService.getPosition());
+            PlayerController.changeQueue(data, PlayerController.getPosition());
         }
     }
 

@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
 
-import com.marverenic.music.LibraryActivity;
+import com.marverenic.music.activity.LibraryActivity;
 
 public class Navigate {
 

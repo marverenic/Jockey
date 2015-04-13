@@ -57,85 +57,89 @@ public class PlaylistFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
         ListView playlistListView = (ListView) view.findViewById(R.id.list);
 
-        // Create the FAB and set its parameters
-        FloatingActionButton FAB = new FloatingActionButton(getActivity());
+        // Attach a FAB to create a new playlist if our list has all playlists in the library
+        //if (playlistLibrary.equals(Library.getPlaylists())) {
 
-        RelativeLayout.LayoutParams fabParams = new RelativeLayout.LayoutParams(
-                (int) getActivity().getResources().getDimension(R.dimen.fab_size),
-                (int) getActivity().getResources().getDimension(R.dimen.fab_size));
+            // Create the FAB and set its parameters
+            FloatingActionButton FAB = new FloatingActionButton(getActivity());
 
-        // Align it to the bottom right of the screen and set its margin
-        fabParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
-            fabParams.addRule(RelativeLayout.ALIGN_PARENT_END);
-        }
-        else{
-            fabParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        }
+            RelativeLayout.LayoutParams fabParams = new RelativeLayout.LayoutParams(
+                    (int) getActivity().getResources().getDimension(R.dimen.fab_size),
+                    (int) getActivity().getResources().getDimension(R.dimen.fab_size));
 
-        int margin = (int) getResources().getDimension(R.dimen.fab_padding);
-        fabParams.setMargins(margin, margin, margin, margin);
-
-        // Set the FAB's background drawable
-        FAB.setLayoutParams(fabParams);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            FAB.setElevation(getResources().getDimension(R.dimen.window_elevation) + 1);
-        }
-        FAB.setBackgroundResource(R.drawable.fab_background);
-
-        // Set the FAB's icon by adding an imageView child
-        ImageView icon = new ImageView(getActivity());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            icon.setImageResource(R.drawable.ic_vector_add);
-        else
-            icon.setImageResource(R.drawable.ic_add);
-
-        icon.setLayoutParams(new FrameLayout.LayoutParams(
-                (int) getActivity().getResources().getDimension(R.dimen.fab_icon_size),
-                (int) getActivity().getResources().getDimension(R.dimen.fab_icon_size),
-                Gravity.CENTER));
-        // Attach the icon to the FAB
-        FAB.addView(icon);
-
-        // Attach the FAB to the view
-        ((RelativeLayout) playlistListView.getParent()).addView(FAB);
-
-        // Set its action to create a new playlist
-        FAB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final EditText input = new EditText(getActivity());
-                input.setInputType(InputType.TYPE_CLASS_TEXT);
-                input.setHint("Playlist name");
-
-                new AlertDialog.Builder(getActivity())
-                        .setTitle("Create Playlist")
-                        .setView(input)
-                        .setPositiveButton("Create", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                LibraryScanner.createPlaylist(getActivity().getApplicationContext(), input.getText().toString(), null);
-
-                                updateData(Library.getPlaylists());
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        }).show();
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    int padding = (int) getResources().getDimension(R.dimen.alert_padding);
-                    ((View) input.getParent()).setPadding(
-                            padding - input.getPaddingLeft(),
-                            padding,
-                            padding - input.getPaddingRight(),
-                            input.getPaddingBottom());
-                }
+            // Align it to the bottom right of the screen and set its margin
+            fabParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
+                fabParams.addRule(RelativeLayout.ALIGN_PARENT_END);
             }
-        });
+            else{
+                fabParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            }
+
+            int margin = (int) getResources().getDimension(R.dimen.fab_padding);
+            fabParams.setMargins(margin, margin, margin, margin);
+
+            // Set the FAB's background drawable
+            FAB.setLayoutParams(fabParams);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                FAB.setElevation(getResources().getDimension(R.dimen.window_elevation) + 1);
+            }
+            FAB.setBackgroundResource(R.drawable.fab_background);
+
+            // Set the FAB's icon by adding an imageView child
+            ImageView icon = new ImageView(getActivity());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                icon.setImageResource(R.drawable.ic_vector_add);
+            else
+                icon.setImageResource(R.drawable.ic_add);
+
+            icon.setLayoutParams(new FrameLayout.LayoutParams(
+                    (int) getActivity().getResources().getDimension(R.dimen.fab_icon_size),
+                    (int) getActivity().getResources().getDimension(R.dimen.fab_icon_size),
+                    Gravity.CENTER));
+            // Attach the icon to the FAB
+            FAB.addView(icon);
+
+            // Attach the FAB to the view
+            ((RelativeLayout) playlistListView.getParent()).addView(FAB);
+
+            // Set its action to create a new playlist
+            FAB.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final EditText input = new EditText(getActivity());
+                    input.setInputType(InputType.TYPE_CLASS_TEXT);
+                    input.setHint("Playlist name");
+
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("Create Playlist")
+                            .setView(input)
+                            .setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    LibraryScanner.createPlaylist(getActivity().getApplicationContext(), input.getText().toString(), null);
+
+                                    updateData(Library.getPlaylists());
+                                }
+                            })
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            }).show();
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        int padding = (int) getResources().getDimension(R.dimen.alert_padding);
+                        ((View) input.getParent()).setPadding(
+                                padding - input.getPaddingLeft(),
+                                padding,
+                                padding - input.getPaddingRight(),
+                                input.getPaddingBottom());
+                    }
+                }
+            });
+        //}
 
         // Most people probably don't have enough playlists to warrant fast scrolling...
         playlistListView.setFastScrollEnabled(false);
@@ -152,5 +156,10 @@ public class PlaylistFragment extends Fragment {
     public void updateData(ArrayList<Playlist> playlistLibrary) {
         this.playlistLibrary = playlistLibrary;
         adapter.updateData(playlistLibrary);
+    }
+
+    public void updateData(){
+        this.playlistLibrary = Library.getPlaylists();
+        adapter.updateData();
     }
 }

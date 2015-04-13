@@ -1,4 +1,4 @@
-package com.marverenic.music;
+package com.marverenic.music.activity;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.marverenic.music.Player;
+import com.marverenic.music.R;
 import com.marverenic.music.adapters.PlaylistEditAdapter;
 import com.marverenic.music.fragments.MiniplayerManager;
 import com.marverenic.music.instances.LibraryScanner;

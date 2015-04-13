@@ -58,6 +58,7 @@ public class Song implements Parcelable {
 
     private Song(Parcel in) {
         songName = in.readString();
+        songId = in.readLong();
         albumName = in.readString();
         artistName = in.readString();
         songDuration = in.readInt();
@@ -67,6 +68,21 @@ public class Song implements Parcelable {
         genreId = in.readLong();
         playCount = in.readInt();
         skipCount = in.readInt();
+    }
+
+    public Song(Song s) {
+        this.songName = s.songName;
+        this.songId = s.songId;
+        this.artistName = s.artistName;
+        this.albumName = s.albumName;
+        this.songDuration = s.songDuration;
+        this.location = s.location;
+        this.albumId = s.albumId;
+        this.artistId = s.artistId;
+        this.genreId = s.genreId;
+        this.trackNumber = s.trackNumber;
+        this.playCount = s.playCount;
+        this.skipCount = s.skipCount;
     }
 
     public boolean equals(final Object obj) {
@@ -86,6 +102,7 @@ public class Song implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(songName);
+        dest.writeLong(songId);
         dest.writeString(albumName);
         dest.writeString(artistName);
         dest.writeInt(songDuration);

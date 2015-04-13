@@ -30,6 +30,7 @@ interface IPlayerService {
     boolean isPlaying();
     boolean isPreparing();
     int getCurrentPosition();
+    int getDuration();
     boolean isShuffle();
     boolean isRepeat();
     boolean isRepeatOne();

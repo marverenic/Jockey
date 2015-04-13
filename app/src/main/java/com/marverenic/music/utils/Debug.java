@@ -89,7 +89,7 @@ public class Debug {
     public static void log(Throwable t, Context context) {
         StringWriter stackTrace = new StringWriter();
         t.printStackTrace(new PrintWriter(stackTrace));
-
+        t.printStackTrace();
         amend(stackTrace.toString() + getHeader(context), context);
     }
 
@@ -125,7 +125,7 @@ public class Debug {
                 "Locale: " + Locale.getDefault() + "\n" +
                 "Network Status: " + ((info == null)
                     ? "Unavailable"
-                    : "type: " + info.getTypeName() + ", state: " + info.getState());
+                    : "type: " + info.getTypeName() + ", state: " + info.getState()) + "\n";
     }
 
 }

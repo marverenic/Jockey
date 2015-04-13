@@ -18,7 +18,7 @@
         android:label="@string/app_name">
 
         <activity
-            android:name="com.marverenic.music.LibraryActivity"
+            android:name=".activity.LibraryActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:screenOrientation="fullUser">
@@ -35,10 +35,10 @@
         </activity>
 
         <activity
-            android:name="com.marverenic.music.SearchActivity"
+            android:name=".activity.SearchActivity"
             android:label="Search"
             android:launchMode="singleTop"
-            android:parentActivityName=".LibraryActivity">
+            android:parentActivityName=".activity.LibraryActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -52,12 +52,12 @@
         </activity>
 
         <activity
-            android:name="com.marverenic.music.LibraryPageActivity"
+            android:name=".activity.LibraryPageActivity"
             android:label=""
             android:screenOrientation="fullUser" />
 
         <activity
-            android:name="com.marverenic.music.NowPlayingActivity"
+            android:name=".activity.NowPlayingActivity"
             android:label="@string/header_now_playing"
             android:screenOrientation="fullUser"
             android:theme="@style/NowPlayingTheme" />
@@ -65,8 +65,8 @@
         <activity-alias
             android:name=".PlayWithJockey"
             android:label="@string/app_name"
-            android:targetActivity="com.marverenic.music.NowPlayingActivity">
-            <!--intent-filter>
+            android:targetActivity=".activity.NowPlayingActivity">
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
 
@@ -87,23 +87,23 @@
                 <data android:mimeType="application/ogg" />
                 <data android:mimeType="application/x-ogg" />
                 <data android:mimeType="application/itunes" />
-            </intent-filter-->
+            </intent-filter>
         </activity-alias>
 
         <activity
-            android:name="com.marverenic.music.QueueActivity"
+            android:name=".activity.QueueActivity"
             android:label="@string/header_now_playing"
-            android:parentActivityName="com.marverenic.music.NowPlayingActivity"
+            android:parentActivityName=".activity.NowPlayingActivity"
             android:screenOrientation="fullUser" />
 
-        <activity android:name=".PlaylistActivity"
-            android:parentActivityName=".LibraryActivity"/>
+        <activity android:name=".activity.PlaylistActivity"
+            android:parentActivityName=".activity.LibraryActivity"/>
 
         <activity
-            android:name="com.marverenic.music.SettingsActivity"
+            android:name=".activity.SettingsActivity"
             android:label="@string/header_settings"
             android:launchMode="singleInstance"
-            android:parentActivityName="com.marverenic.music.LibraryActivity"
+            android:parentActivityName=".activity.LibraryActivity"
             android:screenOrientation="fullUser">
             <intent-filter>
                 <action android:name=".PREFERENCES" />
@@ -112,13 +112,14 @@
         </activity>
 
         <activity
-            android:name="com.marverenic.music.AboutActivity"
+            android:name=".activity.AboutActivity"
             android:label="@string/header_about"
-            android:parentActivityName="com.marverenic.music.LibraryActivity"
+            android:parentActivityName=".activity.LibraryActivity"
             android:screenOrientation="fullUser" />
 
         <service
-            android:name="com.marverenic.music.PlayerService" />
+            android:name="com.marverenic.music.PlayerService"
+            android:process=":player" />
 
         <receiver android:name=".utils.MediaReceiver" >
             <intent-filter>

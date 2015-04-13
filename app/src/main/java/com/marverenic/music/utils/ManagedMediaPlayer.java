@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
 
-    public static enum status {
+    public enum status {
         IDLE, INITIALIZED, PREPARING, PREPARED, STARTED, PAUSED, STOPPED, COMPLETED
     }
 
@@ -104,10 +104,10 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
-        if (onErrorListener != null) return onErrorListener.onError(mp, what, extra);
-
-        Log.i(TAG, "An error occurred and the player was reset");
-        reset();
+        if (onErrorListener != null && !onErrorListener.onError(mp, what, extra)) {
+            Log.i(TAG, "An error occurred and the player was reset");
+            reset();
+        }
         return true;
     }
 
@@ -138,6 +138,22 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
         } else {
             Log.i(TAG, "Attempted to pause, but media player was in state " + state);
         }
+    }
+
+    @Override
+    public int getCurrentPosition(){
+        if (state == status.STARTED || state == status.PAUSED){
+            return super.getCurrentPosition();
+        }
+        else return 0;
+    }
+
+    @Override
+    public int getDuration(){
+        if (state != status.IDLE && state != status.PREPARING){
+            return super.getDuration();
+        }
+        else return 1;
     }
 
     public status getState() {

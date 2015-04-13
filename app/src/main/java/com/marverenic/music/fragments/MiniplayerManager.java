@@ -9,9 +9,10 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.marverenic.music.NowPlayingActivity;
-import com.marverenic.music.PlayerService;
+import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
+import com.marverenic.music.activity.NowPlayingActivity;
+import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 
@@ -39,14 +40,15 @@ public class MiniplayerManager {
     }
 
     public static void update(Activity activity, int contentViewId){
-        if (PlayerService.isInitialized() && PlayerService.getNowPlaying() != null) {
+        Song nowPlaying = PlayerController.getNowPlaying();
+        if (nowPlaying != null) {
             final TextView songTitle = (TextView) activity.findViewById(R.id.textNowPlayingTitle);
             final TextView artistName = (TextView) activity.findViewById(R.id.textNowPlayingDetail);
 
-            songTitle.setText(PlayerService.getNowPlaying().songName);
-            artistName.setText(PlayerService.getNowPlaying().artistName);
+            songTitle.setText(nowPlaying.songName);
+            artistName.setText(nowPlaying.artistName);
 
-            if (!(PlayerService.isPlaying() || PlayerService.isPreparing())) {
+            if (!(PlayerController.isPlaying() || PlayerController.isPreparing())) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     ((ImageButton) activity.findViewById(R.id.playButton)).setImageResource(R.drawable.ic_vector_play);
                     ((ImageButton) activity.findViewById(R.id.playButton)).setImageTintList(ColorStateList.valueOf(Themes.getListText()));
@@ -70,8 +72,8 @@ public class MiniplayerManager {
                 }
             }
 
-            if (PlayerService.getArt() != null) {
-                ((ImageView) activity.findViewById(R.id.imageArtwork)).setImageBitmap(PlayerService.getArt());
+            if (PlayerController.getArt() != null) {
+                ((ImageView) activity.findViewById(R.id.imageArtwork)).setImageBitmap(PlayerController.getArt());
             } else {
                 ((ImageView) activity.findViewById(R.id.imageArtwork)).setImageResource(R.drawable.art_default);
             }
@@ -88,13 +90,13 @@ public class MiniplayerManager {
                 Navigate.to(activity, NowPlayingActivity.class);
                 break;
             case R.id.playButton:
-                PlayerService.togglePlay();
+                PlayerController.togglePlay();
+                update(activity, contentViewId);
                 break;
             case R.id.skipButton:
-                PlayerService.skip();
+                PlayerController.skip();
                 break;
         }
-        update(activity, contentViewId);
     }
 
 }

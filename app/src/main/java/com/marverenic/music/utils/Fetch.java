@@ -2,12 +2,15 @@ package com.marverenic.music.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.v7.graphics.Palette;
 import android.text.Html;
 import android.util.Log;
@@ -38,7 +41,8 @@ public class Fetch {
         lastFmInitialized = true;
     }
 
-    // Returns the album art thumbnail from MediaStore
+    // Returns the album art thumbnail from the MediaStore cache
+    // Uses the Library loaded in RAM to retrieve the art URI
     public static Bitmap fetchAlbumArtLocal(long albumId) {
         Album album = LibraryScanner.findAlbumById(albumId);
         if (album.artUri != null) {
@@ -47,49 +51,88 @@ public class Fetch {
         return null;
     }
 
+    // Returns the album art thumbnail from the MediaStore cache
+    // Uses a cursor to retrieve the art URI
+    public static Bitmap fetchAlbumArtLocal(Context context, long albumId) {
+
+        Cursor cur = context.getContentResolver().query(
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                new String[] {MediaStore.Audio.Albums.ALBUM_ART},
+                MediaStore.Audio.Albums._ID + "=?",
+                new String[] {Long.toString(albumId)},
+                MediaStore.Audio.Albums.ALBUM + " ASC");
+
+        if (!cur.moveToFirst()){
+            cur.close();
+            return null;
+        }
+
+        String artURI = cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
+        cur.close();
+
+        if (artURI != null) {
+            return BitmapFactory.decodeFile(artURI);
+        }
+        return null;
+    }
+
     // Loads the full resolution art into memory
     public static void fetchFullResolutionArt(final Song song, final Context context, final fullResolutionArtCallback callback){
+        // A simple AsyncTask wrapper for fetchFullResolutionArt
         if (callback == null){
             Log.w(TAG, "No callback was provided. Aborting fetchFullResolutionArt");
             return;
         }
 
-        new AsyncTask<Void, Void, Void>(){
+        new AsyncTask<Void, Void, Void>() {
             Bitmap art;
 
             @Override
             protected Void doInBackground(Void... voids) {
-                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-                art = null;
-                try {
-                    retriever.setDataSource(song.location);
-                    byte[] stream = retriever.getEmbeddedPicture();
-                    if (stream != null) art = BitmapFactory.decodeByteArray(stream, 0, stream.length);
-                }
-                catch (Exception e){
-                    e.printStackTrace();
-                    return null;
-                }
-
-                if (art != null) {
-                    // Resize the art so that it is no taller than the device's screen
-                    // and preserve its original aspect ratio
-                    final int displayHeight = context.getResources().getDisplayMetrics().heightPixels;
-                    if (art.getHeight() > displayHeight) {
-                        art = Bitmap.createScaledBitmap(art, (int) (displayHeight * ((float) art.getWidth() / (float) art.getHeight())), displayHeight, true);
-                    }
-                }
+                art = fetchFullResolutionArt(song, context);
                 return null;
             }
 
             @Override
-            protected void onPostExecute(Void v){
+            protected void onPostExecute(Void v) {
                 if (art != null) {
                     // Then do whatever the method wanted to do with this bitmap
                     callback.onArtFetched(art);
                 }
             }
         }.execute();
+    }
+
+    public static Bitmap fetchFullResolutionArt(Song song, @Nullable Context context){
+        // Return a bitmap no larger than the display's largest dimension
+        // for the artwork embedded in a song
+
+        // Don't run this on the main thread. EVER.
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        Bitmap art = null;
+        try {
+            retriever.setDataSource(song.location);
+            byte[] stream = retriever.getEmbeddedPicture();
+            if (stream != null)
+                art = BitmapFactory.decodeByteArray(stream, 0, stream.length);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        if (art != null) {
+            // Resize the art so that it's not ridiculously tall
+            // and preserve its original aspect ratio
+            final int displayHeight = (context != null)
+                    // If we have a context, make it no larger than the device's screen height
+                    ? context.getResources().getDisplayMetrics().heightPixels
+                    // If we don't have a context, scale it down to a large but modest resolution
+                    : 1920;
+            if (art.getHeight() > displayHeight) {
+                art = Bitmap.createScaledBitmap(art, (int) (displayHeight * ((float) art.getWidth() / (float) art.getHeight())), displayHeight, true);
+            }
+        }
+        return art;
     }
 
     // Because fetching full resolution art can be slow, do it
@@ -141,7 +184,7 @@ public class Fetch {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         // Only get the bio if a valid network is present
-        if(network.getActiveNetworkInfo().isAvailable() && !network.getActiveNetworkInfo().isRoaming()
+        if(network.getActiveNetworkInfo() != null && network.getActiveNetworkInfo().isAvailable() && !network.getActiveNetworkInfo().isRoaming()
                 && (prefs.getBoolean("prefUseMobileData", true) || network.getActiveNetworkInfo().getType() != ConnectivityManager.TYPE_MOBILE)) {
 
             Artist artist = Artist.getInfo(artistName, API_KEY);

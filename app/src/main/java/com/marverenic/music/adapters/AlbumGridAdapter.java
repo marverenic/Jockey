@@ -18,9 +18,9 @@ import android.widget.ImageView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
-import com.marverenic.music.LibraryPageActivity;
-import com.marverenic.music.PlayerService;
+import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
+import com.marverenic.music.activity.LibraryPageActivity;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.LibraryScanner;
@@ -231,10 +231,10 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Vie
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case 0: //Queue this artist next
-                                PlayerService.queueNext(context, LibraryScanner.getAlbumEntries(item));
+                                PlayerController.queueNext(LibraryScanner.getAlbumEntries(item));
                                 break;
                             case 1: //Queue this artist last
-                                PlayerService.queueLast(context, LibraryScanner.getAlbumEntries(item));
+                                PlayerController.queueLast(LibraryScanner.getAlbumEntries(item));
                                 break;
                             case 2: //Go to artist
                                 Navigate.to(context, LibraryPageActivity.class, "entry", LibraryScanner.findArtistById(item.artistId));

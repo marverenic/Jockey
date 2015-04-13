@@ -1,4 +1,4 @@
-package com.marverenic.music;
+package com.marverenic.music.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -17,6 +17,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.marverenic.music.Player;
+import com.marverenic.music.PlayerController;
+import com.marverenic.music.R;
 import com.marverenic.music.adapters.QueueEditAdapter;
 import com.marverenic.music.fragments.MiniplayerManager;
 import com.marverenic.music.instances.LibraryScanner;
@@ -83,7 +86,7 @@ public class QueueActivity extends Activity {
                         .setPositiveButton("Create", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                LibraryScanner.createPlaylist(context, input.getText().toString(), PlayerService.getQueue());
+                                LibraryScanner.createPlaylist(context, input.getText().toString(), PlayerController.getQueue());
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

@@ -1,4 +1,4 @@
-package com.marverenic.music;
+package com.marverenic.music.activity;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,6 +19,8 @@ import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
+import com.marverenic.music.Player;
+import com.marverenic.music.R;
 import com.marverenic.music.adapters.LibraryPagerAdapter;
 import com.marverenic.music.fragments.MiniplayerManager;
 import com.marverenic.music.instances.LibraryScanner;
@@ -42,7 +42,7 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
     };
 
     // Set the intent's action to this to avoid automatically going to the Now Playing page
-    public static final String ACTION_LIBRARY = "com.marverenic.music.LibraryActivity.LIBRARY";
+    public static final String ACTION_LIBRARY = "com.marverenic.music.activity.LibraryActivity.LIBRARY";
 
     // Intent flag used to determine whether to open the now playing activity or not
     public static final String START_NOW_PLAYING = "com.marverernic.music.LibraryActivity.GOTOPLAYING";
@@ -53,11 +53,16 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
         onNewIntent(getIntent());
         Themes.setTheme(this);
 
-        if (getActionBar() != null) getActionBar().setIcon(new ColorDrawable(Color.TRANSPARENT));
+        if (getActionBar() != null){
+            getActionBar().setHomeButtonEnabled(false);
+            getActionBar().setDisplayHomeAsUpEnabled(false);
+            getActionBar().setDisplayShowHomeEnabled(false);
+        }
 
         setContentView(R.layout.activity_library);
         findViewById(R.id.pagerSlidingTabs).setVisibility(View.INVISIBLE);
-        findViewById(R.id.pagerSlidingTabs).setVisibility(View.INVISIBLE);
+        findViewById(R.id.pager).setVisibility(View.INVISIBLE);
+        ((View)(findViewById(R.id.miniplayer)).getParent()).setVisibility(View.INVISIBLE);
 
         new Thread(new Updater(this)).start();
 
@@ -112,15 +117,21 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
         tabs.setActivePage(page);
         tabs.setVisibility(View.VISIBLE);
 
+        View miniplayer = ((View)(findViewById(R.id.miniplayer)).getParent());
+        miniplayer.setVisibility(View.VISIBLE);
+
         if (getResources().getConfiguration().smallestScreenWidthDp < 700 && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             tabs.setMini(true);
         } else {
             tabs.setMini(false);
         }
 
+        update();
+
         if (fade) {
             pager.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
             tabs.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
+            miniplayer.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
         }
     }
 
@@ -129,6 +140,9 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
         super.onResume();
         if (Themes.hasChanged(this)) {
             recreate();
+        }
+        if (findViewById(R.id.pager) != null && ((ViewPager) findViewById(R.id.pager)).getAdapter() != null) {
+            ((LibraryPagerAdapter) ((ViewPager) findViewById(R.id.pager)).getAdapter()).refreshPlaylists();
         }
         update();
         Themes.setApplicationIcon(this);
@@ -154,8 +168,8 @@ public class LibraryActivity extends FragmentActivity implements View.OnClickLis
 
     @Override
     public void onStop() {
-        super.onStop();
         PicassoUtils.clearCache(Picasso.with(this));
+        super.onStop();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.marverenic.music;
+package com.marverenic.music.activity;
 
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
@@ -18,6 +18,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.SearchView;
 
+import com.marverenic.music.Player;
+import com.marverenic.music.R;
 import com.marverenic.music.adapters.SearchPagerAdapter;
 import com.marverenic.music.fragments.MiniplayerManager;
 import com.marverenic.music.instances.Album;

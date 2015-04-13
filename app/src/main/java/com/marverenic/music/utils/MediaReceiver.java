@@ -9,8 +9,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
 
-import com.marverenic.music.NowPlayingActivity;
+import com.marverenic.music.PlayerController;
 import com.marverenic.music.PlayerService;
+import com.marverenic.music.activity.NowPlayingActivity;
 
 public class MediaReceiver extends BroadcastReceiver {
 
@@ -48,13 +49,13 @@ public class MediaReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (PlayerService.isInitialized() && PlayerService.isPlaying()) {
+        if (PlayerController.isPlaying()) {
             if (intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)) {
                 if (intent.getIntExtra("state", -1) != 1) {
-                    PlayerService.pause();
+                    PlayerController.pause();
                 }
             } else if (intent.getAction().equals(AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
-                PlayerService.pause();
+                PlayerController.pause();
             }
         }
 

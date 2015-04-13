@@ -80,31 +80,56 @@
         <item name="android:actionBarStyle">@style/actionbar_style</item>
         <item name="android:windowBackground">@color/background</item>
         <item name="android:windowContentOverlay">@null</item>
+        <item name="android:homeAsUpIndicator">@drawable/ic_actionbar_back</item>
+        <item name="android:actionOverflowButtonStyle">@style/ActionBarOverflowStyle</item>
     </style>
 
-    <style name="AppThemeLight" parent="android:Theme.Holo.Light.DarkActionBar">
+    <style name="AppThemeLight" parent="android:Theme.Holo.Light">
         <item name="android:actionBarStyle">@style/actionbar_style</item>
         <item name="android:windowBackground">@color/background_light</item>
         <item name="android:windowContentOverlay">@null</item>
+        <item name="android:homeAsUpIndicator">@drawable/ic_actionbar_back</item>
+        <item name="android:actionOverflowButtonStyle">@style/ActionBarOverflowStyle</item>
     </style>
 
     <style name="NowPlayingTheme" parent="AppTheme">
         <item name="android:actionBarStyle">@style/transparent_actionbar</item>
         <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:homeAsUpIndicator">@drawable/ic_actionbar_back</item>
+        <item name="android:actionOverflowButtonStyle">@style/ActionBarOverflowStyle</item>
     </style>
 
     <style name="actionbar_style" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
         <item name="android:background">@color/primary</item>
         <item name="android:textColor">@color/ui_text</item>
+        <item name="android:height">56dp</item>
+        <item name="android:titleTextStyle">@style/ActionbarTextStyle</item>
+        <item name="android:actionButtonStyle">@style/ActionButtonStyle</item>
     </style>
 
     <style name="transparent_actionbar" parent="@android:style/Widget.Holo.Light.ActionBar">
         <item name="android:textColor">@color/transparent_ui_text</item>
         <item name="android:background">@drawable/skrim_now_playing</item>
+        <item name="android:height">56dp</item>
         <item name="android:windowActionBarOverlay">true</item>
-        <item name="android:selectableItemBackground">
-            ?android:attr/selectableItemBackgroundBorderless
-        </item>
+        <item name="android:titleTextStyle">@style/ActionbarTextStyle</item>
+        <item name="android:actionButtonStyle">@style/ActionButtonStyle</item>
+    </style>
+
+    <style name="ActionButtonStyle" parent="android:style/Widget.Holo.Light.ActionButton">
+        <item name="android:minWidth">56dp</item>
+        <item name="android:padding">0dip</item>
+    </style>
+
+    <style name="ActionBarOverflowStyle" parent="android:style/Widget.Holo.Light.ActionButton.Overflow">
+        <item name="android:src">@drawable/ic_actionbar_menu</item>
+        <item name="android:background">?android:attr/actionBarItemBackground</item>
+    </style>
+
+    <style name="ActionbarTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">20sp</item>
     </style>
 
     <style name="list">

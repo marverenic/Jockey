@@ -16,7 +16,9 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.marverenic.music.Player;
 import com.marverenic.music.R;
+import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Themes;
 
 import java.io.BufferedReader;
@@ -58,6 +60,7 @@ public class LibraryScanner {
             Library.setGenreLib(scanGenres(context));
         }
         Library.sort();
+        updateCounts(context);
 
         loaded = true;
 
@@ -102,8 +105,8 @@ public class LibraryScanner {
         return loaded;
     }
 
-    public static interface onScanCompleteListener {
-        public void onScanComplete();
+    public interface onScanCompleteListener {
+        void onScanComplete();
     }
 
     // Scan the MediaStore for songs
@@ -601,6 +604,7 @@ public class LibraryScanner {
             ContentValues[] values = new ContentValues[songList.size()];
 
             for (int i = 0; i < songList.size(); i++) {
+                values[i] = new ContentValues();
                 values[i].put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, i);
                 values[i].put(MediaStore.Audio.Playlists.Members.AUDIO_ID, songList.get(i).songId);
             }
@@ -642,12 +646,17 @@ public class LibraryScanner {
     //          Media file open method
     //
 
-    public static ArrayList<Song> getSongListFromFile(Context context, String path, String type) throws IOException{
+    public static int getSongListFromFile(Context context, File file, String type, final ArrayList<Song> queue) throws IOException{
         // A somewhat convoluted method for getting a list of songs from a path
 
-        ArrayList<Song> queue = new ArrayList<>();
+        // Songs are put into the queue array list
+        // The integer returned is the position in this queue that corresponds to the requested song
 
         if (Library.isEmpty()){
+            // We depend on the library being scanned, so make sure it's scanned before we go any further
+
+            // In its current implementation, this can't be moved to an async task without changing
+            // a lot of UI calls that assume the player service has started
             scanAll(context, true, true);
         }
 
@@ -658,19 +667,19 @@ public class LibraryScanner {
                     MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
                     null,
                     MediaStore.Audio.Playlists.DATA + "=?",
-                    new String[] {path},
+                    new String[] {file.getPath()},
                     MediaStore.Audio.Playlists.NAME + " ASC");
 
             // If the media store contains this playlist, play it like a regular playlist
             if (cur.getCount() > 0){
                 cur.moveToFirst();
-                queue = getPlaylistEntries(context, new Playlist(
-                                cur.getLong(cur.getColumnIndex(MediaStore.Audio.Playlists._ID)),
-                                cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.NAME))));
+                queue.addAll(getPlaylistEntries(context, new Playlist(
+                        cur.getLong(cur.getColumnIndex(MediaStore.Audio.Playlists._ID)),
+                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.NAME)))));
             }
             else{
                 // If the MediaStore doesn't contain this playlist, attempt to read it manually
-                Scanner sc = new Scanner(new File(path));
+                Scanner sc = new Scanner(file);
                 ArrayList<String> lines = new ArrayList<>();
                 while (sc.hasNextLine()) {
                     lines.add(sc.nextLine());
@@ -682,17 +691,21 @@ public class LibraryScanner {
 
             }
             cur.close();
+            // Return 0 to start at the beginning of the playlist
+            return 0;
         }
         // ALL OTHER TYPES OF MEDIA
         else {
             // If the file isn't a playlist, use a content resolver to find the song and play it
+            // Find all songs in the directory
             Cursor cur = context.getContentResolver().query(
                     MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                     null,
-                    MediaStore.Audio.Media.DATA + "=?",
-                    new String[] {path},
-                    MediaStore.Audio.Media.TITLE + " ASC");
+                    MediaStore.Audio.Media.DATA + " like ?",
+                    new String[] {"%" + file.getParent() + "/%"},
+                    MediaStore.Audio.Media.DATA + " ASC");
 
+            // Create song objects to match those in the music library
             for (int i = 0; i < cur.getCount(); i++) {
                 cur.moveToPosition(i);
                 queue.add(new Song(
@@ -708,10 +721,14 @@ public class LibraryScanner {
                         cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID))));
             }
             cur.close();
+
+            // Find the position of the song that should be played
+            for(int i = 0; i < queue.size(); i++){
+                if (queue.get(i).location.equals(file.getPath())) return i;
+            }
         }
 
-        if (queue.size() == 0) return null;
-        else return queue;
+        return 0;
     }
 
     //
@@ -865,7 +882,51 @@ public class LibraryScanner {
         return false;
     }
 
-    private static String convertStreamToString(InputStream is) throws Exception {
+    public static void updateCounts(Context context){
+        /*
+         * Reads and removes any pending play or skip counts to be added to the Library written by
+         * Player.logPlayCount(). Used to move counts from the temporary file into memory and
+         * eventually the GSON libraries on disk
+         *
+         * This is called when Jockey is loading the library and in PlayerController's UPDATE
+         * broadcast receiver
+         */
+
+        if (Library.isEmpty()) return;
+
+        File countFile = new File(context.getExternalFilesDir(null), Player.TEMP_COUNT_LOG_FILE);
+        if (!countFile.exists() || countFile.length() == 0) {
+            return;
+        }
+        try {
+            FileInputStream countIn = new FileInputStream(countFile);
+            String countString = convertStreamToString(countIn);
+
+            Scanner scanner = new Scanner(countString);
+            while (scanner.hasNext()){
+                Song s = findSongById(scanner.nextInt());
+                if (scanner.nextBoolean()){
+                    // increment skip count
+                    s.skipCount++;
+                }
+                else{
+                    s.playCount++;
+                }
+            }
+        }
+        catch (Exception e){e.printStackTrace();}
+        finally {
+            // Delete the temp file when finished
+            try{
+                if (!countFile.delete()){
+                    Debug.log(new IOException("Couldn't delete play count file"), context);
+                }
+            }
+            catch (Exception ignored){}
+        }
+    }
+
+    public static String convertStreamToString(InputStream is) throws Exception {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
         String line;

@@ -10,9 +10,9 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.marverenic.music.LibraryPageActivity;
-import com.marverenic.music.PlayerService;
+import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
+import com.marverenic.music.activity.LibraryPageActivity;
 import com.marverenic.music.instances.Genre;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.LibraryScanner;
@@ -102,10 +102,10 @@ public class GenreListAdapter extends BaseAdapter implements AdapterView.OnItemC
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case 0: //Queue this genre next
-                                PlayerService.queueNext(context, LibraryScanner.getGenreEntries(item));
+                                PlayerController.queueNext(LibraryScanner.getGenreEntries(item));
                                 break;
                             case 1: //Queue this genre last
-                                PlayerService.queueLast(context, LibraryScanner.getGenreEntries(item));
+                                PlayerController.queueLast(LibraryScanner.getGenreEntries(item));
                                 break;
                             case 2: //Add to playlist
                                 ArrayList<Playlist> playlists = Library.getPlaylists();

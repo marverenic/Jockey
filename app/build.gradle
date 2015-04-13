@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 22
-    buildToolsVersion '22.0.0'
+    buildToolsVersion '22.0.1'
 
     defaultConfig {
         applicationId "com.marverenic.music"
-        versionName "0.2-α.r0m18k"
-        versionCode 21809
-        minSdkVersion 16
+        versionName "0.2-α.r0m19a"
+        versionCode 21900
+        minSdkVersion 15
         targetSdkVersion 22
     }
 
@@ -27,7 +27,7 @@ android {
 dependencies {
     compile 'com.android.support:support-v4:22.0.0'
     compile 'com.android.support:palette-v7:22.0.0'
-    compile 'com.squareup.picasso:picasso:2.5.0'
+    compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'de.u-mass:lastfm-java:0.1.2'
     compile 'com.google.code.gson:gson:2.3.1'
     compile project(':dragsortlistview')

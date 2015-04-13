@@ -80,4 +80,8 @@ public class LibraryPagerAdapter extends FragmentPagerAdapter {
                 return "Page " + position;
         }
     }
+
+    public void refreshPlaylists() {
+        if(playlistFragment != null) playlistFragment.updateData();
+    }
 }

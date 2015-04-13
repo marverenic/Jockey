@@ -28,8 +28,8 @@ import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.marverenic.music.LibraryActivity;
 import com.marverenic.music.R;
+import com.marverenic.music.activity.LibraryActivity;
 
 public class Themes {
 
@@ -224,11 +224,11 @@ public class Themes {
     }
 
     public static int getAlertTheme (Context context){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
             if (isLight(context)) return android.R.style.Theme_Material_Light_Dialog_Alert;
             else return android.R.style.Theme_Material_Dialog_Alert;
         }
-        else{
+        else {
             if (isLight(context)) return android.R.style.Theme_Holo_Light;
             else return android.R.style.Theme_Holo;
         }
@@ -380,6 +380,8 @@ public class Themes {
                 break;
         }
 
+        if (activity.getActionBar() != null) activity.getActionBar().setDisplayHomeAsUpEnabled(!(activity instanceof LibraryActivity));
+
         if (contentView.findViewById(R.id.miniplayer) != null) {
             themeMiniplayer((View) contentView.findViewById(R.id.miniplayer).getParent(), activity);
         }
@@ -409,7 +411,12 @@ public class Themes {
         GradientDrawable topDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.top));
         bodyDrawable.setColor(background);
         topDrawable.setColor(primary);
-        contentView.findViewById(R.id.pager).setBackground(backgroundDrawable);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            contentView.findViewById(R.id.pager).setBackground(backgroundDrawable);
+        }
+        else {
+            contentView.findViewById(R.id.pager).setBackgroundDrawable(backgroundDrawable);
+        }
     }
 
     private static void themeNowPlayingActivity(View contentView, Activity activity) {
@@ -457,7 +464,12 @@ public class Themes {
         GradientDrawable topDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.top));
         bodyDrawable.setColor(background);
         topDrawable.setColor(primary);
-        contentView.findViewById(R.id.list_container).setBackground(backgroundDrawable);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            contentView.findViewById(R.id.list_container).setBackground(backgroundDrawable);
+        }
+        else {
+            contentView.findViewById(R.id.list_container).setBackgroundDrawable(backgroundDrawable);
+        }
     }
 
     private static void themePlaylistEditor(View contentView, Activity activity) {
@@ -471,7 +483,12 @@ public class Themes {
         GradientDrawable topDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.top));
         bodyDrawable.setColor(background);
         topDrawable.setColor(primary);
-        ((ViewGroup) contentView.findViewById(R.id.list).getParent()).setBackground(backgroundDrawable);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            ((ViewGroup) contentView.findViewById(R.id.list).getParent()).setBackground(backgroundDrawable);
+        }
+        else {
+            ((ViewGroup) contentView.findViewById(R.id.list).getParent()).setBackgroundDrawable(backgroundDrawable);
+        }
     }
 
     private static void themeAboutActivity(View contentView, Activity activity) {
@@ -491,7 +508,12 @@ public class Themes {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             ((ImageView) contentView.findViewById(R.id.aboutAppIcon)).setImageBitmap(getLargeIcon(activity, DisplayMetrics.DENSITY_XXXHIGH));
         } else {
-            ((ImageView) contentView.findViewById(R.id.aboutAppIcon)).setImageBitmap(getLargeIcon(activity, DisplayMetrics.DENSITY_XXHIGH));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                ((ImageView) contentView.findViewById(R.id.aboutAppIcon)).setImageBitmap(getLargeIcon(activity, DisplayMetrics.DENSITY_XXHIGH));
+            }
+            else{
+                ((ImageView) contentView.findViewById(R.id.aboutAppIcon)).setImageBitmap(getLargeIcon(activity, DisplayMetrics.DENSITY_XHIGH));
+            }
         }
     }
 

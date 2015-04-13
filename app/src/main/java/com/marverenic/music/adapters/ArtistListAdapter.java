@@ -11,9 +11,9 @@ import android.widget.BaseAdapter;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
-import com.marverenic.music.LibraryPageActivity;
-import com.marverenic.music.PlayerService;
+import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
+import com.marverenic.music.activity.LibraryPageActivity;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.LibraryScanner;
@@ -119,10 +119,10 @@ public class ArtistListAdapter extends BaseAdapter implements SectionIndexer, Ad
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case 0: //Queue this artist next
-                                PlayerService.queueNext(context, LibraryScanner.getArtistSongEntries(item));
+                                PlayerController.queueNext(LibraryScanner.getArtistSongEntries(item));
                                 break;
                             case 1: //Queue this artist last
-                                PlayerService.queueLast(context, LibraryScanner.getArtistSongEntries(item));
+                                PlayerController.queueLast(LibraryScanner.getArtistSongEntries(item));
                                 break;
                             case 2: //Add to playlist...
                                 ArrayList<Playlist> playlists = Library.getPlaylists();

@@ -10,9 +10,9 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.marverenic.music.PlayerService;
-import com.marverenic.music.PlaylistActivity;
+import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
+import com.marverenic.music.activity.PlaylistActivity;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.instances.Playlist;
@@ -102,10 +102,10 @@ public class PlaylistListAdapter extends BaseAdapter implements AdapterView.OnIt
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case 0: //Queue this playlist next
-                                PlayerService.queueNext(context, LibraryScanner.getPlaylistEntries(context, item));
+                                PlayerController.queueNext(LibraryScanner.getPlaylistEntries(context, item));
                                 break;
                             case 1: //Queue this playlist last
-                                PlayerService.queueLast(context, LibraryScanner.getPlaylistEntries(context, item));
+                                PlayerController.queueLast(LibraryScanner.getPlaylistEntries(context, item));
                                 break;
                             case 2: //Delete this playlist
                                 new AlertDialog.Builder(context)
@@ -132,6 +132,11 @@ public class PlaylistListAdapter extends BaseAdapter implements AdapterView.OnIt
 
     public void updateData(ArrayList<Playlist> playlistLibrary) {
         this.data = new ArrayList<>(playlistLibrary);
+        notifyDataSetChanged();
+    }
+
+    public void updateData(){
+        this.data = Library.getPlaylists();
         notifyDataSetChanged();
     }
 }

@@ -15,11 +15,11 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.marverenic.music.LibraryPageActivity;
-import com.marverenic.music.NowPlayingActivity;
 import com.marverenic.music.Player;
-import com.marverenic.music.PlayerService;
+import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
+import com.marverenic.music.activity.LibraryPageActivity;
+import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.instances.Playlist;
@@ -150,8 +150,8 @@ public class PlaylistEditAdapter extends BaseAdapter implements AdapterView.OnIt
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        PlayerService.setQueue(context, data, position - ((ListView) parent).getHeaderViewsCount());
-        PlayerService.begin();
+        PlayerController.setQueue(data, position - ((ListView) parent).getHeaderViewsCount());
+        PlayerController.begin();
 
         context.startService(new Intent(context, Player.class));
         if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("switchToNowPlaying", true)) {
@@ -172,14 +172,10 @@ public class PlaylistEditAdapter extends BaseAdapter implements AdapterView.OnIt
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case 0: //Queue this song next
-                                if (!PlayerService.isInitialized())
-                                    context.startService(new Intent(context, Player.class));
-                                PlayerService.queueNext(context, item);
+                                PlayerController.queueNext(item);
                                 break;
                             case 1: //Queue this song last
-                                if (!PlayerService.isInitialized())
-                                    context.startService(new Intent(context, Player.class));
-                                PlayerService.queueLast(context, item);
+                                PlayerController.queueLast(item);
                                 break;
                             case 2: //Go to artist
                                 Navigate.to(context, LibraryPageActivity.class, "entry", LibraryScanner.findArtistById(item.artistId));

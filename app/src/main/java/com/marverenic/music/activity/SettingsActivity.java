@@ -1,4 +1,4 @@
-package com.marverenic.music;
+package com.marverenic.music.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.marverenic.music.R;
 import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Navigate;
@@ -25,6 +26,8 @@ public class SettingsActivity extends PreferenceActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         Themes.setTheme(this);
         super.onCreate(savedInstanceState);
+
+        if (getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
 
         getFragmentManager().beginTransaction().replace(android.R.id.content, new PrefFragment()).commit();
         Themes.themeActivity(android.R.layout.preference_category, getWindow().getDecorView().findViewById(android.R.id.content), this);
@@ -66,7 +69,7 @@ public class SettingsActivity extends PreferenceActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Navigate.back(this);
+        Navigate.home(this);
         finish();
     }
 
