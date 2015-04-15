@@ -13,7 +13,6 @@
         android:layout_height="@android:dimen/notification_large_icon_height"
         android:layout_weight="0"
         android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
         android:scaleType="centerCrop"
         android:src="@drawable/art_default" />
 
@@ -33,7 +32,7 @@
             android:ellipsize="end"
             android:singleLine="true"
             android:textSize="18sp"
-            android:textColor="@android:color/white" />
+            android:textColor="#202020" />
 
         <TextView
             android:id="@+id/notificationContentText"
@@ -43,7 +42,7 @@
             android:ellipsize="end"
             android:singleLine="true"
             android:padding="0dp"
-            android:textColor="@android:color/darker_gray" />
+            android:textColor="#737373" />
 
         <TextView
             android:id="@+id/notificationSubText"
@@ -53,7 +52,7 @@
             android:ellipsize="end"
             android:singleLine="true"
             android:padding="0dp"
-            android:textColor="@android:color/darker_gray" />
+            android:textColor="#737373" />
 
     </LinearLayout>
 
@@ -69,16 +68,16 @@
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:background="?android:selectableItemBackground"
-            android:src="@drawable/ic_pause_notification" />
+            android:background="@drawable/ripple_notification"
+            android:src="@drawable/ic_vector_pause_notification" />
 
         <ImageView
             android:id="@+id/notificationSkipNext"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:background="?android:selectableItemBackground"
-            android:src="@drawable/ic_skip_next_notification" />
+            android:background="@drawable/ripple_notification"
+            android:src="@drawable/ic_vector_skip_next_notification" />
 
     </LinearLayout>
 
@@ -86,11 +85,10 @@
         android:id="@+id/notificationStop"
         android:layout_marginTop="0dp"
         android:layout_marginEnd="6dp"
-        android:layout_marginRight="6dp"
         android:layout_width="36dp"
         android:layout_height="fill_parent"
         android:scaleType="center"
-        android:background="?android:selectableItemBackground"
-        android:src="@drawable/ic_close_notification" />
+        android:background="@drawable/ripple_notification"
+        android:src="@drawable/ic_vector_close_notification" />
 
 </LinearLayout>

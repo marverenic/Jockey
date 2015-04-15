@@ -91,9 +91,6 @@
     <string name="use_mobile">Use mobile data</string>
     <string name="use_mobile_description_on">Album artwork and other data will be downloaded on mobile networks</string>
     <string name="use_mobile_description_off">Album artwork and other data will only be downloaded on Wi-Fi networks</string>
-    <string name="keep_alive">Continue playback in background</string>
-    <string name="keep_alive_description_on">Jockey will stop playing music when you remove it from the overview page</string>
-    <string name="keep_alive_description_off">Jockey will continue to play music when you remove it from the overview page</string>
 
     <!-- Arrays -->
     <string-array name="queue_options_song">

@@ -3,13 +3,9 @@ package com.marverenic.music.activity;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,12 +19,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.marverenic.music.Player;
 import com.marverenic.music.R;
 import com.marverenic.music.adapters.AlbumGridAdapter;
 import com.marverenic.music.adapters.ArtistPageAdapter;
 import com.marverenic.music.adapters.SongListAdapter;
-import com.marverenic.music.fragments.MiniplayerManager;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Genre;
@@ -43,40 +37,34 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class LibraryPageActivity extends Activity implements View.OnClickListener {
+public class LibraryPageActivity extends BaseActivity {
 
     public enum Type { ARTIST, ALBUM, GENRE, UNKNOWN }
 
     private Type type;
 
-    private BroadcastReceiver updateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            update();
-        }
-    };
-
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
+        Object parent = getIntent().getParcelableExtra("entry");
+        if (parent == null || !(parent instanceof Album || parent instanceof Artist || parent instanceof Genre)){
+            setContentLayout(R.layout.page_error);
+        }
+        else{
+            setContentLayout(R.layout.fragment_list_page);
+        }
+        setContentView(R.id.list_container);
         super.onCreate(savedInstanceState);
 
-        Themes.setTheme(this);
-        setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        Object parent = getIntent().getParcelableExtra("entry");
-
-        if(getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (parent != null) {
-
-            setContentView(R.layout.fragment_list_page);
             final ListView songListView = (ListView) findViewById(R.id.list);
             ArrayList<Song> songEntries = null;
             ArrayList<Album> albumEntries;
 
-            if (getActionBar() != null){
+            if (getActionBar() != null) {
                 getActionBar().setTitle(parent.toString());
-            }
-            else{
+            } else {
                 Debug.log(Debug.LogLevel.WTF, "LibraryPageActivity", "Couldn't find the action bar", this);
             }
 
@@ -91,12 +79,10 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
                     songListView.addHeaderView(artView, null, false);
                     ((ImageView) findViewById(R.id.header)).setImageBitmap(art);
                 }
-            }
-            else if (parent instanceof Genre) {
+            } else if (parent instanceof Genre) {
                 type = Type.GENRE;
                 songEntries = LibraryScanner.getGenreEntries((Genre) parent);
-            }
-            else if (parent instanceof Artist) {
+            } else if (parent instanceof Artist) {
                 type = Type.ARTIST;
                 songEntries = LibraryScanner.getArtistSongEntries((Artist) parent);
                 Library.sortSongList(songEntries);
@@ -104,7 +90,7 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
                 Library.sortAlbumList(albumEntries);
 
                 ListView list = (ListView) findViewById(R.id.list);
-                initializeArtistHeader(list, albumEntries, ((Artist)parent).artistName, this);
+                initializeArtistHeader(list, albumEntries, ((Artist) parent).artistName, this);
                 ArtistPageAdapter adapter = new ArtistPageAdapter(this, songEntries, albumEntries);
                 list.setAdapter(adapter);
                 list.setOnItemClickListener(adapter);
@@ -118,8 +104,7 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
                 if (type != Type.ALBUM) {
                     Library.sortSongList(songEntries);
                     adapter = new SongListAdapter(songEntries, this, true);
-                }
-                else {
+                } else {
                     adapter = new SongListAdapter(songEntries, this, false);
                 }
 
@@ -134,21 +119,12 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
                 else
                     Debug.log(Debug.LogLevel.WTF, "LibraryPageActivity", "Couldn't find the action bar", this);
             }
-
-            Themes.themeActivity(R.layout.fragment_list, getWindow().findViewById(android.R.id.content), this);
         } else {
             type = Type.UNKNOWN;
             setContentView(R.layout.page_error);
             Debug.log(Debug.LogLevel.WTF, "LibraryPageActivity", "An invalid item was passed as the parent object", this);
         }
         update();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        update();
-        registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
     }
 
     @Override
@@ -259,17 +235,6 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
     }
 
     @Override
-    public void onClick(View v) {
-        MiniplayerManager.onClick(v.getId(), this, R.id.list_container);
-    }
-
-    public void update() {
-        if (type != Type.UNKNOWN) {
-            MiniplayerManager.update(this, R.id.list_container);
-        }
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             Navigate.up(this);
@@ -279,19 +244,7 @@ public class LibraryPageActivity extends Activity implements View.OnClickListene
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        Navigate.back(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        LibraryScanner.saveLibrary(this);
-        try {
-            unregisterReceiver(updateReceiver);
-        } catch (Exception e) {
-            Debug.log(Debug.LogLevel.ERROR, "LibraryActivity", "Unable to unregister receiver", this);
-        }
+    public void themeActivity() {
+        Themes.themeActivity(R.layout.fragment_list, getWindow().findViewById(android.R.id.content), this);
     }
 }

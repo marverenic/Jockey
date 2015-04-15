@@ -47,12 +47,6 @@
             android:defaultValue="true"
             android:key="switchToNowPlaying"
             android:title="@string/switch_to_now_playing" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="keepAliveOnRemoved"
-            android:title="@string/keep_alive"
-            android:summaryOff="@string/keep_alive_description_on"
-            android:summaryOn="@string/keep_alive_description_off"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

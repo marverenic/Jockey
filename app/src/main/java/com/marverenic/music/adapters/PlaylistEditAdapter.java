@@ -100,7 +100,7 @@ public class PlaylistEditAdapter extends BaseAdapter implements AdapterView.OnIt
 
     @Override
     public int getItemViewType(int position) {
-        return R.layout.instance_song;
+        return 0;
     }
 
     @Override

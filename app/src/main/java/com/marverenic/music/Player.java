@@ -374,7 +374,8 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     public void togglePlay() {
         if (isPlaying()) {
             pause();
-        } else {
+        }
+        else {
             play();
         }
     }
@@ -689,7 +690,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     }
 
     public boolean isPlaying() {
-        return mediaPlayer.isPlaying();
+        return mediaPlayer.getState() == ManagedMediaPlayer.status.STARTED;
     }
 
     public boolean isPreparing() {

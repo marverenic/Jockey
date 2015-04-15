@@ -25,8 +25,6 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import com.marverenic.music.utils.Themes;
-
 class SlidingTabStrip extends LinearLayout {
 
     private static final int SELECTED_INDICATOR_THICKNESS_DIPS = 2;
@@ -48,8 +46,6 @@ class SlidingTabStrip extends LinearLayout {
         super(context, attrs);
         setWillNotDraw(false);
 
-        Themes.updateColors(context);
-
         final float density = getResources().getDisplayMetrics().density;
 
         TypedValue outValue = new TypedValue();
@@ -57,7 +53,7 @@ class SlidingTabStrip extends LinearLayout {
         final int themeForegroundColor = outValue.data;
 
         mDefaultTabColorizer = new SimpleTabColorizer();
-        mDefaultTabColorizer.setIndicatorColors(Themes.getUiText());
+        mDefaultTabColorizer.setIndicatorColors(Color.WHITE);
         mDefaultTabColorizer.setDividerColors(setColorAlpha(themeForegroundColor, DEFAULT_DIVIDER_COLOR_ALPHA));
 
         mSelectedIndicatorThickness = (int) (SELECTED_INDICATOR_THICKNESS_DIPS * density);

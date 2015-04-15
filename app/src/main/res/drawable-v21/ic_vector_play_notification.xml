@@ -3,20 +3,12 @@
     android:name="ic_play"
     android:width="48dp"
     android:height="48dp"
-    android:tint="@android:color/white"
+    android:tint="#212121"
     android:viewportHeight="48"
     android:viewportWidth="48">
 
-    <group
-        android:scaleX="1.5"
-        android:scaleY="1.5"
-        android:translateX="-12"
-        android:translateY="-12">
-
-        <path
-            android:fillColor="#000000"
-            android:pathData="M16 10v28l22-14z" />
-
-    </group>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M16 10v28l22-14z" />
 
 </vector>

@@ -1,13 +1,10 @@
 package com.marverenic.music.activity;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -42,15 +39,9 @@ import com.marverenic.music.utils.Themes;
 import java.io.File;
 import java.util.ArrayList;
 
-public class NowPlayingActivity extends Activity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
+public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBarChangeListener {
 
     private MediaObserver observer = null;
-    private BroadcastReceiver updateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            update();
-        }
-    };
     private boolean userTouchingProgressBar = false; // This probably shouldn't be here...
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP) //Don't worry Lint. Everything is going to be okay.
@@ -84,11 +75,9 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
             }
         }
 
+        setContentLayout(R.layout.activity_now_playing);
         super.onCreate(savedInstanceState);
         onNewIntent(getIntent());
-        setContentView(R.layout.activity_now_playing);
-
-        Themes.themeActivity(R.layout.activity_now_playing, getWindow().getDecorView().findViewById(android.R.id.content), this);
 
         findViewById(R.id.playButton).setOnClickListener(this);
         findViewById(R.id.nextButton).setOnClickListener(this);
@@ -186,9 +175,6 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                Navigate.up(this);
-                return true;
             case R.id.action_shuffle:
                 PlayerController.toggleShuffle();
                 if (!PlayerController.isShuffle()) {
@@ -259,18 +245,14 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
 
     @Override
     public void onPause() {
-        observer.stop();
-        unregisterReceiver(updateReceiver);
-        LibraryScanner.saveLibrary(this);
         super.onPause();
+        observer.stop();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         new Thread(observer).start();
-        update();
-        registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
     }
 
     @Override
@@ -386,6 +368,19 @@ public class NowPlayingActivity extends Activity implements View.OnClickListener
         finish();
     }
 
+    @Override
+    public void themeActivity() {
+        Themes.themeActivity(R.layout.activity_now_playing, getWindow().getDecorView().findViewById(android.R.id.content), this);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
+            if (getActionBar() != null) getActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.skrim_now_playing));
+        }
+    }
+
+    @Override
+    public void updateMiniplayer(){}
+
+    @Override
     public void update() {
         Song nowPlaying = PlayerController.getNowPlaying();
         if (nowPlaying != null) {

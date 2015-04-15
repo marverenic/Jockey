@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:name="ic_skip_next"
+    android:name="ic_pause"
     android:width="48dp"
     android:height="48dp"
-    android:tint="#212121"
+    android:tint="@android:color/white"
     android:viewportHeight="48"
     android:viewportWidth="48">
 
     <group
-        android:pivotX="24"
-        android:pivotY="24"
-        android:scaleX="0.8"
-        android:scaleY="0.8">
+        android:scaleX="1.5"
+        android:scaleY="1.5"
+        android:translateX="-12"
+        android:translateY="-12">
 
         <path
             android:fillColor="#000000"
-            android:pathData="M12 36l17-12-17-12v24zm20-24v24h4V12h-4z" />
+            android:pathData="M12 38h8V10h-8v28zm16-28v28h8V10h-8z" />
     </group>
-
 </vector>

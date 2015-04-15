@@ -20,7 +20,9 @@ import java.util.List;
 
 public class PlayerController {
 
-    public static IPlayerService playerService = null;
+    private static IPlayerService playerService = null;
+    private static ServiceConnection binder = null;
+
     private static final BroadcastReceiver updateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(final Context context, Intent intent) {
@@ -45,9 +47,9 @@ public class PlayerController {
         }
     };
 
-    public static void startService(final Context context) {
+    public static void bind(final Context context) {
         final ContextWrapper contextWrapper = new ContextWrapper(context);
-        ServiceConnection binder = new ServiceConnection(){
+        binder = new ServiceConnection(){
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 playerService = IPlayerService.Stub.asInterface(service);
@@ -64,7 +66,7 @@ public class PlayerController {
         };
         Intent serviceIntent = new Intent(contextWrapper, PlayerService.class);
         contextWrapper.startService(serviceIntent);
-        contextWrapper.bindService(serviceIntent, binder, Context.BIND_IMPORTANT);
+        contextWrapper.bindService(serviceIntent, binder, 0);
 
         // Register a receiver to invalidate "cached" data when an UPDATE broadcast is sent
         // It has to have high priority because it MUST execute before other BroadcastReceivers
@@ -72,6 +74,14 @@ public class PlayerController {
         IntentFilter filter = new IntentFilter(Player.UPDATE_BROADCAST);
         filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
         contextWrapper.registerReceiver(updateReceiver, filter);
+    }
+
+    public static void unbind(Context context) {
+        if (binder != null) {
+            context.unbindService(binder);
+            binder = null;
+            playerService = null;
+        }
     }
 
     public static void begin() {
@@ -82,6 +92,20 @@ public class PlayerController {
                         public void doInBackground() {
                             try {
                                 playerService.begin();
+                            } catch (RemoteException ignored){}
+                        }
+                    }, null);
+        }
+    }
+
+    public static void stop() {
+        if (playerService != null) {
+            new BackgroundTask(
+                    new BackgroundTask.BackgroundAction() {
+                        @Override
+                        public void doInBackground() {
+                            try {
+                                playerService.stop();
                             } catch (RemoteException ignored){}
                         }
                     }, null);

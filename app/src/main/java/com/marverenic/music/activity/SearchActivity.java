@@ -1,27 +1,18 @@
 package com.marverenic.music.activity;
 
 import android.app.SearchManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.SearchView;
 
-import com.marverenic.music.Player;
 import com.marverenic.music.R;
 import com.marverenic.music.adapters.SearchPagerAdapter;
-import com.marverenic.music.fragments.MiniplayerManager;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Genre;
@@ -29,21 +20,13 @@ import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.SlidingTabLayout;
 
 import java.util.ArrayList;
 
-public class SearchActivity extends FragmentActivity implements View.OnClickListener {
-
-    private BroadcastReceiver updateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            update();
-        }
-    };
+public class SearchActivity extends BaseActivity {
 
     private SearchPagerAdapter adapter;
 
@@ -57,10 +40,10 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setContentLayout(R.layout.activity_library);
+        setContentView(R.id.pager);
         super.onCreate(savedInstanceState);
 
-        Themes.setTheme(this);
-        setContentView(R.layout.activity_library);
         search(getIntent());
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -74,38 +57,6 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
         SlidingTabLayout tabs = ((SlidingTabLayout) findViewById(R.id.pagerSlidingTabs));
         tabs.setViewPager(pager);
         tabs.setActivePage(page);
-
-        if (getResources().getConfiguration().smallestScreenWidthDp < 700 && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            tabs.setMini(true);
-        } else {
-            tabs.setMini(false);
-        }
-
-        Themes.themeActivity(R.layout.activity_library, getWindow().getDecorView().findViewById(android.R.id.content), this);
-
-        startService(new Intent(this, Player.class));
-        registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
-
-        setVolumeControlStream(AudioManager.STREAM_MUSIC);
-    }
-
-    @Override
-    public void onResume() {
-        update();
-        Themes.setApplicationIcon(this);
-        registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        LibraryScanner.saveLibrary(this);
-        try {
-            unregisterReceiver(updateReceiver);
-        } catch (Exception e) {
-            Debug.log(Debug.LogLevel.ERROR, "LibraryActivity", "Unable to unregister receiver", this);
-        }
-        super.onPause();
     }
 
     @Override
@@ -153,19 +104,14 @@ public class SearchActivity extends FragmentActivity implements View.OnClickList
     }
 
     @Override
-    public void onClick(View v) {
-        MiniplayerManager.onClick(v.getId(), this, R.id.pager);
-    }
-
-    @Override
     public void onBackPressed() {
         lastQuery = null;
-        Navigate.home(this);
         super.onBackPressed();
     }
 
-    public void update() {
-        MiniplayerManager.update(this, R.id.pager);
+    @Override
+    public void themeActivity() {
+        Themes.themeActivity(R.layout.activity_library, getWindow().getDecorView().findViewById(android.R.id.content), this);
     }
 
     @Override

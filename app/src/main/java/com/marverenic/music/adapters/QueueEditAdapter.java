@@ -89,7 +89,7 @@ public class QueueEditAdapter extends BaseAdapter implements AdapterView.OnItemC
 
     @Override
     public int getItemViewType(int position) {
-        return R.layout.instance_song;
+        return 0;
     }
 
     @Override

@@ -22,8 +22,8 @@
     <color name="grid_detail_text">#97000000</color>
     <color name="player_control_background">#263238</color>
     <color name="player_text_main">#ECEFF1</color>
-    <color name="player_text_detail">#B0BEC5</color>
-    <color name="player_control_tint">#ECEFF1</color>
+    <color name="player_text_detail">#88FFFFFF</color>
+    <color name="player_control_tint">#FFECEFF1</color>
 
     <!-- Custom Theme Colors-->
     <!-- Light Base -->

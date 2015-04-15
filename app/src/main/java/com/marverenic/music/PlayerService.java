@@ -7,13 +7,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
 
@@ -67,10 +64,7 @@ public class PlayerService extends Service {
         }
 
         reload();
-        if (player.getNowPlaying() != null){
-            updateForeground();
-            notifyNowPlaying();
-        }
+        if (player.getNowPlaying() != null) notifyNowPlaying();
     }
 
     public void reload(){
@@ -103,16 +97,9 @@ public class PlayerService extends Service {
         return super.onUnbind(intent);
     }
 
-    // Stop the service when Jockey is removed from the recent apps overview
-    // (only if enabled in settings)
     @Override
     public void onTaskRemoved(Intent rootIntent) {
-        super.onTaskRemoved(rootIntent);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        if (!prefs.getBoolean("keepAliveOnRemoved", true)){
-            finish();
-            stopSelf();
-        }
+        notifyNowPlaying();
     }
 
     // Listens for commands from the notification
@@ -138,32 +125,14 @@ public class PlayerService extends Service {
                     break;
                 case ACTION_STOP:
                     stop();
-                    return START_STICKY;
+                    return START_NOT_STICKY;
             }
         }
 
-        if (player.getNowPlaying() != null){
-            updateForeground();
+        if (!finished && player.getNowPlaying() != null){
             notifyNowPlaying();
         }
-        return START_STICKY;
-    }
-
-    // Move the service to the foreground or background as needed
-    private void updateForeground() {
-        if (player.isPlaying()){
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                startForeground(NOTIFICATION_ID, getNotification());
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                startForeground(NOTIFICATION_ID, getNotificationCompat());
-            } else {
-                startForeground(NOTIFICATION_ID, getNotificationCompatCompat());
-            }
-        }
-        else{
-            stopForeground(false);
-            notifyNowPlaying();
-        }
+        return START_NOT_STICKY;
     }
 
     private void stop() {
@@ -173,8 +142,7 @@ public class PlayerService extends Service {
         for(int i = 0; i < procInfos.size(); i++){
             if(procInfos.get(i).processName.equals(BuildConfig.APPLICATION_ID)){
                 player.pause();
-                updateForeground();
-                notificationManager.cancel(NOTIFICATION_ID);
+                stopForeground(true);
                 return;
             }
         }
@@ -182,13 +150,6 @@ public class PlayerService extends Service {
         // If the UI process has already ended, kill the service and close the player
         finish();
         stopSelf();
-    }
-
-    @Override
-    public void onDestroy() {
-        finish();
-        stopSelf();
-        super.onDestroy();
     }
 
     public void finish() {
@@ -221,16 +182,15 @@ public class PlayerService extends Service {
 
     // Generate a notification, choosing the proper API level notification builder
     public void notifyNowPlaying() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            notificationManager.notify(NOTIFICATION_ID, getNotification());
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-            notificationManager.notify(NOTIFICATION_ID, getNotificationCompat());
-        else notificationManager.notify(NOTIFICATION_ID, getNotificationCompatCompat());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+            startForeground(NOTIFICATION_ID, getNotification());
+        else
+            startForeground(NOTIFICATION_ID, getNotificationCompat());
     }
 
     // Build a notification on API 15 devices
     @TargetApi(15)
-    public Notification getNotificationCompatCompat() {
+    public Notification getNotificationCompat() {
         // Ensures extra compatibility
 
         Notification notification;
@@ -258,12 +218,13 @@ public class PlayerService extends Service {
             notificationView.setOnClickPendingIntent(R.id.notificationSkipPrevious, PendingIntent.getService(this, 1, intent.setAction(ACTION_PREV), 0));
             notificationView.setOnClickPendingIntent(R.id.notificationSkipNext, PendingIntent.getService(this, 1, intent.setAction(ACTION_NEXT), 0));
             notificationView.setOnClickPendingIntent(R.id.notificationPause, PendingIntent.getService(this, 1, intent.setAction(ACTION_TOGGLE_PLAY), 0));
+            notificationView.setOnClickPendingIntent(R.id.notificationStop, PendingIntent.getService(this, 1, intent.setAction(ACTION_STOP), 0));
 
         }
         else{
             // If the player isn't playing music, set the notification text to a hardcoded set of strings
             notificationView.setTextViewText(R.id.notificationContentTitle, "Nothing is playing");
-            notificationView.setTextViewText(R.id.notificationContentText, "To exit Jockey, remove it from your recent apps");
+            notificationView.setTextViewText(R.id.notificationContentText, "");
             notificationView.setTextViewText(R.id.notificationSubText, "");
         }
 
@@ -282,7 +243,6 @@ public class PlayerService extends Service {
                                 : R.drawable.ic_pause_notification))
                 .setOnlyAlertOnce(true)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setDeleteIntent(PendingIntent.getService(this, 1, intent.setAction(ACTION_STOP), 0))
                 .setContentIntent(PendingIntent.getActivity(
                         getInstance(),
                         0,
@@ -298,7 +258,7 @@ public class PlayerService extends Service {
 
     // Build a notification on API <21, >15 devices
     @TargetApi(16)
-    public Notification getNotificationCompat() {
+    public Notification getNotification() {
         // Creates a notification on pre-Lollipop devices
         // The notification that will be returned
         Notification notification;
@@ -337,120 +297,70 @@ public class PlayerService extends Service {
             notificationView.setOnClickPendingIntent(R.id.notificationSkipPrevious, PendingIntent.getService(this, 1, intent.setAction(ACTION_PREV), 0));
             notificationView.setOnClickPendingIntent(R.id.notificationSkipNext, PendingIntent.getService(this, 1, intent.setAction(ACTION_NEXT), 0));
             notificationView.setOnClickPendingIntent(R.id.notificationPause, PendingIntent.getService(this, 1, intent.setAction(ACTION_TOGGLE_PLAY), 0));
+            notificationView.setOnClickPendingIntent(R.id.notificationStop, PendingIntent.getService(this, 1, intent.setAction(ACTION_STOP), 0));
 
             // Set the button intents for the expanded view
             notificationViewExpanded.setOnClickPendingIntent(R.id.notificationSkipPrevious, PendingIntent.getService(this, 1, intent.setAction(ACTION_PREV), 0));
             notificationViewExpanded.setOnClickPendingIntent(R.id.notificationSkipNext, PendingIntent.getService(this, 1, intent.setAction(ACTION_NEXT), 0));
             notificationViewExpanded.setOnClickPendingIntent(R.id.notificationPause, PendingIntent.getService(this, 1, intent.setAction(ACTION_TOGGLE_PLAY), 0));
+            notificationViewExpanded.setOnClickPendingIntent(R.id.notificationStop, PendingIntent.getService(this, 1, intent.setAction(ACTION_STOP), 0));
 
         }
         else{
             // If the player isn't playing music, set the notification text to a hardcoded set of strings
             notificationView.setTextViewText(R.id.notificationContentTitle, "Nothing is playing");
-            notificationView.setTextViewText(R.id.notificationContentText, "To exit Jockey, remove it from your recent apps");
+            notificationView.setTextViewText(R.id.notificationContentText, "");
             notificationView.setTextViewText(R.id.notificationSubText, "");
 
             notificationViewExpanded.setTextViewText(R.id.notificationContentTitle, "Nothing is playing");
-            notificationViewExpanded.setTextViewText(R.id.notificationContentText, "To exit Jockey, remove it from your recent apps");
+            notificationViewExpanded.setTextViewText(R.id.notificationContentText, "");
             notificationViewExpanded.setTextViewText(R.id.notificationSubText, "");
         }
 
+        boolean isLollipop = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+
         // Update the play/pause button icon to reflect the player status
         if (!(player.isPlaying() || player.isPreparing())) {
-            notificationView.setImageViewResource(R.id.notificationPause, R.drawable.ic_play);
-            notificationViewExpanded.setImageViewResource(R.id.notificationPause, R.drawable.ic_play);
+            if (isLollipop){
+                notificationView.setImageViewResource(R.id.notificationPause, R.drawable.ic_vector_play_notification);
+                notificationViewExpanded.setImageViewResource(R.id.notificationPause, R.drawable.ic_vector_play_notification);
+            }
+            else {
+                notificationView.setImageViewResource(R.id.notificationPause, R.drawable.ic_play);
+                notificationViewExpanded.setImageViewResource(R.id.notificationPause, R.drawable.ic_play);
+            }
         } else{
-            notificationView.setImageViewResource(R.id.notificationPause, R.drawable.ic_pause);
-            notificationViewExpanded.setImageViewResource(R.id.notificationPause, R.drawable.ic_pause);
+            if (isLollipop){
+                notificationView.setImageViewResource(R.id.notificationPause, R.drawable.ic_vector_pause_notification);
+                notificationViewExpanded.setImageViewResource(R.id.notificationPause, R.drawable.ic_vector_pause_notification);
+            }
+            else {
+                notificationView.setImageViewResource(R.id.notificationPause, R.drawable.ic_pause);
+                notificationViewExpanded.setImageViewResource(R.id.notificationPause, R.drawable.ic_pause);
+            }
         }
 
         // Build the notification
-        notification = new Notification.Builder(this)
+        Notification.Builder builder = new Notification.Builder(this)
                 .setSmallIcon(
                         ((player.isPlaying() || player.isPreparing())
-                                ? R.drawable.ic_play_notification
-                                : R.drawable.ic_pause_notification))
+                                ? (isLollipop) ? R.drawable.ic_vector_play_notification_icon : R.drawable.ic_play_notification
+                                : (isLollipop) ? R.drawable.ic_vector_pause_notification_icon : R.drawable.ic_pause_notification))
                 .setOnlyAlertOnce(true)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setContentIntent(PendingIntent.getActivity(
-                        getInstance(),
-                        0,
-                        new Intent(this, LibraryActivity.class).putExtra(LibraryActivity.START_NOW_PLAYING, true),
-                        PendingIntent.FLAG_UPDATE_CURRENT))
-                .setDeleteIntent(PendingIntent.getService(this, 1, intent.setAction(ACTION_STOP), 0))
-                .build();
-
-        // Manually set the expanded and compact views
-        notification.contentView = notificationView;
-        notification.bigContentView = notificationViewExpanded;
-
-        return notification;
-    }
-
-    // Build a notification on API >= 21 devices
-    @TargetApi(21)
-    public Notification getNotification() {
-        // Builds a notification on Lollipop and higher devices
-
-        // Get a notification builder
-        Notification.Builder notification = new Notification.Builder(this);
-
-        // The intent for buttons
-        Intent intent = new Intent(getInstance(), PlayerService.class);
-
-        notification
-                .setStyle(new Notification.MediaStyle().setShowActionsInCompactView(1, 2))
-                .setColor(getResources().getColor(R.color.player_control_background))
-                .setShowWhen(false)
-                .setOnlyAlertOnce(true)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setVisibility(Notification.VISIBILITY_PUBLIC)
                 .setContentIntent(PendingIntent.getActivity(
                         getInstance(),
                         0,
                         new Intent(this, LibraryActivity.class).putExtra(LibraryActivity.START_NOW_PLAYING, true),
                         PendingIntent.FLAG_UPDATE_CURRENT));
 
-        // Set the album artwork
-        if (player.getArt() == null) {
-            notification.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.art_default));
-        } else {
-            notification.setLargeIcon(player.getArt());
-        }
+        notification = builder.build();
 
-        // Add the media control buttons
-        // Always add the previous button first
-        notification.addAction(R.drawable.ic_vector_skip_previous_notification, getResources().getString(R.string.action_previous), PendingIntent.getService(this, 1, intent.setAction(ACTION_PREV), 0));
-        // Add the play/pause button next
-        // Also set the notification's icon to reflect the player's status
-        if (player.isPlaying() || player.isPreparing()) {
-            notification
-                    .addAction(R.drawable.ic_vector_pause, getResources().getString(R.string.action_pause), PendingIntent.getService(this, 1, intent.setAction(ACTION_TOGGLE_PLAY), 0))
-                    .setSmallIcon(R.drawable.ic_vector_play_notification);
-        } else {
-            notification
-                    .setDeleteIntent(PendingIntent.getService(this, 1, intent.setAction(ACTION_STOP), 0))
-                    .addAction(R.drawable.ic_vector_play, getResources().getString(R.string.action_play), PendingIntent.getService(this, 1, intent.setAction(ACTION_TOGGLE_PLAY), 0))
-                    .setSmallIcon(R.drawable.ic_vector_pause_notification);
-        }
-        // Add the skip button last
-        notification.addAction(R.drawable.ic_vector_skip_next_notification, getResources().getString(R.string.action_skip), PendingIntent.getService(this, 1, intent.setAction(ACTION_NEXT), 0));
+        // Manually set the expanded and compact views
+        notification.contentView = notificationView;
+        notification.bigContentView = notificationViewExpanded;
 
-        // Update the now playing information
-        if (player.getNowPlaying() != null) {
-            notification
-                    .setContentTitle(player.getNowPlaying().songName)
-                    .setContentText(player.getNowPlaying().albumName)
-                    .setSubText(player.getNowPlaying().artistName);
-        }
-        else{
-            // If nothing is playing, set the text to a hardcoded string instead
-            notification
-                    .setContentTitle("Nothing is playing")
-                    .setContentText("To exit Jockey, remove it from your recent apps")
-                    .setSubText("");
-        }
-        return notification.build();
+        return notification;
     }
 
     // Get the active instance of the player service
@@ -475,43 +385,36 @@ public class PlayerService extends Service {
         @Override
         public void setQueue(List<Song> newQueue, int newPosition) throws RemoteException {
             service.player.setQueue(cloneSongList(newQueue), newPosition);
-            service.updateForeground();
         }
 
         @Override
         public void changeQueue(List<Song> newQueue, int newPosition) throws RemoteException {
             service.player.changeQueue(cloneSongList(newQueue), newPosition);
-            service.updateForeground();
         }
 
         @Override
         public void queueNext(Song song) throws RemoteException {
             service.player.queueNext(new Song(song));
-            service.updateForeground();
         }
 
         @Override
         public void queueLast(Song song) throws RemoteException {
             service.player.queueNext(new Song(song));
-            service.updateForeground();
         }
 
         @Override
         public void queueNextList(List<Song> songs) throws RemoteException {
             service.player.queueNext(cloneSongList(songs));
-            service.updateForeground();
         }
 
         @Override
         public void queueLastList(List<Song> songs) throws RemoteException {
             service.player.queueLast(cloneSongList(songs));
-            service.updateForeground();
         }
 
         @Override
         public void begin() throws RemoteException {
             service.player.begin();
-            service.updateForeground();
         }
 
         @Override
@@ -521,38 +424,34 @@ public class PlayerService extends Service {
 
         @Override
         public void togglePlay() throws RemoteException {
-            service.player.togglePlay();
             service.saveState();
-            service.updateForeground();
+            service.player.togglePlay();
         }
 
         @Override
         public void play() throws RemoteException {
             service.player.play();
-            service.updateForeground();
         }
 
         @Override
         public void pause() throws RemoteException {
             service.player.pause();
-            service.updateForeground();
         }
 
         @Override
         public void stop() throws RemoteException {
-            service.stop();
+            service.finish();
+            service.stopSelf();
         }
 
         @Override
         public void previous() throws RemoteException {
             service.player.previous();
-            service.updateForeground();
         }
 
         @Override
         public void skip() throws RemoteException {
             service.player.skip();
-            service.updateForeground();
         }
 
         @Override
@@ -563,7 +462,6 @@ public class PlayerService extends Service {
         @Override
         public void changeSong(int newPosition) throws RemoteException {
             service.player.changeSong(newPosition);
-            service.updateForeground();
         }
 
         @Override

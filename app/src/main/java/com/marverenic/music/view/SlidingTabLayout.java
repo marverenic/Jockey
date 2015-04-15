@@ -17,6 +17,7 @@
 package com.marverenic.music.view;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.support.v4.view.PagerAdapter;
@@ -29,7 +30,6 @@ import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 
-import com.marverenic.music.R;
 import com.marverenic.music.utils.Themes;
 
 /**
@@ -53,9 +53,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
     private static final int TITLE_OFFSET_DIPS = 48;
     private static final int TAB_VIEW_PADDING_DIPS = 14;
     private static final int TAB_VIEW_PADDING_DIPS_MIN = 7;
-    private static final int TAB_VIEW_TABLET_MARGIN = 80;
     private static final int TAB_VIEW_TEXT_SIZE_SP = 14;
-    private static final int TAB_VIEW_TEXT_SIZE_SP_MIN = 12;
     private final SlidingTabStrip mTabStrip;
     private int mTitleOffset;
 
@@ -201,7 +199,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
             if (tabTitleView == null && TextView.class.isInstance(tabView)) {
                 tabTitleView = (TextView) tabView;
                 tabTitleView.setText(adapter.getPageTitle(i));
-                tabTitleView.setTextColor(Themes.getUiDetailText());
+                tabTitleView.setTextColor(0xA3FFFFFF);
                 tabTitleView.setTypeface(null, Typeface.NORMAL);
                 tabTitleView.setAllCaps(true);
                 tabView.setOnClickListener(tabClickListener);
@@ -210,41 +208,15 @@ public class SlidingTabLayout extends HorizontalScrollView {
             mTabStrip.addView(tabView);
 
         }
-        ((TextView) mTabStrip.getChildAt(0)).setTextColor(getResources().getColor(R.color.ui_text));
+        ((TextView) mTabStrip.getChildAt(0)).setTextColor(Color.WHITE);
     }
 
     public void setActivePage(int page) {
         Themes.updateColors(getContext());
         for (int i = 0; i < mTabStrip.getChildCount(); i++) {
-            ((TextView) mTabStrip.getChildAt(i)).setTextColor(Themes.getUiDetailText());
+            ((TextView) mTabStrip.getChildAt(i)).setTextColor(0xA3FFFFFF);
         }
-        ((TextView) mTabStrip.getChildAt(page)).setTextColor(Themes.getUiText());
-    }
-
-    public void setMini(boolean isMini) {
-        if (isMini) {
-            final int tabStripChildCount = mTabStrip.getChildCount();
-            int padding = (int) (TAB_VIEW_PADDING_DIPS_MIN * getResources().getDisplayMetrics().density);
-
-            if (tabStripChildCount == 0) {
-                return;
-            }
-            for (int i = 0; i < mTabStrip.getChildCount(); i++) {
-                ((TextView) mTabStrip.getChildAt(i)).setTextSize(TypedValue.COMPLEX_UNIT_SP, TAB_VIEW_TEXT_SIZE_SP_MIN);
-                mTabStrip.getChildAt(i).setPadding(padding, padding, padding, padding);
-            }
-        } else {
-            final int tabStripChildCount = mTabStrip.getChildCount();
-            int padding = (int) (TAB_VIEW_PADDING_DIPS * getResources().getDisplayMetrics().density);
-
-            if (tabStripChildCount == 0) {
-                return;
-            }
-            for (int i = 0; i < mTabStrip.getChildCount(); i++) {
-                ((TextView) mTabStrip.getChildAt(i)).setTextSize(TypedValue.COMPLEX_UNIT_SP, TAB_VIEW_TEXT_SIZE_SP);
-                mTabStrip.getChildAt(i).setPadding(padding, padding, padding, padding);
-            }
-        }
+        ((TextView) mTabStrip.getChildAt(page)).setTextColor(Color.WHITE);
     }
 
     @Override

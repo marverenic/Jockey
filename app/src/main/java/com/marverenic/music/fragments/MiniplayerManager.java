@@ -17,6 +17,7 @@ import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 
 // A static class that manipulates the Miniplayer view
+@Deprecated
 public class MiniplayerManager {
 
     public static void show(Activity activity, int contentViewId){
