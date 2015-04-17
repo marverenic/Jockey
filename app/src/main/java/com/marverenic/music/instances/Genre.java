@@ -18,18 +18,18 @@ public class Genre implements Parcelable {
     };
 
     @SerializedName("genreId")
-    public long genreId;
+    public int genreId;
     @SerializedName("genreName")
     public String genreName;
 
-    public Genre(final long genreId, final String genreName) {
+    public Genre(final int genreId, final String genreName) {
         super();
         this.genreId = genreId;
         this.genreName = genreName;
     }
 
     private Genre(Parcel in) {
-        genreId = in.readLong();
+        genreId = in.readInt();
         genreName = in.readString();
     }
 
@@ -49,7 +49,7 @@ public class Genre implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(genreId);
+        dest.writeInt(genreId);
         dest.writeString(genreName);
     }
 }

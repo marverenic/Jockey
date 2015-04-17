@@ -43,9 +43,9 @@ public class Fetch {
 
     // Returns the album art thumbnail from the MediaStore cache
     // Uses the Library loaded in RAM to retrieve the art URI
-    public static Bitmap fetchAlbumArtLocal(long albumId) {
+    public static Bitmap fetchAlbumArtLocal(int albumId) {
         Album album = LibraryScanner.findAlbumById(albumId);
-        if (album.artUri != null) {
+        if (album != null && album.artUri != null) {
             return BitmapFactory.decodeFile(album.artUri);
         }
         return null;

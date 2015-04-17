@@ -7,13 +7,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.Menu;
@@ -288,44 +286,12 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
                             public void onClick(DialogInterface dialog, int which) {
                                 switch (which) {
                                     case 0: //Go to artist
-                                        Artist artist;
-
-                                        Cursor curArtist = getContentResolver().query(
-                                                MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
-                                                null,
-                                                MediaStore.Audio.Media.ARTIST + " =?",
-                                                new String[]{nowPlaying.artistName},
-                                                MediaStore.Audio.Artists.ARTIST + " ASC");
-                                        curArtist.moveToFirst();
-
-                                        artist = new Artist(
-                                                curArtist.getLong(curArtist.getColumnIndex(MediaStore.Audio.Artists._ID)),
-                                                curArtist.getString(curArtist.getColumnIndex(MediaStore.Audio.Artists.ARTIST)));
-
-                                        curArtist.close();
+                                        Artist artist = LibraryScanner.findArtistById(nowPlaying.artistId);
 
                                         Navigate.to(context, LibraryPageActivity.class, "entry", artist);
                                         break;
                                     case 1: //Go to album
-                                        Album album;
-
-                                        Cursor curAlbum = getContentResolver().query(
-                                                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                                                null,
-                                                MediaStore.Audio.Media.ALBUM + " =? AND " + MediaStore.Audio.Media.ARTIST + " =?",
-                                                new String[]{nowPlaying.albumName, nowPlaying.artistName},
-                                                MediaStore.Audio.Albums.ALBUM + " ASC");
-                                        curAlbum.moveToFirst();
-
-                                        album = new Album(
-                                                curAlbum.getLong(curAlbum.getColumnIndex(MediaStore.Audio.Albums._ID)),
-                                                curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.ALBUM)),
-                                                curAlbum.getLong(curAlbum.getColumnIndex(MediaStore.Audio.Artists._ID)),
-                                                curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
-                                                curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.LAST_YEAR)),
-                                                curAlbum.getString(curAlbum.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART)));
-
-                                        curAlbum.close();
+                                        Album album = LibraryScanner.findAlbumById(nowPlaying.albumId);
 
                                         Navigate.to(context, LibraryPageActivity.class, "entry", album);
                                         break;

@@ -188,25 +188,25 @@ public class LibraryPageActivity extends BaseActivity {
     }
 
     private static void updateArtistGridLayout(GridView albumGrid, int albumCount, Activity activity) {
-        final long screenWidth = activity.getResources().getConfiguration().screenWidthDp;
+        final short screenWidth = (short) activity.getResources().getConfiguration().screenWidthDp;
         final float density = activity.getResources().getDisplayMetrics().density;
-        final long globalPadding = (long) (activity.getResources().getDimension(R.dimen.global_padding) / density);
-        final long gridPadding = (long) (activity.getResources().getDimension(R.dimen.grid_padding) / density);
-        final long scrollbarPadding = 32;
-        final long extraHeight = 4 * gridPadding
-                + (long) (activity.getResources().getDimension(R.dimen.grid_text_header_size) / density)
-                + (long) (activity.getResources().getDimension(R.dimen.grid_text_detail_size) / density);
-        final long minWidth = (long) (activity.getResources().getDimension(R.dimen.grid_width) / density);
+        final short globalPadding = (short) (activity.getResources().getDimension(R.dimen.global_padding) / density);
+        final short gridPadding = (short) (activity.getResources().getDimension(R.dimen.grid_padding) / density);
+        final short scrollbarPadding = 32;
+        final short extraHeight = (short) (4 * gridPadding
+                + (activity.getResources().getDimension(R.dimen.grid_text_header_size) / density)
+                + (activity.getResources().getDimension(R.dimen.grid_text_detail_size) / density));
+        final short minWidth = (short) (activity.getResources().getDimension(R.dimen.grid_width) / density);
 
-        long availableWidth = screenWidth - 2 * (globalPadding + gridPadding) - scrollbarPadding;
+        short availableWidth = (short) (screenWidth - 2 * (globalPadding + gridPadding) - scrollbarPadding);
         double numColumns = (availableWidth + gridPadding) / (minWidth + gridPadding);
 
-        long columnWidth = (long) Math.floor(availableWidth / numColumns);
-        long rowHeight = columnWidth + extraHeight;
+        short columnWidth = (short) Math.floor(availableWidth / numColumns);
+        short rowHeight = (short) (columnWidth + extraHeight);
 
-        long numRows = (long) Math.ceil(albumCount / numColumns);
+        short numRows = (short) Math.ceil(albumCount / numColumns);
 
-        long gridHeight = rowHeight * numRows + 2 * gridPadding;
+        short gridHeight = (short) (rowHeight * numRows + 2 * gridPadding);
 
         int height = (int) ((gridHeight * density));
 

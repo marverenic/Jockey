@@ -18,17 +18,17 @@ public class Artist implements Parcelable {
     };
 
     @SerializedName("artistId")
-    public long artistId;
+    public int artistId;
     @SerializedName("artistName")
     public String artistName;
 
-    public Artist(final long artistId, final String artistName) {
+    public Artist(final int artistId, final String artistName) {
         this.artistId = artistId;
         this.artistName = artistName;
     }
 
     private Artist(Parcel in) {
-        artistId = in.readLong();
+        artistId = in.readInt();
         artistName = in.readString();
     }
 
@@ -48,7 +48,7 @@ public class Artist implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(artistId);
+        dest.writeInt(artistId);
         dest.writeString(artistName);
     }
 

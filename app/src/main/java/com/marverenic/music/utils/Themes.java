@@ -164,15 +164,6 @@ public class Themes {
     public static int getTheme(Context context) {
         int base = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("prefBaseTheme", "1"));
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
-            if (base == 1){
-                return R.style.AppThemeLight;
-            }
-            else{
-                return R.style.AppTheme;
-            }
-        }
-
         int primary = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("prefColorPrimary", "5"));
         if (base == 1) {
             // Light Base
@@ -190,7 +181,7 @@ public class Themes {
                 case 6: // Purple
                     return R.style.AppThemeLight_Purple;
                 default: // Blue or Unknown
-                    return R.style.AppThemeLight;
+                    return R.style.AppThemeLight_Blue;
             }
         } else {
             // Dark or Unknown Base
@@ -208,7 +199,7 @@ public class Themes {
                 case 6: // Purple
                     return R.style.AppTheme_Purple;
                 default: // Blue or Unknown
-                    return R.style.AppTheme;
+                    return R.style.AppTheme_Blue;
             }
         }
     }

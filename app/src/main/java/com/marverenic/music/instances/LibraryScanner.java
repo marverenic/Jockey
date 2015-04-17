@@ -124,17 +124,17 @@ public class LibraryScanner {
             cur.moveToPosition(i);
             Song s = new Song(
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)),
-                    cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media._ID)),
+                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media._ID)),
                     (cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)).equals(MediaStore.UNKNOWN_STRING))
                             ? "Unknown Artist"
                             : cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)),
                     cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DURATION)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA)),
-                    cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)),
-                    cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID)));
+                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)),
+                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID)));
 
-            s.trackNumber = cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media.TRACK));
+            s.trackNumber = cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.TRACK));
             songs.add(s);
         }
         cur.close();
@@ -157,12 +157,12 @@ public class LibraryScanner {
             cur.moveToPosition(i);
             if (!cur.getString(cur.getColumnIndex(MediaStore.Audio.Artists.ARTIST)).equals(MediaStore.UNKNOWN_STRING)) {
                 artists.add(new Artist(
-                        cur.getLong(cur.getColumnIndex(MediaStore.Audio.Artists._ID)),
+                        cur.getInt(cur.getColumnIndex(MediaStore.Audio.Artists._ID)),
                         cur.getString(cur.getColumnIndex(MediaStore.Audio.Artists.ARTIST))));
             }
             else{
                 artists.add(new Artist(
-                        cur.getLong(cur.getColumnIndex(MediaStore.Audio.Artists._ID)),
+                        cur.getInt(cur.getColumnIndex(MediaStore.Audio.Artists._ID)),
                         "Unknown Artist"));
             }
         }
@@ -184,9 +184,9 @@ public class LibraryScanner {
         for (int i = 0; i < cur.getCount(); i++) {
             cur.moveToPosition(i);
             albums.add(new Album(
-                    cur.getLong(cur.getColumnIndex(MediaStore.Audio.Albums._ID)),
+                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Albums._ID)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM)),
-                    cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID)),
+                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID)),
                     (cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)).equals(MediaStore.UNKNOWN_STRING))
                             ? "Unknown Artist"
                             : cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
@@ -210,7 +210,7 @@ public class LibraryScanner {
         for (int i = 0; i < cur.getCount(); i++) {
             cur.moveToPosition(i);
             playlists.add(new Playlist(
-                    cur.getLong(cur.getColumnIndex(MediaStore.Audio.Playlists._ID)),
+                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Playlists._ID)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.NAME))));
         }
         cur.close();
@@ -228,7 +228,7 @@ public class LibraryScanner {
 
         for (int i = 0; i < cur.getCount(); i++) {
             cur.moveToPosition(i);
-            long thisGenreId = cur.getLong(cur.getColumnIndex(MediaStore.Audio.Genres._ID));
+            int thisGenreId = cur.getInt(cur.getColumnIndex(MediaStore.Audio.Genres._ID));
 
             if (cur.getString(cur.getColumnIndex(MediaStore.Audio.Genres.NAME)).equalsIgnoreCase("Unknown")){
                 genres.add(new Genre(-1, "Unknown"));
@@ -246,7 +246,7 @@ public class LibraryScanner {
 
                 for (int j = 0; j < genreCur.getCount(); j++) {
                     genreCur.moveToPosition(j);
-                    findSongById(genreCur.getLong(genreCur.getColumnIndex(MediaStore.Audio.Media._ID))).genreId = thisGenreId;
+                    findSongById(genreCur.getInt(genreCur.getColumnIndex(MediaStore.Audio.Media._ID))).genreId = thisGenreId;
                 }
                 genreCur.close();
             }
@@ -260,7 +260,7 @@ public class LibraryScanner {
     //          LIBRARY SEARCH METHODS
     //
 
-    public static Song findSongById (long songId){
+    public static Song findSongById (int songId){
         // Returns the first Artist object in the library with a matching id
         for (Song s : Library.getSongs()){
             if (s.songId == songId){
@@ -270,7 +270,7 @@ public class LibraryScanner {
         return null;
     }
 
-    public static Artist findArtistById (long artistId){
+    public static Artist findArtistById (int artistId){
         // Returns the first Artist object in the library with a matching id
         for (Artist a : Library.getArtists()){
             if (a.artistId == artistId){
@@ -280,7 +280,7 @@ public class LibraryScanner {
         return null;
     }
 
-    public static Album findAlbumById (long albumId){
+    public static Album findAlbumById (int albumId){
         // Returns the first Artist object in the library with a matching id
         for (Album a : Library.getAlbums()){
             if (a.albumId == albumId){
@@ -290,7 +290,7 @@ public class LibraryScanner {
         return null;
     }
 
-    public static Genre findGenreById (long genreId){
+    public static Genre findGenreById (int genreId){
         // Returns the first Genre object in the library with a matching id
         for (Genre g : Library.getGenres()){
             if (g.genreId == genreId){
@@ -325,13 +325,13 @@ public class LibraryScanner {
             cur.moveToPosition(i);
             songEntries.add(new Song(
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.TITLE)),
-                    cur.getLong(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.AUDIO_ID)),
+                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.AUDIO_ID)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.ARTIST)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.ALBUM)),
                     cur.getInt(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.DURATION)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.DATA)),
-                    cur.getLong(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.ALBUM_ID)),
-                    cur.getLong(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.ARTIST_ID))));
+                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.ALBUM_ID)),
+                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.ARTIST_ID))));
         }
         cur.close();
 
@@ -351,7 +351,7 @@ public class LibraryScanner {
         Collections.sort(songEntries, new Comparator<Song>() {
             @Override
             public int compare(Song o1, Song o2) {
-                return ((Long) o1.trackNumber).compareTo(o2.trackNumber);
+                return ((Integer) o1.trackNumber).compareTo(o2.trackNumber);
             }
         });
 
@@ -596,7 +596,7 @@ public class LibraryScanner {
                 null, null, null);
 
         cursor.moveToFirst();
-        Playlist playlist = new Playlist(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID)), playlistName);
+        Playlist playlist = new Playlist(cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID)), playlistName);
         cursor.close();
 
         // If we have a list of songs, associate it with the playlist
@@ -674,7 +674,7 @@ public class LibraryScanner {
             if (cur.getCount() > 0){
                 cur.moveToFirst();
                 queue.addAll(getPlaylistEntries(context, new Playlist(
-                        cur.getLong(cur.getColumnIndex(MediaStore.Audio.Playlists._ID)),
+                        cur.getInt(cur.getColumnIndex(MediaStore.Audio.Playlists._ID)),
                         cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.NAME)))));
             }
             else{
@@ -710,15 +710,15 @@ public class LibraryScanner {
                 cur.moveToPosition(i);
                 queue.add(new Song(
                         cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)),
-                        cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media._ID)),
+                        cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media._ID)),
                         (cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)).equals(MediaStore.UNKNOWN_STRING))
                                 ? "Unknown Artist"
                                 : cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
                         cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)),
                         cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DURATION)),
                         cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA)),
-                        cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)),
-                        cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID))));
+                        cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)),
+                        cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID))));
             }
             cur.close();
 

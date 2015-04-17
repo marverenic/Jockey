@@ -18,11 +18,11 @@ public class Album implements Parcelable {
     };
 
     @SerializedName("albumId")
-    public long albumId;
+    public int albumId;
     @SerializedName("albumName")
     public String albumName;
     @SerializedName("artistId")
-    public long artistId;
+    public int artistId;
     @SerializedName("artistName")
     public String artistName;
     @SerializedName("year")
@@ -37,7 +37,7 @@ public class Album implements Parcelable {
     @SerializedName("artDetailTextPalette")
     public int artDetailTextPalette = 0;
 
-    public Album(final long albumId, final String albumName, final long artistId, final String artistName, final String year, final String artUri) {
+    public Album(final int albumId, final String albumName, final int artistId, final String artistName, final String year, final String artUri) {
         this.albumId = albumId;
         this.albumName = albumName;
         this.artistId = artistId;
@@ -47,11 +47,15 @@ public class Album implements Parcelable {
     }
 
     private Album(Parcel in) {
-        albumId = in.readLong();
+        albumId = in.readInt();
         albumName = in.readString();
+        artistId = in.readInt();
         artistName = in.readString();
         year = in.readString();
         artUri = in.readString();
+        artPrimaryPalette = in.readInt();
+        artPrimaryTextPalette = in.readInt();
+        artDetailTextPalette = in.readInt();
     }
 
     public boolean equals(final Object obj) {
@@ -70,10 +74,14 @@ public class Album implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(albumId);
+        dest.writeInt(albumId);
         dest.writeString(albumName);
+        dest.writeInt(artistId);
         dest.writeString(artistName);
         dest.writeString(year);
         dest.writeString(artUri);
+        dest.writeInt(artPrimaryPalette);
+        dest.writeInt(artPrimaryTextPalette);
+        dest.writeInt(artDetailTextPalette);
     }
 }

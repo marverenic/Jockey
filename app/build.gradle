@@ -6,8 +6,8 @@ android {
 
     defaultConfig {
         applicationId "com.marverenic.music"
-        versionName "0.2-α.r0m20a"
-        versionCode 22000
+        versionName "0.2-α.r0m20b"
+        versionCode 22001
         minSdkVersion 15
         targetSdkVersion 22
     }

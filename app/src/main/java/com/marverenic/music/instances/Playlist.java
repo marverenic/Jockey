@@ -18,17 +18,17 @@ public class Playlist implements Parcelable {
     };
 
     @SerializedName("playlistId")
-    public long playlistId;
+    public int playlistId;
     @SerializedName("playlistName")
     public String playlistName;
 
-    public Playlist(final long playlistId, final String playlistName) {
+    public Playlist(final int playlistId, final String playlistName) {
         this.playlistId = playlistId;
         this.playlistName = playlistName;
     }
 
     private Playlist(Parcel in) {
-        playlistId = in.readLong();
+        playlistId = in.readInt();
         playlistName = in.readString();
     }
 
@@ -48,7 +48,7 @@ public class Playlist implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(playlistId);
+        dest.writeInt(playlistId);
         dest.writeString(playlistName);
     }
 }

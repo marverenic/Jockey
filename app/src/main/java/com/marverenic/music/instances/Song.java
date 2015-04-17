@@ -20,7 +20,7 @@ public class Song implements Parcelable {
     @SerializedName("songName")
     public String songName;
     @SerializedName("songId")
-    public long songId;
+    public int songId;
     @SerializedName("artistName")
     public String artistName;
     @SerializedName("albumName")
@@ -30,21 +30,21 @@ public class Song implements Parcelable {
     @SerializedName("location")
     public String location;
     @SerializedName("albumId")
-    public long albumId;
+    public int albumId;
     @SerializedName("artistId")
-    public long artistId;
+    public int artistId;
     @SerializedName("genreId")
-    public long genreId = -1;
+    public int genreId = -1;
     @SerializedName("trackNumber")
-    public long trackNumber = 0;
+    public int trackNumber = 0;
     @SerializedName("playCount")
     public int playCount = 0;
     @SerializedName("skipCount")
     public int skipCount = 0;
 
-    public Song(final String songName, final long songId, final String artistName,
+    public Song(final String songName, final int songId, final String artistName,
                 final String albumName, final int songDuration, final String location,
-                final long albumId, final long artistId) {
+                final int albumId, final int artistId) {
 
         this.songName = songName;
         this.songId = songId;
@@ -58,14 +58,14 @@ public class Song implements Parcelable {
 
     private Song(Parcel in) {
         songName = in.readString();
-        songId = in.readLong();
+        songId = in.readInt();
         albumName = in.readString();
         artistName = in.readString();
         songDuration = in.readInt();
         location = in.readString();
-        albumId = in.readLong();
-        artistId = in.readLong();
-        genreId = in.readLong();
+        albumId = in.readInt();
+        artistId = in.readInt();
+        genreId = in.readInt();
         playCount = in.readInt();
         skipCount = in.readInt();
     }
@@ -102,14 +102,14 @@ public class Song implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(songName);
-        dest.writeLong(songId);
+        dest.writeInt(songId);
         dest.writeString(albumName);
         dest.writeString(artistName);
         dest.writeInt(songDuration);
         dest.writeString(location);
-        dest.writeLong(albumId);
-        dest.writeLong(artistId);
-        dest.writeLong(genreId);
+        dest.writeInt(albumId);
+        dest.writeInt(artistId);
+        dest.writeInt(genreId);
         dest.writeInt(playCount);
         dest.writeInt(skipCount);
     }

@@ -31,7 +31,9 @@ public class JockeyApplication extends Application implements Thread.UncaughtExc
     }
 
     public void activityCreated(){
-        PlayerController.bind(this);
+        if (runningActivities == 0){
+            PlayerController.bind(this);
+        }
     }
 
     public void activityResumed() {
@@ -43,7 +45,7 @@ public class JockeyApplication extends Application implements Thread.UncaughtExc
     }
 
     public void activityDestroyed(){
-        if (runningActivities <= 0){
+        if (runningActivities == 0){
             PlayerController.unbind(this);
         }
     }
