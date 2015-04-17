@@ -136,6 +136,7 @@
         <item name="colorControlHighlight">@color/accent</item>
         <item name="android:windowBackground">@color/background_light</item>
         <item name="windowActionBar">false</item>
+        <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
         <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
     </style>
 
