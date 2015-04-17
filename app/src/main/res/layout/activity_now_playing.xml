@@ -12,6 +12,11 @@
         android:contentDescription="@string/art_description"
         android:src="@drawable/art_default_xl" />
 
+    <include layout="@layout/toolbar"
+        android:id="@+id/toolbar"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent" />
+
     <RelativeLayout
         android:id="@+id/playerControlFrame"
         android:layout_width="match_parent"

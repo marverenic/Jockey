@@ -3,11 +3,17 @@ package com.marverenic.music.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.v7.widget.PopupMenu;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.marverenic.music.PlayerController;
@@ -23,9 +29,12 @@ import com.marverenic.music.utils.Themes;
 
 import java.util.ArrayList;
 
-public class GenreListAdapter extends BaseAdapter implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+public class GenreListAdapter extends BaseAdapter implements SectionIndexer, AdapterView.OnItemClickListener {
     private ArrayList<Genre> data;
     private Context context;
+    private ArrayList<Character> sectionCharacter = new ArrayList<>();
+    private ArrayList<Integer> sectionStartingPosition = new ArrayList<>();
+    private ArrayList<Integer> sectionAtPosition = new ArrayList<>();
 
     public GenreListAdapter(Context context) {
         this(Library.getGenres(), context);
@@ -35,6 +44,28 @@ public class GenreListAdapter extends BaseAdapter implements AdapterView.OnItemC
         super();
         this.data = data;
         this.context = context;
+
+        String name;
+        char thisChar;
+        int sectionIndex = -1;
+        for (int i = 0; i < data.size(); i++) {
+            name = data.get(i).genreName.toUpperCase();
+
+            if (name.startsWith("THE ")) {
+                thisChar = name.charAt(4);
+            } else if (name.startsWith("A ")) {
+                thisChar = name.charAt(2);
+            } else {
+                thisChar = name.charAt(0);
+            }
+
+            if (sectionCharacter.size() == 0 || !sectionCharacter.get(sectionCharacter.size() - 1).equals(thisChar)) {
+                sectionIndex++;
+                sectionCharacter.add(thisChar);
+                sectionStartingPosition.add(i);
+            }
+            sectionAtPosition.add(sectionIndex);
+        }
     }
 
     @Override
@@ -42,15 +73,60 @@ public class GenreListAdapter extends BaseAdapter implements AdapterView.OnItemC
         View v = convertView;
         if (convertView == null) {
             v = LayoutInflater.from(parent.getContext()).inflate(R.layout.instance_genre, parent, false);
+            ((TextView) v.findViewById(R.id.textGenreName)).setTextColor(Themes.getListText());
+            ((ImageView) v.findViewById(R.id.instanceMore)).setColorFilter(Themes.getDetailText());
         }
-        Genre p = data.get(position);
+        final Genre g = data.get(position);
 
-        if (p != null) {
-            TextView tt = (TextView) v.findViewById(R.id.textGenreName);
-            if (tt != null) {
-                tt.setText(p.genreName);
-                tt.setTextColor(Themes.getListText());
-            }
+        if (g != null) {
+            ((TextView) v.findViewById(R.id.textGenreName)).setText(g.genreName);
+
+            v.findViewById(R.id.instanceMore).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final PopupMenu menu = new PopupMenu(context, v, Gravity.END);
+                    String[] options = context.getResources().getStringArray(R.array.queue_options_genre);
+                    for (int i = 0; i < options.length;  i++) {
+                        menu.getMenu().add(Menu.NONE, i, i, options[i]);
+                    }
+                    menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem menuItem) {
+                            switch (menuItem.getItemId()){
+                                case 0: //Queue this genre next
+                                    PlayerController.queueNext(LibraryScanner.getGenreEntries(g));
+                                    return true;
+                                case 1: //Queue this genre last
+                                    PlayerController.queueLast(LibraryScanner.getGenreEntries(g));
+                                    return true;
+                                case 2: //Add to playlist
+                                    ArrayList<Playlist> playlists = Library.getPlaylists();
+                                    String[] playlistNames = new String[playlists.size()];
+
+                                    for (int i = 0; i < playlists.size(); i++ ){
+                                        playlistNames[i] = playlists.get(i).toString();
+                                    }
+
+                                    new AlertDialog.Builder(context).setTitle("Add \"" + g.genreName + "\" to playlist")
+                                            .setItems(playlistNames, new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    LibraryScanner.addPlaylistEntries(
+                                                            context,
+                                                            Library.getPlaylists().get(which),
+                                                            LibraryScanner.getGenreEntries(g));
+                                                }
+                                            })
+                                            .setNeutralButton("Cancel", null)
+                                            .show();
+                                    return true;
+                            }
+                            return false;
+                        }
+                    });
+                    menu.show();
+                }
+            });
         } else {
             Debug.log(Debug.LogLevel.WTF, "GenreListAdapter", "The requested entry is null", context);
         }
@@ -84,57 +160,20 @@ public class GenreListAdapter extends BaseAdapter implements AdapterView.OnItemC
         Navigate.to(context, LibraryPageActivity.class, "entry", item);
     }
 
+
     @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        final Genre item = data.get(position);
+    public Object[] getSections() {
+        return sectionCharacter.toArray();
+    }
 
-        AlertDialog.Builder dialog = new AlertDialog.Builder(context);
+    @Override
+    public int getPositionForSection(int sectionNumber) {
+        return sectionStartingPosition.get(sectionNumber);
+    }
 
-        dialog.setTitle(item.genreName)
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // There's nothing to do here
-                    }
-                })
-                .setItems(R.array.queue_options_genre, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                            case 0: //Queue this genre next
-                                PlayerController.queueNext(LibraryScanner.getGenreEntries(item));
-                                break;
-                            case 1: //Queue this genre last
-                                PlayerController.queueLast(LibraryScanner.getGenreEntries(item));
-                                break;
-                            case 2: //Add to playlist
-                                ArrayList<Playlist> playlists = Library.getPlaylists();
-                                String[] playlistNames = new String[playlists.size()];
-
-                                for (int i = 0; i < playlists.size(); i++ ){
-                                    playlistNames[i] = playlists.get(i).toString();
-                                }
-
-                                new AlertDialog.Builder(context).setTitle("Add \"" + item.genreName + "\" to playlist")
-                                        .setItems(playlistNames, new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                LibraryScanner.addPlaylistEntries(
-                                                        context,
-                                                        Library.getPlaylists().get(which),
-                                                        LibraryScanner.getGenreEntries(item));
-                                            }
-                                        })
-                                        .setNeutralButton("Cancel", null)
-                                        .show();
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                });
-        dialog.create().show();
-        return true;
+    @Override
+    public int getSectionForPosition(int itemPosition) {
+        return sectionAtPosition.get(itemPosition);
     }
 
     public void updateData(ArrayList<Genre> data) {

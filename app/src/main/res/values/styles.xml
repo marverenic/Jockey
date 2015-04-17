@@ -20,10 +20,11 @@
     <color name="grid_background_default">#ffb0bec5</color>
     <color name="grid_text">#77000000</color>
     <color name="grid_detail_text">#97000000</color>
-    <color name="player_control_background">#263238</color>
-    <color name="player_text_main">#ECEFF1</color>
-    <color name="player_text_detail">#B0BEC5</color>
-    <color name="player_control_tint">#ECEFF1</color>
+
+    <color name="player_control_background">#212121</color>
+    <color name="player_text_main">#FAFAFA</color>
+    <color name="player_text_detail">#88FFFFFF</color>
+    <color name="player_control_tint">#FAFAFA</color>
 
     <!-- Custom Theme Colors-->
     <!-- Light Base -->
@@ -55,11 +56,11 @@
     <color name="ui_detail_text_orange">#FFCC80</color>
 
     <!-- Yellow -->
-    <color name="primary_yellow">#FF8F00</color>
-    <color name="primary_dark_yellow">#FF6F00</color>
-    <color name="accent_yellow">#FFD740</color>
-    <color name="ui_text_yellow">#FFF8E1</color>
-    <color name="ui_detail_text_yellow">#FFE082</color>
+    <color name="primary_yellow">#F9A825</color>
+    <color name="primary_dark_yellow">#F57F17</color>
+    <color name="accent_yellow">#FFD600</color>
+    <color name="ui_text_yellow">#FFFDE7</color>
+    <color name="ui_detail_text_yellow">#FFF59D</color>
 
     <!-- Green -->
     <color name="primary_green">#2E7D32</color>
@@ -75,69 +76,120 @@
     <color name="ui_text_purple">#EDE7F6</color>
     <color name="ui_detail_text_purple">#B39DDB</color>
 
-
-    <style name="AppTheme" parent="android:Theme.Holo">
-        <item name="android:actionBarStyle">@style/actionbar_style</item>
+    <style name="AppTheme" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="colorControlHighlight">@color/accent</item>
         <item name="android:windowBackground">@color/background</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:homeAsUpIndicator">@drawable/ic_actionbar_back</item>
-        <item name="android:actionOverflowButtonStyle">@style/ActionBarOverflowStyle</item>
+        <item name="windowActionBar">false</item>
+        <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
 
-    <style name="AppThemeLight" parent="android:Theme.Holo.Light">
-        <item name="android:actionBarStyle">@style/actionbar_style</item>
+    <!-- More themes -->
+    <style name="AppTheme.Black" parent="AppTheme">
+        <item name="colorPrimary">@color/primary_grey</item>
+        <item name="colorPrimaryDark">@color/primary_dark_grey</item>
+        <item name="colorAccent">@color/accent_grey</item>
+        <item name="colorControlHighlight">@color/accent_grey</item>
+    </style>
+
+    <style name="AppTheme.Red" parent="AppTheme">
+        <item name="colorPrimary">@color/primary_red</item>
+        <item name="colorPrimaryDark">@color/primary_dark_red</item>
+        <item name="colorAccent">@color/accent_red</item>
+        <item name="colorControlHighlight">@color/accent_red</item>
+    </style>
+
+    <style name="AppTheme.Orange" parent="AppTheme">
+        <item name="colorPrimary">@color/primary_orange</item>
+        <item name="colorPrimaryDark">@color/primary_dark_orange</item>
+        <item name="colorAccent">@color/accent_orange</item>
+        <item name="colorControlHighlight">@color/accent_orange</item>
+    </style>
+
+    <style name="AppTheme.Yellow" parent="AppTheme">
+        <item name="colorPrimary">@color/primary_yellow</item>
+        <item name="colorPrimaryDark">@color/primary_dark_yellow</item>
+        <item name="colorAccent">@color/accent_yellow</item>
+        <item name="colorControlHighlight">@color/accent_yellow</item>
+    </style>
+
+    <style name="AppTheme.Green" parent="AppTheme">
+        <item name="colorPrimary">@color/primary_green</item>
+        <item name="colorPrimaryDark">@color/primary_dark_green</item>
+        <item name="colorAccent">@color/accent_green</item>
+        <item name="colorControlHighlight">@color/accent_green</item>
+    </style>
+
+    <style name="AppTheme.Purple" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/primary_purple</item>
+        <item name="colorPrimaryDark">@color/primary_dark_purple</item>
+        <item name="colorAccent">@color/accent_purple</item>
+        <item name="colorControlHighlight">@color/accent_purple</item>
+    </style>
+
+    <style name="AppThemeLight" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="colorControlHighlight">@color/accent</item>
         <item name="android:windowBackground">@color/background_light</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:homeAsUpIndicator">@drawable/ic_actionbar_back</item>
-        <item name="android:actionOverflowButtonStyle">@style/ActionBarOverflowStyle</item>
+        <item name="windowActionBar">false</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
     </style>
 
-    <style name="NowPlayingTheme" parent="AppTheme">
-        <item name="android:actionBarStyle">@style/transparent_actionbar</item>
-        <item name="android:windowActionBarOverlay">true</item>
-        <item name="android:homeAsUpIndicator">@drawable/ic_actionbar_back</item>
-        <item name="android:actionOverflowButtonStyle">@style/ActionBarOverflowStyle</item>
+    <!-- More themes -->
+    <style name="AppThemeLight.Black" parent="AppThemeLight">
+        <item name="colorPrimary">@color/primary_grey</item>
+        <item name="colorPrimaryDark">@color/primary_dark_grey</item>
+        <item name="colorAccent">@color/accent_grey</item>
+        <item name="colorControlHighlight">@color/accent_grey</item>
     </style>
 
-    <style name="actionbar_style" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
-        <item name="android:background">@color/primary</item>
-        <item name="android:textColor">@color/ui_text</item>
-        <item name="android:height">56dp</item>
-        <item name="android:titleTextStyle">@style/ActionbarTextStyle</item>
-        <item name="android:actionButtonStyle">@style/ActionButtonStyle</item>
+    <style name="AppThemeLight.Red" parent="AppThemeLight">
+        <item name="colorPrimary">@color/primary_red</item>
+        <item name="colorPrimaryDark">@color/primary_dark_red</item>
+        <item name="colorAccent">@color/accent_red</item>
+        <item name="colorControlHighlight">@color/accent_red</item>
     </style>
 
-    <style name="transparent_actionbar" parent="@android:style/Widget.Holo.Light.ActionBar">
-        <item name="android:textColor">@color/transparent_ui_text</item>
-        <item name="android:background">@drawable/skrim_now_playing</item>
-        <item name="android:height">56dp</item>
-        <item name="android:windowActionBarOverlay">true</item>
-        <item name="android:titleTextStyle">@style/ActionbarTextStyle</item>
-        <item name="android:actionButtonStyle">@style/ActionButtonStyle</item>
+    <style name="AppThemeLight.Orange" parent="AppThemeLight">
+        <item name="colorPrimary">@color/primary_orange</item>
+        <item name="colorPrimaryDark">@color/primary_dark_orange</item>
+        <item name="colorAccent">@color/accent_orange</item>
+        <item name="colorControlHighlight">@color/accent_orange</item>
     </style>
 
-    <style name="ActionButtonStyle" parent="android:style/Widget.Holo.Light.ActionButton">
-        <item name="android:minWidth">56dp</item>
-        <item name="android:padding">0dip</item>
+    <style name="AppThemeLight.Yellow" parent="AppThemeLight">
+        <item name="colorPrimary">@color/primary_yellow</item>
+        <item name="colorPrimaryDark">@color/primary_dark_yellow</item>
+        <item name="colorAccent">@color/accent_yellow</item>
+        <item name="colorControlHighlight">@color/accent_yellow</item>
     </style>
 
-    <style name="ActionBarOverflowStyle" parent="android:style/Widget.Holo.Light.ActionButton.Overflow">
-        <item name="android:src">@drawable/ic_actionbar_menu</item>
-        <item name="android:background">?android:attr/actionBarItemBackground</item>
+    <style name="AppThemeLight.Green" parent="AppThemeLight">
+        <item name="colorPrimary">@color/primary_green</item>
+        <item name="colorPrimaryDark">@color/primary_dark_green</item>
+        <item name="colorAccent">@color/accent_green</item>
+        <item name="colorControlHighlight">@color/accent_green</item>
     </style>
 
-    <style name="ActionbarTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:textSize">20sp</item>
+    <style name="AppThemeLight.Purple" parent="AppThemeLight">
+        <item name="colorPrimary">@color/primary_purple</item>
+        <item name="colorPrimaryDark">@color/primary_dark_purple</item>
+        <item name="colorAccent">@color/accent_purple</item>
+        <item name="colorControlHighlight">@color/accent_purple</item>
     </style>
 
     <style name="list">
         <item name="android:layout_height">@dimen/list_height</item>
         <item name="android:background">@color/background_elevated</item>
+        <item name="colorControlHighlight">#9E9E9E</item>
         <item name="android:gravity">center</item>
         <item name="android:fastScrollEnabled">true</item>
-        <item name="android:scrollbarStyle">insideOverlay</item>
+        <item name="android:scrollbarStyle">outsideInset</item>
+        <item name="android:fastScrollAlwaysVisible">true</item>
         <item name="android:fastScrollOverlayPosition">atThumb</item>
     </style>
 

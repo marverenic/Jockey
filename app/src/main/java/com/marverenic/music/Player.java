@@ -261,6 +261,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                     public void onArtFetched(Bitmap art) {
                         artFullRes = art;
                         updateNowPlaying();
+                        Log.i("Player","fetched album art; sent update broadcast");
                     }
                 });
             }
@@ -268,6 +269,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                 // On ICS, calling Fetch.fetchFullResolutionArt(...) here throws a Remote Exception
                 // As a result, ICS won't use full resolution album artwork
                 artFullRes = art;
+                updateNowPlaying();
             }
 
             try {
@@ -289,6 +291,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     // Update external information for the current track
     public void updateNowPlaying() {
+        Log.i("Player", "sent update broadcast");
         PlayerService.getInstance().notifyNowPlaying();
         context.sendOrderedBroadcast(new Intent(UPDATE_BROADCAST), null);
 

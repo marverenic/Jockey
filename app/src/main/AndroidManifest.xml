@@ -59,8 +59,7 @@
         <activity
             android:name=".activity.NowPlayingActivity"
             android:label="@string/header_now_playing"
-            android:screenOrientation="fullUser"
-            android:theme="@style/NowPlayingTheme" />
+            android:screenOrientation="fullUser" />
 
         <activity-alias
             android:name=".PlayWithJockey"

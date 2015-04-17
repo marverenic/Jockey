@@ -47,9 +47,7 @@ public class AlbumFragment extends Fragment {
         // initialize the GridView
         GridView gridView = (GridView) view.findViewById(R.id.albumGrid);
         gridView.setAdapter(adapter);
-        //gridView.setOnItemClickListener(this);
-
-        Themes.themeFragment(R.layout.fragment_grid, view, this);
+        gridView.setBackgroundColor(Themes.getBackgroundElevated());
 
         return view;
     }

@@ -5,11 +5,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.preference.PreferenceManager;
+import android.support.v7.widget.PopupMenu;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
@@ -30,7 +35,7 @@ import com.marverenic.music.utils.Themes;
 
 import java.util.ArrayList;
 
-public class ArtistPageAdapter extends BaseAdapter implements SectionIndexer, AdapterView.OnItemLongClickListener, AdapterView.OnItemClickListener {
+public class ArtistPageAdapter extends BaseAdapter implements SectionIndexer, AdapterView.OnItemClickListener {
     public ArrayList<Song> songs;
     public ArrayList<Album> albums;
     private Context context;
@@ -75,20 +80,63 @@ public class ArtistPageAdapter extends BaseAdapter implements SectionIndexer, Ad
         View v = convertView;
         if (convertView == null) {
             v = LayoutInflater.from(parent.getContext()).inflate(R.layout.instance_song, parent, false);
+
+            ((TextView) v.findViewById(R.id.textSongTitle)).setTextColor(Themes.getListText());
+            ((TextView) v.findViewById(R.id.textSongDetail)).setTextColor(Themes.getDetailText());
+            ((ImageView) v.findViewById(R.id.instanceMore)).setColorFilter(Themes.getDetailText());
         }
-        Song s = songs.get(position);
+        final Song s = songs.get(position);
 
         if (s != null) {
-            TextView tt = (TextView) v.findViewById(R.id.textSongTitle);
-            TextView tt1 = (TextView) v.findViewById(R.id.textSongDetail);
-            if (tt != null) {
-                tt.setText(s.songName);
-                tt.setTextColor(Themes.getListText());
-            }
-            if (tt1 != null) {
-                tt1.setText(s.artistName + " - " + s.albumName);
-                tt1.setTextColor(Themes.getDetailText());
-            }
+            ((TextView) v.findViewById(R.id.textSongTitle)).setText(s.songName);
+            ((TextView) v.findViewById(R.id.textSongDetail)).setText(s.artistName + " - " + s.albumName);
+
+            v.findViewById(R.id.instanceMore).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final PopupMenu menu = new PopupMenu(context, v, Gravity.END);
+                    String[] options = context.getResources().getStringArray(R.array.queue_options_song);
+                    for (int i = 0; i < options.length;  i++) {
+                        menu.getMenu().add(Menu.NONE, i, i, options[i]);
+                    }
+                    menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem menuItem) {
+                            switch (menuItem.getItemId()) {
+                                case 0: //Queue this song next
+                                    PlayerController.queueNext(s);
+                                    return true;
+                                case 1: //Queue this song last
+                                    PlayerController.queueLast(s);
+                                    return true;
+                                case 2: //Go to album
+                                    Navigate.to(context, LibraryPageActivity.class, "entry", LibraryScanner.findAlbumById(s.albumId));
+                                    return true;
+                                case 3: //Add to playlist...
+                                    ArrayList<Playlist> playlists = Library.getPlaylists();
+                                    String[] playlistNames = new String[playlists.size()];
+
+                                    for (int i = 0; i < playlists.size(); i++) {
+                                        playlistNames[i] = playlists.get(i).toString();
+                                    }
+
+                                    new AlertDialog.Builder(context).setTitle("Add \"" + s.songName + "\" to playlist")
+                                            .setItems(playlistNames, new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    LibraryScanner.addPlaylistEntry(context, Library.getPlaylists().get(which), s);
+                                                }
+                                            })
+                                            .setNeutralButton("Cancel", null)
+                                            .show();
+                                    return true;
+                            }
+                            return false;
+                        }
+                    });
+                    menu.show();
+                }
+            });
         } else {
             Debug.log(Debug.LogLevel.WTF, "SongListAdapter", "The requested entry is null", context);
         }
@@ -125,59 +173,6 @@ public class ArtistPageAdapter extends BaseAdapter implements SectionIndexer, Ad
         if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("switchToNowPlaying", true)) {
             Navigate.to(context, NowPlayingActivity.class);
         }
-    }
-
-    @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        final Song item = songs.get(position - ((ListView) parent).getHeaderViewsCount());
-
-        AlertDialog.Builder dialog = new AlertDialog.Builder(context);
-
-        dialog.setTitle(item.songName)
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // There's nothing to do here
-                    }
-                })
-                .setItems(R.array.queue_options_artist_page, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                            case 0: //Queue this song next
-                                PlayerController.queueNext(item);
-                                break;
-                            case 1: //Queue this song last
-                                PlayerController.queueLast(item);
-                                break;
-                            case 2: //Go to album
-                                Navigate.to(context, LibraryPageActivity.class, "entry", LibraryScanner.findAlbumById(item.albumId));
-                                break;
-                            case 3: //Add to playlist...
-                                ArrayList<Playlist> playlists = Library.getPlaylists();
-                                String[] playlistNames = new String[playlists.size()];
-
-                                for (int i = 0; i < playlists.size(); i++ ){
-                                    playlistNames[i] = playlists.get(i).toString();
-                                }
-
-                                new AlertDialog.Builder(context).setTitle("Add \"" + item.songName + "\" to playlist")
-                                        .setItems(playlistNames, new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                LibraryScanner.addPlaylistEntry(context, Library.getPlaylists().get(which), item);
-                                            }
-                                        })
-                                        .setNeutralButton("Cancel", null)
-                                        .show();
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                });
-        dialog.show();
-        return true;
     }
 
     @Override

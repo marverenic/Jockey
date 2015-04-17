@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.media.AudioManager;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -47,37 +49,33 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
     @TargetApi(Build.VERSION_CODES.LOLLIPOP) //Don't worry Lint. Everything is going to be okay.
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        boolean isTabletHorizontal = false;
         if (getResources().getConfiguration().smallestScreenWidthDp >= 700) {
             // If the activity is landscape on a tablet, use a different theme
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                isTabletHorizontal = true;
                 Themes.setTheme(this);
                 getWindow().setStatusBarColor(Themes.getPrimaryDark());
-                if (getActionBar() != null) {
-                    getActionBar().setDisplayHomeAsUpEnabled(true);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) getActionBar().setElevation(getResources().getDimension(R.dimen.header_elevation));
-                }
-            }
-            else {
-                // If the activity is in portrait, use the default theme
-                setTheme(R.style.NowPlayingTheme);
-                if (getActionBar() != null) {
-                    getActionBar().setDisplayHomeAsUpEnabled(true);
-                    getActionBar().setTitle("");
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) getActionBar().setElevation(0);
-                }
             }
         } else {
             // For devices that aren't tablets
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            if (getActionBar() != null) {
-                getActionBar().setDisplayHomeAsUpEnabled(true);
-                getActionBar().setTitle("");
-            }
         }
 
         setContentLayout(R.layout.activity_now_playing);
         super.onCreate(savedInstanceState);
         onNewIntent(getIntent());
+
+        if (!isTabletHorizontal){
+            getSupportActionBar().setTitle("");
+            getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.skrim_now_playing));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+                getWindow().setStatusBarColor(0x66000000);
+            }
+        }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            getSupportActionBar().setElevation(getResources().getDimension(R.dimen.header_elevation));
 
         findViewById(R.id.playButton).setOnClickListener(this);
         findViewById(R.id.nextButton).setOnClickListener(this);
@@ -85,8 +83,6 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
         ((SeekBar) findViewById(R.id.songSeekBar)).setOnSeekBarChangeListener(this);
 
         observer = new MediaObserver(this);
-
-        setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
     @Override
@@ -370,10 +366,24 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
 
     @Override
     public void themeActivity() {
-        Themes.themeActivity(R.layout.activity_now_playing, getWindow().getDecorView().findViewById(android.R.id.content), this);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Themes.getPrimary()));
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            SeekBar seekBar = (SeekBar) findViewById(R.id.songSeekBar);
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
-            if (getActionBar() != null) getActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.skrim_now_playing));
+            Drawable thumb = seekBar.getThumb();
+            thumb.setColorFilter(Themes.getAccent(), PorterDuff.Mode.SRC_IN);
+
+            Drawable progress = seekBar.getProgressDrawable();
+            progress.setTint(Themes.getAccent());
+
+            seekBar.setThumb(thumb);
+            seekBar.setProgressDrawable(progress);
+        } else {
+            // For whatever reason, the control frame seems to need a reminder as to what color it should be
+            findViewById(R.id.playerControlFrame).setBackgroundColor(getResources().getColor(R.color.player_control_background));
+            getSupportActionBar().setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
         }
     }
 
@@ -382,12 +392,12 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
 
     @Override
     public void update() {
+        super.update();
         Song nowPlaying = PlayerController.getNowPlaying();
         if (nowPlaying != null) {
 
             if (PlayerController.isPlaying() && !observer.isRunning()) new Thread(observer).start();
 
-            //final ViewGroup background = (ViewGroup) findViewById(R.id.playerControlFrame);
             final TextView songTitle = (TextView) findViewById(R.id.textSongTitle);
             final TextView artistName = (TextView) findViewById(R.id.textArtistName);
             final TextView albumTitle = (TextView) findViewById(R.id.textAlbumTitle);

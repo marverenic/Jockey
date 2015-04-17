@@ -1,19 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/songInstance"
     android:layout_width="match_parent"
     android:layout_height="@dimen/list_height"
     android:layout_centerVertical="true"
     android:gravity="center"
-    android:orientation="vertical"
     android:paddingLeft="@dimen/list_margin"
     android:paddingRight="@dimen/list_margin">
+
+    <ImageView
+        android:id="@+id/instanceMore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:scaleType="center"
+        android:src="@drawable/abc_ic_menu_moreoverflow_mtrl_alpha"
+        android:background="?selectableItemBackgroundBorderless"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignBottom="@+id/textSongDetail" />
 
     <TextView
         android:id="@+id/textSongTitle"
         style="@style/listTitleText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/instanceMore"
+        android:layout_toStartOf="@id/instanceMore"
         android:ellipsize="end"
         android:singleLine="true" />
 
@@ -22,7 +36,10 @@
         style="@style/listDetailText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/textSongTitle"
+        android:layout_toLeftOf="@id/instanceMore"
+        android:layout_toStartOf="@id/instanceMore"
         android:ellipsize="end"
         android:singleLine="true" />
 
-</LinearLayout>
+</RelativeLayout>

@@ -9,7 +9,11 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v7.widget.PopupMenu;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -32,7 +36,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, View.OnClickListener, View.OnLongClickListener {
+public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, View.OnClickListener {
 
     private ArrayList<Album> data;
     private Context context;
@@ -98,7 +102,6 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Vie
             LayoutInflater inflater = LayoutInflater.from(context);
             convertView = inflater.inflate(R.layout.instance_album, parent, false);
             convertView.findViewById(R.id.albumInstance).setOnClickListener(this);
-            convertView.findViewById(R.id.albumInstance).setOnLongClickListener(this);
 
             // initialize the view holder
             viewHolder = new AlbumViewHolder();
@@ -114,6 +117,57 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Vie
 
         viewHolder.title.setText(a.albumName);
         viewHolder.detail.setText(a.artistName);
+
+
+        convertView.findViewById(R.id.instanceMore).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final PopupMenu menu = new PopupMenu(context, v, Gravity.END);
+                String[] options = context.getResources().getStringArray(R.array.queue_options_album);
+                for (int i = 0; i < options.length; i++) {
+                    menu.getMenu().add(Menu.NONE, i, i, options[i]);
+                }
+                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        switch (menuItem.getItemId()) {
+                            case 0: //Queue this artist next
+                                PlayerController.queueNext(LibraryScanner.getAlbumEntries(a));
+                                return true;
+                            case 1: //Queue this artist last
+                                PlayerController.queueLast(LibraryScanner.getAlbumEntries(a));
+                                return true;
+                            case 2: //Go to artist
+                                Navigate.to(context, LibraryPageActivity.class, "entry", LibraryScanner.findArtistById(a.artistId));
+                                return true;
+                            case 3: //Add to playlist...
+                                ArrayList<Playlist> playlists = Library.getPlaylists();
+                                String[] playlistNames = new String[playlists.size()];
+
+                                for (int i = 0; i < playlists.size(); i++ ){
+                                    playlistNames[i] = playlists.get(i).toString();
+                                }
+
+                                new AlertDialog.Builder(context).setTitle("Add songs by \"" + a.artistName + "\" to playlist")
+                                        .setItems(playlistNames, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                LibraryScanner.addPlaylistEntries(
+                                                        context,
+                                                        Library.getPlaylists().get(which),
+                                                        LibraryScanner.getAlbumEntries(a));
+                                            }
+                                        })
+                                        .setNegativeButton("Cancel", null)
+                                        .show();
+                                return true;
+                        }
+                        return false;
+                    }
+                });
+                menu.show();
+            }
+        });
 
         // Cancel any previous Picasso requests on this view
         Picasso.with(context).cancelRequest(viewHolder.art);
@@ -135,6 +189,7 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Vie
                 viewHolder.parent.setBackgroundColor(a.artPrimaryPalette);
                 viewHolder.title.setTextColor(a.artPrimaryTextPalette);
                 viewHolder.detail.setTextColor(a.artDetailTextPalette);
+                ((ImageView) convertView.findViewById(R.id.instanceMore)).setColorFilter(a.artDetailTextPalette);
             }
             // If the album's palette hasn't already been generated, set the view's colors to the default,
             // load the image, find the colors, save the colors to the album, then update the view's colors the generated ones
@@ -142,6 +197,7 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Vie
                 viewHolder.parent.setBackgroundColor(context.getResources().getColor(R.color.grid_background_default));
                 viewHolder.title.setTextColor(context.getResources().getColor(R.color.grid_text));
                 viewHolder.detail.setTextColor(context.getResources().getColor(R.color.grid_detail_text));
+                ((ImageView) convertView.findViewById(R.id.instanceMore)).setColorFilter(null);
                 Picasso.with(context).load("file://" + a.artUri).placeholder(R.drawable.art_default).resizeDimen(R.dimen.grid_art_size, R.dimen.grid_art_size).into(viewHolder.art, new Callback() {
                     @Override
                     public void onSuccess() {
@@ -201,6 +257,7 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Vie
             viewHolder.parent.setBackgroundColor(context.getResources().getColor(R.color.grid_background_default));
             viewHolder.title.setTextColor(context.getResources().getColor(R.color.grid_text));
             viewHolder.detail.setTextColor(context.getResources().getColor(R.color.grid_detail_text));
+            ((ImageView) convertView.findViewById(R.id.instanceMore)).setColorFilter(context.getResources().getColor(R.color.grid_detail_text));
         }
 
         return convertView;
@@ -211,63 +268,6 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Vie
         int position = ((GridView) v.getParent()).getPositionForView(v);
         Album album = data.get(position);
         Navigate.to(context, LibraryPageActivity.class, "entry", album);
-    }
-
-    @Override
-    public boolean onLongClick(View view) {
-        final Album item = data.get(((GridView) view.getParent()).getPositionForView(view));
-
-        AlertDialog.Builder dialog = new AlertDialog.Builder(context);
-
-        dialog.setTitle(item.albumName)
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // There's nothing to do here
-                    }
-                })
-                .setItems(R.array.queue_options_album, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                            case 0: //Queue this artist next
-                                PlayerController.queueNext(LibraryScanner.getAlbumEntries(item));
-                                break;
-                            case 1: //Queue this artist last
-                                PlayerController.queueLast(LibraryScanner.getAlbumEntries(item));
-                                break;
-                            case 2: //Go to artist
-                                Navigate.to(context, LibraryPageActivity.class, "entry", LibraryScanner.findArtistById(item.artistId));
-                                break;
-                            case 3: //Add to playlist...
-                                ArrayList<Playlist> playlists = Library.getPlaylists();
-                                String[] playlistNames = new String[playlists.size()];
-
-                                for (int i = 0; i < playlists.size(); i++ ){
-                                    playlistNames[i] = playlists.get(i).toString();
-                                }
-
-                                new AlertDialog.Builder(context).setTitle("Add songs by \"" + item.artistName + "\" to playlist")
-                                        .setItems(playlistNames, new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                LibraryScanner.addPlaylistEntries(
-                                                        context,
-                                                        Library.getPlaylists().get(which),
-                                                        LibraryScanner.getAlbumEntries(item));
-                                            }
-                                        })
-                                        .setNeutralButton("Cancel", null)
-                                        .show();
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                });
-
-        dialog.create().show();
-        return true;
     }
 
     @Override

@@ -20,6 +20,8 @@ public class JockeyApplication extends Application implements Thread.UncaughtExc
         Thread.setDefaultUncaughtExceptionHandler(this);
         if (BuildConfig.DEBUG)
             Picasso.setSingletonInstance(new Picasso.Builder(this).indicatorsEnabled(true).build());
+
+        PlayerController.bind(this);
     }
 
     @Override
@@ -28,22 +30,20 @@ public class JockeyApplication extends Application implements Thread.UncaughtExc
         defaultHandler.uncaughtException(thread, t);
     }
 
+    public void activityCreated(){
+        PlayerController.bind(this);
+    }
+
     public void activityResumed() {
-        if (runningActivities == 0){
-            PlayerController.bind(this);
-        }
         ++runningActivities;
     }
 
     public void activityPaused() {
         --runningActivities;
-
-        if (runningActivities < 0)
-            throw new IllegalStateException("Activity stopped without being started");
     }
 
     public void activityDestroyed(){
-        if (runningActivities == 0){
+        if (runningActivities <= 0){
             PlayerController.unbind(this);
         }
     }

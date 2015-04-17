@@ -8,7 +8,7 @@
     android:elevation="2dp"
     android:foreground="?android:attr/selectableItemBackground">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/albumBackground"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -25,29 +25,43 @@
             android:scaleType="fitXY"
             android:src="@drawable/art_default" />
 
+        <ImageView
+            android:id="@+id/instanceMore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:scaleType="center"
+            android:src="@drawable/abc_ic_menu_moreoverflow_mtrl_alpha"
+            android:background="?selectableItemBackgroundBorderless"
+            android:layout_below="@+id/imageAlbumArt"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
         <TextView
             android:id="@+id/textAlbumTitle"
             style="@style/gridTitleText"
+            android:layout_below="@id/imageAlbumArt"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="0dp"
-            android:layout_marginLeft="@dimen/grid_padding"
-            android:layout_marginRight="@dimen/grid_padding"
+            android:layout_marginStart="@dimen/grid_padding"
             android:layout_marginTop="@dimen/grid_padding"
             android:ellipsize="end"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:layout_toStartOf="@+id/instanceMore" />
 
         <TextView
             android:id="@+id/textAlbumArtist"
             style="@style/gridDetailText"
+            android:layout_below="@id/textAlbumTitle"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/grid_padding"
-            android:layout_marginLeft="@dimen/grid_padding"
-            android:layout_marginRight="@dimen/grid_padding"
+            android:layout_marginStart="@dimen/grid_padding"
             android:layout_marginTop="0dp"
             android:ellipsize="end"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:layout_toStartOf="@+id/instanceMore" />
 
-    </LinearLayout>
+    </RelativeLayout>
 </FrameLayout>

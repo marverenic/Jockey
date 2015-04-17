@@ -1,7 +1,12 @@
 package com.marverenic.music.activity;
 
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.ViewGroup;
+import android.widget.ListView;
 
 import com.marverenic.music.R;
 import com.marverenic.music.adapters.PlaylistEditAdapter;
@@ -28,7 +33,7 @@ public class PlaylistActivity extends BaseActivity{
         if (parent instanceof Playlist) {
             playlist = (Playlist) parent;
 
-            if (getActionBar() != null) getActionBar().setTitle(playlist.playlistName);
+            getSupportActionBar().setTitle(playlist.playlistName);
         }
 
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -36,8 +41,6 @@ public class PlaylistActivity extends BaseActivity{
 
     @Override
     public void onResume() {
-        update();
-
         // Recreate the adapter in case the playlist has been edited since this activity was paused
         // The adapter will initialize attach itself and all necessary controllers in its constructor
         // There is no need to create a variable for it
@@ -52,7 +55,24 @@ public class PlaylistActivity extends BaseActivity{
 
     @Override
     public void themeActivity() {
-        Themes.themeActivity(R.layout.page_editable_list, getWindow().getDecorView().findViewById(android.R.id.content), this);
+        super.themeActivity();
+
+        findViewById(R.id.list).setBackgroundColor(Themes.getBackgroundElevated());
+
+        ListView list = (ListView) findViewById(R.id.list);
+        list.setDividerHeight((int) getResources().getDisplayMetrics().density);
+
+        LayerDrawable backgroundDrawable = (LayerDrawable) getResources().getDrawable(R.drawable.header_frame);
+        GradientDrawable bodyDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.body));
+        GradientDrawable topDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.top));
+        bodyDrawable.setColor(Themes.getBackground());
+        topDrawable.setColor(Themes.getPrimary());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            ((ViewGroup) findViewById(R.id.list).getParent()).setBackground(backgroundDrawable);
+        }
+        else {
+            ((ViewGroup) findViewById(R.id.list).getParent()).setBackgroundDrawable(backgroundDrawable);
+        }
     }
 
 }

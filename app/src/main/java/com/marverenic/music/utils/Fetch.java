@@ -95,10 +95,8 @@ public class Fetch {
 
             @Override
             protected void onPostExecute(Void v) {
-                if (art != null) {
-                    // Then do whatever the method wanted to do with this bitmap
-                    callback.onArtFetched(art);
-                }
+                // Then do whatever the method wanted to do with this bitmap
+                callback.onArtFetched(art);
             }
         }.execute();
     }
@@ -137,7 +135,7 @@ public class Fetch {
 
     // Because fetching full resolution art can be slow, do it
     public interface fullResolutionArtCallback{
-        public void onArtFetched(Bitmap art);
+        public void onArtFetched(@Nullable Bitmap art);
     }
 
     public static void buildAlbumPalette (Bitmap bitmap, int defaultPrimary, int defaultTitleText,

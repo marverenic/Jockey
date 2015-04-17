@@ -3,7 +3,10 @@ package com.marverenic.music.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
@@ -36,11 +39,9 @@ public class LibraryActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         onNewIntent(getIntent());
 
-        if (getActionBar() != null){
-            getActionBar().setHomeButtonEnabled(false);
-            getActionBar().setDisplayHomeAsUpEnabled(false);
-            getActionBar().setDisplayShowHomeEnabled(false);
-        }
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(false);
+        getSupportActionBar().setDisplayShowHomeEnabled(false);
 
         findViewById(R.id.pagerSlidingTabs).setVisibility(View.INVISIBLE);
         findViewById(R.id.pager).setVisibility(View.INVISIBLE);
@@ -98,8 +99,6 @@ public class LibraryActivity extends BaseActivity {
         View miniplayer = ((View)(findViewById(R.id.miniplayer)).getParent());
         miniplayer.setVisibility(View.VISIBLE);
 
-        update();
-
         if (fade) {
             pager.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
             tabs.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
@@ -116,7 +115,6 @@ public class LibraryActivity extends BaseActivity {
         if (findViewById(R.id.pager) != null && ((ViewPager) findViewById(R.id.pager)).getAdapter() != null) {
             ((LibraryPagerAdapter) ((ViewPager) findViewById(R.id.pager)).getAdapter()).refreshPlaylists();
         }
-        update();
         Themes.setApplicationIcon(this);
     }
 
@@ -157,6 +155,22 @@ public class LibraryActivity extends BaseActivity {
 
     @Override
     public void themeActivity() {
-        Themes.themeActivity(R.layout.activity_library, getWindow().getDecorView().findViewById(android.R.id.content), this);
+        super.themeActivity();
+
+        findViewById(R.id.pagerSlidingTabs).setBackgroundColor(Themes.getPrimary());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            findViewById(R.id.pagerSlidingTabs).setElevation(0);
+        }
+        LayerDrawable backgroundDrawable = (LayerDrawable) getResources().getDrawable(R.drawable.header_frame);
+        GradientDrawable bodyDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.body));
+        GradientDrawable topDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.top));
+        bodyDrawable.setColor(Themes.getBackground());
+        topDrawable.setColor(Themes.getPrimary());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            findViewById(R.id.pager).setBackground(backgroundDrawable);
+        }
+        else {
+            findViewById(R.id.pager).setBackgroundDrawable(backgroundDrawable);
+        }
     }
 }

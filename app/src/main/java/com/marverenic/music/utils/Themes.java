@@ -5,28 +5,14 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
 import com.marverenic.music.R;
 import com.marverenic.music.activity.LibraryActivity;
@@ -80,6 +66,10 @@ public class Themes {
 
     public static int getBackgroundElevated(){
         return backgroundElevated;
+    }
+
+    public static int getBackgroundMiniplayer() {
+        return backgroundMiniplayer;
     }
 
     public static boolean hasChanged(Context context) {
@@ -353,213 +343,10 @@ public class Themes {
         context.sendBroadcast(addIntent);
     }
 
-    // Public Theme Methods
-    public static void themeActivity(int layoutId, View contentView, Activity activity) {
-        updateColors(activity);
-        setApplicationIcon(activity);
-        contentView.setBackgroundColor(background);
-
-        switch (layoutId) {
-            case R.layout.activity_library:
-                themeLibraryActivity(contentView, activity);
-                break;
-            case R.layout.activity_now_playing:
-                themeNowPlayingActivity(contentView, activity);
-                break;
-            case R.layout.fragment_list:
-                themeLibraryPageActivity(contentView, activity);
-                break;
-            case R.layout.page_editable_list:
-                themePlaylistEditor(contentView, activity);
-                break;
-            case R.layout.about:
-                themeAboutActivity(contentView, activity);
-                break;
-            case android.R.layout.preference_category:
-                themePreferenceActivity(contentView, activity);
-                break;
-        }
-
-        if (activity.getActionBar() != null) activity.getActionBar().setDisplayHomeAsUpEnabled(!(activity instanceof LibraryActivity));
-
-        if (contentView.findViewById(R.id.miniplayer) != null) {
-            themeMiniplayer((View) contentView.findViewById(R.id.miniplayer).getParent(), activity);
-        }
-    }
-
-    public static void themeFragment(int layoutId, View contentView, Fragment fragment) {
-        updateColors(fragment.getActivity());
-
-        switch (layoutId) {
-            case R.layout.fragment_list:
-                themeListFragment(contentView, fragment);
-                break;
-            case R.layout.fragment_grid:
-                themeGridFragment(contentView, fragment);
-                break;
-        }
-    }
-
-    // Activity Theme Methods
-    private static void themeLibraryActivity(View contentView, Activity activity) {
-        contentView.findViewById(R.id.pagerSlidingTabs).setBackgroundColor(primary);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            contentView.findViewById(R.id.pagerSlidingTabs).setElevation(0);
-        }
-        LayerDrawable backgroundDrawable = (LayerDrawable) activity.getResources().getDrawable(R.drawable.header_frame);
-        GradientDrawable bodyDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.body));
-        GradientDrawable topDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.top));
-        bodyDrawable.setColor(background);
-        topDrawable.setColor(primary);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            contentView.findViewById(R.id.pager).setBackground(backgroundDrawable);
-        }
-        else {
-            contentView.findViewById(R.id.pager).setBackgroundDrawable(backgroundDrawable);
-        }
-    }
-
-    private static void themeNowPlayingActivity(View contentView, Activity activity) {
-        if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            if (activity.getActionBar() != null) {
-                activity.getActionBar().setBackgroundDrawable(new ColorDrawable(primary));
-            } else {
-                Debug.log(Debug.LogLevel.WTF, "Themes", "Couldn't find the action bar", activity);
-            }
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            SeekBar seekBar = (SeekBar) contentView.findViewById(R.id.songSeekBar);
-
-            Drawable thumb = seekBar.getThumb();
-            thumb.setColorFilter(accent, PorterDuff.Mode.SRC_IN);
-
-            Drawable progress = seekBar.getProgressDrawable();
-            progress.setTint(accent);
-
-            seekBar.setThumb(thumb);
-            seekBar.setProgressDrawable(progress);
-        } else {
-            // For whatever reason, the control frame seems to need a reminder as to what color it should be
-            contentView.findViewById(R.id.playerControlFrame).setBackgroundColor(activity.getResources().getColor(R.color.player_control_background));
-            if (activity.getActionBar() != null) {
-                activity.getActionBar().setIcon(new ColorDrawable(activity.getResources().getColor(android.R.color.transparent)));
-            } else {
-                Debug.log(Debug.LogLevel.WTF, "Themes", "Couldn't find the action bar", activity);
-            }
-        }
-    }
-
-    private static void themeLibraryPageActivity(View contentView, Activity activity) {
-        contentView.findViewById(R.id.list).setBackgroundColor(backgroundElevated);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (activity.getActionBar() != null) activity.getActionBar().setElevation(0);
-        }
-
-        ListView list = (ListView) contentView.findViewById(R.id.list);
-        list.setDividerHeight((int) activity.getResources().getDisplayMetrics().density);
-
-        LayerDrawable backgroundDrawable = (LayerDrawable) activity.getResources().getDrawable(R.drawable.header_frame);
-        GradientDrawable bodyDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.body));
-        GradientDrawable topDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.top));
-        bodyDrawable.setColor(background);
-        topDrawable.setColor(primary);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            contentView.findViewById(R.id.list_container).setBackground(backgroundDrawable);
-        }
-        else {
-            contentView.findViewById(R.id.list_container).setBackgroundDrawable(backgroundDrawable);
-        }
-    }
-
-    private static void themePlaylistEditor(View contentView, Activity activity) {
-        contentView.findViewById(R.id.list).setBackgroundColor(backgroundElevated);
-
-        ListView list = (ListView) contentView.findViewById(R.id.list);
-        list.setDividerHeight((int) activity.getResources().getDisplayMetrics().density);
-
-        LayerDrawable backgroundDrawable = (LayerDrawable) activity.getResources().getDrawable(R.drawable.header_frame);
-        GradientDrawable bodyDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.body));
-        GradientDrawable topDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.top));
-        bodyDrawable.setColor(background);
-        topDrawable.setColor(primary);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            ((ViewGroup) contentView.findViewById(R.id.list).getParent()).setBackground(backgroundDrawable);
-        }
-        else {
-            ((ViewGroup) contentView.findViewById(R.id.list).getParent()).setBackgroundDrawable(backgroundDrawable);
-        }
-    }
-
-    private static void themeAboutActivity(View contentView, Activity activity) {
-
-        contentView.findViewById(R.id.aboutScroll).setBackgroundColor(primary);
-
-        int[] primaryText = {R.id.aboutAppName, R.id.lastFmHeader, R.id.aboutAOSPHeader, R.id.aboutAOSPTabsHeader,
-                R.id.aboutPicassoHeader, R.id.aboutDSLVHeader, R.id.aboutApolloHeader, R.id.aboutStackOverflowHeader};
-        int[] detailText = {R.id.aboutDescription, R.id.aboutLicense, R.id.aboutUsesHeader,
-                R.id.aboutVersion, R.id.aboutAOSPDetail, R.id.aboutAOSPTabsDetail, R.id.aboutUILDetail, R.id.aboutDSLVDetail};
-
-        for (int aPrimaryText : primaryText)
-            ((TextView) contentView.findViewById(aPrimaryText)).setTextColor(uiText);
-        for (int aDetailText : detailText)
-            ((TextView) contentView.findViewById(aDetailText)).setTextColor(uiDetailText);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            ((ImageView) contentView.findViewById(R.id.aboutAppIcon)).setImageBitmap(getLargeIcon(activity, DisplayMetrics.DENSITY_XXXHIGH));
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                ((ImageView) contentView.findViewById(R.id.aboutAppIcon)).setImageBitmap(getLargeIcon(activity, DisplayMetrics.DENSITY_XXHIGH));
-            }
-            else{
-                ((ImageView) contentView.findViewById(R.id.aboutAppIcon)).setImageBitmap(getLargeIcon(activity, DisplayMetrics.DENSITY_XHIGH));
-            }
-        }
-    }
-
-    private static void themePreferenceActivity(View contentView, Activity activity) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (activity.getActionBar() != null)
-                activity.getActionBar().setElevation(activity.getResources().getDimension(R.dimen.header_elevation));
-            else Debug.log(Debug.LogLevel.WTF, "Themes", "Couldn't find the action bar", activity);
-        }
-    }
-
     public static void setApplicationIcon(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription(activity.getResources().getString(R.string.app_name), getIcon(activity), primary);
             activity.setTaskDescription(taskDescription);
         }
-    }
-
-    // Fragment Theme Methods
-    private static void themeListFragment(View contentView, Fragment fragment) {
-        contentView.findViewById(R.id.list).setBackgroundColor(backgroundElevated);
-
-        ListView list = (ListView) contentView.findViewById(R.id.list);
-        list.setDividerHeight((int) fragment.getResources().getDisplayMetrics().density);
-    }
-
-    private static void themeGridFragment(View contentView, Fragment fragment) {
-        contentView.findViewById(R.id.albumGrid).setBackgroundColor(backgroundElevated);
-    }
-
-    private static void themeMiniplayer(View miniplayer, Context context) {
-        miniplayer.setBackgroundColor(backgroundMiniplayer);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ((ImageButton) miniplayer.findViewById(R.id.skipButton)).setImageTintList(ColorStateList.valueOf(listText));
-            ((ImageButton) miniplayer.findViewById(R.id.playButton)).setImageTintList(ColorStateList.valueOf(listText));
-        } else {
-            if (!isLight(context)) {
-                ((ImageButton) miniplayer.findViewById(R.id.skipButton)).setImageResource(R.drawable.ic_skip_next_miniplayer);
-                ((ImageButton) miniplayer.findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_miniplayer);
-            } else {
-                ((ImageButton) miniplayer.findViewById(R.id.skipButton)).setImageResource(R.drawable.ic_skip_next_miniplayer_light);
-                ((ImageButton) miniplayer.findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_miniplayer_light);
-            }
-        }
-
-        ((TextView) miniplayer.findViewById(R.id.textNowPlayingTitle)).setTextColor(listText);
-        ((TextView) miniplayer.findViewById(R.id.textNowPlayingDetail)).setTextColor(detailText);
     }
 }

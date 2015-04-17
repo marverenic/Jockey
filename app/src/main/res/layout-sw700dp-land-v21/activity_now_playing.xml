@@ -13,10 +13,13 @@
         android:elevation="0dp"
         android:src="@drawable/art_default_xxl" />
 
+    <include layout="@layout/toolbar" android:id="@+id/toolbar" />
+
     <RelativeLayout
         android:id="@+id/playerControlFrame"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/toolbar"
         android:layout_toEndOf="@id/imageArtwork"
         android:background="@color/player_control_background"
         android:elevation="6dp"

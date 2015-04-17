@@ -3,13 +3,15 @@ package com.marverenic.music.activity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.SearchView;
 
 import com.marverenic.music.R;
 import com.marverenic.music.adapters.SearchPagerAdapter;
@@ -50,7 +52,8 @@ public class SearchActivity extends BaseActivity {
         int page = Integer.parseInt(prefs.getString("prefDefaultPage", "1"));
 
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
-        adapter = new SearchPagerAdapter(this, playlistResults, songResults, artistResults, albumResults, genreResults);
+        if (adapter == null)
+            adapter = new SearchPagerAdapter(this, playlistResults, songResults, artistResults, albumResults, genreResults);
         pager.setAdapter(adapter);
         pager.setCurrentItem(page);
 
@@ -70,7 +73,8 @@ public class SearchActivity extends BaseActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                return false;
+                search(query);
+                return true;
             }
 
             @Override
@@ -81,9 +85,10 @@ public class SearchActivity extends BaseActivity {
         });
 
         searchView.setIconified(false);
-        searchView.requestFocus();
-
-        if (lastQuery != null) searchView.setQuery(lastQuery, true);
+        if (lastQuery != null && !lastQuery.isEmpty()){
+            searchView.requestFocus();
+            searchView.setQuery(lastQuery, true);
+        }
 
         return true;
     }
@@ -111,7 +116,23 @@ public class SearchActivity extends BaseActivity {
 
     @Override
     public void themeActivity() {
-        Themes.themeActivity(R.layout.activity_library, getWindow().getDecorView().findViewById(android.R.id.content), this);
+        super.themeActivity();
+
+        findViewById(R.id.pagerSlidingTabs).setBackgroundColor(Themes.getPrimary());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            findViewById(R.id.pagerSlidingTabs).setElevation(0);
+        }
+        LayerDrawable backgroundDrawable = (LayerDrawable) getResources().getDrawable(R.drawable.header_frame);
+        GradientDrawable bodyDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.body));
+        GradientDrawable topDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.top));
+        bodyDrawable.setColor(Themes.getBackground());
+        topDrawable.setColor(Themes.getPrimary());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            findViewById(R.id.pager).setBackground(backgroundDrawable);
+        }
+        else {
+            findViewById(R.id.pager).setBackgroundDrawable(backgroundDrawable);
+        }
     }
 
     @Override

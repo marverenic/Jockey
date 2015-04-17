@@ -45,9 +45,7 @@ public class SongFragment extends Fragment {
 
         songListView.setAdapter(adapter);
         songListView.setOnItemClickListener(adapter);
-        songListView.setOnItemLongClickListener(adapter);
-
-        Themes.themeFragment(R.layout.fragment_list, view, this);
+        songListView.setBackgroundColor(Themes.getBackgroundElevated());
 
         return view;
     }

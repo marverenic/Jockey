@@ -5,11 +5,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -21,16 +23,19 @@ import com.marverenic.music.utils.Themes;
 
 import java.io.File;
 
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends ActionBarActivity {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         Themes.setTheme(this);
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.pref_layout);
 
-        if (getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            getSupportActionBar().setElevation(getResources().getDimension(R.dimen.header_elevation));
 
-        getFragmentManager().beginTransaction().replace(android.R.id.content, new PrefFragment()).commit();
-        Themes.themeActivity(android.R.layout.preference_category, getWindow().getDecorView().findViewById(android.R.id.content), this);
+        getFragmentManager().beginTransaction().replace(R.id.prefFrame, new PrefFragment()).commit();
 
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }

@@ -3,10 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <include layout="@layout/toolbar" android:id="@+id/toolbar"/>
+
     <com.marverenic.music.view.SlidingTabLayout
         android:id="@+id/pagerSlidingTabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
         android:layout_gravity="top"
         android:background="@color/primary"
         android:elevation="@dimen/header_elevation"

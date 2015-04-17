@@ -59,11 +59,11 @@
     <string name="lastfm_description">Last.fm</string>
     <string name="uses_header">Jockey also uses the following open-source libraries:</string>
     <string name="uses_aosp_header">Android Support Libraries</string>
-    <string name="uses_aosp_detail">Support-v4 version 21.0.2, Palette version 21.0.2; distributed by the Android Open Source Project under an Apache License, Version 2.0</string>
+    <string name="uses_aosp_detail">Support-v4 version 22.0.0, Appcompat-v7 22.0.0, Palette version 22.0.0; distributed by the Android Open Source Project under an Apache License, Version 2.0</string>
     <string name="uses_aosp_demos_header">Android API Demos</string>
     <string name="uses_aosp_demos_detail">Color Tab Example, Floating Action Button Example; distributed by the Android Open Source Project under an Apache License, Version 2.0</string>
     <string name="uses_picasso_header">Picasso</string>
-    <string name="uses_picasso_detail">Version 2.5.0; distributed by Square, Inc. under an Apache License, Version 2.0</string>
+    <string name="uses_picasso_detail">Version 2.5.2; distributed by Square, Inc. under an Apache License, Version 2.0</string>
     <string name="uses_dslv_header">DragSortListView</string>
     <string name="uses_dslv_detail">Version 0.6.0; distributed by Carl Bauer under an Apache License, Version 2.0</string>
     <string name="uses_apollo">Jockey also gratefully uses code from Cyanogenmod\'s Apollo music player; licensed under an Apache License, version 2.0</string>
@@ -94,38 +94,38 @@
 
     <!-- Arrays -->
     <string-array name="queue_options_song">
-        <item>Queue this song next</item>
-        <item>Queue this song last</item>
+        <item>Queue next</item>
+        <item>Queue last</item>
         <item>Go to artist</item>
         <item>Go to album</item>
         <item>Add to playlist&#8230;</item>
     </string-array>
     <string-array name="queue_options_album">
-        <item>Queue this album next</item>
-        <item>Queue this album last</item>
+        <item>Queue next</item>
+        <item>Queue last</item>
         <item>Go to artist</item>
         <item>Add to playlist&#8230;</item>
     </string-array>
     <string-array name="queue_options_artist_page">
-        <item>Queue this song next</item>
-        <item>Queue this song last</item>
+        <item>Queue next</item>
+        <item>Queue last</item>
         <item>Go to album</item>
         <item>Add to playlist&#8230;</item>
     </string-array>
     <string-array name="queue_options_artist">
-        <item>Queue all songs by this artist next</item>
-        <item>Queue all songs by this artist last</item>
-        <item>Add all songs to playlist&#8230;</item>
+        <item>Queue next</item>
+        <item>Queue last</item>
+        <item>Add to playlist&#8230;</item>
     </string-array>
     <string-array name="queue_options_genre">
-        <item>Queue all songs in this genre next</item>
-        <item>Queue all songs in this genre last</item>
-        <item>Add all songs to playlist&#8230;</item>
+        <item>Queue next</item>
+        <item>Queue last</item>
+        <item>Add to playlist&#8230;</item>
     </string-array>
     <string-array name="queue_options_playlist">
-        <item>Queue all songs in this playlist next</item>
-        <item>Queue all songs in this playlist last</item>
-        <item>Delete this playlist</item>
+        <item>Queue next</item>
+        <item>Queue last</item>
+        <item>Delete</item>
     </string-array>
     <string-array name="now_playing_options">
         <item>Go to artist</item>
@@ -133,18 +133,18 @@
         <item>Add to playlist&#8230;</item>
     </string-array>
     <string-array name="edit_playlist_options">
-        <item>Queue this song next</item>
-        <item>Queue this song last</item>
+        <item>Queue next</item>
+        <item>Queue last</item>
         <item>Go to artist</item>
         <item>Go to album</item>
         <item>Add to playlist&#8230;</item>
-        <item>Remove from playlist</item>
+        <item>Remove</item>
     </string-array>
     <string-array name="edit_queue_options">
         <item>Go to artist</item>
         <item>Go to album</item>
         <item>Add to playlist&#8230;</item>
-        <item>Remove from queue</item>
+        <item>Remove</item>
     </string-array>
 
     <!-- String Arrays for Settings -->

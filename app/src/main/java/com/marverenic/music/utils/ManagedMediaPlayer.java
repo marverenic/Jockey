@@ -142,7 +142,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
 
     @Override
     public int getCurrentPosition(){
-        if (state == status.STARTED || state == status.PAUSED){
+        if (state == status.PREPARED || state == status.STARTED || state == status.PAUSED){
             return super.getCurrentPosition();
         }
         else return 0;
@@ -150,7 +150,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
 
     @Override
     public int getDuration(){
-        if (state != status.IDLE && state != status.PREPARING){
+        if (state == status.PREPARED || state != status.IDLE && state != status.PREPARING){
             return super.getDuration();
         }
         else return 1;

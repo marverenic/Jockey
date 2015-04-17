@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/action_shuffle"
         android:icon="@drawable/ic_shuffle"
         android:title="@string/shuffle"
-        android:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/action_repeat"
         android:icon="@drawable/ic_repeat"
         android:title="@string/repeat"
-        android:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/action_queue"
         android:icon="@drawable/ic_queue"
         android:title="@string/queue"
-        android:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom"/>
 
 </menu>

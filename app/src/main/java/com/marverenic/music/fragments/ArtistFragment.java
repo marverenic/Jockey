@@ -45,9 +45,7 @@ public class ArtistFragment extends Fragment {
 
         artistListView.setAdapter(adapter);
         artistListView.setOnItemClickListener(adapter);
-        artistListView.setOnItemLongClickListener(adapter);
-
-        Themes.themeFragment(R.layout.fragment_list, view, this);
+        artistListView.setBackgroundColor(Themes.getBackgroundElevated());
 
         return view;
     }

@@ -3,12 +3,15 @@ package com.marverenic.music.activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ListView;
@@ -35,7 +38,8 @@ public class QueueActivity extends BaseActivity {
     }
 
     public void update (){
-        ((ListView) findViewById(R.id.list)).invalidateViews();
+        super.update();
+        new QueueEditAdapter(this, (DragSortListView) findViewById(R.id.list));
     }
 
     @Override
@@ -87,7 +91,24 @@ public class QueueActivity extends BaseActivity {
 
     @Override
     public void themeActivity() {
-        Themes.themeActivity(R.layout.page_editable_list, getWindow().findViewById(android.R.id.content), this);
+        super.themeActivity();
+
+        findViewById(R.id.list).setBackgroundColor(Themes.getBackgroundElevated());
+
+        ListView list = (ListView) findViewById(R.id.list);
+        list.setDividerHeight((int) getResources().getDisplayMetrics().density);
+
+        LayerDrawable backgroundDrawable = (LayerDrawable) getResources().getDrawable(R.drawable.header_frame);
+        GradientDrawable bodyDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.body));
+        GradientDrawable topDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.top));
+        bodyDrawable.setColor(Themes.getBackground());
+        topDrawable.setColor(Themes.getPrimary());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            ((ViewGroup) findViewById(R.id.list).getParent()).setBackground(backgroundDrawable);
+        }
+        else {
+            ((ViewGroup) findViewById(R.id.list).getParent()).setBackgroundDrawable(backgroundDrawable);
+        }
     }
 
     @Override

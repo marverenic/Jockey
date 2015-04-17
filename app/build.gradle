@@ -6,8 +6,8 @@ android {
 
     defaultConfig {
         applicationId "com.marverenic.music"
-        versionName "0.2-α.r0m19b"
-        versionCode 21901
+        versionName "0.2-α.r0m20b"
+        versionCode 22001
         minSdkVersion 15
         targetSdkVersion 22
     }
@@ -26,6 +26,7 @@ android {
 
 dependencies {
     compile 'com.android.support:support-v4:22.0.0'
+    compile 'com.android.support:appcompat-v7:22.0.0'
     compile 'com.android.support:palette-v7:22.0.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'de.u-mass:lastfm-java:0.1.2'

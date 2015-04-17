@@ -3,12 +3,17 @@ package com.marverenic.music.adapters;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.database.DataSetObserver;
+import android.support.v7.widget.PopupMenu;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -28,7 +33,7 @@ import com.mobeta.android.dslv.DragSortListView;
 
 import java.util.ArrayList;
 
-public class QueueEditAdapter extends BaseAdapter implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, DragSortListView.DropListener{
+public class QueueEditAdapter extends BaseAdapter implements AdapterView.OnItemClickListener, DragSortListView.DropListener{
 
     private ArrayList<Song> data;
     private QueueActivity activity;
@@ -42,7 +47,6 @@ public class QueueEditAdapter extends BaseAdapter implements AdapterView.OnItemC
 
         DragSortController controller = new QueueEditAdapter.dragSortController(listView, this, R.id.handle);
         listView.setOnItemClickListener(this);
-        listView.setOnItemLongClickListener(this);
         listView.setAdapter(this);
         listView.setDropListener(this);
         listView.setFloatViewManager(controller);
@@ -54,8 +58,9 @@ public class QueueEditAdapter extends BaseAdapter implements AdapterView.OnItemC
         View v = convertView;
         if (convertView == null) {
             v = LayoutInflater.from(parent.getContext()).inflate(R.layout.instance_song_drag, parent, false);
+            ((ImageView) v.findViewById(R.id.instanceMore)).setColorFilter(Themes.getDetailText());
         }
-        Song s = data.get(position);
+        final Song s = data.get(position);
 
         if (s != null) {
             TextView tt = (TextView) v.findViewById(R.id.textSongTitle);
@@ -80,8 +85,78 @@ public class QueueEditAdapter extends BaseAdapter implements AdapterView.OnItemC
                     tt1.setTextColor(Themes.getDetailText());
                 }
             }
+
+            v.findViewById(R.id.instanceMore).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final PopupMenu menu = new PopupMenu(activity, v, Gravity.END);
+                    String[] options = activity.getResources().getStringArray(R.array.edit_queue_options);
+                    for (int i = 0; i < options.length;  i++) {
+                        menu.getMenu().add(Menu.NONE, i, i, options[i]);
+                    }
+                    menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem menuItem) {
+                            switch (menuItem.getItemId()) {
+                                case 0: //Go to artist
+                                    Navigate.to(activity, LibraryPageActivity.class, "entry", LibraryScanner.findArtistById(s.artistId));
+                                    return true;
+                                case 1: //Go to album
+                                    Navigate.to(activity, LibraryPageActivity.class, "entry", LibraryScanner.findAlbumById(s.albumId));
+                                    return true;
+                                case 2: //Add to playlist...
+                                    ArrayList<Playlist> playlists = Library.getPlaylists();
+                                    String[] playlistNames = new String[playlists.size()];
+
+                                    for (int i = 0; i < playlists.size(); i++) {
+                                        playlistNames[i] = playlists.get(i).toString();
+                                    }
+
+                                    new AlertDialog.Builder(activity).setTitle("Add \"" + s.songName + "\" to playlist")
+                                            .setItems(playlistNames, new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    LibraryScanner.addPlaylistEntry(activity, Library.getPlaylists().get(which), s);
+                                                }
+                                            })
+                                            .setNegativeButton("Cancel", null)
+                                            .show();
+                                    return true;
+                                case 3: //Remove from queue
+                                    new AlertDialog.Builder(activity).setTitle(s.songName)
+                                            .setMessage("Remove this song from the queue?")
+                                            .setPositiveButton("Remove", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    data.remove(position);
+                                                    notifyDataSetChanged();
+
+                                                    listView.invalidateViews();
+
+                                                    if (PlayerController.getPosition() == position) {
+                                                        // If the current song was removed
+                                                        PlayerController.changeQueue(data, position);
+                                                    } else if (PlayerController.getPosition() > position) {
+                                                        // If a song that was before the current playing song was removed...
+                                                        PlayerController.changeQueue(data, PlayerController.getPosition() - 1);
+                                                    } else {
+                                                        // If a song that was after the current playing song was removed...
+                                                        PlayerController.changeQueue(data, PlayerController.getPosition());
+                                                    }
+                                                }
+                                            })
+                                            .setNegativeButton("Cancel", null)
+                                            .show();
+                                    return true;
+                            }
+                            return false;
+                        }
+                    });
+                    menu.show();
+                }
+            });
         } else {
-            Debug.log(Debug.LogLevel.WTF, "SongListAdapter", "The requested entry is null", activity);
+            Debug.log(Debug.LogLevel.WTF, "QueueEditAdapter", "The requested entry is null", activity);
         }
 
         return v;
@@ -151,79 +226,6 @@ public class QueueEditAdapter extends BaseAdapter implements AdapterView.OnItemC
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         PlayerController.changeSong(position);
         Navigate.back(activity);
-    }
-
-    @Override
-    public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int position, long id) {
-        final Song item = data.get(position - listView.getHeaderViewsCount());
-
-        AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
-
-        dialog.setTitle(item.songName)
-                .setNegativeButton("Cancel", null)
-                .setItems(R.array.edit_queue_options, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                            case 0: //Go to artist
-                                Navigate.to(activity, LibraryPageActivity.class, "entry", LibraryScanner.findArtistById(item.artistId));
-                                break;
-                            case 1: //Go to album
-                                Navigate.to(activity, LibraryPageActivity.class, "entry", LibraryScanner.findAlbumById(item.albumId));
-                                break;
-                            case 2: //Add to playlist...
-                                ArrayList<Playlist> playlists = Library.getPlaylists();
-                                String[] playlistNames = new String[playlists.size()];
-
-                                for (int i = 0; i < playlists.size(); i++ ){
-                                    playlistNames[i] = playlists.get(i).toString();
-                                }
-
-                                new AlertDialog.Builder(activity).setTitle("Add \"" + item.songName + "\" to playlist")
-                                        .setItems(playlistNames, new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                LibraryScanner.addPlaylistEntry(activity, Library.getPlaylists().get(which), item);
-                                            }
-                                        })
-                                        .setNegativeButton("Cancel", null)
-                                        .show();
-                                break;
-                            case 3: //Remove from queue
-                                new AlertDialog.Builder(activity).setTitle(item.songName)
-                                        .setMessage("Remove this song from the queue?")
-                                        .setPositiveButton("Remove", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                data.remove(position);
-                                                notifyDataSetChanged();
-
-                                                listView.invalidateViews();
-
-                                                if (PlayerController.getPosition() == position){
-                                                    // If the current song was removed
-                                                    PlayerController.changeQueue(data, position);
-                                                }
-                                                else if (PlayerController.getPosition() > position){
-                                                    // If a song that was before the current playing song was removed...
-                                                    PlayerController.changeQueue(data, PlayerController.getPosition() - 1);
-                                                }
-                                                else {
-                                                    // If a song that was after the current playing song was removed...
-                                                    PlayerController.changeQueue(data, PlayerController.getPosition());
-                                                }
-                                            }
-                                        })
-                                        .setNegativeButton("Cancel", null)
-                                        .show();
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                });
-        dialog.show();
-        return true;
     }
 
     @Override

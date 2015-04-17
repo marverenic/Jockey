@@ -99,7 +99,11 @@ public class PlayerService extends Service {
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
-        notifyNowPlaying();
+        if (player.getNowPlaying() != null) notifyNowPlaying();
+        else{
+            finish();
+            stopSelf();
+        }
     }
 
     // Listens for commands from the notification

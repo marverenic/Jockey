@@ -43,14 +43,9 @@ public class GenreFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
         ListView genreListView = (ListView) view.findViewById(R.id.list);
 
-        // Most people probably don't have enough genres to warrant fast scrolling...
-        genreListView.setFastScrollEnabled(false);
-
         genreListView.setAdapter(adapter);
         genreListView.setOnItemClickListener(adapter);
-        genreListView.setOnItemLongClickListener(adapter);
-
-        Themes.themeFragment(R.layout.fragment_list, view, this);
+        genreListView.setBackgroundColor(Themes.getBackgroundElevated());
 
         return view;
     }

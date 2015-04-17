@@ -12,6 +12,12 @@
         android:contentDescription="@string/art_description"
         android:src="@drawable/art_default_xl" />
 
+    <include layout="@layout/toolbar"
+        android:id="@+id/toolbar"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_marginTop="25dp"/>
+
     <SeekBar
         android:id="@+id/songSeekBar"
         android:layout_width="fill_parent"

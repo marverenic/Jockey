@@ -6,6 +6,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -55,15 +57,13 @@ public class LibraryPageActivity extends BaseActivity {
         setContentView(R.id.list_container);
         super.onCreate(savedInstanceState);
 
-        if (getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
-
         if (parent != null) {
             final ListView songListView = (ListView) findViewById(R.id.list);
             ArrayList<Song> songEntries = null;
             ArrayList<Album> albumEntries;
 
-            if (getActionBar() != null) {
-                getActionBar().setTitle(parent.toString());
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(parent.toString());
             } else {
                 Debug.log(Debug.LogLevel.WTF, "LibraryPageActivity", "Couldn't find the action bar", this);
             }
@@ -94,7 +94,6 @@ public class LibraryPageActivity extends BaseActivity {
                 ArtistPageAdapter adapter = new ArtistPageAdapter(this, songEntries, albumEntries);
                 list.setAdapter(adapter);
                 list.setOnItemClickListener(adapter);
-                list.setOnItemLongClickListener(adapter);
             }
 
             if (type != Type.ARTIST && songEntries != null) {
@@ -110,21 +109,12 @@ public class LibraryPageActivity extends BaseActivity {
 
                 songListView.setAdapter(adapter);
                 songListView.setOnItemClickListener(adapter);
-                songListView.setOnItemLongClickListener(adapter);
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                if (getActionBar() != null)
-                    getActionBar().setElevation(getResources().getDimension(R.dimen.header_elevation));
-                else
-                    Debug.log(Debug.LogLevel.WTF, "LibraryPageActivity", "Couldn't find the action bar", this);
             }
         } else {
             type = Type.UNKNOWN;
             setContentView(R.layout.page_error);
             Debug.log(Debug.LogLevel.WTF, "LibraryPageActivity", "An invalid item was passed as the parent object", this);
         }
-        update();
     }
 
     @Override
@@ -202,10 +192,13 @@ public class LibraryPageActivity extends BaseActivity {
         final float density = activity.getResources().getDisplayMetrics().density;
         final long globalPadding = (long) (activity.getResources().getDimension(R.dimen.global_padding) / density);
         final long gridPadding = (long) (activity.getResources().getDimension(R.dimen.grid_padding) / density);
-        final long extraHeight = 60;
+        final long scrollbarPadding = 32;
+        final long extraHeight = 4 * gridPadding
+                + (long) (activity.getResources().getDimension(R.dimen.grid_text_header_size) / density)
+                + (long) (activity.getResources().getDimension(R.dimen.grid_text_detail_size) / density);
         final long minWidth = (long) (activity.getResources().getDimension(R.dimen.grid_width) / density);
 
-        long availableWidth = screenWidth - 2 * (globalPadding + gridPadding);
+        long availableWidth = screenWidth - 2 * (globalPadding + gridPadding) - scrollbarPadding;
         double numColumns = (availableWidth + gridPadding) / (minWidth + gridPadding);
 
         long columnWidth = (long) Math.floor(availableWidth / numColumns);
@@ -245,6 +238,20 @@ public class LibraryPageActivity extends BaseActivity {
 
     @Override
     public void themeActivity() {
-        Themes.themeActivity(R.layout.fragment_list, getWindow().findViewById(android.R.id.content), this);
+        super.themeActivity();
+
+        findViewById(R.id.list).setBackgroundColor(Themes.getBackgroundElevated());
+
+        LayerDrawable backgroundDrawable = (LayerDrawable) getResources().getDrawable(R.drawable.header_frame);
+        GradientDrawable bodyDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.body));
+        GradientDrawable topDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.top));
+        bodyDrawable.setColor(Themes.getBackground());
+        topDrawable.setColor(Themes.getPrimary());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            findViewById(R.id.list_container).setBackground(backgroundDrawable);
+        }
+        else {
+            findViewById(R.id.list_container).setBackgroundDrawable(backgroundDrawable);
+        }
     }
 }

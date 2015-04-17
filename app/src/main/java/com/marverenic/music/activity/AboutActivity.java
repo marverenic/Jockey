@@ -1,6 +1,9 @@
 package com.marverenic.music.activity;
 
+import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.marverenic.music.BuildConfig;
@@ -20,7 +23,30 @@ public class AboutActivity extends BaseActivity {
 
     @Override
     public void themeActivity() {
-        Themes.themeActivity(R.layout.about, getWindow().findViewById(android.R.id.content), this);
+        super.themeActivity();
+
+        findViewById(R.id.aboutScroll).setBackgroundColor(Themes.getPrimary());
+
+        int[] primaryText = {R.id.aboutAppName, R.id.lastFmHeader, R.id.aboutAOSPHeader, R.id.aboutAOSPTabsHeader,
+                R.id.aboutPicassoHeader, R.id.aboutDSLVHeader, R.id.aboutApolloHeader, R.id.aboutStackOverflowHeader};
+        int[] detailText = {R.id.aboutDescription, R.id.aboutLicense, R.id.aboutUsesHeader,
+                R.id.aboutVersion, R.id.aboutAOSPDetail, R.id.aboutAOSPTabsDetail, R.id.aboutUILDetail, R.id.aboutDSLVDetail};
+
+        for (int aPrimaryText : primaryText)
+            ((TextView) findViewById(aPrimaryText)).setTextColor(Themes.getUiText());
+        for (int aDetailText : detailText)
+            ((TextView) findViewById(aDetailText)).setTextColor(Themes.getUiDetailText());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            ((ImageView) findViewById(R.id.aboutAppIcon)).setImageBitmap(Themes.getLargeIcon(this, DisplayMetrics.DENSITY_XXXHIGH));
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                ((ImageView) findViewById(R.id.aboutAppIcon)).setImageBitmap(Themes.getLargeIcon(this, DisplayMetrics.DENSITY_XXHIGH));
+            }
+            else{
+                ((ImageView) findViewById(R.id.aboutAppIcon)).setImageBitmap(Themes.getLargeIcon(this, DisplayMetrics.DENSITY_XHIGH));
+            }
+        }
     }
 
     @Override
