@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/colorPrimary"
+    android:elevation="@dimen/header_elevation"
     android:id="@+id/toolbar">
 
 </android.support.v7.widget.Toolbar>

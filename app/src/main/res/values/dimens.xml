@@ -1,8 +1,5 @@
 <resources>
 
-    <dimen name="navigation_height">56dp</dimen>
-    <dimen name="tab_padding_v">8dp</dimen>
-    <dimen name="tab_selector_height">4dp</dimen>
     <dimen name="list_text_header_size">20sp</dimen>
     <dimen name="list_text_detail_size">16sp</dimen>
     <dimen name="grid_text_header_size">16sp</dimen>
@@ -30,6 +27,7 @@
     <dimen name="fab_size">56dp</dimen>
     <dimen name="fab_icon_size">24dp</dimen>
     <dimen name="fab_padding">16dp</dimen>
+    <dimen name="fab_elevation">6dp</dimen>
     <dimen name="alert_padding">24dp</dimen>
 
 </resources>

@@ -3,8 +3,6 @@ package com.marverenic.music.activity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -23,7 +21,6 @@ import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.SlidingTabLayout;
 
 import java.util.ArrayList;
@@ -117,22 +114,11 @@ public class SearchActivity extends BaseActivity {
     @Override
     public void themeActivity() {
         super.themeActivity();
+    }
 
-        findViewById(R.id.pagerSlidingTabs).setBackgroundColor(Themes.getPrimary());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            findViewById(R.id.pagerSlidingTabs).setElevation(0);
-        }
-        LayerDrawable backgroundDrawable = (LayerDrawable) getResources().getDrawable(R.drawable.header_frame);
-        GradientDrawable bodyDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.body));
-        GradientDrawable topDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.top));
-        bodyDrawable.setColor(Themes.getBackground());
-        topDrawable.setColor(Themes.getPrimary());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            findViewById(R.id.pager).setBackground(backgroundDrawable);
-        }
-        else {
-            findViewById(R.id.pager).setBackgroundDrawable(backgroundDrawable);
-        }
+    @Override
+    public void update() {
+        updateMiniplayer();
     }
 
     @Override

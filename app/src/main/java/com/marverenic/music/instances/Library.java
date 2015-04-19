@@ -100,6 +100,16 @@ public class Library {
             public int compare(Artist o1, Artist o2) {
                 String o1c = o1.artistName.toLowerCase(Locale.ENGLISH);
                 String o2c = o2.artistName.toLowerCase(Locale.ENGLISH);
+                if (o1c.startsWith("the ")) {
+                    o1c = o1c.substring(4);
+                } else if (o1c.startsWith("a ")) {
+                    o1c = o1c.substring(2);
+                }
+                if (o2c.startsWith("the ")) {
+                    o2c = o2c.substring(4);
+                } else if (o2c.startsWith("a ")) {
+                    o2c = o2c.substring(2);
+                }
                 if (!o1c.matches("[a-z]") && o2c.matches("[a-z]")) {
                     return o2c.compareTo(o1c);
                 }

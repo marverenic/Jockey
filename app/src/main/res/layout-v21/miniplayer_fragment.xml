@@ -4,6 +4,8 @@
     android:layout_width="fill_parent"
     android:layout_height="@dimen/now_playing_ticker_height"
     android:background="?android:attr/selectableItemBackgroundBorderless"
+    android:layout_centerVertical="true"
+    android:gravity="center"
     android:clickable="true"
     android:onClick="onClick">
 
@@ -39,32 +41,34 @@
         android:src="@drawable/ic_play"
         android:tint="@color/list_text" />
 
-    <TextView
-        android:id="@+id/textNowPlayingTitle"
+    <LinearLayout
+        android:id="@+id/songInstance"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/now_playing_ticker_height"
-        android:layout_marginTop="6dp"
-        android:layout_toStartOf="@id/playButton"
-        android:ellipsize="end"
-        android:singleLine="true"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:text="@string/nothing_playing"
-        android:theme="@style/listTitleText" />
+        android:layout_height="fill_parent"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_toEndOf="@+id/imageArtwork"
+        android:layout_toStartOf="@+id/playButton">
 
-    <TextView
-        android:id="@+id/textNowPlayingDetail"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/textNowPlayingTitle"
-        android:layout_marginStart="@dimen/now_playing_ticker_height"
-        android:layout_toStartOf="@id/playButton"
-        android:ellipsize="end"
-        android:singleLine="true"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:text="@string/no_artist"
-        android:theme="@style/listDetailText" />
+        <TextView
+            android:id="@+id/textNowPlayingTitle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@string/nothing_playing"
+            android:theme="@style/listTitleText" />
+
+        <TextView
+            android:id="@+id/textNowPlayingDetail"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@string/no_artist"
+            android:theme="@style/listDetailText" />
+
+    </LinearLayout>
 
 </RelativeLayout>

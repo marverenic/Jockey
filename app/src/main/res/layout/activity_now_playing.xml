@@ -43,7 +43,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:lines="1"
+                android:singleLine="true"
                 android:text="@string/nothing_playing"
                 android:textColor="@color/player_text_main"
                 android:textSize="22sp" />
@@ -53,7 +53,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:lines="1"
+                android:singleLine="true"
                 android:text="@string/no_artist"
                 android:textColor="@color/player_text_detail"
                 android:textSize="22sp" />
@@ -63,7 +63,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:lines="1"
+                android:singleLine="true"
                 android:text="@string/no_album"
                 android:textColor="@color/player_text_detail"
                 android:textSize="22sp" />

@@ -49,35 +49,37 @@ public class PlayerController {
     };
 
     public static void bind(final Context context) {
-        final ContextWrapper contextWrapper = new ContextWrapper(context);
-        binder = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                playerService = IPlayerService.Stub.asInterface(service);
-                contextWrapper.sendOrderedBroadcast(new Intent(Player.UPDATE_BROADCAST), null);
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                playerService = null;
-                try {
-                    contextWrapper.unregisterReceiver(updateReceiver);
-                } catch (Exception ignored) {
+        if (binder == null) {
+            final ContextWrapper contextWrapper = new ContextWrapper(context);
+            binder = new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder service) {
+                    playerService = IPlayerService.Stub.asInterface(service);
+                    contextWrapper.sendOrderedBroadcast(new Intent(Player.UPDATE_BROADCAST), null);
                 }
-            }
-        };
-        Intent serviceIntent = new Intent(contextWrapper, PlayerService.class);
-        contextWrapper.startService(serviceIntent);
-        contextWrapper.bindService(serviceIntent, binder, 0);
 
-        // Register a receiver to invalidate "cached" data when an UPDATE broadcast is sent
-        // It has to have high priority because it MUST execute before other BroadcastReceivers
-        // to ensure that they don't receive old data
-        IntentFilter filter = new IntentFilter(Player.UPDATE_BROADCAST);
-        filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
-        contextWrapper.registerReceiver(updateReceiver, filter);
+                @Override
+                public void onServiceDisconnected(ComponentName name) {
+                    playerService = null;
+                    try {
+                        contextWrapper.unregisterReceiver(updateReceiver);
+                    } catch (Exception ignored) {
+                    }
+                }
+            };
+            Intent serviceIntent = new Intent(contextWrapper, PlayerService.class);
+            contextWrapper.startService(serviceIntent);
+            contextWrapper.bindService(serviceIntent, binder, 0);
 
-        if (BuildConfig.DEBUG) Log.i("PlayerController", "Bound Player service");
+            // Register a receiver to invalidate "cached" data when an UPDATE broadcast is sent
+            // It has to have high priority because it MUST execute before other BroadcastReceivers
+            // to ensure that they don't receive old data
+            IntentFilter filter = new IntentFilter(Player.UPDATE_BROADCAST);
+            filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
+            contextWrapper.registerReceiver(updateReceiver, filter);
+
+            if (BuildConfig.DEBUG) Log.i("PlayerController", "Bound Player service");
+        }
     }
 
     public static void unbind(Context context) {

@@ -30,6 +30,9 @@
     <string name="export_playlist">Save as playlist&#8230;</string>
     <string name="message_create_playlist_error_no_name">Can\'t create a playlist with no name</string>
     <string name="message_play_error_not_found">This song couldn\'t be played</string>
+    <string name="action_sort_name">Sort by name</string>
+    <string name="action_sort_artist">Sort by artist</string>
+    <string name="action_sort_album">Sort by album</string>
 
     <string name="nothing_playing">Nothing is playing</string>
     <string name="no_artist">unknown artist</string>
@@ -50,6 +53,9 @@
     <string name="message_created_playlist">Created playlist \"%1$s\"</string>
     <string name="message_removed_playlist">Deleted playlist \"%1$s\"</string>
     <string name="message_create_playlist_error_exists">Couldn\'t create playlist \"%1$s\" because it already exists</string>
+    <string name="message_sorted_playlist_name">Sorted \"%1$s\" by name</string>
+    <string name="message_sorted_playlist_artist">Sorted \"%1$s\" by artist name</string>
+    <string name="message_sorted_playlist_album">Sorted \"%1$s\" by album name</string>
 
     <!-- About Activity Strings -->
     <string name="about_version">Version</string>

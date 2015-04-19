@@ -57,6 +57,10 @@ public class PlaylistFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
         ListView playlistListView = (ListView) view.findViewById(R.id.list);
 
+        int paddingTop = (int) getActivity().getResources().getDimension(R.dimen.list_margin);
+        int paddingH =(int) getActivity().getResources().getDimension(R.dimen.global_padding);
+        view.setPadding(paddingH, paddingTop, paddingH, 0);
+
         // TODO Attach a FAB to create a new playlist if our list has all playlists in the library
 
         // Add an empty view to the bottom of the list
@@ -87,7 +91,7 @@ public class PlaylistFragment extends Fragment {
         // Set the FAB's background drawable
         FAB.setLayoutParams(fabParams);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            FAB.setElevation(getResources().getDimension(R.dimen.window_elevation) + 1);
+            FAB.setElevation(getResources().getDimension(R.dimen.fab_elevation));
         }
         FAB.setBackgroundResource(R.drawable.fab_background);
 

@@ -5,16 +5,25 @@
 
     <include layout="@layout/toolbar" android:id="@+id/toolbar" />
 
-    <com.mobeta.android.dslv.DragSortListView
-        android:id="@+id/list"
-        style="@style/list"
-        android:layout_width="fill_parent"
+    <FrameLayout
+        android:id="@+id/list_container"
+        android:layout_width="match_parent"
         android:layout_height="fill_parent"
         android:layout_below="@id/toolbar"
-        android:clipToPadding="false"
-        android:elevation="@dimen/window_elevation"
-        android:saveEnabled="true"
-        android:scrollbars="vertical"/>
+        android:paddingLeft="@dimen/global_padding"
+        android:paddingRight="@dimen/global_padding"
+        android:clipToPadding="false">
+
+        <com.mobeta.android.dslv.DragSortListView
+            android:id="@+id/list"
+            style="@style/list"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:clipToPadding="false"
+            android:elevation="@dimen/window_elevation"
+            android:saveEnabled="true"
+            android:scrollbars="vertical"/>
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/miniplayer_holder"

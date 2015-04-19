@@ -4,6 +4,8 @@
     android:layout_width="fill_parent"
     android:layout_height="@dimen/now_playing_ticker_height"
     android:background="?android:attr/selectableItemBackground"
+    android:layout_centerVertical="true"
+    android:gravity="center"
     android:clickable="true"
     android:onClick="onClick">
 
@@ -19,13 +21,14 @@
         android:id="@+id/skipButton"
         android:layout_width="@dimen/now_playing_ticker_height"
         android:layout_height="@dimen/now_playing_ticker_height"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:contentDescription="@string/button_skip_description"
         android:onClick="onClick"
-        android:src="@drawable/ic_skip_next" />
+        android:src="@drawable/ic_skip_next"
+        android:tint="@color/list_text" />
 
     <ImageButton
         android:id="@+id/playButton"
@@ -37,38 +40,42 @@
         android:clickable="true"
         android:contentDescription="@string/button_play_description"
         android:onClick="onClick"
-        android:src="@drawable/ic_play" />
+        android:src="@drawable/ic_play"
+        android:tint="@color/list_text" />
 
-    <TextView
-        android:id="@+id/textNowPlayingTitle"
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/now_playing_ticker_height"
-        android:layout_marginStart="@dimen/now_playing_ticker_height"
-        android:layout_marginTop="6dp"
-        android:layout_toLeftOf="@id/playButton"
-        android:layout_toStartOf="@id/playButton"
-        android:ellipsize="end"
-        android:singleLine="true"
+        android:layout_height="fill_parent"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:orientation="vertical"
         android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:text="@string/nothing_playing"
-        android:theme="@style/listTitleText" />
+        android:paddingStart="8dp"
+        android:layout_toRightOf="@id/imageArtwork"
+        android:layout_toEndOf="@+id/imageArtwork"
+        android:layout_toLeftOf="@id/playButton"
+        android:layout_toStartOf="@+id/playButton">
 
-    <TextView
-        android:id="@+id/textNowPlayingDetail"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/textNowPlayingTitle"
-        android:layout_marginLeft="@dimen/now_playing_ticker_height"
-        android:layout_marginStart="@dimen/now_playing_ticker_height"
-        android:layout_toLeftOf="@id/playButton"
-        android:layout_toStartOf="@id/playButton"
-        android:ellipsize="end"
-        android:singleLine="true"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:text="@string/no_artist"
-        android:theme="@style/listDetailText" />
+        <TextView
+            android:id="@+id/textNowPlayingTitle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@string/nothing_playing"
+            android:textSize="@dimen/list_text_header_size"
+            android:theme="@style/listTitleText" />
+
+        <TextView
+            android:id="@+id/textNowPlayingDetail"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@string/no_artist"
+            android:textSize="@dimen/list_text_detail_size"
+            android:theme="@style/listDetailText" />
+
+    </LinearLayout>
 
 </RelativeLayout>

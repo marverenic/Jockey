@@ -44,6 +44,10 @@ public class AlbumFragment extends Fragment {
         // inflate the root view of the fragment
         View view = inflater.inflate(R.layout.fragment_grid, container, false);
 
+        int paddingTop = (int) getActivity().getResources().getDimension(R.dimen.list_margin);
+        int paddingH =(int) getActivity().getResources().getDimension(R.dimen.global_padding);
+        view.setPadding(paddingH, paddingTop, paddingH, 0);
+
         // initialize the GridView
         GridView gridView = (GridView) view.findViewById(R.id.albumGrid);
         gridView.setAdapter(adapter);

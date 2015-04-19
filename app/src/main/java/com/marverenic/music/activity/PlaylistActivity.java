@@ -1,19 +1,24 @@
 package com.marverenic.music.activity;
 
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
 import android.media.AudioManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.ViewGroup;
-import android.widget.ListView;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.marverenic.music.R;
 import com.marverenic.music.adapters.PlaylistEditAdapter;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.instances.Playlist;
+import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Themes;
 import com.mobeta.android.dslv.DragSortListView;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Locale;
 
 public class PlaylistActivity extends BaseActivity{
 
@@ -54,25 +59,130 @@ public class PlaylistActivity extends BaseActivity{
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.playlist_sort, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_sort_name:
+                if (playlist != null){
+                    ArrayList<Song> sortedList = LibraryScanner.getPlaylistEntries(this, playlist);
+                    Library.sortSongList(sortedList);
+                    LibraryScanner.editPlaylist(this, playlist, sortedList);
+
+                    new PlaylistEditAdapter(
+                            LibraryScanner.getPlaylistEntries(this, playlist),
+                            playlist,
+                            this,
+                            (DragSortListView) findViewById(R.id.list));
+
+                    Toast.makeText(
+                            this,
+                            String.format(getResources().getString(R.string.message_sorted_playlist_name), playlist),
+                            Toast.LENGTH_SHORT)
+                            .show();
+                }
+                return true;
+            case R.id.action_sort_artist:
+                if (playlist != null){
+                    ArrayList<Song> sortedList = LibraryScanner.getPlaylistEntries(this, playlist);
+
+                    Comparator<Song> artistComparator = new Comparator<Song>() {
+                        @Override
+                        public int compare(Song o1, Song o2) {
+                            String o1c = o1.artistName.toLowerCase(Locale.ENGLISH);
+                            String o2c = o2.artistName.toLowerCase(Locale.ENGLISH);
+                            if (o1c.startsWith("the ")) {
+                                o1c = o1c.substring(4);
+                            } else if (o1c.startsWith("a ")) {
+                                o1c = o1c.substring(2);
+                            }
+                            if (o2c.startsWith("the ")) {
+                                o2c = o2c.substring(4);
+                            } else if (o2c.startsWith("a ")) {
+                                o2c = o2c.substring(2);
+                            }
+                            if (!o1c.matches("[a-z]") && o2c.matches("[a-z]")) {
+                                return o2c.compareTo(o1c);
+                            }
+                            return o1c.compareTo(o2c);
+                        }
+                    };
+                    Collections.sort(sortedList, artistComparator);
+
+                    LibraryScanner.editPlaylist(this, playlist, sortedList);
+
+                    new PlaylistEditAdapter(
+                            LibraryScanner.getPlaylistEntries(this, playlist),
+                            playlist,
+                            this,
+                            (DragSortListView) findViewById(R.id.list));
+
+                    Toast.makeText(
+                            this,
+                            String.format(getResources().getString(R.string.message_sorted_playlist_artist), playlist),
+                            Toast.LENGTH_SHORT)
+                            .show();
+                }
+                return true;
+            case R.id.action_sort_album:
+                if (playlist != null){
+                    ArrayList<Song> sortedList = LibraryScanner.getPlaylistEntries(this, playlist);
+
+                    Comparator<Song> albumComparator = new Comparator<Song>() {
+                        @Override
+                        public int compare(Song o1, Song o2) {
+                            String o1c = o1.albumName.toLowerCase(Locale.ENGLISH);
+                            String o2c = o2.albumName.toLowerCase(Locale.ENGLISH);
+                            if (o1c.startsWith("the ")) {
+                                o1c = o1c.substring(4);
+                            } else if (o1c.startsWith("a ")) {
+                                o1c = o1c.substring(2);
+                            }
+                            if (o2c.startsWith("the ")) {
+                                o2c = o2c.substring(4);
+                            } else if (o2c.startsWith("a ")) {
+                                o2c = o2c.substring(2);
+                            }
+                            if (!o1c.matches("[a-z]") && o2c.matches("[a-z]")) {
+                                return o2c.compareTo(o1c);
+                            }
+                            return o1c.compareTo(o2c);
+                        }
+                    };
+                    Collections.sort(sortedList, albumComparator);
+
+                    LibraryScanner.editPlaylist(this, playlist, sortedList);
+
+                    new PlaylistEditAdapter(
+                            LibraryScanner.getPlaylistEntries(this, playlist),
+                            playlist,
+                            this,
+                            (DragSortListView) findViewById(R.id.list));
+
+                    Toast.makeText(
+                            this,
+                            String.format(getResources().getString(R.string.message_sorted_playlist_album), playlist),
+                            Toast.LENGTH_SHORT)
+                            .show();
+                }
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void themeActivity() {
         super.themeActivity();
-
         findViewById(R.id.list).setBackgroundColor(Themes.getBackgroundElevated());
+    }
 
-        ListView list = (ListView) findViewById(R.id.list);
-        list.setDividerHeight((int) getResources().getDisplayMetrics().density);
-
-        LayerDrawable backgroundDrawable = (LayerDrawable) getResources().getDrawable(R.drawable.header_frame);
-        GradientDrawable bodyDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.body));
-        GradientDrawable topDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.top));
-        bodyDrawable.setColor(Themes.getBackground());
-        topDrawable.setColor(Themes.getPrimary());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            ((ViewGroup) findViewById(R.id.list).getParent()).setBackground(backgroundDrawable);
-        }
-        else {
-            ((ViewGroup) findViewById(R.id.list).getParent()).setBackgroundDrawable(backgroundDrawable);
-        }
+    @Override
+    public void update() {
+        updateMiniplayer();
     }
 
 }

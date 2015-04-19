@@ -6,9 +6,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -188,6 +185,7 @@ public class LibraryPageActivity extends BaseActivity {
     }
 
     private static void updateArtistGridLayout(GridView albumGrid, int albumCount, Activity activity) {
+        final boolean isTablet = activity.getResources().getConfiguration().smallestScreenWidthDp > 700;
         final short screenWidth = (short) activity.getResources().getConfiguration().screenWidthDp;
         final float density = activity.getResources().getDisplayMetrics().density;
         final short globalPadding = (short) (activity.getResources().getDimension(R.dimen.global_padding) / density);
@@ -198,7 +196,7 @@ public class LibraryPageActivity extends BaseActivity {
                 + (activity.getResources().getDimension(R.dimen.grid_text_detail_size) / density));
         final short minWidth = (short) (activity.getResources().getDimension(R.dimen.grid_width) / density);
 
-        short availableWidth = (short) (screenWidth - 2 * (globalPadding + gridPadding) - scrollbarPadding);
+        short availableWidth = (short) (screenWidth - 2 * (((isTablet)? globalPadding : 0) + gridPadding) - scrollbarPadding);
         double numColumns = (availableWidth + gridPadding) / (minWidth + gridPadding);
 
         short columnWidth = (short) Math.floor(availableWidth / numColumns);
@@ -239,19 +237,11 @@ public class LibraryPageActivity extends BaseActivity {
     @Override
     public void themeActivity() {
         super.themeActivity();
-
         findViewById(R.id.list).setBackgroundColor(Themes.getBackgroundElevated());
+    }
 
-        LayerDrawable backgroundDrawable = (LayerDrawable) getResources().getDrawable(R.drawable.header_frame);
-        GradientDrawable bodyDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.body));
-        GradientDrawable topDrawable = ((GradientDrawable) backgroundDrawable.findDrawableByLayerId(R.id.top));
-        bodyDrawable.setColor(Themes.getBackground());
-        topDrawable.setColor(Themes.getPrimary());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            findViewById(R.id.list_container).setBackground(backgroundDrawable);
-        }
-        else {
-            findViewById(R.id.list_container).setBackgroundDrawable(backgroundDrawable);
-        }
+    @Override
+    public void update() {
+        updateMiniplayer();
     }
 }

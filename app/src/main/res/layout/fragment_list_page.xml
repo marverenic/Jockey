@@ -12,8 +12,9 @@
         android:layout_below="@id/toolbar"/>
 
     <FrameLayout
+        android:id="@+id/miniplayer_holder"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_alignParentBottom="true"
         android:background="@color/background_miniplayer"
         android:elevation="@dimen/miniplayer_elevation">

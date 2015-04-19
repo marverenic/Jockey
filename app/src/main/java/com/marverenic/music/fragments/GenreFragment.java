@@ -43,6 +43,10 @@ public class GenreFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
         ListView genreListView = (ListView) view.findViewById(R.id.list);
 
+        int paddingTop = (int) getActivity().getResources().getDimension(R.dimen.list_margin);
+        int paddingH =(int) getActivity().getResources().getDimension(R.dimen.global_padding);
+        view.setPadding(paddingH, paddingTop, paddingH, 0);
+
         genreListView.setAdapter(adapter);
         genreListView.setOnItemClickListener(adapter);
         genreListView.setBackgroundColor(Themes.getBackgroundElevated());

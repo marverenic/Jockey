@@ -3,6 +3,8 @@
     android:id="@+id/list_container"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
+    android:paddingLeft="@dimen/global_padding"
+    android:paddingRight="@dimen/global_padding"
     android:clipToPadding="false">
 
     <ListView
@@ -14,5 +16,5 @@
         android:elevation="@dimen/window_elevation"
         android:saveEnabled="true"
         android:scrollbars="vertical"/>
-    
+
 </RelativeLayout>

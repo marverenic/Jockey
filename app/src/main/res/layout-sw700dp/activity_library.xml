@@ -3,16 +3,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/toolbar" android:id="@+id/toolbar"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="192dp"
+        android:background="?attr/colorPrimary">
+        <include layout="@layout/toolbar" android:id="@+id/toolbar"/>
+    </FrameLayout>
 
     <com.marverenic.music.view.SlidingTabLayout
         android:id="@+id/pagerSlidingTabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/toolbar"
+        android:layout_marginTop="@dimen/abc_action_bar_default_height_material"
         android:layout_gravity="top"
-        android:background="@color/primary"
-        android:elevation="@dimen/header_elevation"
+        android:background="?attr/colorPrimary"
         android:paddingLeft="@dimen/global_padding"
         android:paddingRight="@dimen/global_padding" />
 
@@ -21,14 +25,14 @@
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
         android:layout_below="@id/pagerSlidingTabs"
-        android:layout_marginBottom="@dimen/now_playing_ticker_height"
         android:saveEnabled="true" />
 
     <FrameLayout
+        android:id="@+id/miniplayer_holder"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_alignParentBottom="true"
-        android:background="@color/player_control_background"
+        android:background="@color/background_miniplayer"
         android:elevation="@dimen/miniplayer_elevation">
 
         <include

@@ -25,6 +25,8 @@ public class AboutActivity extends BaseActivity {
     public void themeActivity() {
         super.themeActivity();
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) getSupportActionBar().setElevation(0);
+
         findViewById(R.id.aboutScroll).setBackgroundColor(Themes.getPrimary());
 
         int[] primaryText = {R.id.aboutAppName, R.id.lastFmHeader, R.id.aboutAOSPHeader, R.id.aboutAOSPTabsHeader,
@@ -48,6 +50,9 @@ public class AboutActivity extends BaseActivity {
             }
         }
     }
+
+    @Override
+    public void update() {}
 
     @Override
     public void updateMiniplayer(){}
