@@ -1,15 +1,14 @@
 package com.marverenic.music.activity;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatEditText;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
@@ -49,7 +48,7 @@ public class QueueActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.save:
-                final EditText input = new EditText(this);
+                final AppCompatEditText input = new AppCompatEditText(this);
                 input.setInputType(InputType.TYPE_CLASS_TEXT);
                 input.setHint("Playlist name");
 
@@ -71,14 +70,12 @@ public class QueueActivity extends BaseActivity {
                             }
                         }).show();
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    int padding = (int) getResources().getDimension(R.dimen.alert_padding);
-                    ((View) input.getParent()).setPadding(
-                            padding - input.getPaddingLeft(),
-                            padding,
-                            padding - input.getPaddingRight(),
-                            input.getPaddingBottom());
-                }
+                int padding = (int) getResources().getDimension(R.dimen.alert_padding);
+                ((View) input.getParent()).setPadding(
+                        padding - input.getPaddingLeft(),
+                        padding,
+                        padding - input.getPaddingRight(),
+                        input.getPaddingBottom());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

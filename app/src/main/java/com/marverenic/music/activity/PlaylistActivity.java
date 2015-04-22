@@ -38,7 +38,7 @@ public class PlaylistActivity extends BaseActivity{
         if (parent instanceof Playlist) {
             playlist = (Playlist) parent;
 
-            getSupportActionBar().setTitle(playlist.playlistName);
+            if (getSupportActionBar() != null) getSupportActionBar().setTitle(playlist.playlistName);
         }
 
         setVolumeControlStream(AudioManager.STREAM_MUSIC);

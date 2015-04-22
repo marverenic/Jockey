@@ -11,8 +11,6 @@
     <dimen name="list_height">72dp</dimen>
     <dimen name="list_padding_h">16dp</dimen>
     <dimen name="list_margin">6dp</dimen>
-    <dimen name="list_extended_padding_h">56dp</dimen>
-    <dimen name="list_image_size">48dp</dimen>
     <dimen name="grid_width">120dp</dimen>
     <dimen name="artist_image_height">160dp</dimen>
     <dimen name="grid_art_size">162dp</dimen>

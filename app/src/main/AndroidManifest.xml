@@ -118,7 +118,8 @@
 
         <service
             android:name="com.marverenic.music.PlayerService"
-            android:process=":player" />
+            android:process=":player"
+            android:exported="false"/>
 
         <receiver android:name=".utils.MediaReceiver" >
             <intent-filter>

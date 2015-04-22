@@ -1,8 +1,8 @@
 package com.marverenic.music.adapters;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -45,10 +45,19 @@ public class ArtistListAdapter extends BaseAdapter implements SectionIndexer, Ad
         this.data = data;
         this.context = context;
 
+        String name;
         char thisChar;
         int sectionIndex = -1;
         for(int i = 0; i < data.size(); i++){
-            thisChar = data.get(i).artistName.toUpperCase().charAt(0);
+            name = data.get(i).artistName.toUpperCase();
+
+            if (name.startsWith("THE ")) {
+                thisChar = name.charAt(4);
+            } else if (name.startsWith("A ")) {
+                thisChar = name.charAt(2);
+            } else {
+                thisChar = name.charAt(0);
+            }
 
             if(sectionCharacter.size() == 0 || !sectionCharacter.get(sectionCharacter.size() - 1).equals(thisChar)) {
                 sectionIndex++;

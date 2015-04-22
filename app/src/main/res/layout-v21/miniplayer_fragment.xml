@@ -4,7 +4,6 @@
     android:layout_width="fill_parent"
     android:layout_height="@dimen/now_playing_ticker_height"
     android:background="?android:attr/selectableItemBackgroundBorderless"
-    android:layout_centerVertical="true"
     android:gravity="center"
     android:clickable="true"
     android:onClick="onClick">

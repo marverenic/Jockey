@@ -26,6 +26,7 @@ public class SquareImageViewV extends ImageView {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        //noinspection SuspiciousNameCombination
         super.onMeasure(heightMeasureSpec, heightMeasureSpec);
     }
 

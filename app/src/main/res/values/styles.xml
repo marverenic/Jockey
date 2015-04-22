@@ -8,8 +8,8 @@
     <color name="ui_detail_text">#80DEEA</color>
 
     <!-- Base Colors -->
-    <color name="list_text">#E0E0E0</color>
-    <color name="detail_text">#9E9E9E</color>
+    <color name="list_text">@color/primary_text_default_material_dark</color>
+    <color name="detail_text">@color/secondary_text_default_material_dark</color>
     <color name="background">#212121</color>
     <color name="background_elevated">#333333</color>
     <color name="background_miniplayer">#424242</color>
@@ -28,8 +28,8 @@
 
     <!-- Custom Theme Colors-->
     <!-- Light Base -->
-    <color name="list_text_light">#212121</color>
-    <color name="detail_text_light">#757575</color>
+    <color name="list_text_light">@color/primary_text_default_material_light</color>
+    <color name="detail_text_light">@color/secondary_text_default_material_light</color>
     <color name="background_light">#EEEEEE</color>
     <color name="background_elevated_light">#F5F5F5</color>
     <color name="background_miniplayer_light">#FAFAFA</color>
@@ -76,10 +76,9 @@
     <color name="ui_text_purple">#EDE7F6</color>
     <color name="ui_detail_text_purple">#B39DDB</color>
 
-    <style name="AppTheme" parent="Theme.AppCompat">
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@color/background</item>
-        <item name="windowActionBar">false</item>
-        <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
 
     <!-- More themes -->
@@ -132,10 +131,8 @@
         <item name="colorControlHighlight">@color/accent_purple</item>
     </style>
 
-    <style name="AppThemeLight" parent="Theme.AppCompat.Light">
+    <style name="AppThemeLight" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@color/background_light</item>
-        <item name="windowActionBar">false</item>
-        <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
         <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
     </style>
 

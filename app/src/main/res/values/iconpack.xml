@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-    <string-array name="icon_pack" translatable="false">
+    <string-array name="icon_pack" translatable="false" tools:ignore="UnusedResources">
         <item>ic_launcher</item>
         <item>ic_launcher_red</item>
         <item>ic_launcher_orange</item>

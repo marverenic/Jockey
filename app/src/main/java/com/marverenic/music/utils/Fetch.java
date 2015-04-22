@@ -135,13 +135,13 @@ public class Fetch {
 
     // Because fetching full resolution art can be slow, do it
     public interface fullResolutionArtCallback{
-        public void onArtFetched(@Nullable Bitmap art);
+        void onArtFetched(@Nullable Bitmap art);
     }
 
     public static void buildAlbumPalette (Bitmap bitmap, int defaultPrimary, int defaultTitleText,
                                           int defaultBodyText, Album album){
 
-        Palette palette = Palette.generate(bitmap);
+        Palette palette = Palette.from(bitmap).generate();
 
         int primary = defaultPrimary;
         int titleText = defaultTitleText;

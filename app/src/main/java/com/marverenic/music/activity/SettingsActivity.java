@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -23,7 +23,7 @@ import com.marverenic.music.utils.Themes;
 
 import java.io.File;
 
-public class SettingsActivity extends ActionBarActivity {
+public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         Themes.setTheme(this);
@@ -31,9 +31,11 @@ public class SettingsActivity extends ActionBarActivity {
         setContentView(R.layout.pref_layout);
 
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            getSupportActionBar().setElevation(getResources().getDimension(R.dimen.header_elevation));
+        if (getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                getSupportActionBar().setElevation(getResources().getDimension(R.dimen.header_elevation));
+        }
 
         getFragmentManager().beginTransaction().replace(R.id.prefFrame, new PrefFragment()).commit();
 
@@ -91,11 +93,10 @@ public class SettingsActivity extends ActionBarActivity {
             bugReportPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 public boolean onPreferenceClick(Preference preference) {
                     Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:"));
-                    intent.putExtra(Intent.EXTRA_EMAIL, new String[] {"marverenic@gmail.com"});
+                    intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"marverenic@gmail.com"});
                     try {
                         intent.putExtra(Intent.EXTRA_SUBJECT, "[Jockey bug report] " + context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName);
-                    }
-                    catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                         Toast.makeText(context, "Couldn't send the log file", Toast.LENGTH_SHORT).show();
                         return false;

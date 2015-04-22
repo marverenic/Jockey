@@ -37,9 +37,11 @@ public class LibraryActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         onNewIntent(getIntent());
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        getSupportActionBar().setHomeButtonEnabled(false);
-        getSupportActionBar().setDisplayShowHomeEnabled(false);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            getSupportActionBar().setHomeButtonEnabled(false);
+            getSupportActionBar().setDisplayShowHomeEnabled(false);
+        }
 
         findViewById(R.id.pagerSlidingTabs).setVisibility(View.INVISIBLE);
         findViewById(R.id.pager).setVisibility(View.INVISIBLE);

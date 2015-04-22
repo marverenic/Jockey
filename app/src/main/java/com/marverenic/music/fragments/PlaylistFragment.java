@@ -1,17 +1,20 @@
 package com.marverenic.music.fragments;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.StateListDrawable;
+import android.graphics.drawable.shapes.OvalShape;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatEditText;
 import android.text.InputType;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -92,8 +95,25 @@ public class PlaylistFragment extends Fragment {
         FAB.setLayoutParams(fabParams);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             FAB.setElevation(getResources().getDimension(R.dimen.fab_elevation));
+            FAB.setBackgroundResource(R.drawable.fab_background);
         }
-        FAB.setBackgroundResource(R.drawable.fab_background);
+        else{
+            Themes.updateColors(getActivity());
+            StateListDrawable background = new StateListDrawable();
+
+            ShapeDrawable pressed = new ShapeDrawable(new OvalShape());
+            pressed.getPaint().setColor(Themes.getAccent());
+            background.addState(new int[]{android.R.attr.state_pressed}, pressed);
+
+            ShapeDrawable normal = new ShapeDrawable(new OvalShape());
+            normal.getPaint().setColor(Themes.getPrimary());
+            background.addState(new int[]{}, normal);
+
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+                FAB.setBackground(background);
+            else
+                FAB.setBackgroundDrawable(background);
+        }
 
         // Set the FAB's icon by adding an imageView child
         ImageView icon = new ImageView(getActivity());
@@ -116,7 +136,7 @@ public class PlaylistFragment extends Fragment {
         FAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final EditText input = new EditText(getActivity());
+                final AppCompatEditText input = new AppCompatEditText(getActivity());
                 input.setInputType(InputType.TYPE_CLASS_TEXT);
                 input.setHint("Playlist name");
 
@@ -138,14 +158,12 @@ public class PlaylistFragment extends Fragment {
                             }
                         }).show();
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    int padding = (int) getResources().getDimension(R.dimen.alert_padding);
-                    ((View) input.getParent()).setPadding(
-                            padding - input.getPaddingLeft(),
-                            padding,
-                            padding - input.getPaddingRight(),
-                            input.getPaddingBottom());
-                }
+                int padding = (int) getResources().getDimension(R.dimen.alert_padding);
+                ((View) input.getParent()).setPadding(
+                        padding - input.getPaddingLeft(),
+                        padding,
+                        padding - input.getPaddingRight(),
+                        input.getPaddingBottom());
             }
         });
 

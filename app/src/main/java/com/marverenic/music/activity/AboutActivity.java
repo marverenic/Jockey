@@ -25,7 +25,8 @@ public class AboutActivity extends BaseActivity {
     public void themeActivity() {
         super.themeActivity();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) getSupportActionBar().setElevation(0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && getSupportActionBar() != null)
+            getSupportActionBar().setElevation(0);
 
         findViewById(R.id.aboutScroll).setBackgroundColor(Themes.getPrimary());
 

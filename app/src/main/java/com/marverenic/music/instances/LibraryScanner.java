@@ -905,12 +905,13 @@ public class LibraryScanner {
             Scanner scanner = new Scanner(countString);
             while (scanner.hasNext()){
                 Song s = findSongById(scanner.nextInt());
-                if (scanner.nextBoolean()){
-                    // increment skip count
-                    s.skipCount++;
-                }
-                else{
-                    s.playCount++;
+                if (s != null) {
+                    if (scanner.nextBoolean()) {
+                        // increment skip count
+                        s.skipCount++;
+                    } else {
+                        s.playCount++;
+                    }
                 }
             }
         }

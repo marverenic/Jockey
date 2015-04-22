@@ -11,7 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -33,7 +33,7 @@ import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 
-public abstract class BaseActivity extends ActionBarActivity implements View.OnClickListener {
+public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener {
 
     @LayoutRes private int layoutResID = -1;
     @IdRes private int contentResId = -1;
@@ -63,13 +63,21 @@ public abstract class BaseActivity extends ActionBarActivity implements View.OnC
         if (toolbar != null) {
             setSupportActionBar(toolbar);
 
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getSupportActionBar().setHomeButtonEnabled(true);
+                getSupportActionBar().setDisplayShowHomeEnabled(true);
+            }
         }
 
         themeActivity();
         ((JockeyApplication) getApplication()).activityCreated();
+
+        if (findViewById(R.id.miniplayer) != null) {
+            findViewById(R.id.miniplayer).setOnClickListener(this);
+            findViewById(R.id.playButton).setOnClickListener(this);
+            findViewById(R.id.skipButton).setOnClickListener(this);
+        }
     }
 
     /**

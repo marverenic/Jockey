@@ -20,7 +20,7 @@ import java.util.Locale;
 
 public class Debug {
 
-    public static enum LogLevel {VERBOSE, INFO, DEBUG, WARNING, ERROR, WTF, WTSF }
+    public enum LogLevel {VERBOSE, INFO, DEBUG, WARNING, ERROR, WTF, WTSF }
     public static final String FILENAME = "jockey.log";
 
     public static void log(String tag, String message, Context context) {
@@ -89,7 +89,6 @@ public class Debug {
     public static void log(Throwable t, Context context) {
         StringWriter stackTrace = new StringWriter();
         t.printStackTrace(new PrintWriter(stackTrace));
-        t.printStackTrace();
         amend(stackTrace.toString() + getHeader(context), context);
     }
 
@@ -111,9 +110,18 @@ public class Debug {
         ConnectivityManager network = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo info = network.getActiveNetworkInfo();
 
-        ActivityManager actManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
-        actManager.getMemoryInfo(memInfo);
+        String RAM;
+
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+            ActivityManager actManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+            ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
+            actManager.getMemoryInfo(memInfo);
+
+            RAM = memInfo.totalMem/1048576 + " MB";
+        }
+        else{
+            RAM = "Unknown (API < 16)";
+        }
 
         return  "\n" +
                 "[DEVICE INFO]" + "\n" +
@@ -121,7 +129,7 @@ public class Debug {
                 Build.BRAND + " " + Build.MODEL + "\n" +
                 "Android version " + Build.VERSION.RELEASE + "\n" +
                 "Java max heap size: " + Runtime.getRuntime().maxMemory()/1048576 + "MB\n" +
-                "Device memory: " + memInfo.totalMem/1048576 + " MB\n" +
+                "Device memory: " + RAM + "\n" +
                 "Locale: " + Locale.getDefault() + "\n" +
                 "Network Status: " + ((info == null)
                     ? "Unavailable"

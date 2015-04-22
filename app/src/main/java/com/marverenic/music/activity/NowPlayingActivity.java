@@ -1,7 +1,6 @@
 package com.marverenic.music.activity;
 
 import android.annotation.TargetApi;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,6 +11,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.Menu;
@@ -64,7 +64,7 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
         super.onCreate(savedInstanceState);
         onNewIntent(getIntent());
 
-        if (!isTabletHorizontal){
+        if (!isTabletHorizontal && getSupportActionBar() != null){
             getSupportActionBar().setTitle("");
             getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.skrim_now_playing));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
@@ -72,7 +72,7 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
                 getWindow().setStatusBarColor(0x66000000);
             }
         }
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && getSupportActionBar() != null)
             getSupportActionBar().setElevation(getResources().getDimension(R.dimen.header_elevation));
 
         findViewById(R.id.playButton).setOnClickListener(this);
@@ -332,7 +332,7 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
 
     @Override
     public void themeActivity() {
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && getSupportActionBar() != null) {
                 getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Themes.getPrimary()));
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -349,7 +349,8 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
         } else {
             // For whatever reason, the control frame seems to need a reminder as to what color it should be
             findViewById(R.id.playerControlFrame).setBackgroundColor(getResources().getColor(R.color.player_control_background));
-            getSupportActionBar().setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
+            if (getSupportActionBar() != null)
+                getSupportActionBar().setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
         }
     }
 

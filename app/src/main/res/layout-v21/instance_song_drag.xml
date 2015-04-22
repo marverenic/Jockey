@@ -33,7 +33,6 @@
 
         <TextView
             android:id="@+id/textSongTitle"
-            android:text="song title"
             android:textColor="@color/list_text"
             android:textSize="@dimen/list_text_header_size"
             android:layout_marginEnd="@dimen/list_padding_h"
@@ -46,7 +45,6 @@
 
         <TextView
             android:id="@+id/textSongDetail"
-            android:text="artist - album"
             android:textColor="@color/detail_text"
             android:textSize="@dimen/list_text_detail_size"
             android:layout_marginEnd="@dimen/list_padding_h"
