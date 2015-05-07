@@ -35,16 +35,10 @@ public class ArtistActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState){
         Object parent = getIntent().getParcelableExtra(ARTIST_EXTRA);
-        if (parent instanceof Artist){
-            setContentLayout(R.layout.activity_artist);
-        }
-        else{
-            setContentLayout(R.layout.page_error);
-        }
+        setContentLayout(R.layout.activity_artist);
         super.onCreate(savedInstanceState);
 
         if (parent instanceof Artist) {
-
             if (getSupportActionBar() != null) getSupportActionBar().setTitle(parent.toString());
 
             ArrayList<Song> songEntries;
@@ -57,9 +51,9 @@ public class ArtistActivity extends BaseActivity {
 
             ListView list = (ListView) findViewById(R.id.list);
             ArtistPageAdapter adapter = new ArtistPageAdapter(this, songEntries, albumEntries);
+            initializeArtistHeader(albumEntries, ((Artist) parent).artistName);
             list.setAdapter(adapter);
             list.setOnItemClickListener(adapter);
-            initializeArtistHeader(albumEntries, ((Artist) parent).artistName);
         }
     }
 
@@ -80,7 +74,7 @@ public class ArtistActivity extends BaseActivity {
                         public void run() {
                             if(bio.artURL != null && !bio.artURL.equals(""))
                                 Picasso.with(context).load(bio.artURL).placeholder(R.drawable.art_default)
-                                        .into((ImageView) imageHeader);
+                                        .resize(imageHeader.getWidth(), imageHeader.getHeight()).centerCrop().into((ImageView) imageHeader);
 
                             String bioText;
                             if (!bio.tags[0].equals("")) {
@@ -128,7 +122,7 @@ public class ArtistActivity extends BaseActivity {
         final ListView listView = (ListView) findViewById(R.id.list);
         listView.addHeaderView(imageHeader, null, false);
         listView.addHeaderView(bioHeader, null, true);
-        listView.addHeaderView(albumGrid, null, false);
+        listView.addHeaderView(albumHeader, null, false);
 
         updateArtistGridLayout((GridView) findViewById(R.id.albumGrid), albumCount);
     }

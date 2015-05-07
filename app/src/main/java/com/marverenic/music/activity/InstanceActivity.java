@@ -31,12 +31,9 @@ public class InstanceActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         Object parent = getIntent().getParcelableExtra("entry");
         if (parent == null || !(parent instanceof Album || parent instanceof Genre)){
-            setContentLayout(R.layout.page_error);
             type = Type.UNKNOWN;
         }
-        else{
-            setContentLayout(R.layout.fragment_list_page);
-        }
+        setContentLayout(R.layout.fragment_list_page);
         setContentView(R.id.list_container);
         super.onCreate(savedInstanceState);
 
@@ -85,7 +82,6 @@ public class InstanceActivity extends BaseActivity {
             }
         } else {
             type = Type.UNKNOWN;
-            setContentView(R.layout.page_error);
             Debug.log(Debug.LogLevel.WTF, "LibraryPageActivity", "An invalid item was passed as the parent object", this);
         }
     }

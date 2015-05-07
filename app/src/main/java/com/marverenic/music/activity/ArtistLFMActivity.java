@@ -37,12 +37,7 @@ public class ArtistLFMActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState){
         Object parent = getIntent().getParcelableExtra(ARTIST_EXTRA);
-        if (parent instanceof Artist){
-            setContentLayout(R.layout.activity_artist);
-        }
-        else{
-            setContentLayout(R.layout.page_error);
-        }
+        setContentLayout(R.layout.activity_artist);
         super.onCreate(savedInstanceState);
 
         if (parent instanceof Artist) {
@@ -59,9 +54,9 @@ public class ArtistLFMActivity extends BaseActivity {
 
             ListView list = (ListView) findViewById(R.id.list);
             ArtistPageAdapter adapter = new ArtistPageAdapter(this, songEntries, albumEntries);
+            initializeArtistHeader(albumEntries, ((Artist) parent).artistName);
             list.setAdapter(adapter);
             list.setOnItemClickListener(adapter);
-            initializeArtistHeader(albumEntries, ((Artist) parent).artistName);
         }
     }
 
@@ -104,7 +99,7 @@ public class ArtistLFMActivity extends BaseActivity {
         final ListView listView = (ListView) findViewById(R.id.list);
         listView.addHeaderView(imageHeader, null, false);
         listView.addHeaderView(bioHeader, null, false);
-        listView.addHeaderView(albumGrid, null, false);
+        listView.addHeaderView(albumHeader, null, false);
 
         updateArtistGridLayout((GridView) findViewById(R.id.albumGrid), albumCount);
     }

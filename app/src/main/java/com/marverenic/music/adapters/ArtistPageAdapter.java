@@ -55,19 +55,22 @@ public class ArtistPageAdapter extends BaseAdapter implements SectionIndexer, Ad
         char thisChar;
         int sectionIndex = -1;
         for(int i = 0; i < songs.size(); i++){
-            name = songs.get(i).songName.toUpperCase();
+            name = songs.get(i).songName.toUpperCase().trim();
 
-            if (name.startsWith("THE ")){
+            if (name.startsWith("THE ") && name.length() > 4){
                 thisChar = name.charAt(4);
             }
-            else if (name.startsWith("A ")){
+            else if (name.startsWith("A ") && name.length() > 2){
                 thisChar = name.charAt(2);
             }
-            else{
+            else if (name.length() > 0) {
                 thisChar = name.charAt(0);
             }
+            else{
+                thisChar = ' ';
+            }
 
-            if(sectionCharacter.size() == 0 || !sectionCharacter.get(sectionCharacter.size() - 1).equals(thisChar)) {
+            if (thisChar != ' ' && (sectionCharacter.size() == 0 || !sectionCharacter.get(sectionCharacter.size() - 1).equals(thisChar))) {
                 sectionIndex++;
                 sectionCharacter.add(thisChar);
                 sectionStartingPosition.add(i);

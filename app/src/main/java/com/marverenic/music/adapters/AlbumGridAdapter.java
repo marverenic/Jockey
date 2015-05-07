@@ -57,19 +57,22 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Vie
         char thisChar;
         int sectionIndex = -1;
         for(int i = 0; i < data.size(); i++){
-            name = data.get(i).albumName.toUpperCase();
+            name = data.get(i).albumName.toUpperCase().trim();
 
-            if (name.startsWith("THE ")){
+            if (name.startsWith("THE ") && name.length() > 4){
                 thisChar = name.charAt(4);
             }
-            else if (name.startsWith("A ")){
+            else if (name.startsWith("A ") && name.length() > 2){
                 thisChar = name.charAt(2);
             }
-            else{
+            else if (name.length() > 0) {
                 thisChar = name.charAt(0);
             }
+            else{
+                thisChar = ' ';
+            }
 
-            if(sectionCharacter.size() == 0 || !sectionCharacter.get(sectionCharacter.size() - 1).equals(thisChar)) {
+            if (thisChar != ' ' && (sectionCharacter.size() == 0 || !sectionCharacter.get(sectionCharacter.size() - 1).equals(thisChar))) {
                 sectionIndex++;
                 sectionCharacter.add(thisChar);
                 sectionStartingPosition.add(i);

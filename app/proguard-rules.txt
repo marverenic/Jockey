@@ -4,6 +4,9 @@
 # Don't obfuscate class and method names for easier debugging
 -keepnames class com.marverenic.** { *; }
 
+# Don't break search
+-keep class android.support.v7.widget.SearchView { *; }
+
 #
 # From https://google-gson.googlecode.com/svn-history/r878/trunk/examples/android-proguard-example/proguard.cfg
 #
