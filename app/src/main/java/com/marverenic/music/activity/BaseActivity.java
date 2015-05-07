@@ -56,7 +56,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
 
         Themes.setTheme(this);
         super.onCreate(savedInstanceState);
-        super.setContentView(layoutResID);
+        if (layoutResID != -1) super.setContentView(layoutResID);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -212,7 +212,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
                 final View miniplayerView = findViewById(R.id.miniplayer_holder);
                 final int miniplayerHeight = getResources().getDimensionPixelSize(R.dimen.now_playing_ticker_height);
 
-                if(miniplayerView != null && miniplayerView.getLayoutParams().height != miniplayerHeight) {
+                if(miniplayerView != null && miniplayerView.getLayoutParams().height != miniplayerHeight && miniplayerView.getAnimation() == null) {
                     // If the view isn't being created for the first time, animate it in
                     if (createdView) {
                         Animation miniplayerHeightAnim = new Animation() {

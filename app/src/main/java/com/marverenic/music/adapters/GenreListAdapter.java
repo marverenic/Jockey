@@ -18,7 +18,7 @@ import android.widget.TextView;
 
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
-import com.marverenic.music.activity.LibraryPageActivity;
+import com.marverenic.music.activity.InstanceActivity;
 import com.marverenic.music.instances.Genre;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.LibraryScanner;
@@ -157,7 +157,7 @@ public class GenreListAdapter extends BaseAdapter implements SectionIndexer, Ada
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Genre item = data.get(position);
-        Navigate.to(context, LibraryPageActivity.class, "entry", item);
+        Navigate.to(context, InstanceActivity.class, "entry", item);
     }
 
 

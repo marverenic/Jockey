@@ -7,11 +7,13 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.google.gson.Gson;
@@ -19,6 +21,7 @@ import com.google.gson.reflect.TypeToken;
 import com.marverenic.music.activity.LibraryActivity;
 import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.instances.Song;
+import com.marverenic.music.utils.MediaReceiver;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,6 +31,9 @@ import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class PlayerService extends Service {
+
+    private static final String TAG = "PlayerService";
+    private static final boolean debug = BuildConfig.DEBUG;
 
     // Constants
     public static final int NOTIFICATION_ID = 1;
@@ -45,13 +51,14 @@ public class PlayerService extends Service {
 
     private NotificationManager notificationManager;
     private Player player; // The media player for the service
+    private MediaReceiver receiver;
     private boolean finished = false;
-
-    public PlayerService() {
-    }
+    private boolean foreground = false;
 
     @Override
     public void onCreate() {
+        if (debug) Log.i(TAG, "onCreate() called");
+
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         if (this != instance){
@@ -63,11 +70,20 @@ public class PlayerService extends Service {
             player = new Player(this);
         }
 
+        if (receiver == null){
+            receiver = new MediaReceiver();
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(Intent.ACTION_MEDIA_BUTTON);
+            filter.addAction(Intent.ACTION_HEADSET_PLUG);
+            registerReceiver(receiver, filter);
+        }
+
         reload();
         if (player.getNowPlaying() != null) notifyNowPlaying();
     }
 
     public void reload(){
+        if (debug) Log.i(TAG, "reload() called");
         // Attempt to read and restore the last player state
         try{
             File playlistJSON = new File(getExternalFilesDir(null), FILENAME_QUEUE_SAVE);
@@ -88,13 +104,20 @@ public class PlayerService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        if (debug) Log.i(TAG, "onBind() called");
         if (binder == null) binder = new Stub(this);
         return binder;
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
+        if (debug) Log.i(TAG, "onUnbind() called");
         return super.onUnbind(intent);
+    }
+
+    public IBinder getBinder(){
+        if (debug) Log.i(TAG, "getBinder() called");
+        return binder;
     }
 
     @Override
@@ -109,6 +132,8 @@ public class PlayerService extends Service {
     // Listens for commands from the notification
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (debug) Log.i(TAG, "onStartCommand() called. Intent action: " + intent.getAction());
+
         if (intent == null && (player == null || player.getNowPlaying() == null)){
             if (player == null) player = new Player(this);
             reload();
@@ -140,6 +165,8 @@ public class PlayerService extends Service {
     }
 
     private void stop() {
+        if (debug) Log.i(TAG, "stop() called");
+
         // If the UI process is still running, don't kill the process -- only remove its notification
         ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         List<ActivityManager.RunningAppProcessInfo> procInfos = activityManager.getRunningAppProcesses();
@@ -147,6 +174,7 @@ public class PlayerService extends Service {
             if(procInfos.get(i).processName.equals(BuildConfig.APPLICATION_ID)){
                 player.pause();
                 stopForeground(true);
+                foreground = false;
                 return;
             }
         }
@@ -157,14 +185,18 @@ public class PlayerService extends Service {
     }
 
     public void finish() {
-        // If you run this method twice, you're going to have a bad time
+        if (debug) Log.i(TAG, "finish() called");
+
         if (!finished) {
             // Save the player state, then release all important objects
             saveState();
             player.finish();
             player = null;
             stopForeground(true);
+            foreground = false;
             notificationManager.cancel(NOTIFICATION_ID);
+            unregisterReceiver(receiver);
+            receiver = null;
             instance = null;
             binder = null;
             finished = true;
@@ -172,6 +204,8 @@ public class PlayerService extends Service {
     }
 
     public void saveState(){
+        if (debug) Log.i(TAG, "saveState() called");
+
         if (player.getNowPlaying() != null) {
             try {
                 FileWriter playerStateWriter = new FileWriter(new File(getExternalFilesDir(null), FILENAME_QUEUE_SAVE));
@@ -186,6 +220,9 @@ public class PlayerService extends Service {
 
     // Generate a notification, choosing the proper API level notification builder
     public void notifyNowPlaying() {
+        if (debug) Log.i(TAG, "notifyNowPlaying() called");
+
+        foreground = true;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
             startForeground(NOTIFICATION_ID, getNotification());
         else
@@ -195,7 +232,7 @@ public class PlayerService extends Service {
     // Build a notification on API 15 devices
     @TargetApi(15)
     public Notification getNotificationCompat() {
-        // Ensures extra compatibility
+        if (debug) Log.i(TAG, "getNotificationCompat() called");
 
         Notification notification;
 
@@ -263,6 +300,8 @@ public class PlayerService extends Service {
     // Build a notification on API <21, >15 devices
     @TargetApi(16)
     public Notification getNotification() {
+        if (debug) Log.i(TAG, "getNotification() called");
+
         // Creates a notification on pre-Lollipop devices
         // The notification that will be returned
         Notification notification;
@@ -369,6 +408,7 @@ public class PlayerService extends Service {
 
     // Get the active instance of the player service
     public static PlayerService getInstance() {
+        if (debug) Log.i(TAG, "getInstance() called");
         return instance;
     }
 
@@ -377,6 +417,7 @@ public class PlayerService extends Service {
         PlayerService service;
 
         private Stub (PlayerService service){
+            if (debug) Log.i(TAG, "new Stub instantiated");
             this.service = service;
         }
 
@@ -388,148 +429,177 @@ public class PlayerService extends Service {
 
         @Override
         public void setQueue(List<Song> newQueue, int newPosition) throws RemoteException {
+            if (debug) Log.i(TAG, "setQueue() called");
             service.player.setQueue(cloneSongList(newQueue), newPosition);
         }
 
         @Override
         public void changeQueue(List<Song> newQueue, int newPosition) throws RemoteException {
+            if (debug) Log.i(TAG, "changeQueue() called");
             service.player.changeQueue(cloneSongList(newQueue), newPosition);
         }
 
         @Override
         public void queueNext(Song song) throws RemoteException {
+            if (debug) Log.i(TAG, "queueNext() called");
             service.player.queueNext(new Song(song));
         }
 
         @Override
         public void queueLast(Song song) throws RemoteException {
+            if (debug) Log.i(TAG, "queueLast() called");
             service.player.queueNext(new Song(song));
         }
 
         @Override
         public void queueNextList(List<Song> songs) throws RemoteException {
+            if (debug) Log.i(TAG, "queueNextList() called");
             service.player.queueNext(cloneSongList(songs));
         }
 
         @Override
         public void queueLastList(List<Song> songs) throws RemoteException {
+            if (debug) Log.i(TAG, "queueLastList() called");
             service.player.queueLast(cloneSongList(songs));
         }
 
         @Override
         public void begin() throws RemoteException {
+            if (debug) Log.i(TAG, "begin() called");
             service.player.begin();
         }
 
         @Override
         public Song getNowPlaying() throws RemoteException {
+            if (debug) Log.i(TAG, "getNowPlaying() called");
             return service.player.getNowPlaying();
         }
 
         @Override
         public void togglePlay() throws RemoteException {
+            if (debug) Log.i(TAG, "togglePlay() called");
             service.saveState();
             service.player.togglePlay();
         }
 
         @Override
         public void play() throws RemoteException {
+            if (debug) Log.i(TAG, "play() called");
             service.player.play();
         }
 
         @Override
         public void pause() throws RemoteException {
+            if (debug) Log.i(TAG, "pause() called");
             service.player.pause();
         }
 
         @Override
         public void stop() throws RemoteException {
+            if (debug) Log.i(TAG, "stop() called");
             service.finish();
             service.stopSelf();
         }
 
         @Override
         public void previous() throws RemoteException {
+            if (debug) Log.i(TAG, "previous() called");
             service.player.previous();
         }
 
         @Override
         public void skip() throws RemoteException {
+            if (debug) Log.i(TAG, "skip() called");
             service.player.skip();
         }
 
         @Override
         public void seek(int position) throws RemoteException {
+            if (debug) Log.i(TAG, "seek() called");
             service.player.seek(position);
         }
 
         @Override
         public void changeSong(int newPosition) throws RemoteException {
+            if (debug) Log.i(TAG, "changeSong() called");
             service.player.changeSong(newPosition);
         }
 
         @Override
         public void toggleShuffle() throws RemoteException {
+            if (debug) Log.i(TAG, "toggleShuffle() called");
             service.player.toggleShuffle();
         }
 
         @Override
         public void toggleRepeat() throws RemoteException {
+            if (debug) Log.i(TAG, "toggleRepeat() called");
             service.player.toggleRepeat();
         }
 
         @Override
         public Bitmap getArt() throws RemoteException {
+            if (debug) Log.i(TAG, "getArt() called");
             return service.player.getArt();
         }
 
         @Override
         public Bitmap getFullArt() throws RemoteException {
+            if (debug) Log.i(TAG, "getFullArt() called");
             return service.player.getFullArt();
         }
 
         @Override
         public boolean isPlaying() throws RemoteException {
+            if (debug) Log.i(TAG, "isPlaying() called");
             return service.player.isPlaying();
         }
 
         @Override
         public boolean isPreparing() throws RemoteException {
+            if (debug) Log.i(TAG, "isPreparing() called");
             return service.player.isPreparing();
         }
 
         @Override
         public int getCurrentPosition() throws RemoteException {
+            if (debug) Log.i(TAG, "getCurrentPosition() called");
             return service.player.getCurrentPosition();
         }
 
         @Override
         public int getDuration() throws RemoteException {
+            if (debug) Log.i(TAG, "getDuration() called");
             return service.player.getDuration();
         }
 
         @Override
         public boolean isShuffle() throws RemoteException {
+            if (debug) Log.i(TAG, "isShuffle() called");
             return service.player.isShuffle();
         }
 
         @Override
         public boolean isRepeat() throws RemoteException {
+            if (debug) Log.i(TAG, "isRepeat() called");
             return service.player.isRepeat();
         }
 
         @Override
         public boolean isRepeatOne() throws RemoteException {
+            if (debug) Log.i(TAG, "isRepeatOne() called");
             return service.player.isRepeatOne();
         }
 
         @Override
         public List<Song> getQueue() throws RemoteException {
+            if (debug) Log.i(TAG, "getQueue() called");
             return service.player.getQueue();
         }
 
         @Override
         public int getPosition() throws RemoteException {
+            if (debug) Log.i(TAG, "getPosition() called");
             return service.player.getPosition();
         }
     }

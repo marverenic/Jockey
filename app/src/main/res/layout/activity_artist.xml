@@ -5,11 +5,19 @@
 
     <include layout="@layout/toolbar" android:id="@+id/toolbar"/>
 
-    <include
-        layout="@layout/fragment_list"
+    <ListView
+        android:id="@+id/list"
+        style="@style/list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@id/toolbar"/>
+        android:layout_below="@id/toolbar"
+        android:clipToPadding="false"
+        android:elevation="@dimen/window_elevation"
+        android:scrollbarStyle="insideOverlay"
+        android:fastScrollAlwaysVisible="false"
+        android:fastScrollEnabled="false"
+        android:saveEnabled="true"
+        android:scrollbars="vertical"/>
 
     <FrameLayout
         android:id="@+id/miniplayer_holder"

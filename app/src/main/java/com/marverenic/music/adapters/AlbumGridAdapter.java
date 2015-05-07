@@ -24,7 +24,8 @@ import android.widget.TextView;
 
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
-import com.marverenic.music.activity.LibraryPageActivity;
+import com.marverenic.music.activity.ArtistActivity;
+import com.marverenic.music.activity.InstanceActivity;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.LibraryScanner;
@@ -138,7 +139,7 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Vie
                                 PlayerController.queueLast(LibraryScanner.getAlbumEntries(a));
                                 return true;
                             case 2: //Go to artist
-                                Navigate.to(context, LibraryPageActivity.class, "entry", LibraryScanner.findArtistById(a.artistId));
+                                Navigate.to(context, ArtistActivity.class, ArtistActivity.ARTIST_EXTRA, LibraryScanner.findArtistById(a.artistId));
                                 return true;
                             case 3: //Add to playlist...
                                 ArrayList<Playlist> playlists = Library.getPlaylists();
@@ -267,7 +268,7 @@ public class AlbumGridAdapter extends BaseAdapter implements SectionIndexer, Vie
     public void onClick(View v) {
         int position = ((GridView) v.getParent()).getPositionForView(v);
         Album album = data.get(position);
-        Navigate.to(context, LibraryPageActivity.class, "entry", album);
+        Navigate.to(context, InstanceActivity.class, "entry", album);
     }
 
     @Override

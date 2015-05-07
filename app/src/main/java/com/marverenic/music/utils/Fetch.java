@@ -199,7 +199,7 @@ public class Fetch {
                     } else {
                         tags = new String[]{""};
                     }
-                    return new ArtistBio(art, summary, tags);
+                    return new ArtistBio(art, summary, artist.getWikiSummary(), tags);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -213,11 +213,13 @@ public class Fetch {
     public static class ArtistBio {
         public String artURL;
         public String summary;
+        public String summaryHTML;
         public String[] tags;
 
-        public ArtistBio(String artURL, String summary, String[] tags) {
+        public ArtistBio(String artURL, String summary, String summaryHTML, String[] tags) {
             this.artURL = artURL;
             this.summary = summary;
+            this.summaryHTML = summaryHTML;
             this.tags = tags;
         }
     }

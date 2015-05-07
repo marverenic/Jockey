@@ -152,11 +152,11 @@ public class Themes {
                 backgroundMiniplayer = resources.getColor(R.color.background_miniplayer_light);
                 break;
             default: // Material Dark
-                listText = resources.getColor(R.color.list_text);
-                detailText = resources.getColor(R.color.detail_text);
-                background = resources.getColor(R.color.background);
-                backgroundElevated = resources.getColor(R.color.background_elevated);
-                backgroundMiniplayer = resources.getColor(R.color.background_miniplayer);
+                listText = resources.getColor(R.color.list_text_dark);
+                detailText = resources.getColor(R.color.detail_text_dark);
+                background = resources.getColor(R.color.background_dark);
+                backgroundElevated = resources.getColor(R.color.background_elevated_dark);
+                backgroundMiniplayer = resources.getColor(R.color.background_miniplayer_dark);
                 break;
         }
     }

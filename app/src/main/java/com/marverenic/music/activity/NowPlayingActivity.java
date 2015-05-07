@@ -288,12 +288,12 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
                                     case 0: //Go to artist
                                         Artist artist = LibraryScanner.findArtistById(nowPlaying.artistId);
 
-                                        Navigate.to(context, LibraryPageActivity.class, "entry", artist);
+                                        Navigate.to(context, ArtistActivity.class, ArtistActivity.ARTIST_EXTRA, artist);
                                         break;
                                     case 1: //Go to album
                                         Album album = LibraryScanner.findAlbumById(nowPlaying.albumId);
 
-                                        Navigate.to(context, LibraryPageActivity.class, "entry", album);
+                                        Navigate.to(context, InstanceActivity.class, "entry", album);
                                         break;
                                     case 2: //Add to playlist
                                         ArrayList<Playlist> playlists = Library.getPlaylists();

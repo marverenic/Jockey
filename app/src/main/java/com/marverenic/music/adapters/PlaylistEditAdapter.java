@@ -23,7 +23,8 @@ import android.widget.TextView;
 import com.marverenic.music.Player;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
-import com.marverenic.music.activity.LibraryPageActivity;
+import com.marverenic.music.activity.ArtistActivity;
+import com.marverenic.music.activity.InstanceActivity;
 import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.LibraryScanner;
@@ -112,10 +113,10 @@ public class PlaylistEditAdapter extends BaseAdapter implements AdapterView.OnIt
                                     PlayerController.queueLast(s);
                                     return true;
                                 case 2: //Go to artist
-                                    Navigate.to(context, LibraryPageActivity.class, "entry", LibraryScanner.findArtistById(s.artistId));
+                                    Navigate.to(context, ArtistActivity.class, ArtistActivity.ARTIST_EXTRA, LibraryScanner.findArtistById(s.artistId));
                                     return true;
                                 case 3: //Go to album
-                                    Navigate.to(context, LibraryPageActivity.class, "entry", LibraryScanner.findAlbumById(s.albumId));
+                                    Navigate.to(context, InstanceActivity.class, "entry", LibraryScanner.findAlbumById(s.albumId));
                                     return true;
                                 case 4: //Add to playlist...
                                     ArrayList<Playlist> playlists = Library.getPlaylists();

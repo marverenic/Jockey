@@ -33,7 +33,7 @@
 
         <TextView
             android:id="@+id/textSongTitle"
-            android:textColor="@color/list_text"
+            android:textColor="@color/list_text_dark"
             android:textSize="@dimen/list_text_header_size"
             android:layout_marginEnd="@dimen/list_padding_h"
             android:layout_width="fill_parent"
@@ -45,7 +45,7 @@
 
         <TextView
             android:id="@+id/textSongDetail"
-            android:textColor="@color/detail_text"
+            android:textColor="@color/detail_text_dark"
             android:textSize="@dimen/list_text_detail_size"
             android:layout_marginEnd="@dimen/list_padding_h"
             android:layout_below="@id/textSongTitle"

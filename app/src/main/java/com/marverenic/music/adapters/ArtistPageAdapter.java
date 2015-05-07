@@ -22,7 +22,8 @@ import android.widget.TextView;
 import com.marverenic.music.Player;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
-import com.marverenic.music.activity.LibraryPageActivity;
+import com.marverenic.music.activity.ArtistLFMActivity;
+import com.marverenic.music.activity.InstanceActivity;
 import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Library;
@@ -110,7 +111,7 @@ public class ArtistPageAdapter extends BaseAdapter implements SectionIndexer, Ad
                                     PlayerController.queueLast(s);
                                     return true;
                                 case 2: //Go to album
-                                    Navigate.to(context, LibraryPageActivity.class, "entry", LibraryScanner.findAlbumById(s.albumId));
+                                    Navigate.to(context, InstanceActivity.class, "entry", LibraryScanner.findAlbumById(s.albumId));
                                     return true;
                                 case 3: //Add to playlist...
                                     ArrayList<Playlist> playlists = Library.getPlaylists();
@@ -166,6 +167,11 @@ public class ArtistPageAdapter extends BaseAdapter implements SectionIndexer, Ad
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (position - ((ListView) parent).getHeaderViewsCount() < 0) {
+            Navigate.to(context, ArtistLFMActivity.class, ArtistLFMActivity.ARTIST_EXTRA, LibraryScanner.findArtistById(songs.get(0).artistId));
+            return;
+        }
+
         PlayerController.setQueue(songs, position - ((ListView) parent).getHeaderViewsCount());
         PlayerController.begin();
 

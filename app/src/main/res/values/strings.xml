@@ -34,6 +34,7 @@
     <string name="nothing_playing">Nothing is playing</string>
     <string name="no_artist">unknown artist</string>
     <string name="no_album">unknown album</string>
+    <string name="no_description">No description avavilable</string>
 
     <!-- Plurals -->
     <plurals name="playlistConfirmSomeDuplicates">

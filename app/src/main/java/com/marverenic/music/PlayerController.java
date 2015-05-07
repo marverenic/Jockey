@@ -91,8 +91,12 @@ public class PlayerController {
         }
     }
 
+    public static boolean isBound() {
+        return playerService != null;
+    }
+
     public static void begin() {
-        if (playerService != null) {
+        if (isBound()) {
             new BackgroundTask(
                     new BackgroundTask.BackgroundAction() {
                         @Override
@@ -107,7 +111,7 @@ public class PlayerController {
     }
 
     public static void stop() {
-        if (playerService != null) {
+        if (isBound()) {
             new BackgroundTask(
                     new BackgroundTask.BackgroundAction() {
                         @Override
@@ -121,7 +125,7 @@ public class PlayerController {
     }
 
     public static void skip() {
-        if (playerService != null) {
+        if (isBound()) {
             new BackgroundTask(
                     new BackgroundTask.BackgroundAction() {
                         @Override
@@ -135,7 +139,7 @@ public class PlayerController {
     }
 
     public static void previous() {
-        if (playerService != null) {
+        if (isBound()) {
             new BackgroundTask(
                     new BackgroundTask.BackgroundAction() {
                         @Override
@@ -149,7 +153,7 @@ public class PlayerController {
     }
 
     public static void play() {
-        if (playerService != null) {
+        if (isBound()) {
             new BackgroundTask(
                     new BackgroundTask.BackgroundAction() {
                         @Override
@@ -163,7 +167,7 @@ public class PlayerController {
     }
 
     public static void pause() {
-        if (playerService != null) {
+        if (isBound()) {
             new BackgroundTask(
                     new BackgroundTask.BackgroundAction() {
                         @Override
@@ -177,7 +181,7 @@ public class PlayerController {
     }
 
     public static void togglePlay() {
-        if (playerService != null) {
+        if (isBound()) {
             new BackgroundTask(
                     new BackgroundTask.BackgroundAction() {
                         @Override
@@ -212,7 +216,7 @@ public class PlayerController {
     }
 
     public static boolean isPlaying() {
-        if (playerService != null) {
+        if (isBound()) {
             try {
                 return playerService.isPlaying();
             } catch (final RemoteException ignored) {
@@ -222,7 +226,7 @@ public class PlayerController {
     }
 
     public static boolean isPreparing() {
-        if (playerService != null) {
+        if (isBound()) {
             try {
                 return playerService.isPreparing();
             } catch (final RemoteException ignored) {
@@ -233,7 +237,7 @@ public class PlayerController {
 
     public static boolean isShuffle() {
         try {
-            if (playerService != null) return playerService.isShuffle();
+            if (isBound()) return playerService.isShuffle();
         }
         catch (RemoteException ignored){}
         return false;
@@ -241,7 +245,7 @@ public class PlayerController {
 
     public static boolean isRepeat() {
         try {
-            if (playerService != null) return playerService.isRepeat();
+            if (isBound()) return playerService.isRepeat();
         }
         catch (RemoteException ignored){}
         return false;
@@ -249,7 +253,7 @@ public class PlayerController {
 
     public static boolean isRepeatOne() {
         try {
-            if (playerService != null) return playerService.isRepeatOne();
+            if (isBound()) return playerService.isRepeatOne();
         }
         catch (RemoteException ignored){}
         return false;
@@ -258,7 +262,7 @@ public class PlayerController {
     public static Song getNowPlaying() {
         if (PlayerCache.nowPlaying != null) return PlayerCache.nowPlaying;
         try {
-            if (playerService != null){
+            if (isBound()){
                 PlayerCache.nowPlaying = playerService.getNowPlaying();
                 return PlayerCache.nowPlaying;
             }
@@ -270,7 +274,7 @@ public class PlayerController {
     public static Bitmap getArt() {
         if (PlayerCache.art != null) return PlayerCache.art;
         try {
-            if (playerService != null){
+            if (isBound()){
                 PlayerCache.art = playerService.getArt();
                 return PlayerCache.art;
             }
@@ -282,7 +286,7 @@ public class PlayerController {
     public static Bitmap getFullArt() {
         if (PlayerCache.artFullRes != null) return PlayerCache.artFullRes;
         try {
-            if (playerService != null){
+            if (isBound()){
                 PlayerCache.artFullRes = playerService.getFullArt();
                 return PlayerCache.artFullRes;
             }
@@ -293,14 +297,14 @@ public class PlayerController {
 
     public static ArrayList<Song> getQueue() {
         try {
-            if (playerService != null) return new ArrayList<>(playerService.getQueue());
+            if (isBound()) return new ArrayList<>(playerService.getQueue());
         }
         catch (RemoteException ignored){}
         return new ArrayList<>();
     }
 
     public static void setQueue(final List<Song> newQueue, final int newPosition) {
-        if (playerService != null) {
+        if (isBound()) {
             new BackgroundTask(
                     new BackgroundTask.BackgroundAction() {
                         @Override
@@ -314,7 +318,7 @@ public class PlayerController {
     }
 
     public static void changeQueue(final List<Song> newQueue, final int newPosition) {
-        if (playerService != null) {
+        if (isBound()) {
             new BackgroundTask(
                     new BackgroundTask.BackgroundAction() {
                         @Override
@@ -329,7 +333,7 @@ public class PlayerController {
 
     public static int getPosition() {
         try {
-            if (playerService != null) {
+            if (isBound()) {
                 return playerService.getPosition();
             }
         } catch (final RemoteException ignored) {
@@ -338,7 +342,7 @@ public class PlayerController {
     }
 
     public static void queueNext(final Song song) {
-        if (playerService != null) {
+        if (isBound()) {
             new BackgroundTask(
                     new BackgroundTask.BackgroundAction() {
                         @Override
@@ -352,7 +356,7 @@ public class PlayerController {
     }
 
     public static void queueNext(final ArrayList<Song> songs) {
-        if (playerService != null) {
+        if (isBound()) {
             new BackgroundTask(
                     new BackgroundTask.BackgroundAction() {
                         @Override
@@ -366,7 +370,7 @@ public class PlayerController {
     }
 
     public static void queueLast(final Song song) {
-        if (playerService != null) {
+        if (isBound()) {
             new BackgroundTask(
                     new BackgroundTask.BackgroundAction() {
                         @Override
@@ -380,7 +384,7 @@ public class PlayerController {
     }
 
     public static void queueLast(final ArrayList<Song> songs) {
-        if (playerService != null) {
+        if (isBound()) {
             new BackgroundTask(
                     new BackgroundTask.BackgroundAction() {
                         @Override
@@ -394,7 +398,7 @@ public class PlayerController {
     }
 
     public static void seek(final int position) {
-        if (playerService != null) {
+        if (isBound()) {
             new BackgroundTask(
                     new BackgroundTask.BackgroundAction() {
                         @Override
@@ -408,7 +412,7 @@ public class PlayerController {
     }
 
     public static int getCurrentPosition() {
-        if (playerService != null) {
+        if (isBound()) {
             try {
                 return playerService.getCurrentPosition();
             } catch (final RemoteException ignored) {
@@ -418,7 +422,7 @@ public class PlayerController {
     }
 
     public static int getDuration() {
-        if (playerService != null){
+        if (isBound()){
             try{
                 return playerService.getDuration();
             }
@@ -428,7 +432,7 @@ public class PlayerController {
     }
 
     public static void changeSong(final int newPosition){
-        if (playerService != null) {
+        if (isBound()) {
             new BackgroundTask(
                     new BackgroundTask.BackgroundAction() {
                         @Override

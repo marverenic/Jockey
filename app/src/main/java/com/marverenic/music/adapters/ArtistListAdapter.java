@@ -18,7 +18,7 @@ import android.widget.TextView;
 
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
-import com.marverenic.music.activity.LibraryPageActivity;
+import com.marverenic.music.activity.ArtistActivity;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.LibraryScanner;
@@ -160,7 +160,7 @@ public class ArtistListAdapter extends BaseAdapter implements SectionIndexer, Ad
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Artist item = data.get(position);
-        Navigate.to(context, LibraryPageActivity.class, "entry", item);
+        Navigate.to(context, ArtistActivity.class, ArtistActivity.ARTIST_EXTRA, item);
     }
 
     @Override

@@ -19,7 +19,8 @@ import android.widget.TextView;
 
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
-import com.marverenic.music.activity.LibraryPageActivity;
+import com.marverenic.music.activity.ArtistActivity;
+import com.marverenic.music.activity.InstanceActivity;
 import com.marverenic.music.activity.QueueActivity;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.LibraryScanner;
@@ -99,10 +100,10 @@ public class QueueEditAdapter extends BaseAdapter implements AdapterView.OnItemC
                         public boolean onMenuItemClick(MenuItem menuItem) {
                             switch (menuItem.getItemId()) {
                                 case 0: //Go to artist
-                                    Navigate.to(activity, LibraryPageActivity.class, "entry", LibraryScanner.findArtistById(s.artistId));
+                                    Navigate.to(activity, ArtistActivity.class, ArtistActivity.ARTIST_EXTRA, LibraryScanner.findArtistById(s.artistId));
                                     return true;
                                 case 1: //Go to album
-                                    Navigate.to(activity, LibraryPageActivity.class, "entry", LibraryScanner.findAlbumById(s.albumId));
+                                    Navigate.to(activity, InstanceActivity.class, "entry", LibraryScanner.findAlbumById(s.albumId));
                                     return true;
                                 case 2: //Add to playlist...
                                     ArrayList<Playlist> playlists = Library.getPlaylists();

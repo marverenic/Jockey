@@ -11,7 +11,7 @@
         style="@style/list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="@color/background_elevated"
+        android:background="@color/background_elevated_dark"
         android:clipToPadding="false"
         android:columnWidth="@dimen/grid_width"
         android:elevation="@dimen/window_elevation"

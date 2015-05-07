@@ -120,7 +120,9 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         mediaSession = new MediaSession(context, TAG);
         mediaSession.setCallback(new MediaSession.Callback() {
             @Override
-            public void onPlay() { play(); }
+            public void onPlay() {
+                play();
+            }
 
             @Override
             public void onSkipToQueueItem(long id) {

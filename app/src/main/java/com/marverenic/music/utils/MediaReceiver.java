@@ -7,6 +7,7 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.KeyEvent;
 
 import com.marverenic.music.PlayerController;
@@ -49,13 +50,16 @@ public class MediaReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        if (PlayerService.getInstance() == null) return;
+
         if (PlayerController.isPlaying()) {
             if (intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)) {
-                if (intent.getIntExtra("state", -1) != 1) {
-                    PlayerController.pause();
+                if (intent.getIntExtra("state", -1) == 0) {
+                    try {
+                        ((PlayerService.Stub) PlayerService.getInstance().getBinder()).pause();
+                    }
+                    catch (Exception ignored){}
                 }
-            } else if (intent.getAction().equals(AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
-                PlayerController.pause();
             }
         }
 

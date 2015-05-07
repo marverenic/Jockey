@@ -1,19 +1,5 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Theme Colors -->
-    <color name="primary">#00838F</color>
-    <color name="primary_dark">#006064</color>
-    <color name="accent">#40C4FF</color>
-    <color name="ui_text">#E0F7FA</color>
-    <color name="ui_detail_text">#80DEEA</color>
-
-    <!-- Base Colors -->
-    <color name="list_text">@color/primary_text_default_material_dark</color>
-    <color name="detail_text">@color/secondary_text_default_material_dark</color>
-    <color name="background">#212121</color>
-    <color name="background_elevated">#333333</color>
-    <color name="background_miniplayer">#424242</color>
-
     <!-- Static Colors -->
     <color name="transparent_ui_text">#FAFAFA</color>
     <color name="transparent_ui_off">#75FAFAFA</color>
@@ -26,13 +12,20 @@
     <color name="player_text_detail">#88FFFFFF</color>
     <color name="player_control_tint">#FAFAFA</color>
 
-    <!-- Custom Theme Colors-->
+    <!-- Theme Colors-->
     <!-- Light Base -->
     <color name="list_text_light">@color/primary_text_default_material_light</color>
     <color name="detail_text_light">@color/secondary_text_default_material_light</color>
     <color name="background_light">#EEEEEE</color>
     <color name="background_elevated_light">#F5F5F5</color>
     <color name="background_miniplayer_light">#FAFAFA</color>
+
+    <!-- Dark Colors -->
+    <color name="list_text_dark">@color/primary_text_default_material_dark</color>
+    <color name="detail_text_dark">@color/secondary_text_default_material_dark</color>
+    <color name="background_dark">#212121</color>
+    <color name="background_elevated_dark">#333333</color>
+    <color name="background_miniplayer_dark">#424242</color>
 
     <!-- Grey -->
     <color name="primary_grey">#37474F</color>
@@ -69,6 +62,13 @@
     <color name="ui_text_green">#E8F5E9</color>
     <color name="ui_detail_text_green">#A5D6A7</color>
 
+    <!-- Blue Colors -->
+    <color name="primary">#00838F</color>
+    <color name="primary_dark">#006064</color>
+    <color name="accent">#40C4FF</color>
+    <color name="ui_text">#E0F7FA</color>
+    <color name="ui_detail_text">#80DEEA</color>
+
     <!-- Purple -->
     <color name="primary_purple">#4527A0</color>
     <color name="primary_dark_purple">#311B92</color>
@@ -77,7 +77,7 @@
     <color name="ui_detail_text_purple">#B39DDB</color>
 
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowBackground">@color/background</item>
+        <item name="android:windowBackground">@color/background_dark</item>
         <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
 
@@ -188,7 +188,7 @@
 
     <style name="list">
         <item name="android:layout_height">@dimen/list_height</item>
-        <item name="android:background">@color/background_elevated</item>
+        <item name="android:background">@color/background_elevated_dark</item>
         <item name="colorControlHighlight">#9E9E9E</item>
         <item name="android:gravity">center</item>
         <item name="android:fastScrollEnabled">true</item>
@@ -198,14 +198,14 @@
     </style>
 
     <style name="listTitleText">
-        <item name="android:textColor">@color/list_text</item>
+        <item name="android:textColor">@color/list_text_dark</item>
         <item name="android:textSize">@dimen/list_text_header_size</item>
         <item name="android:paddingLeft">@dimen/list_padding_h</item>
         <item name="android:paddingRight">@dimen/list_padding_h</item>
     </style>
 
     <style name="listDetailText">
-        <item name="android:textColor">@color/detail_text</item>
+        <item name="android:textColor">@color/detail_text_dark</item>
         <item name="android:textSize">@dimen/list_text_detail_size</item>
         <item name="android:paddingLeft">@dimen/list_padding_h</item>
         <item name="android:paddingRight">@dimen/list_padding_h</item>

@@ -1,6 +1,9 @@
 # Stop Picasso from causing release builds to fail
 -dontwarn com.squareup.okhttp.**
 
+# Don't obfuscate class and method names for easier debugging
+-keepnames class com.marverenic.** { *; }
+
 #
 # From https://google-gson.googlecode.com/svn-history/r878/trunk/examples/android-proguard-example/proguard.cfg
 #
