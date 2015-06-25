@@ -23,8 +23,8 @@ android {
         applicationId "com.marverenic.music"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 30000
-        versionName "0.3_α-m0r0a.d1"
+        versionCode 30001
+        versionName "0.3_α-m0r0b"
     }
     buildTypes {
         release {
