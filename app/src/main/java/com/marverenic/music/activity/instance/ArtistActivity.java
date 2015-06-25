@@ -209,14 +209,19 @@ public class ArtistActivity extends BaseActivity {
                     super.onPostExecute(artist);
                     setData(artist);
 
-                    if (artist != null)
+                    if (artist != null) {
                         // Set header image
-                        Picasso.with(ArtistActivity.this).load(artist.getImageURL(ImageSize.MEGA))
-                                .placeholder(R.drawable.art_default_xl)
-                                .error(R.drawable.art_default_xl)
-                                .into((ImageView) ArtistActivity.this.findViewById(R.id.backdrop));
-                    else
-                        ((ImageView) ArtistActivity.this.findViewById(R.id.backdrop)).setImageResource(R.drawable.art_default_xl);
+                        String URL = artist.getImageURL(ImageSize.MEGA);
+
+                        if (URL.trim().length() == 0) {
+                            Picasso.with(ArtistActivity.this).load(URL)
+                                    .placeholder(R.drawable.art_default_xl)
+                                    .error(R.drawable.art_default_xl)
+                                    .into((ImageView) ArtistActivity.this.findViewById(R.id.backdrop));
+                            return;
+                        }
+                    }
+                    ((ImageView) ArtistActivity.this.findViewById(R.id.backdrop)).setImageResource(R.drawable.art_default_xl);
                 }
             }.execute(reference);
         }

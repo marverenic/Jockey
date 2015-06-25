@@ -482,20 +482,22 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
      */
     @TargetApi(18)
     public void updateRemoteController (){
-        if (isPlaying()) {
-            remoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
-        } else{
-            remoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_PAUSED);
-        }
+        if (getNowPlaying() != null) {
+            if (isPlaying()) {
+                remoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
+            } else {
+                remoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_PAUSED);
+            }
 
-        // Update the metadata
-        remoteControlClient.editMetadata(true)
-                .putString(MediaMetadataRetriever.METADATA_KEY_ARTIST, getNowPlaying().artistName)
-                .putString(MediaMetadataRetriever.METADATA_KEY_ALBUM, getNowPlaying().albumName)
-                .putString(MediaMetadataRetriever.METADATA_KEY_TITLE, getNowPlaying().songName)
-                .putLong(MediaMetadataRetriever.METADATA_KEY_DURATION, getNowPlaying().songDuration)
-                .putBitmap(RemoteControlClient.MetadataEditor.BITMAP_KEY_ARTWORK, getArt())
-                .apply();
+            // Update the metadata
+            remoteControlClient.editMetadata(true)
+                    .putString(MediaMetadataRetriever.METADATA_KEY_ARTIST, getNowPlaying().artistName)
+                    .putString(MediaMetadataRetriever.METADATA_KEY_ALBUM, getNowPlaying().albumName)
+                    .putString(MediaMetadataRetriever.METADATA_KEY_TITLE, getNowPlaying().songName)
+                    .putLong(MediaMetadataRetriever.METADATA_KEY_DURATION, getNowPlaying().songDuration)
+                    .putBitmap(RemoteControlClient.MetadataEditor.BITMAP_KEY_ARTWORK, getArt())
+                    .apply();
+        }
     }
 
     /**

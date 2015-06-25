@@ -24,7 +24,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 30000
-        versionName "0.3_α-m0r0.d0"
+        versionName "0.3_α-m0r0a.d1"
     }
     buildTypes {
         release {
