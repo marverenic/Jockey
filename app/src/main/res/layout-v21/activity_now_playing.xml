@@ -12,11 +12,18 @@
         android:contentDescription="@string/art_description"
         android:src="@drawable/art_default_xl" />
 
-    <include layout="@layout/toolbar"
-        android:id="@+id/toolbar"
-        android:layout_height="wrap_content"
+    <FrameLayout
         android:layout_width="fill_parent"
-        android:layout_marginTop="25dp"/>
+        android:layout_height="168dp"
+        android:background="@drawable/skrim_now_playing"
+        android:layout_marginTop="25dp">
+
+        <include layout="@layout/toolbar"
+            android:id="@+id/toolbar"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent" />
+
+    </FrameLayout>
 
     <SeekBar
         android:id="@+id/songSeekBar"
@@ -106,7 +113,7 @@
                     android:layout_alignParentStart="true"
                     android:background="?android:attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/button_previous_description"
-                    android:src="@drawable/ic_vector_skip_previous" />
+                    android:src="@drawable/ic_skip_previous_48dp" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -121,7 +128,7 @@
                     android:layout_centerInParent="true"
                     android:background="?android:attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/button_play_description"
-                    android:src="@drawable/ic_vector_play_circle_fill" />
+                    android:src="@drawable/ic_play_circle_filled_72dp" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -136,7 +143,7 @@
                     android:layout_alignParentEnd="true"
                     android:background="?android:attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/button_skip_description"
-                    android:src="@drawable/ic_vector_skip_next" />
+                    android:src="@drawable/ic_skip_next_48dp" />
             </RelativeLayout>
 
         </LinearLayout>

@@ -1,61 +1,59 @@
 package com.marverenic.music.fragments;
 
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
+import com.marverenic.music.Library;
 import com.marverenic.music.R;
-import com.marverenic.music.adapters.ArtistListAdapter;
-import com.marverenic.music.adapters.SearchPagerAdapter;
-import com.marverenic.music.instances.Artist;
+import com.marverenic.music.instances.viewholder.ArtistViewHolder;
 import com.marverenic.music.utils.Themes;
-
-import java.util.ArrayList;
+import com.marverenic.music.view.BackgroundDecoration;
+import com.marverenic.music.view.DividerDecoration;
 
 public class ArtistFragment extends Fragment {
 
-    private ArrayList<Artist> artistLibrary;
-    private ArtistListAdapter adapter;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null && getArguments().getParcelableArrayList(SearchPagerAdapter.DATA_KEY) != null){
-            artistLibrary = new ArrayList<>();
-            for (Parcelable p : getArguments().getParcelableArrayList(SearchPagerAdapter.DATA_KEY)){
-                artistLibrary.add((Artist) p);
-            }
-        }
-
-        if (artistLibrary == null) {
-            adapter = new ArtistListAdapter(getActivity());
-        } else {
-            adapter = new ArtistListAdapter(artistLibrary, getActivity());
-        }
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_list, container, false);
-        ListView artistListView = (ListView) view.findViewById(R.id.list);
+        View view = inflater.inflate(R.layout.list, container, false);
+        RecyclerView artistRecyclerView = (RecyclerView) view.findViewById(R.id.list);
+        artistRecyclerView.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
+        artistRecyclerView.addItemDecoration(new DividerDecoration(getActivity()));
 
-        int paddingTop = (int) getActivity().getResources().getDimension(R.dimen.list_margin);
         int paddingH =(int) getActivity().getResources().getDimension(R.dimen.global_padding);
-        view.setPadding(paddingH, paddingTop, paddingH, 0);
+        view.setPadding(paddingH, 0, paddingH, 0);
 
-        artistListView.setAdapter(adapter);
-        artistListView.setOnItemClickListener(adapter);
-        artistListView.setBackgroundColor(Themes.getBackgroundElevated());
+        artistRecyclerView.setAdapter(new Adapter());
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        artistRecyclerView.setLayoutManager(layoutManager);
 
         return view;
     }
 
-    public void updateData(ArrayList<Artist> artistLibrary) {
-        this.artistLibrary = artistLibrary;
-        adapter.updateData(artistLibrary);
+
+    public class Adapter extends RecyclerView.Adapter<ArtistViewHolder>{
+
+        @Override
+        public ArtistViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+            View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.instance_artist, viewGroup, false);
+            return new ArtistViewHolder(itemView);
+        }
+
+        @Override
+        public void onBindViewHolder(ArtistViewHolder viewHolder, int i) {
+            viewHolder.update(Library.getArtists().get(i));
+        }
+
+        @Override
+        public int getItemCount() {
+            return Library.getArtists().size();
+        }
     }
+
 }

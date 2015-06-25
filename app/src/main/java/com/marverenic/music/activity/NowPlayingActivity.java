@@ -6,13 +6,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,16 +23,16 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.marverenic.music.Library;
 import com.marverenic.music.Player;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
+import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
-import com.marverenic.music.instances.Library;
-import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.utils.Debug;
+import com.marverenic.music.utils.Fetch;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 
@@ -43,6 +43,7 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
 
     private MediaObserver observer = null;
     private boolean userTouchingProgressBar = false; // This probably shouldn't be here...
+    private Song currentReference; // Used to reduce unnecessary view updates when an UPDATE broadcast is received
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP) //Don't worry Lint. Everything is going to be okay.
     @Override
@@ -60,20 +61,21 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
 
-        setContentLayout(R.layout.activity_now_playing);
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_now_playing);
         onNewIntent(getIntent());
 
         if (!isTabletHorizontal && getSupportActionBar() != null){
             getSupportActionBar().setTitle("");
-            getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.skrim_now_playing));
+            getSupportActionBar().setBackgroundDrawable(null);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
                 getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
                 getWindow().setStatusBarColor(0x66000000);
             }
         }
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && getSupportActionBar() != null)
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && getSupportActionBar() != null) {
             getSupportActionBar().setElevation(getResources().getDimension(R.dimen.header_elevation));
+        }
 
         findViewById(R.id.playButton).setOnClickListener(this);
         findViewById(R.id.nextButton).setOnClickListener(this);
@@ -98,7 +100,7 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
 
             // Have the LibraryScanner class get a song list for this file
             try{
-                position = LibraryScanner.getSongListFromFile(this, new File(intent.getData().getPath()), intent.getType(), queue);
+                position = Library.getSongListFromFile(this, new File(intent.getData().getPath()), intent.getType(), queue);
             }
             catch (Exception e){
                 e.printStackTrace();
@@ -123,44 +125,24 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.now_playing, menu);
+        getMenuInflater().inflate(R.menu.activity_now_playing, menu);
 
         if (PlayerController.isShuffle()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                menu.getItem(0).setIcon(R.drawable.ic_vector_shuffle);
-            else
-                menu.getItem(0).setIcon(R.drawable.ic_shuffle);
-
-            menu.getItem(0).setTitle("Disable Shuffle");
+            menu.getItem(0).setTitle(getResources().getString(R.string.action_disable_shuffle));
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                menu.getItem(0).setIcon(R.drawable.ic_vector_shuffle_off);
-            else
-                menu.getItem(0).setIcon(R.drawable.ic_shuffle_off);
-
-            menu.getItem(0).setTitle("Enable Shuffle");
+            menu.getItem(0).getIcon().setAlpha(128);
+            menu.getItem(0).setTitle(getResources().getString(R.string.action_enable_shuffle));
         }
 
         if (PlayerController.isRepeat()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                menu.getItem(1).setIcon(R.drawable.ic_vector_repeat);
-            else
-                menu.getItem(1).setIcon(R.drawable.ic_repeat);
-
-            menu.getItem(1).setTitle("Enable Repeat One");
+            menu.getItem(1).setTitle(getResources().getString(R.string.action_enable_repeat_one));
         } else {
             if (PlayerController.isRepeatOne()) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                    menu.getItem(1).setIcon(R.drawable.ic_vector_repeat_one);
-                else
-                    menu.getItem(1).setIcon(R.drawable.ic_repeat_one);
-                menu.getItem(1).setTitle("Disable Repeat");
+                menu.getItem(1).setIcon(R.drawable.ic_repeat_one_36dp);
+                menu.getItem(1).setTitle(getResources().getString(R.string.action_disable_repeat));
             } else {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                    menu.getItem(1).setIcon(R.drawable.ic_vector_repeat_off);
-                else
-                    menu.getItem(1).setIcon(R.drawable.ic_repeat_off);
-                menu.getItem(1).setTitle("Enable Repeat");
+                menu.getItem(1).getIcon().setAlpha(128);
+                menu.getItem(1).setTitle(getResources().getString(R.string.action_enable_repeat));
             }
         }
         return true;
@@ -171,24 +153,16 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
         switch (item.getItemId()) {
             case R.id.action_shuffle:
                 PlayerController.toggleShuffle();
-                if (!PlayerController.isShuffle()) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                        item.setIcon(R.drawable.ic_vector_shuffle);
-                    else
-                        item.setIcon(R.drawable.ic_shuffle);
-
-                    item.setTitle("Disable Shuffle");
-                    Toast toast = Toast.makeText(this, "Shuffle Enabled", Toast.LENGTH_SHORT);
+                if (PlayerController.isShuffle()) {
+                    item.getIcon().setAlpha(255);
+                    item.setTitle(getResources().getString(R.string.action_disable_shuffle));
+                    Toast toast = Toast.makeText(this, R.string.confirm_enable_shuffle, Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
                 } else {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                        item.setIcon(R.drawable.ic_vector_shuffle_off);
-                    else
-                        item.setIcon(R.drawable.ic_shuffle_off);
-
-                    item.setTitle("Enable Shuffle");
-                    Toast toast = Toast.makeText(this, "Shuffle Disabled", Toast.LENGTH_SHORT);
+                    item.getIcon().setAlpha(128);
+                    item.setTitle(getResources().getString(R.string.action_enable_shuffle));
+                    Toast toast = Toast.makeText(this, R.string.confirm_disable_shuffle, Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
                 }
@@ -196,34 +170,23 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
             case R.id.action_repeat:
                 PlayerController.toggleRepeat();
                 if (PlayerController.isRepeat()) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                        item.setIcon(R.drawable.ic_vector_repeat);
-                    else
-                        item.setIcon(R.drawable.ic_repeat);
-
-                    item.setTitle("Enable Repeat One");
-                    Toast toast = Toast.makeText(this, "Repeat Enabled", Toast.LENGTH_SHORT);
+                    item.getIcon().setAlpha(255);
+                    item.setTitle(getResources().getString(R.string.action_enable_repeat_one));
+                    Toast toast = Toast.makeText(this, R.string.confirm_enable_repeat, Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
                 } else {
                     if (PlayerController.isRepeatOne()) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                            item.setIcon(R.drawable.ic_vector_repeat_one);
-                        else
-                            item.setIcon(R.drawable.ic_repeat_one);
-
-                        item.setTitle("Disable Repeat");
-                        Toast toast = Toast.makeText(this, "Repeat One Enabled", Toast.LENGTH_SHORT);
+                        item.setIcon(R.drawable.ic_repeat_one_36dp);
+                        item.setTitle(getResources().getString(R.string.action_disable_repeat));
+                        Toast toast = Toast.makeText(this, R.string.confirm_enable_repeat_one, Toast.LENGTH_SHORT);
                         toast.setGravity(Gravity.CENTER, 0, 0);
                         toast.show();
                     } else {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                            item.setIcon(R.drawable.ic_vector_repeat_off);
-                        else
-                            item.setIcon(R.drawable.ic_repeat_off);
-
-                        item.setTitle("Enable Repeat");
-                        Toast toast = Toast.makeText(this, "Repeat Disabled", Toast.LENGTH_SHORT);
+                        item.setIcon(R.drawable.ic_repeat_36dp);
+                        item.getIcon().setAlpha(128);
+                        item.setTitle(getResources().getString(R.string.action_enable_repeat));
+                        Toast toast = Toast.makeText(this, R.string.confirm_disable_repeat, Toast.LENGTH_SHORT);
                         toast.setGravity(Gravity.CENTER, 0, 0);
                         toast.show();
                     }
@@ -271,14 +234,7 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
             final Song nowPlaying = PlayerController.getNowPlaying();
 
             if (nowPlaying != null) {
-                AlertDialog.Builder alert;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    alert = new AlertDialog.Builder(this, Themes.getAlertTheme(this));
-                }
-                else{
-                    alert = new AlertDialog.Builder(new ContextThemeWrapper(this, Themes.getAlertTheme(this)));
-                }
-                alert
+                new AlertDialog.Builder(this)
                         .setTitle(nowPlaying.songName)
                         .setNegativeButton("Cancel", null)
                         .setItems(R.array.now_playing_options, new DialogInterface.OnClickListener() {
@@ -286,14 +242,14 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
                             public void onClick(DialogInterface dialog, int which) {
                                 switch (which) {
                                     case 0: //Go to artist
-                                        Artist artist = LibraryScanner.findArtistById(nowPlaying.artistId);
+                                        Artist artist = Library.findArtistById(nowPlaying.artistId);
 
                                         Navigate.to(context, ArtistActivity.class, ArtistActivity.ARTIST_EXTRA, artist);
                                         break;
                                     case 1: //Go to album
-                                        Album album = LibraryScanner.findAlbumById(nowPlaying.albumId);
+                                        Album album = Library.findAlbumById(nowPlaying.albumId);
 
-                                        Navigate.to(context, InstanceActivity.class, "entry", album);
+                                        Navigate.to(context, Library.class, "entry", album);
                                         break;
                                     case 2: //Add to playlist
                                         ArrayList<Playlist> playlists = Library.getPlaylists();
@@ -303,12 +259,12 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
                                             playlistNames[i] = playlists.get(i).toString();
                                         }
 
-                                        new AlertDialog.Builder(context, Themes.getAlertTheme(context))
+                                        new AlertDialog.Builder(context)
                                                 .setTitle("Add \"" + nowPlaying.songName + "\" to playlist")
                                                 .setItems(playlistNames, new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
-                                                        LibraryScanner.addPlaylistEntry(context, Library.getPlaylists().get(which), nowPlaying);
+                                                        Library.addPlaylistEntry(context, Library.getPlaylists().get(which), nowPlaying);
                                                     }
                                                 })
                                                 .setNeutralButton("Cancel", null)
@@ -333,7 +289,7 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
     @Override
     public void themeActivity() {
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && getSupportActionBar() != null) {
-                getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Themes.getPrimary()));
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Themes.getPrimary()));
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             SeekBar seekBar = (SeekBar) findViewById(R.id.songSeekBar);
@@ -362,38 +318,38 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
         Song nowPlaying = PlayerController.getNowPlaying();
         if (nowPlaying != null) {
 
-            if (PlayerController.isPlaying() && !observer.isRunning()) new Thread(observer).start();
+            if (nowPlaying != currentReference) {
+                // The following code only needs to be executed when the song changes, which
+                // doesn't happen on every single UPDATE broadcast. Because of this, we can
+                // reduce the number of redundant calls by only running this if the song has
+                // changed.
 
-            final TextView songTitle = (TextView) findViewById(R.id.textSongTitle);
-            final TextView artistName = (TextView) findViewById(R.id.textArtistName);
-            final TextView albumTitle = (TextView) findViewById(R.id.textAlbumTitle);
+                if (PlayerController.isPlaying() && !observer.isRunning())
+                    new Thread(observer).start();
+
+                final TextView songTitle = (TextView) findViewById(R.id.textSongTitle);
+                final TextView artistName = (TextView) findViewById(R.id.textArtistName);
+                final TextView albumTitle = (TextView) findViewById(R.id.textAlbumTitle);
+
+                songTitle.setText(nowPlaying.songName);
+                artistName.setText(nowPlaying.artistName);
+                albumTitle.setText(nowPlaying.albumName);
+
+                ImageView artImageView = (ImageView) findViewById(R.id.imageArtwork);
+                Bitmap artwork = Fetch.fetchFullArt(nowPlaying);
+                if (artwork == null || artwork.getHeight() == 0 || artwork.getWidth() == 0) {
+                    artImageView.setImageResource(R.drawable.art_default_xl);
+                } else {
+                    artImageView.setImageBitmap(artwork);
+                }
+                currentReference = nowPlaying;
+            }
+
             final SeekBar seekBar = ((SeekBar) findViewById(R.id.songSeekBar));
 
-            songTitle.setText(nowPlaying.songName);
-            artistName.setText(nowPlaying.artistName);
-            albumTitle.setText(nowPlaying.albumName);
-
-            ImageView artImageView = (ImageView) findViewById(R.id.imageArtwork);
-            if (PlayerController.getFullArt() != null) {
-                artImageView.setImageBitmap(PlayerController.getFullArt());
-            }
-            else if (PlayerController.getArt() != null){
-                artImageView.setImageBitmap(PlayerController.getArt());
-            }
-            else {
-                if (getResources().getConfiguration().smallestScreenWidthDp >= 700) {
-                    artImageView.setImageResource(R.drawable.art_default_xxl);
-                } else {
-                    artImageView.setImageResource(R.drawable.art_default_xl);
-                }
-            }
-
             if ((PlayerController.isPlaying() || PlayerController.isPreparing())) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_vector_pause_circle_fill);
-                } else {
-                    ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_pause_circle_fill);
-                }
+                ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_pause_circle_filled_72dp);
+
                 if (!PlayerController.isPreparing()) {
                     if (!observer.isRunning()) new Thread(observer).start();
                     seekBar.setMax(PlayerController.getDuration());
@@ -407,11 +363,7 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
             else {
                 seekBar.setMax(PlayerController.getDuration());
                 seekBar.setProgress(PlayerController.getCurrentPosition());
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_vector_play_circle_fill);
-                } else {
-                    ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_circle_fill);
-                }
+                ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_circle_filled_72dp);
             }
         }
     }
@@ -466,9 +418,7 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
                 });
                 try {
                     Thread.sleep(200);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Debug.log(Debug.LogLevel.WTF, "NowPlayingActivity/MediaObserver", "Some horrible thread exception has occurred", parent);
+                } catch (Exception ignored) {
                 }
             }
         }

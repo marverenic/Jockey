@@ -4,46 +4,35 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
 import android.media.AudioManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.Transformation;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.marverenic.music.BuildConfig;
-import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.Player;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
+import com.marverenic.music.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 
 public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener {
 
-    @LayoutRes private int layoutResID = -1;
-    @IdRes private int contentResId = -1;
-
-    private static final boolean debug = BuildConfig.DEBUG;
-    private boolean createdView = false;
+    private static final boolean DEBUG = BuildConfig.DEBUG;
     private BroadcastReceiver updateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             update();
+            updateMiniplayer();
         }
     };
 
@@ -52,12 +41,21 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      */
     @Override
     public void onCreate(Bundle savedInstanceState){
-        if (debug) Log.i(getClass().toString(), "Called onCreate");
+        if (DEBUG) Log.i(getClass().toString(), "Called onCreate");
 
         Themes.setTheme(this);
         super.onCreate(savedInstanceState);
-        if (layoutResID != -1) super.setContentView(layoutResID);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
+
+        if (Library.isEmpty()) Library.scanAll(this);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void setContentView(@LayoutRes int layoutResId){
+        super.setContentView(layoutResId);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
@@ -71,7 +69,6 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         }
 
         themeActivity();
-        ((JockeyApplication) getApplication()).activityCreated();
 
         if (findViewById(R.id.miniplayer) != null) {
             findViewById(R.id.miniplayer).setOnClickListener(this);
@@ -81,35 +78,21 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     }
 
     /**
-     * Set the layout resource for this activity. Required.
-     * @param layoutResID The layout to be inflated
-     */
-    public void setContentLayout(@LayoutRes int layoutResID){
-        this.layoutResID = layoutResID;
-    }
-
-    /**
-     * Set the layout id that contains the main content in this view. Optional if the #update and
-     * #updateMiniplayer method is overridden and doesn't call the super method
-     * @param contentResId The id of the content container
-     */
-    @Override
-    public void setContentView(@IdRes int contentResId){
-        this.contentResId = contentResId;
-    }
-
-    /**
      * @inheritDoc
      */
     @Override
     public void onResume(){
-        if (debug) Log.i(getClass().toString(), "Called onResume");
         super.onResume();
-        ((JockeyApplication) getApplication()).activityResumed();
+        if (DEBUG) Log.i(getClass().toString(), "Called onResume");
         Themes.setApplicationIcon(this);
         registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
-        update();
-        createdView = true;
+        if (PlayerController.getNowPlaying() == null) {
+            PlayerController.requestSync();
+        }
+        else{
+            update();
+            updateMiniplayer();
+        }
     }
 
     /**
@@ -117,12 +100,11 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      */
     @Override
     public void onPause(){
-        if (debug) Log.i(getClass().toString(), "Called onPause");
         super.onPause();
+        if (DEBUG) Log.i(getClass().toString(), "Called onPause");
         try {
             unregisterReceiver(updateReceiver);
         } catch (Exception ignored) {}
-        ((JockeyApplication) getApplication()).activityPaused();
     }
 
     /**
@@ -130,16 +112,15 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      */
     @Override
     public void onDestroy(){
-        if (debug) Log.i(getClass().toString(), "Called onDestroy");
         super.onDestroy();
-        ((JockeyApplication) getApplication()).activityDestroyed();
+        if (DEBUG) Log.i(getClass().toString(), "Called onDestroy");
     }
 
     /**
      * @inheritDoc
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item){
         if (item.getItemId() == android.R.id.home){
             Navigate.up(this);
             return true;
@@ -151,8 +132,8 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      * @inheritDoc
      */
     @Override
-    public void onBackPressed() {
-        if (debug) Log.i(getClass().toString(), "Called calledOnBackPressed");
+    public void onBackPressed(){
+        if (DEBUG) Log.i(getClass().toString(), "Called calledOnBackPressed");
         super.onBackPressed();
         Navigate.back(this);
     }
@@ -171,18 +152,8 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
             View miniplayer = (View) findViewById(R.id.miniplayer).getParent();
 
             miniplayer.setBackgroundColor(Themes.getBackgroundMiniplayer());
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                ((ImageButton) miniplayer.findViewById(R.id.skipButton)).setImageTintList(ColorStateList.valueOf(Themes.getListText()));
-                ((ImageButton) miniplayer.findViewById(R.id.playButton)).setImageTintList(ColorStateList.valueOf(Themes.getListText()));
-            } else {
-                if (!Themes.isLight(this)) {
-                    ((ImageButton) miniplayer.findViewById(R.id.skipButton)).setImageResource(R.drawable.ic_skip_next_miniplayer);
-                    ((ImageButton) miniplayer.findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_miniplayer);
-                } else {
-                    ((ImageButton) miniplayer.findViewById(R.id.skipButton)).setImageResource(R.drawable.ic_skip_next_miniplayer_light);
-                    ((ImageButton) miniplayer.findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_miniplayer_light);
-                }
-            }
+            ((ImageButton) miniplayer.findViewById(R.id.skipButton)).setColorFilter(Themes.getListText());
+            ((ImageButton) miniplayer.findViewById(R.id.playButton)).setColorFilter(Themes.getListText());
 
             ((TextView) miniplayer.findViewById(R.id.textNowPlayingTitle)).setTextColor(Themes.getListText());
             ((TextView) miniplayer.findViewById(R.id.textNowPlayingDetail)).setTextColor(Themes.getDetailText());
@@ -192,170 +163,35 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     /**
      * Called when the @link PlayerService sends an UPDATE broadcast.
      */
-    public abstract void update();
+    public void update(){
+
+    }
 
     /**
      * Update the miniplayer to reflect the most recent @link PlayerService status. If no miniplayer
      * exists in the view, override this method with an empty code block.
      */
     @SuppressWarnings("ResourceType")
-    public void updateMiniplayer() {
-        if (debug) Log.i(getClass().toString(), "Called updateMiniplayer");
-        if (contentResId != -1) {
-            Song nowPlaying = PlayerController.getNowPlaying();
-            // If there's music playing, update the Miniplayer's view
-            if (nowPlaying != null) {
+    public void updateMiniplayer(){
+        if (DEBUG) Log.i(getClass().toString(), "Called updateMiniplayer");
+        final View miniplayerView = findViewById(R.id.miniplayer_holder);
+        final Song nowPlaying = PlayerController.getNowPlaying();
 
-                // update the text and images inside the miniplayer
-                updateMiniplayerContents(true, PlayerController.getFullArt(), PlayerController.getNowPlaying(), PlayerController.isPlaying() || PlayerController.isPreparing());
+        if (nowPlaying != null){
+            ImageView artworkImageView = (ImageView) miniplayerView.findViewById(R.id.imageArtwork);
+            TextView songTextView = (TextView) miniplayerView.findViewById(R.id.textNowPlayingTitle);
+            TextView artistTextView = (TextView) miniplayerView.findViewById(R.id.textNowPlayingDetail);
+            ImageView playButton = (ImageView) miniplayerView.findViewById(R.id.playButton);
 
-                final View miniplayerView = findViewById(R.id.miniplayer_holder);
-                final int miniplayerHeight = getResources().getDimensionPixelSize(R.dimen.now_playing_ticker_height);
-
-                if(miniplayerView != null && miniplayerView.getLayoutParams().height != miniplayerHeight && miniplayerView.getAnimation() == null) {
-                    // If the view isn't being created for the first time, animate it in
-                    if (createdView) {
-                        Animation miniplayerHeightAnim = new Animation() {
-                            @Override
-                            protected void applyTransformation(float interpolatedTime, Transformation t) {
-                                RelativeLayout.LayoutParams miniplayerLayoutParams = (RelativeLayout.LayoutParams) miniplayerView.getLayoutParams();
-                                miniplayerLayoutParams.height = (int) (miniplayerHeight * interpolatedTime);
-                                miniplayerView.setLayoutParams(miniplayerLayoutParams);
-                            }
-                        };
-                        miniplayerHeightAnim.setDuration(300);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                            miniplayerHeightAnim.setInterpolator(this, android.R.interpolator.linear_out_slow_in);
-                        miniplayerView.startAnimation(miniplayerHeightAnim);
-
-                        if (contentResId != -1) {
-                            // If the id of the main content has been specified, update its margin
-                            final View contentView = findViewById(contentResId);
-                            if (contentView != null) {
-
-                                Animation contentViewMarginAnim = null;
-
-                                if (contentView.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
-                                    contentViewMarginAnim = new Animation() {
-                                        @Override
-                                        protected void applyTransformation(float interpolatedTime, Transformation t) {
-                                            RelativeLayout.LayoutParams contentLayoutParams = (RelativeLayout.LayoutParams) contentView.getLayoutParams();
-                                            contentLayoutParams.bottomMargin = (int) (miniplayerHeight * interpolatedTime);
-                                            contentView.setLayoutParams(contentLayoutParams);
-                                        }
-                                    };
-                                }
-                                else if (contentView.getLayoutParams() instanceof FrameLayout.LayoutParams) {
-                                    contentViewMarginAnim = new Animation() {
-                                        @Override
-                                        protected void applyTransformation(float interpolatedTime, Transformation t) {
-                                            FrameLayout.LayoutParams contentLayoutParams = (FrameLayout.LayoutParams) contentView.getLayoutParams();
-                                            contentLayoutParams.bottomMargin = (int) (miniplayerHeight * interpolatedTime);
-                                            contentView.setLayoutParams(contentLayoutParams);
-                                        }
-                                    };
-                                }
-                                else {
-                                    Log.w(getClass().toString(), "Couldn't animate content layout margin because it isn't in a frame layout or relative layout");
-                                }
-
-                                if (contentViewMarginAnim != null) {
-                                    contentViewMarginAnim.setDuration(300);
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                                        contentViewMarginAnim.setInterpolator(this, android.R.interpolator.linear_out_slow_in);
-                                    contentView.startAnimation(contentViewMarginAnim);
-                                }
-                            }
-                        }
-                    }
-                    // If this is being called while initializing the activity's view, don't animate it in
-                    else{
-                        RelativeLayout.LayoutParams miniplayerLayoutParams = (RelativeLayout.LayoutParams) miniplayerView.getLayoutParams();
-                        miniplayerLayoutParams.height = miniplayerHeight;
-                        miniplayerView.setLayoutParams(miniplayerLayoutParams);
-
-                        if (contentResId != -1) {
-                            // If the id of the main content has been specified, update its margin
-                            final View contentView = findViewById(contentResId);
-
-                            if (contentView.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
-                                RelativeLayout.LayoutParams contentLayoutParams = (RelativeLayout.LayoutParams) contentView.getLayoutParams();
-                                contentLayoutParams.bottomMargin = miniplayerHeight;
-                                contentView.setLayoutParams(contentLayoutParams);
-                            }
-                            else if (contentView.getLayoutParams() instanceof FrameLayout.LayoutParams) {
-                                FrameLayout.LayoutParams contentLayoutParams = (FrameLayout.LayoutParams) contentView.getLayoutParams();
-                                contentLayoutParams.bottomMargin = miniplayerHeight;
-                                contentView.setLayoutParams(contentLayoutParams);
-                            }
-                            else {
-                                Log.w(getClass().toString(), "Couldn't set content layout margin because it isn't in a frame layout or relative layout");
-                            }
-                        }
-                    }
-                }
-            }
-            else {
-                final View contentView = findViewById(contentResId);
-
-                if (contentView.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
-                    RelativeLayout.LayoutParams contentLayoutParams = (RelativeLayout.LayoutParams) contentView.getLayoutParams();
-                    contentLayoutParams.bottomMargin = 0;
-                    contentView.setLayoutParams(contentLayoutParams);
-                }
-                else if (contentView.getLayoutParams() instanceof FrameLayout.LayoutParams) {
-                    FrameLayout.LayoutParams contentLayoutParams = (FrameLayout.LayoutParams) contentView.getLayoutParams();
-                    contentLayoutParams.bottomMargin = 0;
-                    contentView.setLayoutParams(contentLayoutParams);
-                }
-                else {
-                    Log.w(getClass().toString(), "Couldn't set content layout margin because it isn't in a frame layout or relative layout");
-                }
-            }
-        }
-    }
-
-    /**
-     * Update the views inside the miniplayer
-     * @param hasArt Whether or not to update the artwork in the view
-     * @param art The new album artwork to display (null for default image)
-     * @param nowPlaying The currently playing song (null to keep old song)
-     * @param isPlaying The current playing status
-     */
-    public void updateMiniplayerContents(boolean hasArt, Bitmap art, Song nowPlaying, boolean isPlaying){
-        if (hasArt) {
-            if (art != null)
-                ((ImageView) findViewById(R.id.imageArtwork)).setImageBitmap(art);
+            if (PlayerController.getArtwork() != null)
+                artworkImageView.setImageBitmap(PlayerController.getArtwork());
             else
-                ((ImageView) findViewById(R.id.imageArtwork)).setImageResource(R.drawable.art_default);
-        }
+                artworkImageView.setImageResource(R.drawable.art_default);
 
-        if (nowPlaying != null) {
-            final TextView songTitle = (TextView) findViewById(R.id.textNowPlayingTitle);
-            final TextView artistName = (TextView) findViewById(R.id.textNowPlayingDetail);
+            songTextView.setText(nowPlaying.songName);
+            artistTextView.setText(nowPlaying.artistName);
+            playButton.setImageResource((PlayerController.isPlaying())? R.drawable.ic_pause_48dp : R.drawable.ic_play_arrow_48dp);
 
-            songTitle.setText(nowPlaying.songName);
-            artistName.setText(nowPlaying.artistName);
-            ((ImageButton) findViewById(R.id.skipButton)).setColorFilter(Themes.getListText());
-        }
-
-        if (!isPlaying) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_vector_play);
-                ((ImageButton) findViewById(R.id.playButton)).setImageTintList(ColorStateList.valueOf(Themes.getListText()));
-            } else {
-                ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_miniplayer);
-                ((ImageButton) findViewById(R.id.playButton)).setColorFilter(Themes.getListText());
-            }
-        }
-        else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_vector_pause);
-                ((ImageButton) findViewById(R.id.playButton)).setImageTintList(ColorStateList.valueOf(Themes.getListText()));
-            } else {
-                ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_pause_miniplayer);
-                ((ImageButton) findViewById(R.id.playButton)).setColorFilter(Themes.getListText());
-            }
         }
     }
 

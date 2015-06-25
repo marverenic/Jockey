@@ -2,6 +2,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <string name="app_name" translatable="false">Jockey</string>
+
+    <!-- Activity titles -->
     <string name="header_playlists">Playlists</string>
     <string name="header_songs">Songs</string>
     <string name="header_artists">Artists</string>
@@ -12,7 +14,8 @@
     <string name="action_settings">Settings</string>
     <string name="header_settings">Settings</string>
     <string name="header_search">Search</string>
-    <string name="settings_category_general">General</string>
+
+    <!-- Menu actions -->
     <string name="action_refresh">Refresh Library</string>
     <string name="action_skip">Skip</string>
     <string name="action_play">Play</string>
@@ -24,13 +27,31 @@
     <string name="repeat_one">Repeat One</string>
     <string name="queue">Queue</string>
     <string name="search_hint">Search Library</string>
-    <string name="export_playlist">Save as playlist&#8230;</string>
-    <string name="message_create_playlist_error_no_name">Can\'t create a playlist with no name</string>
-    <string name="message_play_error_not_found">This song couldn\'t be played</string>
+    <string name="action_export_playlist">Save as playlist&#8230;</string>
     <string name="action_sort_name">Sort by name</string>
     <string name="action_sort_artist">Sort by artist</string>
     <string name="action_sort_album">Sort by album</string>
+    <string name="action_disable_shuffle">Disable shuffle</string>
+    <string name="action_enable_shuffle">Enable shuffle</string>
+    <string name="action_disable_repeat">Disable repeat</string>
+    <string name="action_enable_repeat">Enable repeat</string>
+    <string name="action_enable_repeat_one">Enable repeat one</string>
+    <string name="action_add_to_playlist">Add to playlist&#8230;</string>
 
+    <!-- Confirmation Toasts -->
+    <string name="confirm_disable_shuffle">Disabled shuffle</string>
+    <string name="confirm_enable_shuffle">Enabled shuffle</string>
+    <string name="confirm_disable_repeat">Disabled repeat</string>
+    <string name="confirm_enable_repeat">Enabled repeat</string>
+    <string name="confirm_enable_repeat_one">Enabled repeat one</string>
+
+    <!-- Error messages -->
+    <string name="message_create_playlist_error_no_name">Can\'t create a playlist with no name</string>
+    <string name="message_play_error_not_found">This song couldn\'t be played</string>
+    <string name="error_hint_duplicate_playlist">Enter a unique playlist name</string>
+    <string name="error_hint_empty_playlist">Enter a playlist name</string>
+
+    <!-- Empty state strings -->
     <string name="nothing_playing">Nothing is playing</string>
     <string name="no_artist">unknown artist</string>
     <string name="no_album">unknown album</string>
@@ -63,14 +84,11 @@
     <string name="lastfm_description">Last.fm</string>
     <string name="uses_header">Jockey also uses the following open-source libraries:</string>
     <string name="uses_aosp_header">Android Support Libraries</string>
-    <string name="uses_aosp_detail">Support-v4 version 22.1.0, Appcompat-v7 22.1.0, Palette version 22.1.0; distributed by the Android Open Source Project under an Apache License, Version 2.0</string>
-    <string name="uses_aosp_demos_header">Android API Demos</string>
-    <string name="uses_aosp_demos_detail">Color Tab Example, Floating Action Button Example; distributed by the Android Open Source Project under an Apache License, Version 2.0</string>
+    <string name="uses_aosp_detail">Support-v4 22.2.0, Appcompat-v7 22.2.0, RecyclerView 22.2.0, CardView 22.2.0, Design 22.2.0, Palette 22.2.0; distributed by the Android Open Source Project under an Apache License, Version 2.0</string>
     <string name="uses_picasso_header">Picasso</string>
     <string name="uses_picasso_detail">Version 2.5.2; distributed by Square, Inc. under an Apache License, Version 2.0</string>
-    <string name="uses_dslv_header">DragSortListView</string>
-    <string name="uses_dslv_detail">Version 0.6.0; distributed by Carl Bauer under an Apache License, Version 2.0</string>
-    <string name="uses_apollo">Jockey also gratefully uses code from Cyanogenmod\'s Apollo music player; licensed under an Apache License, version 2.0</string>
+    <string name="uses_advrecyclerview_header">Advanced RecyclerView</string>
+    <string name="uses_advrecyclerview_detail">Version 0.7.1; distributed by Haruki Hasegawa under an Apache License, Version 2.0</string>
     <string name="uses_stackoverflow">Additional thanks to many helpful Stack Overflow users who are better at programming than I am.</string>
 
     <!-- Accessibility Content Descriptions -->
@@ -81,6 +99,7 @@
     <string name="art_description">Album Art</string>
 
     <!-- Preference Strings -->
+    <string name="settings_category_general">General</string>
     <string name="appearance_header">Appearance</string>
     <string name="playback_header">Playback</string>
     <string name="default_page_pref">Default Page</string>

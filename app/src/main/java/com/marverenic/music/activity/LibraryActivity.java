@@ -1,41 +1,67 @@
 package com.marverenic.music.activity;
 
-import android.app.Activity;
-import android.content.Intent;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
+import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatEditText;
+import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
+import com.marverenic.music.Library;
 import com.marverenic.music.R;
-import com.marverenic.music.adapters.LibraryPagerAdapter;
-import com.marverenic.music.instances.LibraryScanner;
+import com.marverenic.music.fragments.AlbumFragment;
+import com.marverenic.music.fragments.ArtistFragment;
+import com.marverenic.music.fragments.GenreFragment;
+import com.marverenic.music.fragments.PlaylistFragment;
+import com.marverenic.music.fragments.SongFragment;
+import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.utils.Updater;
-import com.marverenic.music.view.SlidingTabLayout;
 
-public class LibraryActivity extends BaseActivity {
+public class LibraryActivity extends BaseActivity implements View.OnClickListener{
 
-    // Set the intent's action to this to avoid automatically going to the Now Playing page
-    public static final String ACTION_LIBRARY = "com.marverenic.music.activity.LibraryActivity.LIBRARY";
-
-    // Intent flag used to determine whether to open the now playing activity or not
-    public static final String START_NOW_PLAYING = "com.marverernic.music.LibraryActivity.GOTOPLAYING";
+    PagerAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        setContentLayout(R.layout.activity_library);
-        setContentView(R.id.pager);
         super.onCreate(savedInstanceState);
-        onNewIntent(getIntent());
+        setContentView(R.layout.activity_library);
+
+        // Setup the FAB
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(this);
+
+        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        int page = Integer.parseInt(prefs.getString("prefDefaultPage", "1"));
+        if (page != 0) fab.setVisibility(View.GONE);
+
+        adapter = new PagerAdapter(getSupportFragmentManager());
+        adapter.setFloatingActionButton(fab);
+        pager.setAdapter(adapter);
+        pager.addOnPageChangeListener(adapter);
+        ((TabLayout) findViewById(R.id.tabs)).setupWithViewPager(pager);
+
+        pager.setCurrentItem(page);
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
@@ -43,81 +69,13 @@ public class LibraryActivity extends BaseActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(false);
         }
 
-        findViewById(R.id.pagerSlidingTabs).setVisibility(View.INVISIBLE);
-        findViewById(R.id.pager).setVisibility(View.INVISIBLE);
-
-        new Thread(new Updater(this)).start();
-
-        if (!LibraryScanner.isLoaded()) {
-            final Activity activity = this;
-            new AsyncTask<Void, Void, Void>(){
-
-                @Override
-                public Void doInBackground(Void... voids){
-                    LibraryScanner.scanAll(activity, true, true);
-                    return null;
-                }
-
-                @Override
-                protected void onPostExecute(Void results){
-                    createPages(true);
-                }
-
-            }.execute();
-        }
-        else{
-            createPages(false);
-        }
-    }
-
-    @Override
-    public void onNewIntent (Intent intent){
-        super.onNewIntent(intent);
-        // If the player is playing, go to the Now Playing page
-        if (intent.getBooleanExtra(START_NOW_PLAYING, false)){
-            Navigate.to(this, NowPlayingActivity.class);
-            intent.removeExtra(START_NOW_PLAYING);
-        }
-    }
-
-    private void createPages(boolean fade) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        int page = Integer.parseInt(prefs.getString("prefDefaultPage", "1"));
-
-        ViewPager pager = (ViewPager) findViewById(R.id.pager);
-        LibraryPagerAdapter adapter = new LibraryPagerAdapter(this);
-        pager.setAdapter(adapter);
-        pager.setCurrentItem(page);
-        pager.setVisibility(View.VISIBLE);
-
-        SlidingTabLayout tabs = ((SlidingTabLayout) findViewById(R.id.pagerSlidingTabs));
-        tabs.setViewPager(pager);
-        tabs.setActivePage(page);
-        tabs.setVisibility(View.VISIBLE);
-
-        if (fade) {
-            pager.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
-            tabs.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (Themes.hasChanged(this)) {
-            recreate();
-        }
-        if (findViewById(R.id.pager) != null && ((ViewPager) findViewById(R.id.pager)).getAdapter() != null) {
-            ((LibraryPagerAdapter) ((ViewPager) findViewById(R.id.pager)).getAdapter()).refreshPlaylists();
-        }
-        Themes.setApplicationIcon(this);
+        new Updater(this, findViewById(R.id.coordinator_layout)).execute();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-
+        getMenuInflater().inflate(R.menu.activity_library, menu);
         return true;
     }
 
@@ -128,14 +86,9 @@ public class LibraryActivity extends BaseActivity {
                 Navigate.to(this, SettingsActivity.class);
                 return true;
             case R.id.action_refresh_library:
-                final LibraryActivity activity = this;
-                LibraryScanner.refresh(this, true, true, new LibraryScanner.onScanCompleteListener() {
-                    @Override
-                    public void onScanComplete() {
-                        Toast.makeText(activity, "Library refreshed.", Toast.LENGTH_SHORT).show();
-                        recreate();
-                    }
-                });
+                Library.resetAll();
+                Library.scanAll(this);
+                adapter.refreshFragments();
                 return true;
             case R.id.search:
                 Navigate.to(this, SearchActivity.class);
@@ -149,16 +102,208 @@ public class LibraryActivity extends BaseActivity {
     }
 
     @Override
-    public void themeActivity() {
-        super.themeActivity();
+    public void onClick(View v){
+        super.onClick(v);
+        if (v.getId() == R.id.fab){
+            final TextInputLayout layout = new TextInputLayout(this);
+            final AppCompatEditText input = new AppCompatEditText(this);
+            input.setInputType(InputType.TYPE_CLASS_TEXT);
+            input.setHint("Playlist name");
+            layout.addView(input);
+            layout.setErrorEnabled(true);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            findViewById(R.id.toolbar).setElevation(0);
+            int padding = (int) getResources().getDimension(R.dimen.alert_padding);
+            ((View) input.getParent()).setPadding(
+                    padding - input.getPaddingLeft(),
+                    padding,
+                    padding - input.getPaddingRight(),
+                    input.getPaddingBottom());
+
+            final AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle("Create Playlist")
+                    .setView(layout)
+                    .setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Playlist playlist = Library.createPlaylist(getApplicationContext(), input.getText().toString(), null);
+
+                            // Update the playlist recycler view with the new data
+                            if (playlist != null) {
+                                PagerAdapter adapter = (PagerAdapter) ((ViewPager) findViewById(R.id.pager)).getAdapter();
+                                PlaylistFragment playlistFragment = (PlaylistFragment) adapter.playlistFragment;
+                                if (playlistFragment != null) {
+                                    View playlistView = playlistFragment.getView();
+                                    if (playlistView != null)
+                                        ((RecyclerView) playlistView.findViewById(R.id.list)).getAdapter()
+                                                .notifyItemInserted(Library.getPlaylists().indexOf(playlist));
+                                }
+                            }
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    }).show();
+
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Themes.getAccent());
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+
+            input.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    String error = Library.verifyPlaylistName(LibraryActivity.this, s.toString());
+                    layout.setError(error);
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(error == null && s.length() > 0);
+                    if (error == null && s.length() > 0){
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Themes.getAccent());
+                    }
+                    else{
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
+                                getResources().getColor((Themes.isLight(LibraryActivity.this)
+                                        ? R.color.secondary_text_disabled_material_light
+                                        : R.color.secondary_text_disabled_material_dark)));
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {}
+            });
         }
     }
 
-    @Override
-    public void update() {
-        updateMiniplayer();
+    public class PagerAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener {
+
+        private Fragment playlistFragment;
+        private Fragment songFragment;
+        private Fragment artistFragment;
+        private Fragment albumFragment;
+        private Fragment genreFragment;
+
+        private FloatingActionButton fab;
+
+        public PagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        public void setFloatingActionButton(FloatingActionButton fab){
+            this.fab = fab;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position){
+                case 0:
+                    if (playlistFragment == null){
+                        playlistFragment = new PlaylistFragment();
+                    }
+                    return playlistFragment;
+                case 1:
+                    if (songFragment == null){
+                        songFragment = new SongFragment();
+                    }
+                    return songFragment;
+                case 2:
+                    if (artistFragment == null){
+                        artistFragment = new ArtistFragment();
+                    }
+                    return artistFragment;
+                case 3:
+                    if (albumFragment == null){
+                        albumFragment = new AlbumFragment();
+                    }
+                    return albumFragment;
+                case 4:
+                    if (genreFragment == null){
+                        genreFragment = new GenreFragment();
+                    }
+                    return genreFragment;
+            }
+            return new Fragment();
+        }
+
+        public void refreshFragments(){
+            if (playlistFragment != null && playlistFragment.getView() != null)
+                ((RecyclerView) playlistFragment.getView().findViewById(R.id.list)).getAdapter().notifyDataSetChanged();
+            if (songFragment != null && songFragment.getView() != null)
+                ((RecyclerView) songFragment.getView().findViewById(R.id.list)).getAdapter().notifyDataSetChanged();
+            if (artistFragment != null && artistFragment.getView() != null)
+                ((RecyclerView) artistFragment.getView().findViewById(R.id.list)).getAdapter().notifyDataSetChanged();
+            if (albumFragment != null && albumFragment.getView() != null)
+                ((RecyclerView) albumFragment.getView().findViewById(R.id.list)).getAdapter().notifyDataSetChanged();
+            if (genreFragment != null && genreFragment.getView() != null)
+                ((RecyclerView) genreFragment.getView().findViewById(R.id.list)).getAdapter().notifyDataSetChanged();
+
+            // TODO String Resource
+            Toast.makeText(LibraryActivity.this, "Refreshed library", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public int getCount() {
+            return 5;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case 0:
+                    return getResources().getString(R.string.header_playlists);
+                case 1:
+                    return getResources().getString(R.string.header_songs);
+                case 2:
+                    return getResources().getString(R.string.header_artists);
+                case 3:
+                    return getResources().getString(R.string.header_albums);
+                case 4:
+                    return getResources().getString(R.string.header_genres);
+                default:
+                    return "Page " + position;
+            }
+        }
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            // Hide the fab when outside of the Playlist fragment
+
+            // If the fab isn't supposed to change states, don't animate anything
+            if (position != 0 && fab.getVisibility() == View.GONE) return;
+
+            Animation fabAnim = AnimationUtils.loadAnimation(LibraryActivity.this,
+                    (position == 0) ? R.anim.fab_in : R.anim.fab_out);
+            fabAnim.setDuration(300);
+            fabAnim.setInterpolator(LibraryActivity.this,
+                    (position == 0)? android.R.interpolator.decelerate_quint : android.R.interpolator.accelerate_quint);
+            //fabAnim.setFillEnabled(position != 0);
+            //fabAnim.setFillAfter(position != 0);
+            fab.startAnimation(fabAnim);
+
+            if (position == 0){
+                // If the FAB is reappearing, make sure it's visible
+                fab.setVisibility(View.VISIBLE);
+            }
+            else {
+                // If the FAB is fading away, make sure to hide it after the animation finishes
+                fab.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        fab.setVisibility(View.GONE);
+                    }
+                }, 300);
+            }
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
     }
 }

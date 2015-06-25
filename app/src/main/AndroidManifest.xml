@@ -1,81 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.marverenic.music" >
+    package="com.marverenic.music">
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
-    <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-    <permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- Used to read music -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- Used to save playlists -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- Used to fetch data from Last.fm -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- Used to limit data usage on metered connections -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- Used to play music when the device is locked -->
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" /> <!-- Used to add themed icons to the launcher -->
 
     <application
-        android:name=".JockeyApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name">
+        android:label="@string/app_name"
+        android:name=".JockeyApplication">
 
+        <!-- Library Activity -->
         <activity
             android:name=".activity.LibraryActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTask"
-            android:screenOrientation="fullUser">
+            android:windowSoftInputMode="adjustPan|adjustNothing"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="com.anddoes.launcher.THEME" />
             </intent-filter>
-            <meta-data
-                android:name="android.app.default_searchable"
-                android:value=".SearchActivity" />
         </activity>
 
+        <!-- Search Activity -->
         <activity
             android:name=".activity.SearchActivity"
-            android:label="Search"
-            android:launchMode="singleTop"
-            android:parentActivityName=".activity.LibraryActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-            </intent-filter>
+            android:label="@string/header_search"
+            android:windowSoftInputMode="adjustPan|adjustNothing"/>
 
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/search" />
-        </activity>
-
+        <!-- Instance Activities -->
         <activity
-            android:name=".activity.InstanceActivity"
-            android:label=""
-            android:screenOrientation="fullUser" />
-
+            android:name=".activity.instance.PlaylistActivity"
+            android:windowSoftInputMode="adjustPan|adjustNothing"/>
         <activity
-            android:name=".activity.ArtistActivity"
-            android:label=""
-            android:screenOrientation="fullUser" />
-
+            android:name=".activity.instance.AlbumActivity"
+            android:windowSoftInputMode="adjustPan|adjustNothing"/>
         <activity
-            android:name=".activity.ArtistLFMActivity"
-            android:label=""
-            android:screenOrientation="fullUser" />
+            android:name=".activity.instance.ArtistActivity"
+            android:windowSoftInputMode="adjustPan|adjustNothing"/>
+        <activity
+            android:name=".activity.instance.GenreActivity"
+            android:windowSoftInputMode="adjustPan|adjustNothing"/>
 
+        <!-- Now Playing Activity -->
         <activity
             android:name=".activity.NowPlayingActivity"
             android:label="@string/header_now_playing"
             android:screenOrientation="fullUser" />
 
+        <!-- Queue Activity -->
+        <activity
+            android:name=".activity.QueueActivity"
+            android:label="@string/header_now_playing"
+            android:windowSoftInputMode="adjustPan|adjustNothing"/>
+
+        <!-- Play with Jockey intent filter -->
         <activity-alias
             android:name=".PlayWithJockey"
             android:label="@string/app_name"
             android:targetActivity=".activity.NowPlayingActivity">
             <intent-filter>
+                <!-- file:// schema -->
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
 
@@ -86,10 +77,9 @@
                 <data android:mimeType="application/itunes" />
             </intent-filter>
             <intent-filter android:priority="-1">
+                <!-- content:// schema -->
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="content" />
                 <data android:mimeType="audio/*" />
@@ -99,15 +89,10 @@
             </intent-filter>
         </activity-alias>
 
-        <activity
-            android:name=".activity.QueueActivity"
-            android:label="@string/header_now_playing"
-            android:parentActivityName=".activity.NowPlayingActivity"
-            android:screenOrientation="fullUser" />
+        <!-- About Activity -->
+        <activity android:name=".activity.AboutActivity" />
 
-        <activity android:name=".activity.PlaylistActivity"
-            android:parentActivityName=".activity.LibraryActivity"/>
-
+        <!-- Settings Activity -->
         <activity
             android:name=".activity.SettingsActivity"
             android:label="@string/header_settings"
@@ -120,17 +105,28 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".activity.AboutActivity"
-            android:label="@string/header_about"
-            android:parentActivityName=".activity.LibraryActivity"
-            android:screenOrientation="fullUser" />
-
+        <!-- Player Service -->
         <service
-            android:name="com.marverenic.music.PlayerService"
+            android:name=".PlayerService"
             android:process=":player"
             android:exported="false" />
 
-    </application>
+        <!-- Broadcast Receivers -->
 
+        <receiver
+            android:name=".PlayerService$Listener"
+            android:process=":player"
+            android:exported="false" />
+
+        <receiver android:name=".PlayerController$Listener"
+            android:exported="false">
+            <intent-filter android:priority="999">
+                <action android:name="marverenic.jockey.player.REFRESH"/>
+            </intent-filter>
+        </receiver>
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="7b7809ed5e2c8780626b5cc48c4a21734d6451b3" />
+    </application>
 </manifest>

@@ -1,61 +1,59 @@
 package com.marverenic.music.fragments;
 
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
+import com.marverenic.music.Library;
 import com.marverenic.music.R;
-import com.marverenic.music.adapters.GenreListAdapter;
-import com.marverenic.music.adapters.SearchPagerAdapter;
-import com.marverenic.music.instances.Genre;
+import com.marverenic.music.instances.viewholder.GenreViewHolder;
 import com.marverenic.music.utils.Themes;
-
-import java.util.ArrayList;
+import com.marverenic.music.view.BackgroundDecoration;
+import com.marverenic.music.view.DividerDecoration;
 
 public class GenreFragment extends Fragment {
 
-    private ArrayList<Genre> genreLibrary;
-    private GenreListAdapter adapter;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null && getArguments().getParcelableArrayList(SearchPagerAdapter.DATA_KEY) != null){
-            genreLibrary = new ArrayList<>();
-            for (Parcelable p : getArguments().getParcelableArrayList(SearchPagerAdapter.DATA_KEY)){
-                genreLibrary.add((Genre) p);
-            }
-        }
-
-        if (genreLibrary == null) {
-            adapter = new GenreListAdapter(getActivity());
-        } else {
-            adapter = new GenreListAdapter(genreLibrary, getActivity());
-        }
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_list, container, false);
-        ListView genreListView = (ListView) view.findViewById(R.id.list);
+        View view = inflater.inflate(R.layout.list, container, false);
+        RecyclerView genreRecyclerView = (RecyclerView) view.findViewById(R.id.list);
+        genreRecyclerView.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
+        genreRecyclerView.addItemDecoration(new DividerDecoration(getActivity()));
 
-        int paddingTop = (int) getActivity().getResources().getDimension(R.dimen.list_margin);
         int paddingH =(int) getActivity().getResources().getDimension(R.dimen.global_padding);
-        view.setPadding(paddingH, paddingTop, paddingH, 0);
+        view.setPadding(paddingH, 0, paddingH, 0);
 
-        genreListView.setAdapter(adapter);
-        genreListView.setOnItemClickListener(adapter);
-        genreListView.setBackgroundColor(Themes.getBackgroundElevated());
+        genreRecyclerView.setAdapter(new Adapter());
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        genreRecyclerView.setLayoutManager(layoutManager);
 
         return view;
     }
 
-    public void updateData(ArrayList<Genre> genreLibrary) {
-        this.genreLibrary = genreLibrary;
-        adapter.updateData(genreLibrary);
+
+    public class Adapter extends RecyclerView.Adapter<GenreViewHolder>{
+
+        @Override
+        public GenreViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+            View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.instance_genre, viewGroup, false);
+            return new GenreViewHolder(itemView);
+        }
+
+        @Override
+        public void onBindViewHolder(GenreViewHolder viewHolder, int i) {
+            viewHolder.update(Library.getGenres().get(i));
+        }
+
+        @Override
+        public int getItemCount() {
+            return Library.getGenres().size();
+        }
     }
+
 }

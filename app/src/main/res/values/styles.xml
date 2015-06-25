@@ -14,11 +14,11 @@
 
     <!-- Theme Colors-->
     <!-- Light Base -->
-    <color name="list_text_light">@color/primary_text_default_material_light</color>
-    <color name="detail_text_light">@color/secondary_text_default_material_light</color>
-    <color name="background_light">#EEEEEE</color>
-    <color name="background_elevated_light">#F5F5F5</color>
-    <color name="background_miniplayer_light">#FAFAFA</color>
+    <color name="list_text">@color/primary_text_default_material_light</color>
+    <color name="detail_text">@color/secondary_text_default_material_light</color>
+    <color name="background">#EEEEEE</color>
+    <color name="background_elevated">#F5F5F5</color>
+    <color name="background_miniplayer">#FAFAFA</color>
 
     <!-- Dark Colors -->
     <color name="list_text_dark">@color/primary_text_default_material_dark</color>
@@ -58,7 +58,7 @@
     <!-- Green -->
     <color name="primary_green">#2E7D32</color>
     <color name="primary_dark_green">#1B5E20</color>
-    <color name="accent_green">#69F0AE</color>
+    <color name="accent_green">#00C853</color>
     <color name="ui_text_green">#E8F5E9</color>
     <color name="ui_detail_text_green">#A5D6A7</color>
 
@@ -76,12 +76,12 @@
     <color name="ui_text_purple">#EDE7F6</color>
     <color name="ui_detail_text_purple">#B39DDB</color>
 
+    <!-- Dark Theme Base -->
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@color/background_dark</item>
-        <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
 
-    <!-- More themes -->
+    <!-- Dark themes -->
     <style name="AppTheme.Black" parent="AppTheme">
         <item name="colorPrimary">@color/primary_grey</item>
         <item name="colorPrimaryDark">@color/primary_dark_grey</item>
@@ -131,8 +131,9 @@
         <item name="colorControlHighlight">@color/accent_purple</item>
     </style>
 
+    <!-- Light theme base -->
     <style name="AppThemeLight" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowBackground">@color/background_light</item>
+        <item name="android:windowBackground">@color/background</item>
         <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
     </style>
 
@@ -186,29 +187,30 @@
         <item name="colorControlHighlight">@color/accent_purple</item>
     </style>
 
+    <!-- Splash screen -->
+    <style name="SplashTheme" parent="android:Theme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
+
     <style name="list">
         <item name="android:layout_height">@dimen/list_height</item>
-        <item name="android:background">@color/background_elevated_dark</item>
-        <item name="colorControlHighlight">#9E9E9E</item>
+        <item name="android:background">@color/background_elevated</item>
         <item name="android:gravity">center</item>
-        <item name="android:fastScrollEnabled">true</item>
-        <item name="android:scrollbarStyle">outsideInset</item>
-        <item name="android:fastScrollAlwaysVisible">true</item>
-        <item name="android:fastScrollOverlayPosition">atThumb</item>
     </style>
 
     <style name="listTitleText">
-        <item name="android:textColor">@color/list_text_dark</item>
+        <item name="android:textColor">@color/list_text</item>
         <item name="android:textSize">@dimen/list_text_header_size</item>
-        <item name="android:paddingLeft">@dimen/list_padding_h</item>
-        <item name="android:paddingRight">@dimen/list_padding_h</item>
+        <item name="android:paddingLeft">@dimen/list_padding</item>
+        <item name="android:paddingRight">@dimen/list_padding</item>
     </style>
 
     <style name="listDetailText">
-        <item name="android:textColor">@color/detail_text_dark</item>
+        <item name="android:textColor">@color/detail_text</item>
         <item name="android:textSize">@dimen/list_text_detail_size</item>
-        <item name="android:paddingLeft">@dimen/list_padding_h</item>
-        <item name="android:paddingRight">@dimen/list_padding_h</item>
+        <item name="android:paddingLeft">@dimen/list_padding</item>
+        <item name="android:paddingRight">@dimen/list_padding</item>
     </style>
 
     <style name="gridTitleText">

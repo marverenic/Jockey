@@ -1,29 +1,8 @@
 <resources>
 
-    <dimen name="list_text_header_size">20sp</dimen>
-    <dimen name="list_text_detail_size">16sp</dimen>
-    <dimen name="grid_text_header_size">16sp</dimen>
-    <dimen name="grid_text_detail_size">12sp</dimen>
-    <dimen name="window_elevation">2dp</dimen>
-    <dimen name="miniplayer_elevation">8dp</dimen>
     <dimen name="global_padding">23dp</dimen>
-    <dimen name="list_height">72dp</dimen>
-    <dimen name="list_padding_h">16dp</dimen>
-    <dimen name="list_margin">6dp</dimen>
     <dimen name="grid_width">170dp</dimen>
-    <dimen name="artist_image_height">250dp</dimen>
     <dimen name="grid_art_size">162dp</dimen>
-    <dimen name="grid_padding">6dp</dimen>
-    <dimen name="settings_header_text_size">18sp</dimen>
-    <dimen name="now_playing_ticker_height">64dp</dimen>
-    <dimen name="now_playing_button_size">80dp</dimen>
     <dimen name="now_playing_max_control_width">400dp</dimen>
-    <dimen name="drag_handle_size">40dp</dimen>
-    <dimen name="drag_handle_padding">8dp</dimen>
-    <dimen name="fab_size">56dp</dimen>
-    <dimen name="fab_icon_size">24dp</dimen>
-    <dimen name="fab_padding">24dp</dimen>
-    <dimen name="fab_elevation">6dp</dimen>
-    <dimen name="alert_padding">24dp</dimen>
 
 </resources>

@@ -1,61 +1,60 @@
 package com.marverenic.music.fragments;
 
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import com.marverenic.music.R;
-import com.marverenic.music.adapters.SearchPagerAdapter;
-import com.marverenic.music.adapters.SongListAdapter;
-import com.marverenic.music.instances.Song;
+import com.marverenic.music.Library;
+import com.marverenic.music.instances.viewholder.SongViewHolder;
 import com.marverenic.music.utils.Themes;
-
-import java.util.ArrayList;
+import com.marverenic.music.view.BackgroundDecoration;
+import com.marverenic.music.view.DividerDecoration;
 
 public class SongFragment extends Fragment {
 
-    private ArrayList<Song> songLibrary;
-    SongListAdapter adapter;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null && getArguments().getParcelableArrayList(SearchPagerAdapter.DATA_KEY) != null){
-            songLibrary = new ArrayList<>();
-            for (Parcelable p : getArguments().getParcelableArrayList(SearchPagerAdapter.DATA_KEY)){
-                songLibrary.add((Song) p);
-            }
-        }
-
-        if (songLibrary == null) {
-            adapter = new SongListAdapter(getActivity(), true);
-        } else {
-            adapter = new SongListAdapter(songLibrary, getActivity(), true);
-        }
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_list, container, false);
-        ListView songListView = (ListView) view.findViewById(R.id.list);
+        View view = inflater.inflate(R.layout.list, container, false);
+        RecyclerView songRecyclerView = (RecyclerView) view.findViewById(R.id.list);
+        songRecyclerView.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
+        songRecyclerView.addItemDecoration(new DividerDecoration(getActivity()));
 
-        int paddingTop = (int) getActivity().getResources().getDimension(R.dimen.list_margin);
         int paddingH =(int) getActivity().getResources().getDimension(R.dimen.global_padding);
-        view.setPadding(paddingH, paddingTop, paddingH, 0);
+        view.setPadding(paddingH, 0, paddingH, 0);
 
-        songListView.setAdapter(adapter);
-        songListView.setOnItemClickListener(adapter);
-        songListView.setBackgroundColor(Themes.getBackgroundElevated());
+        songRecyclerView.setAdapter(new Adapter());
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        songRecyclerView.setLayoutManager(layoutManager);
 
         return view;
     }
 
-    public void updateData(ArrayList<Song> songLibrary) {
-        this.songLibrary = songLibrary;
-        adapter.updateData(songLibrary);
+
+    public class Adapter extends RecyclerView.Adapter<SongViewHolder>{
+
+        @Override
+        public SongViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+            SongViewHolder viewHolder = new SongViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.instance_song, viewGroup, false));
+            viewHolder.setSongList(Library.getSongs());
+            return viewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(SongViewHolder viewHolder, int i) {
+            viewHolder.update(Library.getSongs().get(i));
+        }
+
+        @Override
+        public int getItemCount() {
+            return Library.getSongs().size();
+        }
     }
+
 }

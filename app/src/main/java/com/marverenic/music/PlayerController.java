@@ -3,471 +3,280 @@ package com.marverenic.music;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.os.IBinder;
-import android.os.RemoteException;
-import android.util.Log;
+import android.preference.PreferenceManager;
 
-import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.utils.BackgroundTask;
+import com.marverenic.music.utils.Fetch;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class PlayerController {
 
-    private static IPlayerService playerService = null;
-    private static ServiceConnection binder = null;
+    private static Context applicationContext;
+    private static Player.State playerState;
+    private static Bitmap artwork;
 
-    private static final BroadcastReceiver updateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(final Context context, Intent intent) {
-            PlayerCache.invalidate();
+    /**
+     * Start the player service in the background
+     * @param context The {@link Context} to start the service and send commands with
+     *                THIS {@link Context} IS NEVER RELEASED and may cause a leak
+     */
+    public static void startService(Context context) {
+        if (applicationContext == null) {
+            applicationContext = context;
 
-            /*
-             * It's convenient to update the play counts here because we want to make sure
-             * it only runs on the main thread, and there's already a broadcast receiver
-             * set up like this, so don't bother to make another one.
-             */
-            new BackgroundTask(new BackgroundTask.BackgroundAction() {
-                @Override
-                public void doInBackground() {
-                    /*
-                     * Because this receiver has high priority, do this in the background so that
-                     * any other views can update without waiting for this to finish (Views updated
-                     * with UPDATE broadcasts aren't affected by play counts)
-                     */
-                    LibraryScanner.updateCounts(context);
-                }
-            }, null);
-        }
-    };
-
-    public static void bind(final Context context) {
-        if (binder == null) {
-            final ContextWrapper contextWrapper = new ContextWrapper(context);
-            binder = new ServiceConnection() {
+            Intent serviceIntent = new Intent(context, PlayerService.class);
+            context.bindService(serviceIntent, new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName name, IBinder service) {
-                    playerService = IPlayerService.Stub.asInterface(service);
-                    contextWrapper.sendOrderedBroadcast(new Intent(Player.UPDATE_BROADCAST), null);
                 }
 
                 @Override
                 public void onServiceDisconnected(ComponentName name) {
-                    playerService = null;
-                    try {
-                        contextWrapper.unregisterReceiver(updateReceiver);
-                    } catch (Exception ignored) {
-                    }
                 }
-            };
-            Intent serviceIntent = new Intent(contextWrapper, PlayerService.class);
-            contextWrapper.startService(serviceIntent);
-            contextWrapper.bindService(serviceIntent, binder, 0);
-
-            // Register a receiver to invalidate "cached" data when an UPDATE broadcast is sent
-            // It has to have high priority because it MUST execute before other BroadcastReceivers
-            // to ensure that they don't receive old data
-            IntentFilter filter = new IntentFilter(Player.UPDATE_BROADCAST);
-            filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
-            contextWrapper.registerReceiver(updateReceiver, filter);
-
-            if (BuildConfig.DEBUG) Log.i("PlayerController", "Bound Player service");
+            }, Context.BIND_AUTO_CREATE);
         }
     }
 
-    public static void unbind(Context context) {
-        if (binder != null) {
-            context.unbindService(binder);
-            binder = null;
-            playerService = null;
-            if (BuildConfig.DEBUG) Log.i("PlayerController", "Unbound Player service");
-        }
+    private static Intent getBaseIntent(String action){
+        Intent i = new Intent(applicationContext, PlayerService.Listener.class);
+        if (action != null) i.setAction(action);
+
+        return i;
     }
 
-    public static boolean isBound() {
-        return playerService != null;
-    }
-
-    public static void begin() {
-        if (isBound()) {
-            new BackgroundTask(
-                    new BackgroundTask.BackgroundAction() {
-                        @Override
-                        public void doInBackground() {
-                            try {
-                                playerService.begin();
-                            } catch (RemoteException ignored){}
-                        }
-                    }, null);
-        }
-        PlayerCache.invalidate();
+    public static void requestSync() {
+        applicationContext.sendBroadcast(getBaseIntent(PlayerService.ACTION_REQUEST_SYNC));
     }
 
     public static void stop() {
-        if (isBound()) {
-            new BackgroundTask(
-                    new BackgroundTask.BackgroundAction() {
-                        @Override
-                        public void doInBackground() {
-                            try {
-                                playerService.stop();
-                            } catch (RemoteException ignored){}
-                        }
-                    }, null);
-        }
+        applicationContext.sendBroadcast(getBaseIntent(PlayerService.ACTION_STOP));
     }
 
     public static void skip() {
-        if (isBound()) {
-            new BackgroundTask(
-                    new BackgroundTask.BackgroundAction() {
-                        @Override
-                        public void doInBackground() {
-                            try {
-                                playerService.skip();
-                            } catch (RemoteException ignored){}
-                        }
-                    }, null);
-        }
+        if (playerState != null && playerState.queuePosition < playerState.queue.size()) ++playerState.queuePosition;
+        applicationContext.sendBroadcast(getBaseIntent(PlayerService.ACTION_NEXT));
     }
 
     public static void previous() {
-        if (isBound()) {
-            new BackgroundTask(
-                    new BackgroundTask.BackgroundAction() {
-                        @Override
-                        public void doInBackground() {
-                            try {
-                                playerService.previous();
-                            } catch (RemoteException ignored){}
-                        }
-                    }, null);
-        }
+        if (playerState != null && playerState.queuePosition > 0) --playerState.queuePosition;
+        applicationContext.sendBroadcast(getBaseIntent(PlayerService.ACTION_PREV));
     }
 
-    public static void play() {
-        if (isBound()) {
-            new BackgroundTask(
-                    new BackgroundTask.BackgroundAction() {
-                        @Override
-                        public void doInBackground() {
-                            try {
-                                playerService.play();
-                            } catch (RemoteException ignored){}
-                        }
-                    }, null);
+    public static void begin(){
+        if (playerState != null){
+            playerState.position = 0;
+            playerState.isPlaying = true;
         }
-    }
-
-    public static void pause() {
-        if (isBound()) {
-            new BackgroundTask(
-                    new BackgroundTask.BackgroundAction() {
-                        @Override
-                        public void doInBackground() {
-                            try {
-                                playerService.pause();
-                            } catch (RemoteException ignored){}
-                        }
-                    }, null);
-        }
+        applicationContext.sendBroadcast(getBaseIntent(PlayerService.ACTION_BEGIN));
     }
 
     public static void togglePlay() {
-        if (isBound()) {
-            new BackgroundTask(
-                    new BackgroundTask.BackgroundAction() {
-                        @Override
-                        public void doInBackground() {
-                            try {
-                                playerService.togglePlay();
-                            } catch (RemoteException ignored){}
-                        }
-                    }, null);
+        if (playerState != null){
+            playerState.isPlaying = !playerState.isPlaying;
+            playerState.isPaused = !playerState.isPaused;
         }
+        applicationContext.sendBroadcast(getBaseIntent(PlayerService.ACTION_TOGGLE_PLAY));
+    }
+
+    public static void play() {
+        applicationContext.sendBroadcast(getBaseIntent(PlayerService.ACTION_PLAY));
+    }
+
+    public static void pause() {
+        applicationContext.sendBroadcast(getBaseIntent(PlayerService.ACTION_PAUSE));
     }
 
     public static void toggleRepeat() {
-        try {
-            playerService.toggleRepeat();
-        } catch (final RemoteException ignored) {
+        short repeatOption;
+        switch ((short) PreferenceManager.getDefaultSharedPreferences(applicationContext).getInt(Player.PREFERENCE_REPEAT, Player.REPEAT_NONE)){
+            case Player.REPEAT_ONE:
+                repeatOption = Player.REPEAT_NONE;
+                break;
+            case Player.REPEAT_ALL:
+                repeatOption = Player.REPEAT_ONE;
+                break;
+            case Player.REPEAT_NONE:
+            default:
+                repeatOption = Player.REPEAT_ALL;
         }
+
+        PreferenceManager.getDefaultSharedPreferences(applicationContext).edit().putInt(Player.PREFERENCE_REPEAT, repeatOption).apply();
+
+        Intent prefIntent = getBaseIntent(PlayerService.ACTION_SET_PREFS);
+        prefIntent.putExtra(PlayerService.EXTRA_PREF_REPEAT, repeatOption);
+        applicationContext.sendBroadcast(prefIntent);
     }
 
     public static void toggleShuffle() {
-        if (playerService != null) {
-            new BackgroundTask(
-                    new BackgroundTask.BackgroundAction() {
-                        @Override
-                        public void doInBackground() {
-                            try {
-                                playerService.toggleShuffle();
-                            } catch (RemoteException ignored){}
-                        }
-                    }, null);
+        boolean shuffleOption = !PreferenceManager.getDefaultSharedPreferences(applicationContext).getBoolean(Player.PREFERENCE_SHUFFLE, false);
+        PreferenceManager.getDefaultSharedPreferences(applicationContext).edit().putBoolean(Player.PREFERENCE_SHUFFLE, shuffleOption).apply();
+
+        Intent prefIntent = getBaseIntent(PlayerService.ACTION_SET_PREFS);
+        prefIntent.putExtra(PlayerService.EXTRA_PREF_SHUFFLE, shuffleOption);
+        applicationContext.sendBroadcast(prefIntent);
+    }
+
+    public static void setQueue(final ArrayList<Song> newQueue, final int newPosition) {
+        if (playerState != null) {
+            playerState.queue = newQueue;
+            playerState.queuePosition = newPosition;
         }
+
+        Intent queueIntent = getBaseIntent(PlayerService.ACTION_SET_QUEUE);
+        queueIntent.putParcelableArrayListExtra(PlayerService.EXTRA_QUEUE_LIST, newQueue);
+        queueIntent.putExtra(PlayerService.EXTRA_QUEUE_LIST_POSITION, newPosition);
+
+        applicationContext.sendBroadcast(queueIntent);
+    }
+
+    public static void changeSong(int queuePosition) {
+        playerState.queuePosition = queuePosition;
+
+        Intent changeSongIntent = getBaseIntent(PlayerService.ACTION_CHANGE_SONG);
+        changeSongIntent.putExtra(PlayerService.EXTRA_QUEUE_LIST_POSITION, queuePosition);
+
+        applicationContext.sendBroadcast(changeSongIntent);
+    }
+
+    public static void editQueue(ArrayList<Song> queue, int queuePosition){
+        playerState.queue = queue;
+        playerState.queuePosition = queuePosition;
+
+        Intent queueIntent = getBaseIntent(PlayerService.ACTION_EDIT_QUEUE);
+        queueIntent.putParcelableArrayListExtra(PlayerService.EXTRA_QUEUE_LIST, queue);
+        queueIntent.putExtra(PlayerService.EXTRA_QUEUE_LIST_POSITION, queuePosition);
+
+        applicationContext.sendBroadcast(queueIntent);
+    }
+
+    public static void queueNext(final Song song) {
+        if (playerState != null) {
+            playerState.queue.add(playerState.queuePosition + 1, song);
+        }
+
+        Intent queueIntent = getBaseIntent(PlayerService.ACTION_QUEUE);
+        queueIntent.putExtra(PlayerService.EXTRA_QUEUE_SONG, song);
+        queueIntent.putExtra(PlayerService.EXTRA_QUEUE_NEXT, true);
+
+        applicationContext.sendBroadcast(queueIntent);
+    }
+
+    public static void queueNext(final ArrayList<Song> songs) {
+        if (playerState != null) {
+            playerState.queue.addAll(playerState.queuePosition + 1, songs);
+        }
+
+        Intent queueIntent = getBaseIntent(PlayerService.ACTION_QUEUE);
+        queueIntent.putParcelableArrayListExtra(PlayerService.EXTRA_QUEUE_LIST, songs);
+        queueIntent.putExtra(PlayerService.EXTRA_QUEUE_NEXT, true);
+
+        applicationContext.sendBroadcast(queueIntent);
+    }
+
+    public static void queueLast(final Song song) {
+        if (playerState != null) {
+            playerState.queue.add(song);
+        }
+
+        Intent queueIntent = getBaseIntent(PlayerService.ACTION_QUEUE);
+        queueIntent.putExtra(PlayerService.EXTRA_QUEUE_SONG, song);
+        queueIntent.putExtra(PlayerService.EXTRA_QUEUE_NEXT, false);
+
+        applicationContext.sendBroadcast(queueIntent);
+    }
+
+    public static void queueLast(final ArrayList<Song> songs) {
+        if (playerState != null) {
+            playerState.queue.addAll(songs);
+        }
+
+        Intent queueIntent = getBaseIntent(PlayerService.ACTION_QUEUE);
+        queueIntent.putParcelableArrayListExtra(PlayerService.EXTRA_QUEUE_LIST, songs);
+        queueIntent.putExtra(PlayerService.EXTRA_QUEUE_NEXT, false);
+
+        applicationContext.sendBroadcast(queueIntent);
+    }
+
+    public static void seek(final int position) {
+        if (playerState != null) {
+            playerState.position = position;
+            playerState.bundleTime = System.currentTimeMillis();
+        }
+
+        Intent seekIntent = getBaseIntent(PlayerService.ACTION_SEEK);
+        seekIntent.putExtra(PlayerService.EXTRA_POSITION, position);
+
+        applicationContext.sendBroadcast(seekIntent);
     }
 
     public static boolean isPlaying() {
-        if (isBound()) {
-            try {
-                return playerService.isPlaying();
-            } catch (final RemoteException ignored) {
-            }
-        }
-        return false;
+        return playerState != null && playerState.isPlaying;
     }
 
     public static boolean isPreparing() {
-        if (isBound()) {
-            try {
-                return playerService.isPreparing();
-            } catch (final RemoteException ignored) {
-            }
-        }
-        return false;
+        return playerState != null && playerState.isPreparing;
     }
 
     public static boolean isShuffle() {
-        try {
-            if (isBound()) return playerService.isShuffle();
-        }
-        catch (RemoteException ignored){}
-        return false;
+        return PreferenceManager.getDefaultSharedPreferences(applicationContext).getBoolean(Player.PREFERENCE_SHUFFLE, false);
     }
 
     public static boolean isRepeat() {
-        try {
-            if (isBound()) return playerService.isRepeat();
-        }
-        catch (RemoteException ignored){}
-        return false;
+        return PreferenceManager.getDefaultSharedPreferences(applicationContext).getInt(Player.PREFERENCE_REPEAT, Player.REPEAT_NONE) == Player.REPEAT_ALL;
     }
 
     public static boolean isRepeatOne() {
-        try {
-            if (isBound()) return playerService.isRepeatOne();
-        }
-        catch (RemoteException ignored){}
-        return false;
+        return PreferenceManager.getDefaultSharedPreferences(applicationContext).getInt(Player.PREFERENCE_REPEAT, Player.REPEAT_NONE) == Player.REPEAT_ONE;
     }
 
     public static Song getNowPlaying() {
-        if (PlayerCache.nowPlaying != null) return PlayerCache.nowPlaying;
-        try {
-            if (isBound()){
-                PlayerCache.nowPlaying = playerService.getNowPlaying();
-                return PlayerCache.nowPlaying;
-            }
-        }
-        catch (RemoteException ignored){}
-        return null;
-    }
-
-    public static Bitmap getArt() {
-        if (PlayerCache.art != null) return PlayerCache.art;
-        try {
-            if (isBound()){
-                PlayerCache.art = playerService.getArt();
-                return PlayerCache.art;
-            }
-        }
-        catch (RemoteException ignored){}
-        return null;
-    }
-
-    public static Bitmap getFullArt() {
-        if (PlayerCache.artFullRes != null) return PlayerCache.artFullRes;
-        try {
-            if (isBound()){
-                PlayerCache.artFullRes = playerService.getFullArt();
-                return PlayerCache.artFullRes;
-            }
-        }
-        catch (RemoteException ignored){}
+        if (playerState != null && playerState.queuePosition < playerState.queue.size())
+            return playerState.queue.get(playerState.queuePosition);
         return null;
     }
 
     public static ArrayList<Song> getQueue() {
-        try {
-            if (isBound()) return new ArrayList<>(playerService.getQueue());
-        }
-        catch (RemoteException ignored){}
+        if (playerState != null) return playerState.queue;
         return new ArrayList<>();
     }
 
-    public static void setQueue(final List<Song> newQueue, final int newPosition) {
-        if (isBound()) {
-            new BackgroundTask(
-                    new BackgroundTask.BackgroundAction() {
-                        @Override
-                        public void doInBackground() {
-                            try {
-                                playerService.setQueue(newQueue, newPosition);
-                            } catch (RemoteException ignored){}
-                        }
-                    }, null);
-        }
-    }
-
-    public static void changeQueue(final List<Song> newQueue, final int newPosition) {
-        if (isBound()) {
-            new BackgroundTask(
-                    new BackgroundTask.BackgroundAction() {
-                        @Override
-                        public void doInBackground() {
-                            try {
-                                playerService.changeQueue(newQueue, newPosition);
-                            } catch (RemoteException ignored){}
-                        }
-                    }, null);
-        }
-    }
-
-    public static int getPosition() {
-        try {
-            if (isBound()) {
-                return playerService.getPosition();
-            }
-        } catch (final RemoteException ignored) {
-        }
+    public static int getQueuePosition() {
+        if (playerState != null) return playerState.queuePosition;
         return 0;
-    }
-
-    public static void queueNext(final Song song) {
-        if (isBound()) {
-            new BackgroundTask(
-                    new BackgroundTask.BackgroundAction() {
-                        @Override
-                        public void doInBackground() {
-                            try {
-                                playerService.queueNext(song);
-                            } catch (RemoteException ignored){}
-                        }
-                    }, null);
-        }
-    }
-
-    public static void queueNext(final ArrayList<Song> songs) {
-        if (isBound()) {
-            new BackgroundTask(
-                    new BackgroundTask.BackgroundAction() {
-                        @Override
-                        public void doInBackground() {
-                            try {
-                                playerService.queueNextList(songs);
-                            } catch (RemoteException ignored){}
-                        }
-                    }, null);
-        }
-    }
-
-    public static void queueLast(final Song song) {
-        if (isBound()) {
-            new BackgroundTask(
-                    new BackgroundTask.BackgroundAction() {
-                        @Override
-                        public void doInBackground() {
-                            try {
-                                playerService.queueLast(song);
-                            } catch (RemoteException ignored){}
-                        }
-                    }, null);
-        }
-    }
-
-    public static void queueLast(final ArrayList<Song> songs) {
-        if (isBound()) {
-            new BackgroundTask(
-                    new BackgroundTask.BackgroundAction() {
-                        @Override
-                        public void doInBackground() {
-                            try {
-                                playerService.queueLastList(songs);
-                            } catch (RemoteException ignored){}
-                        }
-                    }, null);
-        }
-    }
-
-    public static void seek(final int position) {
-        if (isBound()) {
-            new BackgroundTask(
-                    new BackgroundTask.BackgroundAction() {
-                        @Override
-                        public void doInBackground() {
-                            try {
-                                playerService.seek(position);
-                            } catch (RemoteException ignored){}
-                        }
-                    }, null);
-        }
     }
 
     public static int getCurrentPosition() {
-        if (isBound()) {
-            try {
-                return playerService.getCurrentPosition();
-            } catch (final RemoteException ignored) {
-            }
-        }
-        return 0;
+        if (playerState == null) return 0;
+        if (!isPlaying()) return playerState.position;
+
+        long dT = System.currentTimeMillis() - playerState.bundleTime;
+        return playerState.position + (int) dT;
     }
 
     public static int getDuration() {
-        if (isBound()){
-            try{
-                return playerService.getDuration();
-            }
-            catch (RemoteException ignored){}
-        }
+        if (playerState != null) return playerState.duration;
         return Integer.MAX_VALUE;
     }
 
-    public static void changeSong(final int newPosition){
-        if (isBound()) {
-            new BackgroundTask(
-                    new BackgroundTask.BackgroundAction() {
-                        @Override
-                        public void doInBackground() {
-                            try {
-                                playerService.changeSong(newPosition);
-                            } catch (RemoteException ignored){}
-                        }
-                    }, null);
-        }
-        PlayerCache.invalidate();
+    public static Bitmap getArtwork() {
+        if (artwork == null) artwork = Fetch.fetchFullArt(getNowPlaying());
+        return artwork;
     }
 
-    public static final class PlayerCache{
-        /*
-         * A simple class to store data related to the player's status.
-         * The idea is to "cache" data on the main process after it's
-         * first requested so that only 1 AIDL call has to be made between
-         * the main process and service process for each field
-         *
-         * These fields are reset whenever an UPDATE broadcast is received
-         * in order to ensure these values are up-to-date
-         */
+    public static class Listener extends BroadcastReceiver{
 
-        // All of these "cached" objects were chosen because they are more
-        // complex as parcelables, and always have an associated UPDATE broadcast
-        public static Song nowPlaying;
-        public static Bitmap art;
-        public static Bitmap artFullRes;
-
-        public static void invalidate(){
-            // Reset all fields -- called when UPDATE broadcast is received
-            nowPlaying = null;
-            art = null;
-            artFullRes = null;
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(Player.UPDATE_BROADCAST)){
+                playerState = intent.getParcelableExtra(Player.UPDATE_EXTRA);
+                artwork = null;
+            }
         }
+
     }
 }

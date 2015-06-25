@@ -1,63 +1,63 @@
 package com.marverenic.music.fragments;
 
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
 
+import com.marverenic.music.Library;
 import com.marverenic.music.R;
-import com.marverenic.music.adapters.AlbumGridAdapter;
-import com.marverenic.music.adapters.SearchPagerAdapter;
-import com.marverenic.music.instances.Album;
+import com.marverenic.music.instances.viewholder.AlbumViewHolder;
 import com.marverenic.music.utils.Themes;
-
-import java.util.ArrayList;
+import com.marverenic.music.view.BackgroundDecoration;
+import com.marverenic.music.view.GridSpacingDecoration;
+import com.marverenic.music.view.ViewUtils;
 
 public class AlbumFragment extends Fragment {
 
-    private ArrayList<Album> albumLibrary;
-    private AlbumGridAdapter adapter;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null && getArguments().getParcelableArrayList(SearchPagerAdapter.DATA_KEY) != null){
-            albumLibrary = new ArrayList<>();
-            for (Parcelable p : getArguments().getParcelableArrayList(SearchPagerAdapter.DATA_KEY)){
-                albumLibrary.add((Album) p);
-            }
-        }
-
-        // initialize the adapter
-        if (albumLibrary == null) {
-            adapter = new AlbumGridAdapter(getActivity());
-        } else {
-            adapter = new AlbumGridAdapter(albumLibrary, getActivity());
-        }
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // inflate the root view of the fragment
-        View view = inflater.inflate(R.layout.fragment_grid, container, false);
+        View view = inflater.inflate(R.layout.list, container, false);
+        RecyclerView albumRecyclerView = (RecyclerView) view.findViewById(R.id.list);
+        albumRecyclerView.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
 
-        int paddingTop = (int) getActivity().getResources().getDimension(R.dimen.list_margin);
         int paddingH =(int) getActivity().getResources().getDimension(R.dimen.global_padding);
-        view.setPadding(paddingH, paddingTop, paddingH, 0);
+        view.setPadding(paddingH, 0, paddingH, 0);
 
-        // initialize the GridView
-        GridView gridView = (GridView) view.findViewById(R.id.albumGrid);
-        gridView.setAdapter(adapter);
-        gridView.setBackgroundColor(Themes.getBackgroundElevated());
+        albumRecyclerView.setAdapter(new Adapter());
+
+        int numColumns = ViewUtils.getNumberOfGridColumns(getActivity());
+
+        GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), numColumns);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        albumRecyclerView.setLayoutManager(layoutManager);
+
+        albumRecyclerView.addItemDecoration(new GridSpacingDecoration((int) getResources().getDimension(R.dimen.grid_margin), numColumns));
 
         return view;
     }
 
-    public void updateData(ArrayList<Album> albumLibrary) {
-        this.albumLibrary = albumLibrary;
-        adapter.updateData(albumLibrary);
+
+    public class Adapter extends RecyclerView.Adapter<AlbumViewHolder>{
+
+        @Override
+        public AlbumViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+            return new AlbumViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.instance_album, viewGroup, false));
+        }
+
+        @Override
+        public void onBindViewHolder(AlbumViewHolder viewHolder, int i) {
+            viewHolder.update(Library.getAlbums().get(i));
+        }
+
+        @Override
+        public int getItemCount() {
+            return Library.getAlbums().size();
+        }
     }
+
 }

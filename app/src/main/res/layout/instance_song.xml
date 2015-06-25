@@ -4,9 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/list_height"
     android:layout_centerVertical="true"
-    android:gravity="center"
-    android:paddingLeft="@dimen/list_margin"
-    android:paddingRight="@dimen/list_margin">
+    android:background="?selectableItemBackground"
+    android:gravity="center">
 
     <ImageView
         android:id="@+id/instanceMore"
@@ -19,10 +18,10 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
-        android:layout_alignBottom="@+id/textSongDetail" />
+        android:layout_alignBottom="@id/instanceDetail" />
 
     <TextView
-        android:id="@+id/textSongTitle"
+        android:id="@+id/instanceTitle"
         style="@style/listTitleText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,11 +31,11 @@
         android:singleLine="true" />
 
     <TextView
-        android:id="@+id/textSongDetail"
+        android:id="@+id/instanceDetail"
         style="@style/listDetailText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/textSongTitle"
+        android:layout_below="@id/instanceTitle"
         android:layout_toLeftOf="@id/instanceMore"
         android:layout_toStartOf="@id/instanceMore"
         android:ellipsize="end"

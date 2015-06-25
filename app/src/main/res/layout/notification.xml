@@ -70,7 +70,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:background="?android:selectableItemBackground"
-            android:src="@drawable/ic_pause_notification" />
+            android:src="@drawable/ic_pause_48dp" />
 
         <ImageView
             android:id="@+id/notificationSkipNext"
@@ -78,7 +78,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:background="?android:selectableItemBackground"
-            android:src="@drawable/ic_skip_next_notification" />
+            android:src="@drawable/ic_skip_next_48dp" />
 
     </LinearLayout>
 
@@ -91,6 +91,6 @@
         android:layout_height="fill_parent"
         android:scaleType="center"
         android:background="?android:selectableItemBackground"
-        android:src="@drawable/ic_close_notification" />
+        android:src="@drawable/ic_close_18dp" />
 
 </LinearLayout>

@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/list_height"
-    android:paddingLeft="@dimen/list_margin"
-    android:paddingRight="@dimen/list_margin">
+    android:background="?selectableItemBackground">
 
     <ImageView
         android:id="@+id/instanceMore"
@@ -18,7 +17,7 @@
         android:layout_centerVertical="true" />
 
     <TextView
-        android:id="@+id/textGenreName"
+        android:id="@+id/instanceTitle"
         style="@style/listTitleText"
         android:layout_toLeftOf="@id/instanceMore"
         android:layout_toStartOf="@id/instanceMore"
@@ -26,8 +25,6 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:ellipsize="end"
-        android:paddingLeft="@dimen/list_padding_h"
-        android:paddingRight="@dimen/list_padding_h"
         android:singleLine="true" />
 
 </RelativeLayout>

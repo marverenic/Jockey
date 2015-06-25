@@ -5,10 +5,10 @@
         <item>ic_launcher</item>
         <item>ic_launcher_red</item>
         <item>ic_launcher_orange</item>
-        <item>ic_launcher_amber</item>
+        <item>ic_launcher_yellow</item>
         <item>ic_launcher_green</item>
         <item>ic_launcher_purple</item>
-        <item>ic_launcher_black</item>
+        <item>ic_launcher_grey</item>
     </string-array>
 
 </resources>

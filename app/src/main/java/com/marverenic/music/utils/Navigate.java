@@ -28,11 +28,10 @@ public class Navigate {
     }
 
     public static void back(Activity parent) {
-        // Something interesting may happen here eventually
         parent.finish();
     }
 
     public static void home(Context parent) {
-        parent.startActivity(new Intent(parent, LibraryActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP).setAction(LibraryActivity.ACTION_LIBRARY));
+        parent.startActivity(new Intent(parent, LibraryActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
     }
 }

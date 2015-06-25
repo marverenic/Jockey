@@ -12,6 +12,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.annotation.StyleRes;
 import android.util.DisplayMetrics;
 
 import com.marverenic.music.R;
@@ -82,7 +83,7 @@ public class Themes {
     }
 
     public static boolean isLight(Context context) {
-        return background == context.getResources().getColor(R.color.background_light);
+        return background == context.getResources().getColor(R.color.background);
     }
 
     // Update method
@@ -145,11 +146,11 @@ public class Themes {
 
         switch (Integer.parseInt(prefs.getString("prefBaseTheme", "1"))) {
             case 1: // Material Light
-                listText = resources.getColor(R.color.list_text_light);
-                detailText = resources.getColor(R.color.detail_text_light);
-                background = resources.getColor(R.color.background_light);
-                backgroundElevated = resources.getColor(R.color.background_elevated_light);
-                backgroundMiniplayer = resources.getColor(R.color.background_miniplayer_light);
+                listText = resources.getColor(R.color.list_text);
+                detailText = resources.getColor(R.color.detail_text);
+                background = resources.getColor(R.color.background);
+                backgroundElevated = resources.getColor(R.color.background_elevated);
+                backgroundMiniplayer = resources.getColor(R.color.background_miniplayer);
                 break;
             default: // Material Dark
                 listText = resources.getColor(R.color.list_text_dark);
@@ -161,7 +162,7 @@ public class Themes {
         }
     }
 
-    public static int getTheme(Context context) {
+    public static @StyleRes int getTheme(Context context) {
         int base = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("prefBaseTheme", "1"));
 
         int primary = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("prefColorPrimary", "5"));
@@ -201,17 +202,6 @@ public class Themes {
                 default: // Blue or Unknown
                     return R.style.AppTheme_Blue;
             }
-        }
-    }
-
-    public static int getAlertTheme (Context context){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-            if (isLight(context)) return android.R.style.Theme_Material_Light_Dialog_Alert;
-            else return android.R.style.Theme_Material_Dialog_Alert;
-        }
-        else {
-            if (isLight(context)) return android.R.style.Theme_Holo_Light;
-            else return android.R.style.Theme_Holo;
         }
     }
 
@@ -319,18 +309,21 @@ public class Themes {
     public static void updateLauncherIcon(Context context) {
         Intent launcherIntent = new Intent(context, LibraryActivity.class);
 
-        /*Intent delIntent = new Intent();
+        // Uncomment to delete Jockey icons from the launcher
+        // Don't forget to add permission "com.android.launcher.permission.UNINSTALL_SHORTCUT" to AndroidManifest
+        /*
+        Intent delIntent = new Intent();
         delIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, launcherIntent);
         delIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, context.getResources().getString(R.string.app_name));
-        delIntent.setAction("com.android.launcher.action.UNINSTALL_SHORTCUT");*/
+        delIntent.setAction("com.android.launcher.action.UNINSTALL_SHORTCUT");
+        context.sendBroadcast(delIntent);
+        */
 
         Intent addIntent = new Intent();
         addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, launcherIntent);
         addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, context.getResources().getString(R.string.app_name));
         addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON, getLargeIcon(context, -1));
         addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-
-        //context.sendBroadcast(delIntent);
         context.sendBroadcast(addIntent);
     }
 

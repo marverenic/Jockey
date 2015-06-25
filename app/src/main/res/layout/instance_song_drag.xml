@@ -1,68 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/songInstance"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/list_height">
+    android:layout_height="@dimen/list_height"
+    android:layout_centerVertical="true"
+    android:background="?selectableItemBackground"
+    android:gravity="center">
 
-    <RelativeLayout
-        android:id="@+id/songInstance"
+    <ImageView
+        android:id="@+id/instanceMore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:scaleType="center"
+        android:src="@drawable/abc_ic_menu_moreoverflow_mtrl_alpha"
+        android:background="?selectableItemBackgroundBorderless"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <ImageView
+        android:id="@+id/handle"
+        android:layout_width="@dimen/drag_handle_size"
+        android:layout_height="@dimen/drag_handle_size"
+        android:src="@drawable/ic_drag_handle"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center">
-
-        <ImageView
-            android:id="@+id/instanceMore"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:scaleType="center"
-            android:src="@drawable/abc_ic_menu_moreoverflow_mtrl_alpha"
-            android:background="?selectableItemBackgroundBorderless"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignBottom="@+id/textSongDetail" />
-
-        <ImageView
-            android:id="@+id/handle"
-            android:layout_width="@dimen/drag_handle_size"
-            android:layout_height="@dimen/drag_handle_size"
-            android:layout_marginStart="@dimen/drag_handle_padding"
-            android:layout_marginEnd="@dimen/drag_handle_padding"
-            android:src="@drawable/ic_drag_handle"
-            android:layout_centerInParent="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"/>
+        android:orientation="vertical"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/handle"
+        android:layout_toEndOf="@+id/handle"
+        android:layout_toStartOf="@id/instanceMore"
+        android:layout_toLeftOf="@id/instanceMore">
 
         <TextView
-            android:id="@+id/textSongTitle"
-            android:textColor="@color/list_text_dark"
-            android:textSize="@dimen/list_text_header_size"
-            android:layout_marginRight="@dimen/list_padding_h"
-            android:layout_marginEnd="@dimen/list_padding_h"
-            android:layout_width="fill_parent"
+            android:id="@+id/instanceTitle"
+            style="@style/listTitleText"
+            android:paddingLeft="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/handle"
-            android:layout_toEndOf="@id/handle"
-            android:layout_toStartOf="@id/instanceMore"
-            android:layout_toLeftOf="@id/instanceMore"
-            android:ellipsize="end"
-            android:singleLine="true"/>
-
-        <TextView
-            android:id="@+id/textSongDetail"
-            android:textColor="@color/detail_text_dark"
-            android:textSize="@dimen/list_text_detail_size"
-            android:layout_marginRight="@dimen/list_padding_h"
-            android:layout_marginEnd="@dimen/list_padding_h"
-            android:layout_below="@id/textSongTitle"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/handle"
-            android:layout_toEndOf="@id/handle"
-            android:layout_toStartOf="@id/instanceMore"
-            android:layout_toLeftOf="@id/instanceMore"
             android:ellipsize="end"
             android:singleLine="true" />
 
-    </RelativeLayout>
-</FrameLayout>
+        <TextView
+            android:id="@+id/instanceDetail"
+            style="@style/listDetailText"
+            android:paddingLeft="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:singleLine="true" />
+
+    </LinearLayout>
+
+</RelativeLayout>

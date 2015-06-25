@@ -3,8 +3,6 @@ package com.marverenic.music.instances;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.gson.annotations.SerializedName;
-
 public class Song implements Parcelable {
 
     public static final Parcelable.Creator<Song> CREATOR = new Parcelable.Creator<Song>() {
@@ -17,29 +15,17 @@ public class Song implements Parcelable {
         }
     };
 
-    @SerializedName("songName")
     public String songName;
-    @SerializedName("songId")
     public int songId;
-    @SerializedName("artistName")
     public String artistName;
-    @SerializedName("albumName")
     public String albumName;
-    @SerializedName("songDuration")
     public int songDuration;
-    @SerializedName("location")
     public String location;
-    @SerializedName("albumId")
     public int albumId;
-    @SerializedName("artistId")
     public int artistId;
-    @SerializedName("genreId")
     public int genreId = -1;
-    @SerializedName("trackNumber")
     public int trackNumber = 0;
-    @SerializedName("playCount")
     public int playCount = 0;
-    @SerializedName("skipCount")
     public int skipCount = 0;
 
     public Song(final String songName, final int songId, final String artistName,

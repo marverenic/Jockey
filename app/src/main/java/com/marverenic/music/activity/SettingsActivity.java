@@ -16,7 +16,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.marverenic.music.R;
-import com.marverenic.music.instances.LibraryScanner;
 import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
@@ -28,7 +27,7 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         Themes.setTheme(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.pref_layout);
+        setContentView(R.layout.activity_settings);
 
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         if (getSupportActionBar() != null){
@@ -114,11 +113,5 @@ public class SettingsActivity extends AppCompatActivity {
                 }
             });
         }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        LibraryScanner.saveLibrary(this);
     }
 }

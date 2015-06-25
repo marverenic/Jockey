@@ -11,9 +11,9 @@
         android:background="@android:color/black"
         android:contentDescription="@string/art_description"
         android:elevation="0dp"
-        android:src="@drawable/art_default_xxl" />
+        android:src="@drawable/art_default_xl" />
 
-    <include layout="@layout/toolbar" android:id="@+id/toolbar" />
+    <include layout="@layout/toolbar" android:id="@+id/toolbar"/>
 
     <RelativeLayout
         android:id="@+id/playerControlFrame"
@@ -99,7 +99,7 @@
                         android:layout_centerInParent="true"
                         android:background="?android:attr/selectableItemBackgroundBorderless"
                         android:contentDescription="@string/button_previous_description"
-                        android:src="@drawable/ic_vector_skip_previous" />
+                        android:src="@drawable/ic_skip_previous_48dp" />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -114,7 +114,7 @@
                         android:layout_centerInParent="true"
                         android:background="?android:attr/selectableItemBackgroundBorderless"
                         android:contentDescription="@string/button_play_description"
-                        android:src="@drawable/ic_vector_play_circle_fill" />
+                        android:src="@drawable/ic_play_circle_filled_72dp" />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -129,7 +129,7 @@
                         android:layout_centerInParent="true"
                         android:background="?android:attr/selectableItemBackgroundBorderless"
                         android:contentDescription="@string/button_skip_description"
-                        android:src="@drawable/ic_vector_skip_next" />
+                        android:src="@drawable/ic_skip_next_48dp" />
                 </RelativeLayout>
 
             </LinearLayout>
