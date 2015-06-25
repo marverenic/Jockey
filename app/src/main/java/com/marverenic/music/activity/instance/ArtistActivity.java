@@ -213,7 +213,7 @@ public class ArtistActivity extends BaseActivity {
                         // Set header image
                         String URL = artist.getImageURL(ImageSize.MEGA);
 
-                        if (URL.trim().length() == 0) {
+                        if (URL.trim().length() != 0) {
                             Picasso.with(ArtistActivity.this).load(URL)
                                     .placeholder(R.drawable.art_default_xl)
                                     .error(R.drawable.art_default_xl)
