@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/background_material_dark"/>
+        </shape>
+    </item>
+
+    <item android:bottom="100dp">
+        <bitmap android:src="@drawable/ic_splash" android:gravity="center"/>
+    </item>
+
+    <item android:bottom="30dp">
+        <bitmap android:src="@drawable/ic_marverenic" android:alpha="0.2" android:gravity="center_horizontal|bottom"/>
+    </item>
+
+</layer-list>

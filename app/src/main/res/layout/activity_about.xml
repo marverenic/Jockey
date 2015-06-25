@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar" android:id="@+id/toolbar"/>
+
+    <ScrollView
+        android:id="@+id/aboutScroll"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/primary_grey"
+        android:paddingLeft="@dimen/global_padding"
+        android:paddingRight="@dimen/global_padding">
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:paddingLeft="@dimen/list_padding"
+            android:paddingRight="@dimen/list_padding">
+
+            <ImageView
+                android:id="@+id/aboutAppIcon"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:src="@drawable/ic_launcher_grey" />
+
+            <TextView
+                android:id="@+id/aboutAppName"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutAppIcon"
+                android:gravity="center"
+                android:text="@string/app_name"
+                android:textColor="@color/ui_text_grey"
+                android:textSize="32sp" />
+
+            <TextView
+                android:id="@+id/aboutVersion"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutAppName"
+                android:gravity="center"
+                android:text="@string/about_version"
+                android:textColor="@color/ui_detail_text_grey"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/aboutDescription"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutVersion"
+                android:layout_marginTop="16dp"
+                android:text="@string/about_description"
+                android:textColor="@color/ui_detail_text_grey"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/aboutLicense"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutDescription"
+                android:layout_marginTop="16dp"
+                android:text="@string/about_license"
+                android:textColor="@color/ui_detail_text_grey"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/lastFmHeader"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutLicense"
+                android:layout_marginTop="16dp"
+                android:text="@string/lastfm_header"
+                android:textColor="@color/ui_text_grey"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/lastFmDetail"
+                android:layout_width="fill_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/lastFmHeader"
+                android:src="@drawable/last_fm_logo"
+                android:textColor="@color/ui_detail_text_grey"
+                android:contentDescription="@string/lastfm_description"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/aboutUsesHeader"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/lastFmDetail"
+                android:layout_marginTop="16dp"
+                android:text="@string/uses_header"
+                android:textColor="@color/ui_detail_text_grey"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/aboutAOSPHeader"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutUsesHeader"
+                android:layout_marginTop="16dp"
+                android:text="@string/uses_aosp_header"
+                android:textColor="@color/ui_text_grey"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/aboutAOSPDetail"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutAOSPHeader"
+                android:text="@string/uses_aosp_detail"
+                android:textColor="@color/ui_detail_text_grey"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/aboutPicassoHeader"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutAOSPDetail"
+                android:layout_marginTop="16dp"
+                android:text="@string/uses_picasso_header"
+                android:textColor="@color/ui_text_grey"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/aboutPicassoDetail"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutPicassoHeader"
+                android:text="@string/uses_picasso_detail"
+                android:textColor="@color/ui_detail_text_grey"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/aboutAdvRecycleViewHeader"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutPicassoDetail"
+                android:layout_marginTop="16dp"
+                android:text="@string/uses_advrecyclerview_header"
+                android:textColor="@color/ui_text_grey"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/aboutAdvRecycleViewDetail"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutAdvRecycleViewHeader"
+                android:text="@string/uses_advrecyclerview_detail"
+                android:textColor="@color/ui_detail_text_grey"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/aboutStackOverflowHeader"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutAdvRecycleViewDetail"
+                android:layout_marginTop="16dp"
+                android:text="@string/uses_stackoverflow"
+                android:textColor="@color/ui_text_grey"
+                android:textSize="20sp" />
+
+            <RelativeLayout
+                android:id="@+id/aboutMarverenicLogo"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutStackOverflowHeader"
+                android:layout_margin="@dimen/list_padding"
+                android:background="?attr/selectableItemBackground">
+                <ImageView
+                    android:id="@+id/aboutMarverenicIcon"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/list_padding"
+                    android:paddingLeft="@dimen/list_padding"
+                    android:paddingRight="@dimen/list_padding"
+                    android:src="@drawable/ic_marverenic" />
+                <TextView
+                    android:id="@+id/aboutMarverenicName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/aboutMarverenicIcon"
+                    android:paddingBottom="@dimen/list_padding"
+                    android:textColor="@android:color/white"
+                    android:text="Marverenic"
+                    android:textAllCaps="true"
+                    android:layout_centerInParent="true"/>
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </ScrollView>
+</LinearLayout>
