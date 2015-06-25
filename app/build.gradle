@@ -7,6 +7,7 @@ buildscript {
         classpath 'io.fabric.tools:gradle:1.+'
     }
 }
+
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
@@ -23,7 +24,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 30000
-        versionName "0.3_α-m0r0"
+        versionName "0.3_α-m0r0.d0"
     }
     buildTypes {
         release {
@@ -36,8 +37,6 @@ android {
             versionNameSuffix '.debug'
         }
     }
-    productFlavors {
-    }
 }
 
 dependencies {
@@ -49,7 +48,7 @@ dependencies {
     compile 'com.android.support:cardview-v7:22.2.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.7.1'
-    //compile 'com.makeramen:roundedimageview:2.1.0'
+    compile 'com.makeramen:roundedimageview:2.1.0'
     compile 'de.u-mass:lastfm-java:0.1.2'
     compile('com.crashlytics.sdk.android:crashlytics:2.4.0@aar') {
         transitive = true;

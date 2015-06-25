@@ -55,12 +55,26 @@ public class ArtistActivity extends BaseActivity {
         albums = Library.getArtistAlbumEntries(reference);
         songs = Library.getArtistSongEntries(reference);
 
-        Collections.sort(albums, new Comparator<Album>() {
-            @Override
-            public int compare(Album a1, Album a2) {
-                return a2.year.compareTo(a1.year);
-            }
-        });
+        // Sort the album list chronologically if all albums have years, otherwise sort alphabetically
+        boolean allEntriesHaveYears = true;
+        int i = 0;
+        while (i < albums.size() && allEntriesHaveYears){
+            if (albums.get(i).year == null || albums.get(i).year.equals(""))
+                allEntriesHaveYears = false;
+            i++;
+        }
+
+        if (allEntriesHaveYears) {
+            Collections.sort(albums, new Comparator<Album>() {
+                @Override
+                public int compare(Album a1, Album a2) {
+                    return a2.year.compareTo(a1.year);
+                }
+            });
+        }
+        else {
+            Library.sortAlbumList(albums);
+        }
 
         CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbar.setTitle(reference.artistName);

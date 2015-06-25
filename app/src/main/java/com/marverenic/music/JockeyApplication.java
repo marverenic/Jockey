@@ -4,8 +4,8 @@ import android.app.Application;
 
 import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.utils.Debug;
-import com.marverenic.music.utils.Themes;
 import com.squareup.picasso.Picasso;
+
 import io.fabric.sdk.android.Fabric;
 
 public class JockeyApplication extends Application implements Thread.UncaughtExceptionHandler {
@@ -14,7 +14,7 @@ public class JockeyApplication extends Application implements Thread.UncaughtExc
 
     @Override
     public void onCreate() {
-        setTheme(Themes.getTheme(this));
+        Fabric.with(this, new Crashlytics());
         super.onCreate();
 
         if (BuildConfig.DEBUG) {
@@ -23,7 +23,6 @@ public class JockeyApplication extends Application implements Thread.UncaughtExc
         else {
             defaultHandler = Thread.getDefaultUncaughtExceptionHandler();
             Thread.setDefaultUncaughtExceptionHandler(this);
-            Fabric.with(this, new Crashlytics());
         }
 
         PlayerController.startService(getApplicationContext());

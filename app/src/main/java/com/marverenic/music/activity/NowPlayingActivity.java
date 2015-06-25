@@ -1,6 +1,5 @@
 package com.marverenic.music.activity;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -45,7 +44,6 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
     private boolean userTouchingProgressBar = false; // This probably shouldn't be here...
     private Song currentReference; // Used to reduce unnecessary view updates when an UPDATE broadcast is received
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP) //Don't worry Lint. Everything is going to be okay.
     @Override
     public void onCreate(Bundle savedInstanceState) {
         boolean isTabletHorizontal = false;
@@ -54,7 +52,8 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 isTabletHorizontal = true;
                 Themes.setTheme(this);
-                getWindow().setStatusBarColor(Themes.getPrimaryDark());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                    getWindow().setStatusBarColor(Themes.getPrimaryDark());
             }
         } else {
             // For devices that aren't tablets
