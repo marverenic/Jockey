@@ -26,6 +26,7 @@ import com.marverenic.music.Library;
 import com.marverenic.music.Player;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
+import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
@@ -217,6 +218,7 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
             PlayerController.togglePlay();
         }
         else if (v.getId() == R.id.nextButton) {
+            // Next song
             PlayerController.skip();
             observer.stop();
             SeekBar seekBar = (SeekBar)findViewById(R.id.songSeekBar);
@@ -224,16 +226,19 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
             seekBar.setProgress(Integer.MAX_VALUE);
         }
         else if (v.getId() == R.id.previousButton) {
+            // Previous song
             PlayerController.previous();
             SeekBar seekBar = (SeekBar)findViewById(R.id.songSeekBar);
             seekBar.setProgress(0);
         }
         else if (v.getId() == R.id.songInfo){
+            // Song info
             final Context context = this;
             final Song nowPlaying = PlayerController.getNowPlaying();
 
             if (nowPlaying != null) {
-                new AlertDialog.Builder(this)
+                // Show an AlertDialog for navigating to relevant activities
+                AlertDialog infoDialog = new AlertDialog.Builder(this)
                         .setTitle(nowPlaying.songName)
                         .setNegativeButton("Cancel", null)
                         .setItems(R.array.now_playing_options, new DialogInterface.OnClickListener() {
@@ -248,7 +253,7 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
                                     case 1: //Go to album
                                         Album album = Library.findAlbumById(nowPlaying.albumId);
 
-                                        Navigate.to(context, Library.class, "entry", album);
+                                        Navigate.to(context, AlbumActivity.class, AlbumActivity.ALBUM_EXTRA, album);
                                         break;
                                     case 2: //Add to playlist
                                         ArrayList<Playlist> playlists = Library.getPlaylists();
@@ -258,7 +263,7 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
                                             playlistNames[i] = playlists.get(i).toString();
                                         }
 
-                                        new AlertDialog.Builder(context)
+                                        AlertDialog playlistDialog = new AlertDialog.Builder(context)
                                                 .setTitle("Add \"" + nowPlaying.songName + "\" to playlist")
                                                 .setItems(playlistNames, new DialogInterface.OnClickListener() {
                                                     @Override
@@ -268,6 +273,8 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
                                                 })
                                                 .setNeutralButton("Cancel", null)
                                                 .show();
+
+                                        playlistDialog.getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(Themes.getAccent());
                                         break;
                                     default:
                                         break;
@@ -275,6 +282,8 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
                             }
                         })
                         .show();
+
+                infoDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Themes.getAccent());
             }
         }
     }

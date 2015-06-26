@@ -9,11 +9,11 @@ import com.marverenic.music.activity.LibraryActivity;
 
 public class Navigate {
 
-    public static void to(Context parent, Class target) {
+    public static void to(Context parent, Class<?  extends Activity> target) {
         to(parent, target, null, null);
     }
 
-    public static void to(Context parent, Class target, String extraName, Parcelable extra) {
+    public static void to(Context parent, Class<?  extends Activity> target, String extraName, Parcelable extra) {
         Intent intent = new Intent(parent, target);
 
         if (extraName != null && extra != null) {
