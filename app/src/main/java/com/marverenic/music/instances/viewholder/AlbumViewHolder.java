@@ -185,7 +185,7 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 Library.addPlaylistEntries(
-                                                        itemView.getContext(),
+                                                        itemView,
                                                         Library.getPlaylists().get(which),
                                                         Library.getAlbumEntries(reference));
                                             }

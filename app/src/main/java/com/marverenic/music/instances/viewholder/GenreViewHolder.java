@@ -83,7 +83,7 @@ public class GenreViewHolder extends RecyclerView.ViewHolder implements View.OnC
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 Library.addPlaylistEntries(
-                                                        context,
+                                                        itemView,
                                                         Library.getPlaylists().get(which),
                                                         Library.getGenreEntries(reference));
                                             }

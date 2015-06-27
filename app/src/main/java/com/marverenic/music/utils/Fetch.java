@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.Library;
+import com.marverenic.music.R;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Song;
 
@@ -82,7 +83,7 @@ public class Fetch {
     }
 
     public static Artist fetchArtistBio(Context context, String artistName) {
-        if (artistName.equalsIgnoreCase("Unknown Artist") || artistName.equalsIgnoreCase("Various Artists")) return null; //TODO String resource
+        if (artistName.equalsIgnoreCase(context.getString(R.string.no_artist)) || artistName.equalsIgnoreCase("Various Artists")) return null; //TODO String resource
         if (!lastFmInitialized) initLastFm(context);
 
         ConnectivityManager network = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

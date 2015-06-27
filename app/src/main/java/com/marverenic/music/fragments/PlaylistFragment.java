@@ -1,7 +1,6 @@
 package com.marverenic.music.fragments;
 
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,7 +11,6 @@ import android.view.ViewGroup;
 import com.marverenic.music.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Playlist;
-import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.viewholder.BlankViewHolder;
 import com.marverenic.music.instances.viewholder.PlaylistViewHolder;
 import com.marverenic.music.utils.Themes;
@@ -21,7 +19,9 @@ import com.marverenic.music.view.DividerDecoration;
 
 import java.util.ArrayList;
 
-public class PlaylistFragment extends Fragment {
+public class PlaylistFragment extends Fragment{
+
+    private Adapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -33,7 +33,8 @@ public class PlaylistFragment extends Fragment {
         int paddingH =(int) getActivity().getResources().getDimension(R.dimen.global_padding);
         view.setPadding(paddingH, 0, paddingH, 0);
 
-        playlistRecyclerView.setAdapter(new Adapter());
+        adapter = new Adapter();
+        playlistRecyclerView.setAdapter(adapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -42,19 +43,37 @@ public class PlaylistFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        Library.addPlaylistListener(adapter);
+    }
 
-    public class Adapter extends RecyclerView.Adapter implements PlaylistViewHolder.OnDeleteCallback {
+    @Override
+    public void onPause(){
+        super.onPause();
+        Library.removePlaylistListener(adapter);
+    }
+
+    public class Adapter extends RecyclerView.Adapter implements Library.PlaylistChangeListener {
 
         public static final int PLAYLIST_VIEW = 0;
         public static final int EMPTY_VIEW = 1;
+
+        /**
+         * A clone of {@link Library#playlistLib} used to determine the index of removed playlists
+         */
+        private ArrayList<Playlist> data;
+
+        public Adapter (){
+            data = new ArrayList<>(Library.getPlaylists());
+        }
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
             if (viewType == PLAYLIST_VIEW) {
                 View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.instance_playlist, viewGroup, false);
-                PlaylistViewHolder viewHolder = new PlaylistViewHolder(itemView);
-                viewHolder.setRemoveCallback(this);
-                return viewHolder;
+                return new PlaylistViewHolder(itemView);
             }
             else{
                 return new BlankViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.instance_blank, viewGroup, false));
@@ -63,41 +82,35 @@ public class PlaylistFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
-            if (i < Library.getPlaylists().size()) {
-                ((PlaylistViewHolder) viewHolder).update(Library.getPlaylists().get(i));
+            if (i < data.size()) {
+                ((PlaylistViewHolder) viewHolder).update(data.get(i));
             }
         }
 
         @Override
         public int getItemCount() {
-            return Library.getPlaylists().size() + 1;
+            return data.size() + 1;
         }
 
         @Override
         public int getItemViewType(int position){
-            if (position < Library.getPlaylists().size()) return PLAYLIST_VIEW;
+            if (position < data.size()) return PLAYLIST_VIEW;
             else return EMPTY_VIEW;
         }
 
         @Override
-        public void onPlaylistDelete(RecyclerView.ViewHolder viewHolder, final Playlist removed) {
-            final ArrayList<Song> contents = Library.getPlaylistEntries(getActivity(), removed);
-            Snackbar snackbar = Snackbar.make(
-                    getActivity().findViewById(R.id.coordinator_layout),
-                    String.format(getResources().getString(R.string.message_removed_playlist), removed),
-                    Snackbar.LENGTH_LONG);
+        public void onPlaylistRemoved(Playlist removed) {
+            if (data.contains(removed))
+                notifyItemRemoved(data.indexOf(removed));
 
-            snackbar.setAction("Undo", new View.OnClickListener() { // TODO String Resource
-                @Override
-                public void onClick(View v) {
-                    Playlist recreated = Library.createPlaylist(getActivity(), removed.playlistName, contents);
-                    notifyItemInserted(Library.getPlaylists().indexOf(recreated));
-                }
-            });
+            data = new ArrayList<>(Library.getPlaylists());
+        }
 
-            Library.removePlaylist(getActivity(), removed);
-            notifyItemRemoved(viewHolder.getAdapterPosition());
-            snackbar.show();
+        @Override
+        public void onPlaylistAdded(Playlist added) {
+            data = new ArrayList<>(Library.getPlaylists());
+            if (data.contains(added))
+                notifyItemInserted(data.indexOf(added));
         }
     }
 

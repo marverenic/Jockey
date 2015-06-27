@@ -4,14 +4,12 @@ import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.marverenic.music.Library;
@@ -136,7 +134,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         }
     }
 
-    public class Adapter extends RecyclerView.Adapter implements PlaylistViewHolder.OnDeleteCallback{
+    public class Adapter extends RecyclerView.Adapter implements Library.PlaylistChangeListener{
 
         private final ArrayList<Playlist> playlistResults = new ArrayList<>();
         private final ArrayList<Song> songResults = new ArrayList<>();
@@ -217,9 +215,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 case HEADER_VIEW:
                     return new HeaderViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.subheader, parent, false));
                 case PLAYLIST_VIEW:
-                    PlaylistViewHolder playlistViewHolder = new PlaylistViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.instance_playlist, parent, false));
-                    playlistViewHolder.setRemoveCallback(this);
-                    return playlistViewHolder;
+                    return new PlaylistViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.instance_playlist, parent, false));
                 case SONG_VIEW:
                     SongViewHolder songViewHolder = new SongViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.instance_song, parent, false));
                     songViewHolder.setSongList(songResults);
@@ -317,36 +313,13 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         }
 
         @Override
-        public void onPlaylistDelete(RecyclerView.ViewHolder viewHolder, final Playlist removed) {
+        public void onPlaylistRemoved(Playlist removed) {
+            // TODO Implement Library listner
+        }
 
-            final ArrayList<Song> contents = Library.getPlaylistEntries(SearchActivity.this, removed);
-            final int index = playlistResults.indexOf(removed);
-            final int playlistCount = playlistResults.size();
-
-            Snackbar snackbar = Snackbar.make(
-                    findViewById(R.id.list),
-                    String.format(getResources().getString(R.string.message_removed_playlist), removed),
-                    Snackbar.LENGTH_LONG);
-
-            snackbar.setAction("Undo", new View.OnClickListener() { // TODO String Resource
-                @Override
-                public void onClick(View v) {
-                    Playlist recreated = Library.createPlaylist(SearchActivity.this, removed.playlistName, contents);
-                    playlistResults.add(recreated);
-                    Library.sortPlaylistList(playlistResults);
-
-                    if (playlistCount == 1) notifyItemInserted(0); // Add the playlist header
-                    notifyItemInserted(index);
-                }
-            });
-
-            Library.removePlaylist(SearchActivity.this, removed);
-            notifyItemRemoved(viewHolder.getAdapterPosition());
-            snackbar.show();
-
-            playlistResults.remove(index);
-            notifyItemRemoved(index);
-            if (playlistCount == 1) notifyItemRemoved(0); // Remove the playlist header
+        @Override
+        public void onPlaylistAdded(Playlist added) {
+            // TODO Implement Library listner
         }
     }
 

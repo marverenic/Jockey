@@ -37,13 +37,15 @@
     <string name="action_enable_repeat">Enable repeat</string>
     <string name="action_enable_repeat_one">Enable repeat one</string>
     <string name="action_add_to_playlist">Add to playlist&#8230;</string>
+    <string name="action_undo">Undo</string>
 
-    <!-- Confirmation Toasts -->
+    <!-- Confirmation messages -->
     <string name="confirm_disable_shuffle">Disabled shuffle</string>
     <string name="confirm_enable_shuffle">Enabled shuffle</string>
     <string name="confirm_disable_repeat">Disabled repeat</string>
     <string name="confirm_enable_repeat">Enabled repeat</string>
     <string name="confirm_enable_repeat_one">Enabled repeat one</string>
+    <string name="confirm_refresh_library">Library refreshed</string>
 
     <!-- Error messages -->
     <string name="message_create_playlist_error_no_name">Can\'t create a playlist with no name</string>
@@ -53,9 +55,9 @@
 
     <!-- Empty state strings -->
     <string name="nothing_playing">Nothing is playing</string>
-    <string name="no_artist">unknown artist</string>
-    <string name="no_album">unknown album</string>
-    <string name="no_description">No description avavilable</string>
+    <string name="no_artist">Unknown artist</string>
+    <string name="no_album">Unknown album</string>
+    <string name="no_description">No description available</string>
 
     <!-- Plurals -->
     <plurals name="playlistConfirmSomeDuplicates">

@@ -83,7 +83,7 @@ public class ArtistViewHolder extends RecyclerView.ViewHolder implements View.On
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 Library.addPlaylistEntries(
-                                                        context,
+                                                        itemView,
                                                         Library.getPlaylists().get(which),
                                                         Library.getArtistSongEntries(reference));
                                             }

@@ -26,7 +26,6 @@ import android.widget.Toast;
 
 import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.utils.Debug;
 import com.marverenic.music.utils.Fetch;
 import com.marverenic.music.utils.ManagedMediaPlayer;
 
@@ -162,8 +161,6 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             mediaPlayer.prepareAsync();
         }
         catch (Exception e){
-            e.printStackTrace();
-            Debug.log(e, context);
             queuePosition = 0;
             queuePositionShuffled = 0;
             queue.clear();

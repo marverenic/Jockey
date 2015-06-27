@@ -37,10 +37,6 @@
             android:summaryOn="@string/use_mobile_description_on"
             android:summaryOff="@string/use_mobile_description_off"
             android:title="@string/use_mobile"/>
-        <Preference
-            android:key="prefSendBugReport"
-            android:title="Send bug report"
-            android:summary="Email a log to the developer with information about crashes and anonymous device information"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/playback_header">
         <CheckBoxPreference

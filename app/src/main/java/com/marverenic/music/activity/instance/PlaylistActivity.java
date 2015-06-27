@@ -84,19 +84,21 @@ public class PlaylistActivity extends BaseActivity {
 
                     adapter.notifyDataSetChanged();
 
-                    //TODO String resources
-                    Snackbar.make(
-                            findViewById(R.id.list),
-                            String.format(getResources().getString(R.string.message_sorted_playlist_name), reference),
-                            Snackbar.LENGTH_LONG)
-                            .setAction("Undo", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    data = unsortedData;
-                                    Library.editPlaylist(PlaylistActivity.this, reference, unsortedData);
-                                    adapter.notifyDataSetChanged();
-                                }
-                            })
+                    Snackbar
+                            .make(
+                                    findViewById(R.id.list),
+                                    String.format(getResources().getString(R.string.message_sorted_playlist_name), reference),
+                                    Snackbar.LENGTH_LONG)
+                            .setAction(
+                                    getResources().getString(R.string.action_undo),
+                                    new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            data = unsortedData;
+                                            Library.editPlaylist(PlaylistActivity.this, reference, unsortedData);
+                                            adapter.notifyDataSetChanged();
+                                        }
+                                    })
                             .show();
                 }
                 return true;
@@ -128,19 +130,21 @@ public class PlaylistActivity extends BaseActivity {
                     Library.editPlaylist(this, reference, data);
                     adapter.notifyDataSetChanged();
 
-                    //TODO String resources
-                    Snackbar.make(
-                            findViewById(R.id.list),
-                            String.format(getResources().getString(R.string.message_sorted_playlist_artist), reference),
-                            Snackbar.LENGTH_LONG)
-                            .setAction("Undo", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    data = unsortedData;
-                                    Library.editPlaylist(PlaylistActivity.this, reference, unsortedData);
-                                    adapter.notifyDataSetChanged();
-                                }
-                            })
+                    Snackbar
+                            .make(
+                                    findViewById(R.id.list),
+                                    String.format(getResources().getString(R.string.message_sorted_playlist_artist), reference),
+                                    Snackbar.LENGTH_LONG)
+                            .setAction(
+                                    getResources().getString(R.string.action_undo),
+                                    new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            data = unsortedData;
+                                            Library.editPlaylist(PlaylistActivity.this, reference, unsortedData);
+                                            adapter.notifyDataSetChanged();
+                                        }
+                                    })
                             .show();
                 }
                 return true;
@@ -172,19 +176,21 @@ public class PlaylistActivity extends BaseActivity {
                     Library.editPlaylist(this, reference, data);
                     adapter.notifyDataSetChanged();
 
-                    //TODO String resources
-                    Snackbar.make(
-                            findViewById(R.id.list),
-                            String.format(getResources().getString(R.string.message_sorted_playlist_album), reference),
-                            Snackbar.LENGTH_LONG)
-                            .setAction("Undo", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    data = unsortedData;
-                                    Library.editPlaylist(PlaylistActivity.this, reference, unsortedData);
-                                    adapter.notifyDataSetChanged();
-                                }
-                            })
+                    Snackbar
+                            .make(
+                                    findViewById(R.id.list),
+                                    String.format(getResources().getString(R.string.message_sorted_playlist_album), reference),
+                                    Snackbar.LENGTH_LONG)
+                            .setAction(
+                                    getResources().getString(R.string.action_undo),
+                                    new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            data = unsortedData;
+                                            Library.editPlaylist(PlaylistActivity.this, reference, unsortedData);
+                                            adapter.notifyDataSetChanged();
+                                        }
+                                    })
                             .show();
                 }
                 return true;

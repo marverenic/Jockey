@@ -96,18 +96,22 @@ public class QueueActivity extends BaseActivity {
                 final AlertDialog saveNewPlaylistDialog = new AlertDialog.Builder(this)
                         .setTitle("Create Playlist")
                         .setView(layout)
-                        .setPositiveButton("Create", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Playlist playlist = Library.createPlaylist(getApplicationContext(), input.getText().toString(), PlayerController.getQueue());
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        }).show();
+                        .setPositiveButton(
+                                "Create",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Library.createPlaylist(findViewById(R.id.list), input.getText().toString(), PlayerController.getQueue());
+                                    }
+                                })
+                        .setNegativeButton(
+                                "Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                }).show();
 
                 saveNewPlaylistDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Themes.getAccent());
                 saveNewPlaylistDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
@@ -150,7 +154,7 @@ public class QueueActivity extends BaseActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Library.addPlaylistEntries(
-                                        QueueActivity.this,
+                                        findViewById(R.id.list),
                                         Library.getPlaylists().get(which),
                                         PlayerController.getQueue());
                             }

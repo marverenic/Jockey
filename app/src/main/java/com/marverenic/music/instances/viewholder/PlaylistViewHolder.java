@@ -21,7 +21,6 @@ import com.marverenic.music.utils.Themes;
 public class PlaylistViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
     private Context context;
-    private OnDeleteCallback callback;
 
     private TextView playlistName;
     private ImageView moreButton;
@@ -75,7 +74,7 @@ public class PlaylistViewHolder extends RecyclerView.ViewHolder implements View.
                                 PlayerController.queueLast(Library.getPlaylistEntries(context, reference));
                                 return true;
                             case 2: //Delete this playlist
-                                if (callback != null) callback.onPlaylistDelete(PlaylistViewHolder.this, reference);
+                                Library.removePlaylist(itemView, reference);
                                 return true;
                         }
                         return false;
@@ -87,13 +86,5 @@ public class PlaylistViewHolder extends RecyclerView.ViewHolder implements View.
                 Navigate.to(context, PlaylistActivity.class, PlaylistActivity.PLAYLIST_EXTRA, reference);
                 break;
         }
-    }
-
-    public void setRemoveCallback(OnDeleteCallback callback){
-        this.callback = callback;
-    }
-
-    public interface OnDeleteCallback {
-        void onPlaylistDelete(RecyclerView.ViewHolder viewHolder, Playlist removed);
     }
 }

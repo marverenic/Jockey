@@ -9,7 +9,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
-import android.widget.Toast;
+import android.support.design.widget.Snackbar;
+import android.view.View;
 
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
@@ -23,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
-import java.util.Scanner;
 
 public class Library {
 
@@ -81,6 +81,64 @@ public class Library {
     };
 
     //
+    //          LIBRARY LISTENERS
+    //
+
+
+    private static final ArrayList<PlaylistChangeListener> PLAYLIST_LISTENERS = new ArrayList<>();
+
+    public interface PlaylistChangeListener {
+        void onPlaylistRemoved(Playlist removed);
+        void onPlaylistAdded(Playlist added);
+    }
+
+    /**
+     * In certain cases like in {@link com.marverenic.music.fragments.PlaylistFragment}, editing the
+     * library can break a lot of things if not done carefully. (i.e. if
+     * {@link android.support.v7.widget.RecyclerView.Adapter#notifyDataSetChanged()} (or similar)
+     * isn't called after adding a playlist, then the UI process can throw an exception and crash)
+     *
+     * If this is the case, call this method to set a callback whenever the library gets updated
+     * (Not all library update calls will be relevant to the context, but better safe than sorry).
+     *
+     * <b>When using this method MAKE SURE TO CALL {@link Library#removePlaylistListener(PlaylistChangeListener)}
+     * WHEN THE ACTIVITY PAUSES -- OTHERWISE YOU WILL CAUSE A LEAK.</b>
+     *
+     * @param listener A {@link PlaylistChangeListener} to act as a callback
+     *                 when the library is changed in any way
+     */
+    public static void addPlaylistListener(PlaylistChangeListener listener){
+        if (!PLAYLIST_LISTENERS.contains(listener)) PLAYLIST_LISTENERS.add(listener);
+    }
+
+    /**
+     * Remove a {@link PlaylistChangeListener} previously added to listen
+     * for library updates.
+     * @param listener A {@link PlaylistChangeListener} currently registered
+     *                 to recieve a callback when the library gets modified. If it's not already
+     *                 registered, then nothing will happen.
+     */
+    public static void removePlaylistListener(PlaylistChangeListener listener){
+        if (PLAYLIST_LISTENERS.contains(listener)) PLAYLIST_LISTENERS.remove(listener);
+    }
+
+    /**
+     * Private method for notifying registered {@link PlaylistChangeListener}s
+     * that the library has lost an entry. (Changing entries doesn't matter)
+     */
+    private static void notifyPlaylistRemoved(Playlist removed){
+        for (PlaylistChangeListener l : PLAYLIST_LISTENERS) l.onPlaylistRemoved(removed);
+    }
+
+    /**
+     * Private method for notifying registered {@link PlaylistChangeListener}s
+     * that the library has gained an entry. (Changing entries doesn't matter)
+     */
+    private static void notifyPlaylistAdded(Playlist added){
+        for (PlaylistChangeListener l : PLAYLIST_LISTENERS) l.onPlaylistAdded(added);
+    }
+
+    //
     //          LIBRARY BUILDING METHODS
     //
 
@@ -119,7 +177,7 @@ public class Library {
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)),
                     cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media._ID)),
                     (cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST)).equals(MediaStore.UNKNOWN_STRING))
-                            ? "Unknown Artist" //TODO String resource
+                            ? context.getString(R.string.no_artist)
                             : cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)),
                     cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DURATION)),
@@ -160,7 +218,7 @@ public class Library {
             else{
                 artists.add(new Artist(
                         cur.getInt(cur.getColumnIndex(MediaStore.Audio.Artists._ID)),
-                        "Unknown Artist")); //TODO String resource
+                        context.getString(R.string.no_artist)));
             }
         }
         cur.close();
@@ -189,7 +247,7 @@ public class Library {
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM)),
                     cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID)),
                     (cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)).equals(MediaStore.UNKNOWN_STRING))
-                            ? "Unknown Artist" //TODO String resource
+                            ? context.getString(R.string.no_artist)
                             : cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.LAST_YEAR)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART))));
@@ -251,15 +309,19 @@ public class Library {
                         thisGenreId,
                         cur.getString(cur.getColumnIndex(MediaStore.Audio.Genres.NAME))));
 
+                // Associate all songs in this genre by setting the genreID field of each song in the genre
+
                 Cursor genreCur = context.getContentResolver().query(
                         MediaStore.Audio.Genres.Members.getContentUri("external", thisGenreId),
                         new String[]{MediaStore.Audio.Media._ID},
                         MediaStore.Audio.Media.IS_MUSIC + " != 0 ", null, null);
                 genreCur.moveToFirst();
 
+                final int ID_INDEX = genreCur.getColumnIndex(MediaStore.Audio.Media._ID);
                 for (int j = 0; j < genreCur.getCount(); j++) {
                     genreCur.moveToPosition(j);
-                    findSongById(genreCur.getInt(genreCur.getColumnIndex(MediaStore.Audio.Media._ID))).genreId = thisGenreId;
+                    final Song s = findSongById(genreCur.getInt(ID_INDEX));
+                    if (s != null) s.genreId = thisGenreId;
                 }
                 genreCur.close();
             }
@@ -543,7 +605,7 @@ public class Library {
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)),
                     cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media._ID)),
                     (cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST)).equals(MediaStore.UNKNOWN_STRING))
-                            ? "Unknown Artist" //TODO String resource
+                            ? context.getString(R.string.no_artist)
                             : cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)),
                     cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DURATION)),
@@ -728,6 +790,102 @@ public class Library {
     //
 
     /**
+     * Add a new playlist to the MediaStore
+     * @param view A {@link View} to put a {@link Snackbar} in. Will also be used to get a {@link Context}.
+     * @param playlistName The name of the new playlist
+     * @param songList An {@link ArrayList} of {@link Song}s to populate the new playlist
+     * @return The Playlist that was added to the library
+     */
+    public static Playlist createPlaylist(final View view, final String playlistName, @Nullable final ArrayList<Song> songList){
+        final Context context = view.getContext();
+        String trimmedName = playlistName.trim();
+
+        setPlaylistLib(scanPlaylists(context));
+
+        String error = verifyPlaylistName(context, trimmedName);
+        if (error != null){
+            Snackbar
+                    .make(
+                            view,
+                            error,
+                            Snackbar.LENGTH_SHORT)
+                    .show();
+            return null;
+        }
+
+        // Add the playlist to the MediaStore
+        final Playlist created = makePlaylist(context, trimmedName, songList);
+
+        Snackbar
+                .make(
+                        view,
+                        String.format(context.getResources().getString(R.string.message_created_playlist), playlistName),
+                        Snackbar.LENGTH_LONG)
+                .setAction(
+                        R.string.action_undo,
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                deletePlaylist(context, created);
+                            }
+                        })
+                .show();
+
+        return created;
+    }
+
+    /**
+     * Test a playlist name to make sure it is valid when making a new playlist. Invalid playlist names
+     * are empty or already exist in the MediaStore
+     * @param context A {@link Context} used to get localized Strings
+     * @param playlistName The playlist name that needs to be validated
+     * @return null if there is no error, or a {@link String} describing the error that can be
+     *         presented to the user
+     */
+    public static String verifyPlaylistName (final Context context, final String playlistName){
+        if (playlistName.length() == 0) return null;
+
+        String trimmedName = playlistName.trim();
+        if (trimmedName.length() == 0){
+            return context.getResources().getString(R.string.error_hint_empty_playlist);
+        }
+
+        for (Playlist p : playlistLib){
+            if (p.playlistName.equalsIgnoreCase(trimmedName)){
+                return context.getResources().getString(R.string.error_hint_duplicate_playlist);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Removes a playlist from the MediaStore
+     * @param view A {@link View} to show a {@link Snackbar} and to get a {@link Context} used to edit the MediaStore
+     * @param playlist A {@link Playlist} which will be removed from the MediaStore
+     */
+    public static void removePlaylist(final View view, final Playlist playlist){
+        final Context context = view.getContext();
+        final ArrayList<Song> entries = getPlaylistEntries(context, playlist);
+
+        deletePlaylist(context, playlist);
+
+        Snackbar
+                .make(
+                        view,
+                        String.format(context.getString(R.string.message_removed_playlist), playlist),
+                        Snackbar.LENGTH_LONG)
+                .setAction(
+                        context.getString(R.string.action_undo),
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                makePlaylist(context, playlist.playlistName, entries);
+                            }
+                        })
+                .show();
+    }
+
+    /**
      * Replace the entries of a playlist in the MediaStore with a new {@link ArrayList} of {@link Song}s
      * @param context A {@link Context} to open a {@link Cursor}
      * @param playlist The {@link Playlist} to edit in the MediaStore
@@ -778,12 +936,207 @@ public class Library {
     }
 
     /**
+     * Append a list of songs to the end of a playlist. Alerts the user about duplicates
+     * @param view A {@link View} to put a {@link android.support.design.widget.Snackbar} in. Will
+     *             also be used to get a {@link Context}.
+     * @param playlist The {@link Playlist} to edit in the MediaStore
+     * @param songs The {@link ArrayList} of {@link Song}s to be added to the playlist in the MediaStore
+     */
+    public static void addPlaylistEntries(final View view, final Playlist playlist, final ArrayList<Song> songs){
+        // Public method to add songs to a playlist
+        // Checks the playlist for duplicate entries
+
+        final Context context = view.getContext();
+
+        int duplicateCount = 0;
+        final ArrayList<Song> currentEntries = getPlaylistEntries(context, playlist);
+        final ArrayList<Song> newEntries = new ArrayList<>();
+
+        for (Song s : songs){
+            if (currentEntries.contains(s))duplicateCount++;
+            else newEntries.add(s);
+        }
+
+        if (duplicateCount > 0){
+            //TODO String Resources
+            AlertDialog.Builder alert = new AlertDialog.Builder(context).setTitle("Add duplicate entries?");
+
+            if (duplicateCount == songs.size()) {
+                alert
+                        .setMessage("This playlist already contains all of these songs. Adding them again will result in duplicates.")
+                        .setPositiveButton("Add duplicates", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                addSongsToEndOfPlaylist(context, playlist, songs);
+                                Snackbar.make(
+                                        view,
+                                        "Added " + songs.size() + " song(s) to the end of playlist \"" + playlist.playlistName + "\"",
+                                        Snackbar.LENGTH_LONG)
+                                        .setAction("Undo", new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                Library.editPlaylist(
+                                                        context,
+                                                        playlist,
+                                                        currentEntries);
+                                            }
+                                        }).show();
+                            }
+                        })
+                        .setNeutralButton("Cancel", null);
+            }
+            else{
+                alert
+                        .setMessage(context.getResources().getQuantityString(R.plurals.playlistConfirmSomeDuplicates, duplicateCount, duplicateCount))
+                        .setPositiveButton("Add new", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                addSongsToEndOfPlaylist(context, playlist, newEntries);
+                                Snackbar.make(
+                                        view,
+                                        "Added " + newEntries.size() + " song(s) to the end of playlist \"" + playlist.playlistName + "\"",
+                                        Snackbar.LENGTH_LONG)
+                                        .setAction("Undo", new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                Library.editPlaylist(
+                                                        context,
+                                                        playlist,
+                                                        currentEntries);
+                                            }
+                                        }).show();
+                            }
+                        })
+                        .setNegativeButton("Add all", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                addSongsToEndOfPlaylist(context, playlist, songs);
+                                Snackbar.make(
+                                        view,
+                                        "Added " + songs.size() + " song(s) to the end of playlist \"" + playlist.playlistName + "\"",
+                                        Snackbar.LENGTH_LONG)
+                                        .setAction("Undo", new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                Library.editPlaylist(
+                                                        context,
+                                                        playlist,
+                                                        currentEntries);
+                                            }
+                                        }).show();
+                            }
+                        })
+                        .setNeutralButton("Cancel", null);
+            }
+
+            alert.show();
+        }
+        else{
+            addSongsToEndOfPlaylist(context, playlist, songs);
+            Snackbar.make(
+                    view,
+                    "Added " + newEntries.size() + " song(s) to the end of playlist \"" + playlist.playlistName + "\"",
+                    Snackbar.LENGTH_LONG)
+                    .setAction("Undo", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Library.editPlaylist(
+                                    context,
+                                    playlist,
+                                    currentEntries);
+                        }
+                    }).show();
+        }
+    }
+
+    //
+    //          MEDIA_STORE EDIT METHODS
+    //
+    // These methods only perform actions to the MediaStore. They do not validate inputs, and they
+    // do not display confirmation messages to the user.
+    //
+
+    /**
+     * Add a new playlist to the MediaStore. Outside of this class, use
+     * {@link Library#createPlaylist(View, String, ArrayList)} instead
+     * <b>This method DOES NOT validate inputs or display a confirmation message to the user</b>.
+     * @param context A {@link Context} used to edit the MediaStore
+     * @param playlistName The name of the new playlist
+     * @param songList An {@link ArrayList} of {@link Song}s to populate the new playlist
+     * @return The Playlist that was added to the library
+     */
+    private static Playlist makePlaylist(final Context context, final String playlistName, @Nullable final ArrayList<Song> songList){
+        String trimmedName = playlistName.trim();
+
+        // Add the playlist to the MediaStore
+        ContentValues mInserts = new ContentValues();
+        mInserts.put(MediaStore.Audio.Playlists.NAME, trimmedName);
+        mInserts.put(MediaStore.Audio.Playlists.DATE_ADDED, System.currentTimeMillis());
+        mInserts.put(MediaStore.Audio.Playlists.DATE_MODIFIED, System.currentTimeMillis());
+
+        Uri newPlaylistUri = context.getContentResolver().insert(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, mInserts);
+
+        // Update the playlist library & resort it
+        setPlaylistLib(scanPlaylists(context));
+        sortPlaylistList(playlistLib);
+
+        // Get the id of the new playlist
+        Cursor cursor = context.getContentResolver().query(
+                newPlaylistUri,
+                new String[] {MediaStore.Audio.Playlists._ID},
+                null, null, null);
+
+        cursor.moveToFirst();
+        final Playlist playlist = new Playlist(cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID)), playlistName);
+        cursor.close();
+
+        // If we have a list of songs, associate it with the playlist
+        if(songList != null) {
+            ContentValues[] values = new ContentValues[songList.size()];
+
+            for (int i = 0; i < songList.size(); i++) {
+                values[i] = new ContentValues();
+                values[i].put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, i);
+                values[i].put(MediaStore.Audio.Playlists.Members.AUDIO_ID, songList.get(i).songId);
+            }
+
+            Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId);
+            ContentResolver resolver = context.getContentResolver();
+
+            resolver.bulkInsert(uri, values);
+            resolver.notifyChange(Uri.parse("content://media"), null);
+        }
+
+        notifyPlaylistAdded(playlist);
+        return playlist;
+    }
+
+    /**
+     * Removes a playlist from the MediaStore
+     * @param context A {@link Context} to update the MediaStore
+     * @param playlist A {@link Playlist} whose matching playlist will be removed from the MediaStore
+     */
+    public static void deletePlaylist(final Context context, final Playlist playlist){
+        // Remove the playlist from the MediaStore
+        context.getContentResolver().delete(
+                MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
+                MediaStore.Audio.Playlists._ID + "=?",
+                new String[]{playlist.playlistId + ""});
+
+        // Update the playlist library & resort it
+        playlistLib.clear();
+        setPlaylistLib(scanPlaylists(context));
+        sortPlaylistList(playlistLib);
+        notifyPlaylistRemoved(playlist);
+    }
+
+    /**
      * Append a song to the end of a playlist. Doesn't check for duplicates
      * @param context A {@link Context} to open a {@link Cursor}
      * @param playlist The {@link Playlist} to edit in the MediaStore
      * @param song The {@link Song} to be added to the playlist in the MediaStore
      */
-    public static void addSongToEndOfPlaylist (final Context context, final Playlist playlist, final Song song){
+    private static void addSongToEndOfPlaylist (final Context context, final Playlist playlist, final Song song){
         // Private method to add a song to a playlist
         // This method does the actual operation to the MediaStore
         Cursor cur = context.getContentResolver().query(
@@ -803,72 +1156,6 @@ public class Library {
         ContentResolver resolver = context.getContentResolver();
         resolver.insert(uri, values);
         resolver.notifyChange(Uri.parse("content://media"), null);
-
-        Toast.makeText(
-                context,
-                String.format(context.getResources().getString(R.string.message_added_song), song, playlist),
-                Toast.LENGTH_SHORT)
-                .show();
-
-    }
-
-    /**
-     * Append a list of songs to the end of a playlist. Alerts the user about duplicates
-     * @param context A {@link Context} to open a {@link Cursor}
-     * @param playlist The {@link Playlist} to edit in the MediaStore
-     * @param songs The {@link ArrayList} of {@link Song}s to be added to the playlist in the MediaStore
-     */
-    public static void addPlaylistEntries(final Context context, final Playlist playlist, final ArrayList<Song> songs){
-        // Public method to add songs to a playlist
-        // Checks the playlist for duplicate entries
-
-        int duplicateCount = 0;
-        ArrayList<Song> currentEntries = getPlaylistEntries(context, playlist);
-        final ArrayList<Song> newEntries = new ArrayList<>();
-
-        for (Song s : songs){
-            if (currentEntries.contains(s))duplicateCount++;
-            else newEntries.add(s);
-        }
-
-        if (duplicateCount > 0){
-            AlertDialog.Builder alert = new AlertDialog.Builder(context)
-                    .setTitle("Add duplicate entries?");
-
-            if (duplicateCount == songs.size()) {
-                alert
-                        .setMessage("This playlist already contains all of these songs. Adding them again will result in duplicates.")
-                        .setPositiveButton("Add duplicates", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                addSongsToEndOfPlaylist(context, playlist, songs);
-                            }
-                        })
-                        .setNeutralButton("Cancel", null);
-            }
-            else{
-                alert
-                        .setMessage(context.getResources().getQuantityString(R.plurals.playlistConfirmSomeDuplicates, duplicateCount, duplicateCount))
-                        .setPositiveButton("Add new", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                addSongsToEndOfPlaylist(context, playlist, newEntries);
-                            }
-                        })
-                        .setNegativeButton("Add all", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                addSongsToEndOfPlaylist(context, playlist, songs);
-                            }
-                        })
-                        .setNeutralButton("Cancel", null);
-            }
-
-            alert.show();
-        }
-        else{
-            addSongsToEndOfPlaylist(context, playlist, songs);
-        }
     }
 
     /**
@@ -877,7 +1164,7 @@ public class Library {
      * @param playlist The {@link Playlist} to edit in the MediaStore
      * @param songs The {@link ArrayList} of {@link Song}s to be added to the playlist in the MediaStore
      */
-    public static void addSongsToEndOfPlaylist(final Context context, final Playlist playlist, final ArrayList<Song> songs){
+    private static void addSongsToEndOfPlaylist(final Context context, final Playlist playlist, final ArrayList<Song> songs){
         // Private method to add a song to a playlist
         // This method does the actual operation to the MediaStore
         Cursor cur = context.getContentResolver().query(
@@ -900,140 +1187,6 @@ public class Library {
         ContentResolver resolver = context.getContentResolver();
         resolver.bulkInsert(uri, values);
         resolver.notifyChange(Uri.parse("content://media"), null);
-
-        Toast.makeText(
-                context,
-                String.format(context.getResources().getQuantityString(R.plurals.message_added_songs, songs.size()), songs.size(), playlist),
-                Toast.LENGTH_SHORT)
-                .show();
-
-        //TODO Show an undo Snackbar
-        /*Snackbar.make(
-                findViewById(R.id.list),
-                "Added queue to the end of playlist \"" + playlist.playlistName + "\"",
-                Snackbar.LENGTH_LONG)
-                .setAction("Undo", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Library.editPlaylist(
-                                context,
-                                playlist,
-                                originalEntries);
-                    }
-                }).show();*/
-    }
-
-    public static String verifyPlaylistName (final Context context, final String playlistName){
-        if (playlistName.length() == 0) return null;
-
-        String trimmedName = playlistName.trim();
-        if (trimmedName.length() == 0){
-            return context.getResources().getString(R.string.error_hint_empty_playlist);
-        }
-
-        for (Playlist p : playlistLib){
-            if (p.playlistName.equalsIgnoreCase(trimmedName)){
-                return context.getResources().getString(R.string.error_hint_duplicate_playlist);
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Add a new playlist to the MediaStore
-     * @param context A {@link Context} to insert values to the MediaStore
-     * @param playlistName The name of the new playlist
-     * @param songList An {@link ArrayList} of {@link Song}s to populate the new playlist
-     * @return The Playlist that was added to the library
-     */
-    public static Playlist createPlaylist(final Context context, final String playlistName, @Nullable final ArrayList<Song> songList){
-
-        String trimmedName = playlistName.trim();
-
-        if (trimmedName.length() == 0){
-            Toast.makeText(
-                    context,
-                    context.getResources().getString(R.string.message_create_playlist_error_no_name),
-                    Toast.LENGTH_SHORT)
-                    .show();
-            return null;
-        }
-
-        for (Playlist p : playlistLib){
-            if (p.playlistName.equalsIgnoreCase(trimmedName)){
-                Toast.makeText(
-                        context,
-                        String.format(context.getResources().getString(R.string.message_create_playlist_error_exists), trimmedName),
-                        Toast.LENGTH_SHORT)
-                        .show();
-                return null;
-            }
-        }
-
-        // Add the playlist to the MediaStore
-        ContentValues mInserts = new ContentValues();
-        mInserts.put(MediaStore.Audio.Playlists.NAME, trimmedName);
-        mInserts.put(MediaStore.Audio.Playlists.DATE_ADDED, System.currentTimeMillis());
-        mInserts.put(MediaStore.Audio.Playlists.DATE_MODIFIED, System.currentTimeMillis());
-
-        Uri newPlaylistUri = context.getContentResolver().insert(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, mInserts);
-
-        // Update the playlist library & resort it
-        Library.setPlaylistLib(scanPlaylists(context));
-        Library.sortPlaylistList(playlistLib);
-
-        // Get the id of the new playlist
-        Cursor cursor = context.getContentResolver().query(
-                newPlaylistUri,
-                new String[] {MediaStore.Audio.Playlists._ID},
-                null, null, null);
-
-        cursor.moveToFirst();
-        Playlist playlist = new Playlist(cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID)), playlistName);
-        cursor.close();
-
-        // If we have a list of songs, associate it with the playlist
-        if(songList != null) {
-            ContentValues[] values = new ContentValues[songList.size()];
-
-            for (int i = 0; i < songList.size(); i++) {
-                values[i] = new ContentValues();
-                values[i].put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, i);
-                values[i].put(MediaStore.Audio.Playlists.Members.AUDIO_ID, songList.get(i).songId);
-            }
-
-            Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId);
-            ContentResolver resolver = context.getContentResolver();
-
-            resolver.bulkInsert(uri, values);
-            resolver.notifyChange(Uri.parse("content://media"), null);
-        }
-
-        Toast.makeText(
-                context,
-                String.format(context.getResources().getString(R.string.message_created_playlist), playlistName),
-                Toast.LENGTH_SHORT)
-                .show();
-
-        return playlist;
-    }
-
-    /**
-     * Removes a playlist from the MediaStore
-     * @param context A {@link Context} to update the MediaStore
-     * @param playlist A {@link Playlist} whose matching playlist will be removed from the MediaStore
-     */
-    public static void removePlaylist(final Context context, final Playlist playlist){
-        // Remove the playlist from the MediaStore
-        context.getContentResolver().delete(
-                MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
-                MediaStore.Audio.Playlists._ID + "=?",
-                new String[] {playlist.playlistId + ""});
-
-        // Update the playlist library & resort it
-        playlistLib.clear();
-        setPlaylistLib(scanPlaylists(context));
-        sortPlaylistList(playlistLib);
     }
 
     //
@@ -1080,7 +1233,8 @@ public class Library {
                         cur.getInt(cur.getColumnIndex(MediaStore.Audio.Playlists._ID)),
                         cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.NAME)))));
             }
-            else{
+            //TODO Attempt to manually read common playlist writing schemes
+            /*else{
                 // If the MediaStore doesn't contain this playlist, attempt to read it manually
                 Scanner sc = new Scanner(file);
                 ArrayList<String> lines = new ArrayList<>();
@@ -1089,10 +1243,10 @@ public class Library {
                 }
 
                 if (lines.size() > 0){
-                    //TODO Attempt to read common playlist writing schemes
+                    // Do stuff
                 }
 
-            }
+            }*/
             cur.close();
             // Return 0 to start at the beginning of the playlist
             return 0;

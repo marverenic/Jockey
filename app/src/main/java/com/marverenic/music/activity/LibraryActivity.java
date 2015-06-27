@@ -31,7 +31,6 @@ import com.marverenic.music.fragments.ArtistFragment;
 import com.marverenic.music.fragments.GenreFragment;
 import com.marverenic.music.fragments.PlaylistFragment;
 import com.marverenic.music.fragments.SongFragment;
-import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.utils.Updater;
@@ -102,7 +101,7 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
     }
 
     @Override
-    public void onClick(View v){
+    public void onClick(final View v){
         super.onClick(v);
         if (v.getId() == R.id.fab){
             final TextInputLayout layout = new TextInputLayout(this);
@@ -122,30 +121,23 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
             final AlertDialog dialog = new AlertDialog.Builder(this)
                     .setTitle("Create Playlist")
                     .setView(layout)
-                    .setPositiveButton("Create", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Playlist playlist = Library.createPlaylist(getApplicationContext(), input.getText().toString(), null);
-
-                            // Update the playlist recycler view with the new data
-                            if (playlist != null) {
-                                PagerAdapter adapter = (PagerAdapter) ((ViewPager) findViewById(R.id.pager)).getAdapter();
-                                PlaylistFragment playlistFragment = (PlaylistFragment) adapter.playlistFragment;
-                                if (playlistFragment != null) {
-                                    View playlistView = playlistFragment.getView();
-                                    if (playlistView != null)
-                                        ((RecyclerView) playlistView.findViewById(R.id.list)).getAdapter()
-                                                .notifyItemInserted(Library.getPlaylists().indexOf(playlist));
+                    .setPositiveButton(
+                            "Create",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Library.createPlaylist(v, input.getText().toString(), null);
                                 }
-                            }
-                        }
-                    })
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    }).show();
+                            })
+                    .setNegativeButton(
+                            "Cancel",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            })
+                    .show();
 
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Themes.getAccent());
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
@@ -238,8 +230,7 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
             if (genreFragment != null && genreFragment.getView() != null)
                 ((RecyclerView) genreFragment.getView().findViewById(R.id.list)).getAdapter().notifyDataSetChanged();
 
-            // TODO String Resource
-            Toast.makeText(LibraryActivity.this, "Refreshed library", Toast.LENGTH_SHORT).show();
+            Toast.makeText(LibraryActivity.this, getResources().getString(R.string.confirm_refresh_library), Toast.LENGTH_SHORT).show();
         }
 
         @Override
