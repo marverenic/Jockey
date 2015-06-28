@@ -66,7 +66,6 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 return numColumns;
             }
         };
-        spanSizeLookup.setSpanIndexCacheEnabled(true); // for performance
         GridLayoutManager layoutManager = new GridLayoutManager(this, numColumns);
         layoutManager.setSpanSizeLookup(spanSizeLookup);
         list.setLayoutManager(layoutManager);
@@ -81,6 +80,18 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         if (parentIntent != null && Intent.ACTION_SEARCH.equals(parentIntent.getAction()) && parentIntent.hasExtra(SearchManager.QUERY)) {
             adapter.search(parentIntent.getStringExtra(SearchManager.QUERY).toLowerCase());
         }
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        Library.addPlaylistListener(adapter);
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        Library.removePlaylistListener(adapter);
     }
 
     @Override
@@ -300,26 +311,68 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
 
         @Override
         public int getItemViewType(int position){
-            Object item = getItem(position);
+            if (!playlistResults.isEmpty() && position <= playlistResults.size()){
+                if (position == 0) return HEADER_VIEW;
+                else return PLAYLIST_VIEW;
+            }
 
-            if (item instanceof String) return HEADER_VIEW;
-            if (item instanceof Playlist) return PLAYLIST_VIEW;
-            if (item instanceof Song) return SONG_VIEW;
-            if (item instanceof Album) return ALBUM_VIEW;
-            if (item instanceof Artist) return ARTIST_VIEW;
-            if (item instanceof Genre) return GENRE_VIEW;
+            //The number of views above the current section. This value is incremented later in the method
+            int leadingViewCount = (playlistResults.isEmpty()? 0 : playlistResults.size() + 1);
+            if (!songResults.isEmpty() && position <= songResults.size() + leadingViewCount) {
+                if (position == leadingViewCount) return HEADER_VIEW;
+                else return SONG_VIEW;
+            }
+
+            leadingViewCount += (songResults.isEmpty()? 0 : songResults.size() + 1);
+            if (!albumResults.isEmpty() && position <= albumResults.size() + leadingViewCount) {
+                if (position == leadingViewCount) return HEADER_VIEW;
+                else return ALBUM_VIEW;
+            }
+
+            leadingViewCount += (albumResults.isEmpty()? 0 : albumResults.size() + 1);
+            if (!artistResults.isEmpty() && position <= artistResults.size() + leadingViewCount){
+                if (position == leadingViewCount) return HEADER_VIEW;
+                else return ARTIST_VIEW;
+            }
+
+            leadingViewCount += (artistResults.isEmpty()? 0 : artistResults.size() + 1);
+            if (!genreResults.isEmpty() && position <= genreResults.size() + leadingViewCount){
+                if (position == leadingViewCount) return HEADER_VIEW;
+                else return GENRE_VIEW;
+            }
 
             return -1;
         }
 
         @Override
         public void onPlaylistRemoved(Playlist removed) {
-            // TODO Implement Library listner
+            final int index = playlistResults.indexOf(removed);
+            if (index != -1){
+                playlistResults.remove(index);
+                if (playlistResults.isEmpty()){
+                    // Remove the header as well as the entry if there aren't any playlist results
+                    notifyItemRangeRemoved(0,2);
+                }
+                else{
+                    notifyItemRemoved(index + 1);
+                }
+            }
         }
 
         @Override
         public void onPlaylistAdded(Playlist added) {
-            // TODO Implement Library listner
+            if (lastQuery != null && lastQuery.length() > 0 && added.playlistName.toLowerCase().contains(lastQuery.toLowerCase().trim())){
+                playlistResults.add(added);
+                Library.sortPlaylistList(playlistResults);
+
+                if (playlistResults.size() == 1){
+                    // If we didn't have any results before, then we need to add the header as well
+                    notifyItemRangeInserted(0, 2);
+                }
+                else {
+                    notifyItemInserted(playlistResults.indexOf(added));
+                }
+            }
         }
     }
 

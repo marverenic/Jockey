@@ -84,6 +84,12 @@ public class Library {
     //          LIBRARY LISTENERS
     //
 
+    // Since it's important to know when the Library has entries added or removed so we can update
+    // the UI accordingly, associate listeners to receive callbacks for such events. These listeners
+    // will get called only when entries are added or removed -- not changed. This lets us do a lot
+    // of things on the UI like adding and removing playlists without having to create the associated
+    // Snackbars, AlertDialogs, etc. and is slightly cleaner than passing a callback as a parameter
+    // to methods that cause such changes since we don't have to instantiate a single-use Object.
 
     private static final ArrayList<PlaylistChangeListener> PLAYLIST_LISTENERS = new ArrayList<>();
 
