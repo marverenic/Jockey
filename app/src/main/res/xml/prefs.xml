@@ -41,7 +41,7 @@
     <PreferenceCategory android:title="@string/playback_header">
         <CheckBoxPreference
             android:defaultValue="true"
-            android:key="switchToNowPlaying"
+            android:key="prefSwitchToNowPlaying"
             android:title="@string/switch_to_now_playing" />
     </PreferenceCategory>
 

@@ -1,6 +1,8 @@
 package com.marverenic.music.instances.viewholder;
 
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -141,7 +143,10 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                     // TODO set list index to properly play song lists with duplicate song entries
                     PlayerController.setQueue(songList, songList.indexOf(reference));
                     PlayerController.begin();
-                    Navigate.to(itemView.getContext(), NowPlayingActivity.class);
+
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(itemView.getContext());
+                    if (prefs.getBoolean("prefSwitchToNowPlaying", true))
+                        Navigate.to(itemView.getContext(), NowPlayingActivity.class);
                 }
                 break;
         }
