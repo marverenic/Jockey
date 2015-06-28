@@ -76,13 +76,12 @@ public class QueueActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // TODO String Resources
         switch (item.getItemId()) {
             case R.id.save:
                 final TextInputLayout layout = new TextInputLayout(this);
                 final AppCompatEditText input = new AppCompatEditText(this);
                 input.setInputType(InputType.TYPE_CLASS_TEXT);
-                input.setHint("Playlist name");
+                input.setHint(R.string.hint_playlist_name);
                 layout.addView(input);
                 layout.setErrorEnabled(true);
 
@@ -94,10 +93,10 @@ public class QueueActivity extends BaseActivity {
                         input.getPaddingBottom());
 
                 final AlertDialog saveNewPlaylistDialog = new AlertDialog.Builder(this)
-                        .setTitle("Create Playlist")
+                        .setTitle(R.string.header_create_playlist)
                         .setView(layout)
                         .setPositiveButton(
-                                "Create",
+                                R.string.action_create,
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -105,7 +104,7 @@ public class QueueActivity extends BaseActivity {
                                     }
                                 })
                         .setNegativeButton(
-                                "Cancel",
+                                R.string.action_cancel,
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -149,7 +148,7 @@ public class QueueActivity extends BaseActivity {
                     playlistNames[i] = playlists.get(i).toString();
                 }
                 final AlertDialog addToPlaylistDialog = new AlertDialog.Builder(QueueActivity.this)
-                        .setTitle("Add queue to playlist")
+                        .setTitle(R.string.header_add_queue_to_playlist)
                         .setItems(playlistNames, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -159,7 +158,7 @@ public class QueueActivity extends BaseActivity {
                                         PlayerController.getQueue());
                             }
                         })
-                        .setNegativeButton("Cancel", null)
+                        .setNegativeButton(R.string.action_cancel, null)
                         .show();
 
                 addToPlaylistDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Themes.getAccent());

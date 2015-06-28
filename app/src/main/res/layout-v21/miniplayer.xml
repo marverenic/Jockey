@@ -11,7 +11,7 @@
         android:layout_width="@dimen/now_playing_ticker_height"
         android:layout_height="@dimen/now_playing_ticker_height"
         android:background="@android:color/black"
-        android:contentDescription="@string/album_art"
+        android:contentDescription="@string/description_album_art"
         android:src="@drawable/art_default" />
 
     <ImageButton

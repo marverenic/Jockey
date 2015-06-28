@@ -4,19 +4,19 @@
     <item
         android:id="@+id/action_shuffle"
         android:icon="@drawable/ic_shuffle_36dp"
-        android:title="@string/shuffle"
+        android:title="@string/action_enable_shuffle"
         app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/action_repeat"
         android:icon="@drawable/ic_repeat_36dp"
-        android:title="@string/repeat"
+        android:title="@string/action_enable_repeat"
         app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/action_queue"
         android:icon="@drawable/ic_queue_music_36dp"
-        android:title="@string/queue"
+        android:title="@string/action_go_to_queue"
         app:showAsAction="ifRoom"/>
 
 </menu>

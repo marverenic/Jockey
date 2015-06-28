@@ -107,7 +107,7 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
             final TextInputLayout layout = new TextInputLayout(this);
             final AppCompatEditText input = new AppCompatEditText(this);
             input.setInputType(InputType.TYPE_CLASS_TEXT);
-            input.setHint("Playlist name");
+            input.setHint(R.string.hint_playlist_name);
             layout.addView(input);
             layout.setErrorEnabled(true);
 
@@ -119,10 +119,10 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
                     input.getPaddingBottom());
 
             final AlertDialog dialog = new AlertDialog.Builder(this)
-                    .setTitle("Create Playlist")
+                    .setTitle(R.string.header_create_playlist)
                     .setView(layout)
                     .setPositiveButton(
-                            "Create",
+                            R.string.action_create,
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -130,7 +130,7 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
                                 }
                             })
                     .setNegativeButton(
-                            "Cancel",
+                            R.string.action_cancel,
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {

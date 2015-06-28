@@ -14,6 +14,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 
 import com.marverenic.music.BuildConfig;
+import com.marverenic.music.R;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -88,27 +89,35 @@ public class Updater extends AsyncTask<Void, Void, String[]> {
         super.onPostExecute(result);
         if (result == null) return;
 
-        //TODO String resources
-        Snackbar.make(view, "A new version of Jockey is available", Snackbar.LENGTH_LONG).setAction("Info", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog alert = new AlertDialog.Builder(context)
-                        .setTitle("Update Jockey")
-                        .setMessage(result[RELEASE_NOTES_INDEX])
-                        .setPositiveButton("Download now", new DialogInterface.OnClickListener() {
+        Snackbar
+                .make(
+                        view,
+                        R.string.info_update_ready,
+                        Snackbar.LENGTH_LONG)
+                .setAction(
+                        R.string.action_info,
+                        new View.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent downloadIntent = new Intent(Intent.ACTION_VIEW);
-                                downloadIntent.setData(Uri.parse(result[DOWNLOAD_URL_INDEX]));
-                                context.startActivity(downloadIntent);
-                            }
-                        })
-                        .setNegativeButton("Remind me later", null)
-                        .show();
+                            public void onClick(View v) {
+                                AlertDialog alert = new AlertDialog.Builder(context)
+                                        .setTitle(R.string.header_update_ready)
+                                        .setMessage(result[RELEASE_NOTES_INDEX])
+                                        .setPositiveButton(
+                                                R.string.action_update_now,
+                                                new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        Intent downloadIntent = new Intent(Intent.ACTION_VIEW);
+                                                        downloadIntent.setData(Uri.parse(result[DOWNLOAD_URL_INDEX]));
+                                                        context.startActivity(downloadIntent);
+                                                    }
+                                                })
+                                        .setNegativeButton(R.string.action_update_later, null)
+                                        .show();
 
-                alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Themes.getAccent());
-                alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Themes.getAccent());
-            }
-        }).show();
+                                alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Themes.getAccent());
+                                alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Themes.getAccent());
+                            }
+                        }).show();
     }
 }

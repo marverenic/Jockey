@@ -78,7 +78,7 @@ public class GenreViewHolder extends RecyclerView.ViewHolder implements View.OnC
                                 }
 
                                 new AlertDialog.Builder(context)
-                                        .setTitle("Add \"" + reference.genreName + "\" to playlist")
+                                        .setTitle(context.getString(R.string.header_add_song_name_to_playlist, reference.genreName))
                                         .setItems(playlistNames, new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
@@ -88,7 +88,7 @@ public class GenreViewHolder extends RecyclerView.ViewHolder implements View.OnC
                                                         Library.getGenreEntries(reference));
                                             }
                                         })
-                                        .setNeutralButton("Cancel", null)
+                                        .setNeutralButton(R.string.action_cancel, null)
                                         .show();
                                 return true;
                         }

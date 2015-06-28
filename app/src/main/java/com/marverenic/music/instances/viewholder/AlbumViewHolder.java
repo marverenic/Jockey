@@ -180,7 +180,7 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
                                 }
 
                                 new AlertDialog.Builder(itemView.getContext())
-                                        .setTitle("Add songs on \"" + reference.albumName + "\" to playlist")
+                                        .setTitle(itemView.getContext().getString(R.string.header_add_song_name_to_playlist, reference.albumName))
                                         .setItems(playlistNames, new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
@@ -190,7 +190,7 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
                                                         Library.getAlbumEntries(reference));
                                             }
                                         })
-                                        .setNegativeButton("Cancel", null)
+                                        .setNegativeButton(R.string.action_cancel, null)
                                         .show();
                                 return true;
                         }

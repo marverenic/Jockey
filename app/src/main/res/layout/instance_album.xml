@@ -17,7 +17,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_margin="0dp"
-            android:contentDescription="@string/album_art"
+            android:contentDescription="@string/description_album_art"
             android:scaleType="fitXY"
             android:src="@drawable/art_default" />
 

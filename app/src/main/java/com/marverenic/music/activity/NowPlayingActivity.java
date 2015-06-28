@@ -240,7 +240,7 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
                 // Show an AlertDialog for navigating to relevant activities
                 AlertDialog infoDialog = new AlertDialog.Builder(this)
                         .setTitle(nowPlaying.songName)
-                        .setNegativeButton("Cancel", null)
+                        .setNegativeButton(R.string.action_cancel, null)
                         .setItems(R.array.now_playing_options, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -264,14 +264,14 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
                                         }
 
                                         AlertDialog playlistDialog = new AlertDialog.Builder(context)
-                                                .setTitle("Add \"" + nowPlaying.songName + "\" to playlist")
+                                                .setTitle(getString(R.string.header_add_song_name_to_playlist, nowPlaying.songName))
                                                 .setItems(playlistNames, new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
                                                         Library.addPlaylistEntry(context, Library.getPlaylists().get(which), nowPlaying);
                                                     }
                                                 })
-                                                .setNeutralButton("Cancel", null)
+                                                .setNeutralButton(R.string.action_cancel, null)
                                                 .show();
 
                                         playlistDialog.getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(Themes.getAccent());

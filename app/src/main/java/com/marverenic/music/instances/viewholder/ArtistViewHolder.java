@@ -78,7 +78,7 @@ public class ArtistViewHolder extends RecyclerView.ViewHolder implements View.On
                                 }
 
                                 new AlertDialog.Builder(context)
-                                        .setTitle("Add \"" + reference.artistName + "\" to playlist")
+                                        .setTitle(context.getString(R.string.header_add_song_name_to_playlist, reference.artistName))
                                         .setItems(playlistNames, new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
@@ -88,7 +88,7 @@ public class ArtistViewHolder extends RecyclerView.ViewHolder implements View.On
                                                         Library.getArtistSongEntries(reference));
                                             }
                                         })
-                                        .setNegativeButton("Cancel", null)
+                                        .setNegativeButton(R.string.action_cancel, null)
                                         .show();
                                 return true;
                         }

@@ -116,7 +116,7 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                                 }
 
                                 new AlertDialog.Builder(itemView.getContext())
-                                        .setTitle("Add \"" + reference.songName + "\" to playlist")
+                                        .setTitle(itemView.getContext().getString(R.string.header_add_song_name_to_playlist, reference.songName))
                                         .setItems(playlistNames, new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
@@ -126,7 +126,7 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                                                         reference);
                                             }
                                         })
-                                        .setNegativeButton("Cancel", null)
+                                        .setNegativeButton(R.string.action_cancel, null)
                                         .show();
                                 return true;
                         }
