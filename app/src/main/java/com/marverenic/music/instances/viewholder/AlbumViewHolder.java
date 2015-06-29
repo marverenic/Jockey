@@ -23,13 +23,14 @@ import com.marverenic.music.instances.Album;
 import com.marverenic.music.Library;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.utils.Navigate;
+import com.marverenic.music.utils.Themes;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, Callback, Palette.PaletteAsyncListener{
+public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, Callback, Palette.PaletteAsyncListener, PopupMenu.OnMenuItemClickListener{
 
     // Used to cache Palette values in memory
     private static HashMap<Album, int[]> colorCache = new HashMap<>();
@@ -154,54 +155,57 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
                 for (int i = 0; i < options.length; i++) {
                     menu.getMenu().add(Menu.NONE, i, i, options[i]);
                 }
-                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem menuItem) {
-                        switch (menuItem.getItemId()) {
-                            case 0: //Queue this album next
-                                PlayerController.queueNext(Library.getAlbumEntries(reference));
-                                return true;
-                            case 1: //Queue this album last
-                                PlayerController.queueLast(Library.getAlbumEntries(reference));
-                                return true;
-                            case 2: //Go to artist
-                                Navigate.to(
-                                        itemView.getContext(),
-                                        ArtistActivity.class,
-                                        ArtistActivity.ARTIST_EXTRA,
-                                        Library.findArtistById(reference.artistId));
-                                return true;
-                            case 3: //Add to playlist...
-                                ArrayList<Playlist> playlists = Library.getPlaylists();
-                                String[] playlistNames = new String[playlists.size()];
-
-                                for (int i = 0; i < playlists.size(); i++ ){
-                                    playlistNames[i] = playlists.get(i).toString();
-                                }
-
-                                new AlertDialog.Builder(itemView.getContext())
-                                        .setTitle(itemView.getContext().getString(R.string.header_add_song_name_to_playlist, reference.albumName))
-                                        .setItems(playlistNames, new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                Library.addPlaylistEntries(
-                                                        itemView,
-                                                        Library.getPlaylists().get(which),
-                                                        Library.getAlbumEntries(reference));
-                                            }
-                                        })
-                                        .setNegativeButton(R.string.action_cancel, null)
-                                        .show();
-                                return true;
-                        }
-                        return false;
-                    }
-                });
+                menu.setOnMenuItemClickListener(this);
                 menu.show();
                 break;
             default:
                 Navigate.to(itemView.getContext(), AlbumActivity.class, AlbumActivity.ALBUM_EXTRA, reference);
                 break;
         }
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case 0: //Queue this album next
+                PlayerController.queueNext(Library.getAlbumEntries(reference));
+                return true;
+            case 1: //Queue this album last
+                PlayerController.queueLast(Library.getAlbumEntries(reference));
+                return true;
+            case 2: //Go to artist
+                Navigate.to(
+                        itemView.getContext(),
+                        ArtistActivity.class,
+                        ArtistActivity.ARTIST_EXTRA,
+                        Library.findArtistById(reference.artistId));
+                return true;
+            case 3: //Add to playlist...
+                ArrayList<Playlist> playlists = Library.getPlaylists();
+                String[] playlistNames = new String[playlists.size()];
+
+                for (int i = 0; i < playlists.size(); i++ ){
+                    playlistNames[i] = playlists.get(i).toString();
+                }
+
+                AlertDialog playlistDialog = new AlertDialog.Builder(itemView.getContext())
+                        .setTitle(itemView.getContext().getString(R.string.header_add_song_name_to_playlist, reference.albumName))
+                        .setItems(playlistNames, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Library.addPlaylistEntries(
+                                        itemView,
+                                        Library.getPlaylists().get(which),
+                                        Library.getAlbumEntries(reference));
+                            }
+                        })
+                        .setNegativeButton(R.string.action_cancel, null)
+                        .show();
+
+                playlistDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Themes.getAccent());
+
+                return true;
+        }
+        return false;
     }
 }

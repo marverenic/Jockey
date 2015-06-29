@@ -26,7 +26,7 @@ import com.marverenic.music.utils.Themes;
 
 import java.util.ArrayList;
 
-public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener{
 
     private View itemView;
     private TextView songName;
@@ -83,56 +83,7 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                 for (int i = 0; i < options.length;  i++) {
                     menu.getMenu().add(Menu.NONE, i, i, options[i]);
                 }
-                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem menuItem) {
-                        switch (menuItem.getItemId()){
-                            case 0: //Queue this song next
-                                PlayerController.queueNext(reference);
-                                return true;
-                            case 1: //Queue this song last
-                                PlayerController.queueLast(reference);
-                                return true;
-                            case 2: //Go to artist
-                                Navigate.to(
-                                        itemView.getContext(),
-                                        ArtistActivity.class,
-                                        ArtistActivity.ARTIST_EXTRA,
-                                        Library.findArtistById(reference.artistId));
-                                return true;
-                            case 3: // Go to album
-                                Navigate.to(
-                                        itemView.getContext(),
-                                        AlbumActivity.class,
-                                        AlbumActivity.ALBUM_EXTRA,
-                                        Library.findAlbumById(reference.albumId));
-                                return true;
-                            case 4: //Add to playlist...
-                                ArrayList<Playlist> playlists = Library.getPlaylists();
-                                String[] playlistNames = new String[playlists.size()];
-
-                                for (int i = 0; i < playlists.size(); i++ ){
-                                    playlistNames[i] = playlists.get(i).toString();
-                                }
-
-                                new AlertDialog.Builder(itemView.getContext())
-                                        .setTitle(itemView.getContext().getString(R.string.header_add_song_name_to_playlist, reference.songName))
-                                        .setItems(playlistNames, new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                Library.addPlaylistEntry(
-                                                        itemView.getContext(),
-                                                        Library.getPlaylists().get(which),
-                                                        reference);
-                                            }
-                                        })
-                                        .setNegativeButton(R.string.action_cancel, null)
-                                        .show();
-                                return true;
-                        }
-                        return false;
-                    }
-                });
+                menu.setOnMenuItemClickListener(this);
                 menu.show();
                 break;
             default:
@@ -150,5 +101,56 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                 }
                 break;
         }
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case 0: //Queue this song next
+                PlayerController.queueNext(reference);
+                return true;
+            case 1: //Queue this song last
+                PlayerController.queueLast(reference);
+                return true;
+            case 2: //Go to artist
+                Navigate.to(
+                        itemView.getContext(),
+                        ArtistActivity.class,
+                        ArtistActivity.ARTIST_EXTRA,
+                        Library.findArtistById(reference.artistId));
+                return true;
+            case 3: // Go to album
+                Navigate.to(
+                        itemView.getContext(),
+                        AlbumActivity.class,
+                        AlbumActivity.ALBUM_EXTRA,
+                        Library.findAlbumById(reference.albumId));
+                return true;
+            case 4: //Add to playlist...
+                ArrayList<Playlist> playlists = Library.getPlaylists();
+                String[] playlistNames = new String[playlists.size()];
+
+                for (int i = 0; i < playlists.size(); i++) {
+                    playlistNames[i] = playlists.get(i).toString();
+                }
+
+                AlertDialog playlistDialog = new AlertDialog.Builder(itemView.getContext())
+                        .setTitle(itemView.getContext().getString(R.string.header_add_song_name_to_playlist, reference.songName))
+                        .setItems(playlistNames, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Library.addPlaylistEntry(
+                                        itemView.getContext(),
+                                        Library.getPlaylists().get(which),
+                                        reference);
+                            }
+                        })
+                        .setNegativeButton(R.string.action_cancel, null)
+                        .show();
+
+                playlistDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Themes.getAccent());
+                return true;
+        }
+        return false;
     }
 }

@@ -18,7 +18,7 @@ import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 
-public class PlaylistViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+public class PlaylistViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener{
 
     private Context context;
 
@@ -63,28 +63,28 @@ public class PlaylistViewHolder extends RecyclerView.ViewHolder implements View.
                 for (int i = 0; i < options.length;  i++) {
                     menu.getMenu().add(Menu.NONE, i, i, options[i]);
                 }
-                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem menuItem) {
-                        switch (menuItem.getItemId()){
-                            case 0: //Queue this playlist next
-                                PlayerController.queueNext(Library.getPlaylistEntries(context, reference));
-                                return true;
-                            case 1: //Queue this playlist last
-                                PlayerController.queueLast(Library.getPlaylistEntries(context, reference));
-                                return true;
-                            case 2: //Delete this playlist
-                                Library.removePlaylist(itemView, reference);
-                                return true;
-                        }
-                        return false;
-                    }
-                });
+                menu.setOnMenuItemClickListener(this);
                 menu.show();
                 break;
             default:
                 Navigate.to(context, PlaylistActivity.class, PlaylistActivity.PLAYLIST_EXTRA, reference);
                 break;
         }
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        switch (menuItem.getItemId()){
+            case 0: //Queue this playlist next
+                PlayerController.queueNext(Library.getPlaylistEntries(context, reference));
+                return true;
+            case 1: //Queue this playlist last
+                PlayerController.queueLast(Library.getPlaylistEntries(context, reference));
+                return true;
+            case 2: //Delete this playlist
+                Library.removePlaylist(itemView, reference);
+                return true;
+        }
+        return false;
     }
 }
