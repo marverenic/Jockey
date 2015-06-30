@@ -23,8 +23,8 @@ android {
         applicationId "com.marverenic.music"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 30002
-        versionName "0.3_α-m0r0c"
+        versionCode 30003
+        versionName "0.3_α-m0r0d.d0"
     }
     buildTypes {
         release {
@@ -48,7 +48,7 @@ dependencies {
     compile 'com.android.support:cardview-v7:22.2.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.7.1'
-    compile 'com.makeramen:roundedimageview:2.1.0'
+    compile 'com.pkmmte.view:circularimageview:1.1'
     compile 'de.u-mass:lastfm-java:0.1.2'
     compile('com.crashlytics.sdk.android:crashlytics:2.4.0@aar') {
         transitive = true;

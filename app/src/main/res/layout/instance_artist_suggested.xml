@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<CardView xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:foreground="?attr/selectableItemBackground">
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/relatedCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:foreground="?attr/selectableItemBackground">
 	
 	<RelativeLayout
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:layout_margin="16dp">
-	
-		<ImageView
+
+		<com.pkmmte.view.CircularImageView
 			android:id="@+id/imageArtwork"
 			android:layout_width="40dp"
 			android:layout_height="40dp"
@@ -21,23 +22,13 @@
 			android:layout_height="wrap_content"
 			android:layout_toRightOf="@id/imageArtwork"
 			android:layout_toEndOf="@id/imageArtwork"
+            android:layout_centerVertical="true"
 			android:paddingLeft="16dp"
 			android:textSize="14sp"
-			android:textColor="@color/list_text"
-			android:text="artist"/>
-
-		<TextView
-			android:id="@+id/textArtistTags"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:layout_below="@id/textArtistName"
-			android:layout_toRightOf="@id/imageArtwork"
-			android:layout_toEndOf="@id/imageArtwork"
-			android:paddingLeft="16dp"
-			android:textSize="14sp"
-			android:textColor="@color/detail_text"
-			android:text="genre"/>
+            android:maxLines="2"
+            android:ellipsize="end"
+			android:textColor="@color/list_text" />
 	
 	</RelativeLayout>
 
-</CardView>
+</android.support.v7.widget.CardView>

@@ -15,6 +15,7 @@
     <dimen name="grid_art_size">162dp</dimen>
     <dimen name="grid_margin">4dp</dimen>
     <dimen name="grid_padding">16dp</dimen>
+    <dimen name="card_margin">8dp</dimen>
     <dimen name="settings_header_text_size">18sp</dimen>
     <dimen name="now_playing_ticker_height">64dp</dimen>
     <dimen name="now_playing_button_size">80dp</dimen>
