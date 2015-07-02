@@ -27,6 +27,7 @@ import com.marverenic.music.instances.viewholder.AlbumViewHolder;
 import com.marverenic.music.instances.viewholder.HeaderViewHolder;
 import com.marverenic.music.instances.viewholder.SongViewHolder;
 import com.marverenic.music.utils.Fetch;
+import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
@@ -119,6 +120,7 @@ public class ArtistActivity extends BaseActivity {
 
         private boolean hasBio = true;
         private de.umass.lastfm.Artist[] relatedArtists = new de.umass.lastfm.Artist[0];
+        private Artist[] localRelatedArtists;
         private de.umass.lastfm.Artist artist;
 
         public static final int LOADING_BIO_VIEW = 0;
@@ -147,8 +149,16 @@ public class ArtistActivity extends BaseActivity {
                     }
                     else{
                         // Get related artists
-                        relatedArtists = new de.umass.lastfm.Artist[artist.getSimilar().size()];
+                        int relatedArtistCount = artist.getSimilar().size();
+                        relatedArtists = new de.umass.lastfm.Artist[relatedArtistCount];
                         artist.getSimilar().toArray(relatedArtists);
+
+                        // Link related artists to artists that exist in the library locally
+                        localRelatedArtists = new Artist[relatedArtistCount];
+
+                        for (int i = 0; i < relatedArtistCount; i++){
+                            localRelatedArtists[i] = Library.findArtistByName(relatedArtists[i].getName());
+                        }
 
                         notifyItemChanged(0);
                         notifyItemRangeInserted((hasBio) ? 1 : 0, relatedArtists.length);
@@ -195,7 +205,7 @@ public class ArtistActivity extends BaseActivity {
                 // Don't update anything in the bio view or its loading view. Since there's only
                 // one instance, the data will never become invalid
                 case RELATED_ARTIST:
-                    ((SuggestedArtistHolder) holder).update(relatedArtists[position - (hasBio? 1 : 0)]);
+                    ((SuggestedArtistHolder) holder).update(relatedArtists[position - (hasBio? 1 : 0)], localRelatedArtists[position - (hasBio? 1 : 0)]);
                     break;
                 case HEADER_VIEW:
                     ((HeaderViewHolder) holder).update(
@@ -321,6 +331,7 @@ public class ArtistActivity extends BaseActivity {
     public static class SuggestedArtistHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private de.umass.lastfm.Artist reference;
+        private Artist localReference;
 
         private Context context;
         private ImageView artwork;
@@ -337,8 +348,9 @@ public class ArtistActivity extends BaseActivity {
             artistName = (TextView) itemView.findViewById(R.id.textArtistName);
         }
 
-        public void update(de.umass.lastfm.Artist artist){
+        public void update(de.umass.lastfm.Artist artist, Artist localArtist){
             reference = artist;
+            localReference = localArtist;
 
             final String artURL = artist.getImageURL(ImageSize.MEDIUM);
             if (artURL != null && !artURL.equals(""))
@@ -349,7 +361,10 @@ public class ArtistActivity extends BaseActivity {
 
         @Override
         public void onClick(View v){
-            // TODO deal with this
+            if (localReference != null){
+                Navigate.to(context, ArtistActivity.class, ARTIST_EXTRA, localReference);
+            }
+            // TODO show information about artists not in the library
         }
 
     }

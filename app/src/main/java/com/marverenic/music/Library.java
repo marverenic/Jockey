@@ -681,6 +681,15 @@ public class Library {
         return null;
     }
 
+    public static Artist findArtistByName (String artistName){
+        final String trimmedQuery = artistName.trim();
+        for (Artist a : artistLib){
+            if (a.artistName.equalsIgnoreCase(trimmedQuery))
+                return a;
+        }
+        return null;
+    }
+
     //
     //          CONTENTS QUERY METHODS
     //
