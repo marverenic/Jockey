@@ -27,7 +27,7 @@
 			android:textSize="14sp"
             android:maxLines="2"
             android:ellipsize="end"
-			android:textColor="@color/list_text" />
+			android:textColor="?android:attr/textColorPrimary" />
 	
 	</RelativeLayout>
 

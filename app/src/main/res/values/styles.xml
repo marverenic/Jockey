@@ -1,16 +1,14 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Static Colors -->
-    <color name="transparent_ui_text">#FAFAFA</color>
-    <color name="transparent_ui_off">#75FAFAFA</color>
     <color name="grid_background_default">#ffb0bec5</color>
     <color name="grid_text">#77000000</color>
     <color name="grid_detail_text">#97000000</color>
+    <color name="about_detail_text">#B4FFFFFF</color>
 
     <color name="player_control_background">#212121</color>
     <color name="player_text_main">#FAFAFA</color>
     <color name="player_text_detail">#88FFFFFF</color>
-    <color name="player_control_tint">#FAFAFA</color>
 
     <!-- Theme Colors-->
     <!-- Light Base -->
@@ -20,7 +18,7 @@
     <color name="background_elevated">#F5F5F5</color>
     <color name="background_miniplayer">#FAFAFA</color>
 
-    <!-- Dark Colors -->
+    <!-- Dark Base -->
     <color name="list_text_dark">@color/primary_text_default_material_dark</color>
     <color name="detail_text_dark">@color/secondary_text_default_material_dark</color>
     <color name="background_dark">#212121</color>
@@ -38,43 +36,31 @@
     <color name="primary_red">#C62828</color>
     <color name="primary_dark_red">#B71C1C</color>
     <color name="accent_red">#FF5252</color>
-    <color name="ui_text_red">#FFEBEE</color>
-    <color name="ui_detail_text_red">#EF9A9A</color>
 
     <!-- Orange -->
     <color name="primary_orange">#EF6C00</color>
     <color name="primary_dark_orange">#E65100</color>
     <color name="accent_orange">#FFAB40</color>
-    <color name="ui_text_orange">#FFF3E0</color>
-    <color name="ui_detail_text_orange">#FFCC80</color>
 
     <!-- Yellow -->
     <color name="primary_yellow">#F9A825</color>
     <color name="primary_dark_yellow">#F57F17</color>
     <color name="accent_yellow">#FFD600</color>
-    <color name="ui_text_yellow">#FFFDE7</color>
-    <color name="ui_detail_text_yellow">#FFF59D</color>
 
     <!-- Green -->
     <color name="primary_green">#2E7D32</color>
     <color name="primary_dark_green">#1B5E20</color>
     <color name="accent_green">#00C853</color>
-    <color name="ui_text_green">#E8F5E9</color>
-    <color name="ui_detail_text_green">#A5D6A7</color>
 
     <!-- Blue Colors -->
     <color name="primary">#00838F</color>
     <color name="primary_dark">#006064</color>
     <color name="accent">#40C4FF</color>
-    <color name="ui_text">#E0F7FA</color>
-    <color name="ui_detail_text">#80DEEA</color>
 
     <!-- Purple -->
     <color name="primary_purple">#4527A0</color>
     <color name="primary_dark_purple">#311B92</color>
     <color name="accent_purple">#7C4DFF</color>
-    <color name="ui_text_purple">#EDE7F6</color>
-    <color name="ui_detail_text_purple">#B39DDB</color>
 
     <!-- Dark Theme Base -->
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
@@ -124,7 +110,7 @@
         <item name="colorControlHighlight">@color/accent</item>
     </style>
 
-    <style name="AppTheme.Purple" parent="Theme.AppCompat">
+    <style name="AppTheme.Purple" parent="AppTheme">
         <item name="colorPrimary">@color/primary_purple</item>
         <item name="colorPrimaryDark">@color/primary_dark_purple</item>
         <item name="colorAccent">@color/accent_purple</item>
@@ -193,21 +179,15 @@
         <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
 
-    <style name="list">
-        <item name="android:layout_height">@dimen/list_height</item>
-        <item name="android:background">@color/background_elevated</item>
-        <item name="android:gravity">center</item>
-    </style>
-
     <style name="listTitleText">
-        <item name="android:textColor">@color/list_text</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="android:textSize">@dimen/list_text_header_size</item>
         <item name="android:paddingLeft">@dimen/list_padding</item>
         <item name="android:paddingRight">@dimen/list_padding</item>
     </style>
 
     <style name="listDetailText">
-        <item name="android:textColor">@color/detail_text</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
         <item name="android:textSize">@dimen/list_text_detail_size</item>
         <item name="android:paddingLeft">@dimen/list_padding</item>
         <item name="android:paddingRight">@dimen/list_padding</item>
@@ -221,12 +201,6 @@
     <style name="gridDetailText">
         <item name="android:textColor">@color/grid_detail_text</item>
         <item name="android:textSize">@dimen/grid_text_detail_size</item>
-    </style>
-
-    <style name="settingsHeader">
-        <item name="android:textColor">@color/ui_text</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textSize">@dimen/settings_header_text_size</item>
     </style>
 
 </resources>

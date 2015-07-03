@@ -45,8 +45,6 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         detailText = (TextView) itemView.findViewById(R.id.instanceDetail);
         moreButton = (ImageView) itemView.findViewById(R.id.instanceMore);
 
-        moreButton.setColorFilter(Themes.getListText());
-
         itemView.setOnClickListener(this);
         moreButton.setOnClickListener(this);
     }
@@ -60,9 +58,6 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
         songName.setText(s.songName);
         detailText.setText(s.artistName + " - " + s.albumName);
-
-        songName.setTextColor(Themes.getListText());
-        detailText.setTextColor(Themes.getDetailText());
     }
 
     public void highlight(int primaryColor, int detailColor){

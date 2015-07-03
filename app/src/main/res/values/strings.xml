@@ -77,7 +77,7 @@
     <string name="action_update_later">Remind me later</string>
 
     <!-- Plurals -->
-    <plurals name="playlistConfirmSomeDuplicates">
+    <plurals name="playlist_confirm_some_duplicates">
         <item quantity="one">This playlist already contains one of these songs. Adding it again will result in this playlist having a duplicated entry.</item>
         <item quantity="other">This playlist already contains some of these songs. Adding them again will result in this playlist having %d duplicated entries.</item>
     </plurals>
@@ -109,6 +109,8 @@
     <string name="uses_picasso_detail">Version 2.5.2; distributed by Square, Inc. under an Apache License, Version 2.0</string>
     <string name="uses_advrecyclerview_header">Advanced RecyclerView</string>
     <string name="uses_advrecyclerview_detail">Version 0.7.1; distributed by Haruki Hasegawa under an Apache License, Version 2.0</string>
+    <string name="uses_circle_iv_header">Circular ImageView</string>
+    <string name="uses_circle_iv_detail">Version 1.1; distributed by Pkmmte Xeleon under an MIT License</string>
     <string name="uses_stackoverflow">Additional thanks to many helpful Stack Overflow users who are better at programming than I am.</string>
 
     <!-- Accessibility Content Descriptions -->

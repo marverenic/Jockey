@@ -30,18 +30,6 @@ public class AboutActivity extends BaseActivity implements View.OnClickListener 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && getSupportActionBar() != null)
             getSupportActionBar().setElevation(0);
 
-        findViewById(R.id.aboutScroll).setBackgroundColor(Themes.getPrimary());
-
-        int[] primaryText = {R.id.aboutAppName, R.id.lastFmHeader, R.id.aboutAOSPHeader,
-                R.id.aboutPicassoHeader, R.id.aboutAdvRecycleViewHeader, R.id.aboutStackOverflowHeader};
-        int[] detailText = {R.id.aboutVersion, R.id.aboutDescription, R.id.aboutLicense, R.id.aboutUsesHeader,
-                 R.id.aboutPicassoDetail, R.id.aboutAOSPDetail, R.id.aboutAdvRecycleViewDetail};
-
-        for (int aPrimaryText : primaryText)
-            ((TextView) findViewById(aPrimaryText)).setTextColor(Themes.getUiText());
-        for (int aDetailText : detailText)
-            ((TextView) findViewById(aDetailText)).setTextColor(Themes.getUiDetailText());
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             ((ImageView) findViewById(R.id.aboutAppIcon)).setImageBitmap(Themes.getLargeIcon(this, DisplayMetrics.DENSITY_XXXHIGH));
         } else {

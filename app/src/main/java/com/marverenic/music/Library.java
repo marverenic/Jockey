@@ -1002,7 +1002,7 @@ public class Library {
             }
             else{
                 alert
-                        .setMessage(context.getResources().getQuantityString(R.plurals.playlistConfirmSomeDuplicates, duplicateCount, duplicateCount))
+                        .setMessage(context.getResources().getQuantityString(R.plurals.playlist_confirm_some_duplicates, duplicateCount, duplicateCount))
                         .setPositiveButton("Add new", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {

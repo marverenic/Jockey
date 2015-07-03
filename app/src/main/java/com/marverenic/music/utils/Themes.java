@@ -12,6 +12,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.StyleRes;
 import android.util.DisplayMetrics;
 
@@ -23,8 +24,6 @@ public class Themes {
     private static int primary;
     private static int primaryDark;
     private static int accent;
-    private static int uiText;
-    private static int uiDetailText;
 
     private static int listText;
     private static int detailText;
@@ -45,18 +44,12 @@ public class Themes {
         return accent;
     }
 
-    public static int getUiText() {
-        return uiText;
-    }
-
-    public static int getUiDetailText() {
-        return uiDetailText;
-    }
-
+    @Deprecated
     public static int getListText() {
         return listText;
     }
 
+    @Deprecated
     public static int getDetailText() {
         return detailText;
     }
@@ -71,15 +64,6 @@ public class Themes {
 
     public static int getBackgroundMiniplayer() {
         return backgroundMiniplayer;
-    }
-
-    public static boolean hasChanged(Context context) {
-        final int oldPrimary = primary;
-        final int oldBackground = background;
-
-        updateColors(context);
-
-        return oldPrimary != primary || oldBackground != background;
     }
 
     public static boolean isLight(Context context) {
@@ -97,50 +81,36 @@ public class Themes {
                 primary = resources.getColor(R.color.primary_grey);
                 primaryDark = resources.getColor(R.color.primary_dark_grey);
                 accent = resources.getColor(R.color.accent_grey);
-                uiText = resources.getColor(R.color.ui_text_grey);
-                uiDetailText = resources.getColor(R.color.ui_detail_text_grey);
                 break;
             case 1: //Red
                 primary = resources.getColor(R.color.primary_red);
                 primaryDark = resources.getColor(R.color.primary_dark_red);
                 accent = resources.getColor(R.color.accent_red);
-                uiText = resources.getColor(R.color.ui_text_red);
-                uiDetailText = resources.getColor(R.color.ui_detail_text_red);
                 break;
             case 2: //Orange
                 primary = resources.getColor(R.color.primary_orange);
                 primaryDark = resources.getColor(R.color.primary_dark_orange);
                 accent = resources.getColor(R.color.accent_orange);
-                uiText = resources.getColor(R.color.ui_text_orange);
-                uiDetailText = resources.getColor(R.color.ui_detail_text_orange);
                 break;
             case 3: //Yellow
                 primary = resources.getColor(R.color.primary_yellow);
                 primaryDark = resources.getColor(R.color.primary_dark_yellow);
                 accent = resources.getColor(R.color.accent_yellow);
-                uiText = resources.getColor(R.color.ui_text_yellow);
-                uiDetailText = resources.getColor(R.color.ui_detail_text_yellow);
                 break;
             case 4: //Green
                 primary = resources.getColor(R.color.primary_green);
                 primaryDark = resources.getColor(R.color.primary_dark_green);
                 accent = resources.getColor(R.color.accent_green);
-                uiText = resources.getColor(R.color.ui_text_green);
-                uiDetailText = resources.getColor(R.color.ui_detail_text_green);
                 break;
             case 6: //Purple
                 primary = resources.getColor(R.color.primary_purple);
                 primaryDark = resources.getColor(R.color.primary_dark_purple);
                 accent = resources.getColor(R.color.accent_purple);
-                uiText = resources.getColor(R.color.ui_text_purple);
-                uiDetailText = resources.getColor(R.color.ui_detail_text_purple);
                 break;
             default: //Blue & Unknown
                 primary = resources.getColor(R.color.primary);
                 primaryDark = resources.getColor(R.color.primary_dark);
                 accent = resources.getColor(R.color.accent);
-                uiText = resources.getColor(R.color.ui_text);
-                uiDetailText = resources.getColor(R.color.ui_detail_text);
                 break;
         }
 
@@ -266,28 +236,15 @@ public class Themes {
                 }
             }
 
-            switch (Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("prefColorPrimary", "5"))) {
-                case 0:
-                    return ((BitmapDrawable) context.getResources().getDrawableForDensity(R.drawable.ic_launcher_grey, density)).getBitmap();
-                case 1:
-                    return ((BitmapDrawable) context.getResources().getDrawableForDensity(R.drawable.ic_launcher_red, density)).getBitmap();
-                case 2:
-                    return ((BitmapDrawable) context.getResources().getDrawableForDensity(R.drawable.ic_launcher_orange, density)).getBitmap();
-                case 3:
-                    return ((BitmapDrawable) context.getResources().getDrawableForDensity(R.drawable.ic_launcher_yellow, density)).getBitmap();
-                case 4:
-                    return ((BitmapDrawable) context.getResources().getDrawableForDensity(R.drawable.ic_launcher_green, density)).getBitmap();
-                case 6:
-                    return ((BitmapDrawable) context.getResources().getDrawableForDensity(R.drawable.ic_launcher_purple, density)).getBitmap();
-                default:
-                    return ((BitmapDrawable) context.getResources().getDrawableForDensity(R.drawable.ic_launcher, density)).getBitmap();
-            }
-        } else {
-            return getIcon(context);
+            @SuppressWarnings("deprecation")
+            BitmapDrawable icon = (BitmapDrawable) context.getResources().getDrawableForDensity(getIconId(context), density);
+            if (icon != null) return icon.getBitmap();
+
         }
+        return getIcon(context);
     }
 
-    public static int getIconId(Context context) {
+    public static @DrawableRes int getIconId(Context context) {
         switch (Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("prefColorPrimary", "5"))) {
             case 0:
                 return R.drawable.ic_launcher_grey;

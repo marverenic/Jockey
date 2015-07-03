@@ -36,9 +36,6 @@ public class GenreViewHolder extends RecyclerView.ViewHolder implements View.OnC
         genreName = (TextView) itemView.findViewById(R.id.instanceTitle);
         moreButton = (ImageView) itemView.findViewById(R.id.instanceMore);
 
-        genreName.setTextColor(Themes.getListText());
-        moreButton.setColorFilter(Themes.getListText());
-
         itemView.setOnClickListener(this);
         moreButton.setOnClickListener(this);
 

@@ -36,9 +36,6 @@ public class ArtistViewHolder extends RecyclerView.ViewHolder implements View.On
         artistName = (TextView) itemView.findViewById(R.id.instanceTitle);
         moreButton = (ImageView) itemView.findViewById(R.id.instanceMore);
 
-        artistName.setTextColor(Themes.getListText());
-        moreButton.setColorFilter(Themes.getListText());
-
         itemView.setOnClickListener(this);
         moreButton.setOnClickListener(this);
 

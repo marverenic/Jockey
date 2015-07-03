@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="extended_actionbar_height">140dp</dimen>
+
+</resources>
