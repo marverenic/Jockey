@@ -24,6 +24,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Fetch;
@@ -161,6 +162,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             mediaPlayer.prepareAsync();
         }
         catch (Exception e){
+            Crashlytics.logException(e);
             queuePosition = 0;
             queuePositionShuffled = 0;
             queue.clear();
@@ -403,6 +405,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             try {
                 mediaPlayer.setDataSource((getNowPlaying()).location);
             } catch (Exception e) {
+                Crashlytics.logException(e);
                 Log.e("MUSIC SERVICE", "Error setting data source", e);
                 Toast.makeText(context, "There was an error playing this song", Toast.LENGTH_SHORT).show();
                 return;
@@ -411,6 +414,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                 mediaPlayer.prepareAsync();
             }
             catch (Exception e){
+                Crashlytics.logException(e);
                 e.printStackTrace();
             }
         }

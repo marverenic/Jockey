@@ -8,8 +8,8 @@
 # Stop Picasso from causing release builds to fail
 -dontwarn com.squareup.okhttp.**
 
-# Don't obfuscate class and method names for easier debugging
--keepnames class com.marverenic.** { *; }
+# Make Crashlytics reports more informative
+-keepattributes SourceFile,LineNumberTable
 
 # Don't break support libraries
 -keep class android.support.v7.widget.SearchView { *; }

@@ -124,9 +124,5 @@
                 <action android:name="marverenic.jockey.player.REFRESH"/>
             </intent-filter>
         </receiver>
-
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="7b7809ed5e2c8780626b5cc48c4a21734d6451b3" />
     </application>
 </manifest>
