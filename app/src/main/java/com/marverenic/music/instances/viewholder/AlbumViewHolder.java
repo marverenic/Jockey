@@ -1,8 +1,11 @@
 package com.marverenic.music.instances.viewholder;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.PopupMenu;
@@ -15,12 +18,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.marverenic.music.Library;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.instances.Album;
-import com.marverenic.music.Library;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
@@ -50,6 +53,11 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
     private ImageView artwork;
     private Album reference;
 
+    private AsyncTask<Bitmap, Void, Palette> paletteTask;
+    private ObjectAnimator backgroundAnimator;
+    private ObjectAnimator titleAnimator;
+    private ObjectAnimator detailAnimator;
+
     public AlbumViewHolder(View itemView) {
         super(itemView);
         this.itemView = itemView;
@@ -69,14 +77,29 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
     }
 
     public void update(Album a){
+        Picasso.with(itemView.getContext()).cancelRequest(artwork);
+        if (paletteTask != null && !paletteTask.isCancelled()) paletteTask.cancel(true);
+
         reference = a;
         albumName.setText(a.albumName);
         artistName.setText(a.artistName);
 
+        if (backgroundAnimator != null){
+            backgroundAnimator.setDuration(0);
+            backgroundAnimator.cancel();
+        }
+        if (titleAnimator != null){
+            titleAnimator.setDuration(0);
+            titleAnimator.cancel();
+        }
+        if (detailAnimator != null){
+            detailAnimator.setDuration(0);
+            detailAnimator.cancel();
+        }
+
         container.setBackgroundColor(defaultFrameColor);
         albumName.setTextColor(defaultTitleColor);
         artistName.setTextColor(defaultDetailColor);
-        moreButton.setColorFilter(defaultDetailColor);
 
         Picasso.with(itemView.getContext()).load("file://" + a.artUri)
                 .placeholder(R.drawable.art_default)
@@ -86,18 +109,39 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
     @Override
     public void onSuccess() {
+        if (paletteTask != null && !paletteTask.isCancelled()) paletteTask.cancel(true);
+
         // Update the colors of the text when album art is loaded
         Bitmap image = ((BitmapDrawable) artwork.getDrawable()).getBitmap();
 
         int[] colors = colorCache.get(reference);
         if (colors == null)
-            Palette.from(image).generate(this);
+            paletteTask = Palette.from(image).generate(this);
         else{
-            //TODO Fade colors in
-            container.setBackgroundColor(colors[FRAME_COLOR]);
-            albumName.setTextColor(colors[TITLE_COLOR]);
-            artistName.setTextColor(colors[DETAIL_COLOR]);
-            moreButton.setColorFilter(colors[DETAIL_COLOR]);
+            final ObjectAnimator backgroundAnimator = ObjectAnimator.ofObject(
+                    container,
+                    "backgroundColor",
+                    new ArgbEvaluator(),
+                    defaultFrameColor,
+                    colors[FRAME_COLOR]);
+            backgroundAnimator.setDuration(300).start();
+
+            final ObjectAnimator titleAnimator = ObjectAnimator.ofObject(
+                    albumName,
+                    "textColor",
+                    new ArgbEvaluator(),
+                    defaultTitleColor,
+                    colors[TITLE_COLOR]);
+            titleAnimator.setDuration(300).start();
+
+            final ObjectAnimator artistAnimator = ObjectAnimator.ofObject(
+                    artistName,
+                    "textColor",
+                    new ArgbEvaluator(),
+                    defaultDetailColor,
+                    colors[DETAIL_COLOR]);
+            artistAnimator.setDuration(300).start();
+
         }
     }
 
@@ -129,13 +173,44 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
             detailColor = palette.getDarkMutedSwatch().getBodyTextColor();
         }
 
-        //TODO fade colors in
-        container.setBackgroundColor(frameColor);
-        albumName.setTextColor(titleColor);
-        artistName.setTextColor(detailColor);
-        moreButton.setColorFilter(detailColor);
-
         colorCache.put(reference, new int[]{frameColor, titleColor, detailColor});
+
+        if (backgroundAnimator != null) {
+            backgroundAnimator.setDuration(0);
+            backgroundAnimator.cancel();
+        }
+        if (titleAnimator != null){
+            titleAnimator.setDuration(0);
+            titleAnimator.cancel();
+        }
+        if (detailAnimator != null){
+            detailAnimator.setDuration(0);
+            detailAnimator.cancel();
+        }
+
+        backgroundAnimator = ObjectAnimator.ofObject(
+                container,
+                "backgroundColor",
+                new ArgbEvaluator(),
+                defaultFrameColor,
+                frameColor);
+        backgroundAnimator.setDuration(300).start();
+
+        titleAnimator = ObjectAnimator.ofObject(
+                albumName,
+                "textColor",
+                new ArgbEvaluator(),
+                defaultTitleColor,
+                titleColor);
+        titleAnimator.setDuration(300).start();
+
+        detailAnimator = ObjectAnimator.ofObject(
+                artistName,
+                "textColor",
+                new ArgbEvaluator(),
+                defaultDetailColor,
+                detailColor);
+        detailAnimator.setDuration(300).start();
     }
 
     @Override
@@ -143,7 +218,6 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
         container.setBackgroundColor(defaultFrameColor);
         albumName.setTextColor(defaultTitleColor);
         artistName.setTextColor(defaultDetailColor);
-        moreButton.setColorFilter(defaultDetailColor);
     }
 
     @Override

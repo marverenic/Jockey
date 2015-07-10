@@ -47,6 +47,7 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
         itemView.setOnClickListener(this);
         moreButton.setOnClickListener(this);
+        moreButton.setColorFilter(Themes.getListText());
     }
 
     public void setSongList(ArrayList<Song> songList){

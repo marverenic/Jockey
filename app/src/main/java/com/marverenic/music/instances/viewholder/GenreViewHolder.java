@@ -38,6 +38,7 @@ public class GenreViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
         itemView.setOnClickListener(this);
         moreButton.setOnClickListener(this);
+        moreButton.setColorFilter(Themes.getListText());
 
         context = itemView.getContext();
     }
