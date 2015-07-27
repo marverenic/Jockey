@@ -31,10 +31,14 @@ import com.marverenic.music.utils.Fetch;
 import com.marverenic.music.utils.ManagedMediaPlayer;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Properties;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -74,6 +78,15 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     private short repeat; // Repeat status
 
     private Bitmap art; // The art for the current song
+
+    /**
+     * A {@link Properties} object used as a hashtable for saving play and skip counts.
+     * See {@link Player#logPlayCount(long, boolean)}
+     *
+     * Keys are stored as strings in the form "song_id"
+     * Values are stored as strings in the form "play,skip"
+     */
+    private Properties playCountHashtable;
 
     /**
      * Create a new Player Object, which manages a {@link MediaPlayer}
@@ -162,7 +175,6 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             mediaPlayer.prepareAsync();
         }
         catch (Exception e){
-            Crashlytics.logException(e);
             queuePosition = 0;
             queuePositionShuffled = 0;
             queue.clear();
@@ -625,7 +637,9 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
      */
     public void skip() {
         if (!isPreparing()) {
-            if (getCurrentPosition() > 24000 || getCurrentPosition() > mediaPlayer.getDuration() / 2) {
+            if (mediaPlayer.getState() == ManagedMediaPlayer.status.COMPLETED
+                    || mediaPlayer.getCurrentPosition() > 24000
+                    || mediaPlayer.getCurrentPosition() > mediaPlayer.getDuration() / 2) {
                 logPlayCount(getNowPlaying().songId, false);
             }
             else if (getCurrentPosition() < 20000) {
@@ -688,7 +702,9 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
      * @param newPosition The index of the song to start playing
      */
     public void changeSong(int newPosition) {
-        if (getCurrentPosition() > 24000 || getCurrentPosition() > mediaPlayer.getDuration() / 2) {
+        if (mediaPlayer.getState() == ManagedMediaPlayer.status.COMPLETED
+                || mediaPlayer.getCurrentPosition() > 24000
+                || mediaPlayer.getCurrentPosition() > mediaPlayer.getDuration() / 2) {
             logPlayCount(getNowPlaying().songId, false);
         }
         else if (getCurrentPosition() < 20000) {
@@ -856,12 +872,71 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     //
 
     /**
+     * Initializes {@link Player#playCountHashtable}
+     * @throws IOException
+     */
+    private void openPlayCountFile() throws IOException{
+        File file = new File(context.getExternalFilesDir(null) + "/" + Library.PLAY_COUNT_FILENAME);
+
+        if (!file.exists()) //noinspection ResultOfMethodCallIgnored
+            file.createNewFile();
+
+        InputStream is = new FileInputStream(file);
+
+        try {
+            playCountHashtable = new Properties();
+            playCountHashtable.load(is);
+        }
+        finally {
+            is.close();
+        }
+    }
+
+    /**
+     * Writes {@link Player#playCountHashtable} to disk
+     * @throws IOException
+     */
+    private void savePlayCountFile() throws IOException{
+        OutputStream os = new FileOutputStream(context.getExternalFilesDir(null) + "/" + Library.PLAY_COUNT_FILENAME);
+
+        try {
+            playCountHashtable.store(os, Library.PLAY_COUNT_FILE_COMMENT);
+        }
+        finally {
+            os.close();
+        }
+    }
+
+    /**
      * Record a play or skip for a certain song
      * @param songId the ID of the song written in the {@link android.provider.MediaStore}
-     * @param skip Whether the song was skipped
+     * @param skip Whether the song was skipped (true if skipped, false if played)
      */
     public void logPlayCount(long songId, boolean skip){
-        // TODO Log play count
+        try {
+            if (playCountHashtable == null) openPlayCountFile();
+
+            final String originalValue = playCountHashtable.getProperty(Long.toString(songId));
+            int playCount = 0;
+            int skipCount = 0;
+
+            if (originalValue != null && !originalValue.equals("")) {
+                final String[] originalValues = originalValue.split(",");
+
+                playCount = Integer.parseInt(originalValues[0]);
+                skipCount = Integer.parseInt(originalValues[1]);
+            }
+
+            if (skip) skipCount++;
+            else playCount++;
+
+            playCountHashtable.setProperty(Long.toString(songId), playCount + "," + skipCount);
+            savePlayCountFile();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
     }
 
     //

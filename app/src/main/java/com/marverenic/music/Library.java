@@ -27,6 +27,9 @@ import java.util.Locale;
 
 public class Library {
 
+    public static final String PLAY_COUNT_FILENAME = ".playcount";
+    public static final String PLAY_COUNT_FILE_COMMENT = "This file contains play count information for Jockey and should not be edited";
+
     private static final ArrayList<Playlist> playlistLib = new ArrayList<>();
     private static final ArrayList<Song> songLib = new ArrayList<>();
     private static final ArrayList<Artist> artistLib = new ArrayList<>();

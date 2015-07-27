@@ -26,7 +26,7 @@ public class Updater extends AsyncTask<Void, Void, String[]> {
     // BUILD CHANNEL
     private static final String CHANNEL = "alpha";
     //private static final String CHANNEL = "beta";
-    //private static final String CHANNEL = "gamma";
+    //private static final String CHANNEL = "stable";
 
     // Indices used in the result String[]
     private static final short DOWNLOAD_URL_INDEX = 0;
@@ -93,7 +93,7 @@ public class Updater extends AsyncTask<Void, Void, String[]> {
                 .make(
                         view,
                         R.string.info_update_ready,
-                        Snackbar.LENGTH_LONG)
+                        Snackbar.LENGTH_INDEFINITE)
                 .setAction(
                         R.string.action_info,
                         new View.OnClickListener() {
