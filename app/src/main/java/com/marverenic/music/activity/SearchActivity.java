@@ -4,6 +4,7 @@ import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -13,6 +14,7 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 
 import com.marverenic.music.Library;
+import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
@@ -36,6 +38,7 @@ import java.util.ArrayList;
 public class SearchActivity extends BaseActivity implements SearchView.OnQueryTextListener {
 
     private static String lastQuery = null;
+    private SearchView searchView;
     private Adapter adapter;
 
     @Override
@@ -75,11 +78,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
         list.addItemDecoration(new DividerDecoration(this, new int[]{R.id.albumInstance, R.id.subheaderFrame}));
 
-        // Handle a pending search
-        Intent parentIntent = getIntent();
-        if (parentIntent != null && Intent.ACTION_SEARCH.equals(parentIntent.getAction()) && parentIntent.hasExtra(SearchManager.QUERY)) {
-            adapter.search(parentIntent.getStringExtra(SearchManager.QUERY).toLowerCase());
-        }
+        handleIntent(getIntent());
     }
 
     @Override
@@ -95,17 +94,25 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
     }
 
     @Override
+    public void onBackPressed(){
+        lastQuery = null;
+        super.onBackPressed();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_search, menu);
 
         MenuItem searchItem = menu.findItem(R.id.search);
-        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView = (SearchView) searchItem.getActionView();
         searchView.setOnQueryTextListener(this);
         searchView.setIconified(false);
 
         if (lastQuery != null && !lastQuery.isEmpty()){
-            searchView.requestFocus();
             searchView.setQuery(lastQuery, true);
+        }
+        else{
+            searchView.requestFocus();
         }
         return true;
     }
@@ -128,6 +135,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
     @Override
     public boolean onQueryTextSubmit(String query) {
         adapter.search(query);
+        searchView.clearFocus();
         return true;
     }
 
@@ -140,8 +148,97 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (intent != null && Intent.ACTION_SEARCH.equals(intent.getAction()) && intent.hasExtra(SearchManager.QUERY)) {
-            adapter.search(intent.getStringExtra(SearchManager.QUERY).toLowerCase());
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent){
+        if (intent != null) {
+            // Handle standard searches
+            if (Intent.ACTION_SEARCH.equals(intent.getAction())
+                    || MediaStore.INTENT_ACTION_MEDIA_SEARCH.equals(intent.getAction())){
+                adapter.search(intent.getStringExtra(SearchManager.QUERY));
+            }
+
+            /** Handle play from search actions */
+            else if (MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH.equals(intent.getAction())){
+
+                adapter.search(intent.getStringExtra(SearchManager.QUERY));
+                final String focus = intent.getStringExtra(MediaStore.EXTRA_MEDIA_FOCUS);
+
+                /** PLAYLISTS */
+                // If there are playlists that match this search, and either the specified focus is
+                // playlists or there are only playlist results, then play the appropriate result
+                if (!adapter.playlistResults.isEmpty() && (focus.equals(MediaStore.Audio.Playlists.ENTRY_CONTENT_TYPE) ||
+                        (adapter.genreResults.isEmpty() && adapter.songResults.isEmpty()))) {
+
+                    // If there is a playlist with this exact name, use it, otherwise fallback to the first result
+                    Playlist playlist = adapter.playlistResults.get(0);
+                    for (Playlist p : adapter.playlistResults) {
+                        if (p.playlistName.equalsIgnoreCase(intent.getStringExtra(SearchManager.QUERY))) {
+                            playlist = p;
+                            break;
+                        }
+                    }
+                    PlayerController.setQueue(Library.getPlaylistEntries(this, playlist), 0);
+                    PlayerController.begin();
+                }
+                /** ARTISTS **/
+                else if (!adapter.artistResults.isEmpty() && focus.equals(MediaStore.Audio.Artists.ENTRY_CONTENT_TYPE)) {
+                    // If one or more artists with this name exist, play songs by all of them
+                    // (Ideally this only includes collaborating artists and keeps the search relevant)
+                    if (adapter.artistResults.size() > 0) {
+                        ArrayList<Song> songs = new ArrayList<>();
+                        for (Artist a : adapter.artistResults)
+                            songs.addAll(Library.getArtistSongEntries(a));
+
+                        PlayerController.setQueue(songs, 0);
+                        PlayerController.begin();
+                    }
+                }
+                /** ALBUMS */
+                else if (!adapter.albumResults.isEmpty() && focus.equals(MediaStore.Audio.Albums.ENTRY_CONTENT_TYPE)) {
+                    if (adapter.albumResults.size() > 0) {
+                        // If albums with this name exist, look for an exact match
+                        // If we find one then use it, otherwise fallback to the first result
+                        Album album = adapter.albumResults.get(0);
+                        for (Album a : adapter.albumResults) {
+                            if (a.albumName.equalsIgnoreCase(intent.getStringExtra(SearchManager.QUERY))) {
+                                album = a;
+                                break;
+                            }
+                        }
+                        PlayerController.setQueue(Library.getAlbumEntries(album), 0);
+                        PlayerController.begin();
+                    }
+                }
+                /** GENRES */
+                else if (!adapter.genreResults.isEmpty() && (focus.equals(MediaStore.Audio.Genres.ENTRY_CONTENT_TYPE)
+                        || adapter.songResults.isEmpty())) {
+
+                    if (adapter.genreResults.size() > 0) {
+                        // If genres with this name exist, look for an exact match
+                        // If we find one then use it, otherwise fallback to the first result
+                        Genre genre = adapter.genreResults.get(0);
+                        for (Genre g : adapter.genreResults) {
+                            if (g.genreName.equalsIgnoreCase(intent.getStringExtra(SearchManager.QUERY))) {
+                                genre = g;
+                                break;
+                            }
+                        }
+                        PlayerController.setQueue(Library.getGenreEntries(genre), 0);
+                        PlayerController.begin();
+                    }
+                }
+                /** SONGS */
+                // If we can't figure out what's going on (And I can understand why) or if
+                // the focus is songs, then just play all of the song results
+                else {
+                    if (adapter.songResults.size() > 0) {
+                        PlayerController.setQueue(adapter.songResults, 0);
+                        PlayerController.begin();
+                    }
+                }
+            }
         }
     }
 

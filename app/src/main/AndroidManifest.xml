@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- Used to read music -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- Used to save playlists -->
-    <uses-permission android:name="android.permission.INTERNET" /> <!-- Used to fetch data from Last.fm -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- Used to fetch data from Last.fm and send bug reports -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- Used to limit data usage on metered connections -->
     <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- Used to play music when the device is locked -->
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" /> <!-- Used to add themed icons to the launcher -->
@@ -60,28 +60,31 @@
             android:label="@string/header_now_playing"
             android:windowSoftInputMode="adjustPan|adjustNothing"/>
 
-        <!-- Play with Jockey intent filter -->
+        <!-- Play with Jockey (from search) intent filter -->
+        <activity-alias
+            android:name=".SearchWithJockey"
+            android:label="@string/app_name"
+            android:targetActivity=".activity.SearchActivity">
+            <intent-filter>
+                <action android:name="android.media.action.MEDIA_PLAY_FROM_SEARCH" />
+                <action android:name="android.intent.action.MEDIA_SEARCH" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity-alias>
+
+        <!-- Play with Jockey (from file) intent filter -->
         <activity-alias
             android:name=".PlayWithJockey"
             android:label="@string/app_name"
             android:targetActivity=".activity.NowPlayingActivity">
             <intent-filter>
-                <!-- file:// schema -->
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:scheme="file" />
-                <data android:mimeType="audio/*" />
-                <data android:mimeType="application/ogg" />
-                <data android:mimeType="application/x-ogg" />
-                <data android:mimeType="application/itunes" />
-            </intent-filter>
-            <intent-filter android:priority="-1">
-                <!-- content:// schema -->
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-
                 <data android:scheme="content" />
+
                 <data android:mimeType="audio/*" />
                 <data android:mimeType="application/ogg" />
                 <data android:mimeType="application/x-ogg" />
@@ -112,7 +115,6 @@
             android:exported="false" />
 
         <!-- Broadcast Receivers -->
-
         <receiver
             android:name=".PlayerService$Listener"
             android:process=":player"
