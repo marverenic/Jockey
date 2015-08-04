@@ -145,6 +145,9 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
         if (state == status.PREPARED || state == status.STARTED || state == status.PAUSED){
             return super.getCurrentPosition();
         }
+        else if (state == status.COMPLETED){
+            return getDuration();
+        }
         else return 0;
     }
 

@@ -58,7 +58,9 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         reference = s;
 
         songName.setText(s.songName);
+        songName.setTextColor(Themes.getListText());
         detailText.setText(s.artistName + " - " + s.albumName);
+        detailText.setTextColor(Themes.getListText());
     }
 
     public void highlight(int primaryColor, int detailColor){

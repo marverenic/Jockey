@@ -422,13 +422,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                 Toast.makeText(context, "There was an error playing this song", Toast.LENGTH_SHORT).show();
                 return;
             }
-            try {
-                mediaPlayer.prepareAsync();
-            }
-            catch (Exception e){
-                Crashlytics.logException(e);
-                e.printStackTrace();
-            }
+            mediaPlayer.prepareAsync();
         }
     }
 
@@ -552,7 +546,9 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     public void play() {
         if (!isPlaying() && getFocus()) {
             if (shuffle) {
-                if (queuePositionShuffled + 1 == queueShuffled.size() && mediaPlayer.getDuration() - mediaPlayer.getCurrentPosition() < 100) {
+                if (queuePositionShuffled + 1 == queueShuffled.size()
+                        && mediaPlayer.getState() == ManagedMediaPlayer.status.COMPLETED) {
+
                     queuePositionShuffled = 0;
                     begin();
                 } else {
@@ -560,7 +556,9 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                     updateNowPlaying();
                 }
             } else {
-                if (queuePosition + 1 == queue.size() && mediaPlayer.getDuration() - mediaPlayer.getCurrentPosition() < 100) {
+                if (queuePosition + 1 == queue.size()
+                        && mediaPlayer.getState() == ManagedMediaPlayer.status.COMPLETED) {
+
                     queuePosition = 0;
                     begin();
                 } else {
