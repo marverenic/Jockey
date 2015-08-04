@@ -58,9 +58,9 @@
     <color name="accent">#40C4FF</color>
 
     <!-- Purple -->
-    <color name="primary_purple">#4527A0</color>
-    <color name="primary_dark_purple">#311B92</color>
-    <color name="accent_purple">#7C4DFF</color>
+    <color name="primary_purple">#6A1B9A</color>
+    <color name="primary_dark_purple">#4A148C</color>
+    <color name="accent_purple">#AA00FF</color>
 
     <!-- Dark Theme Base -->
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
