@@ -43,6 +43,9 @@
     <string name="action_info">Info</string>
     <string name="action_create">Create</string>
     <string name="action_cancel">Cancel</string>
+    <string name="action_add">Add</string>
+    <string name="action_add_all">Add all</string>
+    <string name="action_add_new">Add new</string>
 
     <!-- Content Descriptions (for accessibility) -->
     <string name="description_album_art">Album Art</string>
@@ -64,11 +67,15 @@
     <string name="error_hint_duplicate_playlist">Enter a unique playlist name</string>
     <string name="error_hint_empty_playlist">Enter a playlist name</string>
 
-    <!-- Empty state strings -->
+    <!-- Empty state & unknown strings -->
     <string name="nothing_playing">Nothing is playing</string>
     <string name="no_artist">Unknown artist</string>
     <string name="no_album">Unknown album</string>
     <string name="no_description">No description available</string>
+    <string name="various_artists">Various Artists</string>
+    <string name="unknown_artist">Unknown Artist</string>
+    <string name="unknown_album">Unknown Album</string>
+    <string name="unknown">Unknown</string>
 
     <!-- Update Strings -->
     <string name="info_update_ready">A new version of Jockey is available</string>
@@ -77,9 +84,19 @@
     <string name="action_update_later">Remind me later</string>
 
     <!-- Plurals -->
+    <plurals name="alert_confirm_duplicates">
+        <item quantity="one">Add duplicate song?</item>
+        <item quantity="other">Add duplicate songs?</item>
+    </plurals>
     <plurals name="playlist_confirm_some_duplicates">
         <item quantity="one">This playlist already contains one of these songs. Adding it again will result in this playlist having a duplicated entry.</item>
         <item quantity="other">This playlist already contains some of these songs. Adding them again will result in this playlist having %d duplicated entries.</item>
+    </plurals>
+    <string name="playlist_confirm_duplicate">\"%1$s\" already contains \"%2$s\". Do you want to add it again?</string>
+    <string name="playlist_confirm_all_duplicates">This playlist already contains all of these songs. Adding them again will result in %d duplicated entries.</string>
+    <plurals name="playlist_positive_add_duplicates">
+        <item quantity="one">Add duplicate</item>
+        <item quantity="other">Add duplicates</item>
     </plurals>
     <plurals name="message_added_songs">
         <item quantity="one" >Added 1 song to \"%2$s\"</item>
@@ -95,6 +112,7 @@
     <string name="message_sorted_playlist_artist">Sorted \"%1$s\" by artist name</string>
     <string name="message_sorted_playlist_album">Sorted \"%1$s\" by album name</string>
     <string name="header_add_song_name_to_playlist">Add \"%1$s\" to playlist</string>
+    <string name="confirm_add_songs">Added %1$s songs to playlist \"%2$s\"</string>
 
     <!-- About Activity Strings -->
     <string name="about_version">Version</string>

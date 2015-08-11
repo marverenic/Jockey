@@ -83,7 +83,8 @@ public class Fetch {
     }
 
     public static Artist fetchArtistBio(Context context, String artistName) {
-        if (artistName.equalsIgnoreCase(context.getString(R.string.no_artist)) || artistName.equalsIgnoreCase("Various Artists")) return null; //TODO String resource
+        if (artistName.equalsIgnoreCase(context.getString(R.string.no_artist))
+                || artistName.equalsIgnoreCase(context.getString(R.string.various_artists))) return null;
         if (!lastFmInitialized) initLastFm(context);
 
         ConnectivityManager network = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

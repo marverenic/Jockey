@@ -311,7 +311,7 @@ public class Library {
             int thisGenreId = cur.getInt(cur.getColumnIndex(MediaStore.Audio.Genres._ID));
 
             if (cur.getString(cur.getColumnIndex(MediaStore.Audio.Genres.NAME)).equalsIgnoreCase("Unknown")){
-                genres.add(new Genre(-1, "Unknown"));
+                genres.add(new Genre(-1, context.getString(R.string.unknown)));
             }
             else {
                 genres.add(new Genre(
@@ -937,15 +937,15 @@ public class Library {
         // Checks the playlist for duplicate entries
         if (getPlaylistEntries(context, playlist).contains(song)){
             new AlertDialog.Builder(context)
-                    .setTitle("Add duplicate song")
-                    .setMessage("Playlist \"" + playlist +"\" already contains song \"" + song + "\". Do you want to add a duplicate entry?")
-                    .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                    .setTitle(context.getResources().getQuantityString(R.plurals.alert_confirm_duplicates, 1))
+                    .setMessage(context.getString(R.string.playlist_confirm_duplicate, playlist, song))
+                    .setPositiveButton(R.string.action_add, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             addSongToEndOfPlaylist(context, playlist, song);
                         }
                     })
-                    .setNegativeButton("Cancel", null)
+                    .setNegativeButton(R.string.action_cancel, null)
                     .show();
         }
         else{
@@ -976,21 +976,20 @@ public class Library {
         }
 
         if (duplicateCount > 0){
-            //TODO String Resources
-            AlertDialog.Builder alert = new AlertDialog.Builder(context).setTitle("Add duplicate entries?");
+            AlertDialog.Builder alert = new AlertDialog.Builder(context).setTitle(context.getResources().getQuantityString(R.plurals.alert_confirm_duplicates, duplicateCount));
 
             if (duplicateCount == songs.size()) {
                 alert
-                        .setMessage("This playlist already contains all of these songs. Adding them again will result in duplicates.")
-                        .setPositiveButton("Add duplicates", new DialogInterface.OnClickListener() {
+                        .setMessage(context.getString(R.string.playlist_confirm_all_duplicates, duplicateCount))
+                        .setPositiveButton(context.getResources().getQuantityText(R.plurals.playlist_positive_add_duplicates, duplicateCount), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 addSongsToEndOfPlaylist(context, playlist, songs);
                                 Snackbar.make(
                                         view,
-                                        "Added " + songs.size() + " song(s) to the end of playlist \"" + playlist.playlistName + "\"",
+                                        context.getString(R.string.confirm_add_songs, songs.size(), playlist.playlistName),
                                         Snackbar.LENGTH_LONG)
-                                        .setAction("Undo", new View.OnClickListener() {
+                                        .setAction(context.getString(R.string.action_undo), new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
                                                 Library.editPlaylist(
@@ -1001,20 +1000,20 @@ public class Library {
                                         }).show();
                             }
                         })
-                        .setNeutralButton("Cancel", null);
+                        .setNeutralButton(context.getString(R.string.action_cancel), null);
             }
             else{
                 alert
                         .setMessage(context.getResources().getQuantityString(R.plurals.playlist_confirm_some_duplicates, duplicateCount, duplicateCount))
-                        .setPositiveButton("Add new", new DialogInterface.OnClickListener() {
+                        .setPositiveButton(R.string.action_add_new, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 addSongsToEndOfPlaylist(context, playlist, newEntries);
                                 Snackbar.make(
                                         view,
-                                        "Added " + newEntries.size() + " song(s) to the end of playlist \"" + playlist.playlistName + "\"",
+                                        context.getString(R.string.confirm_add_songs, newEntries.size(), playlist.playlistName),
                                         Snackbar.LENGTH_LONG)
-                                        .setAction("Undo", new View.OnClickListener() {
+                                        .setAction(R.string.action_undo, new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
                                                 Library.editPlaylist(
@@ -1025,15 +1024,15 @@ public class Library {
                                         }).show();
                             }
                         })
-                        .setNegativeButton("Add all", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(R.string.action_add_all, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 addSongsToEndOfPlaylist(context, playlist, songs);
                                 Snackbar.make(
                                         view,
-                                        "Added " + songs.size() + " song(s) to the end of playlist \"" + playlist.playlistName + "\"",
+                                        context.getString(R.string.confirm_add_songs, songs.size(), playlist.playlistName),
                                         Snackbar.LENGTH_LONG)
-                                        .setAction("Undo", new View.OnClickListener() {
+                                        .setAction(R.string.action_undo, new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
                                                 Library.editPlaylist(
@@ -1044,7 +1043,7 @@ public class Library {
                                         }).show();
                             }
                         })
-                        .setNeutralButton("Cancel", null);
+                        .setNeutralButton(R.string.action_cancel, null);
             }
 
             alert.show();
@@ -1053,9 +1052,9 @@ public class Library {
             addSongsToEndOfPlaylist(context, playlist, songs);
             Snackbar.make(
                     view,
-                    "Added " + newEntries.size() + " song(s) to the end of playlist \"" + playlist.playlistName + "\"",
+                    context.getString(R.string.confirm_add_songs, newEntries.size(), playlist.playlistName),
                     Snackbar.LENGTH_LONG)
-                    .setAction("Undo", new View.OnClickListener() {
+                    .setAction(R.string.action_undo, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Library.editPlaylist(
@@ -1287,7 +1286,7 @@ public class Library {
                         cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)),
                         cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media._ID)),
                         (cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)).equals(MediaStore.UNKNOWN_STRING))
-                                ? "Unknown Artist"
+                                ? context.getString(R.string.unknown_artist)
                                 : cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
                         cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)),
                         cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DURATION)),
