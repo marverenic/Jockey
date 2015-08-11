@@ -15,7 +15,7 @@ In order to install comiled APK's, you will need to enable installation of appli
 **Read and write to external storage**  
 Used to save local data; primarily used for Last.fm cache, library storage, and other small miscellaneous files.  
 **Internet**  
-Used to retrieve information and thumbnails for artists from Last.fm  
+Used to retrieve information and thumbnails for artists from Last.fm and upload anonymous usage and crash data with Crashlytics
 **Network State**  
 Used to prevent Jockey from using mobile data (if this preference is enabled)  
 **Keep awake**  

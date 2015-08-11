@@ -25,7 +25,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 30003
-        versionName "0.3_alpha-m0r0d.d4"
+        versionName "0.3_alpha-m0r0d"
     }
     buildTypes {
         release {
