@@ -104,6 +104,7 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
         Picasso.with(itemView.getContext()).load("file://" + a.artUri)
                 .placeholder(R.drawable.art_default)
                 .resizeDimen(R.dimen.grid_art_size, R.dimen.grid_art_size)
+                .centerInside()
                 .into(artwork, this);
     }
 

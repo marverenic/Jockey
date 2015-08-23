@@ -18,7 +18,7 @@
             android:layout_height="fill_parent"
             android:layout_margin="0dp"
             android:contentDescription="@string/description_album_art"
-            android:scaleType="fitXY"
+            android:background="@android:color/black"
             android:src="@drawable/art_default" />
 
         <RelativeLayout
