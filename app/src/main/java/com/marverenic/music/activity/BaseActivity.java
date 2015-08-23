@@ -191,7 +191,6 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     public void themeActivity(){
         Themes.updateColors(this);
         Themes.setApplicationIcon(this);
-        getWindow().getDecorView().findViewById(android.R.id.content).setBackgroundColor(Themes.getBackground());
 
         if (findViewById(R.id.miniplayer) != null) {
             View miniplayer = (View) findViewById(R.id.miniplayer).getParent();

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Dark Theme Base -->
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@color/background_dark</item>
+    </style>
+
+    <!-- Light theme base -->
+    <style name="AppThemeLight" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@color/background</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+    </style>
+
+</resources>
