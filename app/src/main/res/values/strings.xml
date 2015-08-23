@@ -50,12 +50,22 @@
     <string name="action_add">Add</string>
     <string name="action_add_all">Add all</string>
     <string name="action_add_new">Add new</string>
+    <string name="action_agree">Agree</string>
 
     <!-- Content Descriptions (for accessibility) -->
     <string name="description_album_art">Album Art</string>
 
     <!-- Hints -->
     <string name="hint_playlist_name">Playlist name</string>
+
+    <!-- First start Strings -->
+    <string name="first_launch_title">A word about privacy</string>
+    <string name="first_launch_detail"><![CDATA[By using Jockey, you agree to send anonymous crash
+        reports.
+        <br /><br />All data collected is purely anonymous and helps greatly to improve Jockey.
+        This information will kept confidential with Marverenic and is subject to the
+        <a href="http://try.crashlytics.com/terms/">Crashlytics privacy policy</a>]]>.
+    </string>
 
     <!-- Confirmation messages -->
     <string name="confirm_disable_shuffle">Disabled shuffle</string>

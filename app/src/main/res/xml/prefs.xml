@@ -37,6 +37,12 @@
             android:summaryOn="@string/use_mobile_description_on"
             android:summaryOff="@string/use_mobile_description_off"
             android:title="@string/use_mobile"/>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="prefAllowLogging"
+            android:summaryOn="@string/logging_on"
+            android:summaryOff="@string/logging_off"
+            android:title="@string/logging_description"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/playback_header">
         <CheckBoxPreference

@@ -2,27 +2,34 @@ package com.marverenic.music.activity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.marverenic.music.BuildConfig;
+import com.marverenic.music.Library;
 import com.marverenic.music.Player;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
-import com.marverenic.music.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Navigate;
+import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Themes;
 
 public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener {
@@ -48,6 +55,44 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         if (Library.isEmpty()) Library.scanAll(this);
+
+        // Show a first start confirmation about privacy
+        // This can't be done in the Application class because it's not allowed to show
+        // AlertDialogs. Additionally, this check has to occur in every Activity since Jockey can
+        // be started from sources other than its main Activity.
+
+        final SharedPreferences prefs = Prefs.getPrefs(this);
+
+        if (prefs.getBoolean(Prefs.SHOW_FIRST_START, true)){
+            final View messageView = getLayoutInflater().inflate(R.layout.alert_pref, null);
+            final TextView message = (TextView) messageView.findViewById(R.id.alertMessage);
+            final CheckBox pref = (CheckBox) messageView.findViewById(R.id.alertPref);
+
+            message.setText(Html.fromHtml(getString(R.string.first_launch_detail)));
+            message.setMovementMethod(LinkMovementMethod.getInstance());
+
+            pref.setChecked(true);
+            pref.setText(R.string.enable_additional_logging);
+
+            AlertDialog privacyDialog = new AlertDialog.Builder(this)
+                    .setTitle(R.string.first_launch_title)
+                    .setView(messageView)
+                    .setPositiveButton(R.string.action_agree, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            prefs.edit()
+                                    .putBoolean(Prefs.SHOW_FIRST_START, false)
+                                    .putBoolean(Prefs.ALLOW_LOGGING, pref.isChecked())
+                            .apply();
+                        }
+                    })
+                    .setCancelable(false)
+                    .create();
+
+            privacyDialog.show();
+            privacyDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                    .setTextColor(Themes.getAccent());
+        }
     }
 
     /**
