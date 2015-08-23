@@ -102,11 +102,12 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
     @Override
     public void onClick(View v){
         super.onClick(v);
-        if (v.getTag().equals("fab-" + "Playlist")){
-            createPlaylist(v);
-        }
-        else if (v.getTag().equals("fab-" + "Auto Playlist")){
-            createAutoPlaylist(v);
+        if (v.getTag() != null) {
+            if (v.getTag().equals("fab-" + getString(R.string.playlist))) {
+                createPlaylist(v);
+            } else if (v.getTag().equals("fab-" + getString(R.string.playlist_auto))) {
+                createAutoPlaylist(v);
+            }
         }
     }
 
