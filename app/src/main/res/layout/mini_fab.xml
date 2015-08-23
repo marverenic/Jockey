@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.FloatingActionButton
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mini_fab"
+    android:tag="fab-null"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="end|bottom"
+    android:layout_margin="8dp"
+    android:tint="#9E9E9E"
+    app:backgroundTint="@color/background_miniplayer"
+    app:rippleColor="?attr/colorAccent"
+    app:fabSize="mini"
+    app:borderWidth="0dp" />

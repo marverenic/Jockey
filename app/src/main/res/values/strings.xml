@@ -15,6 +15,10 @@
     <string name="header_settings">Settings</string>
     <string name="header_search">Search</string>
 
+    <!-- Data types -->
+    <string name="playlist">Playlist</string>
+    <string name="playlist_auto">Smart Playlist</string>
+
     <!-- Other headers -->
     <string name="header_create_playlist">Create playlist</string>
     <string name="header_add_queue_to_playlist">Add queue to playlist</string>
@@ -89,11 +93,15 @@
         <item quantity="other">Add duplicate songs?</item>
     </plurals>
     <plurals name="playlist_confirm_some_duplicates">
-        <item quantity="one">This playlist already contains one of these songs. Adding it again will result in this playlist having a duplicated entry.</item>
-        <item quantity="other">This playlist already contains some of these songs. Adding them again will result in this playlist having %d duplicated entries.</item>
+        <item quantity="one">This playlist already contains one of these songs. Adding it again will
+            result in this playlist having a duplicated entry.</item>
+        <item quantity="other">This playlist already contains some of these songs. Adding them again
+            will result in this playlist having %d duplicated entries.</item>
     </plurals>
-    <string name="playlist_confirm_duplicate">\"%1$s\" already contains \"%2$s\". Do you want to add it again?</string>
-    <string name="playlist_confirm_all_duplicates">This playlist already contains all of these songs. Adding them again will result in %d duplicated entries.</string>
+    <string name="playlist_confirm_duplicate">\"%1$s\" already contains \"%2$s\". Do you want to add
+        it again?</string>
+    <string name="playlist_confirm_all_duplicates">This playlist already contains all of these
+        songs. Adding them again will result in %d duplicated entries.</string>
     <plurals name="playlist_positive_add_duplicates">
         <item quantity="one">Add duplicate</item>
         <item quantity="other">Add duplicates</item>
@@ -107,7 +115,8 @@
     <string name="message_added_song">Added \"%1$s\" to \"%2$s\"</string>
     <string name="message_created_playlist">Created playlist \"%1$s\"</string>
     <string name="message_removed_playlist">Deleted playlist \"%1$s\"</string>
-    <string name="message_create_playlist_error_exists">Couldn\'t create playlist \"%1$s\" because it already exists</string>
+    <string name="message_create_playlist_error_exists">Couldn\'t create playlist \"%1$s\" because
+        it already exists</string>
     <string name="message_sorted_playlist_name">Sorted \"%1$s\" by name</string>
     <string name="message_sorted_playlist_artist">Sorted \"%1$s\" by artist name</string>
     <string name="message_sorted_playlist_album">Sorted \"%1$s\" by album name</string>
@@ -116,20 +125,27 @@
 
     <!-- About Activity Strings -->
     <string name="about_version">Version</string>
-    <string name="about_description">Jockey is a music player for Android 4.0 and higher designed with Google\'s Material Design guidelines in mind.</string>
+    <string name="about_description">Jockey is a music player for Android 4.0 and higher designed
+        with Google\'s Material Design guidelines in mind.</string>
     <string name="about_license">Jockey is distributed under an Apache 2.0 license</string>
     <string name="lastfm_header">Artist information is provided by</string>
     <string name="lastfm_description">Last.fm</string>
     <string name="uses_header">Jockey also uses the following open-source libraries:</string>
     <string name="uses_aosp_header">Android Support Libraries</string>
-    <string name="uses_aosp_detail">Support-v4 22.2.1, Appcompat-v7 22.2.1, RecyclerView 22.2.1, CardView 22.2.1, Design 22.2.1, Palette 22.2.1; distributed by the Android Open Source Project under an Apache License, Version 2.0</string>
+    <string name="uses_aosp_detail">Support-v4 22.2.1, Appcompat-v7 22.2.1, RecyclerView 22.2.1,
+        CardView 22.2.1, Design 22.2.1, Palette 22.2.1; distributed by the Android Open Source
+        Project under an Apache License, Version 2.0</string>
     <string name="uses_picasso_header">Picasso</string>
-    <string name="uses_picasso_detail">Version 2.5.2; distributed by Square, Inc. under an Apache License, Version 2.0</string>
+    <string name="uses_picasso_detail">Version 2.5.2; distributed by Square, Inc. under an Apache
+        License, Version 2.0</string>
     <string name="uses_advrecyclerview_header">Advanced RecyclerView</string>
-    <string name="uses_advrecyclerview_detail">Version 0.7.1; distributed by Haruki Hasegawa under an Apache License, Version 2.0</string>
+    <string name="uses_advrecyclerview_detail">Version 0.7.1; distributed by Haruki Hasegawa
+        under an Apache License, Version 2.0</string>
     <string name="uses_circle_iv_header">Circular ImageView</string>
-    <string name="uses_circle_iv_detail">Version 1.1; distributed by Pkmmte Xeleon under an MIT License</string>
-    <string name="uses_stackoverflow">Additional thanks to many helpful Stack Overflow users who are better at programming than I am.</string>
+    <string name="uses_circle_iv_detail">Version 1.1; distributed by Pkmmte Xeleon under an
+        MIT License</string>
+    <string name="uses_stackoverflow">Additional thanks to many helpful Stack Overflow users who are
+        better at programming than I am.</string>
 
     <!-- Accessibility Content Descriptions -->
     <string name="button_play_description">Play Button</string>
@@ -151,8 +167,30 @@
     <string name="add_shortcut_description">Place a new shortcut to Jockey on your home screen to match your theme. Happens when you close this page</string>
     <string name="switch_to_now_playing">Automatically Switch to Now Playing</string>
     <string name="use_mobile">Use mobile data</string>
-    <string name="use_mobile_description_on">Album artwork and other data will be downloaded on mobile networks</string>
+    <string name="use_mobile_description_on">Album artwork and other data will be always be downloaded</string>
     <string name="use_mobile_description_off">Album artwork and other data will only be downloaded on Wi-Fi networks</string>
+    <string name="enable_additional_logging">Help improve Jockey by sending anonymous usage data</string>
+    <string name="logging_on">Anonymous information about how you use Jockey will be sent to the developer</string>
+    <string name="logging_off">Only anonymous crash information will be sent to the developer</string>
+    <string name="logging_description">Help improve Jockey</string>
+
+    <!-- Auto playlist Strings -->
+    <string name="auto_plist_id_eq">Is</string>
+    <string name="auto_plist_id_ne">Isn\'t</string>
+    <string name="auto_plist_name_eq">Name is</string>
+    <string name="auto_plist_name_ne">Name isn\'t</string>
+    <string name="auto_plist_name_has">Name contains</string>
+    <string name="auto_plist_name_has_not">Name doesn\'t contain</string>
+    <string name="auto_plist_skip_eq">Has skip count</string>
+    <string name="auto_plist_skip_lt">Has skip count less than</string>
+    <string name="auto_plist_skip_gt">Has skip count greater than</string>
+    <string name="auto_plist_play_eq">Has play count</string>
+    <string name="auto_plist_play_lt">Has play count less than</string>
+    <string name="auto_plist_play_gt">Has play count greater than</string>
+    <string name="auto_plist_artist_eq">Artist is</string>
+    <string name="auto_plist_artist_ne">Artist isn\'t</string>
+    <string name="auto_plist_artist_has">Artist contains</string>
+    <string name="auto_plist_artist_has_not">Artist doesn\'t contain</string>
 
     <!-- Arrays -->
     <string-array name="queue_options_song">

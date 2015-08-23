@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
@@ -20,8 +19,6 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 import com.marverenic.music.Library;
@@ -34,6 +31,7 @@ import com.marverenic.music.fragments.SongFragment;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.utils.Updater;
+import com.marverenic.music.view.FABMenu;
 
 public class LibraryActivity extends BaseActivity implements View.OnClickListener{
 
@@ -45,8 +43,9 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
         setContentView(R.layout.activity_library);
 
         // Setup the FAB
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(this);
+        FABMenu fab = (FABMenu) findViewById(R.id.fab);
+        fab.addChild(R.drawable.ic_add_36dp, this, R.string.playlist);
+        fab.addChild(R.drawable.ic_add_36dp, this, R.string.playlist_auto);
 
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
 
@@ -101,71 +100,82 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
     }
 
     @Override
-    public void onClick(final View v){
+    public void onClick(View v){
         super.onClick(v);
-        if (v.getId() == R.id.fab){
-            final TextInputLayout layout = new TextInputLayout(this);
-            final AppCompatEditText input = new AppCompatEditText(this);
-            input.setInputType(InputType.TYPE_CLASS_TEXT);
-            input.setHint(R.string.hint_playlist_name);
-            layout.addView(input);
-            layout.setErrorEnabled(true);
-
-            int padding = (int) getResources().getDimension(R.dimen.alert_padding);
-            ((View) input.getParent()).setPadding(
-                    padding - input.getPaddingLeft(),
-                    padding,
-                    padding - input.getPaddingRight(),
-                    input.getPaddingBottom());
-
-            final AlertDialog dialog = new AlertDialog.Builder(this)
-                    .setTitle(R.string.header_create_playlist)
-                    .setView(layout)
-                    .setPositiveButton(
-                            R.string.action_create,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Library.createPlaylist(v, input.getText().toString(), null);
-                                }
-                            })
-                    .setNegativeButton(
-                            R.string.action_cancel,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.cancel();
-                                }
-                            })
-                    .show();
-
-            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Themes.getAccent());
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-
-            input.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    String error = Library.verifyPlaylistName(LibraryActivity.this, s.toString());
-                    layout.setError(error);
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(error == null && s.length() > 0);
-                    if (error == null && s.length() > 0){
-                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Themes.getAccent());
-                    }
-                    else{
-                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
-                                getResources().getColor((Themes.isLight(LibraryActivity.this)
-                                        ? R.color.secondary_text_disabled_material_light
-                                        : R.color.secondary_text_disabled_material_dark)));
-                    }
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {}
-            });
+        if (v.getTag().equals("fab-" + "Playlist")){
+            createPlaylist(v);
         }
+        else if (v.getTag().equals("fab-" + "Auto Playlist")){
+            createAutoPlaylist(v);
+        }
+    }
+
+    private void createPlaylist(final View v){
+        final TextInputLayout layout = new TextInputLayout(this);
+        final AppCompatEditText input = new AppCompatEditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        input.setHint(R.string.hint_playlist_name);
+        layout.addView(input);
+        layout.setErrorEnabled(true);
+
+        int padding = (int) getResources().getDimension(R.dimen.alert_padding);
+        ((View) input.getParent()).setPadding(
+                padding - input.getPaddingLeft(),
+                padding,
+                padding - input.getPaddingRight(),
+                input.getPaddingBottom());
+
+        final AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.header_create_playlist)
+                .setView(layout)
+                .setPositiveButton(
+                        R.string.action_create,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Library.createPlaylist(v, input.getText().toString(), null);
+                            }
+                        })
+                .setNegativeButton(
+                        R.string.action_cancel,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        })
+                .show();
+
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Themes.getAccent());
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+
+        input.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String error = Library.verifyPlaylistName(LibraryActivity.this, s.toString());
+                layout.setError(error);
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(error == null && s.length() > 0);
+                if (error == null && s.length() > 0){
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Themes.getAccent());
+                }
+                else{
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
+                            getResources().getColor((Themes.isLight(LibraryActivity.this)
+                                    ? R.color.secondary_text_disabled_material_light
+                                    : R.color.secondary_text_disabled_material_dark)));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+    }
+
+    private void createAutoPlaylist(final View v){
+        //TODO
     }
 
     public class PagerAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener {
@@ -176,13 +186,13 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
         private Fragment albumFragment;
         private Fragment genreFragment;
 
-        private FloatingActionButton fab;
+        private FABMenu fab;
 
         public PagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
-        public void setFloatingActionButton(FloatingActionButton fab){
+        public void setFloatingActionButton(FABMenu fab){
             this.fab = fab;
         }
 
@@ -268,27 +278,11 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
             // If the fab isn't supposed to change states, don't animate anything
             if (position != 0 && fab.getVisibility() == View.GONE) return;
 
-            Animation fabAnim = AnimationUtils.loadAnimation(LibraryActivity.this,
-                    (position == 0) ? R.anim.fab_in : R.anim.fab_out);
-            fabAnim.setDuration(300);
-            fabAnim.setInterpolator(LibraryActivity.this,
-                    (position == 0)? android.R.interpolator.decelerate_quint : android.R.interpolator.accelerate_quint);
-            //fabAnim.setFillEnabled(position != 0);
-            //fabAnim.setFillAfter(position != 0);
-            fab.startAnimation(fabAnim);
-
             if (position == 0){
-                // If the FAB is reappearing, make sure it's visible
-                fab.setVisibility(View.VISIBLE);
+                fab.show();
             }
-            else {
-                // If the FAB is fading away, make sure to hide it after the animation finishes
-                fab.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        fab.setVisibility(View.GONE);
-                    }
-                }, 300);
+            else{
+                fab.hide();
             }
         }
 
