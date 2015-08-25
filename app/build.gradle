@@ -18,14 +18,14 @@ repositories {
 
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.0"
     defaultConfig {
         applicationId "com.marverenic.music"
         minSdkVersion 16
-        targetSdkVersion 22
-        versionCode 30004
-        versionName "0.3_alpha-m0r0e.d0"
+        targetSdkVersion 23
+        versionCode 30100
+        versionName "0.3_alpha-m0r1a.d1"
     }
     buildTypes {
         release {
@@ -42,11 +42,11 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:22.2.1'
-    compile 'com.android.support:design:22.2.1'
-    compile 'com.android.support:palette-v7:22.2.1'
-    compile 'com.android.support:recyclerview-v7:22.2.1'
-    compile 'com.android.support:cardview-v7:22.2.1'
+    compile 'com.android.support:appcompat-v7:23.0.0'
+    compile 'com.android.support:design:23.0.0'
+    compile 'com.android.support:palette-v7:23.0.0'
+    compile 'com.android.support:recyclerview-v7:23.0.0'
+    compile 'com.android.support:cardview-v7:23.0.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.7.2'
     compile 'com.pkmmte.view:circularimageview:1.1'

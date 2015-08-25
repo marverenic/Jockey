@@ -12,6 +12,7 @@ import com.marverenic.music.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.viewholder.BlankViewHolder;
+import com.marverenic.music.instances.viewholder.EmptyStateViewHolder;
 import com.marverenic.music.instances.viewholder.PlaylistViewHolder;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
@@ -57,8 +58,9 @@ public class PlaylistFragment extends Fragment{
 
     public class Adapter extends RecyclerView.Adapter implements Library.PlaylistChangeListener {
 
-        public static final int PLAYLIST_VIEW = 0;
-        public static final int EMPTY_VIEW = 1;
+        public static final int EMPTY_STATE = 0;
+        public static final int PLAYLIST_VIEW = 1;
+        public static final int BLANK_VIEW = 2;
 
         /**
          * A clone of {@link Library#playlistLib} used to determine the index of removed playlists
@@ -72,11 +74,23 @@ public class PlaylistFragment extends Fragment{
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
             if (viewType == PLAYLIST_VIEW) {
-                View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.instance_playlist, viewGroup, false);
-                return new PlaylistViewHolder(itemView);
+                return new PlaylistViewHolder(
+                        LayoutInflater
+                                .from(viewGroup.getContext())
+                                .inflate(R.layout.instance_playlist, viewGroup, false));
+            }
+            else if (viewType == EMPTY_STATE){
+                return new EmptyStateViewHolder(
+                        LayoutInflater
+                                .from(viewGroup.getContext())
+                                .inflate(R.layout.instance_empty, viewGroup, false),
+                        getActivity());
             }
             else{
-                return new BlankViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.instance_blank, viewGroup, false));
+                return new BlankViewHolder(
+                        LayoutInflater
+                                .from(viewGroup.getContext())
+                                .inflate(R.layout.instance_blank, viewGroup, false));
             }
         }
 
@@ -84,6 +98,12 @@ public class PlaylistFragment extends Fragment{
         public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
             if (i < data.size()) {
                 ((PlaylistViewHolder) viewHolder).update(data.get(i));
+            }
+            else if (viewHolder instanceof EmptyStateViewHolder &&
+                    Library.hasRWPermission(getActivity())) {
+                EmptyStateViewHolder emptyHolder = ((EmptyStateViewHolder) viewHolder);
+                emptyHolder.setReason(R.string.empty_playlists);
+                emptyHolder.setDetail(R.string.empty_playlists_detail);
             }
         }
 
@@ -94,8 +114,9 @@ public class PlaylistFragment extends Fragment{
 
         @Override
         public int getItemViewType(int position){
+            if (data.isEmpty()) return EMPTY_STATE;
             if (position < data.size()) return PLAYLIST_VIEW;
-            else return EMPTY_VIEW;
+            else return BLANK_VIEW;
         }
 
         @Override

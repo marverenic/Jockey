@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.marverenic.music.Library;
 import com.marverenic.music.R;
+import com.marverenic.music.instances.viewholder.EmptyStateViewHolder;
 import com.marverenic.music.instances.viewholder.GenreViewHolder;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
@@ -37,22 +38,52 @@ public class GenreFragment extends Fragment {
     }
 
 
-    public class Adapter extends RecyclerView.Adapter<GenreViewHolder>{
+    public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+        public static final int EMPTY = 0;
+        public static final int GENRE = 1;
 
         @Override
-        public GenreViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-            View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.instance_genre, viewGroup, false);
-            return new GenreViewHolder(itemView);
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+            switch (viewType) {
+                case EMPTY:
+                    return new EmptyStateViewHolder(
+                            LayoutInflater
+                                    .from(viewGroup.getContext())
+                                    .inflate(R.layout.instance_empty, viewGroup, false),
+                            getActivity());
+                case GENRE:
+                default:
+                    return new GenreViewHolder(
+                            LayoutInflater
+                                    .from(viewGroup.getContext())
+                                    .inflate(R.layout.instance_genre, viewGroup, false));
+            }
         }
 
         @Override
-        public void onBindViewHolder(GenreViewHolder viewHolder, int i) {
-            viewHolder.update(Library.getGenres().get(i));
+        public int getItemViewType(int position){
+            if (Library.getGenres().isEmpty()) return EMPTY;
+            return GENRE;
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+            if (getItemViewType(position) == GENRE) {
+                ((GenreViewHolder) viewHolder).update(Library.getGenres().get(position));
+            }
+            else if (viewHolder instanceof EmptyStateViewHolder &&
+                    Library.hasRWPermission(getActivity())) {
+                EmptyStateViewHolder emptyHolder = ((EmptyStateViewHolder) viewHolder);
+                emptyHolder.setReason(R.string.empty);
+                emptyHolder.setDetail(R.string.empty_detail);
+                emptyHolder.setButton1(R.string.action_try_again);
+            }
         }
 
         @Override
         public int getItemCount() {
-            return Library.getGenres().size();
+            return (Library.getGenres().isEmpty())? 1 : Library.getGenres().size();
         }
     }
 

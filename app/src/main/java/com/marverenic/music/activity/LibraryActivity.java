@@ -51,7 +51,7 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int page = Integer.parseInt(prefs.getString("prefDefaultPage", "1"));
-        if (page != 0) fab.setVisibility(View.GONE);
+        if (page != 0 || !Library.hasRWPermission(this)) fab.setVisibility(View.GONE);
 
         adapter = new PagerAdapter(getSupportFragmentManager());
         adapter.setFloatingActionButton(fab);
@@ -241,7 +241,14 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
             if (genreFragment != null && genreFragment.getView() != null)
                 ((RecyclerView) genreFragment.getView().findViewById(R.id.list)).getAdapter().notifyDataSetChanged();
 
-            Toast.makeText(LibraryActivity.this, getResources().getString(R.string.confirm_refresh_library), Toast.LENGTH_SHORT).show();
+            if (Library.hasRWPermission(LibraryActivity.this)) {
+                Toast
+                        .makeText(
+                                LibraryActivity.this,
+                                getResources().getString(R.string.confirm_refresh_library),
+                                Toast.LENGTH_SHORT)
+                        .show();
+            }
         }
 
         @Override
@@ -275,6 +282,9 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
         @Override
         public void onPageSelected(int position) {
             // Hide the fab when outside of the Playlist fragment
+
+            // Don't show the FAB if we can't write to the library
+            if (!Library.hasRWPermission(LibraryActivity.this)) return;
 
             // If the fab isn't supposed to change states, don't animate anything
             if (position != 0 && fab.getVisibility() == View.GONE) return;

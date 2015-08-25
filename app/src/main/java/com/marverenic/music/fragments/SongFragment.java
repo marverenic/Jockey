@@ -8,8 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.marverenic.music.R;
 import com.marverenic.music.Library;
+import com.marverenic.music.R;
+import com.marverenic.music.instances.viewholder.EmptyStateViewHolder;
 import com.marverenic.music.instances.viewholder.SongViewHolder;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
@@ -37,23 +38,52 @@ public class SongFragment extends Fragment {
     }
 
 
-    public class Adapter extends RecyclerView.Adapter<SongViewHolder>{
+    public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+        public static final int EMPTY = 0;
+        public static final int SONG = 1;
 
         @Override
-        public SongViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-            SongViewHolder viewHolder = new SongViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.instance_song, viewGroup, false));
-            viewHolder.setSongList(Library.getSongs());
-            return viewHolder;
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+            switch (viewType) {
+                case EMPTY:
+                    return new EmptyStateViewHolder(
+                            LayoutInflater
+                                    .from(viewGroup.getContext())
+                                    .inflate(R.layout.instance_empty, viewGroup, false),
+                            getActivity());
+                case SONG:
+                default:
+                    return new SongViewHolder(
+                            LayoutInflater
+                                    .from(viewGroup.getContext())
+                                    .inflate(R.layout.instance_song, viewGroup, false));
+            }
         }
 
         @Override
-        public void onBindViewHolder(SongViewHolder viewHolder, int i) {
-            viewHolder.update(Library.getSongs().get(i));
+        public int getItemViewType(int position){
+            if (Library.getAlbums().isEmpty()) return EMPTY;
+            return SONG;
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+            if (getItemViewType(position) == SONG) {
+                ((SongViewHolder) viewHolder).update(Library.getSongs().get(position));
+            }
+            else if (viewHolder instanceof EmptyStateViewHolder &&
+                    Library.hasRWPermission(getActivity())) {
+                EmptyStateViewHolder emptyHolder = ((EmptyStateViewHolder) viewHolder);
+                emptyHolder.setReason(R.string.empty);
+                emptyHolder.setDetail(R.string.empty_detail);
+                emptyHolder.setButton1(R.string.action_try_again);
+            }
         }
 
         @Override
         public int getItemCount() {
-            return Library.getSongs().size();
+            return (Library.getSongs().isEmpty())? 1 : Library.getSongs().size();
         }
     }
 

@@ -1,12 +1,16 @@
 package com.marverenic.music;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -29,6 +33,7 @@ public class Library {
 
     public static final String PLAY_COUNT_FILENAME = ".playcount";
     public static final String PLAY_COUNT_FILE_COMMENT = "This file contains play count information for Jockey and should not be edited";
+    public static final int PERMISSION_REQUEST_ID = 0x01;
 
     private static final ArrayList<Playlist> playlistLib = new ArrayList<>();
     private static final ArrayList<Song> songLib = new ArrayList<>();
@@ -148,21 +153,48 @@ public class Library {
     }
 
     //
+    //          PERMISSION METHODS
+    //
+
+    public static boolean hasRWPermission(Context context){
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
+                context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED
+                && context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public static void requestRWPermission(Activity activity){
+        activity.requestPermissions(
+                new String[]{
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                },
+                PERMISSION_REQUEST_ID);
+    }
+
+    //
     //          LIBRARY BUILDING METHODS
     //
 
     /**
      * Scan the MediaStore and update the libraries held in memory
-     * @param context {@link Context} to use to open {@link Cursor}s
+     * @param activity {@link Activity} to use to open {@link Cursor}s and get external storage
+     *                                 permission if necessary
      */
-    public static void scanAll (final Context context){
-        resetAll();
-        setPlaylistLib(scanPlaylists(context));
-        setSongLib(scanSongs(context));
-        setArtistLib(scanArtists(context));
-        setAlbumLib(scanAlbums(context));
-        setGenreLib(scanGenres(context));
-        sort();
+    public static void scanAll (final Activity activity){
+        if (hasRWPermission(activity)) {
+            resetAll();
+            setPlaylistLib(scanPlaylists(activity));
+            setSongLib(scanSongs(activity));
+            setArtistLib(scanArtists(activity));
+            setAlbumLib(scanAlbums(activity));
+            setGenreLib(scanGenres(activity));
+            sort();
+        }
+        else{
+            requestRWPermission(activity);
+        }
     }
 
     /**
@@ -854,7 +886,7 @@ public class Library {
 
     /**
      * Test a playlist name to make sure it is valid when making a new playlist. Invalid playlist names
-     * are empty or already exist in the MediaStore
+     * are instance_empty or already exist in the MediaStore
      * @param context A {@link Context} used to get localized Strings
      * @param playlistName The playlist name that needs to be validated
      * @return null if there is no error, or a {@link String} describing the error that can be
@@ -1215,14 +1247,14 @@ public class Library {
      * the list will include other songs in the same directory. If a playlist is passed as the file,
      * then the playlist will be opened as a regular playlist.
      *
-     * @param context A {@link Context} to use when building the list
+     * @param activity An {@link Activity} to use when building the list
      * @param file The {@link File} which the list will be built around
      * @param type The MIME type of the file being opened
      * @param queue An {@link ArrayList} which will be populated with the {@link Song}s
      * @return The position that this list should be started from
      * @throws IOException
      */
-    public static int getSongListFromFile(Context context, File file, String type, final ArrayList<Song> queue) throws IOException{
+    public static int getSongListFromFile(Activity activity, File file, String type, final ArrayList<Song> queue) throws IOException{
         // A somewhat convoluted method for getting a list of songs from a path
 
         // Songs are put into the queue array list
@@ -1230,13 +1262,13 @@ public class Library {
 
         if (isEmpty()){
             // We depend on the library being scanned, so make sure it's scanned before we go any further
-            scanAll(context);
+            scanAll(activity);
         }
 
         // PLAYLISTS
         if (type.equals("audio/x-mpegurl") || type.equals("audio/x-scpls") || type.equals("application/vnd.ms-wpl")){
             // If a playlist was opened, try to find and play its entry from the MediaStore
-            Cursor cur = context.getContentResolver().query(
+            Cursor cur = activity.getContentResolver().query(
                     MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
                     null,
                     MediaStore.Audio.Playlists.DATA + "=?",
@@ -1246,7 +1278,7 @@ public class Library {
             // If the media store contains this playlist, play it like a regular playlist
             if (cur.getCount() > 0){
                 cur.moveToFirst();
-                queue.addAll(getPlaylistEntries(context, new Playlist(
+                queue.addAll(getPlaylistEntries(activity, new Playlist(
                         cur.getInt(cur.getColumnIndex(MediaStore.Audio.Playlists._ID)),
                         cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.NAME)))));
             }
@@ -1272,7 +1304,7 @@ public class Library {
         else {
             // If the file isn't a playlist, use a content resolver to find the song and play it
             // Find all songs in the directory
-            Cursor cur = context.getContentResolver().query(
+            Cursor cur = activity.getContentResolver().query(
                     MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                     null,
                     MediaStore.Audio.Media.DATA + " like ?",
@@ -1286,7 +1318,7 @@ public class Library {
                         cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)),
                         cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media._ID)),
                         (cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)).equals(MediaStore.UNKNOWN_STRING))
-                                ? context.getString(R.string.unknown_artist)
+                                ? activity.getString(R.string.unknown_artist)
                                 : cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
                         cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)),
                         cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DURATION)),

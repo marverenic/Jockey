@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import com.marverenic.music.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.viewholder.AlbumViewHolder;
+import com.marverenic.music.instances.viewholder.EmptyStateViewHolder;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.GridSpacingDecoration;
@@ -30,10 +31,16 @@ public class AlbumFragment extends Fragment {
 
         albumRecyclerView.setAdapter(new Adapter());
 
-        int numColumns = ViewUtils.getNumberOfGridColumns(getActivity());
+        final int numColumns = ViewUtils.getNumberOfGridColumns(getActivity());
 
         GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), numColumns);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                return (Library.getAlbums().isEmpty())? numColumns : 1;
+            }
+        });
         albumRecyclerView.setLayoutManager(layoutManager);
 
         albumRecyclerView.addItemDecoration(new GridSpacingDecoration((int) getResources().getDimension(R.dimen.grid_margin), numColumns));
@@ -42,21 +49,52 @@ public class AlbumFragment extends Fragment {
     }
 
 
-    public class Adapter extends RecyclerView.Adapter<AlbumViewHolder>{
+    public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+        public static final int EMPTY = 0;
+        public static final int ALBUM = 1;
 
         @Override
-        public AlbumViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-            return new AlbumViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.instance_album, viewGroup, false));
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+            switch (viewType) {
+                case EMPTY:
+                    return new EmptyStateViewHolder(
+                            LayoutInflater
+                                    .from(viewGroup.getContext())
+                                    .inflate(R.layout.instance_empty, viewGroup, false),
+                            getActivity());
+                case ALBUM:
+                default:
+                    return new AlbumViewHolder(
+                            LayoutInflater
+                                    .from(viewGroup.getContext())
+                                    .inflate(R.layout.instance_album, viewGroup, false));
+            }
         }
 
         @Override
-        public void onBindViewHolder(AlbumViewHolder viewHolder, int i) {
-            viewHolder.update(Library.getAlbums().get(i));
+        public int getItemViewType(int position){
+            if (Library.getAlbums().isEmpty()) return EMPTY;
+            return ALBUM;
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+            if (getItemViewType(position) == ALBUM) {
+                ((AlbumViewHolder) viewHolder).update(Library.getAlbums().get(position));
+            }
+            else if (viewHolder instanceof EmptyStateViewHolder &&
+                    Library.hasRWPermission(getActivity())) {
+                EmptyStateViewHolder emptyHolder = ((EmptyStateViewHolder) viewHolder);
+                emptyHolder.setReason(R.string.empty);
+                emptyHolder.setDetail(R.string.empty_detail);
+                emptyHolder.setButton1(R.string.action_try_again);
+            }
         }
 
         @Override
         public int getItemCount() {
-            return Library.getAlbums().size();
+            return (Library.getAlbums().isEmpty())? 1 : Library.getAlbums().size();
         }
     }
 

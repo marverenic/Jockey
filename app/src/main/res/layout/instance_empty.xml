@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/empty_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_splash"
+        android:layout_marginTop="50dp"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:id="@+id/empty_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp"
+        style="@style/listTitleText" />
+
+    <TextView
+        android:id="@+id/empty_message_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp"
+        style="@style/listDetailText" />
+
+    <FrameLayout
+        android:id="@+id/empty_button"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:layout_marginTop="20dp"
+        android:padding="8dp"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:background="?android:attr/selectableItemBackground">
+        <TextView
+            android:id="@+id/empty_button_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="?attr/colorAccent"/>
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/empty_button2"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:padding="8dp"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:background="?android:attr/selectableItemBackground">
+        <TextView
+            android:id="@+id/empty_button2_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="?attr/colorAccent"/>
+    </FrameLayout>
+
+</LinearLayout>

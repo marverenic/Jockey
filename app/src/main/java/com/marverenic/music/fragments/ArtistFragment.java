@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import com.marverenic.music.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.viewholder.ArtistViewHolder;
+import com.marverenic.music.instances.viewholder.EmptyStateViewHolder;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
@@ -36,23 +37,52 @@ public class ArtistFragment extends Fragment {
         return view;
     }
 
+    public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    public class Adapter extends RecyclerView.Adapter<ArtistViewHolder>{
+        public static final int EMPTY = 0;
+        public static final int ARTIST = 1;
 
         @Override
-        public ArtistViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-            View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.instance_artist, viewGroup, false);
-            return new ArtistViewHolder(itemView);
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+            switch (viewType) {
+                case EMPTY:
+                    return new EmptyStateViewHolder(
+                            LayoutInflater
+                                    .from(viewGroup.getContext())
+                                    .inflate(R.layout.instance_empty, viewGroup, false),
+                            getActivity());
+                case ARTIST:
+                default:
+                    return new ArtistViewHolder(
+                            LayoutInflater
+                                    .from(viewGroup.getContext())
+                                    .inflate(R.layout.instance_artist, viewGroup, false));
+            }
         }
 
         @Override
-        public void onBindViewHolder(ArtistViewHolder viewHolder, int i) {
-            viewHolder.update(Library.getArtists().get(i));
+        public int getItemViewType(int position){
+            if (Library.getArtists().isEmpty()) return EMPTY;
+            return ARTIST;
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+            if (getItemViewType(position) == ARTIST) {
+                ((ArtistViewHolder) viewHolder).update(Library.getArtists().get(position));
+            }
+            else if (viewHolder instanceof EmptyStateViewHolder &&
+                    Library.hasRWPermission(getActivity())) {
+                EmptyStateViewHolder emptyHolder = ((EmptyStateViewHolder) viewHolder);
+                emptyHolder.setReason(R.string.empty);
+                emptyHolder.setDetail(R.string.empty_detail);
+                emptyHolder.setButton1(R.string.action_try_again);
+            }
         }
 
         @Override
         public int getItemCount() {
-            return Library.getArtists().size();
+            return (Library.getArtists().isEmpty())? 1 : Library.getArtists().size();
         }
     }
 

@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -83,7 +84,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
                             prefs.edit()
                                     .putBoolean(Prefs.SHOW_FIRST_START, false)
                                     .putBoolean(Prefs.ALLOW_LOGGING, pref.isChecked())
-                            .apply();
+                                    .apply();
                         }
                     })
                     .setCancelable(false)
@@ -92,6 +93,19 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
             privacyDialog.show();
             privacyDialog.getButton(AlertDialog.BUTTON_POSITIVE)
                     .setTextColor(Themes.getAccent());
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantRequests) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantRequests);
+
+        if (requestCode == Library.PERMISSION_REQUEST_ID && Library.hasRWPermission(this)) {
+            recreate();
         }
     }
 
@@ -213,7 +227,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
 
     /**
      * Update the miniplayer to reflect the most recent @link PlayerService status. If no miniplayer
-     * exists in the view, override this method with an empty code block.
+     * exists in the view, override this method with an instance_empty code block.
      */
     @SuppressWarnings("ResourceType")
     public void updateMiniplayer(){

@@ -20,6 +20,7 @@ import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.viewholder.DraggableSongViewHolder;
+import com.marverenic.music.instances.viewholder.EmptyStateViewHolder;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
@@ -198,32 +199,65 @@ public class PlaylistActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public class Adapter extends RecyclerView.Adapter<DraggableSongViewHolder> implements DraggableItemAdapter<DraggableSongViewHolder> {
+    public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements DraggableItemAdapter<DraggableSongViewHolder> {
+
+        public static final int EMPTY = 0;
+        public static final int SONG = 1;
+
 
         public Adapter(){
             setHasStableIds(true);
         }
 
         @Override
-        public DraggableSongViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-            DraggableSongViewHolder viewHolder = new DraggableSongViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.instance_song_drag, viewGroup, false));
-            viewHolder.setSongList(data);
-            return viewHolder;
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+            switch (viewType) {
+                case EMPTY:
+                    return new EmptyStateViewHolder(
+                            LayoutInflater
+                                    .from(viewGroup.getContext())
+                                    .inflate(R.layout.instance_empty, viewGroup, false),
+                            PlaylistActivity.this);
+                case SONG:
+                default:
+                    DraggableSongViewHolder viewHolder = new DraggableSongViewHolder(
+                            LayoutInflater
+                                    .from(viewGroup.getContext())
+                                    .inflate(R.layout.instance_song_drag, viewGroup, false));
+
+                    viewHolder.setSongList(data);
+                    return viewHolder;
+            }
         }
 
         @Override
         public long getItemId(int position){
+            if (data.isEmpty()) return 0;
             return data.get(position).songId;
         }
 
         @Override
-        public void onBindViewHolder(DraggableSongViewHolder viewHolder, int i) {
-            viewHolder.update(data.get(i));
+        public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+            if (getItemViewType(position) == SONG) {
+                ((DraggableSongViewHolder) viewHolder).update(data.get(position));
+            }
+            else if (viewHolder instanceof EmptyStateViewHolder &&
+                    Library.hasRWPermission(PlaylistActivity.this)) {
+                EmptyStateViewHolder emptyHolder = ((EmptyStateViewHolder) viewHolder);
+                emptyHolder.setReason(R.string.empty_playlist);
+                emptyHolder.setDetail(R.string.empty_playlist_detail);
+            }
+        }
+
+        @Override
+        public int getItemViewType(int position){
+            if (data.isEmpty()) return EMPTY;
+            return SONG;
         }
 
         @Override
         public int getItemCount() {
-            return data.size();
+            return (data.isEmpty())? 1 : data.size();
         }
 
         @Override
