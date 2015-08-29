@@ -14,20 +14,27 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.util.SparseIntArray;
 import android.view.View;
 
+import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
+import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Genre;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.Locale;
+import java.util.Properties;
 
 public class Library {
 
@@ -41,6 +48,9 @@ public class Library {
     private static final ArrayList<Album> albumLib = new ArrayList<>();
     private static final ArrayList<Genre> genreLib = new ArrayList<>();
 
+    private static final SparseIntArray playCounts = new SparseIntArray();
+    private static final SparseIntArray skipCounts = new SparseIntArray();
+
     private static final String[] songProjection = new String[]{
             MediaStore.Audio.Media.TITLE,
             MediaStore.Audio.Media._ID,
@@ -48,6 +58,8 @@ public class Library {
             MediaStore.Audio.Media.ALBUM,
             MediaStore.Audio.Media.DURATION,
             MediaStore.Audio.Media.DATA,
+            MediaStore.Audio.Media.YEAR,
+            MediaStore.Audio.Media.DATE_ADDED,
             MediaStore.Audio.Media.ALBUM_ID,
             MediaStore.Audio.Media.ARTIST_ID,
             MediaStore.Audio.Media.TRACK
@@ -84,6 +96,8 @@ public class Library {
             MediaStore.Audio.Playlists.Members.ALBUM,
             MediaStore.Audio.Playlists.Members.DURATION,
             MediaStore.Audio.Playlists.Members.DATA,
+            MediaStore.Audio.Playlists.Members.YEAR,
+            MediaStore.Audio.Playlists.Members.DATE_ADDED,
             MediaStore.Audio.Playlists.Members.ALBUM_ID,
             MediaStore.Audio.Playlists.Members.ARTIST_ID
     };
@@ -223,6 +237,8 @@ public class Library {
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)),
                     cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DURATION)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA)),
+                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.YEAR)),
+                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DATE_ADDED)),
                     cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)),
                     cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID)));
 
@@ -320,7 +336,32 @@ public class Library {
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.NAME))));
         }
         cur.close();
+
+        playlists.addAll(scanAutoPlaylists(context));
         return playlists;
+    }
+
+    /**
+     * Scans storage for Auto Playlist configurations
+     * @param context {@link Context} to use to read files on the device
+     * @return An {@link ArrayList} with the loaded {@link AutoPlaylist}s
+     */
+    public static ArrayList<AutoPlaylist> scanAutoPlaylists (Context context){
+        // TODO read AutoPlaylists instead of inserting predefined playlists
+        AutoPlaylist mostListened = new AutoPlaylist(
+                4, "Most Listened", 20, AutoPlaylist.Rule.Field.PLAY_COUNT, false, true,
+                new AutoPlaylist.Rule(
+                        AutoPlaylist.Rule.Type.SONG,
+                        AutoPlaylist.Rule.Field.PLAY_COUNT,
+                        AutoPlaylist.Rule.Match.GREATER_THAN,
+                        "0")
+        );
+        AutoPlaylist mostRecentlyAdded = new AutoPlaylist(
+                4, "Most Recently Added", 20, AutoPlaylist.Rule.Field.DATE_ADDED, false, true);
+        ArrayList<AutoPlaylist> autoPlaylists = new ArrayList<>();
+        autoPlaylists.add(mostListened);
+        autoPlaylists.add(mostRecentlyAdded);
+        return autoPlaylists;
     }
 
     /**
@@ -651,6 +692,8 @@ public class Library {
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)),
                     cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DURATION)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA)),
+                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.YEAR)),
+                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DATE_ADDED)),
                     cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)),
                     cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID)));
 
@@ -661,7 +704,7 @@ public class Library {
 
         // Sort the contents of the list so that it matches the order of the int array
         ArrayList<Song> songs = new ArrayList<>();
-        Song dummy = new Song(null, 0, null, null, 0, null, 0, 0);
+        Song dummy = new Song(null, 0, null, null, 0, null, 0, 0, 0, 0);
         for (int i : songIDs){
             dummy.songId = i;
             // Because Songs are equal if their ids are equal, we can use a dummy song with the ID
@@ -736,6 +779,10 @@ public class Library {
      * @return An {@link ArrayList} of {@link Song}s contained in the playlist
      */
     public static ArrayList<Song> getPlaylistEntries (Context context, Playlist playlist){
+        if (playlist instanceof AutoPlaylist){
+            return ((AutoPlaylist) playlist).generatePlaylist(context);
+        }
+
         ArrayList<Song> songEntries = new ArrayList<>();
 
         Cursor cur = context.getContentResolver().query(
@@ -752,6 +799,8 @@ public class Library {
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.ALBUM)),
                     cur.getInt(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.DURATION)),
                     cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.DATA)),
+                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.YEAR)),
+                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.DATE_ADDED)),
                     cur.getInt(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.ALBUM_ID)),
                     cur.getInt(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.ARTIST_ID))));
         }
@@ -833,6 +882,86 @@ public class Library {
         }
 
         return songEntries;
+    }
+
+    //
+    //          PLAY COUNT READING & ACCESSING METHODS
+    //
+
+    /**
+     * Reload the play counts as modified by {@link Player#logPlayCount(long, boolean)}
+     * @param context Used to open a {@link Properties} from disk
+     */
+    public static void loadPlayCounts(Context context) {
+        playCounts.clear();
+        skipCounts.clear();
+        try {
+            Properties countProperties = openPlayCountFile(context);
+            Enumeration iterator = countProperties.propertyNames();
+
+            while (iterator.hasMoreElements()){
+                String key = (String) iterator.nextElement();
+                String value = countProperties.getProperty(key, "0,0");
+
+                final String[] originalValues = value.split(",");
+
+                int playCount = Integer.parseInt(originalValues[0]);
+                int skipCount = Integer.parseInt(originalValues[1]);
+
+                playCounts.put(Integer.parseInt(key), playCount);
+                skipCounts.put(Integer.parseInt(key), skipCount);
+            }
+        }
+        catch (IOException e){
+            Crashlytics.logException(e);
+        }
+    }
+
+    /**
+     * Returns a readable {@link Properties} to be used with {@link Library#loadPlayCounts(Context)}
+     * @param context Used to read files from external storage
+     * @return A {@link Properties} object that has been initialized with values saved by
+     *         {@link Player#logPlayCount(long, boolean)} and {@link Player#savePlayCountFile()}
+     * @throws IOException
+     */
+    private static Properties openPlayCountFile(Context context) throws IOException{
+        File file = new File(context.getExternalFilesDir(null) + "/" + Library.PLAY_COUNT_FILENAME);
+
+        if (!file.exists()) //noinspection ResultOfMethodCallIgnored
+            file.createNewFile();
+
+        InputStream is = new FileInputStream(file);
+        Properties playCountHashtable;
+
+        try {
+            playCountHashtable = new Properties();
+            playCountHashtable.load(is);
+        }
+        finally {
+            is.close();
+        }
+
+        return playCountHashtable;
+    }
+
+    /**
+     * Returns the number of skips a song has. Note that you may need to call
+     * {@link Library#loadPlayCounts(Context)} in case the data has gone stale
+     * @param songId The {@link Song#songId} as written in the MediaStore
+     * @return The number of times a song has been skipped
+     */
+    public static int getSkipCount (int songId){
+        return skipCounts.get(songId, 0);
+    }
+
+    /**
+     * Returns the number of plays a song has. Note that you may need to call
+     * {@link Library#loadPlayCounts(Context)} in case the data has gone stale
+     * @param songId The {@link Song#songId} as written in the MediaStore
+     * @return The number of times a song has been plays
+     */
+    public static int getPlayCount (int songId){
+        return playCounts.get(songId, 0);
     }
 
     //
@@ -1323,6 +1452,8 @@ public class Library {
                         cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)),
                         cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DURATION)),
                         cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA)),
+                        cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.YEAR)),
+                        cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DATE_ADDED)),
                         cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)),
                         cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID))));
             }

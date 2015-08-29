@@ -17,6 +17,7 @@ import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropM
 import com.marverenic.music.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
+import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.viewholder.DraggableSongViewHolder;
@@ -243,9 +244,16 @@ public class PlaylistActivity extends BaseActivity {
             }
             else if (viewHolder instanceof EmptyStateViewHolder &&
                     Library.hasRWPermission(PlaylistActivity.this)) {
-                EmptyStateViewHolder emptyHolder = ((EmptyStateViewHolder) viewHolder);
-                emptyHolder.setReason(R.string.empty_playlist);
-                emptyHolder.setDetail(R.string.empty_playlist_detail);
+                if (reference instanceof AutoPlaylist){
+                    EmptyStateViewHolder emptyHolder = ((EmptyStateViewHolder) viewHolder);
+                    emptyHolder.setReason(R.string.empty_auto_playlist);
+                    emptyHolder.setDetail(R.string.empty_auto_playlist_detail);
+                }
+                else {
+                    EmptyStateViewHolder emptyHolder = ((EmptyStateViewHolder) viewHolder);
+                    emptyHolder.setReason(R.string.empty_playlist);
+                    emptyHolder.setDetail(R.string.empty_playlist_detail);
+                }
             }
         }
 

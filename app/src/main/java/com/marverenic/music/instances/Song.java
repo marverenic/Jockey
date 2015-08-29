@@ -3,6 +3,8 @@ package com.marverenic.music.instances;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.marverenic.music.Library;
+
 public class Song implements Parcelable {
 
     public static final Parcelable.Creator<Song> CREATOR = new Parcelable.Creator<Song>() {
@@ -21,16 +23,16 @@ public class Song implements Parcelable {
     public String albumName;
     public int songDuration;
     public String location;
+    public int year;
+    public int dateAdded; // seconds since Jan 1, 1970
     public int albumId;
     public int artistId;
     public int genreId = -1;
     public int trackNumber = 0;
-    public int playCount = 0;
-    public int skipCount = 0;
 
     public Song(final String songName, final int songId, final String artistName,
                 final String albumName, final int songDuration, final String location,
-                final int albumId, final int artistId) {
+                final int year, final int dateAdded, final int albumId, final int artistId) {
 
         this.songName = songName;
         this.songId = songId;
@@ -38,6 +40,8 @@ public class Song implements Parcelable {
         this.albumName = albumName;
         this.songDuration = songDuration;
         this.location = location;
+        this.year = year;
+        this.dateAdded = dateAdded;
         this.albumId = albumId;
         this.artistId = artistId;
     }
@@ -49,11 +53,11 @@ public class Song implements Parcelable {
         artistName = in.readString();
         songDuration = in.readInt();
         location = in.readString();
+        year = in.readInt();
+        dateAdded = in.readInt();
         albumId = in.readInt();
         artistId = in.readInt();
         genreId = in.readInt();
-        playCount = in.readInt();
-        skipCount = in.readInt();
     }
 
     public Song(Song s) {
@@ -63,12 +67,20 @@ public class Song implements Parcelable {
         this.albumName = s.albumName;
         this.songDuration = s.songDuration;
         this.location = s.location;
+        this.year = s.year;
+        this.dateAdded = s.dateAdded;
         this.albumId = s.albumId;
         this.artistId = s.artistId;
         this.genreId = s.genreId;
         this.trackNumber = s.trackNumber;
-        this.playCount = s.playCount;
-        this.skipCount = s.skipCount;
+    }
+
+    public int skipCount(){
+        return Library.getSkipCount(songId);
+    }
+
+    public int playCount(){
+        return Library.getPlayCount(songId);
     }
 
     public boolean equals(final Object obj) {
@@ -93,10 +105,10 @@ public class Song implements Parcelable {
         dest.writeString(artistName);
         dest.writeInt(songDuration);
         dest.writeString(location);
+        dest.writeInt(year);
+        dest.writeInt(dateAdded);
         dest.writeInt(albumId);
         dest.writeInt(artistId);
         dest.writeInt(genreId);
-        dest.writeInt(playCount);
-        dest.writeInt(skipCount);
     }
 }

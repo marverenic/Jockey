@@ -23,7 +23,7 @@ public class Playlist implements Parcelable {
         this.playlistName = playlistName;
     }
 
-    private Playlist(Parcel in) {
+    public Playlist(Parcel in) {
         playlistId = in.readInt();
         playlistName = in.readString();
     }
