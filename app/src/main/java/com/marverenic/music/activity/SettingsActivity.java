@@ -1,18 +1,17 @@
 package com.marverenic.music.activity;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.marverenic.music.R;
 import com.marverenic.music.utils.Navigate;
+import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Themes;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -44,11 +43,11 @@ public class SettingsActivity extends AppCompatActivity {
     public void onDestroy() {
         super.onDestroy();
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences prefs = Prefs.getPrefs(this);
 
-        if (prefs.getBoolean("prefAddShortcut", true)) {
+        if (prefs.getBoolean(Prefs.ADD_SHORTCUT, true)) {
             Themes.updateLauncherIcon(this);
-            prefs.edit().putBoolean("prefAddShortcut", false).apply();
+            prefs.edit().putBoolean(Prefs.ADD_SHORTCUT, false).apply();
         }
         finish();
     }
@@ -73,13 +72,10 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public static class PrefFragment extends PreferenceFragment {
-
         @Override
         public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.prefs);
-
-            final Context context = getActivity();
         }
     }
 }

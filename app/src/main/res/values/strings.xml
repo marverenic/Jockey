@@ -61,9 +61,9 @@
     <string name="hint_playlist_name">Playlist name</string>
 
     <!-- First start Strings -->
-    <string name="first_launch_title">A word about privacy</string>
-    <string name="first_launch_detail"><![CDATA[By using Jockey, you agree to send anonymous crash
-        reports.
+    <string name="first_launch_title">Welcome to Jockey</string>
+    <string name="first_launch_detail"><![CDATA[By using this application, you agree to send
+        anonymous crash reports.
         <br /><br />All data collected is purely anonymous and helps greatly to improve Jockey.
         This information will kept confidential with Marverenic and is subject to the
         <a href="http://try.crashlytics.com/terms/">Crashlytics privacy policy</a>]]>.
@@ -191,9 +191,9 @@
     <string name="use_mobile">Use mobile data</string>
     <string name="use_mobile_description_on">Album artwork and other data will be always be downloaded</string>
     <string name="use_mobile_description_off">Album artwork and other data will only be downloaded on Wi-Fi networks</string>
-    <string name="enable_additional_logging">Help improve Jockey by sending anonymous usage data</string>
-    <string name="logging_on">Anonymous information about how you use Jockey will be sent to the developer</string>
-    <string name="logging_off">Only anonymous crash information will be sent to the developer</string>
+    <string name="enable_additional_logging_detailed">Help make Jockey better by sending anonymous usage data</string>
+    <string name="logging_on">Anonymous usage data and crash information will be sent to Marverenic</string>
+    <string name="logging_off">Only anonymous crash information will be sent to Marverenic</string>
     <string name="logging_description">Help improve Jockey</string>
 
     <!-- Auto playlist Strings -->

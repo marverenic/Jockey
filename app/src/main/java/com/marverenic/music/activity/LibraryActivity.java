@@ -3,7 +3,6 @@ package com.marverenic.music.activity;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
@@ -29,6 +28,7 @@ import com.marverenic.music.fragments.GenreFragment;
 import com.marverenic.music.fragments.PlaylistFragment;
 import com.marverenic.music.fragments.SongFragment;
 import com.marverenic.music.utils.Navigate;
+import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.utils.Updater;
 import com.marverenic.music.view.FABMenu;
@@ -49,8 +49,8 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
 
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        int page = Integer.parseInt(prefs.getString("prefDefaultPage", "1"));
+        SharedPreferences prefs = Prefs.getPrefs(this);
+        int page = Integer.parseInt(prefs.getString(Prefs.DEFAULT_PAGE, "1"));
         if (page != 0 || !Library.hasRWPermission(this)) fab.setVisibility(View.GONE);
 
         adapter = new PagerAdapter(getSupportFragmentManager());
@@ -163,6 +163,7 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Themes.getAccent());
                 }
                 else{
+                    //noinspection deprecation
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
                             getResources().getColor((Themes.isLight(LibraryActivity.this)
                                     ? R.color.secondary_text_disabled_material_light

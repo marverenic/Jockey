@@ -11,7 +11,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StyleRes;
 import android.util.DisplayMetrics;
@@ -44,12 +43,10 @@ public class Themes {
         return accent;
     }
 
-    @Deprecated
     public static int getListText() {
         return listText;
     }
 
-    @Deprecated
     public static int getDetailText() {
         return detailText;
     }
@@ -66,17 +63,18 @@ public class Themes {
         return backgroundMiniplayer;
     }
 
+    @SuppressWarnings("deprecation")
     public static boolean isLight(Context context) {
         return background == context.getResources().getColor(R.color.background);
     }
 
     // Update method
+    @SuppressWarnings("deprecation")
     public static void updateColors(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-
+        SharedPreferences prefs = Prefs.getPrefs(context);
         Resources resources = context.getResources();
 
-        switch (Integer.parseInt(prefs.getString("prefColorPrimary", "5"))) {
+        switch (Integer.parseInt(prefs.getString(Prefs.PRIMARY_COLOR, "5"))) {
             case 0: //Black
                 primary = resources.getColor(R.color.primary_grey);
                 primaryDark = resources.getColor(R.color.primary_dark_grey);
@@ -133,9 +131,10 @@ public class Themes {
     }
 
     public static @StyleRes int getTheme(Context context) {
-        int base = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("prefBaseTheme", "1"));
+        SharedPreferences prefs = Prefs.getPrefs(context);
+        int base = Integer.parseInt(prefs.getString(Prefs.BASE_COLOR, "1"));
+        int primary = Integer.parseInt(prefs.getString(Prefs.PRIMARY_COLOR, "1"));
 
-        int primary = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("prefColorPrimary", "5"));
         if (base == 1) {
             // Light Base
             switch (primary) {
@@ -175,10 +174,11 @@ public class Themes {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public static void setTheme(Activity activity) {
         updateColors(activity);
-
         activity.setTheme(getTheme(activity));
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription(activity.getResources().getString(R.string.app_name), getIcon(activity), primary);
             activity.setTaskDescription(taskDescription);
@@ -195,22 +195,7 @@ public class Themes {
     }
 
     public static Bitmap getIcon(Context context) {
-        switch (Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("prefColorPrimary", "5"))) {
-            case 0:
-                return BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher_grey);
-            case 1:
-                return BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher_red);
-            case 2:
-                return BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher_orange);
-            case 3:
-                return BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher_yellow);
-            case 4:
-                return BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher_green);
-            case 6:
-                return BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher_purple);
-            default:
-                return BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher);
-        }
+        return BitmapFactory.decodeResource(context.getResources(), getIconId(context));
     }
 
     public static Bitmap getLargeIcon(Context context, int density) {
@@ -245,7 +230,7 @@ public class Themes {
     }
 
     public static @DrawableRes int getIconId(Context context) {
-        switch (Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("prefColorPrimary", "5"))) {
+        switch (Integer.parseInt(Prefs.getPrefs(context).getString(Prefs.PRIMARY_COLOR, "5"))) {
             case 0:
                 return R.drawable.ic_launcher_grey;
             case 1:

@@ -1,8 +1,6 @@
 package com.marverenic.music.instances.viewholder;
 
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +20,7 @@ import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Navigate;
+import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Themes;
 
 import java.util.ArrayList;
@@ -93,8 +92,7 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                     PlayerController.setQueue(songList, songList.indexOf(reference));
                     PlayerController.begin();
 
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(itemView.getContext());
-                    if (prefs.getBoolean("prefSwitchToNowPlaying", true))
+                    if (Prefs.getPrefs(itemView.getContext()).getBoolean(Prefs.SWITCH_TO_PLAYING, true))
                         Navigate.to(itemView.getContext(), NowPlayingActivity.class);
                 }
                 break;

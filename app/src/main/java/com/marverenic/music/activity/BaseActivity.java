@@ -73,7 +73,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
             message.setMovementMethod(LinkMovementMethod.getInstance());
 
             pref.setChecked(true);
-            pref.setText(R.string.enable_additional_logging);
+            pref.setText(R.string.enable_additional_logging_detailed);
 
             AlertDialog privacyDialog = new AlertDialog.Builder(this)
                     .setTitle(R.string.first_launch_title)

@@ -3,12 +3,8 @@ package com.marverenic.music.utils;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
@@ -53,13 +49,7 @@ public class Updater extends AsyncTask<Void, Void, String[]> {
         hasRun = true;
 
         // Check with a URL to see if Jockey has an update
-        ConnectivityManager network = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        NetworkInfo info = network.getActiveNetworkInfo();
-
-        // Only check for an update if a valid network is present
-        if(info != null && info.isAvailable() && !info.isRoaming() && (prefs.getBoolean("prefUseMobileData", true) || info.getType() != ConnectivityManager.TYPE_MOBILE)) {
-
+        if(Prefs.allowNetwork(context)) {
             try {
                 URL versionURL = new URL("https://raw.githubusercontent.com/marverenic/Jockey/build/" + CHANNEL + "/version");
                 BufferedReader in = new BufferedReader(new InputStreamReader(versionURL.openStream()));

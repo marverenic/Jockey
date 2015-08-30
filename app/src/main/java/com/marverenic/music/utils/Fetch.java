@@ -1,13 +1,10 @@
 package com.marverenic.music.utils;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
-import android.net.ConnectivityManager;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 
@@ -87,13 +84,8 @@ public class Fetch {
                 || artistName.equalsIgnoreCase(context.getString(R.string.various_artists))) return null;
         if (!lastFmInitialized) initLastFm(context);
 
-        ConnectivityManager network = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-
         // Only get the bio if a valid network is present
-        if(network.getActiveNetworkInfo() != null && network.getActiveNetworkInfo().isAvailable() && !network.getActiveNetworkInfo().isRoaming()
-                && (prefs.getBoolean("prefUseMobileData", true) || network.getActiveNetworkInfo().getType() != ConnectivityManager.TYPE_MOBILE)) {
-
+        if(Prefs.allowNetwork(context)) {
             return  Artist.getInfo(artistName, API_KEY);
         }
         return null;
