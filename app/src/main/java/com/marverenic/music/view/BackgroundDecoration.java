@@ -1,10 +1,14 @@
 package com.marverenic.music.view;
 
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.NinePatchDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
+import com.marverenic.music.R;
 
 /**
  * An {@link android.support.v7.widget.RecyclerView.ItemDecoration} that draws a solid color behind
@@ -13,6 +17,7 @@ import android.view.View;
 public class BackgroundDecoration extends RecyclerView.ItemDecoration {
 
     private Drawable mBackground;
+    private NinePatchDrawable mShadow;
     private int[] excludedIDs;
 
     /**
@@ -39,23 +44,39 @@ public class BackgroundDecoration extends RecyclerView.ItemDecoration {
         int left = parent.getPaddingLeft();
         int right = parent.getWidth() - parent.getPaddingRight();
 
+        if (mShadow == null){
+            //noinspection deprecation
+            mShadow = (NinePatchDrawable) parent.getContext().getResources()
+                    .getDrawable(R.drawable.list_shadow);
+        }
+
+        Rect shadowPadding = new Rect();
+        mShadow.getPadding(shadowPadding);
+
         if (excludedIDs == null) {
             int top = 0;
             int bottom = c.getHeight();
 
             mBackground.setBounds(left, top, right, bottom);
             mBackground.draw(c);
+
+            mShadow.setBounds(left - shadowPadding.left, top - shadowPadding.top,
+                    right + shadowPadding.right, bottom + shadowPadding.bottom);
+            mShadow.draw(c);
         }
         else{
             int layoutCount = parent.getChildCount();
             for (int i = 0; i < layoutCount; i++){
                 View topView = parent.getChildAt(i);
                 if (includeView(topView.getId())) {
-                    // Find the last view in this section that will receive a background
-                    View bottomView = topView;
-                    while(++i < layoutCount && includeView(bottomView.getId())){
-                        bottomView = parent.getChildAt(i);
+
+                    //noinspection StatementWithEmptyBody
+                    while(++i < layoutCount && includeView(parent.getChildAt(i).getId())){
+                        // Find the last view in this section that will receive a background
+                        // This loop is intentionally left empty
                     }
+
+                    View bottomView = parent.getChildAt(--i);
 
                     RecyclerView.LayoutParams topParams = (RecyclerView.LayoutParams) topView.getLayoutParams();
                     RecyclerView.LayoutParams bottomParams = (RecyclerView.LayoutParams) bottomView.getLayoutParams();
@@ -67,6 +88,10 @@ public class BackgroundDecoration extends RecyclerView.ItemDecoration {
 
                     mBackground.setBounds(left, top, right, bottom);
                     mBackground.draw(c);
+
+                    mShadow.setBounds(left - shadowPadding.left, top - shadowPadding.top,
+                            right + shadowPadding.right, bottom + shadowPadding.bottom);
+                    mShadow.draw(c);
                 }
             }
         }
