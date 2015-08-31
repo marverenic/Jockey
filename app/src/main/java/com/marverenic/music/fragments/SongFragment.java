@@ -57,7 +57,8 @@ public class SongFragment extends Fragment {
                     return new SongViewHolder(
                             LayoutInflater
                                     .from(viewGroup.getContext())
-                                    .inflate(R.layout.instance_song, viewGroup, false));
+                                    .inflate(R.layout.instance_song, viewGroup, false),
+                            Library.getSongs());
             }
         }
 

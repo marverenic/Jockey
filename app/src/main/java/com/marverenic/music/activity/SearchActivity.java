@@ -325,9 +325,10 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 case PLAYLIST_VIEW:
                     return new PlaylistViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.instance_playlist, parent, false));
                 case SONG_VIEW:
-                    SongViewHolder songViewHolder = new SongViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.instance_song, parent, false));
-                    songViewHolder.setSongList(songResults);
-                    return songViewHolder;
+                    return new SongViewHolder(
+                            LayoutInflater.from(parent.getContext())
+                                    .inflate(R.layout.instance_song, parent, false),
+                            songResults);
                 case ALBUM_VIEW:
                     return new AlbumViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.instance_album, parent, false));
                 case ARTIST_VIEW:

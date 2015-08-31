@@ -47,9 +47,10 @@ public class AlbumActivity extends BaseActivity {
 
         @Override
         public SongViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-            SongViewHolder viewHolder = new SongViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.instance_song, viewGroup, false));
-            viewHolder.setSongList(data);
-            return viewHolder;
+            return new SongViewHolder(
+                    LayoutInflater.from(viewGroup.getContext())
+                            .inflate(R.layout.instance_song, viewGroup, false),
+                    data);
         }
 
         @Override

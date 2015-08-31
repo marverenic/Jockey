@@ -36,9 +36,10 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
     private View.OnClickListener customListener;
 
-    public SongViewHolder(View itemView) {
+    public SongViewHolder(View itemView, ArrayList<Song> songList) {
         super(itemView);
         this.itemView = itemView;
+        this.songList = songList;
 
         songName = (TextView) itemView.findViewById(R.id.instanceTitle);
         detailText = (TextView) itemView.findViewById(R.id.instanceDetail);
@@ -47,10 +48,6 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         itemView.setOnClickListener(this);
         moreButton.setOnClickListener(this);
         moreButton.setColorFilter(Themes.getListText());
-    }
-
-    public void setSongList(ArrayList<Song> songList){
-        this.songList = songList;
     }
 
     public void update(Song s){

@@ -221,13 +221,10 @@ public class PlaylistActivity extends BaseActivity {
                             PlaylistActivity.this);
                 case SONG:
                 default:
-                    DraggableSongViewHolder viewHolder = new DraggableSongViewHolder(
-                            LayoutInflater
-                                    .from(viewGroup.getContext())
-                                    .inflate(R.layout.instance_song_drag, viewGroup, false));
-
-                    viewHolder.setSongList(data);
-                    return viewHolder;
+                    return new DraggableSongViewHolder(
+                            LayoutInflater.from(viewGroup.getContext())
+                                    .inflate(R.layout.instance_song_drag, viewGroup, false),
+                            data);
             }
         }
 

@@ -188,9 +188,10 @@ public class ArtistActivity extends BaseActivity {
                 case ALBUM_INSTANCE:
                     return new AlbumViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.instance_album, parent, false));
                 case SONG_INSTANCE:
-                    SongViewHolder viewHolder = new SongViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.instance_song, parent, false));
-                    viewHolder.setSongList(songs);
-                    return viewHolder;
+                    return new SongViewHolder(
+                            LayoutInflater.from(parent.getContext())
+                                    .inflate(R.layout.instance_song, parent, false),
+                            songs);
                 default:
                     return null;
             }

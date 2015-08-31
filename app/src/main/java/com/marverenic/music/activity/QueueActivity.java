@@ -182,8 +182,12 @@ public class QueueActivity extends BaseActivity {
 
         @Override
         public DraggableSongViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-            DraggableSongViewHolder viewHolder = new DraggableSongViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.instance_song_drag, viewGroup, false));
-            viewHolder.setSongList(data);
+            DraggableSongViewHolder viewHolder = new DraggableSongViewHolder(
+                    LayoutInflater
+                            .from(viewGroup.getContext())
+                            .inflate(R.layout.instance_song_drag, viewGroup, false),
+                    data);
+
             viewHolder.setClickListener(this);
             return viewHolder;
         }
