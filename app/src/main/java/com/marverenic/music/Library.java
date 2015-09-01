@@ -2,7 +2,6 @@ package com.marverenic.music;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -14,6 +13,7 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.util.SparseIntArray;
 import android.view.View;
 
@@ -24,6 +24,7 @@ import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Genre;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
+import com.marverenic.music.utils.Themes;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -1097,7 +1098,7 @@ public class Library {
         // Public method to add a song to a playlist
         // Checks the playlist for duplicate entries
         if (getPlaylistEntries(context, playlist).contains(song)){
-            new AlertDialog.Builder(context)
+            AlertDialog dialog = new AlertDialog.Builder(context)
                     .setTitle(context.getResources().getQuantityString(R.plurals.alert_confirm_duplicates, 1))
                     .setMessage(context.getString(R.string.playlist_confirm_duplicate, playlist, song))
                     .setPositiveButton(R.string.action_add, new DialogInterface.OnClickListener() {
@@ -1108,6 +1109,8 @@ public class Library {
                     })
                     .setNegativeButton(R.string.action_cancel, null)
                     .show();
+
+            Themes.themeAlertDialog(dialog);
         }
         else{
             addSongToEndOfPlaylist(context, playlist, song);
@@ -1207,7 +1210,7 @@ public class Library {
                         .setNeutralButton(R.string.action_cancel, null);
             }
 
-            alert.show();
+            Themes.themeAlertDialog(alert.show());
         }
         else{
             addSongsToEndOfPlaylist(context, playlist, songs);

@@ -13,7 +13,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StyleRes;
+import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
+import android.widget.Button;
 
 import com.marverenic.music.R;
 import com.marverenic.music.activity.LibraryActivity;
@@ -246,6 +248,16 @@ public class Themes {
             default:
                 return R.drawable.ic_launcher;
         }
+    }
+
+    public static void themeAlertDialog(AlertDialog dialog){
+        Button positive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        Button negative = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+        Button neutral = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
+
+        if (positive != null) positive.setTextColor(getAccent());
+        if (negative != null) negative.setTextColor(getAccent());
+        if (neutral != null) neutral.setTextColor(getAccent());
     }
 
     public static void updateLauncherIcon(Context context) {

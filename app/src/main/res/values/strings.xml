@@ -53,6 +53,7 @@
     <string name="action_agree">Agree</string>
     <string name="action_try_again">Try again</string>
     <string name="action_open_settings">Open settings</string>
+    <string name="action_make_new_playlist">Make new playlist&#8230;</string>
 
     <!-- Content Descriptions (for accessibility) -->
     <string name="description_album_art">Album Art</string>

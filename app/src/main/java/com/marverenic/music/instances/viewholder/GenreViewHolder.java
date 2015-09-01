@@ -1,8 +1,6 @@
 package com.marverenic.music.instances.viewholder;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
@@ -17,11 +15,9 @@ import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.GenreActivity;
 import com.marverenic.music.instances.Genre;
-import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.utils.Navigate;
+import com.marverenic.music.utils.PlaylistDialog;
 import com.marverenic.music.utils.Themes;
-
-import java.util.ArrayList;
 
 public class GenreViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener{
 
@@ -76,29 +72,11 @@ public class GenreViewHolder extends RecyclerView.ViewHolder implements View.OnC
                 PlayerController.queueLast(Library.getGenreEntries(reference));
                 return true;
             case 2: //Add to playlist
-                ArrayList<Playlist> playlists = Library.getPlaylists();
-                String[] playlistNames = new String[playlists.size()];
-
-                for (int i = 0; i < playlists.size(); i++ ){
-                    playlistNames[i] = playlists.get(i).toString();
-                }
-
-                AlertDialog playlistDialog = new AlertDialog.Builder(context)
-                        .setTitle(context.getString(R.string.header_add_song_name_to_playlist, reference.genreName))
-                        .setItems(playlistNames, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Library.addPlaylistEntries(
-                                        itemView,
-                                        Library.getPlaylists().get(which),
-                                        Library.getGenreEntries(reference));
-                            }
-                        })
-                        .setNegativeButton(R.string.action_cancel, null)
-                        .show();
-
-                playlistDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Themes.getAccent());
-
+                PlaylistDialog.AddToNormal.alert(
+                        itemView,
+                        Library.getGenreEntries(reference),
+                        itemView.getContext()
+                                .getString(R.string.header_add_song_name_to_playlist, reference));
                 return true;
         }
         return false;
