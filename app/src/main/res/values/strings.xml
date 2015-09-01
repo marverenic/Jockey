@@ -138,6 +138,7 @@
     <string name="message_added_song">Added \"%1$s\" to \"%2$s\"</string>
     <string name="message_created_playlist">Created playlist \"%1$s\"</string>
     <string name="message_removed_playlist">Deleted playlist \"%1$s\"</string>
+    <string name="message_removed_song">Removed song \"%1$s\"</string>
     <string name="message_create_playlist_error_exists">Couldn\'t create playlist \"%1$s\" because
         it already exists</string>
     <string name="message_sorted_playlist_name">Sorted \"%1$s\" by name</string>
@@ -222,6 +223,13 @@
         <item>Go to artist</item>
         <item>Go to album</item>
         <item>Add to playlist&#8230;</item>
+    </string-array>
+    <string-array name="queue_options_song_playlist">
+        <item>Queue next</item>
+        <item>Queue last</item>
+        <item>Go to artist</item>
+        <item>Go to album</item>
+        <item>Remove</item>
     </string-array>
     <string-array name="queue_options_album">
         <item>Queue next</item>

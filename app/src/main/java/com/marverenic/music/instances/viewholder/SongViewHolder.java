@@ -1,5 +1,6 @@
 package com.marverenic.music.instances.viewholder;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
@@ -15,6 +16,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
+import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.PlaylistDialog;
@@ -30,9 +32,15 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     private TextView detailText;
     private ImageView moreButton;
     private Song reference;
+    private Playlist playlistReference;
+    private OnRemovedListener removalListener;
     private ArrayList<Song> songList;
 
     private View.OnClickListener customListener;
+
+    public interface OnRemovedListener{
+        void onSongRemoved(View view, Song song);
+    }
 
     public SongViewHolder(View itemView, ArrayList<Song> songList) {
         super(itemView);
@@ -46,6 +54,12 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         itemView.setOnClickListener(this);
         moreButton.setOnClickListener(this);
         moreButton.setColorFilter(Themes.getListText());
+    }
+
+    public void setPlaylist(@NonNull Playlist playlist, @NonNull OnRemovedListener listener){
+        // Set a playlist for this viewholder to add a remove button to the context menu
+        this.playlistReference = playlist;
+        this.removalListener = listener;
     }
 
     public void update(Song s){
@@ -71,7 +85,12 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         switch (v.getId()){
             case R.id.instanceMore:
                 final PopupMenu menu = new PopupMenu(itemView.getContext(), v, Gravity.END);
-                String[] options = itemView.getResources().getStringArray(R.array.queue_options_song);
+                String[] options = itemView.getResources()
+                        .getStringArray(
+                                (playlistReference == null)
+                                        ? R.array.queue_options_song
+                                        : R.array.queue_options_song_playlist);
+
                 for (int i = 0; i < options.length;  i++) {
                     menu.getMenu().add(Menu.NONE, i, i, options[i]);
                 }
@@ -117,9 +136,13 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                         AlbumActivity.ALBUM_EXTRA,
                         Library.findAlbumById(reference.albumId));
                 return true;
-            case 4: //Add to playlist...
-                PlaylistDialog.AddToNormal.alert(itemView, reference, itemView.getContext()
-                                .getString(R.string.header_add_song_name_to_playlist, reference));
+            case 4:
+                if (playlistReference == null) { //Add to playlist...
+                    PlaylistDialog.AddToNormal.alert(itemView, reference, itemView.getContext()
+                            .getString(R.string.header_add_song_name_to_playlist, reference));
+                } else { // Remove
+                    removalListener.onSongRemoved(itemView, reference);
+                }
                 return true;
         }
         return false;

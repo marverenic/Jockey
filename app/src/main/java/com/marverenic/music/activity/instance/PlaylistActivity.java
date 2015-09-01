@@ -22,6 +22,7 @@ import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.viewholder.DraggableSongViewHolder;
 import com.marverenic.music.instances.viewholder.EmptyStateViewHolder;
+import com.marverenic.music.instances.viewholder.SongViewHolder;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
@@ -200,7 +201,7 @@ public class PlaylistActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements DraggableItemAdapter<DraggableSongViewHolder> {
+    public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements DraggableItemAdapter<DraggableSongViewHolder>, SongViewHolder.OnRemovedListener {
 
         public static final int EMPTY = 0;
         public static final int SONG = 1;
@@ -221,10 +222,15 @@ public class PlaylistActivity extends BaseActivity {
                             PlaylistActivity.this);
                 case SONG:
                 default:
-                    return new DraggableSongViewHolder(
+                    DraggableSongViewHolder vh = new DraggableSongViewHolder(
                             LayoutInflater.from(viewGroup.getContext())
                                     .inflate(R.layout.instance_song_drag, viewGroup, false),
                             data);
+                    if (!(reference instanceof AutoPlaylist)) {
+                        vh.setPlaylist(reference, this);
+                    }
+
+                    return vh;
             }
         }
 
@@ -290,6 +296,36 @@ public class PlaylistActivity extends BaseActivity {
 
             data.add(to, data.remove(from));
             Library.editPlaylist(PlaylistActivity.this, reference, data);
+        }
+
+        @Override
+        public void onSongRemoved(View view, final Song song) {
+            RecyclerView recyclerView = (RecyclerView) view.getParent();
+            final int position = recyclerView.getChildAdapterPosition(view);
+
+            data.remove(position);
+
+            Library.editPlaylist(PlaylistActivity.this, reference, data);
+            notifyItemRemoved(position);
+
+            Snackbar
+                    .make(
+                            view,
+                            getResources().getString(R.string.message_removed_song, song.songName),
+                            Snackbar.LENGTH_LONG)
+                    .setAction(R.string.action_undo, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            data.add(position, song);
+                            Library.editPlaylist(PlaylistActivity.this, reference, data);
+                            if (data.size() > 1) {
+                                notifyItemInserted(position);
+                            } else {
+                                notifyItemChanged(position);
+                            }
+                        }
+                    })
+                    .show();
         }
     }
 
