@@ -67,7 +67,7 @@
             android:src="@drawable/ic_add_36dp"
             app:rippleColor="#8fff"
             app:fabSize="normal"
-            app:borderWidth="0dp"/>
+            app:layout_behavior="com.marverenic.music.view.FABMenu$Behavior"/>
 
     </android.support.design.widget.CoordinatorLayout>
 

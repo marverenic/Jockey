@@ -15,6 +15,7 @@
     <color name="list_text">@color/primary_text_default_material_light</color>
     <color name="detail_text">@color/secondary_text_default_material_light</color>
     <color name="background">#EEEEEE</color>
+    <color name="screen_overlay">#CCFFFFFF</color>
     <color name="background_elevated">#F5F5F5</color>
     <color name="background_miniplayer">#FAFAFA</color>
 
@@ -22,6 +23,7 @@
     <color name="list_text_dark">@color/primary_text_default_material_dark</color>
     <color name="detail_text_dark">@color/secondary_text_default_material_dark</color>
     <color name="background_dark">#212121</color>
+    <color name="screen_overlay_dark">#CC212121</color>
     <color name="background_elevated_dark">#333333</color>
     <color name="background_miniplayer_dark">#424242</color>
 

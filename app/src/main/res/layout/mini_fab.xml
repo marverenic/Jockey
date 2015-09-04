@@ -12,4 +12,4 @@
     app:backgroundTint="@color/background_miniplayer"
     app:rippleColor="?attr/colorAccent"
     app:fabSize="mini"
-    app:borderWidth="0dp" />
+    app:layout_behavior=""/>

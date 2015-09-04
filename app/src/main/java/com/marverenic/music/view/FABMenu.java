@@ -5,6 +5,8 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,9 +18,11 @@ import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Transformation;
 import android.view.animation.TranslateAnimation;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.marverenic.music.R;
+import com.marverenic.music.utils.Themes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,37 +31,54 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
 
     private static final String TAG = "FABMenu";
 
+    private FrameLayout screen;
     private final List<FloatingActionButton> children = new ArrayList<>();
     private final List<TextView> labels = new ArrayList<>();
-    private final List<String> childNames = new ArrayList<>();
     private boolean childrenVisible = false;
 
     public FABMenu(Context context) {
         super(context);
         setOnClickListener(this);
+        buildScreen(context);
     }
 
     public FABMenu(Context context, AttributeSet attrs) {
         super(context, attrs);
         setOnClickListener(this);
+        buildScreen(context);
     }
 
     public FABMenu(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setOnClickListener(this);
+        buildScreen(context);
+    }
+
+    private void buildScreen(Context context) {
+        screen = new FrameLayout(context);
+        screen.setLayoutParams(
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT));
+
+        //noinspection deprecation
+        screen.setBackgroundColor(
+                Themes.isLight(context)
+                        ? context.getResources().getColor(R.color.screen_overlay)
+                        : context.getResources().getColor(R.color.screen_overlay_dark));
+
+        screen.setOnClickListener(this);
     }
 
     public void addChild(@DrawableRes int icon, OnClickListener onClickListener, String label){
         children.add(buildChild(icon, onClickListener, label));
         labels.add(buildChildLabel(label));
-        childNames.add(label);
     }
 
     public void addChild(@DrawableRes int icon, OnClickListener onClickListener, @StringRes int label){
         final String name = getResources().getString(label);
         children.add(buildChild(icon, onClickListener, name));
         labels.add(buildChildLabel(name));
-        childNames.add(name);
     }
 
     private FloatingActionButton buildChild(@DrawableRes int icon, final OnClickListener onClickListener, String label){
@@ -91,6 +112,16 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
             Log.e(TAG, "Parent must be a CoordinatorLayout to properly set margin");
         }
 
+        // When children aren't visible on screen, remove them from the view hierarchy completely
+        // If we don't do this, then the FloatingActionButton Behaviors conflict for some reason
+        // and Snackbars won't slide the FAB up which is kind of an important detail.
+        //
+        // FABMenu.Behavior takes care of some of the left over discrepancies like overlapping FAB's
+        //
+        // Additionally, the screen is functionally important because it prevents the user
+        // from doing something that could generate a Snackbar when the FAB's are visible
+        // which can cause the main FAB to be overlapped.
+        ((ViewGroup) button.getParent()).removeView(button);
         return button;
     }
 
@@ -118,6 +149,7 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
             Log.e(TAG, "Parent must be a CoordinatorLayout to properly set margin");
         }
 
+        ((ViewGroup) label.getParent()).removeView(label);
         return label;
     }
 
@@ -155,12 +187,13 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
     }
 
     public void showChildren(){
+        if (childrenVisible) return;
         childrenVisible = true;
 
         // Start a sliding animation on each child
         for (int i = 0; i < children.size(); i++) {
             final FloatingActionButton child = children.get(i);
-            final TextView label = labels.get(i);
+            ((ViewGroup) getParent()).addView(child);
 
             final float padding = getResources().getDimension(R.dimen.fab_margin);
             final float dpScale = getResources().getDisplayMetrics().density;
@@ -191,6 +224,7 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
                 fadeAnim.setInterpolator(getContext(), android.R.interpolator.decelerate_quint);
 
                 for (TextView l : labels) {
+                    ((ViewGroup) getParent()).addView(l);
                     l.setVisibility(VISIBLE);
                     l.startAnimation(fadeAnim);
                 }
@@ -208,9 +242,18 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
         rotateAnim.setDuration(300);
 
         startAnimation(rotateAnim);
+
+        // Make the list inactive by showing a screen over it
+        ((ViewGroup) getParent()).addView(screen);
+        AlphaAnimation fadeAnimation = new AlphaAnimation(0, 1);
+        fadeAnimation.setInterpolator(getContext(), android.R.interpolator.decelerate_quint);
+        fadeAnimation.setDuration(300);
+
+        screen.startAnimation(fadeAnimation);
     }
 
     public void hideChildren(){
+        if (!childrenVisible) return;
         childrenVisible = false;
 
         Animation fabAnim = AnimationUtils.loadAnimation(getContext(), R.anim.fab_out);
@@ -228,16 +271,20 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
             l.startAnimation(labelAnim);
         }
 
-        // Make sure to hide the FABs after the animation finishes
+        // Make sure to hide the FABs and screen after the animation finishes
         postDelayed(new Runnable() {
             @Override
             public void run() {
                 for (FloatingActionButton c : children) {
                     c.setVisibility(GONE);
+                    ((ViewGroup) c.getParent()).removeView(c);
                 }
                 for (TextView l : labels){
                     l.setVisibility(GONE);
+                    ((ViewGroup) l.getParent()).removeView(l);
                 }
+
+                ((ViewGroup) screen.getParent()).removeView(screen);
             }
         }, 300);
 
@@ -252,15 +299,81 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
         slideAnim.setDuration(300);
 
         startAnimation(slideAnim);
+
+        // Make the list active again by removing the screen over it
+        AlphaAnimation fadeAnimation = new AlphaAnimation(1, 0);
+        fadeAnimation.setInterpolator(getContext(), android.R.interpolator.accelerate_quint);
+        fadeAnimation.setDuration(300);
+
+        screen.startAnimation(fadeAnimation);
     }
 
     @Override
     public void onClick(View v) {
-        if (childrenVisible){
+        if (v == this) {
+            if (childrenVisible) {
+                hideChildren();
+            } else {
+                showChildren();
+            }
+        } else if (v == screen) {
             hideChildren();
         }
-        else{
-            showChildren();
+    }
+
+    // A lot of code here is copied from FloatingActionButton.Behavior because I can't override the
+    // methods since Google made them private. The only code that's actually functionally different
+    // is in updateFabTranslationForSnackbar( ... )
+    public static class Behavior extends FloatingActionButton.Behavior {
+
+        public Behavior () {
+            super();
+        }
+
+        public Behavior (Context context, AttributeSet attrs) {
+            super();
+        }
+
+        @Override
+        public boolean onDependentViewChanged(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
+            if(dependency instanceof Snackbar.SnackbarLayout) {
+                updateFabTranslationForSnackbar(parent, child, dependency);
+                return false;
+            } else{
+                return super.onDependentViewChanged(parent, child, dependency);
+            }
+        }
+
+        private void updateFabTranslationForSnackbar(CoordinatorLayout parent, FloatingActionButton fab, View snackbar) {
+            if(fab.getVisibility() == VISIBLE) {
+                float translationY = this.getFabTranslationYForSnackbar(parent, fab);
+                ViewCompat.setTranslationY(fab, translationY);
+
+
+                // The only thing I actually wanted to modify:
+                for (FloatingActionButton child : ((FABMenu) fab).children){
+                    ViewCompat.setTranslationY(child, translationY);
+                }
+
+                for (TextView label : ((FABMenu) fab).labels){
+                    ViewCompat.setTranslationY(label, translationY);
+                }
+            }
+        }
+
+        private float getFabTranslationYForSnackbar(CoordinatorLayout parent, FloatingActionButton fab) {
+            float minOffset = 0.0F;
+            List dependencies = parent.getDependencies(fab);
+            int i = 0;
+
+            for(int z = dependencies.size(); i < z; ++i) {
+                View view = (View)dependencies.get(i);
+                if(view instanceof Snackbar.SnackbarLayout && parent.doViewsOverlap(fab, view)) {
+                    minOffset = Math.min(minOffset, ViewCompat.getTranslationY(view) - (float)view.getHeight());
+                }
+            }
+
+            return minOffset;
         }
     }
 }
