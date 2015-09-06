@@ -1,6 +1,7 @@
 package com.marverenic.music;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -171,6 +172,7 @@ public class Library {
     //          PERMISSION METHODS
     //
 
+    @TargetApi(23)
     public static boolean hasRWPermission(Context context){
         return Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
                 context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -179,6 +181,7 @@ public class Library {
                         == PackageManager.PERMISSION_GRANTED;
     }
 
+    @TargetApi(23)
     public static void requestRWPermission(Activity activity){
         activity.requestPermissions(
                 new String[]{

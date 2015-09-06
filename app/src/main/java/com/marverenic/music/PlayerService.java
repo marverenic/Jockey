@@ -7,7 +7,9 @@ import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -250,14 +252,15 @@ public class PlayerService extends Service {
         }
 
         // Build the notification
-        Notification.Builder builder = new Notification.Builder(this)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(
                         (player.isPlaying() || player.isPreparing())
                                 ? R.drawable.ic_play_arrow_24dp
                                 : R.drawable.ic_pause_24dp)
                 .setOnlyAlertOnce(true)
                 .setOngoing(true)
-                .setPriority(Notification.PRIORITY_LOW)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setCategory(NotificationCompat.CATEGORY_TRANSPORT)
                 .setContentIntent(PendingIntent.getActivity(this, 0,
                         new Intent(this, LibraryActivity.class),
                         PendingIntent.FLAG_UPDATE_CURRENT));
@@ -266,7 +269,9 @@ public class PlayerService extends Service {
 
         // Manually set the expanded and compact views
         notification.contentView = notificationView;
-        notification.bigContentView = notificationViewExpanded;
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+            notification.bigContentView = notificationViewExpanded;
+        }
 
         startForeground(NOTIFICATION_ID, notification);
     }
