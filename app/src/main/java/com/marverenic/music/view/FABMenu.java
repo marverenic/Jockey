@@ -1,6 +1,7 @@
 package com.marverenic.music.view;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
@@ -35,6 +36,7 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
     private final List<FloatingActionButton> children = new ArrayList<>();
     private final List<TextView> labels = new ArrayList<>();
     private boolean childrenVisible = false;
+    private Runnable delayedRunnable;
 
     public FABMenu(Context context) {
         super(context);
@@ -105,6 +107,18 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
             CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) button.getLayoutParams();
             params.rightMargin += padding;
             params.bottomMargin = (int) (56 * dpScale + padding * (2 + children.size()) + 40 * dpScale * children.size());
+
+            // For some reason, the children are 12dp higher and 18dp further to the left on pre-L
+            // devices than on L+ devices. I don't know for sure what causes this (I suspect it's
+            // the drop shadow or elevation compatibility code), but this takes care of it.
+            //
+            // There's probably a better way to fix this, but this was the easiest. If for some
+            // reason this changes in an update to one of the support libraries, just remeasure
+            // these offsets and update them here.
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                params.rightMargin -= 12 * dpScale;
+                params.bottomMargin -= 18 * dpScale;
+            }
 
             button.setLayoutParams(params);
         }
@@ -187,7 +201,7 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
     }
 
     public void showChildren(){
-        if (childrenVisible) return;
+        if (childrenVisible || delayedRunnable != null) return;
         childrenVisible = true;
 
         // Start a sliding animation on each child
@@ -216,7 +230,7 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
         }
 
         //Delay the label animation
-        postDelayed(new Runnable() {
+        delayedRunnable = new Runnable() {
             @Override
             public void run() {
                 final AlphaAnimation fadeAnim = new AlphaAnimation(0, 1);
@@ -228,8 +242,11 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
                     l.setVisibility(VISIBLE);
                     l.startAnimation(fadeAnim);
                 }
+                delayedRunnable = null;
             }
-        }, 500 + 25 * children.size());
+        };
+
+        postDelayed(delayedRunnable, 300);
 
         // Rotate the main FAB icon by 45 degrees to form a close button
         Animation rotateAnim = new Animation() {
@@ -244,7 +261,7 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
         startAnimation(rotateAnim);
 
         // Make the list inactive by showing a screen over it
-        ((ViewGroup) getParent()).addView(screen);
+        ((ViewGroup) getParent()).addView(screen, ((ViewGroup) getParent()).indexOfChild(this));
         AlphaAnimation fadeAnimation = new AlphaAnimation(0, 1);
         fadeAnimation.setInterpolator(getContext(), android.R.interpolator.decelerate_quint);
         fadeAnimation.setDuration(300);
@@ -253,7 +270,7 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
     }
 
     public void hideChildren(){
-        if (!childrenVisible) return;
+        if (!childrenVisible || delayedRunnable != null) return;
         childrenVisible = false;
 
         Animation fabAnim = AnimationUtils.loadAnimation(getContext(), R.anim.fab_out);
@@ -272,7 +289,7 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
         }
 
         // Make sure to hide the FABs and screen after the animation finishes
-        postDelayed(new Runnable() {
+        delayedRunnable = new Runnable() {
             @Override
             public void run() {
                 for (FloatingActionButton c : children) {
@@ -285,20 +302,23 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
                 }
 
                 ((ViewGroup) screen.getParent()).removeView(screen);
+
+                delayedRunnable = null;
             }
-        }, 300);
+        };
+        postDelayed(delayedRunnable, 300);
 
         // Rotate the main FAB icon by 45 degrees to invert the original rotation
-        Animation slideAnim = new Animation() {
+        Animation rotateAnim = new Animation() {
             @Override
             protected void applyTransformation(float interpolatedTime, Transformation t) {
                 setRotation(45 + 45 * interpolatedTime);
             }
         };
-        slideAnim.setInterpolator(getContext(), android.R.interpolator.decelerate_quint);
-        slideAnim.setDuration(300);
+        rotateAnim.setInterpolator(getContext(), android.R.interpolator.decelerate_quint);
+        rotateAnim.setDuration(300);
 
-        startAnimation(slideAnim);
+        startAnimation(rotateAnim);
 
         // Make the list active again by removing the screen over it
         AlphaAnimation fadeAnimation = new AlphaAnimation(1, 0);
