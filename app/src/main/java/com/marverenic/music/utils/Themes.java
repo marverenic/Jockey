@@ -135,7 +135,7 @@ public class Themes {
     public static @StyleRes int getTheme(Context context) {
         SharedPreferences prefs = Prefs.getPrefs(context);
         int base = Integer.parseInt(prefs.getString(Prefs.BASE_COLOR, "1"));
-        int primary = Integer.parseInt(prefs.getString(Prefs.PRIMARY_COLOR, "1"));
+        int primary = Integer.parseInt(prefs.getString(Prefs.PRIMARY_COLOR, "5"));
 
         if (base == 1) {
             // Light Base
