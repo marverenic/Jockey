@@ -16,7 +16,7 @@
         android:layout_width="fill_parent"
         android:layout_height="168dp"
         android:background="@drawable/skrim_now_playing"
-        android:layout_marginTop="25dp">
+        android:layout_marginTop="@dimen/skrimMargin">
 
         <include layout="@layout/toolbar"
             android:id="@+id/toolbar"
@@ -30,7 +30,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/imageArtwork"
-        android:layout_marginTop="-16dp"
+        android:layout_marginTop="@dimen/seekbarMargin"
         android:backgroundTint="@android:color/transparent"
         android:elevation="12dp"
         android:padding="0dp"
@@ -41,8 +41,7 @@
         android:id="@+id/playerControlFrame"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@id/songSeekBar"
-        android:layout_marginTop="-16dp"
+        android:layout_below="@id/imageArtwork"
         android:background="@color/player_control_background"
         android:elevation="8dp"
         android:gravity="center">
