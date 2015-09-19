@@ -1,20 +1,13 @@
 package com.marverenic.music.activity;
 
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.InputType;
-import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,14 +15,15 @@ import android.widget.Toast;
 
 import com.marverenic.music.Library;
 import com.marverenic.music.R;
+import com.marverenic.music.activity.instance.AutoPlaylistEditor;
 import com.marverenic.music.fragments.AlbumFragment;
 import com.marverenic.music.fragments.ArtistFragment;
 import com.marverenic.music.fragments.GenreFragment;
 import com.marverenic.music.fragments.PlaylistFragment;
 import com.marverenic.music.fragments.SongFragment;
 import com.marverenic.music.utils.Navigate;
+import com.marverenic.music.utils.PlaylistDialog;
 import com.marverenic.music.utils.Prefs;
-import com.marverenic.music.utils.Themes;
 import com.marverenic.music.utils.Updater;
 import com.marverenic.music.view.FABMenu;
 
@@ -104,80 +98,11 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
         super.onClick(v);
         if (v.getTag() != null) {
             if (v.getTag().equals("fab-" + getString(R.string.playlist))) {
-                createPlaylist(v);
+                PlaylistDialog.MakeNormal.alert(findViewById(R.id.coordinator_layout));
             } else if (v.getTag().equals("fab-" + getString(R.string.playlist_auto))) {
-                createAutoPlaylist(v);
+                Navigate.to(this, AutoPlaylistEditor.class, AutoPlaylistEditor.PLAYLIST_EXTRA, null);
             }
         }
-    }
-
-    private void createPlaylist(final View v){
-        final TextInputLayout layout = new TextInputLayout(this);
-        final AppCompatEditText input = new AppCompatEditText(this);
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        input.setHint(R.string.hint_playlist_name);
-        layout.addView(input);
-        layout.setErrorEnabled(true);
-
-        int padding = (int) getResources().getDimension(R.dimen.alert_padding);
-        ((View) input.getParent()).setPadding(
-                padding - input.getPaddingLeft(),
-                padding,
-                padding - input.getPaddingRight(),
-                input.getPaddingBottom());
-
-        final AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle(R.string.header_create_playlist)
-                .setView(layout)
-                .setPositiveButton(
-                        R.string.action_create,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Library.createPlaylist(v, input.getText().toString(), null);
-                            }
-                        })
-                .setNegativeButton(
-                        R.string.action_cancel,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        })
-                .show();
-
-        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Themes.getAccent());
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-
-        input.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String error = Library.verifyPlaylistName(LibraryActivity.this, s.toString());
-                layout.setError(error);
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(error == null && s.length() > 0);
-                if (error == null && s.length() > 0){
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Themes.getAccent());
-                }
-                else{
-                    //noinspection deprecation
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
-                            getResources().getColor((Themes.isLight(LibraryActivity.this)
-                                    ? R.color.secondary_text_disabled_material_light
-                                    : R.color.secondary_text_disabled_material_dark)));
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-        });
-    }
-
-    private void createAutoPlaylist(final View v){
-        //TODO
     }
 
     public class PagerAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener {

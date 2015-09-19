@@ -353,7 +353,8 @@ public class Library {
     public static ArrayList<AutoPlaylist> scanAutoPlaylists (Context context){
         // TODO read AutoPlaylists instead of inserting predefined playlists
         AutoPlaylist mostListened = new AutoPlaylist(
-                4, "Most Listened", 20, AutoPlaylist.Rule.Field.PLAY_COUNT, false, true,
+                4, "Most Listened", 20, AutoPlaylist.Rule.Field.PLAY_COUNT,
+                AutoPlaylist.Rule.Field.PLAY_COUNT, false, true,
                 new AutoPlaylist.Rule(
                         AutoPlaylist.Rule.Type.SONG,
                         AutoPlaylist.Rule.Field.PLAY_COUNT,
@@ -361,7 +362,8 @@ public class Library {
                         "0")
         );
         AutoPlaylist mostRecentlyAdded = new AutoPlaylist(
-                4, "Most Recently Added", 20, AutoPlaylist.Rule.Field.DATE_ADDED, false, true);
+                4, "Most Recently Added", 20, AutoPlaylist.Rule.Field.DATE_ADDED,
+                AutoPlaylist.Rule.Field.DATE_ADDED,  false, true);
         ArrayList<AutoPlaylist> autoPlaylists = new ArrayList<>();
         autoPlaylists.add(mostListened);
         autoPlaylists.add(mostRecentlyAdded);
@@ -1371,6 +1373,25 @@ public class Library {
         ContentResolver resolver = context.getContentResolver();
         resolver.bulkInsert(uri, values);
         resolver.notifyChange(Uri.parse("content://media"), null);
+    }
+
+    //
+    //          AUTO PLAYLIST EDIT METHODS
+    //
+
+    /**
+     * Add an {@link AutoPlaylist} to the library.
+     * @param playlist the AutoPlaylist to be added to the library. The configuration of this
+     *                 playlist will be saved so that it can be loaded when the library is next
+     *                 rescanned, and a "stale" copy with current entries will be written in the
+     *                 MediaStore so that other applications may access this playlist
+     */
+    public static void makeAutoPlaylist(AutoPlaylist playlist) {
+        // TODO
+    }
+
+    public static void editAutoPlaylist(AutoPlaylist playlist) {
+        // TODO
     }
 
     //

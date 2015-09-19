@@ -21,10 +21,21 @@ public class AutoPlaylist extends Playlist implements Parcelable {
     public static final int UNLIMITED_ENTRIES = -1;
 
     /**
+     * An empty auto playlist instance
+     */
+    public static final AutoPlaylist EMPTY =
+            new AutoPlaylist(-1, "", UNLIMITED_ENTRIES, Rule.Field.NAME, Rule.Field.NAME, true, true, Rule.EMPTY);
+
+    /**
      * How many items can be stored in this playlist. Default is unlimited
      */
+    private int maximumEntries;
 
-    private int maximumEntries = UNLIMITED_ENTRIES;
+    /**
+     * The field to look at when truncating the playlist. Must be a member of {@link Rule.Field}.
+     * {@link Rule.Field#ID} will yield a random trim
+     */
+    private int truncateMethod;
 
     /**
      * Whether or not a song has to match all rules in order to appear in the playlist.
@@ -67,11 +78,32 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      * @param rules The rules that songs must follow in order to appear in this playlist
      */
     public AutoPlaylist (int playlistId, String playlistName, int maximumEntries, int sortMethod,
-                         boolean sortAscending, boolean matchAllRules, Rule... rules){
+                         int truncateMethod, boolean sortAscending, boolean matchAllRules, Rule... rules){
         super(playlistId, playlistName);
         setRules(maximumEntries, matchAllRules, rules);
+        this.truncateMethod = truncateMethod;
         this.sortMethod = sortMethod;
         this.sortAscending = sortAscending;
+    }
+
+    /**
+     * Duplicate a playlist. The instantiated playlist will be completely independent of its parent
+     * @param playlist The AutoPlaylist to become a copy of
+     */
+    public AutoPlaylist(AutoPlaylist playlist) {
+        this(
+                playlist.playlistId,
+                playlist.playlistName,
+                playlist.maximumEntries,
+                playlist.sortMethod,
+                playlist.truncateMethod,
+                playlist.sortAscending,
+                playlist.matchAllRules);
+
+        this.rules = new Rule[playlist.rules.length];
+        for (int i = 0; i < this.rules.length; i++) {
+            this.rules[i] = new Rule(playlist.rules[i]);
+        }
     }
 
     /**
@@ -88,6 +120,18 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         this.maximumEntries = maximumEntries;
         this.matchAllRules = matchAllRules;
         this.rules = rules;
+    }
+
+    public void setRules(Rule... rules) {
+        this.rules = rules;
+    }
+
+    public boolean doesMatchAllRules() {
+        return matchAllRules;
+    }
+
+    public int getMaximumEntries() {
+        return maximumEntries;
     }
 
     /**
@@ -115,7 +159,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
             }
             songs = new ArrayList<>(songSet);
         }
-        return trim(sort(songs));
+        return sort(trim(sort(songs, truncateMethod, true)), sortMethod, true);
     }
 
     /**
@@ -124,8 +168,11 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      * @param in The {@link ArrayList} to be sorted
      * @return The original, sorted, {@link ArrayList} for convenience
      */
-    private ArrayList<Song> sort(ArrayList<Song> in){
+    private static ArrayList<Song> sort(ArrayList<Song> in, int sortMethod, final boolean sortAscending){
         switch (sortMethod){
+            case Rule.Field.ID:
+                Collections.shuffle(in);
+                break;
             case Rule.Field.NAME:
                 Collections.sort(in, new Comparator<Song>() {
                     @Override
@@ -223,6 +270,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         matchAllRules = in.readByte() == 1;
         rules = in.createTypedArray(Rule.CREATOR);
         sortMethod = in.readInt();
+        truncateMethod = in.readInt();
         sortAscending = in.readByte() == 1;
     }
 
@@ -238,34 +286,44 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         dest.writeByte((byte) ((matchAllRules) ? 1 : 0));
         dest.writeTypedArray(rules, 0);
         dest.writeInt(sortMethod);
+        dest.writeInt(truncateMethod);
         dest.writeByte((byte) ((sortAscending)? 1 : 0));
+    }
+
+    public Rule[] getRules() {
+        return rules.clone();
     }
 
     public static class Rule implements Parcelable {
 
+        public static final int NULL = -0;
+
         public static final class Type {
-            public static final int PLAYLIST = 1;
-            public static final int SONG = 2;
-            public static final int ARTIST = 3;
-            public static final int ALBUM = 8;
-            public static final int GENRE = 16;
+            public static final int PLAYLIST = 0;
+            public static final int SONG = 1;
+            public static final int ARTIST = 2;
+            public static final int ALBUM = 3;
+            public static final int GENRE = 4;
         }
         public static final class Field {
-            public static final int ID = 32;
-            public static final int NAME = 64;
-            public static final int PLAY_COUNT = 128;
-            public static final int SKIP_COUNT = 256;
-            public static final int YEAR = 512;
-            public static final int DATE_ADDED = 1024;
+            public static final int ID = 5;
+            public static final int NAME = 6;
+            public static final int PLAY_COUNT = 7;
+            public static final int SKIP_COUNT = 8;
+            public static final int YEAR = 9;
+            public static final int DATE_ADDED = 10;
+            public static final int DATE_PLAYED = 11; // Unused
         }
         public static final class Match {
-            public static final int EQUALS = 2048;
-            public static final int NOT_EQUALS = 4096;
-            public static final int CONTAINS = 8192;
-            public static final int NOT_CONTAINS = 16384;
-            public static final int LESS_THAN = 32768;
-            public static final int GREATER_THAN = 65536;
+            public static final int EQUALS = 12;
+            public static final int NOT_EQUALS = 13;
+            public static final int CONTAINS = 14;
+            public static final int NOT_CONTAINS = 15;
+            public static final int LESS_THAN = 16;
+            public static final int GREATER_THAN = 17;
         }
+
+        public static final Rule EMPTY = new Rule(NULL, NULL, NULL, "");
 
         private int type;
         private int match;
@@ -280,21 +338,59 @@ public class AutoPlaylist extends Playlist implements Parcelable {
             this.value = value;
         }
 
-        public static final Parcelable.Creator<Rule> CREATOR = new Parcelable.Creator<Rule>() {
-            public Rule createFromParcel(Parcel in) {
-                return new Rule(in);
-            }
-
-            public Rule[] newArray(int size) {
-                return new Rule[size];
-            }
-        };
+        public Rule(Rule rule) {
+            this(rule.type, rule.field, rule.match, rule.value);
+        }
 
         private Rule(Parcel in) {
             type = in.readInt();
             match = in.readInt();
             field = in.readInt();
             value = in.readString();
+        }
+
+        public int getType() {
+            return type;
+        }
+
+        public void setType(int type) {
+            this.type = type;
+        }
+
+        public int getField() {
+            return field;
+        }
+
+        public void setField(int field) {
+            this.field = field;
+        }
+
+        public int getMatch() {
+            return match;
+        }
+
+        public void setMatch(int match) {
+            this.match = match;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+        public boolean equals(Object o) {
+            if (!(o instanceof  Rule)){
+                return false;
+            }
+            if (this == o) {
+                return true;
+            }
+            Rule other = (Rule) o;
+            return this.type == other.type && this.field == other.field && this.match == other.match
+                    && this.value.equals(other.value);
         }
 
         @Override
@@ -309,6 +405,16 @@ public class AutoPlaylist extends Playlist implements Parcelable {
             dest.writeInt(field);
             dest.writeString(value);
         }
+
+        public static final Parcelable.Creator<Rule> CREATOR = new Parcelable.Creator<Rule>() {
+            public Rule createFromParcel(Parcel in) {
+                return new Rule(in);
+            }
+
+            public Rule[] newArray(int size) {
+                return new Rule[size];
+            }
+        };
 
         private void validate(int type, int field, int match, String value){
             // Only Songs have play counts and skip counts

@@ -13,7 +13,9 @@ import android.widget.TextView;
 import com.marverenic.music.Library;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
+import com.marverenic.music.activity.instance.AutoPlaylistEditor;
 import com.marverenic.music.activity.instance.PlaylistActivity;
+import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
@@ -57,7 +59,9 @@ public class PlaylistViewHolder extends RecyclerView.ViewHolder implements View.
         switch (v.getId()){
             case R.id.instanceMore:
                 final PopupMenu menu = new PopupMenu(context, v, Gravity.END);
-                String[] options = context.getResources().getStringArray(R.array.queue_options_playlist);
+                String[] options = (reference instanceof AutoPlaylist)
+                        ? context.getResources().getStringArray(R.array.queue_options_smart_playlist)
+                        : context.getResources().getStringArray(R.array.queue_options_playlist);
                 for (int i = 0; i < options.length;  i++) {
                     menu.getMenu().add(Menu.NONE, i, i, options[i]);
                 }
@@ -72,6 +76,17 @@ public class PlaylistViewHolder extends RecyclerView.ViewHolder implements View.
 
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
+        if (reference instanceof AutoPlaylist) {
+            switch (menuItem.getItemId()) {
+                case 2: //Edit this playlist
+                    Navigate.to(context, AutoPlaylistEditor.class,
+                            AutoPlaylistEditor.PLAYLIST_EXTRA, reference);
+                    return true;
+                case 3: // Delete this playlist
+                    Library.removePlaylist(itemView, reference);
+                    return true;
+            }
+        }
         switch (menuItem.getItemId()){
             case 0: //Queue this playlist next
                 PlayerController.queueNext(Library.getPlaylistEntries(context, reference));

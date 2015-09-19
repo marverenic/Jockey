@@ -22,6 +22,7 @@
     <!-- Other headers -->
     <string name="header_create_playlist">Create playlist</string>
     <string name="header_add_queue_to_playlist">Add queue to playlist</string>
+    <string name="playlist_auto_new">New Smart Playlist</string>
 
     <!-- Menu actions -->
     <string name="action_refresh">Refresh Library</string>
@@ -54,6 +55,8 @@
     <string name="action_try_again">Try again</string>
     <string name="action_open_settings">Open settings</string>
     <string name="action_make_new_playlist">Make new playlist&#8230;</string>
+    <string name="action_add_rule">Add rule</string>
+    <string name="action_discard_changes">Discard changes</string>
 
     <!-- Content Descriptions (for accessibility) -->
     <string name="description_album_art">Album Art</string>
@@ -205,16 +208,50 @@
     <string name="auto_plist_name_ne">Name isn\'t</string>
     <string name="auto_plist_name_has">Name contains</string>
     <string name="auto_plist_name_has_not">Name doesn\'t contain</string>
-    <string name="auto_plist_skip_eq">Has skip count</string>
+    <string name="auto_plist_skip_eq">Has skip count equal to</string>
     <string name="auto_plist_skip_lt">Has skip count less than</string>
     <string name="auto_plist_skip_gt">Has skip count greater than</string>
-    <string name="auto_plist_play_eq">Has play count</string>
+    <string name="auto_plist_play_eq">Has play count equal to</string>
     <string name="auto_plist_play_lt">Has play count less than</string>
     <string name="auto_plist_play_gt">Has play count greater than</string>
-    <string name="auto_plist_artist_eq">Artist is</string>
-    <string name="auto_plist_artist_ne">Artist isn\'t</string>
-    <string name="auto_plist_artist_has">Artist contains</string>
-    <string name="auto_plist_artist_has_not">Artist doesn\'t contain</string>
+    <string name="auto_plist_last_play_after">Has been played since</string>
+    <string name="auto_plist_last_play_before">Hasn\'t been played since</string>
+    <string name="auto_plist_last_play_on">Was last played on</string>
+
+    <string-array name="auto_plist_choose_by">
+        <item>Random</item>
+        <item>Name</item>
+        <item>Most played</item>
+        <item>Least played</item>
+        <item>Most skipped</item>
+        <item>Least skipped</item>
+        <item>Recently played</item>
+        <item>Least recently played</item>
+    </string-array>
+    <string-array name="auto_plist_types">
+        <item>Playlist</item>
+        <item>Song</item>
+        <item>Artist</item>
+        <item>Album</item>
+        <item>Genre</item>
+    </string-array>
+    <string-array name="auto_plist_fields">
+        <item>@string/auto_plist_id_eq</item>
+        <item>@string/auto_plist_id_ne</item>
+        <item>@string/auto_plist_name_eq</item>
+        <item>@string/auto_plist_name_ne</item>
+        <item>@string/auto_plist_name_has</item>
+        <item>@string/auto_plist_name_has_not</item>
+        <item>@string/auto_plist_play_lt</item>
+        <item>@string/auto_plist_play_eq</item>
+        <item>@string/auto_plist_play_gt</item>
+        <item>@string/auto_plist_skip_lt</item>
+        <item>@string/auto_plist_skip_eq</item>
+        <item>@string/auto_plist_skip_gt</item>
+        <item>@string/auto_plist_last_play_before</item>
+        <item>@string/auto_plist_last_play_on</item>
+        <item>@string/auto_plist_last_play_after</item>
+    </string-array>
 
     <!-- Arrays -->
     <string-array name="queue_options_song">
@@ -256,6 +293,12 @@
     <string-array name="queue_options_playlist">
         <item>Queue next</item>
         <item>Queue last</item>
+        <item>Delete</item>
+    </string-array>
+    <string-array name="queue_options_smart_playlist">
+        <item>Queue next</item>
+        <item>Queue last</item>
+        <item>Edit&#8230;</item>
         <item>Delete</item>
     </string-array>
     <string-array name="now_playing_options">
