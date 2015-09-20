@@ -12,16 +12,16 @@
 
     <!-- Theme Colors-->
     <!-- Light Base -->
-    <color name="list_text">@color/primary_text_default_material_light</color>
-    <color name="detail_text">@color/secondary_text_default_material_light</color>
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#757575</color>
     <color name="background">#EEEEEE</color>
     <color name="screen_overlay">#CCFFFFFF</color>
     <color name="background_elevated">#F5F5F5</color>
     <color name="background_miniplayer">#FAFAFA</color>
 
     <!-- Dark Base -->
-    <color name="list_text_dark">@color/primary_text_default_material_dark</color>
-    <color name="detail_text_dark">@color/secondary_text_default_material_dark</color>
+    <color name="primary_text_dark">#FAFAFA</color>
+    <color name="secondary_text_dark">#9E9E9E</color>
     <color name="background_dark">#212121</color>
     <color name="screen_overlay_dark">#CC212121</color>
     <color name="background_elevated_dark">#333333</color>
@@ -67,6 +67,8 @@
     <!-- Dark Theme Base -->
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@color/background_dark</item>
+        <item name="textColorPrimary">@color/primary_text_dark</item>
+        <item name="textColorSecondary">@color/secondary_text_dark</item>
     </style>
 
     <!-- Dark themes -->
@@ -122,6 +124,8 @@
     <!-- Light theme base -->
     <style name="AppThemeLight" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@color/background</item>
+        <item name="textColorPrimary">@color/primary_text</item>
+        <item name="textColorSecondary">@color/secondary_text</item>
         <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
     </style>
 

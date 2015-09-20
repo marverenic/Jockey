@@ -26,8 +26,6 @@ public class Themes {
     private static int primaryDark;
     private static int accent;
 
-    private static int listText;
-    private static int detailText;
     private static int background;
     private static int backgroundElevated;
     private static int backgroundMiniplayer;
@@ -43,14 +41,6 @@ public class Themes {
 
     public static int getAccent() {
         return accent;
-    }
-
-    public static int getListText() {
-        return listText;
-    }
-
-    public static int getDetailText() {
-        return detailText;
     }
 
     public static int getBackground() {
@@ -116,15 +106,11 @@ public class Themes {
 
         switch (Integer.parseInt(prefs.getString("prefBaseTheme", "1"))) {
             case 1: // Material Light
-                listText = resources.getColor(R.color.list_text);
-                detailText = resources.getColor(R.color.detail_text);
                 background = resources.getColor(R.color.background);
                 backgroundElevated = resources.getColor(R.color.background_elevated);
                 backgroundMiniplayer = resources.getColor(R.color.background_miniplayer);
                 break;
             default: // Material Dark
-                listText = resources.getColor(R.color.list_text_dark);
-                detailText = resources.getColor(R.color.detail_text_dark);
                 background = resources.getColor(R.color.background_dark);
                 backgroundElevated = resources.getColor(R.color.background_elevated_dark);
                 backgroundMiniplayer = resources.getColor(R.color.background_miniplayer_dark);

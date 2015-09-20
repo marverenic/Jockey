@@ -19,24 +19,24 @@
         android:layout_width="@dimen/now_playing_ticker_height"
         android:layout_height="@dimen/now_playing_ticker_height"
         android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_skip_next_48dp"
+        android:tint="?android:attr/textColorPrimary"
         android:background="?android:attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:contentDescription="@string/button_skip_description"
-        android:onClick="onClick"
-        android:src="@drawable/ic_skip_next_48dp"
-        android:tint="@color/list_text" />
+        android:onClick="onClick" />
 
     <ImageButton
         android:id="@+id/playButton"
         android:layout_width="@dimen/now_playing_ticker_height"
         android:layout_height="@dimen/now_playing_ticker_height"
         android:layout_toStartOf="@id/skipButton"
+        android:src="@drawable/ic_play_arrow_48dp"
+        android:tint="?android:attr/textColorPrimary"
         android:background="?android:attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:contentDescription="@string/button_play_description"
-        android:onClick="onClick"
-        android:src="@drawable/ic_play_arrow_48dp"
-        android:tint="@color/list_text" />
+        android:onClick="onClick" />
 
     <LinearLayout
         android:id="@+id/songInstance"

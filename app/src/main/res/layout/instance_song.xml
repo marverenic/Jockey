@@ -7,19 +7,6 @@
     android:background="?selectableItemBackground"
     android:gravity="center">
 
-    <ImageView
-        android:id="@+id/instanceMore"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:scaleType="center"
-        android:src="@drawable/abc_ic_menu_moreoverflow_mtrl_alpha"
-        android:background="?selectableItemBackgroundBorderless"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignBottom="@id/instanceDetail" />
-
     <TextView
         android:id="@+id/instanceTitle"
         style="@style/listTitleText"
@@ -40,5 +27,19 @@
         android:layout_toStartOf="@id/instanceMore"
         android:ellipsize="end"
         android:singleLine="true" />
+
+    <ImageView
+        android:id="@+id/instanceMore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:scaleType="center"
+        android:src="@drawable/abc_ic_menu_moreoverflow_mtrl_alpha"
+        android:tint="?textColorPrimary"
+        android:background="?selectableItemBackgroundBorderless"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignBottom="@id/instanceDetail" />
 
 </RelativeLayout>

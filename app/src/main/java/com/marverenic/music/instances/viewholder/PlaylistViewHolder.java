@@ -18,7 +18,6 @@ import com.marverenic.music.activity.instance.PlaylistActivity;
 import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.utils.Themes;
 
 public class PlaylistViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener{
 
@@ -26,6 +25,7 @@ public class PlaylistViewHolder extends RecyclerView.ViewHolder implements View.
 
     private TextView playlistName;
     private ImageView moreButton;
+    private ImageView autoPlaylistIndicator;
 
     private Playlist reference;
 
@@ -33,10 +33,10 @@ public class PlaylistViewHolder extends RecyclerView.ViewHolder implements View.
         super(itemView);
         playlistName = (TextView) itemView.findViewById(R.id.instanceTitle);
         moreButton = (ImageView) itemView.findViewById(R.id.instanceMore);
+        autoPlaylistIndicator = (ImageView) itemView.findViewById(R.id.instanceAutoIndicator);
 
         itemView.setOnClickListener(this);
         moreButton.setOnClickListener(this);
-        moreButton.setColorFilter(Themes.getListText());
 
         context = itemView.getContext();
     }
@@ -51,6 +51,12 @@ public class PlaylistViewHolder extends RecyclerView.ViewHolder implements View.
         else {
             playlistName.setText(p.playlistName);
             moreButton.setVisibility(View.VISIBLE);
+        }
+
+        if (p instanceof AutoPlaylist) {
+            autoPlaylistIndicator.setVisibility(View.VISIBLE);
+        } else {
+            autoPlaylistIndicator.setVisibility(View.GONE);
         }
     }
 

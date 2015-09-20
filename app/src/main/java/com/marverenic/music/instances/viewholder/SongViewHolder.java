@@ -21,7 +21,6 @@ import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.PlaylistDialog;
 import com.marverenic.music.utils.Prefs;
-import com.marverenic.music.utils.Themes;
 
 import java.util.ArrayList;
 
@@ -53,7 +52,6 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
         itemView.setOnClickListener(this);
         moreButton.setOnClickListener(this);
-        moreButton.setColorFilter(Themes.getListText());
     }
 
     public void setPlaylist(@NonNull Playlist playlist, @NonNull OnRemovedListener listener){
@@ -66,14 +64,7 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         reference = s;
 
         songName.setText(s.songName);
-        songName.setTextColor(Themes.getListText());
         detailText.setText(s.artistName + " - " + s.albumName);
-        detailText.setTextColor(Themes.getListText());
-    }
-
-    public void highlight(int primaryColor, int detailColor){
-        songName.setTextColor(primaryColor);
-        detailText.setTextColor(detailColor);
     }
 
     public void setClickListener(View.OnClickListener listener){

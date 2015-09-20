@@ -43,6 +43,7 @@
         android:layout_height="wrap_content"
         android:padding="8dp"
         android:src="@drawable/ic_delete_36dp"
+        android:tint="?textColorPrimary"
         android:background="?android:attr/selectableItemBackground"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"

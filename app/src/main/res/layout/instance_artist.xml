@@ -4,6 +4,17 @@
     android:layout_height="@dimen/list_height"
     android:background="?selectableItemBackground">
 
+    <TextView
+        android:id="@+id/instanceTitle"
+        style="@style/listTitleText"
+        android:layout_toLeftOf="@+id/instanceMore"
+        android:layout_toStartOf="@+id/instanceMore"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:ellipsize="end"
+        android:singleLine="true" />
+
     <ImageView
         android:id="@+id/instanceMore"
         android:layout_width="wrap_content"
@@ -11,20 +22,10 @@
         android:padding="10dp"
         android:scaleType="center"
         android:src="@drawable/abc_ic_menu_moreoverflow_mtrl_alpha"
+        android:tint="?textColorPrimary"
         android:background="?selectableItemBackgroundBorderless"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true" />
-
-    <TextView
-        android:id="@+id/instanceTitle"
-        style="@style/listTitleText"
-        android:layout_toLeftOf="@id/instanceMore"
-        android:layout_toStartOf="@id/instanceMore"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:ellipsize="end"
-        android:singleLine="true" />
 
 </RelativeLayout>

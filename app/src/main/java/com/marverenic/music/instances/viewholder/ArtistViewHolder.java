@@ -17,7 +17,6 @@ import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.PlaylistDialog;
-import com.marverenic.music.utils.Themes;
 
 public class ArtistViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener{
 
@@ -33,7 +32,6 @@ public class ArtistViewHolder extends RecyclerView.ViewHolder implements View.On
 
         itemView.setOnClickListener(this);
         moreButton.setOnClickListener(this);
-        moreButton.setColorFilter(Themes.getListText());
 
         context = itemView.getContext();
     }

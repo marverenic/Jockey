@@ -23,8 +23,8 @@
         android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/handle"
         android:layout_toEndOf="@+id/handle"
-        android:layout_toStartOf="@id/instanceMore"
-        android:layout_toLeftOf="@id/instanceMore">
+        android:layout_toStartOf="@+id/instancePlayingIndicator"
+        android:layout_toLeftOf="@+id/instancePlayingIndicator">
 
         <TextView
             android:id="@+id/instanceTitle"
@@ -45,6 +45,17 @@
             android:singleLine="true" />
 
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/instancePlayingIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:src="@drawable/ic_play_circle_filled_24dp"
+        android:tint="?attr/colorAccent"
+        android:layout_toLeftOf="@+id/instanceMore"
+        android:layout_toStartOf="@+id/instanceMore"
+        android:layout_centerVertical="true"/>
 
     <ImageView
         android:id="@+id/instanceMore"

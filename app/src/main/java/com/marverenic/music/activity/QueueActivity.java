@@ -93,20 +93,36 @@ public class QueueActivity extends BaseActivity {
 
     public class Adapter extends RecyclerView.Adapter<DraggableSongViewHolder> implements DraggableItemAdapter<DraggableSongViewHolder>, View.OnClickListener {
 
+        private static final int REGULAR_VIEW = 0;
+        private static final int HIGHLIT_VIEW = 1;
+
         public Adapter(){
             setHasStableIds(true);
         }
 
         @Override
-        public DraggableSongViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        public DraggableSongViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
             DraggableSongViewHolder viewHolder = new DraggableSongViewHolder(
                     LayoutInflater
                             .from(viewGroup.getContext())
-                            .inflate(R.layout.instance_song_drag, viewGroup, false),
+                            .inflate(
+                                    (viewType == HIGHLIT_VIEW)
+                                            ? R.layout.instance_song_drag_highlight
+                                            : R.layout.instance_song_drag,
+                                    viewGroup,
+                                    false),
                     data);
 
             viewHolder.setClickListener(this);
             return viewHolder;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if (data.get(position).equals(PlayerController.getNowPlaying())) {
+                return HIGHLIT_VIEW;
+            }
+            return REGULAR_VIEW;
         }
 
         @Override
@@ -123,12 +139,6 @@ public class QueueActivity extends BaseActivity {
         @Override
         public void onBindViewHolder(DraggableSongViewHolder viewHolder, int i) {
             viewHolder.update(data.get(i));
-            if (data.get(i).equals(PlayerController.getNowPlaying())){
-                if (Themes.isLight(QueueActivity.this))
-                    viewHolder.highlight(Themes.getPrimaryDark(), Themes.getPrimary());
-                else
-                    viewHolder.highlight(Themes.getPrimary(), Themes.getPrimaryDark());
-            }
         }
 
         @Override

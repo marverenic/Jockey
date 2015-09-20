@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AutoPlaylistEditor;
 import com.marverenic.music.instances.AutoPlaylist;
-import com.marverenic.music.utils.Themes;
 
 public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
@@ -34,7 +33,6 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         parent = adapter;
 
         ImageView menuButton = (ImageView) itemView.findViewById(R.id.instanceRemove);
-        menuButton.setColorFilter(Themes.getListText());
         menuButton.setOnClickListener(this);
 
         typeDropDown = (AppCompatSpinner) itemView.findViewById(R.id.typeSelector);

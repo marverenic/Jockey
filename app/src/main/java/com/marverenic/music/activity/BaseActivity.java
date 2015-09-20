@@ -19,7 +19,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -210,11 +209,6 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
             View miniplayer = (View) findViewById(R.id.miniplayer).getParent();
 
             miniplayer.setBackgroundColor(Themes.getBackgroundMiniplayer());
-            ((ImageButton) miniplayer.findViewById(R.id.skipButton)).setColorFilter(Themes.getListText());
-            ((ImageButton) miniplayer.findViewById(R.id.playButton)).setColorFilter(Themes.getListText());
-
-            ((TextView) miniplayer.findViewById(R.id.textNowPlayingTitle)).setTextColor(Themes.getListText());
-            ((TextView) miniplayer.findViewById(R.id.textNowPlayingDetail)).setTextColor(Themes.getDetailText());
         }
     }
 

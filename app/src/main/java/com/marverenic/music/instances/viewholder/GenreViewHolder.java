@@ -17,7 +17,6 @@ import com.marverenic.music.activity.instance.GenreActivity;
 import com.marverenic.music.instances.Genre;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.PlaylistDialog;
-import com.marverenic.music.utils.Themes;
 
 public class GenreViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener{
 
@@ -34,7 +33,6 @@ public class GenreViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
         itemView.setOnClickListener(this);
         moreButton.setOnClickListener(this);
-        moreButton.setColorFilter(Themes.getListText());
 
         context = itemView.getContext();
     }
