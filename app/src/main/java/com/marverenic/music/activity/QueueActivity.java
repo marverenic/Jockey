@@ -52,10 +52,6 @@ public class QueueActivity extends BaseActivity {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         songRecyclerView.setLayoutManager(layoutManager);
 
-        songRecyclerView.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
-        songRecyclerView.addItemDecoration(new DividerDecoration(this).disableExtraPadding());
-        // Padding is disabled because for some reason these views already get 1dp of spacing...
-
         dragDropManager.attachRecyclerView(songRecyclerView);
     }
 

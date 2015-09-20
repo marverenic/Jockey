@@ -21,7 +21,6 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
     private Drawable dividerDrawable;
     private static int measuredDividerHeight;
     private int[] excludedIDs;
-    private boolean enablePadding = true;
 
     /**
      * Create a new ItemDecorator for use with a RecyclerView
@@ -41,16 +40,6 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
         dividerDrawable = new ColorDrawable(Themes.isLight(context)? 0x1E000000 : 0x1EFFFFFF);
         measuredDividerHeight = (int) Math.ceil(DIVIDER_HEIGHT_DP * context.getResources().getDisplayMetrics().density);
         excludedIDs = excludedLayoutIDs;
-    }
-
-    /**
-     * Disable adding padding between separators. This is the behavior specified in the Material Design
-     * Guidelines, but touch effects can overlap the separators.
-     * @return This object, for chain building
-     */
-    public DividerDecoration disableExtraPadding(){
-        enablePadding = false;
-        return this;
     }
 
     @Override
@@ -79,7 +68,7 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
 
-        if (enablePadding && (excludedIDs == null || includeView(view.getId()))){
+        if (excludedIDs == null || includeView(view.getId())){
             outRect.bottom = measuredDividerHeight;
         }
     }
