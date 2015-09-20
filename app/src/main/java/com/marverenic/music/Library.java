@@ -622,6 +622,14 @@ public class Library {
         Comparator<Playlist> playlistComparator = new Comparator<Playlist>() {
             @Override
             public int compare(Playlist o1, Playlist o2) {
+                if (!o1.getClass().equals(o2.getClass())) {
+                    if (o1 instanceof AutoPlaylist) {
+                        return -1;
+                    }
+                    if (o2 instanceof AutoPlaylist) {
+                        return 1;
+                    }
+                }
                 return o1.playlistName.compareToIgnoreCase(o2.playlistName);
             }
         };
