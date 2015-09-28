@@ -925,8 +925,12 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                 skipCount = Integer.parseInt(originalValues[1]);
             }
 
-            if (skip) skipCount++;
-            else playCount++;
+            if (skip) {
+                skipCount++;
+            } else {
+                // TODO save the date that this song was played
+                playCount++;
+            }
 
             playCountHashtable.setProperty(Long.toString(songId), playCount + "," + skipCount);
             savePlayCountFile();

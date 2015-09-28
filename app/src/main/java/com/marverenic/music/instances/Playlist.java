@@ -3,6 +3,8 @@ package com.marverenic.music.instances;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Playlist implements Parcelable {
 
     public static final Parcelable.Creator<Playlist> CREATOR = new Parcelable.Creator<Playlist>() {
@@ -15,7 +17,9 @@ public class Playlist implements Parcelable {
         }
     };
 
+    @SerializedName("playlistId")
     public int playlistId;
+    @SerializedName("playlistName")
     public String playlistName;
 
     public Playlist(final int playlistId, final String playlistName) {

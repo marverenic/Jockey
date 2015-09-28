@@ -5,6 +5,9 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +20,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AutoPlaylistEditor;
 import com.marverenic.music.instances.AutoPlaylist;
 
-public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, AdapterView.OnItemSelectedListener, TextWatcher {
 
     AutoPlaylistEditor.Adapter parent;
     View itemView;
@@ -43,17 +46,19 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
         typeDropDown.setOnItemSelectedListener(this);
         fieldDropDown.setOnItemSelectedListener(this);
+
+        editText.addTextChangedListener(this);
     }
 
     public void update(AutoPlaylist.Rule rule) {
         reference = rule;
 
-        typeDropDown.setSelection(rule.getType());
+        typeDropDown.setSelection(rule.type);
 
         FieldAdapter fieldAdapter = (FieldAdapter) fieldDropDown.getAdapter();
-        fieldDropDown.setSelection(fieldAdapter.lookupIndex(rule.getField(), rule.getMatch()));
+        fieldDropDown.setSelection(fieldAdapter.lookupIndex(rule.field, rule.match));
 
-        editText.setText(rule.getValue());
+        editText.setText(rule.value);
     }
 
     @Override
@@ -83,19 +88,41 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         // When the type is selected, update the available options in the fieldDropDown and update
         // the rule this viewHolder refers to
         if (view.getParent().equals(typeDropDown)) {
-            ((FieldAdapter) fieldDropDown.getAdapter()).setType((int) id);
-            reference.setField((int) id - 1);
+            ((FieldAdapter) fieldDropDown.getAdapter()).setType(position);
+            reference.type = position;
         }
-        // When a field and match are chosen, update the rule tha this viewholder refers to
+        // When a field and match are chosen, update the rule that this viewholder refers to
         if (view.getParent().equals(fieldDropDown)) {
             FieldAdapter fieldAdapter = (FieldAdapter) fieldDropDown.getAdapter();
-            reference.setField(fieldAdapter.getRuleField((int) id));
-            reference.setMatch(fieldAdapter.getRuleMatch((int) id));
+            reference.field = fieldAdapter.getRuleField(position);
+            reference.match = fieldAdapter.getRuleMatch(position);
+
+            if (editText.getInputType() != fieldAdapter.getInputType(position)) {
+                // If the input type changes, clear the text that the user has entered and change
+                // the input type
+                editText.setText("");
+                editText.setInputType(fieldAdapter.getInputType(position));
+            }
         }
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        reference.value = s.toString();
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
 
     }
 
@@ -141,6 +168,24 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                 AutoPlaylist.Rule.Match.LESS_THAN,
                 AutoPlaylist.Rule.Match.EQUALS,
                 AutoPlaylist.Rule.Match.GREATER_THAN
+        };
+
+        private static final int[] inputType = new int[] {
+                InputType.TYPE_CLASS_NUMBER, // TODO implement ids
+                InputType.TYPE_CLASS_NUMBER, // TODO implement ids
+                InputType.TYPE_CLASS_TEXT,
+                InputType.TYPE_CLASS_TEXT,
+                InputType.TYPE_CLASS_TEXT,
+                InputType.TYPE_CLASS_TEXT,
+                InputType.TYPE_CLASS_NUMBER,
+                InputType.TYPE_CLASS_NUMBER,
+                InputType.TYPE_CLASS_NUMBER,
+                InputType.TYPE_CLASS_NUMBER,
+                InputType.TYPE_CLASS_NUMBER,
+                InputType.TYPE_CLASS_NUMBER,
+                InputType.TYPE_CLASS_NUMBER, // TODO implement dates
+                InputType.TYPE_CLASS_NUMBER,
+                InputType.TYPE_CLASS_NUMBER,
         };
 
         private Context context;
@@ -200,6 +245,10 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
         public int getRuleMatch(int position) {
             return matches[position];
+        }
+
+        public int getInputType(int position) {
+            return inputType[position];
         }
 
         @Override

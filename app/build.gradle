@@ -19,13 +19,13 @@ repositories {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.0"
+    buildToolsVersion "23.0.1"
     defaultConfig {
         applicationId "com.marverenic.music"
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 30100
-        versionName "0.3_alpha-m0r1a.d4"
+        versionName "0.3_alpha-m0r1a.d5"
     }
     buildTypes {
         release {
@@ -48,6 +48,7 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:23.0.1'
     compile 'com.android.support:cardview-v7:23.0.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.google.code.gson:gson:2.3.1'
     compile 'com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.7.2'
     compile 'com.pkmmte.view:circularimageview:1.1'
     compile 'de.u-mass:lastfm-java:0.1.2'

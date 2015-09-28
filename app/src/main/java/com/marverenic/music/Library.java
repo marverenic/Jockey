@@ -19,6 +19,8 @@ import android.util.SparseIntArray;
 import android.view.View;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.AutoPlaylist;
@@ -29,6 +31,8 @@ import com.marverenic.music.utils.Themes;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -43,6 +47,8 @@ public class Library {
     public static final String PLAY_COUNT_FILENAME = ".playcount";
     public static final String PLAY_COUNT_FILE_COMMENT = "This file contains play count information for Jockey and should not be edited";
     public static final int PERMISSION_REQUEST_ID = 0x01;
+
+    private static final String AUTO_PLAYLIST_EXTENSION = ".jpl";
 
     private static final ArrayList<Playlist> playlistLib = new ArrayList<>();
     private static final ArrayList<Song> songLib = new ArrayList<>();
@@ -341,7 +347,10 @@ public class Library {
         }
         cur.close();
 
-        playlists.addAll(scanAutoPlaylists(context));
+        for (Playlist p : scanAutoPlaylists(context)) {
+            playlists.remove(p);
+            playlists.add(p);
+        }
         return playlists;
     }
 
@@ -350,23 +359,23 @@ public class Library {
      * @param context {@link Context} to use to read files on the device
      * @return An {@link ArrayList} with the loaded {@link AutoPlaylist}s
      */
-    public static ArrayList<AutoPlaylist> scanAutoPlaylists (Context context){
-        // TODO read AutoPlaylists instead of inserting predefined playlists
-        AutoPlaylist mostListened = new AutoPlaylist(
-                4, "Most Listened", 20, AutoPlaylist.Rule.Field.PLAY_COUNT,
-                AutoPlaylist.Rule.Field.PLAY_COUNT, false, true,
-                new AutoPlaylist.Rule(
-                        AutoPlaylist.Rule.Type.SONG,
-                        AutoPlaylist.Rule.Field.PLAY_COUNT,
-                        AutoPlaylist.Rule.Match.GREATER_THAN,
-                        "0")
-        );
-        AutoPlaylist mostRecentlyAdded = new AutoPlaylist(
-                4, "Most Recently Added", 20, AutoPlaylist.Rule.Field.DATE_ADDED,
-                AutoPlaylist.Rule.Field.DATE_ADDED,  false, true);
+    public static ArrayList<AutoPlaylist> scanAutoPlaylists (Context context) {
         ArrayList<AutoPlaylist> autoPlaylists = new ArrayList<>();
-        autoPlaylists.add(mostListened);
-        autoPlaylists.add(mostRecentlyAdded);
+        final Gson gson = new Gson();
+
+        try {
+            File externalFiles = new File(context.getExternalFilesDir(null) + "/");
+
+            String[] files = externalFiles.list();
+            for (String s : files) {
+                if (s.endsWith(AUTO_PLAYLIST_EXTENSION)) {
+                    autoPlaylists.add(gson.fromJson(new FileReader(externalFiles + "/" + s), AutoPlaylist.class));
+                }
+            }
+        } catch (IOException e) {
+            Crashlytics.logException(e);
+        }
+
         return autoPlaylists;
     }
 
@@ -1072,7 +1081,11 @@ public class Library {
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                makePlaylist(context, playlist.playlistName, entries);
+                                if (playlist instanceof AutoPlaylist) {
+                                    makeAutoPlaylist(context, (AutoPlaylist) playlist);
+                                } else {
+                                    makePlaylist(context, playlist.playlistName, entries);
+                                }
                             }
                         })
                 .show();
@@ -1322,6 +1335,12 @@ public class Library {
         setPlaylistLib(scanPlaylists(context));
         sortPlaylistList(playlistLib);
         notifyPlaylistRemoved(playlist);
+
+        // If the playlist is an AutoPlaylist, make sure to delete its configuration
+        if (playlist instanceof AutoPlaylist) {
+            //noinspection ResultOfMethodCallIgnored
+            new File(context.getExternalFilesDir(null) + "/"  + playlist.playlistName + AUTO_PLAYLIST_EXTENSION).delete();
+        }
     }
 
     /**
@@ -1394,12 +1413,55 @@ public class Library {
      *                 rescanned, and a "stale" copy with current entries will be written in the
      *                 MediaStore so that other applications may access this playlist
      */
-    public static void makeAutoPlaylist(AutoPlaylist playlist) {
-        // TODO
+    public static void makeAutoPlaylist(Context context, AutoPlaylist playlist) {
+        try {
+            // Add the playlist to the MediaStore
+            Playlist p = makePlaylist(context, playlist.playlistName, playlist.generatePlaylist(context));
+            // By default, makePlaylist adds it to the library array. We don't want that
+            playlistLib.remove(p);
+
+            // Assign the auto playlist's ID to match the one in the MediaStore
+            playlist.playlistId = p.playlistId;
+
+            // Save the playlist configuration with GSON
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            FileWriter playlistWriter = new FileWriter(context.getExternalFilesDir(null) + "/" + playlist.playlistName + AUTO_PLAYLIST_EXTENSION);
+            playlistWriter.write(gson.toJson(playlist, AutoPlaylist.class));
+            playlistWriter.close();
+
+            // Add the playlist to the library and resort the playlist library
+            playlistLib.add(playlist);
+            sortPlaylistList(playlistLib);
+            notifyPlaylistAdded(playlist);
+        } catch (IOException e) {
+            Crashlytics.logException(e);
+        }
     }
 
-    public static void editAutoPlaylist(AutoPlaylist playlist) {
-        // TODO
+    public static void editAutoPlaylist(Context context, AutoPlaylist playlist) {
+        try {
+            // Save the playlist configuration with GSON
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            FileWriter playlistWriter = new FileWriter(context.getExternalFilesDir(null) + "/"  + playlist.playlistName + AUTO_PLAYLIST_EXTENSION);
+            playlistWriter.write(gson.toJson(playlist, AutoPlaylist.class));
+            playlistWriter.close();
+
+            // Edit the contents of this playlist in the MediaStore
+            editPlaylist(context, playlist, playlist.generatePlaylist(context));
+
+            // Remove the old index of this playlist. Since playlists are compared by Id's, this
+            // will remove the old index
+            playlistLib.remove(playlist);
+
+            // Add the playlist again. This makes sure that if the values have been cloned before
+            // being changed that their values will be updated without having to rescan the
+            // entire library
+            playlistLib.add(playlist);
+
+            sortPlaylistList(playlistLib);
+        } catch (IOException e) {
+            Crashlytics.logException(e);
+        }
     }
 
     //
