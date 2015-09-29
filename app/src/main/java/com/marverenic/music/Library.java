@@ -1330,17 +1330,17 @@ public class Library {
                 MediaStore.Audio.Playlists._ID + "=?",
                 new String[]{playlist.playlistId + ""});
 
-        // Update the playlist library & resort it
-        playlistLib.clear();
-        setPlaylistLib(scanPlaylists(context));
-        sortPlaylistList(playlistLib);
-        notifyPlaylistRemoved(playlist);
-
         // If the playlist is an AutoPlaylist, make sure to delete its configuration
         if (playlist instanceof AutoPlaylist) {
             //noinspection ResultOfMethodCallIgnored
             new File(context.getExternalFilesDir(null) + "/"  + playlist.playlistName + AUTO_PLAYLIST_EXTENSION).delete();
         }
+
+        // Update the playlist library & resort it
+        playlistLib.clear();
+        setPlaylistLib(scanPlaylists(context));
+        sortPlaylistList(playlistLib);
+        notifyPlaylistRemoved(playlist);
     }
 
     /**
