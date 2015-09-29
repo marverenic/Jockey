@@ -58,6 +58,7 @@ public class Library {
 
     private static final SparseIntArray playCounts = new SparseIntArray();
     private static final SparseIntArray skipCounts = new SparseIntArray();
+    private static final SparseIntArray playDates = new SparseIntArray();
 
     private static final String[] songProjection = new String[]{
             MediaStore.Audio.Media.TITLE,
@@ -918,6 +919,7 @@ public class Library {
     public static void loadPlayCounts(Context context) {
         playCounts.clear();
         skipCounts.clear();
+        playDates.clear();
         try {
             Properties countProperties = openPlayCountFile(context);
             Enumeration iterator = countProperties.propertyNames();
@@ -930,9 +932,15 @@ public class Library {
 
                 int playCount = Integer.parseInt(originalValues[0]);
                 int skipCount = Integer.parseInt(originalValues[1]);
+                int playDate = 0;
+
+                if (originalValues.length > 2) {
+                    playDate = Integer.parseInt(originalValues[2]);
+                }
 
                 playCounts.put(Integer.parseInt(key), playCount);
                 skipCounts.put(Integer.parseInt(key), skipCount);
+                playDates.put(Integer.parseInt(key), playDate);
             }
         }
         catch (IOException e){
@@ -985,6 +993,17 @@ public class Library {
      */
     public static int getPlayCount (int songId){
         return playCounts.get(songId, 0);
+    }
+
+    /**
+     * * Returns the last time a song was played with Jockey. Note that you may need to call
+     * {@link Library#loadPlayCounts(Context)} in case the data has gone stale
+     * @param songId The {@link Song#songId} as written in the MediaStore
+     * @return The last time a song was played given in seconds as a UTC timestamp
+     *         (since midnight of January 1, 1970 UTC)
+     */
+    public static int getPlayDate(int songId) {
+        return playDates.get(songId, 0);
     }
 
     //

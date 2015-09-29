@@ -917,22 +917,32 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             final String originalValue = playCountHashtable.getProperty(Long.toString(songId));
             int playCount = 0;
             int skipCount = 0;
+            int playDate = 0;
 
             if (originalValue != null && !originalValue.equals("")) {
                 final String[] originalValues = originalValue.split(",");
 
                 playCount = Integer.parseInt(originalValues[0]);
                 skipCount = Integer.parseInt(originalValues[1]);
+
+                // Preserve backwards compatibility with play count files written with older
+                // versions of Jockey that didn't save this data
+                if (originalValues.length > 2) {
+                    playDate = Integer.parseInt(originalValues[2]);
+                }
             }
 
             if (skip) {
                 skipCount++;
             } else {
-                // TODO save the date that this song was played
+                playDate = (int) (System.currentTimeMillis() / 1000);
                 playCount++;
             }
 
-            playCountHashtable.setProperty(Long.toString(songId), playCount + "," + skipCount);
+            playCountHashtable.setProperty(
+                    Long.toString(songId),
+                    playCount + "," + skipCount + "," + playDate);
+
             savePlayCountFile();
         }
         catch (Exception e){
