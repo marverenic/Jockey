@@ -28,6 +28,8 @@ public class RuleHeaderViewHolder extends RecyclerView.ViewHolder implements Vie
             AutoPlaylist.Rule.Field.PLAY_COUNT,
             AutoPlaylist.Rule.Field.SKIP_COUNT,
             AutoPlaylist.Rule.Field.SKIP_COUNT,
+            AutoPlaylist.Rule.Field.DATE_ADDED,
+            AutoPlaylist.Rule.Field.DATE_ADDED,
             AutoPlaylist.Rule.Field.DATE_PLAYED,
             AutoPlaylist.Rule.Field.DATE_PLAYED
     };
@@ -39,8 +41,10 @@ public class RuleHeaderViewHolder extends RecyclerView.ViewHolder implements Vie
             true,
             false,
             true,
+            false,
             true,
-            false
+            false,
+            true
     };
 
     private View itemView;

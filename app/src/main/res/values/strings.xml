@@ -214,6 +214,9 @@
     <string name="auto_plist_play_eq">Has play count equal to</string>
     <string name="auto_plist_play_lt">Has play count less than</string>
     <string name="auto_plist_play_gt">Has play count greater than</string>
+    <string name="auto_plist_added_after">Was added after</string>
+    <string name="auto_plist_added_before">Was added before</string>
+    <string name="auto_plist_added_on">Was added on</string>
     <string name="auto_plist_last_play_after">Has been played since</string>
     <string name="auto_plist_last_play_before">Hasn\'t been played since</string>
     <string name="auto_plist_last_play_on">Was last played on</string>
@@ -225,6 +228,8 @@
         <item>Least played</item>
         <item>Most skipped</item>
         <item>Least skipped</item>
+        <item>Recently added</item>
+        <item>Least recently added</item>
         <item>Recently played</item>
         <item>Least recently played</item>
     </string-array>
@@ -248,6 +253,9 @@
         <item>@string/auto_plist_skip_lt</item>
         <item>@string/auto_plist_skip_eq</item>
         <item>@string/auto_plist_skip_gt</item>
+        <item>@string/auto_plist_added_before</item>
+        <item>@string/auto_plist_added_on</item>
+        <item>@string/auto_plist_added_after</item>
         <item>@string/auto_plist_last_play_before</item>
         <item>@string/auto_plist_last_play_on</item>
         <item>@string/auto_plist_last_play_after</item>

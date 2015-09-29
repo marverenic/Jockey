@@ -147,6 +147,9 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                 AutoPlaylist.Rule.Field.SKIP_COUNT,
                 AutoPlaylist.Rule.Field.SKIP_COUNT,
                 AutoPlaylist.Rule.Field.SKIP_COUNT,
+                AutoPlaylist.Rule.Field.DATE_ADDED,
+                AutoPlaylist.Rule.Field.DATE_ADDED,
+                AutoPlaylist.Rule.Field.DATE_ADDED,
                 AutoPlaylist.Rule.Field.DATE_PLAYED,
                 AutoPlaylist.Rule.Field.DATE_PLAYED,
                 AutoPlaylist.Rule.Field.DATE_PLAYED
@@ -159,6 +162,9 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                 AutoPlaylist.Rule.Match.NOT_EQUALS,
                 AutoPlaylist.Rule.Match.CONTAINS,
                 AutoPlaylist.Rule.Match.NOT_CONTAINS,
+                AutoPlaylist.Rule.Match.LESS_THAN,
+                AutoPlaylist.Rule.Match.EQUALS,
+                AutoPlaylist.Rule.Match.GREATER_THAN,
                 AutoPlaylist.Rule.Match.LESS_THAN,
                 AutoPlaylist.Rule.Match.EQUALS,
                 AutoPlaylist.Rule.Match.GREATER_THAN,
@@ -186,6 +192,9 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                 InputType.TYPE_CLASS_NUMBER, // TODO implement dates
                 InputType.TYPE_CLASS_NUMBER,
                 InputType.TYPE_CLASS_NUMBER,
+                InputType.TYPE_CLASS_NUMBER, // TODO implement dates
+                InputType.TYPE_CLASS_NUMBER,
+                InputType.TYPE_CLASS_NUMBER
         };
 
         private Context context;
