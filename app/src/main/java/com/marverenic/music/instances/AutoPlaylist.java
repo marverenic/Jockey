@@ -133,6 +133,10 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      *         the rules of this playlist
      */
     public ArrayList<Song> generatePlaylist(Context context){
+        // In the event that the play counts in this process have gone stale, make
+        // sure they're current
+        Library.loadPlayCounts(context);
+
         ArrayList<Song> songs;
         if (matchAllRules) {
             songs = Library.getSongs();
@@ -209,6 +213,15 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                     public int compare(Song s1, Song s2) {
                         if (sortAscending) return s1.dateAdded - s2.dateAdded;
                         else return s2.dateAdded - s1.dateAdded;
+                    }
+                });
+                break;
+            case Rule.Field.DATE_PLAYED:
+                Collections.sort(in, new Comparator<Song>() {
+                    @Override
+                    public int compare(Song s1, Song s2) {
+                        if (sortAscending) return s1.playDate() - s2.playDate();
+                        else return s2.playDate() - s1.playDate();
                     }
                 });
                 break;
@@ -305,7 +318,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
             public static final int SKIP_COUNT = 8;
             public static final int YEAR = 9;
             public static final int DATE_ADDED = 10;
-            public static final int DATE_PLAYED = 11; // Unused
+            public static final int DATE_PLAYED = 11;
         }
         public static final class Match {
             public static final int EQUALS = 12;
@@ -535,9 +548,6 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                     }
                     break;
                 case Field.PLAY_COUNT:
-                    // In the event that the play counts in this process have gone stale, make
-                    // sure they're current
-                    Library.loadPlayCounts(context);
                     final long playCount = Long.parseLong(value);
                     if (match == Match.EQUALS || match == Match.NOT_EQUALS){
                         for (Song s : in){
@@ -555,8 +565,6 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                     }
                     break;
                 case Field.SKIP_COUNT:
-                    // Refresh skip counts (see PLAY_COUNT case)
-                    Library.loadPlayCounts(context);
                     final long skipCount = Long.parseLong(value);
                     if (match == Match.EQUALS || match == Match.NOT_EQUALS){
                         for (Song s : in){
@@ -608,6 +616,31 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                             // (This value is still in seconds)
                             int dayAdded = s.dateAdded - s.dateAdded % 86400; // 24 * 60 * 60
                             if (dayAdded < date ^ match == Match.GREATER_THAN){
+                                filteredSongs.add(s);
+                            }
+                        }
+                    }
+                    break;
+                case Field.DATE_PLAYED:
+                    final int playDate = Integer.parseInt(value);
+                    if (match == Match.EQUALS || match == Match.NOT_EQUALS) {
+                        for (Song s : in){
+                            // Look at the day the song was added, not the time
+                            // (This value is still in seconds)
+                            int dayAdded = s.playDate();
+                            dayAdded -= dayAdded % 86400; // 24 * 60 * 60
+                            if (dayAdded == playDate ^ match == Match.NOT_EQUALS) {
+                                filteredSongs.add(s);
+                            }
+                        }
+                    }
+                    else if (match == Match.LESS_THAN || match == Match.GREATER_THAN) {
+                        for (Song s : in){
+                            // Look at the day the song was added, not the time
+                            // (This value is still in seconds)
+                            int dayAdded = s.playDate();
+                            dayAdded -= dayAdded % 86400; // 24 * 60 * 60
+                            if (dayAdded < playDate ^ match == Match.GREATER_THAN) {
                                 filteredSongs.add(s);
                             }
                         }

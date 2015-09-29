@@ -83,6 +83,10 @@ public class Song implements Parcelable {
         return Library.getPlayCount(songId);
     }
 
+    public int playDate() {
+        return Library.getPlayDate(songId);
+    }
+
     public boolean equals(final Object obj) {
         return this == obj ||
                 (obj != null && obj instanceof Song && songId == ((Song) obj).songId);
