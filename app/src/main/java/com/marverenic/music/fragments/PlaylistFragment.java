@@ -50,15 +50,19 @@ public class PlaylistFragment extends Fragment{
         Library.addPlaylistListener(adapter);
         // Since playlist entries can be added and removed in other Activities, assume our data
         // has gone stale since we were last in the foreground
-        adapter.data.clear();
-        adapter.data.addAll(Library.getPlaylists());
-        adapter.notifyDataSetChanged();
+        refresh();
     }
 
     @Override
     public void onPause(){
         super.onPause();
         Library.removePlaylistListener(adapter);
+    }
+
+    public void refresh() {
+        adapter.data.clear();
+        adapter.data.addAll(Library.getPlaylists());
+        adapter.notifyDataSetChanged();
     }
 
     public class Adapter extends RecyclerView.Adapter implements Library.PlaylistChangeListener {

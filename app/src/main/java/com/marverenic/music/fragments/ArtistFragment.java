@@ -18,6 +18,8 @@ import com.marverenic.music.view.DividerDecoration;
 
 public class ArtistFragment extends Fragment {
 
+    private Adapter adapter;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.list, container, false);
@@ -28,13 +30,18 @@ public class ArtistFragment extends Fragment {
         int paddingH =(int) getActivity().getResources().getDimension(R.dimen.global_padding);
         view.setPadding(paddingH, 0, paddingH, 0);
 
-        artistRecyclerView.setAdapter(new Adapter());
+        adapter = new Adapter();
+        artistRecyclerView.setAdapter(adapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         artistRecyclerView.setLayoutManager(layoutManager);
 
         return view;
+    }
+
+    public void refresh() {
+        adapter.notifyDataSetChanged();
     }
 
     public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

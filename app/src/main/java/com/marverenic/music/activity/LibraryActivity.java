@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -107,11 +106,11 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
 
     public class PagerAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener {
 
-        private Fragment playlistFragment;
-        private Fragment songFragment;
-        private Fragment artistFragment;
-        private Fragment albumFragment;
-        private Fragment genreFragment;
+        private PlaylistFragment playlistFragment;
+        private SongFragment songFragment;
+        private ArtistFragment artistFragment;
+        private AlbumFragment albumFragment;
+        private GenreFragment genreFragment;
 
         private FABMenu fab;
 
@@ -156,16 +155,21 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
         }
 
         public void refreshFragments(){
-            if (playlistFragment != null && playlistFragment.getView() != null)
-                ((RecyclerView) playlistFragment.getView().findViewById(R.id.list)).getAdapter().notifyDataSetChanged();
-            if (songFragment != null && songFragment.getView() != null)
-                ((RecyclerView) songFragment.getView().findViewById(R.id.list)).getAdapter().notifyDataSetChanged();
-            if (artistFragment != null && artistFragment.getView() != null)
-                ((RecyclerView) artistFragment.getView().findViewById(R.id.list)).getAdapter().notifyDataSetChanged();
-            if (albumFragment != null && albumFragment.getView() != null)
-                ((RecyclerView) albumFragment.getView().findViewById(R.id.list)).getAdapter().notifyDataSetChanged();
-            if (genreFragment != null && genreFragment.getView() != null)
-                ((RecyclerView) genreFragment.getView().findViewById(R.id.list)).getAdapter().notifyDataSetChanged();
+            if (playlistFragment != null) {
+                playlistFragment.refresh();
+            }
+            if (songFragment != null) {
+                songFragment.refresh();
+            }
+            if (artistFragment != null) {
+                artistFragment.refresh();
+            }
+            if (albumFragment != null) {
+                albumFragment.refresh();
+            }
+            if (genreFragment != null) {
+                genreFragment.refresh();
+            }
 
             if (Library.hasRWPermission(LibraryActivity.this)) {
                 Toast

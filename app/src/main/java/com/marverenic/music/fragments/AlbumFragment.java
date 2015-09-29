@@ -20,6 +20,8 @@ import com.marverenic.music.view.ViewUtils;
 
 public class AlbumFragment extends Fragment {
 
+    private Adapter adapter;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.list, container, false);
@@ -29,7 +31,8 @@ public class AlbumFragment extends Fragment {
         int paddingH =(int) getActivity().getResources().getDimension(R.dimen.global_padding);
         view.setPadding(paddingH, 0, paddingH, 0);
 
-        albumRecyclerView.setAdapter(new Adapter());
+        adapter = new Adapter();
+        albumRecyclerView.setAdapter(adapter);
 
         final int numColumns = ViewUtils.getNumberOfGridColumns(getActivity());
 
@@ -46,6 +49,10 @@ public class AlbumFragment extends Fragment {
         albumRecyclerView.addItemDecoration(new GridSpacingDecoration((int) getResources().getDimension(R.dimen.grid_margin), numColumns));
 
         return view;
+    }
+
+    public void refresh() {
+        adapter.notifyDataSetChanged();
     }
 
 
