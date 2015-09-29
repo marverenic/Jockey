@@ -48,6 +48,11 @@ public class PlaylistFragment extends Fragment{
     public void onResume(){
         super.onResume();
         Library.addPlaylistListener(adapter);
+        // Since playlist entries can be added and removed in other Activities, assume our data
+        // has gone stale since we were last in the foreground
+        adapter.data.clear();
+        adapter.data.addAll(Library.getPlaylists());
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -124,12 +129,15 @@ public class PlaylistFragment extends Fragment{
             if (data.contains(removed))
                 notifyItemRemoved(data.indexOf(removed));
 
-            data = new ArrayList<>(Library.getPlaylists());
+            adapter.data.clear();
+            adapter.data.addAll(Library.getPlaylists());
         }
 
         @Override
         public void onPlaylistAdded(Playlist added) {
-            data = new ArrayList<>(Library.getPlaylists());
+            adapter.data.clear();
+            adapter.data.addAll(Library.getPlaylists());
+
             if (data.contains(added))
                 notifyItemInserted(data.indexOf(added));
         }
