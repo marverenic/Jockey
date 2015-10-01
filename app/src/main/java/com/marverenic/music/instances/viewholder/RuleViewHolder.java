@@ -2,6 +2,7 @@ package com.marverenic.music.instances.viewholder;
 
 import android.content.Context;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.RecyclerView;
@@ -16,19 +17,29 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AutoPlaylistEditor;
 import com.marverenic.music.instances.AutoPlaylist;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, AdapterView.OnItemSelectedListener, TextWatcher {
 
-    AutoPlaylistEditor.Adapter parent;
-    View itemView;
-    AutoPlaylist.Rule reference;
+    private AutoPlaylistEditor.Adapter parent;
+    private View itemView;
+    private AutoPlaylist.Rule reference;
 
-    AppCompatSpinner typeDropDown;
-    AppCompatSpinner fieldDropDown;
-    AppCompatEditText editText;
+    private AppCompatSpinner typeDropDown;
+    private AppCompatSpinner fieldDropDown;
+    private AppCompatEditText editText;
+    private TextInputLayout textInputLayout;
+
+    private final DateFormat dateFormat;
+    private final String datePattern;
 
     public RuleViewHolder(View itemView, AutoPlaylistEditor.Adapter adapter) {
         super(itemView);
@@ -40,7 +51,9 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
         typeDropDown = (AppCompatSpinner) itemView.findViewById(R.id.typeSelector);
         fieldDropDown = (AppCompatSpinner) itemView.findViewById(R.id.fieldSelector);
+
         editText = (AppCompatEditText) itemView.findViewById(R.id.valueEditText);
+        textInputLayout = (TextInputLayout) itemView.findViewById(R.id.valueInputLayout);
 
         fieldDropDown.setAdapter(new FieldAdapter(itemView.getContext()));
 
@@ -48,6 +61,16 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         fieldDropDown.setOnItemSelectedListener(this);
 
         editText.addTextChangedListener(this);
+
+        // Set up a SimpleDate format
+        dateFormat = SimpleDateFormat.getDateInstance(DateFormat.SHORT);
+
+        // Figure out the pattern of the dateFormat by parsing January 2, 1970...
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(24 * 60 * 60 * 1000 - c.getTimeZone().getRawOffset() + 1);
+        // ... And converting the result into a pattern
+        datePattern = dateFormat.format(c.getTime())
+                .replace("19", "YY").replace("70", "YY").replace("1", "MM").replace("2", "DD");
     }
 
     public void update(AutoPlaylist.Rule rule) {
@@ -58,7 +81,13 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         FieldAdapter fieldAdapter = (FieldAdapter) fieldDropDown.getAdapter();
         fieldDropDown.setSelection(fieldAdapter.lookupIndex(rule.field, rule.match));
 
-        editText.setText(rule.value);
+        if (rule.field == AutoPlaylist.Rule.Field.DATE_PLAYED || rule.field == AutoPlaylist.Rule.Field.DATE_ADDED) {
+            Calendar c = Calendar.getInstance();
+            c.setTimeInMillis(Integer.parseInt(rule.value) * 1000);
+            editText.setText(dateFormat.format(c.getTime()));
+        } else {
+            editText.setText(rule.value);
+        }
     }
 
     @Override
@@ -97,12 +126,7 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
             reference.field = fieldAdapter.getRuleField(position);
             reference.match = fieldAdapter.getRuleMatch(position);
 
-            if (editText.getInputType() != fieldAdapter.getInputType(position)) {
-                // If the input type changes, clear the text that the user has entered and change
-                // the input type
-                editText.setText("");
-                editText.setInputType(fieldAdapter.getInputType(position));
-            }
+            editText.setInputType(fieldAdapter.getInputType(position));
         }
     }
 
@@ -118,7 +142,42 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        reference.value = s.toString();
+        if ((editText.getInputType() & InputType.TYPE_CLASS_DATETIME) == InputType.TYPE_CLASS_DATETIME) {
+            // Handle calendar conversions
+            try {
+                Calendar c = Calendar.getInstance();
+                c.setTime(dateFormat.parse(s.toString()));
+                // Take year shorthand into account
+                final int year = c.get(Calendar.YEAR);
+                if (year < 100) {
+                    int currentYear = Calendar.getInstance().get(Calendar.YEAR) % 100;
+                    int century = currentYear / 100; // The one century offset doesn't matter here
+                    int lowYear = year + (century - 1) * 100;
+                    int highYear = year + century * 100;
+
+                    // Whichever year is closer to the current date is more likely, favoring
+                    // dates in the past
+                    if (year - lowYear <= highYear - year) {
+                        c.set(Calendar.YEAR, lowYear);
+                    } else {
+                        c.set(Calendar.YEAR, highYear);
+                    }
+                }
+
+                reference.value = Long.toString(c.getTimeInMillis() / 1000);
+                textInputLayout.setError(null);
+            } catch (ParseException e) {
+                if (!datePattern.equals(textInputLayout.getError())) {
+                    textInputLayout.setError(datePattern);
+                }
+                Crashlytics.logException(e);
+                e.printStackTrace();
+            }
+        } else {
+            // Handle all other conversions
+            reference.value = s.toString();
+            textInputLayout.setError(null); // TODO show more errors
+        }
     }
 
     @Override
@@ -189,12 +248,12 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                 InputType.TYPE_CLASS_NUMBER,
                 InputType.TYPE_CLASS_NUMBER,
                 InputType.TYPE_CLASS_NUMBER,
-                InputType.TYPE_CLASS_NUMBER, // TODO implement dates
-                InputType.TYPE_CLASS_NUMBER,
-                InputType.TYPE_CLASS_NUMBER,
-                InputType.TYPE_CLASS_NUMBER, // TODO implement dates
-                InputType.TYPE_CLASS_NUMBER,
-                InputType.TYPE_CLASS_NUMBER
+                InputType.TYPE_CLASS_DATETIME | InputType.TYPE_DATETIME_VARIATION_DATE,
+                InputType.TYPE_CLASS_DATETIME | InputType.TYPE_DATETIME_VARIATION_DATE,
+                InputType.TYPE_CLASS_DATETIME | InputType.TYPE_DATETIME_VARIATION_DATE,
+                InputType.TYPE_CLASS_DATETIME | InputType.TYPE_DATETIME_VARIATION_DATE,
+                InputType.TYPE_CLASS_DATETIME | InputType.TYPE_DATETIME_VARIATION_DATE,
+                InputType.TYPE_CLASS_DATETIME | InputType.TYPE_DATETIME_VARIATION_DATE
         };
 
         private Context context;
