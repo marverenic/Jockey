@@ -138,7 +138,7 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
             menu.getItem(1).setTitle(getResources().getString(R.string.action_enable_repeat_one));
         } else {
             if (PlayerController.isRepeatOne()) {
-                menu.getItem(1).setIcon(R.drawable.ic_repeat_one_36dp);
+                menu.getItem(1).setIcon(R.drawable.ic_repeat_one_24dp);
                 menu.getItem(1).setTitle(getResources().getString(R.string.action_disable_repeat));
             } else {
                 menu.getItem(1).getIcon().setAlpha(128);
@@ -177,13 +177,13 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
                     toast.show();
                 } else {
                     if (PlayerController.isRepeatOne()) {
-                        item.setIcon(R.drawable.ic_repeat_one_36dp);
+                        item.setIcon(R.drawable.ic_repeat_one_24dp);
                         item.setTitle(getResources().getString(R.string.action_disable_repeat));
                         Toast toast = Toast.makeText(this, R.string.confirm_enable_repeat_one, Toast.LENGTH_SHORT);
                         toast.setGravity(Gravity.CENTER, 0, 0);
                         toast.show();
                     } else {
-                        item.setIcon(R.drawable.ic_repeat_36dp);
+                        item.setIcon(R.drawable.ic_repeat_24dp);
                         item.getIcon().setAlpha(128);
                         item.setTitle(getResources().getString(R.string.action_enable_repeat));
                         Toast toast = Toast.makeText(this, R.string.confirm_disable_repeat, Toast.LENGTH_SHORT);
@@ -356,7 +356,7 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
             final SeekBar seekBar = ((SeekBar) findViewById(R.id.songSeekBar));
 
             if ((PlayerController.isPlaying() || PlayerController.isPreparing())) {
-                ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_pause_circle_filled_72dp);
+                ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_pause_circle_fill_72dp);
 
                 if (!PlayerController.isPreparing()) {
                     if (!observer.isRunning()) new Thread(observer).start();
@@ -371,7 +371,7 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
             else {
                 seekBar.setMax(PlayerController.getDuration());
                 seekBar.setProgress(PlayerController.getCurrentPosition());
-                ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_circle_filled_72dp);
+                ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_circle_fill_72dp);
             }
         }
     }

@@ -37,8 +37,8 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
 
         // Setup the FAB
         FABMenu fab = (FABMenu) findViewById(R.id.fab);
-        fab.addChild(R.drawable.ic_add_36dp, this, R.string.playlist);
-        fab.addChild(R.drawable.ic_add_36dp, this, R.string.playlist_auto);
+        fab.addChild(R.drawable.ic_add_24dp, this, R.string.playlist);
+        fab.addChild(R.drawable.ic_add_24dp, this, R.string.playlist_auto);
 
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/ruleInstance"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -27,7 +28,8 @@
         android:layout_height="wrap_content"
         android:layout_toStartOf="@+id/instanceRemove"
         android:layout_toLeftOf="@+id/instanceRemove"
-        android:layout_below="@id/fieldSelector">
+        android:layout_below="@id/fieldSelector"
+        app:errorEnabled="true">
 
         <android.support.v7.widget.AppCompatEditText
             android:id="@+id/valueEditText"
@@ -42,11 +44,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="8dp"
-        android:src="@drawable/ic_delete_36dp"
+        android:src="@drawable/ic_clear_24dp"
         android:tint="?textColorPrimary"
         android:background="?android:attr/selectableItemBackground"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"/>
+        android:layout_centerInParent="true"/>
 
 </RelativeLayout>

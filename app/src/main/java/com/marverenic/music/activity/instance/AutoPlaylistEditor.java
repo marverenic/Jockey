@@ -46,7 +46,7 @@ public class AutoPlaylistEditor extends BaseActivity {
             } else {
                 getSupportActionBar().setTitle(reference.playlistName);
             }
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_done_36dp);
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_done_24dp);
         }
 
         if (reference == null) {
