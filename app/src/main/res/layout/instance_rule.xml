@@ -22,6 +22,16 @@
         android:layout_toEndOf="@+id/typeSelector"
         android:entries="@array/auto_plist_fields"/>
 
+    <android.support.v7.widget.AppCompatSpinner
+        android:id="@+id/valueSpinner"
+        android:visibility="invisible"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_toStartOf="@+id/instanceRemove"
+        android:layout_toLeftOf="@+id/instanceRemove"
+        android:layout_below="@id/fieldSelector"/>
+
     <android.support.design.widget.TextInputLayout
         android:id="@+id/valueInputLayout"
         android:layout_width="fill_parent"
@@ -33,6 +43,7 @@
 
         <android.support.v7.widget.AppCompatEditText
             android:id="@+id/valueEditText"
+            android:visibility="invisible"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="number"/>

@@ -18,9 +18,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
+import com.marverenic.music.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AutoPlaylistEditor;
+import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.AutoPlaylist;
+import com.marverenic.music.instances.Song;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -35,8 +38,9 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
     private AppCompatSpinner typeDropDown;
     private AppCompatSpinner fieldDropDown;
-    private AppCompatEditText editText;
-    private TextInputLayout textInputLayout;
+    private AppCompatEditText valueEditText;
+    private TextInputLayout valueInputLayout;
+    private AppCompatSpinner valueSpinner;
 
     private final DateFormat dateFormat;
     private final String datePattern;
@@ -46,21 +50,24 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         this.itemView = itemView;
         parent = adapter;
 
-        ImageView menuButton = (ImageView) itemView.findViewById(R.id.instanceRemove);
-        menuButton.setOnClickListener(this);
+        ImageView removeButton = (ImageView) itemView.findViewById(R.id.instanceRemove);
+        removeButton.setOnClickListener(this);
 
         typeDropDown = (AppCompatSpinner) itemView.findViewById(R.id.typeSelector);
         fieldDropDown = (AppCompatSpinner) itemView.findViewById(R.id.fieldSelector);
 
-        editText = (AppCompatEditText) itemView.findViewById(R.id.valueEditText);
-        textInputLayout = (TextInputLayout) itemView.findViewById(R.id.valueInputLayout);
+        valueEditText = (AppCompatEditText) itemView.findViewById(R.id.valueEditText);
+        valueInputLayout = (TextInputLayout) itemView.findViewById(R.id.valueInputLayout);
+        valueSpinner = (AppCompatSpinner) itemView.findViewById(R.id.valueSpinner);
 
         fieldDropDown.setAdapter(new FieldAdapter(itemView.getContext()));
+        valueSpinner.setAdapter(new InstanceAdapter());
 
         typeDropDown.setOnItemSelectedListener(this);
         fieldDropDown.setOnItemSelectedListener(this);
+        valueSpinner.setOnItemSelectedListener(this);
 
-        editText.addTextChangedListener(this);
+        valueEditText.addTextChangedListener(this);
 
         // Set up a SimpleDate format
         dateFormat = SimpleDateFormat.getDateInstance(DateFormat.SHORT);
@@ -84,9 +91,14 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         if (rule.field == AutoPlaylist.Rule.Field.DATE_PLAYED || rule.field == AutoPlaylist.Rule.Field.DATE_ADDED) {
             Calendar c = Calendar.getInstance();
             c.setTimeInMillis(Integer.parseInt(rule.value) * 1000);
-            editText.setText(dateFormat.format(c.getTime()));
+            valueEditText.setText(dateFormat.format(c.getTime()));
+        } else if (rule.field == AutoPlaylist.Rule.Field.ID) {
+            InstanceAdapter valueAdapter = ((InstanceAdapter) valueSpinner.getAdapter());
+            valueAdapter.setType(rule.type);
+            valueSpinner.setSelection(
+                    valueAdapter.lookupIndexForId(Long.parseLong(rule.value)));
         } else {
-            editText.setText(rule.value);
+            valueEditText.setText(rule.value);
         }
     }
 
@@ -118,6 +130,12 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         // the rule this viewHolder refers to
         if (view.getParent().equals(typeDropDown)) {
             ((FieldAdapter) fieldDropDown.getAdapter()).setType(position);
+
+            if (reference.type != position) {
+                ((InstanceAdapter) valueSpinner.getAdapter()).setType(position);
+                valueSpinner.setSelection(0);
+            }
+
             reference.type = position;
         }
         // When a field and match are chosen, update the rule that this viewholder refers to
@@ -126,7 +144,20 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
             reference.field = fieldAdapter.getRuleField(position);
             reference.match = fieldAdapter.getRuleMatch(position);
 
-            editText.setInputType(fieldAdapter.getInputType(position));
+            valueEditText.setInputType(fieldAdapter.getInputType(position));
+
+            if (reference.field == AutoPlaylist.Rule.Field.ID) {
+                valueEditText.setVisibility(View.INVISIBLE);
+                valueSpinner.setVisibility(View.VISIBLE);
+            } else {
+                valueEditText.setVisibility(View.VISIBLE);
+                valueSpinner.setVisibility(View.INVISIBLE);
+            }
+        }
+        if (view.getParent().equals(valueSpinner)) {
+            if (reference.field == AutoPlaylist.Rule.Field.ID) {
+                reference.value = Long.toString(id);
+            }
         }
     }
 
@@ -142,7 +173,7 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        if ((editText.getInputType() & InputType.TYPE_CLASS_DATETIME) == InputType.TYPE_CLASS_DATETIME) {
+        if ((valueEditText.getInputType() & InputType.TYPE_CLASS_DATETIME) == InputType.TYPE_CLASS_DATETIME) {
             // Handle calendar conversions
             try {
                 Calendar c = Calendar.getInstance();
@@ -165,10 +196,10 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                 }
 
                 reference.value = Long.toString(c.getTimeInMillis() / 1000);
-                textInputLayout.setError(null);
+                valueInputLayout.setError(null);
             } catch (ParseException e) {
-                if (!datePattern.equals(textInputLayout.getError())) {
-                    textInputLayout.setError(datePattern);
+                if (!datePattern.equals(valueInputLayout.getError())) {
+                    valueInputLayout.setError(datePattern);
                 }
                 Crashlytics.logException(e);
                 e.printStackTrace();
@@ -176,7 +207,7 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         } else {
             // Handle all other conversions
             reference.value = s.toString();
-            textInputLayout.setError(null); // TODO show more errors
+            valueInputLayout.setError(null); // TODO show more errors
         }
     }
 
@@ -343,6 +374,107 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
             TextView textView = (TextView) convertView.findViewById(android.R.id.text1);
             textView.setText(songChoices[position]);
+
+            return convertView;
+        }
+    }
+
+    private static class InstanceAdapter extends BaseAdapter {
+
+        private int type;
+
+        public InstanceAdapter() {
+            type = AutoPlaylist.Rule.Type.SONG;
+        }
+
+        @Override
+        public int getCount() {
+            switch (type) {
+                case AutoPlaylist.Rule.Type.PLAYLIST:
+                    return Library.getPlaylists().size();
+                case AutoPlaylist.Rule.Type.SONG:
+                    return Library.getSongs().size();
+                case AutoPlaylist.Rule.Type.ARTIST:
+                    return Library.getArtists().size();
+                case AutoPlaylist.Rule.Type.ALBUM:
+                    return Library.getAlbums().size();
+                case AutoPlaylist.Rule.Type.GENRE:
+                    return Library.getGenres().size();
+            }
+            return 0;
+        }
+
+        public void setType(int type) {
+            this.type = type;
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            switch (type) {
+                case AutoPlaylist.Rule.Type.PLAYLIST:
+                    return Library.getPlaylists().get(position);
+                case AutoPlaylist.Rule.Type.SONG:
+                    return Library.getSongs().get(position);
+                case AutoPlaylist.Rule.Type.ARTIST:
+                    return Library.getArtists().get(position);
+                case AutoPlaylist.Rule.Type.ALBUM:
+                    return Library.getAlbums().get(position);
+                case AutoPlaylist.Rule.Type.GENRE:
+                    return Library.getGenres().get(position);
+            }
+            return null;
+        }
+
+        public int lookupIndexForId(long id) {
+            final int count = getCount();
+            for (int i = 0; i < count; i++) {
+                if (getItemId(i) == id) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            switch (type) {
+                case AutoPlaylist.Rule.Type.PLAYLIST:
+                    return Library.getPlaylists().get(position).playlistId;
+                case AutoPlaylist.Rule.Type.SONG:
+                    return Library.getSongs().get(position).songId;
+                case AutoPlaylist.Rule.Type.ARTIST:
+                    return Library.getArtists().get(position).artistId;
+                case AutoPlaylist.Rule.Type.ALBUM:
+                    return Library.getAlbums().get(position).albumId;
+                case AutoPlaylist.Rule.Type.GENRE:
+                    return Library.getGenres().get(position).genreId;
+            }
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = LayoutInflater
+                        .from(parent.getContext())
+                        .inflate(R.layout.instance_spinner, parent, false);
+            }
+
+            Object reference = getItem(position);
+
+            TextView titleText = (TextView) convertView.findViewById(android.R.id.text1);
+            TextView detailText = (TextView) convertView.findViewById(android.R.id.text2);
+
+            titleText.setText(reference.toString());
+
+            if (reference instanceof Song) {
+                detailText.setText(((Song) reference).artistName);
+            } else if (reference instanceof Album) {
+                detailText.setText(((Album) reference).artistName);
+            } else {
+                detailText.setVisibility(View.GONE);
+            }
 
             return convertView;
         }
