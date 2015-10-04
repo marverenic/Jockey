@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Locale;
 
 public class AutoPlaylist extends Playlist implements Parcelable {
 
@@ -169,25 +168,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                 Collections.shuffle(in);
                 break;
             case Rule.Field.NAME:
-                Collections.sort(in, new Comparator<Song>() {
-                    @Override
-                    public int compare(Song o1, Song o2) {
-                        String o1c = o1.songName.toLowerCase(Locale.ENGLISH);
-                        String o2c = o2.songName.toLowerCase(Locale.ENGLISH);
-                        if (o1c.startsWith("the ")) {
-                            o1c = o1c.substring(4);
-                        } else if (o1c.startsWith("a ")) {
-                            o1c = o1c.substring(2);
-                        }
-                        if (o2c.startsWith("the ")) {
-                            o2c = o2c.substring(4);
-                        } else if (o2c.startsWith("a ")) {
-                            o2c = o2c.substring(2);
-                        }
-                        if (sortAscending) return o1c.compareTo(o2c);
-                        else return o2c.compareTo(o1c);
-                    }
-                });
+                Library.sortSongList(in);
                 break;
             case Rule.Field.PLAY_COUNT:
                 Collections.sort(in, new Comparator<Song>() {
