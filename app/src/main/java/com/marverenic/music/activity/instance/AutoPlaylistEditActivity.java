@@ -24,7 +24,7 @@ import com.marverenic.music.view.DividerDecoration;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class AutoPlaylistEditor extends BaseActivity {
+public class AutoPlaylistEditActivity extends BaseActivity {
 
     public static final String PLAYLIST_EXTRA = "auto-playlist";
 
@@ -137,13 +137,13 @@ public class AutoPlaylistEditor extends BaseActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             saveChanges();
-                            Navigate.back(AutoPlaylistEditor.this);
+                            Navigate.back(AutoPlaylistEditActivity.this);
                         }
                     })
                     .setNegativeButton("Discard", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Navigate.back(AutoPlaylistEditor.this);
+                            Navigate.back(AutoPlaylistEditActivity.this);
                         }
                     })
                     .setNeutralButton("Cancel", null)

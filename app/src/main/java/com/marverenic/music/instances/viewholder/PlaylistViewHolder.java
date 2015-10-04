@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.marverenic.music.Library;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
-import com.marverenic.music.activity.instance.AutoPlaylistEditor;
+import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
 import com.marverenic.music.activity.instance.PlaylistActivity;
 import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Playlist;
@@ -85,8 +85,8 @@ public class PlaylistViewHolder extends RecyclerView.ViewHolder implements View.
         if (reference instanceof AutoPlaylist) {
             switch (menuItem.getItemId()) {
                 case 2: //Edit this playlist
-                    Navigate.to(context, AutoPlaylistEditor.class,
-                            AutoPlaylistEditor.PLAYLIST_EXTRA, reference);
+                    Navigate.to(context, AutoPlaylistEditActivity.class,
+                            AutoPlaylistEditActivity.PLAYLIST_EXTRA, reference);
                     return true;
                 case 3: // Delete this playlist
                     Library.removePlaylist(itemView, reference);

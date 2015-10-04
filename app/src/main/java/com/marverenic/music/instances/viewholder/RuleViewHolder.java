@@ -20,7 +20,7 @@ import android.widget.TextView;
 import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.Library;
 import com.marverenic.music.R;
-import com.marverenic.music.activity.instance.AutoPlaylistEditor;
+import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Song;
@@ -32,7 +32,7 @@ import java.util.Calendar;
 
 public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, AdapterView.OnItemSelectedListener, TextWatcher {
 
-    private AutoPlaylistEditor.Adapter parent;
+    private AutoPlaylistEditActivity.Adapter parent;
     private View itemView;
     private AutoPlaylist.Rule reference;
 
@@ -45,7 +45,7 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     private final DateFormat dateFormat;
     private final String datePattern;
 
-    public RuleViewHolder(View itemView, AutoPlaylistEditor.Adapter adapter) {
+    public RuleViewHolder(View itemView, AutoPlaylistEditActivity.Adapter adapter) {
         super(itemView);
         this.itemView = itemView;
         parent = adapter;

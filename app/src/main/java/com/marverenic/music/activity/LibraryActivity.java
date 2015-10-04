@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import com.marverenic.music.Library;
 import com.marverenic.music.R;
-import com.marverenic.music.activity.instance.AutoPlaylistEditor;
+import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
 import com.marverenic.music.fragments.AlbumFragment;
 import com.marverenic.music.fragments.ArtistFragment;
 import com.marverenic.music.fragments.GenreFragment;
@@ -99,7 +99,7 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
             if (v.getTag().equals("fab-" + getString(R.string.playlist))) {
                 PlaylistDialog.MakeNormal.alert(findViewById(R.id.coordinator_layout));
             } else if (v.getTag().equals("fab-" + getString(R.string.playlist_auto))) {
-                Navigate.to(this, AutoPlaylistEditor.class, AutoPlaylistEditor.PLAYLIST_EXTRA, null);
+                Navigate.to(this, AutoPlaylistEditActivity.class, AutoPlaylistEditActivity.PLAYLIST_EXTRA, null);
             }
         }
     }

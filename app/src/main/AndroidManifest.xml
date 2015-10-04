@@ -48,7 +48,7 @@
             android:name=".activity.instance.GenreActivity"
             android:windowSoftInputMode="adjustPan|adjustNothing"/>
         <activity
-            android:name=".activity.instance.AutoPlaylistEditor" />
+            android:name=".activity.instance.AutoPlaylistEditActivity" />
 
         <!-- Now Playing Activity -->
         <activity
