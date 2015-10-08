@@ -50,6 +50,7 @@ public class QueueActivity extends BaseActivity {
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        layoutManager.scrollToPosition(PlayerController.getQueuePosition());
         songRecyclerView.setLayoutManager(layoutManager);
 
         dragDropManager.attachRecyclerView(songRecyclerView);
