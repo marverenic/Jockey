@@ -283,8 +283,6 @@ public class AutoPlaylist extends Playlist implements Parcelable {
 
     public static class Rule implements Parcelable {
 
-        public static final int NULL = -0;
-
         public static final class Type {
             public static final int PLAYLIST = 0;
             public static final int SONG = 1;
@@ -310,7 +308,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
             public static final int GREATER_THAN = 17;
         }
 
-        public static final Rule EMPTY = new Rule(Type.SONG, NULL, NULL, "");
+        public static final Rule EMPTY = new Rule(Type.SONG, Field.NAME, Match.CONTAINS, "");
 
         public int type;
         public int match;
