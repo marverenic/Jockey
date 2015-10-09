@@ -36,7 +36,7 @@ public class AutoPlaylistEditActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_instance);
+        setContentView(R.layout.activity_instance_no_miniplayer);
 
         reference = getIntent().getParcelableExtra(PLAYLIST_EXTRA);
 
@@ -154,6 +154,9 @@ public class AutoPlaylistEditActivity extends BaseActivity {
             super.onBackPressed();
         }
     }
+
+    @Override
+    public void updateMiniplayer() {}
 
     public static class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 

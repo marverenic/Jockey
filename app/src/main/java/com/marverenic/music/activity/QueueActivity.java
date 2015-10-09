@@ -32,7 +32,7 @@ public class QueueActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_instance);
+        setContentView(R.layout.activity_instance_no_miniplayer);
 
         data = PlayerController.getQueue();
 
@@ -87,6 +87,9 @@ public class QueueActivity extends BaseActivity {
         data = PlayerController.getQueue();
         adapter.notifyDataSetChanged();
     }
+
+    @Override
+    public void updateMiniplayer() {}
 
     public class Adapter extends RecyclerView.Adapter<DraggableSongViewHolder> implements DraggableItemAdapter<DraggableSongViewHolder>, View.OnClickListener {
 
