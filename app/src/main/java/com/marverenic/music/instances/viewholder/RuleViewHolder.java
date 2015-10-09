@@ -478,5 +478,31 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
             return convertView;
         }
+
+        @Override
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = LayoutInflater
+                        .from(parent.getContext())
+                        .inflate(R.layout.instance_spinner_dropdown, parent, false);
+            }
+
+            Object reference = getItem(position);
+
+            TextView titleText = (TextView) convertView.findViewById(android.R.id.text1);
+            TextView detailText = (TextView) convertView.findViewById(android.R.id.text2);
+
+            titleText.setText(reference.toString());
+
+            if (reference instanceof Song) {
+                detailText.setText(((Song) reference).artistName);
+            } else if (reference instanceof Album) {
+                detailText.setText(((Album) reference).artistName);
+            } else {
+                detailText.setVisibility(View.GONE);
+            }
+
+            return convertView;
+        }
     }
 }
