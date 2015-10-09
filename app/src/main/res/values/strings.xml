@@ -202,25 +202,6 @@
     <string name="logging_description">Help improve Jockey</string>
 
     <!-- Auto playlist Strings -->
-    <string name="auto_plist_id_eq">Is</string>
-    <string name="auto_plist_id_ne">Isn\'t</string>
-    <string name="auto_plist_name_eq">Name is</string>
-    <string name="auto_plist_name_ne">Name isn\'t</string>
-    <string name="auto_plist_name_has">Name contains</string>
-    <string name="auto_plist_name_has_not">Name doesn\'t contain</string>
-    <string name="auto_plist_skip_eq">Has skip count equal to</string>
-    <string name="auto_plist_skip_lt">Has skip count less than</string>
-    <string name="auto_plist_skip_gt">Has skip count greater than</string>
-    <string name="auto_plist_play_eq">Has play count equal to</string>
-    <string name="auto_plist_play_lt">Has play count less than</string>
-    <string name="auto_plist_play_gt">Has play count greater than</string>
-    <string name="auto_plist_added_after">Was added after</string>
-    <string name="auto_plist_added_before">Was added before</string>
-    <string name="auto_plist_added_on">Was added on</string>
-    <string name="auto_plist_last_play_after">Has been played since</string>
-    <string name="auto_plist_last_play_before">Hasn\'t been played since</string>
-    <string name="auto_plist_last_play_on">Was last played on</string>
-
     <string-array name="auto_plist_choose_by">
         <item>Random</item>
         <item>Name</item>
@@ -241,24 +222,24 @@
         <item>Genre</item>
     </string-array>
     <string-array name="auto_plist_fields">
-        <item>@string/auto_plist_id_eq</item>
-        <item>@string/auto_plist_id_ne</item>
-        <item>@string/auto_plist_name_eq</item>
-        <item>@string/auto_plist_name_ne</item>
-        <item>@string/auto_plist_name_has</item>
-        <item>@string/auto_plist_name_has_not</item>
-        <item>@string/auto_plist_play_lt</item>
-        <item>@string/auto_plist_play_eq</item>
-        <item>@string/auto_plist_play_gt</item>
-        <item>@string/auto_plist_skip_lt</item>
-        <item>@string/auto_plist_skip_eq</item>
-        <item>@string/auto_plist_skip_gt</item>
-        <item>@string/auto_plist_added_before</item>
-        <item>@string/auto_plist_added_on</item>
-        <item>@string/auto_plist_added_after</item>
-        <item>@string/auto_plist_last_play_before</item>
-        <item>@string/auto_plist_last_play_on</item>
-        <item>@string/auto_plist_last_play_after</item>
+        <item>Is</item>
+        <item>Isn\'t</item>
+        <item>Name is</item>
+        <item>Name isn\'t</item>
+        <item>Name contains</item>
+        <item>Name doesn\'t contain</item>
+        <item>Has play count less than</item>
+        <item>Has play count equal to</item>
+        <item>Has play count greater than</item>
+        <item>Has skip count less than</item>
+        <item>Has skip count equal to</item>
+        <item>Has skip count greater than</item>
+        <item>Was added after</item>
+        <item>Was added before</item>
+        <item>Was added on</item>
+        <item>Was last played before</item>
+        <item>Was last played on</item>
+        <item>Has been played since</item>
     </string-array>
 
     <!-- Arrays -->
