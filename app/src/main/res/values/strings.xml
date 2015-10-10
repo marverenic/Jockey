@@ -38,6 +38,7 @@
     <string name="action_enable_repeat">Enable repeat</string>
     <string name="action_enable_repeat_one">Enable repeat one</string>
     <string name="action_add_to_playlist">Add to playlist&#8230;</string>
+    <string name="action_done">Done</string>
 
     <!-- Other Actions -->
     <string name="action_skip">Skip</string>

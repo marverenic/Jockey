@@ -1,36 +1,40 @@
 package com.marverenic.music.instances.viewholder;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.DatePicker;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Song;
+import com.marverenic.music.utils.Themes;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, AdapterView.OnItemSelectedListener, TextWatcher {
+public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
     private AutoPlaylistEditActivity.Adapter parent;
     private View itemView;
@@ -38,12 +42,11 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
     private AppCompatSpinner typeDropDown;
     private AppCompatSpinner fieldDropDown;
-    private AppCompatEditText valueEditText;
-    private TextInputLayout valueInputLayout;
+    private FrameLayout valueTextWrapper;
+    private TextView valueText;
     private AppCompatSpinner valueSpinner;
 
     private final DateFormat dateFormat;
-    private final String datePattern;
 
     public RuleViewHolder(View itemView, AutoPlaylistEditActivity.Adapter adapter) {
         super(itemView);
@@ -56,8 +59,8 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         typeDropDown = (AppCompatSpinner) itemView.findViewById(R.id.typeSelector);
         fieldDropDown = (AppCompatSpinner) itemView.findViewById(R.id.fieldSelector);
 
-        valueEditText = (AppCompatEditText) itemView.findViewById(R.id.valueEditText);
-        valueInputLayout = (TextInputLayout) itemView.findViewById(R.id.valueInputLayout);
+        valueText = (TextView) itemView.findViewById(R.id.valueText);
+        valueTextWrapper = (FrameLayout) itemView.findViewById(R.id.valueTextWrapper);
         valueSpinner = (AppCompatSpinner) itemView.findViewById(R.id.valueSpinner);
 
         fieldDropDown.setAdapter(new FieldAdapter(itemView.getContext()));
@@ -67,17 +70,10 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         fieldDropDown.setOnItemSelectedListener(this);
         valueSpinner.setOnItemSelectedListener(this);
 
-        valueEditText.addTextChangedListener(this);
+        valueTextWrapper.setOnClickListener(this);
 
         // Set up a SimpleDate format
-        dateFormat = SimpleDateFormat.getDateInstance(DateFormat.SHORT);
-
-        // Figure out the pattern of the dateFormat by parsing January 2, 1970...
-        Calendar c = Calendar.getInstance();
-        c.setTimeInMillis(24 * 60 * 60 * 1000 - c.getTimeZone().getRawOffset() + 1);
-        // ... And converting the result into a pattern
-        datePattern = dateFormat.format(c.getTime())
-                .replace("19", "YY").replace("70", "YY").replace("1", "MM").replace("2", "DD");
+        dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM);
     }
 
     public void update(AutoPlaylist.Rule rule) {
@@ -91,14 +87,14 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         if (rule.field == AutoPlaylist.Rule.Field.DATE_PLAYED || rule.field == AutoPlaylist.Rule.Field.DATE_ADDED) {
             Calendar c = Calendar.getInstance();
             c.setTimeInMillis(Integer.parseInt(rule.value) * 1000);
-            valueEditText.setText(dateFormat.format(c.getTime()));
+            valueText.setText(dateFormat.format(c.getTime()));
         } else if (rule.field == AutoPlaylist.Rule.Field.ID) {
             InstanceAdapter valueAdapter = ((InstanceAdapter) valueSpinner.getAdapter());
             valueAdapter.setType(rule.type);
             valueSpinner.setSelection(
                     valueAdapter.lookupIndexForId(Long.parseLong(rule.value)));
         } else {
-            valueEditText.setText(rule.value);
+            valueText.setText(rule.value);
         }
     }
 
@@ -119,6 +115,123 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                         }
                     })
                     .show();
+        } else if (v.getId() == R.id.valueTextWrapper) {
+            // Show a date picker if relevant, otherwise use a regular AlertDialog to get user input
+            if (reference.field == AutoPlaylist.Rule.Field.DATE_ADDED
+                    || reference.field == AutoPlaylist.Rule.Field.DATE_PLAYED) {
+                // Calculate the date stored in the reference
+                Calendar calendar = Calendar.getInstance();
+                try {
+                    int timestamp = Integer.parseInt(reference.value);
+                    calendar.setTimeInMillis(timestamp * 1000);
+                } catch (NumberFormatException ignored) {
+                    // If the reference's value isn't valid, just use the current time as the
+                    // selected date
+                }
+
+                DatePickerDialog dateDialog = new DatePickerDialog (
+                        itemView.getContext(),
+                        new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                                Calendar c = Calendar.getInstance();
+                                c.set(year, monthOfYear, dayOfMonth);
+                                reference.value = Long.toString(c.getTimeInMillis() / 1000);
+                                update(reference);
+                            }
+                        },
+                        calendar.get(Calendar.YEAR),
+                        calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH));
+                dateDialog.show();
+
+            } else {
+                /*
+                 Ideally, the View that this ViewHolder wraps would have the EditText directly
+                 in it without doing the trickery below where it disguises a TextView as an EditText
+                 and opens an AlertDialog, but there are severe penalties with nesting EditTexts in
+                 a RecyclerView with a LinearLayoutManager. With no code in the ReyclerView
+                 Adapter's .onBindViewHolder() method, GC will kick in frequently when scrolling
+                 to free ~2MB from the heap while pausing for around 60ms (which may also be
+                 complimented by extra layout calls with the EditText). This has been previously
+                 reported to Google's AOSP bug tracker which provides more insight into this problem
+                 https://code.google.com/p/android/issues/detail?id=82586 (closed Feb '15)
+
+                 There are some workarounds to this issue, but the most practical suggestions that
+                 keep the previously mentioned layout are to use a ListView or to extend EditText
+                 or LinearLayout Manager (which either cause problems in themselves, don't work,
+                 or both).
+
+                 The solution used here simply avoids the problem all together by not nesting an
+                 EditText in a RecyclerView. When an EditText is needed, the user is prompted with
+                 an AlertDialog. It's not the best UX, but it's the most practical one for now.
+
+                 10/8/15
+                 */
+
+                final TextInputLayout inputLayout = new TextInputLayout(itemView.getContext());
+                final AppCompatEditText editText = new AppCompatEditText(itemView.getContext());
+
+                int type = ((FieldAdapter) fieldDropDown.getAdapter())
+                        .getInputType(fieldDropDown.getSelectedItemPosition());
+
+                editText.setInputType(type);
+                inputLayout.addView(editText);
+
+                final AlertDialog valueDialog = new AlertDialog.Builder(itemView.getContext())
+                        .setMessage(
+                                typeDropDown.getSelectedItem() + " "
+                                        + fieldDropDown.getSelectedItem().toString().toLowerCase())
+                        .setView(inputLayout)
+                        .setNegativeButton(R.string.action_cancel, null)
+                        .setPositiveButton(R.string.action_done, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (editText.getInputType() == InputType.TYPE_CLASS_NUMBER) {
+                                    try {
+                                        // Verify the input if this rule needs a numeric value
+                                        reference.value = Integer.toString(Integer.parseInt(
+                                                editText.getText().toString().trim()));
+
+                                    } catch (NumberFormatException e) {
+                                        // If the user inputted something that's not a number,
+                                        // reset it to 0
+                                        reference.value = "0";
+                                    }
+                                } else {
+                                    reference.value = editText.getText().toString().trim();
+                                }
+                                update(reference);
+                            }
+                        })
+                        .create();
+
+                valueDialog.getWindow()
+                        .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+                valueDialog.show();
+
+                int padding = (int) itemView.getResources().getDimension(R.dimen.alert_padding);
+                ((View) inputLayout.getParent()).setPadding(
+                        padding - inputLayout.getPaddingLeft(),
+                        0,
+                        padding - inputLayout.getPaddingRight(),
+                        0);
+
+                Themes.themeAlertDialog(valueDialog);
+
+                editText.setText(reference.value);
+                editText.setSelection(reference.value.length());
+                editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                    @Override
+                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                        if (actionId == KeyEvent.KEYCODE_ENDCALL) {
+                            valueDialog.getButton(DialogInterface.BUTTON_POSITIVE).callOnClick();
+                        }
+                        return false;
+                    }
+                });
+            }
         }
     }
 
@@ -144,14 +257,12 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
             reference.field = fieldAdapter.getRuleField(position);
             reference.match = fieldAdapter.getRuleMatch(position);
 
-            valueEditText.setInputType(fieldAdapter.getInputType(position));
-
             if (reference.field == AutoPlaylist.Rule.Field.ID) {
-                valueEditText.setVisibility(View.INVISIBLE);
+                valueTextWrapper.setVisibility(View.GONE);
                 valueSpinner.setVisibility(View.VISIBLE);
             } else {
-                valueEditText.setVisibility(View.VISIBLE);
-                valueSpinner.setVisibility(View.INVISIBLE);
+                valueTextWrapper.setVisibility(View.VISIBLE);
+                valueSpinner.setVisibility(View.GONE);
             }
         }
         if (view.getParent().equals(valueSpinner)) {
@@ -162,59 +273,7 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     }
 
     @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
-
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-    }
-
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-        if ((valueEditText.getInputType() & InputType.TYPE_CLASS_DATETIME) == InputType.TYPE_CLASS_DATETIME) {
-            // Handle calendar conversions
-            try {
-                Calendar c = Calendar.getInstance();
-                c.setTime(dateFormat.parse(s.toString()));
-                // Take year shorthand into account
-                final int year = c.get(Calendar.YEAR);
-                if (year < 100) {
-                    int currentYear = Calendar.getInstance().get(Calendar.YEAR) % 100;
-                    int century = currentYear / 100; // The one century offset doesn't matter here
-                    int lowYear = year + (century - 1) * 100;
-                    int highYear = year + century * 100;
-
-                    // Whichever year is closer to the current date is more likely, favoring
-                    // dates in the past
-                    if (year - lowYear <= highYear - year) {
-                        c.set(Calendar.YEAR, lowYear);
-                    } else {
-                        c.set(Calendar.YEAR, highYear);
-                    }
-                }
-
-                reference.value = Long.toString(c.getTimeInMillis() / 1000);
-                valueInputLayout.setError(null);
-            } catch (ParseException e) {
-                if (!datePattern.equals(valueInputLayout.getError())) {
-                    valueInputLayout.setError(datePattern);
-                }
-                Crashlytics.logException(e);
-                e.printStackTrace();
-            }
-        } else {
-            // Handle all other conversions
-            reference.value = s.toString();
-            valueInputLayout.setError(null); // TODO show more errors
-        }
-    }
-
-    @Override
-    public void afterTextChanged(Editable s) {
-
-    }
+    public void onNothingSelected(AdapterView<?> parent) {}
 
     private static class FieldAdapter extends BaseAdapter {
 
@@ -267,8 +326,8 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         };
 
         private static final int[] inputType = new int[] {
-                InputType.TYPE_CLASS_NUMBER, // TODO implement ids
-                InputType.TYPE_CLASS_NUMBER, // TODO implement ids
+                InputType.TYPE_NULL,
+                InputType.TYPE_NULL,
                 InputType.TYPE_CLASS_TEXT,
                 InputType.TYPE_CLASS_TEXT,
                 InputType.TYPE_CLASS_TEXT,
@@ -279,12 +338,12 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                 InputType.TYPE_CLASS_NUMBER,
                 InputType.TYPE_CLASS_NUMBER,
                 InputType.TYPE_CLASS_NUMBER,
-                InputType.TYPE_CLASS_DATETIME | InputType.TYPE_DATETIME_VARIATION_DATE,
-                InputType.TYPE_CLASS_DATETIME | InputType.TYPE_DATETIME_VARIATION_DATE,
-                InputType.TYPE_CLASS_DATETIME | InputType.TYPE_DATETIME_VARIATION_DATE,
-                InputType.TYPE_CLASS_DATETIME | InputType.TYPE_DATETIME_VARIATION_DATE,
-                InputType.TYPE_CLASS_DATETIME | InputType.TYPE_DATETIME_VARIATION_DATE,
-                InputType.TYPE_CLASS_DATETIME | InputType.TYPE_DATETIME_VARIATION_DATE
+                InputType.TYPE_NULL,
+                InputType.TYPE_NULL,
+                InputType.TYPE_NULL,
+                InputType.TYPE_NULL,
+                InputType.TYPE_NULL,
+                InputType.TYPE_NULL
         };
 
         private Context context;

@@ -30,21 +30,27 @@
         android:layout_toLeftOf="@+id/instanceRemove"
         android:layout_below="@id/fieldSelector"/>
 
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/valueInputLayout"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+    <FrameLayout
+        android:id="@+id/valueTextWrapper"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:layout_marginTop="8dp"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp"
         android:layout_toStartOf="@+id/instanceRemove"
         android:layout_toLeftOf="@+id/instanceRemove"
         android:layout_below="@id/fieldSelector">
 
-        <android.support.v7.widget.AppCompatEditText
-            android:id="@+id/valueEditText"
+        <TextView
+            android:id="@+id/valueText"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:inputType="none"/>
+            style="@style/Widget.AppCompat.EditText"
+            android:focusable="false"
+            android:clickable="false"
+            android:layout_gravity="center_vertical"/>
 
-    </android.support.design.widget.TextInputLayout>
+    </FrameLayout>
 
     <ImageView
         android:id="@+id/instanceRemove"

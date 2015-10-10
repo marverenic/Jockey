@@ -25,7 +25,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 30100
-        versionName "0.3_alpha-m0r1a.d5"
+        versionName "0.3_alpha-m0r1a.d6"
     }
     buildTypes {
         release {
