@@ -78,23 +78,43 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
     public void update(AutoPlaylist.Rule rule) {
         reference = rule;
+        update();
+    }
 
-        typeDropDown.setSelection(rule.type);
+    public void update() {
+        typeDropDown.setSelection(reference.type);
 
         FieldAdapter fieldAdapter = (FieldAdapter) fieldDropDown.getAdapter();
-        fieldDropDown.setSelection(fieldAdapter.lookupIndex(rule.field, rule.match));
+        fieldDropDown.setSelection(fieldAdapter.lookupIndex(reference.field, reference.match));
 
-        if (rule.field == AutoPlaylist.Rule.Field.DATE_PLAYED || rule.field == AutoPlaylist.Rule.Field.DATE_ADDED) {
+        if (reference.field == AutoPlaylist.Rule.Field.DATE_PLAYED
+                || reference.field == AutoPlaylist.Rule.Field.DATE_ADDED) {
+
             Calendar c = Calendar.getInstance();
-            c.setTimeInMillis(Integer.parseInt(rule.value) * 1000);
+            try {
+                c.setTimeInMillis(Long.parseLong(reference.value) * 1000);
+            } catch (NumberFormatException e) {
+                c.setTimeInMillis(System.currentTimeMillis());
+                reference.value = Long.toString(c.getTimeInMillis() / 1000);
+            }
+
             valueText.setText(dateFormat.format(c.getTime()));
-        } else if (rule.field == AutoPlaylist.Rule.Field.ID) {
+
+        } else if (reference.field == AutoPlaylist.Rule.Field.ID) {
             InstanceAdapter valueAdapter = ((InstanceAdapter) valueSpinner.getAdapter());
-            valueAdapter.setType(rule.type);
+            valueAdapter.setType(reference.type);
             valueSpinner.setSelection(
-                    valueAdapter.lookupIndexForId(Long.parseLong(rule.value)));
+                    valueAdapter.lookupIndexForId(Long.parseLong(reference.value)));
         } else {
-            valueText.setText(rule.value);
+            valueText.setText(reference.value);
+        }
+
+        if (reference.field == AutoPlaylist.Rule.Field.ID) {
+            valueTextWrapper.setVisibility(View.GONE);
+            valueSpinner.setVisibility(View.VISIBLE);
+        } else {
+            valueTextWrapper.setVisibility(View.VISIBLE);
+            valueSpinner.setVisibility(View.GONE);
         }
     }
 
@@ -122,11 +142,12 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                 // Calculate the date stored in the reference
                 Calendar calendar = Calendar.getInstance();
                 try {
-                    int timestamp = Integer.parseInt(reference.value);
-                    calendar.setTimeInMillis(timestamp * 1000);
+                    long timestamp = Long.parseLong(reference.value);
+                    calendar.setTimeInMillis(timestamp * 1000l);
                 } catch (NumberFormatException ignored) {
                     // If the reference's value isn't valid, just use the current time as the
                     // selected date
+                    calendar.setTimeInMillis(System.currentTimeMillis());
                 }
 
                 DatePickerDialog dateDialog = new DatePickerDialog (
@@ -136,8 +157,8 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                                 Calendar c = Calendar.getInstance();
                                 c.set(year, monthOfYear, dayOfMonth);
-                                reference.value = Long.toString(c.getTimeInMillis() / 1000);
-                                update(reference);
+                                reference.value = Long.toString(c.getTimeInMillis() / 1000l);
+                                update();
                             }
                         },
                         calendar.get(Calendar.YEAR),
@@ -201,7 +222,7 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                                 } else {
                                     reference.value = editText.getText().toString().trim();
                                 }
-                                update(reference);
+                                update();
                             }
                         })
                         .create();
@@ -254,15 +275,17 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         // When a field and match are chosen, update the rule that this viewholder refers to
         if (view.getParent().equals(fieldDropDown)) {
             FieldAdapter fieldAdapter = (FieldAdapter) fieldDropDown.getAdapter();
+            final int originalField = reference.field;
             reference.field = fieldAdapter.getRuleField(position);
             reference.match = fieldAdapter.getRuleMatch(position);
 
-            if (reference.field == AutoPlaylist.Rule.Field.ID) {
-                valueTextWrapper.setVisibility(View.GONE);
-                valueSpinner.setVisibility(View.VISIBLE);
-            } else {
-                valueTextWrapper.setVisibility(View.VISIBLE);
-                valueSpinner.setVisibility(View.GONE);
+            // If the field was switched from or to an ID match, reset the value
+            if (originalField == AutoPlaylist.Rule.Field.ID
+                    && reference.field != AutoPlaylist.Rule.Field.ID) {
+                reference.value = "";
+            } else if (originalField != AutoPlaylist.Rule.Field.ID
+                    && reference.field == AutoPlaylist.Rule.Field.ID) {
+                reference.value = "0";
             }
         }
         if (view.getParent().equals(valueSpinner)) {
@@ -270,6 +293,8 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                 reference.value = Long.toString(id);
             }
         }
+
+        update();
     }
 
     @Override
