@@ -39,6 +39,13 @@ public class AutoPlaylistEditActivity extends BaseActivity {
         setContentView(R.layout.activity_instance_no_miniplayer);
 
         reference = getIntent().getParcelableExtra(PLAYLIST_EXTRA);
+        if (savedInstanceState != null) {
+            editedReference = savedInstanceState.getParcelable(PLAYLIST_EXTRA);
+            if (editedReference != null) {
+                editedRules = new ArrayList<>(editedReference.getRules().length);
+                Collections.addAll(editedRules, editedReference.getRules());
+            }
+        }
 
         if (getSupportActionBar() != null){
             if (reference == null){
@@ -70,6 +77,11 @@ public class AutoPlaylistEditActivity extends BaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_auto_playlist_editor, menu);
         return true;
+    }
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(PLAYLIST_EXTRA, editedReference);
     }
 
     public void saveChanges() {
