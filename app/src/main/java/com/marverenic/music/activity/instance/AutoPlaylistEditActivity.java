@@ -120,7 +120,7 @@ public class AutoPlaylistEditActivity extends BaseActivity {
                 }
                 return true;
             case android.R.id.home:
-                if (rulesChanged()) {
+                if (!editedReference.isEqual(reference) || rulesChanged()) {
                     saveChanges();
                 }
                 break;

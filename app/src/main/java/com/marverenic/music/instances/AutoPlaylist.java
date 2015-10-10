@@ -239,6 +239,22 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         return trimmed;
     }
 
+    /**
+     * Used to determine if the rules of this AutoPlaylist are equal to that of another playlist.
+     * This is different from .equals() because .equals() looks at ID's only which is required
+     * behavior in other areas of the app.
+     * @param other The AutoPlaylist to compare to
+     * @return true if these AutoPlaylists have the same rules
+     */
+    public boolean isEqual(AutoPlaylist other) {
+        return other == this || other != null
+                && other.matchAllRules == this.matchAllRules
+                && other.sortAscending == this.sortAscending
+                && other.truncateAscending == this.truncateAscending
+                && other.maximumEntries == this.maximumEntries
+                && other.playlistName.equals(this.playlistName);
+    }
+
     public static final Parcelable.Creator<Parcelable> CREATOR = new Parcelable.Creator<Parcelable>() {
         public AutoPlaylist createFromParcel(Parcel in) {
             return new AutoPlaylist(in);

@@ -95,6 +95,7 @@ public class RuleHeaderViewHolder extends RecyclerView.ViewHolder implements Vie
         ((ViewGroup) matchAllRulesSwitch.getParent()).setOnClickListener(this);
         songCapContainer.setOnClickListener(this);
         songCapCheckBox.setOnCheckedChangeListener(this);
+        matchAllRulesSwitch.setOnCheckedChangeListener(this);
 
         // Add listeners to modify the reference when values are changed
         truncateMethodSpinner.setOnItemSelectedListener(this);
