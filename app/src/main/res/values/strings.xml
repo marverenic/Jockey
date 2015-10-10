@@ -102,7 +102,7 @@
     <string name="empty">Couldn\'t find any music here</string>
     <string name="empty_detail">You can sync songs from your computer or download them from the Internet</string>
     <string name="empty_playlists">You don\'t have any playlists</string>
-    <string name="empty_playlists_detail">You can make a new one by pressing the \"+\" button</string>
+    <string name="empty_playlists_detail">You can make a new one by pressing the &#8220;+&#8221; button</string>
     <string name="empty_playlist">This playlist is empty</string>
     <string name="empty_playlist_detail">You can add songs from the library page</string>
     <string name="empty_auto_playlist">This playlist is empty</string>
@@ -125,8 +125,8 @@
         <item quantity="other">This playlist already contains some of these songs. Adding them again
             will result in this playlist having %d duplicated entries.</item>
     </plurals>
-    <string name="playlist_confirm_duplicate">\"%1$s\" already contains \"%2$s\". Do you want to add
-        it again?</string>
+    <string name="playlist_confirm_duplicate">&#8220;%1$s&#8221; already contains &#8220;%2$s&#8221;.
+        Do you want to add it again?</string>
     <string name="playlist_confirm_all_duplicates">This playlist already contains all of these
         songs. Adding them again will result in %d duplicated entries.</string>
     <plurals name="playlist_positive_add_duplicates">
@@ -134,22 +134,22 @@
         <item quantity="other">Add duplicates</item>
     </plurals>
     <plurals name="message_added_songs">
-        <item quantity="one" >Added 1 song to \"%2$s\"</item>
-        <item quantity="other">Added %1$d songs to \"%2$s\"</item>
+        <item quantity="one" >Added 1 song to &#8220;%2$s&#8221;</item>
+        <item quantity="other">Added %1$d songs to &#8220;%2$s&#8221;</item>
     </plurals>
 
     <!-- Formatted Strings -->
-    <string name="message_added_song">Added \"%1$s\" to \"%2$s\"</string>
-    <string name="message_created_playlist">Created playlist \"%1$s\"</string>
-    <string name="message_removed_playlist">Deleted playlist \"%1$s\"</string>
-    <string name="message_removed_song">Removed song \"%1$s\"</string>
-    <string name="message_create_playlist_error_exists">Couldn\'t create playlist \"%1$s\" because
-        it already exists</string>
-    <string name="message_sorted_playlist_name">Sorted \"%1$s\" by name</string>
-    <string name="message_sorted_playlist_artist">Sorted \"%1$s\" by artist name</string>
-    <string name="message_sorted_playlist_album">Sorted \"%1$s\" by album name</string>
-    <string name="header_add_song_name_to_playlist">Add \"%1$s\" to playlist</string>
-    <string name="confirm_add_songs">Added %1$s songs to playlist \"%2$s\"</string>
+    <string name="message_added_song">Added &#8220;%1$s&#8221; to &#8220;%2$s&#8221;</string>
+    <string name="message_created_playlist">Created playlist &#8220;%1$s&#8221;</string>
+    <string name="message_removed_playlist">Deleted playlist &#8220;%1$s&#8221;</string>
+    <string name="message_removed_song">Removed song &#8220;%1$s&#8221;</string>
+    <string name="message_create_playlist_error_exists">Couldn\'t create playlist &#8220;%1$s&#8221;
+        because it already exists</string>
+    <string name="message_sorted_playlist_name">Sorted &#8220;%1$s&#8221; by name</string>
+    <string name="message_sorted_playlist_artist">Sorted &#8220;%1$s&#8221; by artist name</string>
+    <string name="message_sorted_playlist_album">Sorted &#8220;%1$s&#8221; by album name</string>
+    <string name="header_add_song_name_to_playlist">Add &#8220;%1$s&#8221; to playlist</string>
+    <string name="confirm_add_songs">Added %1$s songs to playlist &#8220;%2$s&#8221;</string>
 
     <!-- About Activity Strings -->
     <string name="about_version">Version</string>
