@@ -111,7 +111,7 @@ public class AutoPlaylistEditActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
             case R.id.add:
-                adapter.rules.add(AutoPlaylist.Rule.EMPTY);
+                adapter.rules.add(new AutoPlaylist.Rule(AutoPlaylist.Rule.EMPTY));
                 adapter.notifyItemInserted(adapter.rules.size());
                 return true;
             case R.id.discard:
