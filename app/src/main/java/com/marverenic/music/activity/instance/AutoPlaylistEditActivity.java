@@ -96,6 +96,17 @@ public class AutoPlaylistEditActivity extends BaseActivity {
         return false;
     }
 
+    private boolean validateName() {
+        boolean valid = editedReference.playlistName.trim().equalsIgnoreCase(reference.playlistName.trim())
+                || Library.verifyPlaylistName(this, editedReference.playlistName) == null;
+
+        if (!valid) {
+            RecyclerView list = (RecyclerView) findViewById(R.id.list);
+            list.scrollToPosition(0);
+        }
+        return valid;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
@@ -120,8 +131,12 @@ public class AutoPlaylistEditActivity extends BaseActivity {
                 }
                 return true;
             case android.R.id.home:
-                if (!editedReference.isEqual(reference) || rulesChanged()) {
-                    saveChanges();
+                if (validateName()) {
+                    if (!editedReference.isEqual(reference) || rulesChanged()) {
+                        saveChanges();
+                    }
+                } else {
+                    return true;
                 }
                 break;
         }
@@ -136,8 +151,10 @@ public class AutoPlaylistEditActivity extends BaseActivity {
                     .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            saveChanges();
-                            Navigate.back(AutoPlaylistEditActivity.this);
+                            if (validateName()) {
+                                saveChanges();
+                                Navigate.back(AutoPlaylistEditActivity.this);
+                            }
                         }
                     })
                     .setNegativeButton("Discard", new DialogInterface.OnClickListener() {

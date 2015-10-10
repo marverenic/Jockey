@@ -49,6 +49,7 @@ public class RuleHeaderViewHolder extends RecyclerView.ViewHolder implements Vie
 
     private View itemView;
     private AutoPlaylist reference;
+    private final String originalName;
 
     private AppCompatEditText nameEditText;
     private TextInputLayout nameEditLayout;
@@ -66,6 +67,7 @@ public class RuleHeaderViewHolder extends RecyclerView.ViewHolder implements Vie
 
         this.itemView = itemView;
         this.reference = reference;
+        this.originalName = reference.playlistName;
 
         // Initialize View references
         nameEditText = (AppCompatEditText) itemView.findViewById(R.id.playlist_name_input_text);
@@ -108,10 +110,13 @@ public class RuleHeaderViewHolder extends RecyclerView.ViewHolder implements Vie
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // Validate playlist names to avoid collisions
-                String error = Library.verifyPlaylistName(itemView.getContext(), s.toString());
-                nameEditLayout.setError(error);
-
-                reference.playlistName = s.toString();
+                if (s.length() > 0 && !originalName.equalsIgnoreCase(s.toString().trim())) {
+                    String error = Library.verifyPlaylistName(itemView.getContext(), s.toString());
+                    nameEditLayout.setError(error);
+                } else {
+                    nameEditLayout.setErrorEnabled(false);
+                }
+                reference.playlistName = s.toString().trim();
             }
 
             @Override

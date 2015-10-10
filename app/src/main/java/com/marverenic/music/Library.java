@@ -1134,6 +1134,26 @@ public class Library {
     }
 
     /**
+     * Rename a playlist in the MediaStore
+     * @param context A {@link Context} to open a {@link ContentResolver}
+     * @param playlistID The id of the {@link Playlist} to be renamed
+     * @param name The new name of the playlist
+     */
+    public static void renamePlaylist(final Context context, final long playlistID, final String name) {
+        if (verifyPlaylistName(context, name) == null) {
+            ContentValues values = new ContentValues(1);
+            values.put(MediaStore.Audio.Playlists.NAME, name);
+
+            ContentResolver resolver = context.getContentResolver();
+            resolver.update(
+                    MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
+                    values,
+                    MediaStore.Audio.Playlists._ID + "=?",
+                    new String[]{Long.toString(playlistID)});
+        }
+    }
+
+    /**
      * Append a song to the end of a playlist. Alerts the user about duplicates
      * @param context A {@link Context} to open a {@link Cursor}
      * @param playlist The {@link Playlist} to edit in the MediaStore
@@ -1468,9 +1488,19 @@ public class Library {
             // Edit the contents of this playlist in the MediaStore
             editPlaylist(context, playlist, playlist.generatePlaylist(context));
 
-            // Remove the old index of this playlist. Since playlists are compared by Id's, this
-            // will remove the old index
-            playlistLib.remove(playlist);
+            // Remove the old index of this playlist, but keep the Object for reference.
+            // Since playlists are compared by Id's, this will remove the old index
+            AutoPlaylist oldReference =
+                    (AutoPlaylist) playlistLib.remove(playlistLib.indexOf(playlist));
+
+            // If the user renamed the playlist, update it now
+            if (!oldReference.playlistName.equals(playlist.playlistName)) {
+                renamePlaylist(context, playlist.playlistId, playlist.playlistName);
+                // Delete the old config file so that it doesn't reappear on restart
+                //noinspection ResultOfMethodCallIgnored
+                new File(context.getExternalFilesDir(null) + "/" +
+                        oldReference.playlistName + AUTO_PLAYLIST_EXTENSION).delete();
+            }
 
             // Add the playlist again. This makes sure that if the values have been cloned before
             // being changed that their values will be updated without having to rescan the
