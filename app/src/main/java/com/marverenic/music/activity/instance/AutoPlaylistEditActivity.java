@@ -140,6 +140,8 @@ public class AutoPlaylistEditActivity extends BaseActivity {
                             .show();
 
                     Themes.themeAlertDialog(dialog);
+                } else {
+                    finish();
                 }
                 return true;
             case android.R.id.home:
