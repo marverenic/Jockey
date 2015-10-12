@@ -138,7 +138,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
 
         ArrayList<Song> songs;
         if (matchAllRules) {
-            songs = Library.getSongs();
+            songs = new ArrayList<>(Library.getSongs());
             for (Rule r : rules) {
                 if (r != null) {
                     songs = r.evaluate(songs, context);
@@ -147,7 +147,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         }
         else{
             HashSet<Song> songSet = new HashSet<>(); // Use a Set to prevent duplicates
-            final ArrayList<Song> allSongs = Library.getSongs();
+            final ArrayList<Song> allSongs = new ArrayList<>(Library.getSongs());
             for (Rule r : rules){
                 songSet.addAll(r.evaluate(allSongs, context));
             }
