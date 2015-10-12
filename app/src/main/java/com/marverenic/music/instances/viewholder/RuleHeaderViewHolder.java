@@ -137,7 +137,8 @@ public class RuleHeaderViewHolder extends RecyclerView.ViewHolder implements Vie
                     reference.maximumEntries = Integer.parseInt(s.toString().trim());
                     nameEditLayout.setError(null);
                 } catch (NumberFormatException e) {
-                    nameEditLayout.setError("Please enter a number"); // TODO String resource
+                    nameEditLayout.setError(
+                            itemView.getContext().getString(R.string.error_hint_not_a_number));
                 }
             }
 
@@ -175,6 +176,18 @@ public class RuleHeaderViewHolder extends RecyclerView.ViewHolder implements Vie
             maximumEditText.setEnabled(isChecked);
             truncateMethodSpinner.setEnabled(isChecked);
             truncateMethodPrefix.setEnabled(isChecked);
+            if (!isChecked) {
+                reference.maximumEntries = AutoPlaylist.UNLIMITED_ENTRIES;
+            } else {
+                try {
+                    reference.maximumEntries =
+                            Integer.parseInt(maximumEditText.getText().toString().trim());
+                    nameEditLayout.setError(null);
+                } catch (NumberFormatException e) {
+                    nameEditLayout.setError(
+                            itemView.getContext().getString(R.string.error_hint_not_a_number));
+                }
+            }
         }
         if (buttonView == matchAllRulesSwitch) {
             reference.matchAllRules = isChecked;
