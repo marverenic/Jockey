@@ -1,7 +1,11 @@
 package com.marverenic.music.activity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,8 +14,8 @@ import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
+import com.marverenic.music.BuildConfig;
 import com.marverenic.music.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
@@ -77,9 +81,34 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
                 Navigate.to(this, SettingsActivity.class);
                 return true;
             case R.id.action_refresh_library:
-                Library.resetAll();
-                Library.scanAll(this);
-                adapter.refreshFragments();
+                if (Library.hasRWPermission(LibraryActivity.this)) {
+                    Library.scanAll(this);
+
+                    Snackbar
+                            .make(
+                                    findViewById(R.id.list),
+                                    R.string.confirm_refresh_library,
+                                    Snackbar.LENGTH_SHORT)
+                            .show();
+                } else {
+                    Snackbar
+                            .make(
+                                    findViewById(R.id.list),
+                                    R.string.message_refresh_library_no_permission,
+                                    Snackbar.LENGTH_LONG)
+                            .setAction(
+                                    R.string.action_open_settings,
+                                    new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            Intent intent = new Intent()
+                                                .setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                                .setData(Uri.fromParts("package", BuildConfig.APPLICATION_ID, null));
+                                            startActivity(intent);
+                                        }
+                                    })
+                            .show();
+                }
                 return true;
             case R.id.search:
                 Navigate.to(this, SearchActivity.class);
@@ -152,33 +181,6 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
                     return genreFragment;
             }
             return new Fragment();
-        }
-
-        public void refreshFragments(){
-            if (playlistFragment != null) {
-                playlistFragment.refresh();
-            }
-            if (songFragment != null) {
-                songFragment.refresh();
-            }
-            if (artistFragment != null) {
-                artistFragment.refresh();
-            }
-            if (albumFragment != null) {
-                albumFragment.refresh();
-            }
-            if (genreFragment != null) {
-                genreFragment.refresh();
-            }
-
-            if (Library.hasRWPermission(LibraryActivity.this)) {
-                Toast
-                        .makeText(
-                                LibraryActivity.this,
-                                getResources().getString(R.string.confirm_refresh_library),
-                                Toast.LENGTH_SHORT)
-                        .show();
-            }
         }
 
         @Override

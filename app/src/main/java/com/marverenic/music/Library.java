@@ -123,10 +123,15 @@ public class Library {
     // to methods that cause such changes since we don't have to instantiate a single-use Object.
 
     private static final ArrayList<PlaylistChangeListener> PLAYLIST_LISTENERS = new ArrayList<>();
+    private static final ArrayList<LibraryRefreshListener> REFRESH_LISTENERS = new ArrayList<>();
 
     public interface PlaylistChangeListener {
         void onPlaylistRemoved(Playlist removed);
         void onPlaylistAdded(Playlist added);
+    }
+
+    public interface LibraryRefreshListener {
+        void onLibraryRefreshed();
     }
 
     /**
@@ -148,6 +153,10 @@ public class Library {
         if (!PLAYLIST_LISTENERS.contains(listener)) PLAYLIST_LISTENERS.add(listener);
     }
 
+    public static void addRefreshListener(LibraryRefreshListener listener) {
+        if (!REFRESH_LISTENERS.contains(listener)) REFRESH_LISTENERS.add(listener);
+    }
+
     /**
      * Remove a {@link PlaylistChangeListener} previously added to listen
      * for library updates.
@@ -157,6 +166,10 @@ public class Library {
      */
     public static void removePlaylistListener(PlaylistChangeListener listener){
         if (PLAYLIST_LISTENERS.contains(listener)) PLAYLIST_LISTENERS.remove(listener);
+    }
+
+    public static void removeRefreshListener(LibraryRefreshListener listener) {
+        REFRESH_LISTENERS.remove(listener);
     }
 
     /**
@@ -173,6 +186,10 @@ public class Library {
      */
     private static void notifyPlaylistAdded(Playlist added){
         for (PlaylistChangeListener l : PLAYLIST_LISTENERS) l.onPlaylistAdded(added);
+    }
+
+    private static void notifyLibraryRefreshed() {
+        for (LibraryRefreshListener l : REFRESH_LISTENERS) l.onLibraryRefreshed();
     }
 
     //
@@ -216,6 +233,7 @@ public class Library {
             setAlbumLib(scanAlbums(activity));
             setGenreLib(scanGenres(activity));
             sort();
+            notifyLibraryRefreshed();
         }
         else{
             requestRWPermission(activity);

@@ -54,8 +54,6 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-        if (Library.isEmpty()) Library.scanAll(this);
-
         // Show a first start confirmation about privacy
         // This can't be done in the Application class because it's not allowed to show
         // AlertDialogs. Additionally, this check has to occur in every Activity since Jockey can
@@ -84,14 +82,18 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
                                     .putBoolean(Prefs.SHOW_FIRST_START, false)
                                     .putBoolean(Prefs.ALLOW_LOGGING, pref.isChecked())
                                     .apply();
+
+                            Library.scanAll(BaseActivity.this);
                         }
                     })
                     .setCancelable(false)
                     .create();
 
             privacyDialog.show();
-            privacyDialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                    .setTextColor(Themes.getAccent());
+            Themes.themeAlertDialog(privacyDialog);
+
+        } else if (Library.isEmpty()){
+            Library.scanAll(this);
         }
     }
 
@@ -104,7 +106,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         super.onRequestPermissionsResult(requestCode, permissions, grantRequests);
 
         if (requestCode == Library.PERMISSION_REQUEST_ID && Library.hasRWPermission(this)) {
-            recreate();
+            Library.scanAll(this);
         }
     }
 

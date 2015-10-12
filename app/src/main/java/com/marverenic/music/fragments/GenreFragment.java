@@ -40,12 +40,22 @@ public class GenreFragment extends Fragment {
         return view;
     }
 
-    public void refresh() {
-        adapter.notifyDataSetChanged();
+    @Override
+    public void onResume() {
+        super.onResume();
+        Library.addRefreshListener(adapter);
+        // Assume this fragment's data has gone stale since it was last in the foreground
+        adapter.onLibraryRefreshed();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        Library.removeRefreshListener(adapter);
+    }
 
-    public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+            implements Library.LibraryRefreshListener {
 
         public static final int EMPTY = 0;
         public static final int GENRE = 1;
@@ -91,6 +101,11 @@ public class GenreFragment extends Fragment {
         @Override
         public int getItemCount() {
             return (Library.getGenres().isEmpty())? 1 : Library.getGenres().size();
+        }
+
+        @Override
+        public void onLibraryRefreshed() {
+            notifyDataSetChanged();
         }
     }
 

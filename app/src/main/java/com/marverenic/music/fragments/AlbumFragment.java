@@ -34,6 +34,8 @@ public class AlbumFragment extends Fragment {
         adapter = new Adapter();
         albumRecyclerView.setAdapter(adapter);
 
+        Library.addRefreshListener(adapter);
+
         final int numColumns = ViewUtils.getNumberOfGridColumns(getActivity());
 
         GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), numColumns);
@@ -51,12 +53,21 @@ public class AlbumFragment extends Fragment {
         return view;
     }
 
-    public void refresh() {
-        adapter.notifyDataSetChanged();
+    @Override
+    public void onResume() {
+        super.onResume();
+        Library.addRefreshListener(adapter);
+        // Assume this fragment's data has gone stale since it was last in the foreground
+        adapter.onLibraryRefreshed();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        Library.removeRefreshListener(adapter);
+    }
 
-    public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Library.LibraryRefreshListener {
 
         public static final int EMPTY = 0;
         public static final int ALBUM = 1;
@@ -102,6 +113,11 @@ public class AlbumFragment extends Fragment {
         @Override
         public int getItemCount() {
             return (Library.getAlbums().isEmpty())? 1 : Library.getAlbums().size();
+        }
+
+        @Override
+        public void onLibraryRefreshed() {
+            notifyDataSetChanged();
         }
     }
 
