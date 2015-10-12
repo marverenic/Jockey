@@ -1053,7 +1053,7 @@ public class Library {
         }
 
         // Add the playlist to the MediaStore
-        final Playlist created = makePlaylist(context, trimmedName, songList);
+        final Playlist created = addPlaylist(context, trimmedName, songList);
 
         Snackbar
                 .make(
@@ -1119,9 +1119,9 @@ public class Library {
                             @Override
                             public void onClick(View v) {
                                 if (playlist instanceof AutoPlaylist) {
-                                    makeAutoPlaylist(context, (AutoPlaylist) playlist);
+                                    createAutoPlaylist(context, (AutoPlaylist) playlist);
                                 } else {
-                                    makePlaylist(context, playlist.playlistName, entries);
+                                    addPlaylist(context, playlist.playlistName, entries);
                                 }
                             }
                         })
@@ -1321,13 +1321,32 @@ public class Library {
     //
 
     /**
-     * Add a new playlist to the MediaStore. Outside of this class, use
-     * {@link Library#createPlaylist(View, String, ArrayList)} instead
+     * Add a new playlist to the MediaStore and to the application's current library instance. Use
+     * this when making regular playlists.
+     * Outside of this class, use {@link Library#createPlaylist(View, String, ArrayList)} instead
      * <b>This method DOES NOT validate inputs or display a confirmation message to the user</b>.
      * @param context A {@link Context} used to edit the MediaStore
      * @param playlistName The name of the new playlist
      * @param songList An {@link ArrayList} of {@link Song}s to populate the new playlist
      * @return The Playlist that was added to the library
+     */
+    private static Playlist addPlaylist(final Context context, final String playlistName,
+                                        @Nullable final ArrayList<Song> songList) {
+        final Playlist added = makePlaylist(context, playlistName, songList);
+        playlistLib.add(added);
+        sortPlaylistList(playlistLib);
+        notifyPlaylistAdded(added);
+        return added;
+    }
+
+    /**
+     * Internal logic for adding a playlist to the MediaStore only.
+     * @param context A {@link Context} used to edit the MediaStore
+     * @param playlistName The name of the new playlist
+     * @param songList An {@link ArrayList} of {@link Song}s to populate the new playlist
+     * @return The Playlist that was added to the library
+     * @see Library#addPlaylist(Context, String, ArrayList) for playlist creation
+     * @see Library#createAutoPlaylist(Context, AutoPlaylist) for AutoPlaylist creation
      */
     private static Playlist makePlaylist(final Context context, final String playlistName, @Nullable final ArrayList<Song> songList){
         String trimmedName = playlistName.trim();
@@ -1339,10 +1358,6 @@ public class Library {
         mInserts.put(MediaStore.Audio.Playlists.DATE_MODIFIED, System.currentTimeMillis());
 
         Uri newPlaylistUri = context.getContentResolver().insert(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, mInserts);
-
-        // Update the playlist library & resort it
-        setPlaylistLib(scanPlaylists(context));
-        sortPlaylistList(playlistLib);
 
         // Get the id of the new playlist
         Cursor cursor = context.getContentResolver().query(
@@ -1371,7 +1386,6 @@ public class Library {
             resolver.notifyChange(Uri.parse("content://media"), null);
         }
 
-        notifyPlaylistAdded(playlist);
         return playlist;
     }
 
@@ -1470,12 +1484,10 @@ public class Library {
      *                 rescanned, and a "stale" copy with current entries will be written in the
      *                 MediaStore so that other applications may access this playlist
      */
-    public static void makeAutoPlaylist(Context context, AutoPlaylist playlist) {
+    public static void createAutoPlaylist(Context context, AutoPlaylist playlist) {
         try {
             // Add the playlist to the MediaStore
             Playlist p = makePlaylist(context, playlist.playlistName, playlist.generatePlaylist(context));
-            // By default, makePlaylist adds it to the library array. We don't want that
-            playlistLib.remove(p);
 
             // Assign the auto playlist's ID to match the one in the MediaStore
             playlist.playlistId = p.playlistId;

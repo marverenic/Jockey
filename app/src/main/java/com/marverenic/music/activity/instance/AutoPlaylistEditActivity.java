@@ -88,7 +88,7 @@ public class AutoPlaylistEditActivity extends BaseActivity {
         AutoPlaylist.Rule[] modifiedRules = new AutoPlaylist.Rule[editedRules.size()];
         editedReference.rules = editedRules.toArray(modifiedRules);
         if (reference.playlistId == AutoPlaylist.EMPTY.playlistId) {
-            Library.makeAutoPlaylist(this, editedReference);
+            Library.createAutoPlaylist(this, editedReference);
         } else {
             Library.editAutoPlaylist(this, editedReference);
         }
