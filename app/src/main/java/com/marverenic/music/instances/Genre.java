@@ -29,6 +29,12 @@ public class Genre implements Parcelable {
         genreName = in.readString();
     }
 
+    @Override
+    public int hashCode() {
+        return genreId;
+    }
+
+    @Override
     public boolean equals(final Object obj) {
         return this == obj ||
                 (obj != null && obj instanceof Genre && genreId == ((Genre) obj).genreId);

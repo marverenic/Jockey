@@ -28,6 +28,12 @@ public class Artist implements Parcelable {
         artistName = in.readString();
     }
 
+    @Override
+    public int hashCode() {
+        return artistId;
+    }
+
+    @Override
     public boolean equals(final Object obj) {
         return this == obj ||
                 (obj != null && obj instanceof Artist && artistId == ((Artist) obj).artistId);

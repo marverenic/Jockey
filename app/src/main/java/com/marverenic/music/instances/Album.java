@@ -40,6 +40,12 @@ public class Album implements Parcelable {
         artUri = in.readString();
     }
 
+    @Override
+    public int hashCode() {
+        return albumId;
+    }
+
+    @Override
     public boolean equals(final Object obj) {
         return this == obj ||
                 (obj != null && obj instanceof Album && albumId == ((Album) obj).albumId);

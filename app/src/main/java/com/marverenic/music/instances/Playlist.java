@@ -32,6 +32,12 @@ public class Playlist implements Parcelable {
         playlistName = in.readString();
     }
 
+    @Override
+    public int hashCode() {
+        return playlistId;
+    }
+
+    @Override
     public boolean equals(final Object obj) {
         return this == obj ||
                 (obj != null && obj instanceof Playlist && playlistId == ((Playlist) obj).playlistId);

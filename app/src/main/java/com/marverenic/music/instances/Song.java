@@ -87,6 +87,12 @@ public class Song implements Parcelable {
         return Library.getPlayDate(songId);
     }
 
+    @Override
+    public int hashCode() {
+        return songId;
+    }
+
+    @Override
     public boolean equals(final Object obj) {
         return this == obj ||
                 (obj != null && obj instanceof Song && songId == ((Song) obj).songId);
