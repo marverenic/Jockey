@@ -1116,8 +1116,6 @@ public class Library {
      *         presented to the user
      */
     public static String verifyPlaylistName (final Context context, final String playlistName){
-        if (playlistName.length() == 0) return null;
-
         String trimmedName = playlistName.trim();
         if (trimmedName.length() == 0){
             return context.getResources().getString(R.string.error_hint_empty_playlist);

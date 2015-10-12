@@ -110,10 +110,11 @@ public class RuleHeaderViewHolder extends RecyclerView.ViewHolder implements Vie
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // Validate playlist names to avoid collisions
-                if (s.length() > 0 && !originalName.equalsIgnoreCase(s.toString().trim())) {
+                if (originalName.length() == 0 || !originalName.equalsIgnoreCase(s.toString().trim())) {
                     String error = Library.verifyPlaylistName(itemView.getContext(), s.toString());
                     nameEditLayout.setError(error);
                 } else {
+                    nameEditLayout.setError(null);
                     nameEditLayout.setErrorEnabled(false);
                 }
                 reference.playlistName = s.toString().trim();
