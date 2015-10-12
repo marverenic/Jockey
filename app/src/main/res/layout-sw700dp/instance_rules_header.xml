@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_alignBaseline="@+id/playlist_maximum_input_text"
+            android:layout_centerVertical="true"
             android:text="@string/playlist_maximum_prefix" />
 
 
@@ -80,7 +80,7 @@
             android:layout_toEndOf="@+id/playlist_maximum_prefix"
             android:layout_toLeftOf="@+id/playlist_maximum_suffix"
             android:layout_toStartOf="@+id/playlist_maximum_suffix"
-            android:gravity="center_horizontal"
+            android:layout_centerVertical="true"
             android:inputType="number"/>
 
         <TextView
@@ -92,9 +92,37 @@
             android:padding="0dp"
             android:layout_marginRight="8dp"
             android:layout_marginEnd="8dp"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/playlist_chosen_by_prefix"
+            android:layout_toStartOf="@+id/playlist_chosen_by_prefix" />
+
+        <TextView
+            android:id="@+id/playlist_chosen_by_prefix"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/playlist_chosen_by_prefix"
+            style="@style/listTitleText"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/playlist_chosen_by"
+            android:layout_toStartOf="@+id/playlist_chosen_by" />
+
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/playlist_chosen_by"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/auto_plist_choose_by"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_centerVertical="true"
+            android:layout_alignTop="@+id/playlist_chosen_by_prefix"
             android:layout_toLeftOf="@+id/playlist_song_cap_check"
-            android:layout_toStartOf="@+id/playlist_song_cap_check"
-            android:layout_alignBaseline="@+id/playlist_maximum_input_text" />
+            android:layout_toStartOf="@+id/playlist_song_cap_check"/>
 
         <android.support.v7.widget.AppCompatCheckBox
             android:id="@+id/playlist_song_cap_check"
@@ -108,33 +136,6 @@
             android:layout_centerInParent="true"
             android:layout_marginTop="@dimen/list_padding"
             android:layout_marginBottom="@dimen/list_padding"/>
-
-        <TextView
-            android:id="@+id/playlist_chosen_by_prefix"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/playlist_chosen_by_prefix"
-            style="@style/listTitleText"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:layout_below="@+id/playlist_maximum_input_text"
-            android:layout_toLeftOf="@+id/playlist_chosen_by"
-            android:layout_toStartOf="@+id/playlist_chosen_by" />
-
-        <android.support.v7.widget.AppCompatSpinner
-            android:id="@+id/playlist_chosen_by"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:entries="@array/auto_plist_choose_by"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_alignTop="@+id/playlist_chosen_by_prefix"
-            android:layout_toLeftOf="@+id/playlist_song_cap_check"
-            android:layout_toStartOf="@+id/playlist_song_cap_check"/>
 
     </RelativeLayout>
 

@@ -205,6 +205,10 @@
     <string name="logging_description">Help improve Jockey</string>
 
     <!-- Auto playlist Strings -->
+    <string name="playlist_maximum_prefix">Allow no more than</string>
+    <string name="playlist_maximum_suffix">songs</string>
+    <string name="playlist_chosen_by_prefix">chosen by</string>
+    <string name="match_all_rules">Match all rules</string>
     <string-array name="auto_plist_choose_by">
         <item>Random</item>
         <item>Name</item>
