@@ -201,7 +201,7 @@ public class PlaylistActivity extends BaseActivity {
 
         public static final int EMPTY = 0;
         public static final int SONG = 1;
-
+        public static final int AUTO_SONG = 2;
 
         public Adapter(){
             setHasStableIds(true);
@@ -216,6 +216,12 @@ public class PlaylistActivity extends BaseActivity {
                                     .from(viewGroup.getContext())
                                     .inflate(R.layout.instance_empty, viewGroup, false),
                             PlaylistActivity.this);
+                case AUTO_SONG:
+                    return new SongViewHolder(
+                            LayoutInflater
+                                    .from(viewGroup.getContext())
+                                    .inflate(R.layout.instance_song, viewGroup, false),
+                            data);
                 case SONG:
                 default:
                     DraggableSongViewHolder vh = new DraggableSongViewHolder(
@@ -238,10 +244,10 @@ public class PlaylistActivity extends BaseActivity {
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-            if (getItemViewType(position) == SONG) {
-                ((DraggableSongViewHolder) viewHolder).update(data.get(position));
-            }
-            else if (viewHolder instanceof EmptyStateViewHolder &&
+            if (getItemViewType(position) == SONG || getItemViewType(position) == AUTO_SONG) {
+                ((SongViewHolder) viewHolder).update(data.get(position));
+
+            } else if (viewHolder instanceof EmptyStateViewHolder &&
                     Library.hasRWPermission(PlaylistActivity.this)) {
                 if (reference instanceof AutoPlaylist){
                     EmptyStateViewHolder emptyHolder = ((EmptyStateViewHolder) viewHolder);
@@ -259,7 +265,7 @@ public class PlaylistActivity extends BaseActivity {
         @Override
         public int getItemViewType(int position){
             if (data.isEmpty()) return EMPTY;
-            return SONG;
+            return (reference instanceof AutoPlaylist)? AUTO_SONG : SONG;
         }
 
         @Override
