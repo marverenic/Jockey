@@ -255,6 +255,10 @@ public class Library {
                 null,
                 MediaStore.Audio.Media.TITLE + " ASC");
 
+        if (cur == null) {
+            throw new RuntimeException("Content resolver query returned null");
+        }
+
         for (int i = 0; i < cur.getCount(); i++) {
             cur.moveToPosition(i);
             Song s = new Song(
@@ -294,6 +298,10 @@ public class Library {
                 null,
                 MediaStore.Audio.Artists.ARTIST + " ASC");
 
+        if (cur == null) {
+            throw new RuntimeException("Content resolver query returned null");
+        }
+
         for (int i = 0; i < cur.getCount(); i++) {
             cur.moveToPosition(i);
             if (!cur.getString(cur.getColumnIndex(MediaStore.Audio.Artists.ARTIST)).equals(MediaStore.UNKNOWN_STRING)) {
@@ -326,6 +334,11 @@ public class Library {
                 null,
                 null,
                 MediaStore.Audio.Albums.ALBUM + " ASC");
+
+        if (cur == null) {
+            throw new RuntimeException("Content resolver query returned null");
+        }
+
         for (int i = 0; i < cur.getCount(); i++) {
             cur.moveToPosition(i);
             albums.add(new Album(
@@ -357,6 +370,10 @@ public class Library {
                 null,
                 null,
                 MediaStore.Audio.Playlists.NAME + " ASC");
+
+        if (cur == null) {
+            throw new RuntimeException("Content resolver query returned null");
+        }
 
         for (int i = 0; i < cur.getCount(); i++) {
             cur.moveToPosition(i);
@@ -413,6 +430,10 @@ public class Library {
                 null,
                 MediaStore.Audio.Genres.NAME + " ASC");
 
+        if (cur == null) {
+            throw new RuntimeException("Content resolver query returned null");
+        }
+
         for (int i = 0; i < cur.getCount(); i++) {
             cur.moveToPosition(i);
             int thisGenreId = cur.getInt(cur.getColumnIndex(MediaStore.Audio.Genres._ID));
@@ -431,6 +452,11 @@ public class Library {
                         MediaStore.Audio.Genres.Members.getContentUri("external", thisGenreId),
                         new String[]{MediaStore.Audio.Media._ID},
                         MediaStore.Audio.Media.IS_MUSIC + " != 0 ", null, null);
+
+                if (genreCur == null) {
+                    throw new RuntimeException("Content resolver query returned null");
+                }
+
                 genreCur.moveToFirst();
 
                 final int ID_INDEX = genreCur.getColumnIndex(MediaStore.Audio.Media._ID);
@@ -723,6 +749,10 @@ public class Library {
                 ids,
                 MediaStore.Audio.Media.TITLE + " ASC");
 
+        if (cur == null) {
+            throw new RuntimeException("Content resolver query returned null");
+        }
+
         for (int i = 0; i < cur.getCount(); i++) {
             cur.moveToPosition(i);
             Song s = new Song(
@@ -831,6 +861,10 @@ public class Library {
                 MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId),
                 playlistEntryProjection,
                 MediaStore.Audio.Media.IS_MUSIC + " != 0", null, null);
+
+        if (cur == null) {
+            throw new RuntimeException("Content resolver query returned null");
+        }
 
         for (int i = 0; i < cur.getCount(); i++) {
             cur.moveToPosition(i);
@@ -1359,11 +1393,19 @@ public class Library {
 
         Uri newPlaylistUri = context.getContentResolver().insert(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, mInserts);
 
+        if (newPlaylistUri == null) {
+            throw new RuntimeException("Content resolver insert returned null");
+        }
+
         // Get the id of the new playlist
         Cursor cursor = context.getContentResolver().query(
                 newPlaylistUri,
                 new String[] {MediaStore.Audio.Playlists._ID},
                 null, null, null);
+
+        if (cursor == null) {
+            throw new RuntimeException("Content resolver query returned null");
+        }
 
         cursor.moveToFirst();
         final Playlist playlist = new Playlist(cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID)), playlistName);
@@ -1428,6 +1470,10 @@ public class Library {
                 null, null, null,
                 MediaStore.Audio.Playlists.Members.TRACK + " ASC");
 
+        if (cur == null) {
+            throw new RuntimeException("Content resolver query returned null");
+        }
+
         long count = 0;
         if (cur.moveToLast()) count = cur.getLong(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.TRACK));
         cur.close();
@@ -1455,6 +1501,10 @@ public class Library {
                 MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId),
                 null, null, null,
                 MediaStore.Audio.Playlists.Members.TRACK + " ASC");
+
+        if (cur == null) {
+            throw new RuntimeException("Content resolver query returned null");
+        }
 
         long count = 0;
         if (cur.moveToLast()) count = cur.getLong(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.TRACK));
@@ -1580,6 +1630,10 @@ public class Library {
                     new String[] {file.getPath()},
                     MediaStore.Audio.Playlists.NAME + " ASC");
 
+            if (cur == null) {
+                throw new RuntimeException("Content resolver query returned null");
+            }
+
             // If the media store contains this playlist, play it like a regular playlist
             if (cur.getCount() > 0){
                 cur.moveToFirst();
@@ -1615,6 +1669,10 @@ public class Library {
                     MediaStore.Audio.Media.DATA + " like ?",
                     new String[] {"%" + file.getParent() + "/%"},
                     MediaStore.Audio.Media.DATA + " ASC");
+
+            if (cur == null) {
+                throw new RuntimeException("Content resolver query returned null");
+            }
 
             // Create song objects to match those in the music library
             for (int i = 0; i < cur.getCount(); i++) {
