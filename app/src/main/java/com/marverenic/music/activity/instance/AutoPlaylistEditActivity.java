@@ -159,7 +159,7 @@ public class AutoPlaylistEditActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        if (rulesChanged()) {
+        if (!editedReference.isEqual(reference) || rulesChanged()) {
             AlertDialog dialog = new AlertDialog.Builder(this)
                     .setMessage("Save changes?")
                     .setPositiveButton("Save", new DialogInterface.OnClickListener() {
