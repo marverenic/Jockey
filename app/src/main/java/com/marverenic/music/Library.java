@@ -852,7 +852,9 @@ public class Library {
      */
     public static ArrayList<Song> getPlaylistEntries (Context context, Playlist playlist){
         if (playlist instanceof AutoPlaylist){
-            return ((AutoPlaylist) playlist).generatePlaylist(context);
+            ArrayList<Song> entries = ((AutoPlaylist) playlist).generatePlaylist(context);
+            editPlaylist(context, playlist, entries);
+            return entries;
         }
 
         ArrayList<Song> songEntries = new ArrayList<>();
