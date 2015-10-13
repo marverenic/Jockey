@@ -27,19 +27,9 @@
     public static int e(...);
 }
 
-#
-# From https://google-gson.googlecode.com/svn-history/r878/trunk/examples/android-proguard-example/proguard.cfg
-#
-##---------------Begin: proguard configuration for Gson  ----------
-# Gson uses generic type information stored in a class file when working with fields. Proguard
-# removes such information by default, so configure it to keep all of it.
+# GSON rules
+# Don't obfuscate instance field names for GSON
+-keepnames class com.marverenic.music.instances.** { *; }
+# From https://github.com/google/gson/blob/master/examples/android-proguard-example/proguard.cfg
 -keepattributes Signature
-
-# Gson specific classes
 -keep class sun.misc.Unsafe { *; }
-#-keep class com.google.gson.stream.** { *; }
-
-# Application classes that will be serialized/deserialized over Gson
-#-keep class com.google.gson.examples.android.instances.** { *; }
-
-##---------------End: proguard configuration for Gson  ----------
