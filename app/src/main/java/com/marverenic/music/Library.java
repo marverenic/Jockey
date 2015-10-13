@@ -384,8 +384,14 @@ public class Library {
         cur.close();
 
         for (Playlist p : scanAutoPlaylists(context)) {
-            playlists.remove(p);
-            playlists.add(p);
+            if (playlists.remove(p)) {
+                playlists.add(p);
+            } else {
+                // If AutoPlaylists have been deleted outside of Jockey, delete its configuration
+                //noinspection ResultOfMethodCallIgnored
+                new File(context.getExternalFilesDir(null) + "/" + p.playlistName + AUTO_PLAYLIST_EXTENSION)
+                        .delete();
+            }
         }
         return playlists;
     }
