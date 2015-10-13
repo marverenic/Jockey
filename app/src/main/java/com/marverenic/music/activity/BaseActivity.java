@@ -244,7 +244,9 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
 
             songTextView.setText(nowPlaying.songName);
             artistTextView.setText(nowPlaying.artistName);
-            playButton.setImageResource((PlayerController.isPlaying())? R.drawable.ic_pause_48dp : R.drawable.ic_play_arrow_48dp);
+            playButton.setImageResource((PlayerController.isPlaying())
+                    ? R.drawable.ic_pause_36dp
+                    : R.drawable.ic_play_arrow_36dp);
 
         }
     }

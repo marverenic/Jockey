@@ -68,17 +68,19 @@
             android:id="@+id/notificationPause"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
+            android:padding="8dp"
             android:layout_weight="1"
             android:background="?android:selectableItemBackground"
-            android:src="@drawable/ic_pause_48dp" />
+            android:src="@drawable/ic_pause_36dp" />
 
         <ImageView
             android:id="@+id/notificationSkipNext"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
+            android:padding="8dp"
             android:layout_weight="1"
             android:background="?android:selectableItemBackground"
-            android:src="@drawable/ic_skip_next_48dp" />
+            android:src="@drawable/ic_skip_next_36dp" />
 
     </LinearLayout>
 

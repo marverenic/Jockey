@@ -244,11 +244,11 @@ public class PlayerService extends Service {
 
         // Update the play/pause button icon to reflect the player status
         if (!(player.isPlaying() || player.isPreparing())) {
-            notificationView.setImageViewResource(R.id.notificationPause, R.drawable.ic_play_arrow_48dp);
-            notificationViewExpanded.setImageViewResource(R.id.notificationPause, R.drawable.ic_play_arrow_48dp);
+            notificationView.setImageViewResource(R.id.notificationPause, R.drawable.ic_play_arrow_36dp);
+            notificationViewExpanded.setImageViewResource(R.id.notificationPause, R.drawable.ic_play_arrow_36dp);
         } else{
-            notificationView.setImageViewResource(R.id.notificationPause, R.drawable.ic_pause_48dp);
-            notificationViewExpanded.setImageViewResource(R.id.notificationPause, R.drawable.ic_pause_48dp);
+            notificationView.setImageViewResource(R.id.notificationPause, R.drawable.ic_pause_36dp);
+            notificationViewExpanded.setImageViewResource(R.id.notificationPause, R.drawable.ic_pause_36dp);
         }
 
         // Build the notification

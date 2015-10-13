@@ -16,11 +16,13 @@
 
     <ImageButton
         android:id="@+id/skipButton"
-        android:layout_width="@dimen/now_playing_ticker_height"
-        android:layout_height="@dimen/now_playing_ticker_height"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:layout_centerInParent="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:src="@drawable/ic_skip_next_48dp"
+        android:src="@drawable/ic_skip_next_36dp"
         android:tint="?textColorPrimary"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
@@ -29,11 +31,13 @@
 
     <ImageButton
         android:id="@+id/playButton"
-        android:layout_width="@dimen/now_playing_ticker_height"
-        android:layout_height="@dimen/now_playing_ticker_height"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:layout_centerInParent="true"
         android:layout_toLeftOf="@id/skipButton"
         android:layout_toStartOf="@id/skipButton"
-        android:src="@drawable/ic_play_arrow_48dp"
+        android:src="@drawable/ic_play_arrow_36dp"
         android:tint="?textColorPrimary"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true"

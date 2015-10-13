@@ -67,18 +67,20 @@
             android:id="@+id/notificationPause"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
+            android:padding="8dp"
             android:layout_weight="1"
             android:background="@drawable/ripple_notification"
-            android:src="@drawable/ic_pause_48dp"
+            android:src="@drawable/ic_pause_36dp"
             android:tint="@android:color/black"/>
 
         <ImageView
             android:id="@+id/notificationSkipNext"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
+            android:padding="8dp"
             android:layout_weight="1"
             android:background="@drawable/ripple_notification"
-            android:src="@drawable/ic_skip_next_48dp"
+            android:src="@drawable/ic_skip_next_36dp"
             android:tint="@android:color/black"/>
 
     </LinearLayout>
