@@ -89,7 +89,6 @@
     <string name="message_play_error_not_found">This song couldn\'t be played</string>
     <string name="error_hint_duplicate_playlist">Enter a unique playlist name</string>
     <string name="error_hint_empty_playlist">Enter a playlist name</string>
-    <string name="error_hint_not_a_number">Please enter a number</string>
 
     <!-- Empty state & unknown strings -->
     <string name="nothing_playing">Nothing is playing</string>

@@ -135,10 +135,8 @@ public class RuleHeaderViewHolder extends RecyclerView.ViewHolder implements Vie
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 try {
                     reference.maximumEntries = Integer.parseInt(s.toString().trim());
-                    nameEditLayout.setError(null);
                 } catch (NumberFormatException e) {
-                    nameEditLayout.setError(
-                            itemView.getContext().getString(R.string.error_hint_not_a_number));
+                    reference.maximumEntries = 0;
                 }
             }
 
@@ -179,13 +177,13 @@ public class RuleHeaderViewHolder extends RecyclerView.ViewHolder implements Vie
             if (!isChecked) {
                 reference.maximumEntries = AutoPlaylist.UNLIMITED_ENTRIES;
             } else {
-                try {
-                    reference.maximumEntries =
-                            Integer.parseInt(maximumEditText.getText().toString().trim());
-                    nameEditLayout.setError(null);
-                } catch (NumberFormatException e) {
-                    nameEditLayout.setError(
-                            itemView.getContext().getString(R.string.error_hint_not_a_number));
+                if (maximumEditText.getText().length() > 0) {
+                    try {
+                        reference.maximumEntries =
+                                Integer.parseInt(maximumEditText.getText().toString().trim());
+                    } catch (NumberFormatException e) {
+                        reference.maximumEntries = 0;
+                    }
                 }
             }
         }
