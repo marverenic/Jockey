@@ -10,7 +10,7 @@
 		android:layout_height="wrap_content"
 		android:layout_margin="16dp">
 
-		<com.pkmmte.view.CircularImageView
+		<ImageView
 			android:id="@+id/imageArtwork"
 			android:layout_width="40dp"
 			android:layout_height="40dp"

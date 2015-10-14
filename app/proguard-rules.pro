@@ -5,8 +5,12 @@
 -dontpreverify
 -optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
 
-# Stop Picasso from causing release builds to fail
--dontwarn com.squareup.okhttp.**
+# Glide rules
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
+    **[] $VALUES;
+    public *;
+}
 
 # Make Crashlytics reports more informative
 -keepattributes SourceFile,LineNumberTable

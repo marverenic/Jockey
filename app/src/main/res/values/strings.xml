@@ -165,15 +165,11 @@
     <string name="uses_aosp_detail">Support-v4 23.0.1, Appcompat-v7 23.0.1, RecyclerView 23.0.1,
         CardView 23.0.1, Design 23.0.1, Palette 23.0.1; distributed by the Android Open Source
         Project under an Apache License, Version 2.0</string>
-    <string name="uses_picasso_header">Picasso</string>
-    <string name="uses_picasso_detail">Version 2.5.2; distributed by Square, Inc. under an Apache
-        License, Version 2.0</string>
+    <string name="uses_glide_header">Glide</string>
+    <string name="uses_glide_detail">Version 3.6.1; distributed by Google, Inc. under a BSD License</string>
     <string name="uses_advrecyclerview_header">Advanced RecyclerView</string>
     <string name="uses_advrecyclerview_detail">Version 0.7.1; distributed by Haruki Hasegawa
         under an Apache License, Version 2.0</string>
-    <string name="uses_circle_iv_header">Circular ImageView</string>
-    <string name="uses_circle_iv_detail">Version 1.1; distributed by Pkmmte Xeleon under an
-        MIT License</string>
     <string name="uses_stackoverflow">Additional thanks to many helpful Stack Overflow users who are
         better at programming than I am.</string>
 

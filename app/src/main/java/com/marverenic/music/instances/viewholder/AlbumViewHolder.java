@@ -16,6 +16,10 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.marverenic.music.Library;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
@@ -24,12 +28,10 @@ import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.PlaylistDialog;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 
-public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, Callback, Palette.PaletteAsyncListener, PopupMenu.OnMenuItemClickListener{
+public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, Palette.PaletteAsyncListener, PopupMenu.OnMenuItemClickListener{
 
     // Used to cache Palette values in memory
     private static HashMap<Album, int[]> colorCache = new HashMap<>();
@@ -73,7 +75,6 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
     }
 
     public void update(Album a){
-        Picasso.with(itemView.getContext()).cancelRequest(artwork);
         if (paletteTask != null && !paletteTask.isCancelled()) paletteTask.cancel(true);
 
         reference = a;
@@ -97,23 +98,28 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
         albumName.setTextColor(defaultTitleColor);
         artistName.setTextColor(defaultDetailColor);
 
-        Picasso.with(itemView.getContext()).load("file://" + a.artUri)
+        Glide.with(itemView.getContext())
+                .load("file://" + a.artUri)
+                .asBitmap()
+                .diskCacheStrategy(DiskCacheStrategy.RESULT)
                 .placeholder(R.drawable.art_default)
-                .resizeDimen(R.dimen.grid_art_size, R.dimen.grid_art_size)
-                .centerInside()
-                .into(artwork, this);
+                .into(new BitmapImageViewTarget(artwork) {
+                    @Override
+                    @SuppressWarnings("unchecked")
+                    public void onResourceReady(Bitmap bitmap, GlideAnimation anim) {
+                        super.onResourceReady(bitmap, anim);
+                        updatePalette();
+                    }
+                });
     }
 
-    @Override
-    public void onSuccess() {
+    private void updatePalette() {
         if (paletteTask != null && !paletteTask.isCancelled()) paletteTask.cancel(true);
 
-        // Update the colors of the text when album art is loaded
-        Bitmap image = ((BitmapDrawable) artwork.getDrawable()).getBitmap();
-
+        Bitmap bitmap = ((BitmapDrawable) artwork.getDrawable()).getBitmap();
         int[] colors = colorCache.get(reference);
         if (colors == null)
-            paletteTask = Palette.from(image).generate(this);
+            paletteTask = Palette.from(bitmap).generate(this);
         else{
             final ObjectAnimator backgroundAnimator = ObjectAnimator.ofObject(
                     container,
@@ -138,7 +144,6 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
                     defaultDetailColor,
                     colors[DETAIL_COLOR]);
             artistAnimator.setDuration(300).start();
-
         }
     }
 
@@ -210,8 +215,7 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
         detailAnimator.setDuration(300).start();
     }
 
-    @Override
-    public void onError() {
+    private void resetPalette() {
         container.setBackgroundColor(defaultFrameColor);
         albumName.setTextColor(defaultTitleColor);
         artistName.setTextColor(defaultDetailColor);

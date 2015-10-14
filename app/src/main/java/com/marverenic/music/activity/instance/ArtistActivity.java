@@ -1,11 +1,15 @@
 package com.marverenic.music.activity.instance;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +21,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.marverenic.music.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
@@ -34,7 +40,6 @@ import com.marverenic.music.view.DividerDecoration;
 import com.marverenic.music.view.GridSpacingDecoration;
 import com.marverenic.music.view.MaterialProgressDrawable;
 import com.marverenic.music.view.ViewUtils;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -164,8 +169,9 @@ public class ArtistActivity extends BaseActivity {
                         String URL = artist.getImageURL(ImageSize.MEGA);
 
                         if (URL.trim().length() != 0) {
-                            Picasso.with(ArtistActivity.this).load(URL)
+                            Glide.with(ArtistActivity.this).load(URL)
                                     .placeholder(R.drawable.art_default_xl)
+                                    .centerCrop()
                                     .error(R.drawable.art_default_xl)
                                     .into((ImageView) findViewById(R.id.backdrop));
                         }
@@ -259,18 +265,13 @@ public class ArtistActivity extends BaseActivity {
      */
     public class BioViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private Adapter adapter;
-
         private CardView cardView;
         private TextView bioText;
-        private View itemView;
         private FrameLayout lfmButton;
         private String artistURL;
 
         public BioViewHolder(View itemView, Adapter adapter, de.umass.lastfm.Artist artist) {
             super(itemView);
-            this.itemView = itemView;
-            this.adapter = adapter;
 
             cardView = (CardView) itemView.findViewById(R.id.infoCard);
             bioText = (TextView) itemView.findViewById(R.id.infoText);
@@ -285,6 +286,7 @@ public class ArtistActivity extends BaseActivity {
             setData(artist);
         }
 
+        @SuppressLint("SetTextI18n")
         public void setData(de.umass.lastfm.Artist artist) {
             String[] tags = new String[artist.getTags().size()];
             artist.getTags().toArray(tags);
@@ -304,8 +306,10 @@ public class ArtistActivity extends BaseActivity {
             String summary = Html.fromHtml(artist.getWikiSummary()).toString();
             if (summary.length() > 0) {
                 // Trim the "read more" attribution since there's already a button linking to Last.fm
-                summary = summary.substring(0, summary.length() - " Read more about  on Last.fm.".length() - artist.getName().length() - 1);
-                if (tagList.length() > 0) tagList += " - ";
+                summary = summary
+                        .substring(0, summary.length() - "Read more on Last.fm.".length())
+                        .trim();
+                if (tagList.length() > 0 && summary.length() > 0) tagList += " - ";
             }
 
             bioText.setText(tagList + summary);
@@ -328,7 +332,6 @@ public class ArtistActivity extends BaseActivity {
      */
     public static class SuggestedArtistHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private de.umass.lastfm.Artist reference;
         private Artist localReference;
 
         private Context context;
@@ -347,12 +350,24 @@ public class ArtistActivity extends BaseActivity {
         }
 
         public void update(de.umass.lastfm.Artist artist, Artist localArtist){
-            reference = artist;
             localReference = localArtist;
 
             final String artURL = artist.getImageURL(ImageSize.MEDIUM);
-            if (artURL != null && !artURL.equals(""))
-                Picasso.with(context).load(artURL).error(R.drawable.art_default).into(artwork);
+            if (artURL != null && !artURL.equals("")) {
+                Glide.with(context)
+                        .load(artURL)
+                        .asBitmap()
+                        .error(R.drawable.art_default)
+                        .into(new BitmapImageViewTarget(artwork) {
+                            @Override
+                            protected void setResource(Bitmap resource) {
+                                RoundedBitmapDrawable circularBitmapDrawable =
+                                        RoundedBitmapDrawableFactory.create(context.getResources(), resource);
+                                circularBitmapDrawable.setCircular(true);
+                                artwork.setImageDrawable(circularBitmapDrawable);
+                            }
+                        });
+            }
 
             artistName.setText(artist.getName());
         }

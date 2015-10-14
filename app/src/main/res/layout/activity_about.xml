@@ -123,7 +123,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/aboutAOSPDetail"
                 android:layout_marginTop="16dp"
-                android:text="@string/uses_picasso_header"
+                android:text="@string/uses_glide_header"
                 android:textColor="@android:color/white"
                 android:textSize="20sp" />
 
@@ -132,7 +132,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/aboutPicassoHeader"
-                android:text="@string/uses_picasso_detail"
+                android:text="@string/uses_glide_detail"
                 android:textColor="@color/about_detail_text"
                 android:textSize="20sp" />
 
@@ -156,29 +156,10 @@
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/aboutCircleIVHeader"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/aboutAdvRecycleViewDetail"
-                android:layout_marginTop="16dp"
-                android:text="@string/uses_circle_iv_header"
-                android:textColor="@android:color/white"
-                android:textSize="20sp" />
-
-            <TextView
-                android:id="@+id/aboutCircleIVDetail"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/aboutCircleIVHeader"
-                android:text="@string/uses_circle_iv_detail"
-                android:textColor="@color/about_detail_text"
-                android:textSize="20sp" />
-
-            <TextView
                 android:id="@+id/aboutStackOverflowHeader"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutCircleIVDetail"
+                android:layout_below="@id/aboutAdvRecycleViewDetail"
                 android:layout_marginTop="16dp"
                 android:text="@string/uses_stackoverflow"
                 android:textColor="@android:color/white"
