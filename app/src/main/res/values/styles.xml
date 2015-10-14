@@ -69,6 +69,11 @@
         <item name="android:windowBackground">@color/background_dark</item>
         <item name="textColorPrimary">@color/primary_text_dark</item>
         <item name="textColorSecondary">@color/secondary_text_dark</item>
+        <item name="popupMenuStyle">@style/PopupMenu</item>
+    </style>
+
+    <style name="PopupMenu" parent="@style/Widget.AppCompat.PopupMenu">
+        <item name="overlapAnchor">true</item>
     </style>
 
     <!-- Dark themes -->
@@ -127,6 +132,11 @@
         <item name="textColorPrimary">@color/primary_text</item>
         <item name="textColorSecondary">@color/secondary_text</item>
         <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="popupMenuStyle">@style/PopupMenu.Light</item>
+    </style>
+
+    <style name="PopupMenu.Light" parent="@style/Widget.AppCompat.Light.PopupMenu">
+        <item name="overlapAnchor">true</item>
     </style>
 
     <!-- More themes -->
