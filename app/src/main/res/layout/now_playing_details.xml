@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/songInfo"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+
+    <TextView
+        android:id="@+id/textSongTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@+id/songDetail"
+        android:layout_toLeftOf="@+id/songDetail"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="@string/nothing_playing"
+        android:textColor="@color/player_text_main"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/textArtistName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textSongTitle"
+        android:layout_toStartOf="@+id/songDetail"
+        android:layout_toLeftOf="@+id/songDetail"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="@string/no_artist"
+        android:textColor="@color/player_text_detail"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/textAlbumTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textArtistName"
+        android:layout_toStartOf="@+id/songDetail"
+        android:layout_toLeftOf="@+id/songDetail"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="@string/no_album"
+        android:textColor="@color/player_text_detail"
+        android:textSize="16sp" />
+
+    <ImageButton
+        android:id="@+id/songDetail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:scaleType="center"
+        android:src="@drawable/abc_ic_menu_moreoverflow_mtrl_alpha"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerInParent="true"
+        android:tint="@color/player_text_main"
+        android:background="?selectableItemBackgroundBorderless"/>
+</RelativeLayout>

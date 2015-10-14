@@ -1,6 +1,5 @@
 package com.marverenic.music.activity;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -12,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,7 +39,8 @@ import com.marverenic.music.utils.Themes;
 import java.io.File;
 import java.util.ArrayList;
 
-public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBarChangeListener {
+public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBarChangeListener,
+        PopupMenu.OnMenuItemClickListener {
 
     private MediaObserver observer = null;
     private boolean userTouchingProgressBar = false; // This probably shouldn't be here...
@@ -80,6 +81,7 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
         findViewById(R.id.playButton).setOnClickListener(this);
         findViewById(R.id.nextButton).setOnClickListener(this);
         findViewById(R.id.previousButton).setOnClickListener(this);
+        findViewById(R.id.songDetail).setOnClickListener(this);
         ((SeekBar) findViewById(R.id.songSeekBar)).setOnSeekBarChangeListener(this);
 
         observer = new MediaObserver(this);
@@ -231,61 +233,69 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
             SeekBar seekBar = (SeekBar)findViewById(R.id.songSeekBar);
             seekBar.setProgress(0);
         }
-        else if (v.getId() == R.id.songInfo){
+        else if (v.getId() == R.id.songDetail){
             // Song info
-            final Context context = this;
             final Song nowPlaying = PlayerController.getNowPlaying();
 
             if (nowPlaying != null) {
-                // Show an AlertDialog for navigating to relevant activities
-                AlertDialog infoDialog = new AlertDialog.Builder(this)
-                        .setTitle(nowPlaying.songName)
-                        .setNegativeButton(R.string.action_cancel, null)
-                        .setItems(R.array.now_playing_options, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                switch (which) {
-                                    case 0: //Go to artist
-                                        Artist artist = Library.findArtistById(nowPlaying.artistId);
+                final PopupMenu menu = new PopupMenu(this, v, Gravity.END);
+                String[] options = getResources().getStringArray(R.array.now_playing_options);
 
-                                        Navigate.to(context, ArtistActivity.class, ArtistActivity.ARTIST_EXTRA, artist);
-                                        break;
-                                    case 1: //Go to album
-                                        Album album = Library.findAlbumById(nowPlaying.albumId);
-
-                                        Navigate.to(context, AlbumActivity.class, AlbumActivity.ALBUM_EXTRA, album);
-                                        break;
-                                    case 2: //Add to playlist
-                                        ArrayList<Playlist> playlists = Library.getPlaylists();
-                                        String[] playlistNames = new String[playlists.size()];
-
-                                        for (int i = 0; i < playlists.size(); i++ ){
-                                            playlistNames[i] = playlists.get(i).toString();
-                                        }
-
-                                        AlertDialog playlistDialog = new AlertDialog.Builder(context)
-                                                .setTitle(getString(R.string.header_add_song_name_to_playlist, nowPlaying.songName))
-                                                .setItems(playlistNames, new DialogInterface.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(DialogInterface dialog, int which) {
-                                                        Library.addPlaylistEntry(context, Library.getPlaylists().get(which), nowPlaying);
-                                                    }
-                                                })
-                                                .setNeutralButton(R.string.action_cancel, null)
-                                                .show();
-
-                                        playlistDialog.getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(Themes.getAccent());
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }
-                        })
-                        .show();
-
-                infoDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Themes.getAccent());
+                for (int i = 0; i < options.length;  i++) {
+                    menu.getMenu().add(Menu.NONE, i, i, options[i]);
+                }
+                menu.setOnMenuItemClickListener(this);
+                menu.show();
             }
         }
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        final Song nowPlaying = PlayerController.getNowPlaying();
+        if (nowPlaying == null) {
+            return false;
+        }
+
+        switch (item.getItemId()) {
+            case 0: //Go to artist
+                Artist artist = Library.findArtistById(nowPlaying.artistId);
+                Navigate.to(this, ArtistActivity.class, ArtistActivity.ARTIST_EXTRA, artist);
+                return true;
+            case 1: //Go to album
+                Album album = Library.findAlbumById(nowPlaying.albumId);
+
+                Navigate.to(this, AlbumActivity.class, AlbumActivity.ALBUM_EXTRA, album);
+                return true;
+            case 2: //Add to playlist
+                ArrayList<Playlist> playlists = Library.getPlaylists();
+                String[] playlistNames = new String[playlists.size()];
+
+                for (int i = 0; i < playlists.size(); i++ ){
+                    playlistNames[i] = playlists.get(i).toString();
+                }
+
+                AlertDialog playlistDialog = new AlertDialog.Builder(this)
+                        .setTitle(
+                                getString(
+                                        R.string.header_add_song_name_to_playlist,
+                                        nowPlaying.songName))
+                        .setItems(playlistNames, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Library.addPlaylistEntry(
+                                        NowPlayingActivity.this,
+                                        Library.getPlaylists().get(which),
+                                        nowPlaying);
+                            }
+                        })
+                        .setNeutralButton(R.string.action_cancel, null)
+                        .show();
+
+                Themes.themeAlertDialog(playlistDialog);
+                return true;
+        }
+        return false;
     }
 
     @Override
@@ -356,7 +366,7 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
             final SeekBar seekBar = ((SeekBar) findViewById(R.id.songSeekBar));
 
             if ((PlayerController.isPlaying() || PlayerController.isPreparing())) {
-                ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_pause_circle_fill_72dp);
+                ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_pause_circle_fill_56dp);
 
                 if (!PlayerController.isPreparing()) {
                     if (!observer.isRunning()) new Thread(observer).start();
@@ -371,7 +381,7 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
             else {
                 seekBar.setMax(PlayerController.getDuration());
                 seekBar.setProgress(PlayerController.getCurrentPosition());
-                ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_circle_fill_72dp);
+                ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_circle_fill_56dp);
             }
         }
     }
