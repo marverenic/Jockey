@@ -1,6 +1,5 @@
 package com.marverenic.music.activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -10,7 +9,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.Menu;
@@ -30,10 +28,10 @@ import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
-import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Fetch;
 import com.marverenic.music.utils.Navigate;
+import com.marverenic.music.utils.PlaylistDialog;
 import com.marverenic.music.utils.Themes;
 
 import java.io.File;
@@ -268,31 +266,12 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
                 Navigate.to(this, AlbumActivity.class, AlbumActivity.ALBUM_EXTRA, album);
                 return true;
             case 2: //Add to playlist
-                ArrayList<Playlist> playlists = Library.getPlaylists();
-                String[] playlistNames = new String[playlists.size()];
-
-                for (int i = 0; i < playlists.size(); i++ ){
-                    playlistNames[i] = playlists.get(i).toString();
-                }
-
-                AlertDialog playlistDialog = new AlertDialog.Builder(this)
-                        .setTitle(
-                                getString(
-                                        R.string.header_add_song_name_to_playlist,
-                                        nowPlaying.songName))
-                        .setItems(playlistNames, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Library.addPlaylistEntry(
-                                        NowPlayingActivity.this,
-                                        Library.getPlaylists().get(which),
-                                        nowPlaying);
-                            }
-                        })
-                        .setNeutralButton(R.string.action_cancel, null)
-                        .show();
-
-                Themes.themeAlertDialog(playlistDialog);
+                PlaylistDialog.AddToNormal.alert(
+                        findViewById(R.id.imageArtwork),
+                        nowPlaying,
+                        getString(
+                                R.string.header_add_song_name_to_playlist,
+                                nowPlaying.songName));
                 return true;
         }
         return false;
