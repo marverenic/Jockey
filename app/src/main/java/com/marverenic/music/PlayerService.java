@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -33,18 +34,6 @@ public class PlayerService extends Service {
      */
     public static final String ACTION_TOGGLE_PLAY = "com.marverenic.music.action.TOGGLE_PLAY";
     /**
-     * Starts playback of current song in the queue (See {@link Player#begin()})
-     */
-    public static final String ACTION_BEGIN = "com.marverenic.music.action.BEGIN";
-    /**
-     * Pause playback
-     */
-    public static final String ACTION_PAUSE = "com.marverenic.music.action.PAUSE";
-    /**
-     * Resume playback
-     */
-    public static final String ACTION_PLAY = "com.marverenic.music.action.PLAY";
-    /**
      * Skip to the previous song
      */
     public static final String ACTION_PREV = "com.marverenic.music.action.PREVIOUS";
@@ -56,74 +45,16 @@ public class PlayerService extends Service {
      * Stop playback and kill service
      */
     public static final String ACTION_STOP = "com.marverenic.music.action.STOP";
-    /**
-     * Seek within the current song
-     */
-    public static final String ACTION_SEEK = "com.marverenic.music.action.SEEK";
-    /**
-     * Begin playback a different song in the queue
-     * Make sure to pass {@link PlayerService#EXTRA_QUEUE_LIST_POSITION}
-     */
-    public static final String ACTION_CHANGE_SONG = "com.marverenic.music.action.CHANGE_SONG";
-    /**
-     * Replace the songs in the queue
-     */
-    public static final String ACTION_SET_QUEUE = "com.marverenic.music.action.CHANGE_QUEUE";
-    /**
-     * Edit the contents and current position of the queue without changing the current song
-     */
-    public static final String ACTION_EDIT_QUEUE = "com.marverenic.music.action.EDIT_QUEUE";
-    /**
-     * Add an item or list of items to the queue
-     */
-    public static final String ACTION_QUEUE = "com.marverenic.music.action.ADD_QUEUE";
-    /**
-     * Sync shuffle and repeat preferences with SharedPreferences. Pass {@link PlayerService#EXTRA_PREF_SHUFFLE}
-     * and/or {@link PlayerService#EXTRA_PREF_REPEAT} as applicable
-     */
-    public static final String ACTION_SET_PREFS = "com.marverenic.music.action.PREF_EDIT";
-    /**
-     * Request an update broadcast to be sent
-     * Used to keep the processes in sync with each other
-     */
-    public static final String ACTION_REQUEST_SYNC = "com.marverenic.music.action.SYNC_PROCESSES";
-    /**
-     * The position to seek to. Pass as an int extra with {@link PlayerService#ACTION_SEEK}
-     */
-    public static final String EXTRA_POSITION = "com.marverenic.music.extra.SEEK_POSITION";
-    /**
-     * The {@link Song} to queue. Pass as a parcelable extra with {@link PlayerService#ACTION_QUEUE}
-     */
-    public static final String EXTRA_QUEUE_SONG = "com.marverenic.music.extra.QUEUE_ITEM";
-    /**
-     * The {@link ArrayList<Song>} to queue. Pass as a parcelable extra with
-     * {@link PlayerService#ACTION_QUEUE} or {@link PlayerService#ACTION_EDIT_QUEUE}
-     */
-    public static final String EXTRA_QUEUE_LIST = "com.marverenic.music.extra.QUEUE_LIST";
-    /**
-     * Whether or not to queue the song(s) next or not. Pass as a boolean extra with
-     * {@link PlayerService#ACTION_QUEUE}. If a value isn't passed, then false is assumed
-     */
-    public static final String EXTRA_QUEUE_NEXT = "com.marverenic.music.extra.QUEUE_LAST";
-    /**
-     * The starting position of the new queue.
-     * Pass as an int extra with {@link PlayerService#ACTION_SET_QUEUE}, {@link PlayerService#ACTION_EDIT_QUEUE},
-     * or {@link PlayerService#ACTION_QUEUE} with {@link PlayerService#EXTRA_QUEUE_LIST} specified
-     */
-    public static final String EXTRA_QUEUE_LIST_POSITION = "com.marverenic.music.extra.QUEUE_POSITION";
-    /**
-     * Pass as an extra with {@link PlayerService#ACTION_SET_PREFS} to change the shuffle setting
-     */
-    public static final String EXTRA_PREF_SHUFFLE = "com.marverenic.music.extra.SHUFFLE_PREF";
-    /**
-     * Pass as an extra with {@link PlayerService#ACTION_SET_PREFS} to change the repeat setting
-     */
-    public static final String EXTRA_PREF_REPEAT = "com.marverenic.music.extra.REPEAT_PREF";
 
     /**
      * The service instance in use (singleton)
      */
     private static PlayerService instance;
+
+    /**
+     * Used in binding and unbinding this service to the UI process
+     */
+    private static IBinder binder;
 
     // Instance variables
     /**
@@ -134,7 +65,10 @@ public class PlayerService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        if (binder == null) {
+            binder = new Stub();
+        }
+        return binder;
     }
 
     /**
@@ -335,15 +269,6 @@ public class PlayerService extends Service {
                 case (ACTION_TOGGLE_PLAY):
                     instance.player.togglePlay();
                     break;
-                case (ACTION_BEGIN):
-                    instance.player.begin();
-                    break;
-                case (ACTION_PLAY):
-                    instance.player.play();
-                    break;
-                case (ACTION_PAUSE):
-                    instance.player.pause();
-                    break;
                 case (ACTION_PREV):
                     instance.player.previous();
                     break;
@@ -353,56 +278,125 @@ public class PlayerService extends Service {
                 case (ACTION_STOP):
                     instance.stop();
                     break;
-                case (ACTION_SEEK):
-                    instance.player.seek(intent.getIntExtra(EXTRA_POSITION, instance.player.getCurrentPosition()));
-                    instance.player.updateNowPlaying();
-                    break;
-                case (ACTION_CHANGE_SONG):
-                    instance.player.changeSong(intent.getIntExtra(EXTRA_QUEUE_LIST_POSITION, instance.player.getQueuePosition()));
-                    break;
-                case (ACTION_SET_QUEUE):
-                    if (!intent.hasExtra(EXTRA_QUEUE_LIST)){
-                        if (debug) Log.w(TAG, "intent with action ACTION_SET_QUEUE was sent, but no EXTRA_QUEUE_LIST was provided");
-                        break;
-                    }
-                    ArrayList<Song> queue = intent.getParcelableArrayListExtra(EXTRA_QUEUE_LIST);
-                    instance.player.setQueue(queue, intent.getIntExtra(EXTRA_QUEUE_LIST_POSITION, 0));
-                    break;
-                case (ACTION_EDIT_QUEUE):
-                    if (!intent.hasExtra(EXTRA_QUEUE_LIST)){
-                        if (debug) Log.w(TAG, "intent with action ACTION_EDIT_QUEUE was sent, but no EXTRA_QUEUE_LIST was provided");
-                        break;
-                    }
-                    ArrayList<Song> editedQueue = intent.getParcelableArrayListExtra(EXTRA_QUEUE_LIST);
-                    instance.player.editQueue(editedQueue, intent.getIntExtra(EXTRA_QUEUE_LIST_POSITION, 0));
-                    break;
-                case (ACTION_QUEUE):
-                    if (intent.hasExtra(EXTRA_QUEUE_SONG)){
-                        if (intent.getBooleanExtra(EXTRA_QUEUE_NEXT, false))
-                            instance.player.queueNext((Song) intent.getParcelableExtra(EXTRA_QUEUE_SONG));
-                        else
-                            instance.player.queueLast((Song) intent.getParcelableExtra(EXTRA_QUEUE_SONG));
-                    }
-                    else if (intent.hasExtra(EXTRA_QUEUE_LIST)){
-                        ArrayList<Song> songList = intent.getParcelableArrayListExtra(EXTRA_QUEUE_LIST);
-                        if (intent.getBooleanExtra(EXTRA_QUEUE_NEXT, false))
-                            instance.player.queueNext(songList);
-                        else
-                            instance.player.queueLast(songList);
-                    }
-                    else{
-                        if (debug) Log.w(TAG, "intent with action ACTION_QUEUE was sent, but no EXTRA_QUEUE_LIST or EXTRA_QUEUE_SONG was provided");
-                    }
-                    break;
-                case (ACTION_SET_PREFS):
-                    instance.player.setPrefs(
-                            intent.getBooleanExtra(EXTRA_PREF_SHUFFLE, instance.player.isShuffle()),
-                            intent.getShortExtra(EXTRA_PREF_REPEAT, instance.player.getRepeat()));
-                    break;
-                case (ACTION_REQUEST_SYNC):
-                    instance.player.updateNowPlaying();
-                    break;
             }
+        }
+    }
+
+    public static class Stub extends IPlayerService.Stub {
+
+        @Override
+        public void stop() throws RemoteException {
+            instance.stop();
+        }
+
+        @Override
+        public void skip() throws RemoteException {
+            instance.player.skip();
+        }
+
+        @Override
+        public void previous() throws RemoteException {
+            instance.player.previous();
+        }
+
+        @Override
+        public void begin() throws RemoteException {
+            instance.player.begin();
+        }
+
+        @Override
+        public void togglePlay() throws RemoteException {
+            instance.player.togglePlay();
+        }
+
+        @Override
+        public void play() throws RemoteException {
+            instance.player.play();
+        }
+
+        @Override
+        public void pause() throws RemoteException {
+            instance.player.play();
+        }
+
+        @Override
+        public void setPrefs(boolean shuffle, int repeat) throws RemoteException {
+            instance.player.setPrefs(shuffle, (short) repeat);
+        }
+
+        @Override
+        public void setQueue(List<Song> newQueue, int newPosition) throws RemoteException {
+            instance.player.setQueue(new ArrayList<>(newQueue), newPosition);
+        }
+
+        @Override
+        public void changeSong(int position) throws RemoteException {
+            instance.player.changeSong(position);
+        }
+
+        @Override
+        public void editQueue(List<Song> newQueue, int newPosition) throws RemoteException {
+            instance.player.editQueue(new ArrayList<>(newQueue), newPosition);
+        }
+
+        @Override
+        public void queueNext(Song song) throws RemoteException {
+            instance.player.queueNext(song);
+        }
+
+        @Override
+        public void queueNextList(List<Song> songs) throws RemoteException {
+            instance.player.queueNext(new ArrayList<>(songs));
+        }
+
+        @Override
+        public void queueLast(Song song) throws RemoteException {
+            instance.player.queueLast(song);
+        }
+
+        @Override
+        public void queueLastList(List<Song> songs) throws RemoteException {
+            instance.player.queueLast(new ArrayList<>(songs));
+        }
+
+        @Override
+        public void seek(int position) throws RemoteException {
+            instance.player.seek(position);
+        }
+
+        @Override
+        public boolean isPlaying() throws RemoteException {
+            return instance.player.isPlaying();
+        }
+
+        @Override
+        public boolean isPreparing() throws RemoteException {
+            return instance.player.isPreparing();
+        }
+
+        @Override
+        public Song getNowPlaying() throws RemoteException {
+            return instance.player.getNowPlaying();
+        }
+
+        @Override
+        public List<Song> getQueue() throws RemoteException {
+            return instance.player.getQueue();
+        }
+
+        @Override
+        public int getQueuePosition() throws RemoteException {
+            return instance.player.getQueuePosition();
+        }
+
+        @Override
+        public int getCurrentPosition() throws RemoteException {
+            return instance.player.getCurrentPosition();
+        }
+
+        @Override
+        public int getDuration() throws RemoteException {
+            return instance.player.getDuration();
         }
     }
 }

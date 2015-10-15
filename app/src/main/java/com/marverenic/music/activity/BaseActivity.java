@@ -146,10 +146,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         if (DEBUG) Log.i(getClass().toString(), "Called onResume");
         Themes.setApplicationIcon(this);
         registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
-        if (PlayerController.getNowPlaying() == null) {
-            PlayerController.requestSync();
-        }
-        else{
+        if (PlayerController.getNowPlaying() != null) {
             update();
             updateMiniplayer();
         }

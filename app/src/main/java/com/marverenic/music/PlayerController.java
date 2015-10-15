@@ -5,11 +5,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
+import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Fetch;
 
@@ -17,8 +20,10 @@ import java.util.ArrayList;
 
 public class PlayerController {
 
+    private static final String TAG = "PlayerController";
+
     private static Context applicationContext;
-    private static Player.State playerState;
+    private static IPlayerService playerService;
     private static Bitmap artwork;
 
     /**
@@ -35,36 +40,17 @@ public class PlayerController {
             context.bindService(serviceIntent, new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName name, IBinder service) {
+                    playerService = IPlayerService.Stub.asInterface(service);
+                    // Forge an update broadcast to update the UI as soon as possible
+                    applicationContext.sendBroadcast(new Intent(Player.UPDATE_BROADCAST), null);
                 }
 
                 @Override
                 public void onServiceDisconnected(ComponentName name) {
+                    playerService = null;
                 }
             }, Context.BIND_AUTO_CREATE);
         }
-    }
-
-    /**
-     * Since we communicate to the {@link PlayerService} using {@link Intent}s, we have to build a
-     * lot of Intents that look really similar. This method makes template Intents that will be
-     * sent to the service and optionally have an action already set
-     * @param action Optional; set the action of the intent. If null, no action will be set
-     * @return A template {@link Intent} that can be sent with {@link Context#sendBroadcast(Intent)},
-     *         or have more information added first.
-     */
-    private static Intent getBaseIntent(@Nullable String action){
-        Intent i = new Intent(applicationContext, PlayerService.Listener.class);
-        if (action != null) i.setAction(action);
-
-        return i;
-    }
-
-    /**
-     * Request the player service to send information about the {@link Player}'s status to the
-     * UI process with an {@link Intent} with the {@link Player#UPDATE_BROADCAST} action
-     */
-    public static void requestSync() {
-        applicationContext.sendBroadcast(getBaseIntent(PlayerService.ACTION_REQUEST_SYNC));
     }
 
     /**
@@ -74,10 +60,14 @@ public class PlayerController {
      * See {@link PlayerService#stop()}
      */
     public static void stop() {
-        applicationContext.sendBroadcast(getBaseIntent(PlayerService.ACTION_STOP));
-        applicationContext = null;
-        playerState = null;
-        artwork = null;
+        if (playerService != null) {
+            try {
+                playerService.stop();
+            } catch (RemoteException e) {
+                Crashlytics.logException(e);
+                Log.w(TAG, e);
+            }
+        }
     }
 
     /**
@@ -85,8 +75,14 @@ public class PlayerController {
      * See {@link Player#skip()}
      */
     public static void skip() {
-        if (playerState != null && playerState.queuePosition < playerState.queue.size()) ++playerState.queuePosition;
-        applicationContext.sendBroadcast(getBaseIntent(PlayerService.ACTION_NEXT));
+        if (playerService != null) {
+            try {
+                playerService.skip();
+            } catch (RemoteException e) {
+                Crashlytics.logException(e);
+                Log.w(TAG, e);
+            }
+        }
     }
 
     /**
@@ -94,14 +90,14 @@ public class PlayerController {
      * See {@link Player#previous()}
      */
     public static void previous() {
-        if (playerState != null){
-            playerState.position = 0;
-            playerState.bundleTime = System.currentTimeMillis();
-
-            if (playerState.queuePosition > 0)
-                --playerState.queuePosition;
+        if (playerService != null) {
+            try {
+                playerService.previous();
+            } catch (RemoteException e) {
+                Crashlytics.logException(e);
+                Log.w(TAG, e);
+            }
         }
-        applicationContext.sendBroadcast(getBaseIntent(PlayerService.ACTION_PREV));
     }
 
     /**
@@ -109,12 +105,14 @@ public class PlayerController {
      * See {@link Player#begin()}
      */
     public static void begin(){
-        if (playerState != null){
-            playerState.position = 0;
-            playerState.bundleTime = System.currentTimeMillis();
-            playerState.isPlaying = true;
+        if (playerService != null) {
+            try {
+                playerService.begin();
+            } catch (RemoteException e) {
+                Crashlytics.logException(e);
+                Log.w(TAG, e);
+            }
         }
-        applicationContext.sendBroadcast(getBaseIntent(PlayerService.ACTION_BEGIN));
     }
 
     /**
@@ -122,13 +120,14 @@ public class PlayerController {
      * See {@link Player#togglePlay()}
      */
     public static void togglePlay() {
-        if (playerState != null){
-            playerState.position = getCurrentPosition();
-            playerState.bundleTime = System.currentTimeMillis();
-            playerState.isPlaying = !playerState.isPlaying;
-            playerState.isPaused = !playerState.isPaused;
+        if (playerService != null) {
+            try {
+                playerService.togglePlay();
+            } catch (RemoteException e) {
+                Crashlytics.logException(e);
+                Log.w(TAG, e);
+            }
         }
-        applicationContext.sendBroadcast(getBaseIntent(PlayerService.ACTION_TOGGLE_PLAY));
     }
 
     /**
@@ -136,7 +135,14 @@ public class PlayerController {
      * See {@link Player#play()}
      */
     public static void play() {
-        applicationContext.sendBroadcast(getBaseIntent(PlayerService.ACTION_PLAY));
+        if (playerService != null) {
+            try {
+                playerService.play();
+            } catch (RemoteException e) {
+                Crashlytics.logException(e);
+                Log.w(TAG, e);
+            }
+        }
     }
 
     /**
@@ -144,7 +150,14 @@ public class PlayerController {
      * See {@link Player#pause()}
      */
     public static void pause() {
-        applicationContext.sendBroadcast(getBaseIntent(PlayerService.ACTION_PAUSE));
+        if (playerService != null) {
+            try {
+                playerService.pause();
+            } catch (RemoteException e) {
+                Crashlytics.logException(e);
+                Log.w(TAG, e);
+            }
+        }
     }
 
     /**
@@ -168,11 +181,17 @@ public class PlayerController {
                 repeatOption = Player.REPEAT_ALL;
         }
 
-        PreferenceManager.getDefaultSharedPreferences(applicationContext).edit().putInt(Player.PREFERENCE_REPEAT, repeatOption).apply();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext);
+        prefs.edit().putInt(Player.PREFERENCE_REPEAT, repeatOption).apply();
 
-        Intent prefIntent = getBaseIntent(PlayerService.ACTION_SET_PREFS);
-        prefIntent.putExtra(PlayerService.EXTRA_PREF_REPEAT, repeatOption);
-        applicationContext.sendBroadcast(prefIntent);
+        if (playerService  != null) {
+            try {
+                playerService.setPrefs(prefs.getBoolean(Player.PREFERENCE_SHUFFLE, false), repeatOption);
+            } catch (RemoteException e) {
+                Crashlytics.logException(e);
+                Log.w(TAG, e);
+            }
+        }
     }
 
     /**
@@ -181,12 +200,18 @@ public class PlayerController {
      * See {@link Player#setPrefs(boolean, short)}
      */
     public static void toggleShuffle() {
-        boolean shuffleOption = !PreferenceManager.getDefaultSharedPreferences(applicationContext).getBoolean(Player.PREFERENCE_SHUFFLE, false);
-        PreferenceManager.getDefaultSharedPreferences(applicationContext).edit().putBoolean(Player.PREFERENCE_SHUFFLE, shuffleOption).apply();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext);
+        boolean shuffleOption = !prefs.getBoolean(Player.PREFERENCE_SHUFFLE, false);
+        prefs.edit().putBoolean(Player.PREFERENCE_SHUFFLE, shuffleOption).apply();
 
-        Intent prefIntent = getBaseIntent(PlayerService.ACTION_SET_PREFS);
-        prefIntent.putExtra(PlayerService.EXTRA_PREF_SHUFFLE, shuffleOption);
-        applicationContext.sendBroadcast(prefIntent);
+        if (playerService != null) {
+            try {
+                playerService.setPrefs(shuffleOption, prefs.getInt(Player.PREFERENCE_REPEAT, 0));
+            } catch (RemoteException e) {
+                Crashlytics.logException(e);
+                Log.w(TAG, e);
+            }
+        }
     }
 
     /**
@@ -196,16 +221,14 @@ public class PlayerController {
      * See {@link Player#setQueue(ArrayList, int)}
      */
     public static void setQueue(final ArrayList<Song> newQueue, final int newPosition) {
-        if (playerState != null) {
-            playerState.queue = newQueue;
-            playerState.queuePosition = newPosition;
+        if (playerService != null) {
+            try {
+                playerService.setQueue(newQueue, newPosition);
+            } catch (RemoteException e) {
+                Crashlytics.logException(e);
+                Log.w(TAG, e);
+            }
         }
-
-        Intent queueIntent = getBaseIntent(PlayerService.ACTION_SET_QUEUE);
-        queueIntent.putParcelableArrayListExtra(PlayerService.EXTRA_QUEUE_LIST, newQueue);
-        queueIntent.putExtra(PlayerService.EXTRA_QUEUE_LIST_POSITION, newPosition);
-
-        applicationContext.sendBroadcast(queueIntent);
     }
 
     /**
@@ -214,12 +237,14 @@ public class PlayerController {
      * See {@link Player#changeSong(int)}
      */
     public static void changeSong(int queuePosition) {
-        playerState.queuePosition = queuePosition;
-
-        Intent changeSongIntent = getBaseIntent(PlayerService.ACTION_CHANGE_SONG);
-        changeSongIntent.putExtra(PlayerService.EXTRA_QUEUE_LIST_POSITION, queuePosition);
-
-        applicationContext.sendBroadcast(changeSongIntent);
+        if (playerService != null) {
+            try {
+                playerService.changeSong(queuePosition);
+            } catch (RemoteException e) {
+                Crashlytics.logException(e);
+                Log.w(TAG, e);
+            }
+        }
     }
 
     /**
@@ -229,14 +254,15 @@ public class PlayerController {
      * See {@link Player#editQueue(ArrayList, int)}
      */
     public static void editQueue(ArrayList<Song> queue, int queuePosition){
-        playerState.queue = queue;
-        playerState.queuePosition = queuePosition;
+        if (playerService != null) {
+            try {
+                playerService.editQueue(queue, queuePosition);
+            } catch (RemoteException e) {
+                Crashlytics.logException(e);
+                Log.w(TAG, e);
 
-        Intent queueIntent = getBaseIntent(PlayerService.ACTION_EDIT_QUEUE);
-        queueIntent.putParcelableArrayListExtra(PlayerService.EXTRA_QUEUE_LIST, queue);
-        queueIntent.putExtra(PlayerService.EXTRA_QUEUE_LIST_POSITION, queuePosition);
-
-        applicationContext.sendBroadcast(queueIntent);
+            }
+        }
     }
 
     /**
@@ -245,15 +271,14 @@ public class PlayerController {
      * See {@link Player#queueNext(Song)}
      */
     public static void queueNext(final Song song) {
-        if (playerState != null) {
-            playerState.queue.add(playerState.queuePosition + 1, song);
+        if (playerService != null) {
+            try {
+                playerService.queueNext(song);
+            } catch (RemoteException e) {
+                Crashlytics.logException(e);
+                Log.w(TAG, e);
+            }
         }
-
-        Intent queueIntent = getBaseIntent(PlayerService.ACTION_QUEUE);
-        queueIntent.putExtra(PlayerService.EXTRA_QUEUE_SONG, song);
-        queueIntent.putExtra(PlayerService.EXTRA_QUEUE_NEXT, true);
-
-        applicationContext.sendBroadcast(queueIntent);
     }
 
     /**
@@ -262,15 +287,14 @@ public class PlayerController {
      * See {@link Player#queueNext(ArrayList)}
      */
     public static void queueNext(final ArrayList<Song> songs) {
-        if (playerState != null) {
-            playerState.queue.addAll(playerState.queuePosition + 1, songs);
+        if (playerService != null) {
+            try {
+                playerService.queueNextList(songs);
+            } catch (RemoteException e) {
+                Crashlytics.logException(e);
+                Log.w(TAG, e);
+            }
         }
-
-        Intent queueIntent = getBaseIntent(PlayerService.ACTION_QUEUE);
-        queueIntent.putParcelableArrayListExtra(PlayerService.EXTRA_QUEUE_LIST, songs);
-        queueIntent.putExtra(PlayerService.EXTRA_QUEUE_NEXT, true);
-
-        applicationContext.sendBroadcast(queueIntent);
     }
 
     /**
@@ -279,15 +303,14 @@ public class PlayerController {
      * See {@link Player#queueLast(Song)}
      */
     public static void queueLast(final Song song) {
-        if (playerState != null) {
-            playerState.queue.add(song);
+        if (playerService != null) {
+            try {
+                playerService.queueLast(song);
+            } catch (RemoteException e) {
+                Crashlytics.logException(e);
+                Log.w(TAG, e);
+            }
         }
-
-        Intent queueIntent = getBaseIntent(PlayerService.ACTION_QUEUE);
-        queueIntent.putExtra(PlayerService.EXTRA_QUEUE_SONG, song);
-        queueIntent.putExtra(PlayerService.EXTRA_QUEUE_NEXT, false);
-
-        applicationContext.sendBroadcast(queueIntent);
     }
 
     /**
@@ -296,15 +319,14 @@ public class PlayerController {
      * See {@link Player#queueLast(ArrayList)}
      */
     public static void queueLast(final ArrayList<Song> songs) {
-        if (playerState != null) {
-            playerState.queue.addAll(songs);
+        if (playerService != null) {
+            try {
+                playerService.queueLastList(songs);
+            } catch (RemoteException e) {
+                Crashlytics.logException(e);
+                Log.w(TAG, e);
+            }
         }
-
-        Intent queueIntent = getBaseIntent(PlayerService.ACTION_QUEUE);
-        queueIntent.putParcelableArrayListExtra(PlayerService.EXTRA_QUEUE_LIST, songs);
-        queueIntent.putExtra(PlayerService.EXTRA_QUEUE_NEXT, false);
-
-        applicationContext.sendBroadcast(queueIntent);
     }
 
     /**
@@ -312,94 +334,142 @@ public class PlayerController {
      * @param position The new seek position in milliseconds
      */
     public static void seek(final int position) {
-        if (playerState != null) {
-            playerState.position = position;
-            playerState.bundleTime = System.currentTimeMillis();
+        if (playerService != null) {
+            try {
+                playerService.seek(position);
+            } catch (RemoteException e) {
+                Crashlytics.logException(e);
+                Log.w(TAG, e);
+            }
         }
-
-        Intent seekIntent = getBaseIntent(PlayerService.ACTION_SEEK);
-        seekIntent.putExtra(PlayerService.EXTRA_POSITION, position);
-
-        applicationContext.sendBroadcast(seekIntent);
     }
 
     /**
      * @return if the player service is currently playing music
      */
     public static boolean isPlaying() {
-        return playerState != null && playerState.isPlaying;
+        if (playerService == null) return false;
+
+        try {
+            return playerService.isPlaying();
+        } catch (RemoteException e) {
+            Crashlytics.logException(e);
+            Log.w(TAG, e);
+            return false;
+        }
     }
 
     /**
      * @return if the player service is currently preparing to play a song
      */
     public static boolean isPreparing() {
-        return playerState != null && playerState.isPreparing;
+        if (playerService == null) return false;
+
+        try {
+            return playerService.isPreparing();
+        } catch (RemoteException e) {
+            Crashlytics.logException(e);
+            Log.w(TAG, e);
+            return false;
+        }
     }
 
     /**
      * @return if shuffle is enabled in {@link android.content.SharedPreferences}
      */
     public static boolean isShuffle() {
-        return PreferenceManager.getDefaultSharedPreferences(applicationContext).getBoolean(Player.PREFERENCE_SHUFFLE, false);
+        return PreferenceManager.getDefaultSharedPreferences(applicationContext)
+                .getBoolean(Player.PREFERENCE_SHUFFLE, false);
     }
 
     /**
      * @return whether repeat all is currently enabled in {@link android.content.SharedPreferences}
      */
     public static boolean isRepeat() {
-        return PreferenceManager.getDefaultSharedPreferences(applicationContext).getInt(Player.PREFERENCE_REPEAT, Player.REPEAT_NONE) == Player.REPEAT_ALL;
+        return PreferenceManager.getDefaultSharedPreferences(applicationContext)
+                .getInt(Player.PREFERENCE_REPEAT, Player.REPEAT_NONE) == Player.REPEAT_ALL;
     }
 
     /**
      * @return whether repeat one is currently enabled in {@link android.content.SharedPreferences}
      */
     public static boolean isRepeatOne() {
-        return PreferenceManager.getDefaultSharedPreferences(applicationContext).getInt(Player.PREFERENCE_REPEAT, Player.REPEAT_NONE) == Player.REPEAT_ONE;
+        return PreferenceManager.getDefaultSharedPreferences(applicationContext)
+                .getInt(Player.PREFERENCE_REPEAT, Player.REPEAT_NONE) == Player.REPEAT_ONE;
     }
 
     /**
      * @return The song currently being played by the player service (null if nothing is playing)
      */
     public static Song getNowPlaying() {
-        if (playerState != null && playerState.queuePosition < playerState.queue.size())
-            return playerState.queue.get(playerState.queuePosition);
-        return null;
+        if (playerService == null) return null;
+
+        try {
+            return playerService.getNowPlaying();
+        } catch (RemoteException e) {
+            Crashlytics.logException(e);
+            Log.w(TAG, e);
+            return null;
+        }
     }
 
     /**
      * @return The current queue of the player service
      */
     public static ArrayList<Song> getQueue() {
-        if (playerState != null) return playerState.queue;
-        return new ArrayList<>();
+        if (playerService == null) return null;
+
+        try {
+            return new ArrayList<>(playerService.getQueue());
+        } catch (RemoteException e) {
+            Crashlytics.logException(e);
+            Log.w(TAG, e);
+            return null;
+
+        }
     }
 
     /**
      * @return The index of the currently playing song in the player service's queue
      */
     public static int getQueuePosition() {
-        if (playerState != null) return playerState.queuePosition;
-        return 0;
+        if (playerService == null) return 0;
+
+        try {
+            return playerService.getQueuePosition();
+        } catch (RemoteException e) {
+            Crashlytics.logException(e);
+            Log.w(TAG, e);
+            return 0;
+        }
     }
 
     /**
      * @return The current seek position of the now playing song in milliseconds
      */
     public static int getCurrentPosition() {
-        if (playerState == null) return 0;
-        if (!isPlaying()) return playerState.position;
+        if (playerService == null) return 0;
 
-        long dT = System.currentTimeMillis() - playerState.bundleTime;
-        return playerState.position + (int) dT;
+        try {
+            return playerService.getCurrentPosition();
+        } catch (RemoteException e) {
+            Crashlytics.logException(e);
+            Log.w(TAG, e);
+            return 0;
+        }
     }
 
     /**
      * @return The total duration of the currently playing song
      */
     public static int getDuration() {
-        if (playerState != null) return playerState.duration;
-        return Integer.MAX_VALUE;
+        try {
+            return playerService.getDuration();
+        } catch (RemoteException e) {
+            Crashlytics.logException(e);
+            Log.w(TAG, e);
+            return Integer.MAX_VALUE;
+        }
     }
 
     /**
@@ -420,7 +490,6 @@ public class PlayerController {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(Player.UPDATE_BROADCAST)){
-                playerState = intent.getParcelableExtra(Player.UPDATE_EXTRA);
                 artwork = null;
             }
         }

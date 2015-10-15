@@ -16,8 +16,6 @@ import android.media.RemoteControlClient;
 import android.media.session.MediaSession;
 import android.media.session.PlaybackState;
 import android.os.Build;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -434,7 +432,6 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         PlayerService.getInstance().notifyNowPlaying();
 
         Intent broadcast = new Intent(UPDATE_BROADCAST);
-        broadcast.putExtra(UPDATE_EXTRA, new State(this));
         context.sendOrderedBroadcast(broadcast, null);
 
         // Update the relevant media controller
@@ -955,70 +952,6 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     //      ACCESSOR METHODS
     //
 
-    /**
-     * Used to send the {@link Player} state across processes
-     * See {@link com.marverenic.music.PlayerController.Listener#onReceive(Context, Intent)}
-     */
-    public static class State implements Parcelable {
-        public boolean isPlaying;
-        public boolean isPaused;
-        public boolean isPreparing;
-        public long bundleTime;
-        public int position;
-        public int duration;
-        public ArrayList<Song> queue;
-        public int queuePosition;
-
-        public static final Parcelable.Creator<State> CREATOR = new Parcelable.Creator<State>() {
-            public State createFromParcel(Parcel in) {
-                return new State(in);
-            }
-
-            public State[] newArray(int size) {
-                return new State[size];
-            }
-        };
-
-        public State(Player p){
-            isPlaying = p.isPlaying();
-            isPaused = p.isPaused();
-            isPreparing = p.isPreparing();
-            bundleTime = System.currentTimeMillis();
-            position = p.getCurrentPosition();
-            duration = p.getDuration();
-            queue = p.getQueue();
-            queuePosition = p.getQueuePosition();
-        }
-
-        public State(Parcel in){
-            boolean[] booleans = new boolean[3];
-            in.readBooleanArray(booleans);
-            isPlaying = booleans[0];
-            isPaused = booleans[1];
-            isPreparing = booleans[2];
-            bundleTime = in.readLong();
-            position = in.readInt();
-            duration = in.readInt();
-            queue = in.createTypedArrayList(Song.CREATOR);
-            queuePosition = in.readInt();
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeBooleanArray(new boolean[]{isPlaying, isPaused, isPreparing});
-            dest.writeLong(bundleTime);
-            dest.writeInt(position);
-            dest.writeInt(duration);
-            dest.writeTypedArray(queue.toArray(new Parcelable[queue.size()]), flags);
-            dest.writeInt(queuePosition);
-        }
-    }
-
     public Bitmap getArt() {
         return art;
     }
@@ -1033,18 +966,6 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     public boolean isPreparing() {
         return mediaPlayer.getState() == ManagedMediaPlayer.status.PREPARING;
-    }
-
-    public boolean isStopped() {
-        return mediaPlayer.getState() == ManagedMediaPlayer.status.STOPPED;
-    }
-
-    public boolean isShuffle(){
-        return shuffle;
-    }
-
-    public short getRepeat(){
-        return repeat;
     }
 
     public int getCurrentPosition() {
