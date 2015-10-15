@@ -3,7 +3,7 @@ package com.marverenic.music.instances.viewholder;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.PopupMenu;
@@ -17,9 +17,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.marverenic.music.Library;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
@@ -28,10 +28,13 @@ import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.PlaylistDialog;
+import com.marverenic.music.view.ViewUtils;
 
 import java.util.HashMap;
 
-public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, Palette.PaletteAsyncListener, PopupMenu.OnMenuItemClickListener{
+public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
+        Palette.PaletteAsyncListener, PopupMenu.OnMenuItemClickListener,
+        RequestListener<String, GlideDrawable>{
 
     // Used to cache Palette values in memory
     private static HashMap<Album, int[]> colorCache = new HashMap<>();
@@ -56,6 +59,7 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
     private ObjectAnimator titleAnimator;
     private ObjectAnimator detailAnimator;
 
+    @SuppressWarnings("deprecation")
     public AlbumViewHolder(View itemView) {
         super(itemView);
         this.itemView = itemView;
@@ -81,6 +85,44 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
         albumName.setText(a.albumName);
         artistName.setText(a.artistName);
 
+        resetPalette();
+
+        Glide.with(itemView.getContext())
+                .load("file://" + a.artUri)
+                .placeholder(R.drawable.art_default)
+                .animate(android.R.anim.fade_in)
+                .crossFade()
+                .listener(this)
+                .into(artwork);
+    }
+
+    @Override
+    public boolean onException(Exception e, String model, Target<GlideDrawable> target,
+                               boolean isFirstResource) {
+        return false;
+    }
+
+    @Override
+    public boolean onResourceReady(GlideDrawable resource, String model,
+                                   Target<GlideDrawable> target, boolean isFromMemoryCache,
+                                   boolean isFirstResource) {
+        if (isFromMemoryCache) {
+            updatePalette(resource);
+        } else {
+            animatePalette(resource);
+        }
+        return false;
+    }
+
+    private void generatePalette(Drawable drawable) {
+        if (colorCache.get(reference) == null) {
+            paletteTask = Palette.from(ViewUtils.drawableToBitmap(drawable)).generate(this);
+        }
+    }
+
+    private void resetPalette() {
+        if (paletteTask != null && !paletteTask.isCancelled()) paletteTask.cancel(true);
+
         if (backgroundAnimator != null){
             backgroundAnimator.setDuration(0);
             backgroundAnimator.cancel();
@@ -97,31 +139,26 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
         container.setBackgroundColor(defaultFrameColor);
         albumName.setTextColor(defaultTitleColor);
         artistName.setTextColor(defaultDetailColor);
-
-        Glide.with(itemView.getContext())
-                .load("file://" + a.artUri)
-                .asBitmap()
-                .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                .placeholder(R.drawable.art_default)
-                .into(new BitmapImageViewTarget(artwork) {
-                    @Override
-                    @SuppressWarnings("unchecked")
-                    public void onResourceReady(Bitmap bitmap, GlideAnimation anim) {
-                        super.onResourceReady(bitmap, anim);
-                        updatePalette();
-                    }
-                });
     }
 
-    private void updatePalette() {
-        if (paletteTask != null && !paletteTask.isCancelled()) paletteTask.cancel(true);
-
-        Bitmap bitmap = ((BitmapDrawable) artwork.getDrawable()).getBitmap();
+    private void updatePalette(Drawable drawable) {
         int[] colors = colorCache.get(reference);
-        if (colors == null)
-            paletteTask = Palette.from(bitmap).generate(this);
-        else{
-            final ObjectAnimator backgroundAnimator = ObjectAnimator.ofObject(
+
+        if (colors != null) {
+            container.setBackgroundColor(colors[FRAME_COLOR]);
+            albumName.setTextColor(colors[TITLE_COLOR]);
+            artistName.setTextColor(colors[DETAIL_COLOR]);
+        } else {
+            resetPalette();
+            generatePalette(drawable);
+        }
+    }
+
+    private void animatePalette(Drawable drawable) {
+        int[] colors = colorCache.get(reference);
+
+        if (colors != null) {
+            backgroundAnimator = ObjectAnimator.ofObject(
                     container,
                     "backgroundColor",
                     new ArgbEvaluator(),
@@ -129,7 +166,7 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
                     colors[FRAME_COLOR]);
             backgroundAnimator.setDuration(300).start();
 
-            final ObjectAnimator titleAnimator = ObjectAnimator.ofObject(
+            titleAnimator = ObjectAnimator.ofObject(
                     albumName,
                     "textColor",
                     new ArgbEvaluator(),
@@ -137,13 +174,15 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
                     colors[TITLE_COLOR]);
             titleAnimator.setDuration(300).start();
 
-            final ObjectAnimator artistAnimator = ObjectAnimator.ofObject(
+            detailAnimator = ObjectAnimator.ofObject(
                     artistName,
                     "textColor",
                     new ArgbEvaluator(),
                     defaultDetailColor,
                     colors[DETAIL_COLOR]);
-            artistAnimator.setDuration(300).start();
+            detailAnimator.setDuration(300).start();
+        } else {
+            generatePalette(drawable);
         }
     }
 
@@ -176,49 +215,7 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
         }
 
         colorCache.put(reference, new int[]{frameColor, titleColor, detailColor});
-
-        if (backgroundAnimator != null) {
-            backgroundAnimator.setDuration(0);
-            backgroundAnimator.cancel();
-        }
-        if (titleAnimator != null){
-            titleAnimator.setDuration(0);
-            titleAnimator.cancel();
-        }
-        if (detailAnimator != null){
-            detailAnimator.setDuration(0);
-            detailAnimator.cancel();
-        }
-
-        backgroundAnimator = ObjectAnimator.ofObject(
-                container,
-                "backgroundColor",
-                new ArgbEvaluator(),
-                defaultFrameColor,
-                frameColor);
-        backgroundAnimator.setDuration(300).start();
-
-        titleAnimator = ObjectAnimator.ofObject(
-                albumName,
-                "textColor",
-                new ArgbEvaluator(),
-                defaultTitleColor,
-                titleColor);
-        titleAnimator.setDuration(300).start();
-
-        detailAnimator = ObjectAnimator.ofObject(
-                artistName,
-                "textColor",
-                new ArgbEvaluator(),
-                defaultDetailColor,
-                detailColor);
-        detailAnimator.setDuration(300).start();
-    }
-
-    private void resetPalette() {
-        container.setBackgroundColor(defaultFrameColor);
-        albumName.setTextColor(defaultTitleColor);
-        artistName.setTextColor(defaultDetailColor);
+        animatePalette(null);
     }
 
     @Override
