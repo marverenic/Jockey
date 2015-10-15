@@ -31,8 +31,6 @@
     <color name="primary_grey">#37474F</color>
     <color name="primary_dark_grey">#263238</color>
     <color name="accent_grey">#90A4AE</color>
-    <color name="ui_text_grey">#FAFAFA</color>
-    <color name="ui_detail_text_grey">#BDBDBD</color>
 
     <!-- Red -->
     <color name="primary_red">#C62828</color>
