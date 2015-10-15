@@ -30,7 +30,7 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     private TextView songName;
     private TextView detailText;
     private ImageView moreButton;
-    private Song reference;
+    protected Song reference;
     private Playlist playlistReference;
     private OnRemovedListener removalListener;
     private ArrayList<Song> songList;
@@ -65,10 +65,6 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
         songName.setText(s.songName);
         detailText.setText(s.artistName + " - " + s.albumName);
-    }
-
-    public void setClickListener(View.OnClickListener listener){
-        customListener = listener;
     }
 
     @Override

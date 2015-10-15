@@ -16,7 +16,7 @@ import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropM
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.instances.viewholder.DraggableSongViewHolder;
+import com.marverenic.music.instances.viewholder.QueueSongViewHolder;
 import com.marverenic.music.utils.PlaylistDialog;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
@@ -91,7 +91,9 @@ public class QueueActivity extends BaseActivity {
     @Override
     public void updateMiniplayer() {}
 
-    public class Adapter extends RecyclerView.Adapter<DraggableSongViewHolder> implements DraggableItemAdapter<DraggableSongViewHolder>, View.OnClickListener {
+    public class Adapter extends RecyclerView.Adapter<QueueSongViewHolder>
+            implements DraggableItemAdapter<QueueSongViewHolder>,
+            QueueSongViewHolder.OnRemovedListener {
 
         private static final int REGULAR_VIEW = 0;
         private static final int HIGHLIT_VIEW = 1;
@@ -101,8 +103,9 @@ public class QueueActivity extends BaseActivity {
         }
 
         @Override
-        public DraggableSongViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-            DraggableSongViewHolder viewHolder = new DraggableSongViewHolder(
+        public QueueSongViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+            return new QueueSongViewHolder(
+                    QueueActivity.this,
                     LayoutInflater
                             .from(viewGroup.getContext())
                             .inflate(
@@ -111,10 +114,7 @@ public class QueueActivity extends BaseActivity {
                                             : R.layout.instance_song_drag,
                                     viewGroup,
                                     false),
-                    data);
-
-            viewHolder.setClickListener(this);
-            return viewHolder;
+                    this);
         }
 
         @Override
@@ -126,18 +126,12 @@ public class QueueActivity extends BaseActivity {
         }
 
         @Override
-        public void onClick(View view) {
-            PlayerController.changeSong(((RecyclerView) findViewById(R.id.list)).getChildAdapterPosition(view));
-            finish();
-        }
-
-        @Override
         public long getItemId(int position){
             return data.get(position).songId;
         }
 
         @Override
-        public void onBindViewHolder(DraggableSongViewHolder viewHolder, int i) {
+        public void onBindViewHolder(QueueSongViewHolder viewHolder, int i) {
             viewHolder.update(data.get(i));
         }
 
@@ -147,7 +141,7 @@ public class QueueActivity extends BaseActivity {
         }
 
         @Override
-        public boolean onCheckCanStartDrag(DraggableSongViewHolder viewHolder, int position, int x, int y){
+        public boolean onCheckCanStartDrag(QueueSongViewHolder viewHolder, int position, int x, int y){
             final View containerView = viewHolder.itemView;
             final View dragHandleView = viewHolder.dragHandle;
 
@@ -161,7 +155,7 @@ public class QueueActivity extends BaseActivity {
         }
 
         @Override
-        public ItemDraggableRange onGetItemDraggableRange(DraggableSongViewHolder songViewHolder, int position) {
+        public ItemDraggableRange onGetItemDraggableRange(QueueSongViewHolder viewHolder, int position) {
             return null;
         }
 
@@ -181,6 +175,12 @@ public class QueueActivity extends BaseActivity {
             // Modify the Array and push the change to the service
             data.add(to, data.remove(from));
             PlayerController.editQueue(data, futureNowPlayingIndex);
+        }
+
+        @Override
+        public void onItemRemoved(int index) {
+            data.remove(index);
+            notifyDataSetChanged();
         }
     }
 
