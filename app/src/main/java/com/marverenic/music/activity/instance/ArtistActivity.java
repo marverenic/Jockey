@@ -13,7 +13,6 @@ import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +21,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
@@ -32,7 +33,10 @@ import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.viewholder.AlbumViewHolder;
 import com.marverenic.music.instances.viewholder.HeaderViewHolder;
 import com.marverenic.music.instances.viewholder.SongViewHolder;
-import com.marverenic.music.utils.Fetch;
+import com.marverenic.music.lastfm.ImageList;
+import com.marverenic.music.lastfm.LArtist;
+import com.marverenic.music.lastfm.Query;
+import com.marverenic.music.lastfm.Tag;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
@@ -41,11 +45,14 @@ import com.marverenic.music.view.GridSpacingDecoration;
 import com.marverenic.music.view.MaterialProgressDrawable;
 import com.marverenic.music.view.ViewUtils;
 
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import de.umass.lastfm.ImageSize;
+import javax.xml.parsers.ParserConfigurationException;
 
 public class ArtistActivity extends BaseActivity {
 
@@ -124,9 +131,9 @@ public class ArtistActivity extends BaseActivity {
     public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         private boolean hasBio = true;
-        private ArrayList<de.umass.lastfm.Artist> relatedArtists = new ArrayList<>();
+        private ArrayList<LArtist> relatedArtists = new ArrayList<>();
         private ArrayList<Artist> localRelatedArtists = new ArrayList<>();
-        private de.umass.lastfm.Artist artist;
+        private LArtist artist;
 
         public static final int LOADING_BIO_VIEW = 0;
         public static final int BIO_VIEW = 1;
@@ -140,51 +147,61 @@ public class ArtistActivity extends BaseActivity {
             new AsyncTask<Artist, Void, Void>() {
                 @Override
                 protected Void doInBackground(Artist... params) {
-                    artist = Fetch.fetchArtistBio(ArtistActivity.this, params[0].artistName);
+                    try {
+                        artist = Query.getArtist(ArtistActivity.this, params[0]);
+                    } catch (IOException|ParserConfigurationException|SAXException e) {
+                        e.printStackTrace();
+                        Crashlytics.logException(e);
+                        artist = null;
+                    }
+
                     return null;
                 }
 
                 @Override
                 protected void onPostExecute(Void result) {
                     super.onPostExecute(result);
-
-                    if (artist == null) {
-                        hasBio = false;
-                        notifyDataSetChanged();
-                    }
-                    else{
-                        // Only show related artists if they exist in the library
-                        for (de.umass.lastfm.Artist a : artist.getSimilar()){
-                            Artist localReference = Library.findArtistByName(a.getName());
-                            if (localReference != null){
-                                relatedArtists.add(a);
-                                localRelatedArtists.add(localReference);
-                            }
-                        }
-
-                        notifyItemChanged(0);
-                        notifyItemRangeInserted((hasBio) ? 1 : 0, relatedArtists.size());
-
-                        // Set header image
-                        String URL = artist.getImageURL(ImageSize.MEGA);
-
-                        if (URL.trim().length() != 0) {
-                            Glide.with(ArtistActivity.this).load(URL)
-                                    .placeholder(R.drawable.art_default_xl)
-                                    .centerCrop()
-                                    .error(R.drawable.art_default_xl)
-                                    .into((ImageView) findViewById(R.id.backdrop));
-                        }
-                    }
+                    updateLastFmData();
                 }
             }.execute(reference);
+        }
+
+        private void updateLastFmData() {
+            if (artist == null) {
+                hasBio = false;
+                notifyDataSetChanged();
+            }
+            else{
+                // Only show related artists if they exist in the library
+                for (LArtist a : artist.getRelatedArtists()){
+                    Artist localReference = Library.findArtistByName(a.getName());
+                    if (localReference != null){
+                        relatedArtists.add(a);
+                        localRelatedArtists.add(localReference);
+                    }
+                }
+
+                notifyItemChanged(0);
+                notifyItemRangeInserted((hasBio) ? 1 : 0, relatedArtists.size());
+
+                // Set header image
+                String URL = artist.getImageURL(ImageList.SIZE_MEGA);
+
+                if (URL.trim().length() != 0) {
+                    Glide.with(ArtistActivity.this).load(URL)
+                            .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                            .centerCrop()
+                            .animate(android.R.anim.fade_in)
+                            .into((ImageView) findViewById(R.id.backdrop));
+                }
+            }
         }
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             switch (viewType){
                 case LOADING_BIO_VIEW:
-                    return new LoadingViewHolder(LayoutInflater.from(ArtistActivity.this).inflate(R.layout.instance_loading, parent, false), this);
+                    return new LoadingViewHolder(LayoutInflater.from(ArtistActivity.this).inflate(R.layout.instance_loading, parent, false));
                 case BIO_VIEW:
                     return new BioViewHolder(LayoutInflater.from(ArtistActivity.this).inflate(R.layout.instance_artist_bio, parent, false), this, artist);
                 case RELATED_ARTIST:
@@ -206,8 +223,11 @@ public class ArtistActivity extends BaseActivity {
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             switch (getItemViewType(position)) {
-                // Don't update anything in the bio view or its loading view. Since there's only
-                // one instance, the data will never become invalid
+                // Don't update anything in the bio view. Since there's only one instance, the data
+                // will never become invalid
+                case LOADING_BIO_VIEW:
+                    ((LoadingViewHolder) holder).update();
+                    break;
                 case RELATED_ARTIST:
                     ((SuggestedArtistHolder) holder).update(relatedArtists.get(position - (hasBio? 1 : 0)), localRelatedArtists.get(position - (hasBio? 1 : 0)));
                     break;
@@ -245,17 +265,24 @@ public class ArtistActivity extends BaseActivity {
     /**
      * Temporary ViewHolder for loading an artist bio
      */
-    public class LoadingViewHolder extends RecyclerView.ViewHolder {
+    public static class LoadingViewHolder extends RecyclerView.ViewHolder {
 
-        public LoadingViewHolder(View itemView, final Adapter adapter) {
+        MaterialProgressDrawable spinner;
+
+        public LoadingViewHolder(View itemView) {
             super(itemView);
 
             ImageView spinnerView = (ImageView) itemView.findViewById(R.id.loadingDrawable);
-            MaterialProgressDrawable spinner = new MaterialProgressDrawable(itemView.getContext(), spinnerView);
-            spinner.setColorSchemeColors(Themes.getAccent());
+            spinner = new MaterialProgressDrawable(itemView.getContext(), spinnerView);
+            spinner.setColorSchemeColors(Themes.getAccent(), Themes.getPrimary());
             spinner.updateSizes(MaterialProgressDrawable.LARGE);
             spinner.setAlpha(255);
             spinnerView.setImageDrawable(spinner);
+            spinner.start();
+        }
+
+        public void update() {
+            spinner.stop();
             spinner.start();
         }
     }
@@ -263,14 +290,14 @@ public class ArtistActivity extends BaseActivity {
     /**
      * ViewHolder class for artist bio
      */
-    public class BioViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class BioViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private CardView cardView;
         private TextView bioText;
         private FrameLayout lfmButton;
         private String artistURL;
 
-        public BioViewHolder(View itemView, Adapter adapter, de.umass.lastfm.Artist artist) {
+        public BioViewHolder(View itemView, Adapter adapter, LArtist artist) {
             super(itemView);
 
             cardView = (CardView) itemView.findViewById(R.id.infoCard);
@@ -287,32 +314,36 @@ public class ArtistActivity extends BaseActivity {
         }
 
         @SuppressLint("SetTextI18n")
-        public void setData(de.umass.lastfm.Artist artist) {
-            String[] tags = new String[artist.getTags().size()];
-            artist.getTags().toArray(tags);
+        public void setData(LArtist artist) {
+            Tag[] tags = artist.getTags();
+            String[] tagNames = new String[tags.length];
+
+            for (int i = 0; i < tags.length; i++) {
+                tagNames[i] = tags[i].getName();
+            }
 
             String tagList = ""; // A list of tags to display in the card
 
             if (tags.length > 0) {
                 // Capitalize the first letter of the tag
-                tagList = tags[0].substring(0,1).toUpperCase() + tags[0].substring(1);
+                tagList = tagNames[0].substring(0,1).toUpperCase() + tagNames[0].substring(1);
                 // Add up to 4 more tags (separated by commas)
                 int tagCount = (tags.length < 5)? tags.length : 5;
                 for (int i = 1; i < tagCount; i++){
-                    tagList += ", " + tags[i].substring(0,1).toUpperCase() + tags[i].substring(1);
+                    tagList += ", " + tagNames[i].substring(0,1).toUpperCase() + tagNames[i].substring(1);
                 }
             }
 
-            String summary = Html.fromHtml(artist.getWikiSummary()).toString();
+            String summary = artist.getBio().getSummary();
             if (summary.length() > 0) {
                 // Trim the "read more" attribution since there's already a button linking to Last.fm
-                summary = summary
-                        .substring(0, summary.length() - "Read more on Last.fm.".length())
-                        .trim();
-                if (tagList.length() > 0 && summary.length() > 0) tagList += " - ";
+                summary = summary.substring(0, summary.lastIndexOf("<a href=\""));
             }
 
-            bioText.setText(tagList + summary);
+            bioText.setText(tagList
+                    + ((tagList.trim().length() > 0 && summary.trim().length() > 0) ? "\n\n" : "")
+                    + summary);
+
             artistURL = artist.getUrl();
         }
 
@@ -322,7 +353,7 @@ public class ArtistActivity extends BaseActivity {
                 Intent openLFMIntent = new Intent(Intent.ACTION_VIEW);
                 if (artistURL == null) openLFMIntent.setData(Uri.parse("http://www.last.fm/home"));
                 else openLFMIntent.setData(Uri.parse(artistURL));
-                startActivity(openLFMIntent);
+                itemView.getContext().startActivity(openLFMIntent);
             }
         }
     }
@@ -349,10 +380,10 @@ public class ArtistActivity extends BaseActivity {
             artistName = (TextView) itemView.findViewById(R.id.textArtistName);
         }
 
-        public void update(de.umass.lastfm.Artist artist, Artist localArtist){
+        public void update(LArtist artist, Artist localArtist){
             localReference = localArtist;
 
-            final String artURL = artist.getImageURL(ImageSize.MEDIUM);
+            final String artURL = artist.getImageURL(ImageList.SIZE_MEDIUM);
             if (artURL != null && !artURL.equals("")) {
                 Glide.with(context)
                         .load(artURL)

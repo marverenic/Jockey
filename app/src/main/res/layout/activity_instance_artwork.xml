@@ -41,10 +41,7 @@
                 <ImageView
                     android:id="@+id/backdrop"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:fitsSystemWindows="true"
-                    android:src="@drawable/art_default_xl"
+                    android:layout_height="@dimen/extended_actionbar_height"
                     app:layout_collapseMode="parallax" />
 
                 <android.support.v7.widget.Toolbar

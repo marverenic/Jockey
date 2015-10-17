@@ -8,31 +8,13 @@ import android.media.MediaMetadataRetriever;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 
-import com.marverenic.music.BuildConfig;
 import com.marverenic.music.Library;
-import com.marverenic.music.R;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Song;
-
-import java.io.File;
-
-import de.umass.lastfm.Artist;
-import de.umass.lastfm.Caller;
-import de.umass.lastfm.cache.FileSystemCache;
 
 public class Fetch {
 
     private static final String TAG = "Fetch";
-    // API key for Last.fm. Please use your own.
-    private static final String API_KEY = "a9fc65293034b84b83d20c6e2ecda4b5";
-    private static boolean lastFmInitialized = false;
-
-    public static void initLastFm(Context context) {
-        Caller.getInstance().setCache(new FileSystemCache(new File(context.getExternalCacheDir() + "/lastfm/")));
-        Caller.getInstance().setUserAgent("Jockey/" + BuildConfig.VERSION_NAME);
-
-        lastFmInitialized = true;
-    }
 
     // Returns the album art thumbnail from the MediaStore cache
     // Uses the Library loaded in RAM to retrieve the art URI
@@ -75,18 +57,6 @@ public class Fetch {
         }
         catch (Exception e) {
             e.printStackTrace();
-        }
-        return null;
-    }
-
-    public static Artist fetchArtistBio(Context context, String artistName) {
-        if (artistName.equalsIgnoreCase(context.getString(R.string.no_artist))
-                || artistName.equalsIgnoreCase(context.getString(R.string.various_artists))) return null;
-        if (!lastFmInitialized) initLastFm(context);
-
-        // Only get the bio if a valid network is present
-        if(Prefs.allowNetwork(context)) {
-            return  Artist.getInfo(artistName, API_KEY);
         }
         return null;
     }
