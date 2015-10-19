@@ -21,11 +21,11 @@
 
     <!-- Dark Base -->
     <color name="primary_text_dark">#FAFAFA</color>
-    <color name="secondary_text_dark">#9E9E9E</color>
-    <color name="background_dark">#212121</color>
+    <color name="secondary_text_dark">#E0E0E0</color>
+    <color name="background_dark">#111111</color>
     <color name="screen_overlay_dark">#CC212121</color>
-    <color name="background_elevated_dark">#333333</color>
-    <color name="background_miniplayer_dark">#424242</color>
+    <color name="background_elevated_dark">#212121</color>
+    <color name="background_miniplayer_dark">#333333</color>
 
     <!-- Grey -->
     <color name="primary_grey">#37474F</color>
