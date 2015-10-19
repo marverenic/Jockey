@@ -1,5 +1,6 @@
 package com.marverenic.music.activity;
 
+import android.graphics.drawable.NinePatchDrawable;
 import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -41,8 +42,13 @@ public class QueueActivity extends BaseActivity {
         this.adapter = new Adapter();
         RecyclerViewDragDropManager dragDropManager = new RecyclerViewDragDropManager();
         RecyclerView.Adapter adapter = dragDropManager.createWrappedAdapter(this.adapter);
-        // TODO drag drop shadow
-        // dragDropManager.setDraggingItemShadowDrawable((NinePatchDrawable) getResources().getDrawable(R.drawable.material_shadow_z3));
+
+        //noinspection deprecation
+        dragDropManager.setDraggingItemShadowDrawable(
+                (NinePatchDrawable) getResources().getDrawable(
+                        (Themes.isLight(this))
+                                ? R.drawable.list_drag_shadow_light
+                                : R.drawable.list_drag_shadow_dark));
 
         songRecyclerView.setAdapter(adapter);
         songRecyclerView.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));

@@ -1,5 +1,6 @@
 package com.marverenic.music.activity.instance;
 
+import android.graphics.drawable.NinePatchDrawable;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewCompat;
@@ -53,7 +54,13 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
         RecyclerViewDragDropManager dragDropManager = new RecyclerViewDragDropManager();
         this.adapter = new Adapter();
         RecyclerView.Adapter adapter = dragDropManager.createWrappedAdapter(this.adapter);
-        // TODO dragDropManager.setDraggingItemShadowDrawable((NinePatchDrawable) getResources().getDrawable(R.drawable.material_shadow_z3));
+
+        //noinspection deprecation
+        dragDropManager.setDraggingItemShadowDrawable(
+                (NinePatchDrawable) getResources().getDrawable(
+                        (Themes.isLight(this))
+                                ? R.drawable.list_drag_shadow_light
+                                : R.drawable.list_drag_shadow_dark));
 
         songRecyclerView.setAdapter(adapter);
         songRecyclerView.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
