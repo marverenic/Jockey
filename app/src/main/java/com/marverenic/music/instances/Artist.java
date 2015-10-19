@@ -2,8 +2,11 @@ package com.marverenic.music.instances;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
-public class Artist implements Parcelable {
+import java.util.Locale;
+
+public class Artist implements Parcelable, Comparable<Artist> {
 
     public static final Parcelable.Creator<Artist> CREATOR = new Parcelable.Creator<Artist>() {
         public Artist createFromParcel(Parcel in) {
@@ -54,4 +57,20 @@ public class Artist implements Parcelable {
         dest.writeString(artistName);
     }
 
+    @Override
+    public int compareTo(@NonNull Artist another) {
+        String o1c = artistName.toLowerCase(Locale.ENGLISH);
+        String o2c = another.artistName.toLowerCase(Locale.ENGLISH);
+        if (o1c.startsWith("the ")) {
+            o1c = o1c.substring(4);
+        } else if (o1c.startsWith("a ")) {
+            o1c = o1c.substring(2);
+        }
+        if (o2c.startsWith("the ")) {
+            o2c = o2c.substring(4);
+        } else if (o2c.startsWith("a ")) {
+            o2c = o2c.substring(2);
+        }
+        return o1c.compareTo(o2c);
+    }
 }

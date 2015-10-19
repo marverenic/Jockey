@@ -2,10 +2,11 @@ package com.marverenic.music.instances;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Playlist implements Parcelable {
+public class Playlist implements Parcelable, Comparable<Playlist> {
 
     public static final Parcelable.Creator<Playlist> CREATOR = new Parcelable.Creator<Playlist>() {
         public Playlist createFromParcel(Parcel in) {
@@ -56,5 +57,18 @@ public class Playlist implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(playlistId);
         dest.writeString(playlistName);
+    }
+
+    @Override
+    public int compareTo(@NonNull Playlist another) {
+        if (!getClass().equals(another.getClass())) {
+            if (this instanceof AutoPlaylist) {
+                return -1;
+            }
+            if (this instanceof AutoPlaylist) {
+                return 1;
+            }
+        }
+        return playlistName.compareToIgnoreCase(another.playlistName);
     }
 }

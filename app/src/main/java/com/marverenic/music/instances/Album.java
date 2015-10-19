@@ -2,8 +2,11 @@ package com.marverenic.music.instances;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
-public class Album implements Parcelable {
+import java.util.Locale;
+
+public class Album implements Parcelable, Comparable<Album> {
 
     public static final Parcelable.Creator<Album> CREATOR = new Parcelable.Creator<Album>() {
         public Album createFromParcel(Parcel in) {
@@ -68,5 +71,22 @@ public class Album implements Parcelable {
         dest.writeString(artistName);
         dest.writeString(year);
         dest.writeString(artUri);
+    }
+
+    @Override
+    public int compareTo(@NonNull Album another) {
+        String o1c = albumName.toLowerCase(Locale.ENGLISH);
+        String o2c = another.albumName.toLowerCase(Locale.ENGLISH);
+        if (o1c.startsWith("the ")) {
+            o1c = o1c.substring(4);
+        } else if (o1c.startsWith("a ")) {
+            o1c = o1c.substring(2);
+        }
+        if (o2c.startsWith("the ")) {
+            o2c = o2c.substring(4);
+        } else if (o2c.startsWith("a ")) {
+            o2c = o2c.substring(2);
+        }
+        return o1c.compareTo(o2c);
     }
 }

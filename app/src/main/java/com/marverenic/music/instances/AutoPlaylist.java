@@ -10,7 +10,6 @@ import com.marverenic.music.Library;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 
 public class AutoPlaylist extends Playlist implements Parcelable {
@@ -168,53 +167,27 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                 Collections.shuffle(in);
                 break;
             case Rule.Field.NAME:
-                Library.sortSongList(in);
+                Collections.sort(in);
                 break;
             case Rule.Field.PLAY_COUNT:
-                Collections.sort(in, new Comparator<Song>() {
-                    @Override
-                    public int compare(Song s1, Song s2) {
-                        if (sortAscending) return s1.playCount() - s2.playCount();
-                        else return s2.playCount() - s1.playCount();
-                    }
-                });
+                Collections.sort(in, Song.PLAY_COUNT_COMPARATOR);
                 break;
             case Rule.Field.SKIP_COUNT:
-                Collections.sort(in, new Comparator<Song>() {
-                    @Override
-                    public int compare(Song s1, Song s2) {
-                        if (sortAscending) return s1.skipCount() - s2.skipCount();
-                        else return s2.skipCount() - s1.skipCount();
-                    }
-                });
+                Collections.sort(in, Song.SKIP_COUNT_COMPARATOR);
                 break;
             case Rule.Field.DATE_ADDED:
-                Collections.sort(in, new Comparator<Song>() {
-                    @Override
-                    public int compare(Song s1, Song s2) {
-                        if (sortAscending) return s1.dateAdded - s2.dateAdded;
-                        else return s2.dateAdded - s1.dateAdded;
-                    }
-                });
+                Collections.sort(in, Song.DATE_ADDED_COMPARATOR);
                 break;
             case Rule.Field.DATE_PLAYED:
-                Collections.sort(in, new Comparator<Song>() {
-                    @Override
-                    public int compare(Song s1, Song s2) {
-                        if (sortAscending) return s1.playDate() - s2.playDate();
-                        else return s2.playDate() - s1.playDate();
-                    }
-                });
+                Collections.sort(in, Song.DATE_PLAYED_COMPARATOR);
                 break;
             case Rule.Field.YEAR:
-                Collections.sort(in, new Comparator<Song>() {
-                    @Override
-                    public int compare(Song s1, Song s2) {
-                        if (sortAscending) return s1.year - s2.year;
-                        else return s2.year - s1.year;
-                    }
-                });
+                Collections.sort(in, Song.YEAR_COMPARATOR);
                 break;
+        }
+
+        if (sortAscending) {
+            Collections.reverse(in);
         }
         return in;
     }

@@ -2,8 +2,9 @@ package com.marverenic.music.instances;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
-public class Genre implements Parcelable {
+public class Genre implements Parcelable, Comparable<Genre> {
 
     public static final Parcelable.Creator<Genre> CREATOR = new Parcelable.Creator<Genre>() {
         public Genre createFromParcel(Parcel in) {
@@ -53,5 +54,10 @@ public class Genre implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(genreId);
         dest.writeString(genreName);
+    }
+
+    @Override
+    public int compareTo(@NonNull Genre another) {
+        return genreName.compareTo(another.genreName);
     }
 }

@@ -88,7 +88,7 @@ public class ArtistActivity extends BaseActivity {
             });
         }
         else {
-            Library.sortAlbumList(albums);
+            Collections.sort(albums);
         }
 
         CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);

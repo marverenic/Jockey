@@ -34,6 +34,7 @@ import com.marverenic.music.view.DividerDecoration;
 import com.marverenic.music.view.GridSpacingDecoration;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class SearchActivity extends BaseActivity implements SearchView.OnQueryTextListener {
 
@@ -311,7 +312,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                     }
                 }
 
-                Library.sortGenreList(genreResults);
+                Collections.sort(genreResults);
             }
 
             notifyDataSetChanged();
@@ -461,7 +462,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         public void onPlaylistAdded(Playlist added) {
             if (lastQuery != null && lastQuery.length() > 0 && added.playlistName.toLowerCase().contains(lastQuery.toLowerCase().trim())){
                 playlistResults.add(added);
-                Library.sortPlaylistList(playlistResults);
+                Collections.sort(playlistResults);
 
                 if (playlistResults.size() == 1){
                     // If we didn't have any results before, then we need to add the header as well

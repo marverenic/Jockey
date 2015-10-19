@@ -2,10 +2,14 @@ package com.marverenic.music.instances;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import com.marverenic.music.Library;
 
-public class Song implements Parcelable {
+import java.util.Comparator;
+import java.util.Locale;
+
+public class Song implements Parcelable, Comparable<Song> {
 
     public static final Parcelable.Creator<Song> CREATOR = new Parcelable.Creator<Song>() {
         public Song createFromParcel(Parcel in) {
@@ -121,4 +125,101 @@ public class Song implements Parcelable {
         dest.writeInt(artistId);
         dest.writeInt(genreId);
     }
+
+    @Override
+    public int compareTo(@NonNull Song another) {
+        String o1c = songName.toLowerCase(Locale.ENGLISH);
+        String o2c = another.songName.toLowerCase(Locale.ENGLISH);
+
+        if (o1c.startsWith("the ")) {
+            o1c = o1c.substring(4);
+        } else if (o1c.startsWith("a ")) {
+            o1c = o1c.substring(2);
+        }
+        if (o2c.startsWith("the ")) {
+            o2c = o2c.substring(4);
+        } else if (o2c.startsWith("a ")) {
+            o2c = o2c.substring(2);
+        }
+        return o1c.compareTo(o2c);
+    }
+
+    public static final Comparator<Song> ARTIST_COMPARATOR = new Comparator<Song>() {
+        @Override
+        public int compare(Song s1, Song s2) {
+            String o1c = s1.artistName.toLowerCase(Locale.ENGLISH);
+            String o2c = s2.artistName.toLowerCase(Locale.ENGLISH);
+            if (o1c.startsWith("the ")) {
+                o1c = o1c.substring(4);
+            } else if (o1c.startsWith("a ")) {
+                o1c = o1c.substring(2);
+            }
+            if (o2c.startsWith("the ")) {
+                o2c = o2c.substring(4);
+            } else if (o2c.startsWith("a ")) {
+                o2c = o2c.substring(2);
+            }
+            if (!o1c.matches("[a-z]") && o2c.matches("[a-z]")) {
+                return o2c.compareTo(o1c);
+            }
+            return o1c.compareTo(o2c);
+        }
+    };
+
+    public static final Comparator<Song> ALBUM_COMPARATOR = new Comparator<Song>() {
+        @Override
+        public int compare(Song o1, Song o2) {
+            String o1c = o1.albumName.toLowerCase(Locale.ENGLISH);
+            String o2c = o2.albumName.toLowerCase(Locale.ENGLISH);
+            if (o1c.startsWith("the ")) {
+                o1c = o1c.substring(4);
+            } else if (o1c.startsWith("a ")) {
+                o1c = o1c.substring(2);
+            }
+            if (o2c.startsWith("the ")) {
+                o2c = o2c.substring(4);
+            } else if (o2c.startsWith("a ")) {
+                o2c = o2c.substring(2);
+            }
+            if (!o1c.matches("[a-z]") && o2c.matches("[a-z]")) {
+                return o2c.compareTo(o1c);
+            }
+            return o1c.compareTo(o2c);
+        }
+    };
+
+    public static final Comparator<Song> PLAY_COUNT_COMPARATOR = new Comparator<Song>() {
+        @Override
+        public int compare(Song s1, Song s2) {
+            return s2.playCount() - s1.playCount();
+        }
+    };
+
+    public static final Comparator<Song> SKIP_COUNT_COMPARATOR = new Comparator<Song>() {
+        @Override
+        public int compare(Song s1, Song s2) {
+            return s2.skipCount() - s1.skipCount();
+        }
+    };
+
+    public static final Comparator<Song> DATE_ADDED_COMPARATOR = new Comparator<Song>() {
+        @Override
+        public int compare(Song s1, Song s2) {
+            return s2.dateAdded - s1.dateAdded;
+        }
+    };
+
+    public static final Comparator<Song> DATE_PLAYED_COMPARATOR = new Comparator<Song>() {
+        @Override
+        public int compare(Song s1, Song s2) {
+            return s2.playDate() - s1.playDate();
+        }
+    };
+
+    public static final Comparator<Song> YEAR_COMPARATOR = new Comparator<Song>() {
+        @Override
+        public int compare(Song s1, Song s2) {
+            return s2.year - s1.year;
+        }
+    };
 }
