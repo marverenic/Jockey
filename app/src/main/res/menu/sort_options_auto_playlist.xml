@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_sort_random"
+        android:title="@string/action_sort_random" />
+
+    <item
+        android:id="@+id/action_sort_name"
+        android:title="@string/action_sort_name" />
+
+    <item
+        android:id="@+id/action_sort_play"
+        android:title="@string/action_sort_play" />
+
+    <item
+        android:id="@+id/action_sort_skip"
+        android:title="@string/action_sort_skip" />
+
+    <item
+        android:id="@+id/action_sort_date_added"
+        android:title="@string/action_sort_date_added" />
+
+    <item
+        android:id="@+id/action_sort_date_played"
+        android:title="@string/action_sort_date_played" />
+
+</menu>

@@ -1,19 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/action_sort_name"
-        android:title="@string/action_sort_name"
-        app:showAsAction="never"/>
-
-    <item
-        android:id="@+id/action_sort_artist"
-        android:title="@string/action_sort_artist"
-        app:showAsAction="never"/>
-
-    <item
-        android:id="@+id/action_sort_album"
-        android:title="@string/action_sort_album"
-        app:showAsAction="never"/>
+    <item android:id="@+id/action_sort"
+        android:title="@string/action_sort"
+        android:icon="@drawable/ic_sort_24dp"
+        app:showAsAction="always"/>
 
 </menu>

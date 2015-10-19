@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,10 +31,8 @@ import com.marverenic.music.view.DividerDecoration;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Locale;
 
-public class PlaylistActivity extends BaseActivity {
+public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuItemClickListener {
 
     public static final String PLAYLIST_EXTRA = "playlist";
     private ArrayList<Song> data;
@@ -74,127 +74,100 @@ public class PlaylistActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        final ArrayList<Song> unsortedData = new ArrayList<>(data);
-        switch (item.getItemId()){
-            case R.id.action_sort_name:
-                if (reference != null){
-                    Library.sortSongList(data);
-                    Library.editPlaylist(this, reference, data);
-
-                    adapter.notifyDataSetChanged();
-
-                    Snackbar
-                            .make(
-                                    findViewById(R.id.list),
-                                    String.format(getResources().getString(R.string.message_sorted_playlist_name), reference),
-                                    Snackbar.LENGTH_LONG)
-                            .setAction(
-                                    getResources().getString(R.string.action_undo),
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            data = unsortedData;
-                                            Library.editPlaylist(PlaylistActivity.this, reference, unsortedData);
-                                            adapter.notifyDataSetChanged();
-                                        }
-                                    })
-                            .show();
-                }
-                return true;
-            case R.id.action_sort_artist:
-                if (reference != null){
-                    Comparator<Song> artistComparator = new Comparator<Song>() {
-                        @Override
-                        public int compare(Song o1, Song o2) {
-                            String o1c = o1.artistName.toLowerCase(Locale.ENGLISH);
-                            String o2c = o2.artistName.toLowerCase(Locale.ENGLISH);
-                            if (o1c.startsWith("the ")) {
-                                o1c = o1c.substring(4);
-                            } else if (o1c.startsWith("a ")) {
-                                o1c = o1c.substring(2);
-                            }
-                            if (o2c.startsWith("the ")) {
-                                o2c = o2c.substring(4);
-                            } else if (o2c.startsWith("a ")) {
-                                o2c = o2c.substring(2);
-                            }
-                            if (!o1c.matches("[a-z]") && o2c.matches("[a-z]")) {
-                                return o2c.compareTo(o1c);
-                            }
-                            return o1c.compareTo(o2c);
-                        }
-                    };
-                    Collections.sort(data, artistComparator);
-
-                    Library.editPlaylist(this, reference, data);
-                    adapter.notifyDataSetChanged();
-
-                    Snackbar
-                            .make(
-                                    findViewById(R.id.list),
-                                    String.format(getResources().getString(R.string.message_sorted_playlist_artist), reference),
-                                    Snackbar.LENGTH_LONG)
-                            .setAction(
-                                    getResources().getString(R.string.action_undo),
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            data = unsortedData;
-                                            Library.editPlaylist(PlaylistActivity.this, reference, unsortedData);
-                                            adapter.notifyDataSetChanged();
-                                        }
-                                    })
-                            .show();
-                }
-                return true;
-            case R.id.action_sort_album:
-                if (reference != null){
-                    Comparator<Song> albumComparator = new Comparator<Song>() {
-                        @Override
-                        public int compare(Song o1, Song o2) {
-                            String o1c = o1.albumName.toLowerCase(Locale.ENGLISH);
-                            String o2c = o2.albumName.toLowerCase(Locale.ENGLISH);
-                            if (o1c.startsWith("the ")) {
-                                o1c = o1c.substring(4);
-                            } else if (o1c.startsWith("a ")) {
-                                o1c = o1c.substring(2);
-                            }
-                            if (o2c.startsWith("the ")) {
-                                o2c = o2c.substring(4);
-                            } else if (o2c.startsWith("a ")) {
-                                o2c = o2c.substring(2);
-                            }
-                            if (!o1c.matches("[a-z]") && o2c.matches("[a-z]")) {
-                                return o2c.compareTo(o1c);
-                            }
-                            return o1c.compareTo(o2c);
-                        }
-                    };
-                    Collections.sort(data, albumComparator);
-
-                    Library.editPlaylist(this, reference, data);
-                    adapter.notifyDataSetChanged();
-
-                    Snackbar
-                            .make(
-                                    findViewById(R.id.list),
-                                    String.format(getResources().getString(R.string.message_sorted_playlist_album), reference),
-                                    Snackbar.LENGTH_LONG)
-                            .setAction(
-                                    getResources().getString(R.string.action_undo),
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            data = unsortedData;
-                                            Library.editPlaylist(PlaylistActivity.this, reference, unsortedData);
-                                            adapter.notifyDataSetChanged();
-                                        }
-                                    })
-                            .show();
-                }
-                return true;
+        if (reference == null) {
+            return super.onOptionsItemSelected(item);
         }
+
+        if (item.getItemId() == R.id.action_sort) {
+            PopupMenu sortMenu = new PopupMenu(this, findViewById(R.id.action_sort), Gravity.END);
+            sortMenu.inflate(
+                    (reference instanceof AutoPlaylist)
+                            ? R.menu.sort_options_auto_playlist
+                            : R.menu.sort_options);
+            sortMenu.setOnMenuItemClickListener(this);
+            sortMenu.show();
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        final ArrayList<Song> unsortedData = new ArrayList<>(data);
+        int sortFlag = -1;
+        String result;
+
+        switch (item.getItemId()){
+            case R.id.action_sort_random:
+                Collections.shuffle(data);
+                result = getResources().getString(R.string.message_sorted_playlist_random);
+                sortFlag = AutoPlaylist.Rule.Field.ID;
+                break;
+            case R.id.action_sort_name:
+                Collections.sort(data);
+                result = getResources().getString(R.string.message_sorted_playlist_name);
+                sortFlag = AutoPlaylist.Rule.Field.NAME;
+                break;
+            case R.id.action_sort_artist:
+                Collections.sort(data, Song.ARTIST_COMPARATOR);
+                result = getResources().getString(R.string.message_sorted_playlist_artist);
+                break;
+            case R.id.action_sort_album:
+                Collections.sort(data, Song.ALBUM_COMPARATOR);
+                result = getResources().getString(R.string.message_sorted_playlist_album);
+                break;
+            case R.id.action_sort_play:
+                Collections.sort(data, Song.PLAY_COUNT_COMPARATOR);
+                result = getResources().getString(R.string.message_sorted_playlist_play);
+                sortFlag = AutoPlaylist.Rule.Field.PLAY_COUNT;
+                break;
+            case R.id.action_sort_skip:
+                Collections.sort(data, Song.SKIP_COUNT_COMPARATOR);
+                result = getResources().getString(R.string.message_sorted_playlist_skip);
+                sortFlag = AutoPlaylist.Rule.Field.SKIP_COUNT;
+                break;
+            case R.id.action_sort_date_added:
+                Collections.sort(data, Song.DATE_ADDED_COMPARATOR);
+                result = getResources().getString(R.string.message_sorted_playlist_date_added);
+                sortFlag = AutoPlaylist.Rule.Field.DATE_ADDED;
+                break;
+            case R.id.action_sort_date_played:
+                Collections.sort(data, Song.DATE_PLAYED_COMPARATOR);
+                result = getResources().getString(R.string.message_sorted_playlist_date_played);
+                sortFlag = AutoPlaylist.Rule.Field.DATE_PLAYED;
+                break;
+            default:
+                return false;
+        }
+
+        if (reference instanceof AutoPlaylist) {
+            ((AutoPlaylist) reference).sortMethod = sortFlag;
+            Library.editAutoPlaylist(this, (AutoPlaylist) reference);
+        } else {
+            Library.editPlaylist(this, reference, data);
+        }
+
+        adapter.notifyDataSetChanged();
+
+        Snackbar
+                .make(
+                        findViewById(R.id.list),
+                        String.format(result, reference),
+                        Snackbar.LENGTH_LONG)
+                .setAction(
+                        getResources().getString(R.string.action_undo),
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                data = unsortedData;
+                                Library.editPlaylist(PlaylistActivity.this, reference, unsortedData);
+                                adapter.notifyDataSetChanged();
+                            }
+                        })
+                .show();
+
+        return true;
     }
 
     public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements DraggableItemAdapter<DraggableSongViewHolder>, SongViewHolder.OnRemovedListener {
