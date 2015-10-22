@@ -407,6 +407,11 @@ public class Library {
         try {
             File externalFiles = new File(context.getExternalFilesDir(null) + "/");
 
+            if (!externalFiles.exists()) {
+                //noinspection ResultOfMethodCallIgnored
+                externalFiles.mkdirs();
+            }
+
             String[] files = externalFiles.list();
             for (String s : files) {
                 if (s.endsWith(AUTO_PLAYLIST_EXTENSION)) {
