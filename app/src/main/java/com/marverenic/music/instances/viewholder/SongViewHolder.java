@@ -83,8 +83,7 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                 break;
             default:
                 if (songList != null) {
-                    // TODO set list index to properly play song lists with duplicate song entries
-                    PlayerController.setQueue(songList, songList.indexOf(reference));
+                    PlayerController.setQueue(songList, getAdapterPosition());
                     PlayerController.begin();
 
                     if (Prefs.getPrefs(itemView.getContext()).getBoolean(Prefs.SWITCH_TO_PLAYING, true))

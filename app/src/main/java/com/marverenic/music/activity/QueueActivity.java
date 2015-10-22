@@ -125,7 +125,7 @@ public class QueueActivity extends BaseActivity {
 
         @Override
         public int getItemViewType(int position) {
-            if (data.get(position).equals(PlayerController.getNowPlaying())) {
+            if (position == PlayerController.getQueuePosition()) {
                 return HIGHLIT_VIEW;
             }
             return REGULAR_VIEW;
