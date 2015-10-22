@@ -47,7 +47,7 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
     @Override
     public void onCreate(Bundle savedInstanceState) {
         boolean isTabletHorizontal = false;
-        if (getResources().getConfiguration().smallestScreenWidthDp >= 700) {
+        if (getResources().getConfiguration().smallestScreenWidthDp >= 600) {
             // If the activity is landscape on a tablet, use a different theme
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 isTabletHorizontal = true;

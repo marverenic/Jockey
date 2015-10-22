@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.marverenic.music.view.SquareImageViewV
+        android:id="@+id/imageArtwork"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginTop="?android:actionBarSize"
+        android:background="@android:color/black"
+        android:contentDescription="@string/art_description"
+        android:src="@drawable/art_default_xl" />
+
+    <include layout="@layout/toolbar" android:id="@+id/toolbar"/>
+
+    <RelativeLayout
+        android:id="@+id/playerControlFrame"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar"
+        android:layout_toRightOf="@id/imageArtwork"
+        android:layout_toEndOf="@id/imageArtwork"
+        android:background="@color/player_control_background"
+        android:gravity="center">
+
+        <include
+            android:id="@+id/playerDetails"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            layout="@layout/now_playing_details" />
+
+        <SeekBar
+            android:id="@+id/songSeekBar"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/playerDetails"
+            android:layout_marginTop="64dp"
+            android:layout_marginBottom="64dp"
+            android:padding="0dp" />
+
+        <include
+            android:id="@+id/playerControls"
+            android:layout_width="@dimen/now_playing_max_control_width"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/songSeekBar"
+            android:layout_centerHorizontal="true"
+            layout="@layout/now_playing_controls" />
+    </RelativeLayout>
+</RelativeLayout>

@@ -1,0 +1,6 @@
+<resources>
+
+    <dimen name="global_padding">46dp</dimen>
+    <dimen name="extended_actionbar_height">240dp</dimen>
+
+</resources>
