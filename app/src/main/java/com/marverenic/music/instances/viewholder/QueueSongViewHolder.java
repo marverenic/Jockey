@@ -48,7 +48,7 @@ public class QueueSongViewHolder extends DraggableSongViewHolder {
                 menu.show();
                 break;
             default:
-                PlayerController.changeSong(getAdapterPosition());
+                PlayerController.changeSong(index);
                 parentActivity.finish();
                 break;
         }

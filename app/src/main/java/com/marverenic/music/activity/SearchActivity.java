@@ -251,6 +251,14 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         private final ArrayList<Artist> artistResults = new ArrayList<>();
         private final ArrayList<Genre> genreResults = new ArrayList<>();
 
+        private final int[] HEADERS = {
+                R.string.header_playlists,
+                R.string.header_songs,
+                R.string.header_albums,
+                R.string.header_artists,
+                R.string.header_genres
+        };
+
         private static final int HEADER_VIEW = 0;
         private static final int PLAYLIST_VIEW = 1;
         private static final int SONG_VIEW = 2;
@@ -343,26 +351,72 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-            Object item = getItem(position);
 
-            if (item instanceof String){
-                ((HeaderViewHolder) viewHolder).update((String) item);
+            switch (getItemViewType(position)) {
+                case HEADER_VIEW:
+                    ((HeaderViewHolder) viewHolder)
+                            .update(getResources().getString(HEADERS[getTypeIndex(position)]));
+                    break;
+                case PLAYLIST_VIEW:
+                    ((PlaylistViewHolder) viewHolder)
+                            .update(playlistResults.get(getTypeIndex(position)));
+                    break;
+                case SONG_VIEW:
+                    int index = getTypeIndex(position);
+                    ((SongViewHolder) viewHolder)
+                            .update(songResults.get(index), index);
+                    break;
+                case ALBUM_VIEW:
+                    ((AlbumViewHolder) viewHolder)
+                            .update(albumResults.get(getTypeIndex(position)));
+                    break;
+                case ARTIST_VIEW:
+                    ((ArtistViewHolder) viewHolder)
+                            .update(artistResults.get((getTypeIndex(position))));
+                    break;
+                case GENRE_VIEW:
+                    ((GenreViewHolder) viewHolder)
+                            .update(genreResults.get(getTypeIndex(position)));
             }
-            else if (item instanceof Playlist){
-                ((PlaylistViewHolder) viewHolder).update((Playlist) item);
+        }
+
+        /**
+         * Look up the index of the applicable data type for a specified index in the adapter
+         * @param position The index of the adapter to lookup a data entry index
+         * @return The index of this view's corresponding data array for the given position
+         */
+        private int getTypeIndex(int position) {
+            if (!playlistResults.isEmpty() && position <= playlistResults.size()){
+                if (position == 0) return 0;
+                else return position - 1;
             }
-            else if (item instanceof Song){
-                ((SongViewHolder) viewHolder).update((Song) item);
+
+            //The number of views above the current section. This value is incremented later in the method
+            int leadingViewCount = (playlistResults.isEmpty()? 0 : playlistResults.size() + 1);
+            if (!songResults.isEmpty() && position <= songResults.size() + leadingViewCount) {
+                if (position == leadingViewCount) return 1;
+                else return position - 1 - leadingViewCount;
             }
-            else if (item instanceof Album){
-                ((AlbumViewHolder) viewHolder).update((Album) item);
+
+            leadingViewCount += (songResults.isEmpty()? 0 : songResults.size() + 1);
+            if (!albumResults.isEmpty() && position <= albumResults.size() + leadingViewCount) {
+                if (position == leadingViewCount) return 2;
+                else return position - 1 - leadingViewCount;
             }
-            else if (item instanceof Artist){
-                ((ArtistViewHolder) viewHolder).update((Artist) item);
+
+            leadingViewCount += (albumResults.isEmpty()? 0 : albumResults.size() + 1);
+            if (!artistResults.isEmpty() && position <= artistResults.size() + leadingViewCount){
+                if (position == leadingViewCount) return 3;
+                else return position - 1 - leadingViewCount;
             }
-            else if (item instanceof Genre){
-                ((GenreViewHolder) viewHolder).update((Genre) item);
+
+            leadingViewCount += (artistResults.isEmpty()? 0 : artistResults.size() + 1);
+            if (!genreResults.isEmpty() && position <= genreResults.size() + leadingViewCount){
+                if (position == leadingViewCount) return 4;
+                else return position - 1 - leadingViewCount;
             }
+
+            return 0;
         }
 
         public Object getItem(int position){

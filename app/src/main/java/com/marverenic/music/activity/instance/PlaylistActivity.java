@@ -225,7 +225,7 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
             if (getItemViewType(position) == SONG || getItemViewType(position) == AUTO_SONG) {
-                ((SongViewHolder) viewHolder).update(data.get(position));
+                ((SongViewHolder) viewHolder).update(data.get(position), position);
 
             } else if (viewHolder instanceof EmptyStateViewHolder &&
                     Library.hasRWPermission(PlaylistActivity.this)) {

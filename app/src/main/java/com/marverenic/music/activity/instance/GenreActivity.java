@@ -55,7 +55,7 @@ public class GenreActivity extends BaseActivity {
 
         @Override
         public void onBindViewHolder(SongViewHolder viewHolder, int i) {
-            viewHolder.update(data.get(i));
+            viewHolder.update(data.get(i), i);
         }
 
         @Override

@@ -88,7 +88,7 @@ public class SongFragment extends Fragment {
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
             if (getItemViewType(position) == SONG) {
-                ((SongViewHolder) viewHolder).update(Library.getSongs().get(position));
+                ((SongViewHolder) viewHolder).update(Library.getSongs().get(position), position);
             }
             else if (viewHolder instanceof EmptyStateViewHolder &&
                     Library.hasRWPermission(getActivity())) {

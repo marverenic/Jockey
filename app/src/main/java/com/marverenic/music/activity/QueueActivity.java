@@ -138,7 +138,7 @@ public class QueueActivity extends BaseActivity {
 
         @Override
         public void onBindViewHolder(QueueSongViewHolder viewHolder, int i) {
-            viewHolder.update(data.get(i));
+            viewHolder.update(data.get(i), i);
         }
 
         @Override

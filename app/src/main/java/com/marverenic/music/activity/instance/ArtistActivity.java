@@ -241,7 +241,9 @@ public class ArtistActivity extends BaseActivity {
                     ((AlbumViewHolder) holder).update(albums.get(position - (hasBio ? 2 : 1) - relatedArtists.size()));
                     break;
                 case SONG_INSTANCE:
-                    ((SongViewHolder) holder).update(songs.get(position - albums.size() - (hasBio? 3 : 2) - relatedArtists.size()));
+                    int songIndex =
+                            position - albums.size() - (hasBio? 3 : 2) - relatedArtists.size();
+                    ((SongViewHolder) holder).update(songs.get(songIndex), songIndex);
                     break;
             }
         }

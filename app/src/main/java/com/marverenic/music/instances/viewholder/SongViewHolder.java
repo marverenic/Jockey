@@ -29,7 +29,10 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     private View itemView;
     private TextView songName;
     private TextView detailText;
+
     protected Song reference;
+    protected int index;
+
     private Playlist playlistReference;
     private OnRemovedListener removalListener;
     private ArrayList<Song> songList;
@@ -57,8 +60,9 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         this.removalListener = listener;
     }
 
-    public void update(Song s){
+    public void update(Song s, int index) {
         reference = s;
+        this.index = index;
 
         songName.setText(s.songName);
         detailText.setText(s.artistName + " - " + s.albumName);
@@ -83,7 +87,7 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                 break;
             default:
                 if (songList != null) {
-                    PlayerController.setQueue(songList, getAdapterPosition());
+                    PlayerController.setQueue(songList, index);
                     PlayerController.begin();
 
                     if (Prefs.getPrefs(itemView.getContext()).getBoolean(Prefs.SWITCH_TO_PLAYING, true))
