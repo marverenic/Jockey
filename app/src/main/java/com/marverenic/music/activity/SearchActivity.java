@@ -419,40 +419,6 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
             return 0;
         }
 
-        public Object getItem(int position){
-            if (!playlistResults.isEmpty() && position <= playlistResults.size()){
-                if (position == 0) return SearchActivity.this.getResources().getString(R.string.header_playlists);
-                else return playlistResults.get(position - 1);
-            }
-
-            //The number of views above the current section. This value is incremented later in the method
-            int leadingViewCount = (playlistResults.isEmpty()? 0 : playlistResults.size() + 1);
-            if (!songResults.isEmpty() && position <= songResults.size() + leadingViewCount) {
-                if (position == leadingViewCount) return SearchActivity.this.getResources().getString(R.string.header_songs);
-                else return songResults.get(position - 1 - leadingViewCount);
-            }
-
-            leadingViewCount += (songResults.isEmpty()? 0 : songResults.size() + 1);
-            if (!albumResults.isEmpty() && position <= albumResults.size() + leadingViewCount) {
-                if (position == leadingViewCount) return SearchActivity.this.getResources().getString(R.string.header_albums);
-                else return albumResults.get(position - 1 - leadingViewCount);
-            }
-
-            leadingViewCount += (albumResults.isEmpty()? 0 : albumResults.size() + 1);
-            if (!artistResults.isEmpty() && position <= artistResults.size() + leadingViewCount){
-                if (position == leadingViewCount) return SearchActivity.this.getResources().getString(R.string.header_artists);
-                else return artistResults.get(position - 1 - leadingViewCount);
-            }
-
-            leadingViewCount += (artistResults.isEmpty()? 0 : artistResults.size() + 1);
-            if (!genreResults.isEmpty() && position <= genreResults.size() + leadingViewCount){
-                if (position == leadingViewCount) return SearchActivity.this.getResources().getString(R.string.header_genres);
-                else return genreResults.get(position - 1 - leadingViewCount);
-            }
-
-            return null;
-        }
-
         @Override
         public int getItemCount() {
             return (playlistResults.isEmpty() ? 0 : 1 + playlistResults.size())
