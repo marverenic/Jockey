@@ -47,11 +47,9 @@ public class RuleHeaderViewHolder extends RecyclerView.ViewHolder implements Vie
             true
     };
 
-    private View itemView;
     private AutoPlaylist reference;
     private final String originalName;
 
-    private AppCompatEditText nameEditText;
     private TextInputLayout nameEditLayout;
 
     private SwitchCompat matchAllRulesSwitch;
@@ -59,18 +57,18 @@ public class RuleHeaderViewHolder extends RecyclerView.ViewHolder implements Vie
     private RelativeLayout songCapContainer;
     private AppCompatCheckBox songCapCheckBox;
     private AppCompatEditText maximumEditText;
+
     private AppCompatSpinner truncateMethodSpinner;
     private TextView truncateMethodPrefix;
 
     public RuleHeaderViewHolder(final View itemView, final AutoPlaylist reference) {
         super(itemView);
 
-        this.itemView = itemView;
         this.reference = reference;
         this.originalName = reference.playlistName;
 
         // Initialize View references
-        nameEditText = (AppCompatEditText) itemView.findViewById(R.id.playlist_name_input_text);
+        AppCompatEditText nameEditText = (AppCompatEditText) itemView.findViewById(R.id.playlist_name_input_text);
         nameEditLayout = (TextInputLayout) itemView.findViewById(R.id.playlist_name_input);
 
         matchAllRulesSwitch = (SwitchCompat) itemView.findViewById(R.id.playlist_match_all);

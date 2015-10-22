@@ -50,7 +50,6 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
     private FrameLayout container;
     private TextView albumName;
     private TextView artistName;
-    private ImageView moreButton;
     private ImageView artwork;
     private Album reference;
 
@@ -71,7 +70,7 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
         container = (FrameLayout) itemView;
         albumName = (TextView) itemView.findViewById(R.id.instanceTitle);
         artistName = (TextView) itemView.findViewById(R.id.instanceDetail);
-        moreButton = (ImageView) itemView.findViewById(R.id.instanceMore);
+        ImageView moreButton = (ImageView) itemView.findViewById(R.id.instanceMore);
         artwork = (ImageView) itemView.findViewById(R.id.instanceArt);
 
         itemView.setOnClickListener(this);

@@ -23,13 +23,12 @@ public class GenreViewHolder extends RecyclerView.ViewHolder implements View.OnC
     private Context context;
 
     private TextView genreName;
-    private ImageView moreButton;
     private Genre reference;
 
     public GenreViewHolder(View itemView) {
         super(itemView);
         genreName = (TextView) itemView.findViewById(R.id.instanceTitle);
-        moreButton = (ImageView) itemView.findViewById(R.id.instanceMore);
+        ImageView moreButton = (ImageView) itemView.findViewById(R.id.instanceMore);
 
         itemView.setOnClickListener(this);
         moreButton.setOnClickListener(this);
