@@ -12,6 +12,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.RemoteViews;
 
 import com.marverenic.music.activity.LibraryActivity;
@@ -278,6 +279,42 @@ public class PlayerService extends Service {
                 case (ACTION_STOP):
                     instance.stop();
                     break;
+            }
+        }
+    }
+
+    /**
+     * Receives media button presses from in line remotes, input devices, and other sources
+     */
+    public static class RemoteControlReceiver extends BroadcastReceiver {
+
+        public RemoteControlReceiver() {
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Handle Media button Intents
+            if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
+                KeyEvent event = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+                if (event.getAction() == KeyEvent.ACTION_UP) {
+                    switch (event.getKeyCode()) {
+                        case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                            instance.player.togglePlay();
+                            break;
+                        case KeyEvent.KEYCODE_MEDIA_PLAY:
+                            instance.player.play();
+                            break;
+                        case KeyEvent.KEYCODE_MEDIA_PAUSE:
+                            instance.player.pause();
+                            break;
+                        case KeyEvent.KEYCODE_MEDIA_NEXT:
+                            instance.player.skip();
+                            break;
+                        case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+                            instance.player.previous();
+                            break;
+                    }
+                }
             }
         }
     }

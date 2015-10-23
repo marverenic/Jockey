@@ -1,6 +1,5 @@
 package com.marverenic.music;
 
-import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -9,16 +8,14 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
-import android.media.MediaMetadata;
-import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
-import android.media.RemoteControlClient;
-import android.media.session.MediaSession;
-import android.media.session.PlaybackState;
 import android.os.Build;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -40,11 +37,9 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.Scanner;
 
-@SuppressWarnings("deprecation")
 public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener, AudioManager.OnAudioFocusChangeListener {
 
     public static final String UPDATE_BROADCAST = "marverenic.jockey.player.REFRESH"; // Sent to refresh views that use up-to-date player information
-    public static final String UPDATE_EXTRA = "extra"; // An extra which acts as a snapshot of the current player status when an UPDATE broadcast is sent
     private static final String TAG = "Player";
     private static final String QUEUE_FILE = ".queue";
 
@@ -54,9 +49,8 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     // Instance variables
     private ManagedMediaPlayer mediaPlayer;
     private Context context;
-    private MediaSession mediaSession;
-    private RemoteControlClient remoteControlClient;
-    private SystemListener headphoneListener;
+    private MediaSessionCompat mediaSession;
+    private HeadsetListener headphoneListener;
 
     // Queue information
     private ArrayList<Song> queue;
@@ -82,7 +76,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
      * See {@link Player#logPlayCount(long, boolean)}
      *
      * Keys are stored as strings in the form "song_id"
-     * Values are stored as strings in the form "play,skip"
+     * Values are stored as strings in the form "play,skip,lastPlayDateAsUtcTimeStamp"
      */
     private Properties playCountHashtable;
 
@@ -110,15 +104,10 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         shuffle = prefs.getBoolean(PREFERENCE_SHUFFLE, false);
         repeat = (short) prefs.getInt(PREFERENCE_REPEAT, REPEAT_NONE);
 
-        // Initialize the relevant media controller
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            initMediaSession();
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            initRemoteController();
-        }
+        initMediaSession();
 
-        // Attach a SystemListener to respond to headphone events
-        headphoneListener = new SystemListener(this);
+        // Attach a HeadsetListener to respond to headphone events
+        headphoneListener = new HeadsetListener(this);
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_MEDIA_BUTTON);
         filter.addAction(Intent.ACTION_HEADSET_PLUG);
@@ -164,6 +153,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                 @Override
                 public void onPrepared(MediaPlayer mp) {
                     mp.seekTo(currentPosition);
+                    updateNowPlaying();
                     mp.setOnPreparedListener(Player.this);
                 }
             });
@@ -244,18 +234,18 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         active = false;
         mediaPlayer.stop();
         mediaPlayer.release();
+        mediaSession.release();
         mediaPlayer = null;
         context = null;
     }
 
     /**
-     * Initiate a {@link MediaSession} to allow the Android system to interact with the player.
-     * Only supported on API >= 21. See {@link Player#initRemoteController()} for API < 21
+     * Initiate a MediaSession to allow the Android system to interact with the player
      */
-    @TargetApi(21)
     private void initMediaSession() {
-        mediaSession = new MediaSession(context, TAG);
-        mediaSession.setCallback(new MediaSession.Callback() {
+        mediaSession = new MediaSessionCompat(context, TAG, null, null);
+
+        mediaSession.setCallback(new MediaSessionCompat.Callback() {
             @Override
             public void onPlay() {
                 play();
@@ -290,44 +280,29 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             public void onSeekTo(long pos) {
                 seek((int) pos);
             }
-
         });
-        mediaSession.setSessionActivity(PendingIntent.getActivity(context, 0, new Intent(context, NowPlayingActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP), PendingIntent.FLAG_CANCEL_CURRENT));
-        mediaSession.setFlags(MediaSession.FLAG_HANDLES_MEDIA_BUTTONS | MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS);
-        PlaybackState.Builder state = new PlaybackState.Builder().setActions(PlaybackState.ACTION_PLAY | PlaybackState.ACTION_PLAY_PAUSE |
-                PlaybackState.ACTION_PLAY_FROM_MEDIA_ID | PlaybackState.ACTION_PAUSE |
-                PlaybackState.ACTION_SKIP_TO_NEXT | PlaybackState.ACTION_SKIP_TO_PREVIOUS)
-                .setState(PlaybackState.STATE_NONE, 0, 0f);
+        mediaSession.setSessionActivity(
+                PendingIntent.getActivity(
+                        context, 0,
+                        new Intent(context, NowPlayingActivity.class)
+                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                        PendingIntent.FLAG_CANCEL_CURRENT));
+
+        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS
+                | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+
+        PlaybackStateCompat.Builder state = new PlaybackStateCompat.Builder()
+                .setActions(PlaybackStateCompat.ACTION_PLAY
+                        | PlaybackStateCompat.ACTION_PLAY_PAUSE
+                        | PlaybackStateCompat.ACTION_SEEK_TO
+                        | PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID
+                        | PlaybackStateCompat.ACTION_PAUSE
+                        | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+                        | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
+                .setState(PlaybackStateCompat.STATE_NONE, 0, 0f);
+
         mediaSession.setPlaybackState(state.build());
         mediaSession.setActive(true);
-    }
-
-    /**
-     * Initiate a {@link android.media.RemoteController} to allow the Android system to interact with the player
-     * Only used on API < 21. See {@link Player#initMediaSession()} for API >= 21
-     */
-    @TargetApi(18)
-    private void initRemoteController() {
-        getFocus();
-
-        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-
-        // build the PendingIntent for the remote control client
-        Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
-        PendingIntent mediaPendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, mediaButtonIntent, 0);
-
-        // create and register the remote control client
-        remoteControlClient = new RemoteControlClient(mediaPendingIntent);
-        // Flags for the media transport control that this client supports.
-        int flags = RemoteControlClient.FLAG_KEY_MEDIA_PREVIOUS
-                | RemoteControlClient.FLAG_KEY_MEDIA_NEXT
-                | RemoteControlClient.FLAG_KEY_MEDIA_PLAY
-                | RemoteControlClient.FLAG_KEY_MEDIA_PAUSE
-                | RemoteControlClient.FLAG_KEY_MEDIA_PLAY_PAUSE
-                | RemoteControlClient.FLAG_KEY_MEDIA_STOP;
-
-        remoteControlClient.setTransportControlFlags(flags);
-        audioManager.registerRemoteControlClient(remoteControlClient);
     }
 
     @Override
@@ -425,82 +400,54 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     }
 
     /**
-     * Update the main thread about this player instance as well as any relevant {@link android.media.RemoteController}
-     * or {@link MediaSession}. This method also calls {@link PlayerService#notifyNowPlaying()}.
+     * Update the main thread and Android System about this player instance. This method also calls
+     * {@link PlayerService#notifyNowPlaying()}.
      */
     public void updateNowPlaying() {
         PlayerService.getInstance().notifyNowPlaying();
-
-        Intent broadcast = new Intent(UPDATE_BROADCAST);
-        context.sendOrderedBroadcast(broadcast, null);
-
-        // Update the relevant media controller
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            updateMediaSession();
-        }
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            updateRemoteController();
-        }
+        context.sendOrderedBroadcast(new Intent(UPDATE_BROADCAST), null);
+        updateMediaSession();
     }
 
     /**
-     * Update the {@link MediaSession} to keep the Android system up to date with player information
+     * Update the MediaSession to keep the Android system up to date with player information
      */
-    @TargetApi(21)
     public void updateMediaSession() {
         if (getNowPlaying() != null) {
-            MediaMetadata.Builder metadataBuilder = new MediaMetadata.Builder();
+            MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder();
+            Song nowPlaying = getNowPlaying();
             metadataBuilder
-                    .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, getNowPlaying().songName)
-                    .putString(MediaMetadata.METADATA_KEY_TITLE, getNowPlaying().songName)
-                    .putString(MediaMetadata.METADATA_KEY_ALBUM, getNowPlaying().albumName)
-                    .putString(MediaMetadata.METADATA_KEY_ARTIST, getNowPlaying().artistName)
-                    .putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, art);
+                    .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, nowPlaying.songName)
+                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, nowPlaying.songName)
+                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, nowPlaying.albumName)
+                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, nowPlaying.artistName)
+                    .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, getDuration())
+                    .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, art);
             mediaSession.setMetadata(metadataBuilder.build());
 
-            PlaybackState.Builder state = new PlaybackState.Builder().setActions(PlaybackState.ACTION_PLAY | PlaybackState.ACTION_PLAY_PAUSE |
-                    PlaybackState.ACTION_PLAY_FROM_MEDIA_ID | PlaybackState.ACTION_PAUSE |
-                    PlaybackState.ACTION_SKIP_TO_NEXT | PlaybackState.ACTION_SKIP_TO_PREVIOUS);
+            PlaybackStateCompat.Builder state = new PlaybackStateCompat.Builder().setActions(
+                    PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PLAY_PAUSE
+                            | PlaybackStateCompat.ACTION_SEEK_TO
+                            | PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID
+                            | PlaybackStateCompat.ACTION_PAUSE
+                            | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+                            | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS);
 
             switch (mediaPlayer.getState()) {
                 case STARTED:
-                    state.setState(PlaybackState.STATE_PLAYING, getQueuePosition(), 1f);
+                    state.setState(PlaybackStateCompat.STATE_PLAYING, getCurrentPosition(), 1f);
                     break;
                 case PAUSED:
-                    state.setState(PlaybackState.STATE_PAUSED, getQueuePosition(), 1f);
+                    state.setState(PlaybackStateCompat.STATE_PAUSED, getCurrentPosition(), 1f);
                     break;
                 case STOPPED:
-                    state.setState(PlaybackState.STATE_STOPPED, getQueuePosition(), 1f);
+                    state.setState(PlaybackStateCompat.STATE_STOPPED, getCurrentPosition(), 1f);
                     break;
                 default:
-                    state.setState(PlaybackState.STATE_NONE, getQueuePosition(), 1f);
+                    state.setState(PlaybackStateCompat.STATE_NONE, getCurrentPosition(), 1f);
             }
             mediaSession.setPlaybackState(state.build());
             mediaSession.setActive(true);
-        }
-    }
-
-    /**
-     * Update the {@link android.media.RemoteController} to keep the Android system up to date with
-     * player information
-     */
-    @TargetApi(18)
-    public void updateRemoteController (){
-        if (getNowPlaying() != null) {
-            if (isPlaying()) {
-                remoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
-            } else {
-                remoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_PAUSED);
-            }
-
-            // Update the metadata
-            remoteControlClient.editMetadata(true)
-                    .putString(MediaMetadataRetriever.METADATA_KEY_ARTIST, getNowPlaying().artistName)
-                    .putString(MediaMetadataRetriever.METADATA_KEY_ALBUM, getNowPlaying().albumName)
-                    .putString(MediaMetadataRetriever.METADATA_KEY_TITLE, getNowPlaying().songName)
-                    .putLong(MediaMetadataRetriever.METADATA_KEY_DURATION, getNowPlaying().songDuration)
-                    .putBitmap(RemoteControlClient.MetadataEditor.BITMAP_KEY_ARTWORK, getArt())
-                    .apply();
         }
     }
 
@@ -682,13 +629,15 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     public void seek(int position) {
         if (position <= mediaPlayer.getDuration() && getNowPlaying() != null) {
             mediaPlayer.seekTo(position);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                if (isPlaying()) {
-                    mediaSession.setPlaybackState(new PlaybackState.Builder().setState(PlaybackState.STATE_PLAYING, (long) mediaPlayer.getCurrentPosition(), 1f).build());
-                } else {
-                    mediaSession.setPlaybackState(new PlaybackState.Builder().setState(PlaybackState.STATE_PAUSED, (long) mediaPlayer.getCurrentPosition(), 1f).build());
-                }
-            }
+
+            mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
+                    .setState(
+                            isPlaying()
+                                    ? PlaybackStateCompat.STATE_PLAYING
+                                    : PlaybackStateCompat.STATE_PAUSED,
+                            (long) mediaPlayer.getCurrentPosition(),
+                            isPlaying() ? 1f : 0f)
+                    .build());
         }
     }
 
@@ -960,10 +909,6 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         return mediaPlayer.getState() == ManagedMediaPlayer.status.STARTED;
     }
 
-    public boolean isPaused() {
-        return mediaPlayer.getState() == ManagedMediaPlayer.status.PAUSED;
-    }
-
     public boolean isPreparing() {
         return mediaPlayer.getState() == ManagedMediaPlayer.status.PREPARING;
     }
@@ -987,27 +932,24 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     }
 
     /**
-     * Receives system intents that affect playback including disconnecting headphones and pressing
-     * a button on an in-line remote
+     * Receives headphone connect and disconnect intents so that music may be paused when headphones
+     * are disconnected
      */
-    public static class SystemListener extends BroadcastReceiver {
+    public static class HeadsetListener extends BroadcastReceiver {
 
         Player instance;
 
-        public SystemListener(Player instance){
+        public HeadsetListener(Player instance){
             this.instance = instance;
         }
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i("SystemListener", "Heard intent with action " + intent.getAction());
-            // Handle headphone unplug intents
             if (intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)
                     && intent.getIntExtra("state", -1) == 0 && instance.isPlaying()){
 
                 instance.pause();
             }
-            // TODO handle in-line remote button intents
         }
     }
 }
