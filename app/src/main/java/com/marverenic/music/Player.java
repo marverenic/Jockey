@@ -334,6 +334,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         if(repeat == REPEAT_ONE){
             mediaPlayer.seekTo(0);
             play();
+            logPlayCount(getNowPlaying().songId, false);
         }
         else {
             skip();
