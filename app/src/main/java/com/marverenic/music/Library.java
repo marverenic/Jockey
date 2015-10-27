@@ -19,6 +19,8 @@ import android.util.SparseIntArray;
 import android.view.View;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.CustomEvent;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.marverenic.music.instances.Album;
@@ -27,6 +29,7 @@ import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Genre;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
+import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Themes;
 
 import java.io.File;
@@ -233,6 +236,23 @@ public class Library {
             setGenreLib(scanGenres(activity));
             sort();
             notifyLibraryRefreshed();
+
+            // If the user permits it, log info about the size of their library
+            if (Prefs.allowAnalytics(activity)) {
+                int autoPlaylistCount = 0;
+                for (Playlist p : playlistLib) {
+                    if (p instanceof AutoPlaylist) autoPlaylistCount++;
+                }
+
+                Answers.getInstance().logCustom(
+                        new CustomEvent("Loaded library")
+                                .putCustomAttribute("Playlist count", playlistLib.size())
+                                .putCustomAttribute("Auto Playlist count", autoPlaylistCount)
+                                .putCustomAttribute("Song count", songLib.size())
+                                .putCustomAttribute("Artist count", artistLib.size())
+                                .putCustomAttribute("Album count", albumLib.size())
+                                .putCustomAttribute("Genre count", genreLib.size()));
+            }
         }
         else{
             requestRWPermission(activity);
