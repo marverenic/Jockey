@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -448,7 +447,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                     state.setState(PlaybackStateCompat.STATE_NONE, getCurrentPosition(), 1f);
             }
             mediaSession.setPlaybackState(state.build());
-            mediaSession.setActive(true);
+            mediaSession.setActive(active);
         }
     }
 
@@ -522,6 +521,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             mediaPlayer.pause();
             updateNowPlaying();
         }
+        shouldResumeOnFocusGained = false;
     }
 
     /**
@@ -533,9 +533,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         }
         ((AudioManager) context.getSystemService(Context.AUDIO_SERVICE)).abandonAudioFocus(this);
         active = false;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            updateMediaSession();
-        }
+        updateMediaSession();
     }
 
     /**
