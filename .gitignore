@@ -1,3 +1,4 @@
+# Android Studio user configurations
 .gradle
 /local.properties
 /.idea/
@@ -5,6 +6,15 @@
 /build
 *.iml
 *.bat
+
+# Gradle Wrapper
+gradlew
+gradle-wrapper.*
+
+# Fabric API key for Crashlytics.
+# If you're building Jockey, you'll need to remake this file or remove Crashlytics for Jockey to
+# compile
+/app/fabric.properties
 
 # Built application files
 *.apk
