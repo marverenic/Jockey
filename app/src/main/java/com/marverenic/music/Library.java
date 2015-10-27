@@ -275,7 +275,7 @@ public class Library {
                 MediaStore.Audio.Media.TITLE + " ASC");
 
         if (cur == null) {
-            throw new RuntimeException("Content resolver query returned null");
+            return songs;
         }
 
         for (int i = 0; i < cur.getCount(); i++) {
@@ -318,7 +318,7 @@ public class Library {
                 MediaStore.Audio.Artists.ARTIST + " ASC");
 
         if (cur == null) {
-            throw new RuntimeException("Content resolver query returned null");
+            return artists;
         }
 
         for (int i = 0; i < cur.getCount(); i++) {
@@ -355,7 +355,7 @@ public class Library {
                 MediaStore.Audio.Albums.ALBUM + " ASC");
 
         if (cur == null) {
-            throw new RuntimeException("Content resolver query returned null");
+            return albums;
         }
 
         for (int i = 0; i < cur.getCount(); i++) {
@@ -391,7 +391,7 @@ public class Library {
                 MediaStore.Audio.Playlists.NAME + " ASC");
 
         if (cur == null) {
-            throw new RuntimeException("Content resolver query returned null");
+            return playlists;
         }
 
         for (int i = 0; i < cur.getCount(); i++) {
@@ -461,7 +461,7 @@ public class Library {
                 MediaStore.Audio.Genres.NAME + " ASC");
 
         if (cur == null) {
-            throw new RuntimeException("Content resolver query returned null");
+            return genres;
         }
 
         for (int i = 0; i < cur.getCount(); i++) {
@@ -483,19 +483,17 @@ public class Library {
                         new String[]{MediaStore.Audio.Media._ID},
                         MediaStore.Audio.Media.IS_MUSIC + " != 0 ", null, null);
 
-                if (genreCur == null) {
-                    throw new RuntimeException("Content resolver query returned null");
-                }
+                if (genreCur != null) {
+                    genreCur.moveToFirst();
 
-                genreCur.moveToFirst();
-
-                final int ID_INDEX = genreCur.getColumnIndex(MediaStore.Audio.Media._ID);
-                for (int j = 0; j < genreCur.getCount(); j++) {
-                    genreCur.moveToPosition(j);
-                    final Song s = findSongById(genreCur.getInt(ID_INDEX));
-                    if (s != null) s.genreId = thisGenreId;
+                    final int ID_INDEX = genreCur.getColumnIndex(MediaStore.Audio.Media._ID);
+                    for (int j = 0; j < genreCur.getCount(); j++) {
+                        genreCur.moveToPosition(j);
+                        final Song s = findSongById(genreCur.getInt(ID_INDEX));
+                        if (s != null) s.genreId = thisGenreId;
+                    }
+                    genreCur.close();
                 }
-                genreCur.close();
             }
         }
         cur.close();
@@ -662,7 +660,7 @@ public class Library {
                 MediaStore.Audio.Media.TITLE + " ASC");
 
         if (cur == null) {
-            throw new RuntimeException("Content resolver query returned null");
+            return contents;
         }
 
         for (int i = 0; i < cur.getCount(); i++) {
@@ -777,7 +775,7 @@ public class Library {
                 MediaStore.Audio.Media.IS_MUSIC + " != 0", null, null);
 
         if (cur == null) {
-            throw new RuntimeException("Content resolver query returned null");
+            return songEntries;
         }
 
         for (int i = 0; i < cur.getCount(); i++) {
