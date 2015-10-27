@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="info_update_ready">A new version of Jockey is available</string>
+    <string name="header_update_ready">Update Jockey</string>
+    <string name="action_update_now">Download now</string>
+    <string name="action_update_later">Remind me later</string>
+
+</resources>

@@ -19,11 +19,6 @@ import java.util.Scanner;
 
 public class Updater extends AsyncTask<Void, Void, String[]> {
 
-    // BUILD CHANNEL
-    private static final String CHANNEL = "alpha";
-    //private static final String CHANNEL = "beta";
-    //private static final String CHANNEL = "stable";
-
     // Indices used in the result String[]
     private static final short DOWNLOAD_URL_INDEX = 0;
     private static final short RELEASE_NOTES_INDEX = 1;
@@ -51,7 +46,7 @@ public class Updater extends AsyncTask<Void, Void, String[]> {
         // Check with a URL to see if Jockey has an update
         if(Prefs.allowNetwork(context)) {
             try {
-                URL versionURL = new URL("https://raw.githubusercontent.com/marverenic/Jockey/build/" + CHANNEL + "/version");
+                URL versionURL = new URL("https://raw.githubusercontent.com/marverenic/Jockey/build/" + BuildConfig.CHANNEL + "/version");
                 BufferedReader in = new BufferedReader(new InputStreamReader(versionURL.openStream()));
 
                 final String code = in.readLine();
