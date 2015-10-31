@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -386,21 +388,32 @@ public class ArtistActivity extends BaseActivity {
             localReference = localArtist;
 
             final String artURL = artist.getImageURL(ImageList.SIZE_MEDIUM);
-            if (artURL != null && !artURL.equals("")) {
-                Glide.with(context)
-                        .load(artURL)
-                        .asBitmap()
-                        .error(R.drawable.art_default)
-                        .into(new BitmapImageViewTarget(artwork) {
-                            @Override
-                            protected void setResource(Bitmap resource) {
-                                RoundedBitmapDrawable circularBitmapDrawable =
-                                        RoundedBitmapDrawableFactory.create(context.getResources(), resource);
-                                circularBitmapDrawable.setCircular(true);
-                                artwork.setImageDrawable(circularBitmapDrawable);
-                            }
-                        });
-            }
+
+            Glide.with(context)
+                    .load(artURL)
+                    .asBitmap()
+                    .error(R.drawable.art_default)
+                    .into(new BitmapImageViewTarget(artwork) {
+                        @Override
+                        protected void setResource(Bitmap resource) {
+                            RoundedBitmapDrawable circularBitmapDrawable =
+                                    RoundedBitmapDrawableFactory.create(
+                                            context.getResources(),
+                                            resource);
+                            circularBitmapDrawable.setCircular(true);
+                            artwork.setImageDrawable(circularBitmapDrawable);
+                        }
+
+                        @Override
+                        public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                            RoundedBitmapDrawable circularBitmapDrawable =
+                                    RoundedBitmapDrawableFactory.create(
+                                            context.getResources(),
+                                            ((BitmapDrawable) errorDrawable).getBitmap());
+                            circularBitmapDrawable.setCircular(true);
+                            artwork.setImageDrawable(circularBitmapDrawable);
+                        }
+                    });
 
             artistName.setText(artist.getName());
         }

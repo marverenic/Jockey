@@ -70,14 +70,31 @@ public class GridSpacingDecoration extends RecyclerView.ItemDecoration {
             outRect.left = halfSpacing;
             outRect.right = halfSpacing;
 
-            if (sectionPosition < numColumns) // Items in the first row
+            // Items in the first row
+            if (sectionPosition < numColumns) {
                 outRect.top = spacing;
-            if (column == 0) // Items on the far left column
+            }
+
+            // Items on the far left column
+            if (column == 0) {
                 outRect.left = spacing;
-            if (column == numColumns - 1) // Items in the far right column
+            }
+
+            // Items in the far right column
+            if (column == numColumns - 1) {
                 outRect.right = spacing;
-            if (sectionPosition >= childCount - (childCount % numColumns)) // Items in the last row
+            }
+
+            // Items in the last row
+            int lastRowItemCount = childCount % numColumns;
+            // If the last row is completely filled, the mod operation will suggest that the
+            // last row is empty
+            if (lastRowItemCount == 0) {
+                lastRowItemCount = numColumns;
+            }
+            if (sectionPosition >= childCount - lastRowItemCount) {
                 outRect.bottom = spacing;
+            }
         }
     }
 }

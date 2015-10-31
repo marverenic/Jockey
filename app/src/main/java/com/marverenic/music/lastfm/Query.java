@@ -87,7 +87,7 @@ public class Query {
                     }
                     break;
                 case "similar":
-                    NodeList similarChildren = artistNode.getChildNodes();
+                    NodeList similarChildren = child.getChildNodes();
                     ArrayList<LArtist> related = new ArrayList<>();
                     for (int j = 0; j < similarChildren.getLength(); j++) {
                         Node similar = similarChildren.item(j);

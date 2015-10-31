@@ -3,6 +3,7 @@ package com.marverenic.music.instances.viewholder;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.v7.graphics.Palette;
@@ -187,30 +188,34 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
     @Override
     public void onGenerated(Palette palette) {
-        int frameColor = defaultFrameColor;
+        int frameColor = palette.getVibrantColor(Color.TRANSPARENT);
+        Palette.Swatch swatch = palette.getVibrantSwatch();
+
+        if (swatch == null || frameColor == Color.TRANSPARENT) {
+            frameColor = palette.getLightVibrantColor(Color.TRANSPARENT);
+            swatch = palette.getLightVibrantSwatch();
+        }
+        if (swatch == null || frameColor == Color.TRANSPARENT) {
+            frameColor = palette.getDarkVibrantColor(Color.TRANSPARENT);
+            swatch = palette.getDarkVibrantSwatch();
+        }
+        if (swatch == null || frameColor == Color.TRANSPARENT) {
+            frameColor = palette.getLightMutedColor(Color.TRANSPARENT);
+            swatch = palette.getLightMutedSwatch();
+        }
+        if (swatch == null || frameColor == Color.TRANSPARENT) {
+            frameColor = palette.getDarkMutedColor(Color.TRANSPARENT);
+            swatch = palette.getDarkMutedSwatch();
+        }
+
         int titleColor = defaultTitleColor;
         int detailColor = defaultDetailColor;
 
-        if (palette.getVibrantSwatch() != null && palette.getVibrantColor(-1) != -1) {
-            frameColor = palette.getVibrantColor(0);
-            titleColor = palette.getVibrantSwatch().getTitleTextColor();
-            detailColor = palette.getVibrantSwatch().getBodyTextColor();
-        } else if (palette.getLightVibrantSwatch() != null && palette.getLightVibrantColor(-1) != -1) {
-            frameColor = palette.getLightVibrantColor(0);
-            titleColor = palette.getLightVibrantSwatch().getTitleTextColor();
-            detailColor = palette.getLightVibrantSwatch().getBodyTextColor();
-        } else if (palette.getDarkVibrantSwatch() != null && palette.getDarkVibrantColor(-1) != -1) {
-            frameColor = palette.getDarkVibrantColor(0);
-            titleColor = palette.getDarkVibrantSwatch().getTitleTextColor();
-            detailColor = palette.getDarkVibrantSwatch().getBodyTextColor();
-        } else if (palette.getLightMutedSwatch() != null && palette.getLightMutedColor(-1) != -1) {
-            frameColor = palette.getLightMutedColor(0);
-            titleColor = palette.getLightMutedSwatch().getTitleTextColor();
-            detailColor = palette.getLightMutedSwatch().getBodyTextColor();
-        } else if (palette.getDarkMutedSwatch() != null && palette.getDarkMutedColor(-1) != -1) {
-            frameColor = palette.getDarkMutedColor(0);
-            titleColor = palette.getDarkMutedSwatch().getTitleTextColor();
-            detailColor = palette.getDarkMutedSwatch().getBodyTextColor();
+        if (swatch != null && frameColor != Color.TRANSPARENT) {
+            titleColor = swatch.getTitleTextColor();
+            detailColor = swatch.getBodyTextColor();
+        } else {
+            frameColor = defaultFrameColor;
         }
 
         colorCache.put(reference, new int[]{frameColor, titleColor, detailColor});
