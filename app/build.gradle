@@ -25,13 +25,13 @@ android {
         applicationId "com.marverenic.music"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 39002
-        versionName "1.0.0-rc1"
+        versionCode 40000
+        versionName "1.0.0"
 
         /* Release channel used in com.marverenic.music.utils.Updater for independent releases */
-        buildConfigField "String", "CHANNEL", "\"alpha\""
+        // buildConfigField "String", "CHANNEL", "\"alpha\""
         // buildConfigField "String", "CHANNEL", "\"beta\""
-        // buildConfigField "String", "CHANNEL", "\"stable\""
+        buildConfigField "String", "CHANNEL", "\"stable\""
     }
     buildTypes {
         release {
