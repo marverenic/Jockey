@@ -1,12 +1,13 @@
 # Jockey
-Jockey is a music player for Android based on Google's Material Design standards. The point of Jockey is to be a simple, lightweight media player with features designed for music enthusiasts and casual listeners alike. Currently Jockey is notably lacking a number of enthusiast features like custom equalizers, gapless playback, crossfade and replay gain which may be added in the future.
+Jockey is a music player for Android based on Google's Material Design standards. The point of Jockey is to be a simple, lightweight media player with features designed for music enthusiasts and casual listeners alike. Currently Jockey is notably lacking a number of enthusiast features like custom equalizers, gapless playback, crossfade and replay gain which may be added in the future.  
 
+[![Get it on Google Play](https://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=com.marverenic.music)  
 
-![Default library view](http://i.imgur.com/tFZTUU2.png)
-![Designed for tablets](http://i.imgur.com/VYxek4n.png)
+![Now Playing](screenshots/NowPlaying5_framed.png)
+![Designed for tablets](screenshots/Albums9_framed.png)
 
 ### Downloads
-To download compiled versions of Jockey, visit the [build branch](https://github.com/marverenic/Jockey/tree/build).  
+You can get Jockey on [Google Play](https://play.google.com/store/apps/details?id=com.marverenic.music), or you can install it manually. If you decide to sideload Jockey, you cab download compiled versions of Jockey from the [build branch](https://github.com/marverenic/Jockey/tree/build).  
 In order to install compiled APK's, you will need to enable installation of applications from third party sources if you haven't already done so, and then sideload the APK. There are many guides available online that demonstrate this process in detail.
 
 ### Permissions
