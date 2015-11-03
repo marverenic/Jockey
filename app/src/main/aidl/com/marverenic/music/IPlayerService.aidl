@@ -29,5 +29,6 @@ interface IPlayerService {
     int getQueuePosition();
     int getCurrentPosition();
     int getDuration();
+    int getAudioSessionId();
 
 }

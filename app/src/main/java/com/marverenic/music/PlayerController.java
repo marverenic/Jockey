@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
@@ -494,6 +495,20 @@ public class PlayerController {
     public static Bitmap getArtwork() {
         if (artwork == null) artwork = Fetch.fetchFullArt(getNowPlaying());
         return artwork;
+    }
+
+    /**
+     * @return The Audio Session Id from {@link MediaPlayer#getAudioSessionId()}. If an exception
+     *         was raised, 0 is returned.
+     */
+    public static int getAudioSessionId() {
+        try {
+            return playerService.getAudioSessionId();
+        } catch (RemoteException e) {
+            Crashlytics.logException(e);
+            Log.w(TAG, e);
+            return 0;
+        }
     }
 
     /**

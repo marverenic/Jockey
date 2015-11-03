@@ -195,7 +195,7 @@
     <string name="theme_base">Base Theme</string>
     <string name="theme_base_description">Controls the background color. Takes effect when you leave this page</string>
     <string name="add_shortcut">Add themed icon to launcher</string>
-    <string name="add_shortcut_description">Place a new shortcut to Jockey on your home screen to match your theme. Happens when you close this page</string>
+    <string name="add_shortcut_description">This will add a new shortcut to Jockey on your home screen with the same color as your current theme</string>
     <string name="switch_to_now_playing">Automatically Switch to Now Playing</string>
     <string name="use_mobile">Use mobile data</string>
     <string name="use_mobile_description_on">Album artwork and other data will be always be downloaded</string>

@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.audiofx.Equalizer;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -23,6 +24,7 @@ import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Fetch;
 import com.marverenic.music.utils.ManagedMediaPlayer;
+import com.marverenic.music.utils.Prefs;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,6 +49,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     // Instance variables
     private ManagedMediaPlayer mediaPlayer;
+    private Equalizer equalizer;
     private Context context;
     private MediaSessionCompat mediaSession;
     private HeadsetListener headphoneListener;
@@ -94,6 +97,10 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         mediaPlayer.setOnPreparedListener(this);
         mediaPlayer.setOnCompletionListener(this);
 
+        // Initialize the equalizer
+        equalizer = new Equalizer(0, mediaPlayer.getAudioSessionId());
+        equalizer.setEnabled(true);
+
         // Initialize the queue
         queue = new ArrayList<>();
         queuePosition = 0;
@@ -102,6 +109,12 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         shuffle = prefs.getBoolean(PREFERENCE_SHUFFLE, false);
         repeat = (short) prefs.getInt(PREFERENCE_REPEAT, REPEAT_NONE);
+
+        // Load equalizer preferences
+        int eqBandCount = equalizer.getNumberOfBands();
+        for (short i = 0; i < eqBandCount; i++) {
+            equalizer.setBandLevel(i, (short) prefs.getInt(Prefs.EQ_BAND_PREFIX + i, 0));
+        }
 
         initMediaSession();
 
@@ -928,6 +941,10 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     public int getQueuePosition() {
         if (shuffle) return queuePositionShuffled;
         return queuePosition;
+    }
+
+    public int getAudioSessionId() {
+        return mediaPlayer.getAudioSessionId();
     }
 
     /**

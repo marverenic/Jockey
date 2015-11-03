@@ -25,13 +25,13 @@ android {
         applicationId "com.marverenic.music"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 40000
-        versionName "1.0.0"
+        versionCode 40001
+        versionName "1.1.0-b0"
 
         /* Release channel used in com.marverenic.music.utils.Updater for independent releases */
         // buildConfigField "String", "CHANNEL", "\"alpha\""
-        // buildConfigField "String", "CHANNEL", "\"beta\""
-        buildConfigField "String", "CHANNEL", "\"stable\""
+        buildConfigField "String", "CHANNEL", "\"beta\""
+        // buildConfigField "String", "CHANNEL", "\"stable\""
     }
     buildTypes {
         release {
@@ -66,6 +66,7 @@ dependencies {
     compile 'com.github.bumptech.glide:glide:3.6.1'
     compile 'com.google.code.gson:gson:2.3.1'
     compile 'com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.8.2'
+    compile 'com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:0.5.2'
     compile('com.crashlytics.sdk.android:crashlytics:2.5.2@aar') {
         transitive = true;
     }

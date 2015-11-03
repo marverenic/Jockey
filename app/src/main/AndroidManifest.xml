@@ -102,7 +102,6 @@
             android:name=".activity.SettingsActivity"
             android:label="@string/header_settings"
             android:launchMode="singleInstance"
-            android:parentActivityName=".activity.LibraryActivity"
             android:screenOrientation="fullUser">
             <intent-filter>
                 <action android:name=".PREFERENCES" />

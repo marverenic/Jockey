@@ -435,6 +435,11 @@ public class PlayerService extends Service {
         public int getDuration() throws RemoteException {
             return instance.player.getDuration();
         }
+
+        @Override
+        public int getAudioSessionId() throws RemoteException {
+            return instance.player.getAudioSessionId();
+        }
     }
 }
 

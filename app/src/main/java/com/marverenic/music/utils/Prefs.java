@@ -2,6 +2,7 @@ package com.marverenic.music.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.audiofx.Equalizer;
 import android.net.ConnectivityManager;
 import android.preference.PreferenceManager;
 
@@ -45,6 +46,13 @@ public class Prefs {
      * Whether or not to navigate to the Now Playing Activity when the user picks a new song
      */
     public static final String SWITCH_TO_PLAYING = "prefSwitchToNowPlaying";
+    /**
+     * The prefix used to record equalizer band levels. Append a numeric suffix to represent the
+     * band number up to {@link Equalizer#getNumberOfBands()}. The value associated with this key
+     * corresponds to the value used in {@link Equalizer#setBandLevel(short, short)} and
+     * {@link Equalizer#getBandLevel(short)}
+     */
+    public static final String EQ_BAND_PREFIX = "equalizerLevel";
 
 
     /**
