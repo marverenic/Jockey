@@ -111,9 +111,14 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         repeat = (short) prefs.getInt(PREFERENCE_REPEAT, REPEAT_NONE);
 
         // Load equalizer preferences
-        int eqBandCount = equalizer.getNumberOfBands();
-        for (short i = 0; i < eqBandCount; i++) {
-            equalizer.setBandLevel(i, (short) prefs.getInt(Prefs.EQ_BAND_PREFIX + i, 0));
+        short preset = (short) prefs.getInt(Prefs.EQ_PRESET_ID, -1);
+        if (preset == -1) {
+            int eqBandCount = equalizer.getNumberOfBands();
+            for (short i = 0; i < eqBandCount; i++) {
+                equalizer.setBandLevel(i, (short) prefs.getInt(Prefs.EQ_BAND_PREFIX + i, 0));
+            }
+        } else {
+            equalizer.usePreset(preset);
         }
 
         initMediaSession();

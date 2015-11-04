@@ -53,6 +53,12 @@ public class Prefs {
      * {@link Equalizer#getBandLevel(short)}
      */
     public static final String EQ_BAND_PREFIX = "equalizerLevel";
+    /**
+     * An equalizer preset defined by the system that the user has selected as indexed by
+     * {@link Equalizer#getPresetName(short)} and {@link Equalizer#usePreset(short)}.
+     * -1 is saved to specify a custom equalizer configuration
+     */
+    public static final String EQ_PRESET_ID = "equalizerPresetId";
 
 
     /**

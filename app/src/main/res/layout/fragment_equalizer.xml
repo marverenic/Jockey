@@ -24,13 +24,38 @@
 
     </FrameLayout>
 
+    <RelativeLayout
+        android:id="@+id/equalizerPresetFrame"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_below="@id/subheaderFrame">
+
+        <TextView
+            android:id="@+id/equalizerPresetPrefix"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="Preset:"/>
+
+        <Spinner
+            android:id="@+id/equalizerPresetSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/equalizerPresetPrefix" />
+
+    </RelativeLayout>
+
     <LinearLayout
         android:id="@+id/equalizer_panel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/subheaderFrame">
+        android:layout_below="@id/equalizerPresetFrame">
     </LinearLayout>
 
 </RelativeLayout>
