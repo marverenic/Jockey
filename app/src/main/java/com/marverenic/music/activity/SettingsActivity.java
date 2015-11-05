@@ -12,7 +12,6 @@ import android.view.MenuItem;
 
 import com.marverenic.music.R;
 import com.marverenic.music.fragments.EqualizerFragment;
-import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Themes;
 
@@ -39,7 +38,7 @@ public class SettingsActivity extends BaseActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 if (!getFragmentManager().popBackStackImmediate()) {
-                    Navigate.home(this);
+                    super.onOptionsItemSelected(item);
                 }
                 return true;
             default:
@@ -50,7 +49,7 @@ public class SettingsActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         if (!getFragmentManager().popBackStackImmediate()) {
-            Navigate.home(this);
+            super.onBackPressed();
         }
     }
 
