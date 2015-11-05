@@ -7,6 +7,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.marverenic.music.R;
@@ -62,6 +63,15 @@ public class SettingsActivity extends BaseActivity {
         public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.prefs);
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+            if (toolbar != null) {
+                toolbar.setTitle(R.string.header_settings);
+            }
         }
 
         @Override

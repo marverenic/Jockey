@@ -1,11 +1,14 @@
 package com.marverenic.music.fragments;
 
+import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.audiofx.Equalizer;
 import android.os.Bundle;
-import android.support.v7.widget.AppCompatCheckBox;
+import android.support.v7.widget.SwitchCompat;
+import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,13 +24,13 @@ import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.utils.Prefs;
 
-public class EqualizerFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
+public class EqualizerFragment extends Fragment implements CompoundButton.OnCheckedChangeListener {
 
     private Equalizer equalizer;
     private EqualizerFrame[] sliders;
     private TextView presetSpinnerPrefix;
     private Spinner presetSpinner;
-    private AppCompatCheckBox equalizerToggle;
+    private SwitchCompat equalizerToggle;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -35,9 +38,22 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
         presetSpinnerPrefix = (TextView) layout.findViewById(R.id.equalizerPresetPrefix);
         presetSpinner = (Spinner) layout.findViewById(R.id.equalizerPresetSpinner);
 
-        equalizerToggle = ((AppCompatCheckBox) layout.findViewById(R.id.equalizerToggle));
-        equalizerToggle.setOnCheckedChangeListener(this);
-        layout.findViewById(R.id.equalizerToggleFrame).setOnClickListener(this);
+        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            equalizerToggle = new SwitchCompat(getActivity());
+            equalizerToggle.setOnCheckedChangeListener(this);
+
+            Toolbar.LayoutParams params = new Toolbar.LayoutParams(
+                    ActionBar.LayoutParams.WRAP_CONTENT,
+                    ActionBar.LayoutParams.WRAP_CONTENT,
+                    Gravity.END);
+            int padding = (int) (16 * getResources().getDisplayMetrics().density);
+            params.setMargins(padding, 0, padding, 0);
+
+            // TODO String Resources
+            toolbar.setTitle("Equalizer");
+            toolbar.addView(equalizerToggle, params);
+        }
 
         LinearLayout equalizerPanel = (LinearLayout) layout.findViewById(R.id.equalizer_panel);
 
@@ -70,6 +86,11 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
     @Override
     public void onDetach() {
         super.onDetach();
+        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            toolbar.removeView(equalizerToggle);
+        }
+
         if (sliders != null) {
             SharedPreferences.Editor prefsEditor = Prefs.getPrefs(getActivity()).edit();
 
@@ -99,11 +120,6 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         setEqualizerEnabled(isChecked);
-    }
-
-    @Override
-    public void onClick(View v) {
-        equalizerToggle.toggle();
     }
 
     private static class PresetAdapter extends BaseAdapter implements AdapterView.OnItemSelectedListener {
