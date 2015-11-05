@@ -58,6 +58,13 @@ public class PlayerController {
     }
 
     /**
+     * @return Whether or not the service has been bound to the UI process
+     */
+    public static boolean isServiceStarted() {
+        return playerService != null;
+    }
+
+    /**
      * Stop playback completely and end the player service process. If you call this from the UI
      * thread make sure that you don't want to play music for the rest of the lifetime of the
      * process, otherwise you're going to have a bad time.
