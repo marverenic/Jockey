@@ -85,6 +85,9 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
     }
 
     private void setEqualizerEnabled(boolean enabled) {
+        if (equalizerToggle.isChecked() != enabled) {
+            equalizerToggle.setChecked(enabled);
+        }
         equalizer.setEnabled(enabled);
         presetSpinnerPrefix.setEnabled(enabled);
         presetSpinner.setEnabled(enabled);
