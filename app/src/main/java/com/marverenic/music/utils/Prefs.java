@@ -59,6 +59,10 @@ public class Prefs {
      * -1 is saved to specify a custom equalizer configuration
      */
     public static final String EQ_PRESET_ID = "equalizerPresetId";
+    /**
+     * Whether or not to enable the equalizer
+     */
+    public static final String EQ_ENABLED = "prefUseEqualizer";
 
 
     /**

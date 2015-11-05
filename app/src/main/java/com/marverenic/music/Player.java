@@ -97,10 +97,6 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         mediaPlayer.setOnPreparedListener(this);
         mediaPlayer.setOnCompletionListener(this);
 
-        // Initialize the equalizer
-        equalizer = new Equalizer(0, mediaPlayer.getAudioSessionId());
-        equalizer.setEnabled(true);
-
         // Initialize the queue
         queue = new ArrayList<>();
         queuePosition = 0;
@@ -110,7 +106,10 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         shuffle = prefs.getBoolean(PREFERENCE_SHUFFLE, false);
         repeat = (short) prefs.getInt(PREFERENCE_REPEAT, REPEAT_NONE);
 
-        // Load equalizer preferences
+        // Initialize the equalizer
+        equalizer = new Equalizer(0, mediaPlayer.getAudioSessionId());
+        equalizer.setEnabled(prefs.getBoolean(Prefs.EQ_ENABLED, false));
+
         short preset = (short) prefs.getInt(Prefs.EQ_PRESET_ID, -1);
         if (preset == -1) {
             int eqBandCount = equalizer.getNumberOfBands();

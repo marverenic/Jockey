@@ -5,11 +5,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.audiofx.Equalizer;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -19,36 +21,47 @@ import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.utils.Prefs;
 
-public class EqualizerFragment extends Fragment {
+public class EqualizerFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
 
+    private Equalizer equalizer;
     private EqualizerFrame[] sliders;
+    private TextView presetSpinnerPrefix;
     private Spinner presetSpinner;
+    private AppCompatCheckBox equalizerToggle;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View layout = inflater.inflate(R.layout.fragment_equalizer, container, false);
+        presetSpinnerPrefix = (TextView) layout.findViewById(R.id.equalizerPresetPrefix);
+        presetSpinner = (Spinner) layout.findViewById(R.id.equalizerPresetSpinner);
+
+        equalizerToggle = ((AppCompatCheckBox) layout.findViewById(R.id.equalizerToggle));
+        equalizerToggle.setOnCheckedChangeListener(this);
+        layout.findViewById(R.id.equalizerToggleFrame).setOnClickListener(this);
 
         LinearLayout equalizerPanel = (LinearLayout) layout.findViewById(R.id.equalizer_panel);
 
         int audioSession = PlayerController.getAudioSessionId();
         // Make sure that the audio session is valid before displaying the equalizer
         if (audioSession != 0) {
-            Equalizer equalizer = new Equalizer(0, PlayerController.getAudioSessionId());
-            equalizer.setEnabled(true);
+            SharedPreferences prefs = Prefs.getPrefs(getActivity());
+
+            equalizer = new Equalizer(0, PlayerController.getAudioSessionId());
             int bandCount = equalizer.getNumberOfBands();
 
             sliders = new EqualizerFrame[bandCount];
 
-            presetSpinner = (Spinner) layout.findViewById(R.id.equalizerPresetSpinner);
             PresetAdapter presetAdapter = new PresetAdapter(getActivity(), equalizer, sliders);
             presetSpinner.setAdapter(presetAdapter);
-            presetSpinner.setSelection(Prefs.getPrefs(getActivity()).getInt(Prefs.EQ_PRESET_ID, -1) + 1);
+            presetSpinner.setSelection(prefs.getInt(Prefs.EQ_PRESET_ID, -1) + 1);
             presetSpinner.setOnItemSelectedListener(presetAdapter);
 
             for (short i = 0; i < bandCount; i++) {
                 inflater.inflate(R.layout.instance_eq_slider, equalizerPanel, true);
                 sliders[i] = new EqualizerFrame(equalizerPanel.getChildAt(i), equalizer, i, presetSpinner);
             }
+
+            setEqualizerEnabled(prefs.getBoolean(Prefs.EQ_ENABLED, false));
         }
 
         return layout;
@@ -66,8 +79,28 @@ public class EqualizerFragment extends Fragment {
             }
 
             prefsEditor.putInt(Prefs.EQ_PRESET_ID, (int) presetSpinner.getSelectedItemId());
+            prefsEditor.putBoolean(Prefs.EQ_ENABLED, equalizerToggle.isChecked());
             prefsEditor.apply();
         }
+    }
+
+    private void setEqualizerEnabled(boolean enabled) {
+        equalizer.setEnabled(enabled);
+        presetSpinnerPrefix.setEnabled(enabled);
+        presetSpinner.setEnabled(enabled);
+        for (EqualizerFrame f : sliders) {
+            f.update(enabled);
+        }
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        setEqualizerEnabled(isChecked);
+    }
+
+    @Override
+    public void onClick(View v) {
+        equalizerToggle.toggle();
     }
 
     private static class PresetAdapter extends BaseAdapter implements AdapterView.OnItemSelectedListener {
@@ -179,6 +212,11 @@ public class EqualizerFragment extends Fragment {
             bandSlider.setMax(Math.abs(minLevel) + maxLevel);
             bandSlider.setProgress(eq.getBandLevel(bandNumber) + Math.abs(range[0]));
             bandSlider.setOnSeekBarChangeListener(this);
+        }
+
+        public void update(boolean enabled) {
+            bandSlider.setEnabled(enabled);
+            bandLabel.setEnabled(enabled);
         }
 
         public void update(int level) {

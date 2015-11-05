@@ -49,7 +49,7 @@ public class SettingsActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         if (!getFragmentManager().popBackStackImmediate()) {
-            super.onBackPressed();
+            Navigate.home(this);
         }
     }
 
