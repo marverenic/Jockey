@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:height="36dp"
-    android:width="36dp"
-    android:viewportHeight="24.0"
-    android:viewportWidth="24.0">
-    <path android:fillColor="#FFFFFFFF" android:pathData="M6,6 h2 v12 H6z M9.5,12 l8.5,6 V6z"/>
-</vector>
+<rotate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/ic_skip_next_36dp"
+    android:pivotX="50%"
+    android:pivotY="50%"
+    android:fromDegrees="180"/>
