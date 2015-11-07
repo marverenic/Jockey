@@ -47,13 +47,6 @@ public class Prefs {
      */
     public static final String SWITCH_TO_PLAYING = "prefSwitchToNowPlaying";
     /**
-     * The prefix used to record equalizer band levels. Append a numeric suffix to represent the
-     * band number up to {@link Equalizer#getNumberOfBands()}. The value associated with this key
-     * corresponds to the value used in {@link Equalizer#setBandLevel(short, short)} and
-     * {@link Equalizer#getBandLevel(short)}
-     */
-    public static final String EQ_BAND_PREFIX = "equalizerLevel";
-    /**
      * An equalizer preset defined by the system that the user has selected as indexed by
      * {@link Equalizer#getPresetName(short)} and {@link Equalizer#usePreset(short)}.
      * -1 is saved to specify a custom equalizer configuration
@@ -63,6 +56,11 @@ public class Prefs {
      * Whether or not to enable the equalizer
      */
     public static final String EQ_ENABLED = "prefUseEqualizer";
+    /**
+     * All {@link Equalizer} settings written and parsed by
+     * {@link android.media.audiofx.Equalizer.Settings}
+     */
+    public static final String EQ_SETTINGS = "prefEqualizerSettings";
 
 
     /**

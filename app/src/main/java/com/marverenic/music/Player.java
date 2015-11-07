@@ -106,21 +106,8 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         shuffle = prefs.getBoolean(PREFERENCE_SHUFFLE, false);
         repeat = (short) prefs.getInt(PREFERENCE_REPEAT, REPEAT_NONE);
 
-        // Initialize the equalizer
-        equalizer = new Equalizer(0, mediaPlayer.getAudioSessionId());
-        equalizer.setEnabled(prefs.getBoolean(Prefs.EQ_ENABLED, false));
-
-        short preset = (short) prefs.getInt(Prefs.EQ_PRESET_ID, -1);
-        if (preset == -1) {
-            int eqBandCount = equalizer.getNumberOfBands();
-            for (short i = 0; i < eqBandCount; i++) {
-                equalizer.setBandLevel(i, (short) prefs.getInt(Prefs.EQ_BAND_PREFIX + i, 0));
-            }
-        } else {
-            equalizer.usePreset(preset);
-        }
-
         initMediaSession();
+        initEqualizer();
 
         // Attach a HeadsetListener to respond to headphone events
         headphoneListener = new HeadsetListener(this);
@@ -187,6 +174,26 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     }
 
     /**
+     * Reload all equalizer settings from SharedPreferences
+     */
+    private void initEqualizer() {
+        SharedPreferences prefs = Prefs.getPrefs(context);
+        String eqSettings = prefs.getString(Prefs.EQ_SETTINGS, null);
+        boolean enabled = prefs.getBoolean(Prefs.EQ_ENABLED, false);
+
+        Equalizer.Settings eqPrefs;
+        if (eqSettings != null) {
+            eqPrefs = new Equalizer.Settings(eqSettings);
+        } else {
+            eqPrefs = new Equalizer.Settings();
+        }
+
+        equalizer = new Equalizer(0, mediaPlayer.getAudioSessionId());
+        equalizer.setProperties(eqPrefs);
+        equalizer.setEnabled(enabled);
+    }
+
+    /**
      * Writes a player state to disk. Contains information about the queue (both unshuffled and shuffled),
      * current queuePosition within this list, and the current queuePosition of the song
      * @throws IOException
@@ -247,6 +254,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         ((AudioManager) context.getSystemService(Context.AUDIO_SERVICE)).abandonAudioFocus(this);
         context.unregisterReceiver(headphoneListener);
 
+        equalizer.release();
         active = false;
         mediaPlayer.stop();
         mediaPlayer.release();

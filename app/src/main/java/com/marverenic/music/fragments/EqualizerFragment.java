@@ -91,17 +91,14 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
             toolbar.removeView(equalizerToggle);
         }
 
-        if (sliders != null) {
-            SharedPreferences.Editor prefsEditor = Prefs.getPrefs(getActivity()).edit();
+        if (equalizer != null) {
+            Prefs.getPrefs(getActivity()).edit()
+                    .putString(Prefs.EQ_SETTINGS, equalizer.getProperties().toString())
+                    .putBoolean(Prefs.EQ_ENABLED, equalizerToggle.isChecked())
+                    .putInt(Prefs.EQ_PRESET_ID, (int) presetSpinner.getSelectedItemId())
+                    .apply();
 
-            for (int i = 0; i < sliders.length; i++) {
-                int value = sliders[i].bandSlider.getProgress() - Math.abs(sliders[i].minLevel);
-                prefsEditor.putInt(Prefs.EQ_BAND_PREFIX + i, value);
-            }
-
-            prefsEditor.putInt(Prefs.EQ_PRESET_ID, (int) presetSpinner.getSelectedItemId());
-            prefsEditor.putBoolean(Prefs.EQ_ENABLED, equalizerToggle.isChecked());
-            prefsEditor.apply();
+            equalizer.release();
         }
     }
 
@@ -216,7 +213,7 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
             bandSlider = (SeekBar) root.findViewById(R.id.eq_slider);
             bandLabel = (TextView) root.findViewById(R.id.eq_band_name);
 
-            int frequency = eq.getBandFreqRange(bandNumber)[0] / 1000;
+            int frequency = eq.getCenterFreq(bandNumber) / 1000;
 
             if (frequency > 1000) {
                 bandLabel.setText(frequency / 1000 + "K");
