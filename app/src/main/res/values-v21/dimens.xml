@@ -2,6 +2,6 @@
 <resources>
 
     <dimen name="seekbarMargin">-16dp</dimen>
-    <dimen name="skrimMargin">25dp</dimen>
+    <dimen name="scrimMargin">25dp</dimen>
 
 </resources>

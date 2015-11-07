@@ -15,7 +15,7 @@
     <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="168dp"
-        android:background="@drawable/skrim_now_playing">
+        android:background="@drawable/scrim_now_playing">
 
         <include layout="@layout/toolbar"
             android:id="@+id/toolbar"

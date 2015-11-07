@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent"
-    android:layout_width="match_parent">
+    android:layout_width="match_parent"
+    android:fitsSystemWindows="false">
 
     <FrameLayout
         android:id="@+id/miniplayer_holder"
@@ -38,11 +39,18 @@
                 android:fitsSystemWindows="true"
                 app:contentScrim="?attr/colorPrimary">
 
-                <ImageView
-                    android:id="@+id/backdrop"
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/extended_actionbar_height"
-                    app:layout_collapseMode="parallax" />
+                    app:layout_collapseMode="parallax"
+                    android:foreground="@drawable/scrim_instance_artwork"
+                    android:fitsSystemWindows="true">
+                    <ImageView
+                        android:id="@+id/backdrop"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:fitsSystemWindows="true"/>
+                </FrameLayout>
 
                 <android.support.v7.widget.Toolbar
                     android:id="@+id/toolbar"
