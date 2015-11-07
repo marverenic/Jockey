@@ -350,10 +350,10 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+        logPlayCount(getNowPlaying().songId, false);
         if(repeat == REPEAT_ONE){
             mediaPlayer.seekTo(0);
             play();
-            logPlayCount(getNowPlaying().songId, false);
         }
         else {
             skip();
@@ -510,9 +510,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     public void play() {
         if (!isPlaying() && getFocus()) {
             if (shuffle) {
-                if (queuePositionShuffled + 1 == queueShuffled.size()
-                        && mediaPlayer.getState() == ManagedMediaPlayer.status.COMPLETED) {
-
+                if (queuePositionShuffled + 1 == queueShuffled.size() && mediaPlayer.isComplete()) {
                     queuePositionShuffled = 0;
                     begin();
                 } else {
@@ -520,9 +518,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                     updateNowPlaying();
                 }
             } else {
-                if (queuePosition + 1 == queue.size()
-                        && mediaPlayer.getState() == ManagedMediaPlayer.status.COMPLETED) {
-
+                if (queuePosition + 1 == queue.size() && mediaPlayer.isComplete()) {
                     queuePosition = 0;
                     begin();
                 } else {
@@ -598,45 +594,31 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
      */
     public void skip() {
         if (!isPreparing()) {
-            if (mediaPlayer.getState() == ManagedMediaPlayer.status.COMPLETED
-                    || mediaPlayer.getCurrentPosition() > 24000
-                    || mediaPlayer.getCurrentPosition() > mediaPlayer.getDuration() / 2) {
-                logPlayCount(getNowPlaying().songId, false);
-            }
-            else if (getCurrentPosition() < 20000) {
-                logPlayCount(getNowPlaying().songId, true);
+            if (!mediaPlayer.isComplete()) {
+                if (mediaPlayer.getCurrentPosition() > 24000
+                        || mediaPlayer.getCurrentPosition() > mediaPlayer.getDuration() / 2) {
+                    logPlayCount(getNowPlaying().songId, false);
+                } else if (getCurrentPosition() < 20000) {
+                    logPlayCount(getNowPlaying().songId, true);
+                }
             }
 
-            // Change the media source
-            if (shuffle) {
-                if (queuePositionShuffled + 1 < queueShuffled.size()) {
-                    queuePositionShuffled++;
-                    begin();
+            if (shuffle && queuePositionShuffled + 1 < queueShuffled.size()) {
+                queuePositionShuffled++;
+                begin();
+            } else if (!shuffle && queuePosition + 1 < queue.size()) {
+                queuePosition++;
+                begin();
+            } else if (repeat == REPEAT_ALL) {
+                if (shuffle) {
+                    queuePositionShuffled = 0;
                 } else {
-                    if (repeat == REPEAT_ALL) {
-                        queuePositionShuffled = 0;
-                        begin();
-                    } else {
-                        mediaPlayer.pause();
-                        mediaPlayer.seekTo(mediaPlayer.getDuration());
-                        updateNowPlaying();
-                    }
+                    queuePosition = 0;
                 }
+                begin();
             } else {
-                if (queuePosition + 1 < queue.size()) {
-                    queuePosition++;
-                    begin();
-                } else {
-                    if (repeat == REPEAT_ALL) {
-                        queuePosition = 0;
-                        begin();
-                    } else {
-                        mediaPlayer.pause();
-                        mediaPlayer.seekTo(mediaPlayer.getDuration());
-                        updateNowPlaying();
-                    }
-
-                }
+                mediaPlayer.complete();
+                updateNowPlaying();
             }
         }
     }
@@ -665,13 +647,14 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
      * @param newPosition The index of the song to start playing
      */
     public void changeSong(int newPosition) {
-        if (mediaPlayer.getState() == ManagedMediaPlayer.status.COMPLETED
-                || mediaPlayer.getCurrentPosition() > 24000
-                || mediaPlayer.getCurrentPosition() > mediaPlayer.getDuration() / 2) {
-            logPlayCount(getNowPlaying().songId, false);
-        }
-        else if (getCurrentPosition() < 20000) {
-            logPlayCount(getNowPlaying().songId, true);
+        if (!mediaPlayer.isComplete()) {
+            if (mediaPlayer.getCurrentPosition() > 24000
+                    || mediaPlayer.getCurrentPosition() > mediaPlayer.getDuration() / 2) {
+                logPlayCount(getNowPlaying().songId, false);
+            }
+            else if (getCurrentPosition() < 20000) {
+                logPlayCount(getNowPlaying().songId, true);
+            }
         }
 
         if (shuffle) {
