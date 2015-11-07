@@ -45,7 +45,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
+        setContentView(R.layout.activity_instance);
 
         // Set up the RecyclerView's adapter
         RecyclerView list = (RecyclerView) findViewById(R.id.list);
