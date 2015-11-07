@@ -42,5 +42,12 @@
             android:layout_gravity="center">
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/equalizerNotes"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:padding="16dp"/>
+
     </LinearLayout>
 </ScrollView>

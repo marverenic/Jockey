@@ -255,6 +255,12 @@
         <item>Has been played since</item>
     </string-array>
 
+    <!-- Equalizer Strings -->
+    <string name="equalizerNoteSystem">It looks like you already have a system-wide equalizer
+        installed (possibly provided by your device\'s manufacturer). This may cause conflicts with
+        Jockey\'s built-in equalizer, so be prepared to disable this if you notice unexpected
+        behavior when playing music.</string>
+
     <!-- Arrays -->
     <string-array name="queue_options_song">
         <item>Queue next</item>

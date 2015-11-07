@@ -3,7 +3,11 @@ package com.marverenic.music.fragments;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.media.audiofx.AudioEffect;
 import android.media.audiofx.Equalizer;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
@@ -23,6 +27,8 @@ import android.widget.TextView;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.utils.Prefs;
+
+import java.util.List;
 
 public class EqualizerFragment extends Fragment implements CompoundButton.OnCheckedChangeListener {
 
@@ -78,6 +84,17 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
             }
 
             setEqualizerEnabled(prefs.getBoolean(Prefs.EQ_ENABLED, false));
+        }
+
+        // If this device already has an application that can handle equalizers system-wide, inform
+        // the user of possible issues by using Jockey's built-in equalizer
+        Intent systemEqualizer = new Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
+
+        PackageManager manager = getActivity().getPackageManager();
+        List<ResolveInfo> list = manager.queryIntentActivities(systemEqualizer, 0);
+
+        if (list != null && list.size() > 0) {
+            ((TextView) layout.findViewById(R.id.equalizerNotes)).setText(R.string.equalizerNoteSystem);
         }
 
         return layout;
@@ -249,7 +266,8 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-            presetSpinner.setSelection(0); // Disable any preset
+            // Disable any preset
+            presetSpinner.setSelection(0);
         }
     }
 }
