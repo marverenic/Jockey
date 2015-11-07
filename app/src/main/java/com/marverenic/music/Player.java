@@ -181,15 +181,10 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         String eqSettings = prefs.getString(Prefs.EQ_SETTINGS, null);
         boolean enabled = prefs.getBoolean(Prefs.EQ_ENABLED, false);
 
-        Equalizer.Settings eqPrefs;
-        if (eqSettings != null) {
-            eqPrefs = new Equalizer.Settings(eqSettings);
-        } else {
-            eqPrefs = new Equalizer.Settings();
-        }
-
         equalizer = new Equalizer(0, mediaPlayer.getAudioSessionId());
-        equalizer.setProperties(eqPrefs);
+        if (eqSettings != null) {
+            equalizer.setProperties(new Equalizer.Settings(eqSettings));
+        }
         equalizer.setEnabled(enabled);
     }
 
