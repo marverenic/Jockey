@@ -160,9 +160,8 @@
 
     <!-- About Activity Strings -->
     <string name="about_version">Version</string>
-    <string name="about_description">Jockey is a music player for Android 4.0 and higher designed
-        with Google\'s Material Design guidelines in mind.</string>
-    <string name="about_license">Jockey is distributed under an Apache 2.0 license</string>
+    <string name="about_description">Jockey is a music player for Android 4.0 and higher focused on
+        simplicity, performance, and design distributed under an Apache 2.0 license.</string>
     <string name="lastfm_header">Artist information is provided by</string>
     <string name="lastfm_description">Last.fm</string>
     <string name="uses_header">Jockey also uses the following open-source libraries:</string>
@@ -170,10 +169,16 @@
     <string name="uses_aosp_detail">Support-v4 23.1.0, Appcompat-v7 23.1.0, RecyclerView 23.1.0,
         CardView 23.1.0, Design 23.1.0, Palette 23.1.0; distributed by the Android Open Source
         Project under an Apache License, Version 2.0</string>
+    <string name="uses_gson_header">Gson</string>
+    <string name="uses_gson_detail">Version 2.3.1 distributed by Google, Inc. under an Apache License,
+        Version 2.0</string>
     <string name="uses_glide_header">Glide</string>
     <string name="uses_glide_detail">Version 3.6.1; distributed by Google, Inc. under a BSD License</string>
     <string name="uses_advrecyclerview_header">Advanced RecyclerView</string>
     <string name="uses_advrecyclerview_detail">Version 0.7.1; distributed by Haruki Hasegawa
+        under an Apache License, Version 2.0</string>
+    <string name="uses_vert_slider_header">VerticalSeekBar</string>
+    <string name="uses_vert_slider_detail">Version 0.5.2; distributed by Haruki Hasegawa
         under an Apache License, Version 2.0</string>
     <string name="uses_stackoverflow">Additional thanks to many helpful Stack Overflow users who are
         better at programming than I am.</string>
@@ -195,7 +200,7 @@
     <string name="theme_base">Base Theme</string>
     <string name="theme_base_description">Controls the background color. Takes effect when you leave this page</string>
     <string name="add_shortcut">Add themed icon to launcher</string>
-    <string name="add_shortcut_description">This will add a new shortcut to Jockey on your home screen with the same color as your current theme</string>
+    <string name="add_shortcut_description">Do you want to add a link to Jockey that matches your current theme to your launcher?</string>
     <string name="switch_to_now_playing">Automatically Switch to Now Playing</string>
     <string name="use_mobile">Use mobile data</string>
     <string name="use_mobile_description_on">Album artwork and other data will be always be downloaded</string>
