@@ -10,6 +10,7 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.StyleRes;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -43,6 +44,10 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         }
     };
 
+    // Used when resuming the Activity to respond to a potential theme change
+    @StyleRes
+    private int themeId;
+
     /**
      * @inheritDoc
      */
@@ -51,6 +56,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         if (DEBUG) Log.i(getClass().toString(), "Called onCreate");
 
         Themes.setTheme(this);
+        themeId = Themes.getTheme(this);
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
@@ -144,11 +150,17 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     public void onResume(){
         super.onResume();
         if (DEBUG) Log.i(getClass().toString(), "Called onResume");
-        Themes.setApplicationIcon(this);
-        registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
-        if (PlayerController.getNowPlaying() != null) {
-            update();
-            updateMiniplayer();
+
+        if (themeId != Themes.getTheme(this)) {
+            // If the theme was changed since this Activity was last started, recreate it
+            recreate();
+        } else {
+            Themes.setApplicationIcon(this);
+            registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
+            if (PlayerController.getNowPlaying() != null) {
+                update();
+                updateMiniplayer();
+            }
         }
     }
 
