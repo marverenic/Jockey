@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.audiofx.AudioEffect;
 import android.media.audiofx.Equalizer;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
@@ -70,9 +71,6 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     public static final short REPEAT_ALL = 1;
     public static final short REPEAT_ONE = 2;
     private short repeat; // Repeat status
-
-    // Equalizer flag used to enable the Equalizer only after music first starts playing
-    private boolean eqStarted = false;
 
     private Bitmap art; // The art for the current song
 
@@ -182,25 +180,20 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     private void initEqualizer() {
         SharedPreferences prefs = Prefs.getPrefs(context);
         String eqSettings = prefs.getString(Prefs.EQ_SETTINGS, null);
-        eqStarted = !Prefs.getPrefs(context).getBoolean(Prefs.EQ_ENABLED, false);
+        boolean enabled = Prefs.getPrefs(context).getBoolean(Prefs.EQ_ENABLED, false);
 
         equalizer = new Equalizer(0, mediaPlayer.getAudioSessionId());
         if (eqSettings != null) {
             equalizer.setProperties(new Equalizer.Settings(eqSettings));
         }
-        equalizer.setEnabled(false);
-    }
+        equalizer.setEnabled(enabled);
 
-    /**
-     * Called the first time that music begins to play to enable the equalizer (if it is in the
-     * user's settings)
-     */
-    private void startEqualizer() {
-        if (!eqStarted) {
-            int seek = mediaPlayer.getCurrentPosition();
-            equalizer.setEnabled(true);
-            mediaPlayer.seekTo(seek); // Prevent the player from restarting
-            eqStarted = true;
+        // If the built in equalizer is off, bind to the system equalizer if one is available
+        if (!enabled) {
+            final Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
+            intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
+            intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, context.getPackageName());
+            context.sendBroadcast(intent);
         }
     }
 
@@ -264,6 +257,12 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     public void finish (){
         ((AudioManager) context.getSystemService(Context.AUDIO_SERVICE)).abandonAudioFocus(this);
         context.unregisterReceiver(headphoneListener);
+
+        // Unbind from the system audio effects
+        final Intent intent = new Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION);
+        intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, PlayerController.getAudioSessionId());
+        intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, context.getPackageName());
+        context.sendBroadcast(intent);
 
         equalizer.release();
         active = false;
@@ -542,7 +541,6 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                     updateNowPlaying();
                 }
             }
-            startEqualizer();
         }
     }
 

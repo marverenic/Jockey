@@ -3,7 +3,11 @@ package com.marverenic.music.fragments;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.media.audiofx.AudioEffect;
 import android.media.audiofx.Equalizer;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
@@ -23,6 +27,8 @@ import android.widget.TextView;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.utils.Prefs;
+
+import java.util.List;
 
 public class EqualizerFragment extends Fragment implements CompoundButton.OnCheckedChangeListener {
 
@@ -50,7 +56,6 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
             int padding = (int) (16 * getResources().getDisplayMetrics().density);
             params.setMargins(padding, 0, padding, 0);
 
-            toolbar.setTitle(R.string.header_equalizer);
             toolbar.addView(equalizerToggle, params);
         }
 
@@ -79,7 +84,27 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
             setEqualizerEnabled(prefs.getBoolean(Prefs.EQ_ENABLED, false));
         }
 
+        // If this device already has an application that can handle equalizers system-wide, inform
+        // the user of possible issues by using Jockey's built-in equalizer
+        Intent systemEqualizer = new Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
+
+        PackageManager manager = getActivity().getPackageManager();
+        List<ResolveInfo> list = manager.queryIntentActivities(systemEqualizer, 0);
+
+        if (list != null && list.size() > 0) {
+            ((TextView) layout.findViewById(R.id.equalizerNotes)).setText(R.string.equalizerNoteSystem);
+        }
+
         return layout;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            toolbar.setTitle(R.string.header_equalizer);
+        }
     }
 
     @Override
@@ -110,6 +135,19 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
         presetSpinner.setEnabled(enabled);
         for (EqualizerFrame f : sliders) {
             f.update(enabled);
+        }
+
+        // Bind or unbind from the system equalizer as needed
+        if (!enabled) {
+            final Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
+            intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, PlayerController.getAudioSessionId());
+            intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, getActivity().getPackageName());
+            getActivity().sendBroadcast(intent);
+        } else {
+            final Intent intent = new Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION);
+            intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, PlayerController.getAudioSessionId());
+            intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, getActivity().getPackageName());
+            getActivity().sendBroadcast(intent);
         }
     }
 

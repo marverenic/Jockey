@@ -257,6 +257,12 @@
 
     <!-- Equalizer Strings -->
     <string name="header_equalizer">Equalizer</string>
+    <string name="equalizerNoteSystem">It looks like you already have a global equalizer
+        installed (possibly provided by your device\'s manufacturer). This may cause conflicts with
+        Jockey\'s built-in equalizer, so be prepared to disable this if you notice unexpected
+        behavior.
+        \n\nTo use the system equalizer, return to the settings page and tap equalizer. To return to
+        this page, long-press on the equalizer setting.</string>
 
     <!-- Arrays -->
     <string-array name="queue_options_song">
