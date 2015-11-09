@@ -256,10 +256,7 @@
     </string-array>
 
     <!-- Equalizer Strings -->
-    <string name="equalizerNoteSystem">It looks like you already have a system-wide equalizer
-        installed (possibly provided by your device\'s manufacturer). This may cause conflicts with
-        Jockey\'s built-in equalizer, so be prepared to disable this if you notice unexpected
-        behavior when playing music.</string>
+    <string name="header_equalizer">Equalizer</string>
 
     <!-- Arrays -->
     <string-array name="queue_options_song">

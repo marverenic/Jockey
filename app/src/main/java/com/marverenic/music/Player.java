@@ -71,6 +71,9 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     public static final short REPEAT_ONE = 2;
     private short repeat; // Repeat status
 
+    // Equalizer flag used to enable the Equalizer only after music first starts playing
+    private boolean eqStarted = false;
+
     private Bitmap art; // The art for the current song
 
     /**
@@ -179,13 +182,26 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     private void initEqualizer() {
         SharedPreferences prefs = Prefs.getPrefs(context);
         String eqSettings = prefs.getString(Prefs.EQ_SETTINGS, null);
-        boolean enabled = prefs.getBoolean(Prefs.EQ_ENABLED, false);
+        eqStarted = !Prefs.getPrefs(context).getBoolean(Prefs.EQ_ENABLED, false);
 
         equalizer = new Equalizer(0, mediaPlayer.getAudioSessionId());
         if (eqSettings != null) {
             equalizer.setProperties(new Equalizer.Settings(eqSettings));
         }
-        equalizer.setEnabled(enabled);
+        equalizer.setEnabled(false);
+    }
+
+    /**
+     * Called the first time that music begins to play to enable the equalizer (if it is in the
+     * user's settings)
+     */
+    private void startEqualizer() {
+        if (!eqStarted) {
+            int seek = mediaPlayer.getCurrentPosition();
+            equalizer.setEnabled(true);
+            mediaPlayer.seekTo(seek); // Prevent the player from restarting
+            eqStarted = true;
+        }
     }
 
     /**
@@ -526,6 +542,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                     updateNowPlaying();
                 }
             }
+            startEqualizer();
         }
     }
 
