@@ -19,14 +19,14 @@ repositories {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "23.0.2"
     //noinspection GroovyMissingReturnStatement
     defaultConfig {
         applicationId "com.marverenic.music"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 40006
-        versionName "1.1.0-rc1"
+        versionCode 40007
+        versionName "1.1.0-rc2"
 
         /* Release channel used in com.marverenic.music.utils.Updater for independent releases */
         // buildConfigField "String", "CHANNEL", "\"alpha\""
@@ -46,6 +46,7 @@ android {
         }
     }
     productFlavors {
+        //noinspection GroovyMissingReturnStatement
         googlePlay {
 
         }
