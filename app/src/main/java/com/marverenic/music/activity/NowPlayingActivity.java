@@ -32,7 +32,7 @@ import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.utils.Fetch;
+import com.marverenic.music.utils.Util;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.PlaylistDialog;
 import com.marverenic.music.utils.Themes;
@@ -355,7 +355,7 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
                 albumTitle.setText(nowPlaying.albumName);
 
                 ImageView artImageView = (ImageView) findViewById(R.id.imageArtwork);
-                Bitmap artwork = Fetch.fetchFullArt(nowPlaying);
+                Bitmap artwork = Util.fetchFullArt(nowPlaying);
                 if (artwork == null || artwork.getHeight() == 0 || artwork.getWidth() == 0) {
                     artImageView.setImageResource(R.drawable.art_default_xl);
                 } else {

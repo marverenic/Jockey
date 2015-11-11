@@ -23,7 +23,7 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.utils.Fetch;
+import com.marverenic.music.utils.Util;
 import com.marverenic.music.utils.ManagedMediaPlayer;
 import com.marverenic.music.utils.Prefs;
 
@@ -162,7 +162,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                 }
             });
 
-            art = Fetch.fetchFullArt(getNowPlaying());
+            art = Util.fetchFullArt(getNowPlaying());
             mediaPlayer.setDataSource(getNowPlaying().location);
             mediaPlayer.prepareAsync();
         }
@@ -420,7 +420,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             mediaPlayer.stop();
             mediaPlayer.reset();
 
-            art = Fetch.fetchFullArt(getNowPlaying());
+            art = Util.fetchFullArt(getNowPlaying());
 
             try {
                 mediaPlayer.setDataSource((getNowPlaying()).location);

@@ -5,8 +5,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.media.audiofx.AudioEffect;
 import android.media.audiofx.Equalizer;
 import android.os.Bundle;
@@ -27,8 +25,7 @@ import android.widget.TextView;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.utils.Prefs;
-
-import java.util.List;
+import com.marverenic.music.utils.Util;
 
 public class EqualizerFragment extends Fragment implements CompoundButton.OnCheckedChangeListener {
 
@@ -86,12 +83,7 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
 
         // If this device already has an application that can handle equalizers system-wide, inform
         // the user of possible issues by using Jockey's built-in equalizer
-        Intent systemEqualizer = new Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
-
-        PackageManager manager = getActivity().getPackageManager();
-        List<ResolveInfo> list = manager.queryIntentActivities(systemEqualizer, 0);
-
-        if (list != null && list.size() > 0) {
+        if (Util.getSystemEqIntent(getActivity()) != null) {
             ((TextView) layout.findViewById(R.id.equalizerNotes)).setText(R.string.equalizerNoteSystem);
         }
 

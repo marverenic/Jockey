@@ -2,9 +2,6 @@ package com.marverenic.music.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.media.audiofx.AudioEffect;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -23,8 +20,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.fragments.EqualizerFragment;
 import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Themes;
-
-import java.util.List;
+import com.marverenic.music.utils.Util;
 
 public class SettingsActivity extends BaseActivity {
 
@@ -96,19 +92,16 @@ public class SettingsActivity extends BaseActivity {
         @Override
         public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
             if ("com.marverenic.music.fragments.EqualizerFragment".equals(preference.getFragment())) {
-                Intent systemEqualizer = new Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
+                Intent eqIntent = Util.getSystemEqIntent(getActivity());
 
-                PackageManager manager = getActivity().getPackageManager();
-                List<ResolveInfo> list = manager.queryIntentActivities(systemEqualizer, 0);
-
-                if (list != null && list.size() > 0) {
+                if (eqIntent != null) {
                     // If the system has an equalizer implementation already in place, use it
                     // to avoid weird problems and conflicts that can cause unexpected behavior
 
                     // for example, on Motorola devices, attaching an Equalizer can cause the
                     // MediaPlayer's volume to briefly become very loud -- even when the phone
                     // is muted
-                    startActivity(systemEqualizer);
+                    startActivity(eqIntent);
                 } else {
                     // otherwise, use our custom Equalizer implementation
                     // TODO animate this

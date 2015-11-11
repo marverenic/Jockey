@@ -17,7 +17,7 @@ import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.utils.Fetch;
+import com.marverenic.music.utils.Util;
 import com.marverenic.music.utils.Prefs;
 
 import java.util.ArrayList;
@@ -500,7 +500,7 @@ public class PlayerController {
      * @return The album artwork for the current song
      */
     public static Bitmap getArtwork() {
-        if (artwork == null) artwork = Fetch.fetchFullArt(getNowPlaying());
+        if (artwork == null) artwork = Util.fetchFullArt(getNowPlaying());
         return artwork;
     }
 
