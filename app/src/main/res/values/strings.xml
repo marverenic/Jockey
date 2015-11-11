@@ -263,6 +263,7 @@
         behavior.
         \n\nTo use the system equalizer, return to the settings page and tap equalizer. To return to
         this page, long-press on the equalizer setting.</string>
+    <string name="equalizerPresetPrefix">Preset:</string>
 
     <!-- Arrays -->
     <string-array name="queue_options_song">
