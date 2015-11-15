@@ -278,21 +278,30 @@ public class Library {
             return songs;
         }
 
+        final int titleIndex = cur.getColumnIndex(MediaStore.Audio.Media.TITLE);
+        final int idIndex = cur.getColumnIndex(MediaStore.Audio.Media._ID);
+        final int artistIndex = cur.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+        final int albumIndex = cur.getColumnIndex(MediaStore.Audio.Media.ALBUM);
+        final int durationIndex = cur.getColumnIndex(MediaStore.Audio.Media.DURATION);
+        final int dataIndex = cur.getColumnIndex(MediaStore.Audio.Media.DATA);
+        final int yearIndex = cur.getColumnIndex(MediaStore.Audio.Media.YEAR);
+        final int dateIndex = cur.getColumnIndex(MediaStore.Audio.Media.DATE_ADDED);
+        final int albumIdIndex = cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
+        final int artistIdIndex = cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID);
+
         for (int i = 0; i < cur.getCount(); i++) {
             cur.moveToPosition(i);
             Song s = new Song(
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)),
-                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media._ID)),
-                    (cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST)).equals(MediaStore.UNKNOWN_STRING))
-                            ? context.getString(R.string.no_artist)
-                            : cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)),
-                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DURATION)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA)),
-                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.YEAR)),
-                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DATE_ADDED)),
-                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)),
-                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID)));
+                    cur.getString(titleIndex),
+                    cur.getInt(idIndex),
+                    parseUnknown(cur.getString(artistIndex), context.getString(R.string.no_artist)),
+                    cur.getString(albumIndex),
+                    cur.getInt(durationIndex),
+                    cur.getString(dataIndex),
+                    cur.getInt(yearIndex),
+                    cur.getInt(dateIndex),
+                    cur.getInt(albumIdIndex),
+                    cur.getInt(artistIdIndex));
 
             s.trackNumber = cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.TRACK));
             songs.add(s);
@@ -321,18 +330,16 @@ public class Library {
             return artists;
         }
 
+        final int idIndex = cur.getColumnIndex(MediaStore.Audio.Artists._ID);
+        final int artistIndex = cur.getColumnIndex(MediaStore.Audio.Artists.ARTIST);
+
         for (int i = 0; i < cur.getCount(); i++) {
             cur.moveToPosition(i);
-            if (!cur.getString(cur.getColumnIndex(MediaStore.Audio.Artists.ARTIST)).equals(MediaStore.UNKNOWN_STRING)) {
-                artists.add(new Artist(
-                        cur.getInt(cur.getColumnIndex(MediaStore.Audio.Artists._ID)),
-                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Artists.ARTIST))));
-            }
-            else{
-                artists.add(new Artist(
-                        cur.getInt(cur.getColumnIndex(MediaStore.Audio.Artists._ID)),
-                        context.getString(R.string.no_artist)));
-            }
+            artists.add(new Artist(
+                    cur.getInt(idIndex),
+                    parseUnknown(
+                            cur.getString(artistIndex),
+                            context.getString(R.string.no_artist))));
         }
         cur.close();
 
@@ -358,17 +365,24 @@ public class Library {
             return albums;
         }
 
+        final int idIndex = cur.getColumnIndex(MediaStore.Audio.Albums._ID);
+        final int albumIndex = cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM);
+        final int artistIndex = cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST);
+        final int artistIdIndex = cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID);
+        final int yearIndex = cur.getColumnIndex(MediaStore.Audio.Albums.LAST_YEAR);
+        final int artIndex = cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART);
+
         for (int i = 0; i < cur.getCount(); i++) {
             cur.moveToPosition(i);
             albums.add(new Album(
-                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Albums._ID)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM)),
-                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID)),
-                    (cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)).equals(MediaStore.UNKNOWN_STRING))
-                            ? context.getString(R.string.no_artist)
-                            : cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.LAST_YEAR)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART))));
+                    cur.getInt(idIndex),
+                    cur.getString(albumIndex),
+                    cur.getInt(artistIdIndex),
+                    parseUnknown(
+                            cur.getString(artistIndex),
+                            context.getString(R.string.no_artist)),
+                    cur.getString(yearIndex),
+                    cur.getString(artIndex)));
         }
         cur.close();
 
@@ -394,11 +408,12 @@ public class Library {
             return playlists;
         }
 
+        final int idIndex = cur.getColumnIndex(MediaStore.Audio.Playlists._ID);
+        final int nameIndex = cur.getColumnIndex(MediaStore.Audio.Playlists.NAME);
+
         for (int i = 0; i < cur.getCount(); i++) {
             cur.moveToPosition(i);
-            playlists.add(new Playlist(
-                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Playlists._ID)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.NAME))));
+            playlists.add(new Playlist(cur.getInt(idIndex), cur.getString(nameIndex)));
         }
         cur.close();
 
@@ -464,17 +479,19 @@ public class Library {
             return genres;
         }
 
+        final int idIndex = cur.getColumnIndex(MediaStore.Audio.Genres._ID);
+        final int nameIndex = cur.getColumnIndex(MediaStore.Audio.Genres.NAME);
+
         for (int i = 0; i < cur.getCount(); i++) {
             cur.moveToPosition(i);
-            int thisGenreId = cur.getInt(cur.getColumnIndex(MediaStore.Audio.Genres._ID));
 
-            if (cur.getString(cur.getColumnIndex(MediaStore.Audio.Genres.NAME)).equalsIgnoreCase("Unknown")){
+            int thisGenreId = cur.getInt(idIndex);
+            String thisName = cur.getString(nameIndex);
+
+            if (thisName == null || thisName.equalsIgnoreCase("Unknown")){
                 genres.add(new Genre(-1, context.getString(R.string.unknown)));
-            }
-            else {
-                genres.add(new Genre(
-                        thisGenreId,
-                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Genres.NAME))));
+            } else {
+                genres.add(new Genre(thisGenreId,thisName));
 
                 // Associate all songs in this genre by setting the genreID field of each song in the genre
 
@@ -499,6 +516,21 @@ public class Library {
         cur.close();
 
         return genres;
+    }
+
+    /**
+     * Checks Strings from ContentResolvers and replaces the default unknown value of
+     * {@link MediaStore#UNKNOWN_STRING} with another String if needed
+     * @param value The value returned from the ContentResolver
+     * @param convertValue The value to replace unknown Strings with
+     * @return A String with localized unknown values if needed, otherwise the original value
+     */
+    private static String parseUnknown(String value, String convertValue) {
+        if (value != null && value.equals(MediaStore.UNKNOWN_STRING)) {
+            return convertValue;
+        } else {
+            return value;
+        }
     }
 
     //
