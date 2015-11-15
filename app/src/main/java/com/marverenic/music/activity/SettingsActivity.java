@@ -94,7 +94,7 @@ public class SettingsActivity extends BaseActivity {
             if ("com.marverenic.music.fragments.EqualizerFragment".equals(preference.getFragment())) {
                 Intent eqIntent = Util.getSystemEqIntent(getActivity());
 
-                if (eqIntent != null) {
+                if (eqIntent != null && !Prefs.getPrefs(getActivity()).getBoolean(Prefs.EQ_ENABLED, false)) {
                     // If the system has an equalizer implementation already in place, use it
                     // to avoid weird problems and conflicts that can cause unexpected behavior
 
@@ -103,7 +103,8 @@ public class SettingsActivity extends BaseActivity {
                     // is muted
                     startActivity(eqIntent);
                 } else {
-                    // otherwise, use our custom Equalizer implementation
+                    // If there isn't a global equalizer or the user has already enabled our
+                    // equalizer, navigate to the built-in implementation
                     // TODO animate this
                     getFragmentManager().beginTransaction()
                             .replace(R.id.prefFrame, new EqualizerFragment())
