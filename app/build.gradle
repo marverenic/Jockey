@@ -25,13 +25,13 @@ android {
         applicationId "com.marverenic.music"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 40008
-        versionName "1.1.0-rc3"
+        versionCode 40100
+        versionName "1.1.0"
 
         /* Release channel used in com.marverenic.music.utils.Updater for independent releases */
         // buildConfigField "String", "CHANNEL", "\"alpha\""
-        buildConfigField "String", "CHANNEL", "\"beta\""
-        // buildConfigField "String", "CHANNEL", "\"stable\""
+        // buildConfigField "String", "CHANNEL", "\"beta\""
+        buildConfigField "String", "CHANNEL", "\"stable\""
     }
     buildTypes {
         release {
@@ -59,11 +59,11 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:23.1.0'
-    compile 'com.android.support:design:23.1.0'
-    compile 'com.android.support:palette-v7:23.1.0'
-    compile 'com.android.support:recyclerview-v7:23.1.0'
-    compile 'com.android.support:cardview-v7:23.1.0'
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:design:23.1.1'
+    compile 'com.android.support:palette-v7:23.1.1'
+    compile 'com.android.support:recyclerview-v7:23.1.1'
+    compile 'com.android.support:cardview-v7:23.1.1'
     compile 'com.github.bumptech.glide:glide:3.6.1'
     compile 'com.google.code.gson:gson:2.3.1'
     compile 'com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.8.2'
