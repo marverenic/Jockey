@@ -53,8 +53,5 @@ public class AboutActivity extends BaseActivity implements View.OnClickListener 
     }
 
     @Override
-    public void update(){}
-
-    @Override
     public void updateMiniplayer(){}
 }

@@ -1,10 +1,6 @@
 package com.marverenic.music.activity;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -25,7 +21,6 @@ import android.widget.TextView;
 
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.Library;
-import com.marverenic.music.Player;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Song;
@@ -33,16 +28,9 @@ import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Themes;
 
-public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener {
+public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener, PlayerController.UpdateListener {
 
     private static final boolean DEBUG = BuildConfig.DEBUG;
-    private BroadcastReceiver updateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            update();
-            updateMiniplayer();
-        }
-    };
 
     // Used when resuming the Activity to respond to a potential theme change
     @StyleRes
@@ -156,9 +144,9 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
             recreate();
         } else {
             Themes.setApplicationIcon(this);
-            registerReceiver(updateReceiver, new IntentFilter(Player.UPDATE_BROADCAST));
+            PlayerController.registerUpdateListener(this);
             if (PlayerController.getNowPlaying() != null) {
-                update();
+                onUpdate();
                 updateMiniplayer();
             }
         }
@@ -171,9 +159,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     public void onPause(){
         super.onPause();
         if (DEBUG) Log.i(getClass().toString(), "Called onPause");
-        try {
-            unregisterReceiver(updateReceiver);
-        } catch (Exception ignored) {}
+        PlayerController.unregisterUpdateListener(this);
     }
 
     /**
@@ -224,10 +210,12 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     }
 
     /**
-     * Called when the @link PlayerService sends an UPDATE broadcast.
+     * @inheritDoc
      */
-    public void update(){
-
+    @Override
+    public void onUpdate() {
+        if (DEBUG) Log.i(getClass().toString(), "Called onUpdate");
+        updateMiniplayer();
     }
 
     /**

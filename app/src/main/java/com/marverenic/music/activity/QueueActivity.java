@@ -89,7 +89,8 @@ public class QueueActivity extends BaseActivity {
     }
 
     @Override
-    public void update(){
+    public void onUpdate() {
+        super.onUpdate();
         data = PlayerController.getQueue();
         adapter.notifyDataSetChanged();
     }

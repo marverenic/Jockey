@@ -333,7 +333,9 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
     public void updateMiniplayer(){}
 
     @Override
-    public void update() {
+    public void onUpdate() {
+        super.onUpdate();
+
         Song nowPlaying = PlayerController.getNowPlaying();
         if (nowPlaying != null) {
 

@@ -21,14 +21,26 @@ import com.marverenic.music.utils.Util;
 import com.marverenic.music.utils.Prefs;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
-public class PlayerController {
+public final class PlayerController {
 
     private static final String TAG = "PlayerController";
 
     private static Context applicationContext;
     private static IPlayerService playerService;
+    private static Set<UpdateListener> updateListeners;
     private static Bitmap artwork;
+
+    static {
+        updateListeners = new HashSet<>();
+    }
+
+    // This class is never instantiated
+    private PlayerController() {
+
+    }
 
     /**
      * Start the player service in the background
@@ -45,8 +57,7 @@ public class PlayerController {
                 @Override
                 public void onServiceConnected(ComponentName name, IBinder service) {
                     playerService = IPlayerService.Stub.asInterface(service);
-                    // Forge an update broadcast to update the UI as soon as possible
-                    applicationContext.sendBroadcast(new Intent(Player.UPDATE_BROADCAST), null);
+                    updateUi();
                 }
 
                 @Override
@@ -65,6 +76,35 @@ public class PlayerController {
     }
 
     /**
+     * Register a callback for when the Player Service changes its state and the UI needs to be
+     * updated. Don't forget to unregister this listener when you're done, otherwise you'll probably
+     * leak an Activity or something horrific.
+     * @param l The UpdateListener to be registered
+     * @see #unregisterUpdateListener(UpdateListener)
+     */
+    public static void registerUpdateListener(UpdateListener l) {
+        updateListeners.add(l);
+    }
+
+    /**
+     * Unregister an Update Listener callback set in {@link #registerUpdateListener(UpdateListener)}
+     * @param l The Listener to be removed. If it's not currently bound than nothing interesting
+     *          happens.
+     */
+    public static void unregisterUpdateListener(UpdateListener l) {
+        updateListeners.remove(l);
+    }
+
+    /**
+     * Called to alert all Update Listeners that the Player's state has changed
+     */
+    private static void updateUi() {
+        for (UpdateListener l : updateListeners) {
+            l.onUpdate();
+        }
+    }
+
+    /**
      * Stop playback completely and end the player service process. If you call this from the UI
      * thread make sure that you don't want to play music for the rest of the lifetime of the
      * process, otherwise you're going to have a bad time.
@@ -74,6 +114,7 @@ public class PlayerController {
         if (playerService != null) {
             try {
                 playerService.stop();
+                updateUi();
             } catch (RemoteException e) {
                 Crashlytics.logException(e);
                 Log.w(TAG, e);
@@ -89,6 +130,7 @@ public class PlayerController {
         if (playerService != null) {
             try {
                 playerService.skip();
+                updateUi();
             } catch (RemoteException e) {
                 Crashlytics.logException(e);
                 Log.w(TAG, e);
@@ -104,6 +146,7 @@ public class PlayerController {
         if (playerService != null) {
             try {
                 playerService.previous();
+                updateUi();
             } catch (RemoteException e) {
                 Crashlytics.logException(e);
                 Log.w(TAG, e);
@@ -119,6 +162,7 @@ public class PlayerController {
         if (playerService != null) {
             try {
                 playerService.begin();
+                updateUi();
             } catch (RemoteException e) {
                 Crashlytics.logException(e);
                 Log.w(TAG, e);
@@ -134,6 +178,7 @@ public class PlayerController {
         if (playerService != null) {
             try {
                 playerService.togglePlay();
+                updateUi();
             } catch (RemoteException e) {
                 Crashlytics.logException(e);
                 Log.w(TAG, e);
@@ -149,6 +194,7 @@ public class PlayerController {
         if (playerService != null) {
             try {
                 playerService.play();
+                updateUi();
             } catch (RemoteException e) {
                 Crashlytics.logException(e);
                 Log.w(TAG, e);
@@ -164,6 +210,7 @@ public class PlayerController {
         if (playerService != null) {
             try {
                 playerService.pause();
+                updateUi();
             } catch (RemoteException e) {
                 Crashlytics.logException(e);
                 Log.w(TAG, e);
@@ -264,6 +311,7 @@ public class PlayerController {
         if (playerService != null) {
             try {
                 playerService.changeSong(queuePosition);
+                updateUi();
             } catch (RemoteException e) {
                 Crashlytics.logException(e);
                 Log.w(TAG, e);
@@ -529,8 +577,13 @@ public class PlayerController {
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(Player.UPDATE_BROADCAST)){
                 artwork = null;
+                updateUi();
             }
         }
 
+    }
+
+    public interface UpdateListener {
+        void onUpdate();
     }
 }

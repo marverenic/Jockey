@@ -361,6 +361,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             default:
                 break;
         }
+        updateNowPlaying();
     }
 
     @Override
@@ -373,12 +374,14 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         else {
             skip();
         }
+        updateUi();
     }
 
     @Override
     public void onPrepared(MediaPlayer mp) {
         if(!isPreparing()) {
             mediaPlayer.start();
+            updateUi();
             updateNowPlaying();
         }
     }
@@ -440,7 +443,6 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
      */
     public void updateNowPlaying() {
         PlayerService.getInstance().notifyNowPlaying();
-        context.sendOrderedBroadcast(new Intent(UPDATE_BROADCAST), null);
         updateMediaSession();
     }
 
@@ -484,6 +486,14 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             mediaSession.setPlaybackState(state.build());
             mediaSession.setActive(active);
         }
+    }
+
+    /**
+     * Called to notify the UI thread to refresh any player data when the player changes states
+     * on its own (Like when a song finishes)
+     */
+    public void updateUi() {
+        context.sendBroadcast(new Intent(UPDATE_BROADCAST), null);
     }
 
     /**

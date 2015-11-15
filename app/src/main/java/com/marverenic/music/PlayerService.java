@@ -269,15 +269,19 @@ public class PlayerService extends Service {
             switch (intent.getAction()){
                 case (ACTION_TOGGLE_PLAY):
                     instance.player.togglePlay();
+                    instance.player.updateUi();
                     break;
                 case (ACTION_PREV):
                     instance.player.previous();
+                    instance.player.updateUi();
                     break;
                 case (ACTION_NEXT):
                     instance.player.skip();
+                    instance.player.updateUi();
                     break;
                 case (ACTION_STOP):
                     instance.stop();
+                    instance.player.updateUi();
                     break;
             }
         }
