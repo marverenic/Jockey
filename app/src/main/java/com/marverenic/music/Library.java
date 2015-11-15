@@ -442,15 +442,14 @@ public class Library {
         try {
             File externalFiles = new File(context.getExternalFilesDir(null) + "/");
 
-            if (!externalFiles.exists()) {
-                //noinspection ResultOfMethodCallIgnored
-                externalFiles.mkdirs();
-            }
-
-            String[] files = externalFiles.list();
-            for (String s : files) {
-                if (s.endsWith(AUTO_PLAYLIST_EXTENSION)) {
-                    autoPlaylists.add(gson.fromJson(new FileReader(externalFiles + "/" + s), AutoPlaylist.class));
+            if (externalFiles.exists() || externalFiles.mkdirs()) {
+                String[] files = externalFiles.list();
+                for (String s : files) {
+                    if (s.endsWith(AUTO_PLAYLIST_EXTENSION)) {
+                        autoPlaylists.add(gson.fromJson(
+                                new FileReader(externalFiles + "/" + s),
+                                AutoPlaylist.class));
+                    }
                 }
             }
         } catch (IOException e) {
@@ -954,21 +953,19 @@ public class Library {
     private static Properties openPlayCountFile(Context context) throws IOException{
         File file = new File(context.getExternalFilesDir(null) + "/" + Library.PLAY_COUNT_FILENAME);
 
-        if (!file.exists()) //noinspection ResultOfMethodCallIgnored
-            file.createNewFile();
+        if (file.exists() || file.createNewFile()) {
+            InputStream is = new FileInputStream(file);
+            Properties playCountHashtable;
 
-        InputStream is = new FileInputStream(file);
-        Properties playCountHashtable;
-
-        try {
             playCountHashtable = new Properties();
             playCountHashtable.load(is);
-        }
-        finally {
-            is.close();
-        }
 
-        return playCountHashtable;
+            is.close();
+            return playCountHashtable;
+        }
+        else {
+            return new Properties();
+        }
     }
 
     /**
