@@ -619,7 +619,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
      */
     public void skip() {
         if (!isPreparing()) {
-            if (!mediaPlayer.isComplete()) {
+            if (!mediaPlayer.isComplete() && getNowPlaying() != null) {
                 if (mediaPlayer.getCurrentPosition() > 24000
                         || mediaPlayer.getCurrentPosition() > mediaPlayer.getDuration() / 2) {
                     logPlayCount(getNowPlaying().songId, false);
