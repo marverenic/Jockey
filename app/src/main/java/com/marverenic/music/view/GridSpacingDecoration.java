@@ -67,22 +67,12 @@ public class GridSpacingDecoration extends RecyclerView.ItemDecoration {
 
             outRect.top = halfSpacing;
             outRect.bottom = halfSpacing;
-            outRect.left = halfSpacing;
-            outRect.right = halfSpacing;
+            outRect.left = spacing * (numColumns - column) / numColumns;
+            outRect.right = spacing * (column + 1) / numColumns;
 
             // Items in the first row
             if (sectionPosition < numColumns) {
                 outRect.top = spacing;
-            }
-
-            // Items on the far left column
-            if (column == 0) {
-                outRect.left = spacing;
-            }
-
-            // Items in the far right column
-            if (column == numColumns - 1) {
-                outRect.right = spacing;
             }
 
             // Items in the last row
