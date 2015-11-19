@@ -25,8 +25,8 @@ android {
         applicationId "com.marverenic.music"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 40101
-        versionName "1.1.1-beta0"
+        versionCode 40102
+        versionName "1.1.1-beta1"
 
         /* Release channel used in com.marverenic.music.utils.Updater for independent releases */
         // buildConfigField "String", "CHANNEL", "\"alpha\""
