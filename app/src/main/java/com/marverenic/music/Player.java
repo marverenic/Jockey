@@ -23,9 +23,9 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.utils.Util;
 import com.marverenic.music.utils.ManagedMediaPlayer;
 import com.marverenic.music.utils.Prefs;
+import com.marverenic.music.utils.Util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -184,7 +184,12 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
         equalizer = new Equalizer(0, mediaPlayer.getAudioSessionId());
         if (eqSettings != null) {
-            equalizer.setProperties(new Equalizer.Settings(eqSettings));
+            try {
+                equalizer.setProperties(new Equalizer.Settings(eqSettings));
+            } catch (IllegalArgumentException|UnsupportedOperationException e) {
+                Crashlytics.logException(new RuntimeException(
+                        "Failed to load equalizer settings: " + eqSettings, e));
+            }
         }
         equalizer.setEnabled(enabled);
 
