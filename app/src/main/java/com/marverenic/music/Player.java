@@ -431,8 +431,8 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             art = Util.fetchFullArt(getNowPlaying());
 
             try {
-                mediaPlayer.setDataSource((getNowPlaying()).location);
-            } catch (Exception e) {
+                mediaPlayer.setDataSource(getNowPlaying().location);
+            } catch (IOException e) {
                 Crashlytics.logException(e);
                 Log.e("MUSIC SERVICE", "Error setting data source", e);
                 Toast.makeText(context, "There was an error playing this song", Toast.LENGTH_SHORT).show();
