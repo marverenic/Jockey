@@ -75,8 +75,8 @@ public class Album implements Parcelable, Comparable<Album> {
 
     @Override
     public int compareTo(@NonNull Album another) {
-        String o1c = albumName.toLowerCase(Locale.ENGLISH);
-        String o2c = another.albumName.toLowerCase(Locale.ENGLISH);
+        String o1c = (albumName == null) ? "" : albumName.toLowerCase(Locale.ENGLISH);
+        String o2c = (albumName == null) ? "" : another.albumName.toLowerCase(Locale.ENGLISH);
         if (o1c.startsWith("the ")) {
             o1c = o1c.substring(4);
         } else if (o1c.startsWith("a ")) {
