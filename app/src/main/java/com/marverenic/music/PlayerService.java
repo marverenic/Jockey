@@ -281,7 +281,9 @@ public class PlayerService extends Service {
                     break;
                 case (ACTION_STOP):
                     instance.stop();
-                    instance.player.updateUi();
+                    if (!instance.finished) {
+                        instance.player.updateUi();
+                    }
                     break;
             }
         }
