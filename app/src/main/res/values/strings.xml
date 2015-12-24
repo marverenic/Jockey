@@ -170,7 +170,7 @@
         CardView 23.1.1, Design 23.1.1, Palette 23.1.1; distributed by the Android Open Source
         Project under an Apache License, Version 2.0</string>
     <string name="uses_gson_header">Gson</string>
-    <string name="uses_gson_detail">Version 2.3.1 distributed by Google, Inc. under an Apache License,
+    <string name="uses_gson_detail">Version 2.4 distributed by Google, Inc. under an Apache License,
         Version 2.0</string>
     <string name="uses_glide_header">Glide</string>
     <string name="uses_glide_detail">Version 3.6.1; distributed by Google, Inc. under a BSD License</string>
