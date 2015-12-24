@@ -1,6 +1,8 @@
 package com.marverenic.music.utils;
 
+import android.content.Context;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.util.Log;
 
 import java.io.IOException;
@@ -31,6 +33,17 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
         super.reset();
         state = status.IDLE;
         effectivelyComplete = false;
+    }
+
+    @Override
+    public void setDataSource(Context context, Uri uri) throws IOException {
+        if (state == status.IDLE) {
+            super.setDataSource(context, uri);
+            state = status.INITIALIZED;
+            effectivelyComplete = false;
+        } else {
+            Log.i(TAG, "Attempted to set data source, but media player was in state " + state);
+        }
     }
 
     @Override

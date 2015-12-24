@@ -11,14 +11,13 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.audiofx.AudioEffect;
 import android.media.audiofx.Equalizer;
+import android.net.Uri;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.activity.NowPlayingActivity;
@@ -431,14 +430,11 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             art = Util.fetchFullArt(getNowPlaying());
 
             try {
-                mediaPlayer.setDataSource(getNowPlaying().location);
+                mediaPlayer.setDataSource(context, Uri.parse(getNowPlaying().location));
+                mediaPlayer.prepareAsync();
             } catch (IOException e) {
                 Crashlytics.logException(e);
-                Log.e("MUSIC SERVICE", "Error setting data source", e);
-                Toast.makeText(context, "There was an error playing this song", Toast.LENGTH_SHORT).show();
-                return;
             }
-            mediaPlayer.prepareAsync();
         }
     }
 
