@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.marverenic.music.R;
 import com.marverenic.music.fragments.EqualizerFragment;
@@ -102,7 +103,7 @@ public class SettingsActivity extends BaseActivity {
                     // MediaPlayer's volume to briefly become very loud -- even when the phone
                     // is muted
                     startActivity(eqIntent);
-                } else {
+                } else if (Util.hasEqualizer()) {
                     // If there isn't a global equalizer or the user has already enabled our
                     // equalizer, navigate to the built-in implementation
                     // TODO animate this
@@ -110,6 +111,9 @@ public class SettingsActivity extends BaseActivity {
                             .replace(R.id.prefFrame, new EqualizerFragment())
                             .addToBackStack(null)
                             .commit();
+                } else {
+                    Toast.makeText(getActivity(), R.string.equalizerUnsupported, Toast.LENGTH_LONG)
+                            .show();
                 }
                 return true;
             } else if (preference.getKey().equals(Prefs.ADD_SHORTCUT)) {
@@ -137,10 +141,19 @@ public class SettingsActivity extends BaseActivity {
             if (item instanceof Preference) {
                 Preference pref = (Preference) item;
                 if ("com.marverenic.music.fragments.EqualizerFragment".equals(pref.getFragment())) {
-                    getFragmentManager().beginTransaction()
-                            .replace(R.id.prefFrame, new EqualizerFragment())
-                            .addToBackStack(null)
-                            .commit();
+                    if (Util.hasEqualizer()) {
+                        getFragmentManager().beginTransaction()
+                                .replace(R.id.prefFrame, new EqualizerFragment())
+                                .addToBackStack(null)
+                                .commit();
+                    } else {
+                        Toast
+                                .makeText(
+                                        getActivity(),
+                                        R.string.equalizerUnsupported,
+                                        Toast.LENGTH_LONG)
+                                .show();
+                    }
                 }
                 return true;
             }

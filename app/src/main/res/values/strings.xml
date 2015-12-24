@@ -265,6 +265,7 @@
         \nTo return to this page, tap and hold Equalizer in the settings page.
     </string>
     <string name="equalizerPresetPrefix">Preset:</string>
+    <string name="equalizerUnsupported">Your device doesn\'t support equalizers</string>
 
     <!-- Arrays -->
     <string-array name="queue_options_song">

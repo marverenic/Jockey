@@ -107,7 +107,9 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         repeat = (short) prefs.getInt(PREFERENCE_REPEAT, REPEAT_NONE);
 
         initMediaSession();
-        initEqualizer();
+        if (Util.hasEqualizer()) {
+            initEqualizer();
+        }
 
         // Attach a HeadsetListener to respond to headphone events
         headphoneListener = new HeadsetListener(this);
@@ -268,7 +270,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, context.getPackageName());
         context.sendBroadcast(intent);
 
-        equalizer.release();
+        if (equalizer != null) equalizer.release();
         active = false;
         mediaPlayer.stop();
         mediaPlayer.release();
