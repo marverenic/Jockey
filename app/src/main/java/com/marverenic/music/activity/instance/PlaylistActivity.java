@@ -46,10 +46,16 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
         setContentView(R.layout.activity_instance);
 
         reference = getIntent().getParcelableExtra(PLAYLIST_EXTRA);
-        data = Library.getPlaylistEntries(this, reference);
-        if (getSupportActionBar() != null) getSupportActionBar().setTitle(reference.playlistName);
 
-        RecyclerView songRecyclerView = (RecyclerView) findViewById(R.id.list);
+        if (reference != null) {
+            data = Library.getPlaylistEntries(this, reference);
+            if (getSupportActionBar() != null)
+                getSupportActionBar().setTitle(reference.playlistName);
+        } else {
+            data = new ArrayList<>();
+        }
+
+        RecyclerView list = (RecyclerView) findViewById(R.id.list);
 
         RecyclerViewDragDropManager dragDropManager = new RecyclerViewDragDropManager();
         this.adapter = new Adapter();
@@ -62,15 +68,15 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
                                 ? R.drawable.list_drag_shadow_light
                                 : R.drawable.list_drag_shadow_dark));
 
-        songRecyclerView.setAdapter(adapter);
-        songRecyclerView.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
-        songRecyclerView.addItemDecoration(new DividerDecoration(this));
+        list.setAdapter(adapter);
+        list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
+        list.addItemDecoration(new DividerDecoration(this));
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        songRecyclerView.setLayoutManager(layoutManager);
+        list.setLayoutManager(layoutManager);
 
-        dragDropManager.attachRecyclerView(songRecyclerView);
+        dragDropManager.attachRecyclerView(list);
     }
 
     @Override

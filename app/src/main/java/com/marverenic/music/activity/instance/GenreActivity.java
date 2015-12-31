@@ -30,17 +30,24 @@ public class GenreActivity extends BaseActivity {
         setContentView(R.layout.activity_instance);
 
         reference = getIntent().getParcelableExtra(GENRE_EXTRA);
-        data = Library.getGenreEntries(reference);
-        if (getSupportActionBar() != null) getSupportActionBar().setTitle(reference.genreName);
 
-        RecyclerView songRecyclerView = (RecyclerView) findViewById(R.id.list);
-        songRecyclerView.setAdapter(new Adapter());
-        songRecyclerView.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
-        songRecyclerView.addItemDecoration(new DividerDecoration(this));
+        if (reference != null) {
+            data = Library.getGenreEntries(reference);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(reference.genreName);
+            }
+        } else {
+            data = new ArrayList<>();
+        }
+
+        RecyclerView list = (RecyclerView) findViewById(R.id.list);
+        list.setAdapter(new Adapter());
+        list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
+        list.addItemDecoration(new DividerDecoration(this));
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        songRecyclerView.setLayoutManager(layoutManager);
+        list.setLayoutManager(layoutManager);
     }
 
     public class Adapter extends RecyclerView.Adapter<SongViewHolder>{

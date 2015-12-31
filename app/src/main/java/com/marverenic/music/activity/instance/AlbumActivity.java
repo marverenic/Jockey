@@ -35,8 +35,14 @@ public class AlbumActivity extends BaseActivity {
         setContentView(R.layout.activity_instance_artwork);
 
         reference = getIntent().getParcelableExtra(ALBUM_EXTRA);
-        data = Library.getAlbumEntries(reference);
-        if (getSupportActionBar() != null) getSupportActionBar().setTitle(reference.albumName);
+        if (reference != null) {
+            data = Library.getAlbumEntries(reference);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(reference.albumName);
+            }
+        } else {
+            data = new ArrayList<>();
+        }
 
         Glide.with(this).load(reference.artUri)
                 .centerCrop()
