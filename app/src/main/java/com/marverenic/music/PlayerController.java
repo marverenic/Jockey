@@ -489,14 +489,14 @@ public final class PlayerController {
      * @return The current queue of the player service
      */
     public static ArrayList<Song> getQueue() {
-        if (playerService == null) return null;
+        if (playerService == null) return new ArrayList<>();
 
         try {
             return new ArrayList<>(playerService.getQueue());
         } catch (RemoteException e) {
             Crashlytics.logException(e);
             Log.w(TAG, e);
-            return null;
+            return new ArrayList<>();
 
         }
     }
