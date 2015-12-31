@@ -59,8 +59,12 @@ public class Artist implements Parcelable, Comparable<Artist> {
 
     @Override
     public int compareTo(@NonNull Artist another) {
-        String o1c = artistName.toLowerCase(Locale.ENGLISH);
-        String o2c = another.artistName.toLowerCase(Locale.ENGLISH);
+        String o1c = (artistName == null)
+                ? ""
+                : artistName.toLowerCase(Locale.ENGLISH);
+        String o2c = (another.artistName == null)
+                ? ""
+                : another.artistName.toLowerCase(Locale.ENGLISH);
         if (o1c.startsWith("the ")) {
             o1c = o1c.substring(4);
         } else if (o1c.startsWith("a ")) {
