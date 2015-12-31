@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.RemoteViews;
 
+import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.activity.LibraryActivity;
 import com.marverenic.music.instances.Song;
 
@@ -261,8 +262,9 @@ public class PlayerService extends Service {
                 try {
                     instance.player.saveState(intent.getAction());
                 }
-                catch (IOException e){
-                    e.printStackTrace();
+                catch (IOException e) {
+                    Crashlytics.logException(e);
+                    if (debug) e.printStackTrace();
                 }
             }
 
@@ -281,7 +283,7 @@ public class PlayerService extends Service {
                     break;
                 case (ACTION_STOP):
                     instance.stop();
-                    if (!instance.finished) {
+                    if (instance != null) {
                         instance.player.updateUi();
                     }
                     break;
