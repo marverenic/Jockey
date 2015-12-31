@@ -266,7 +266,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
         // Unbind from the system audio effects
         final Intent intent = new Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION);
-        intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, PlayerController.getAudioSessionId());
+        intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
         intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, context.getPackageName());
         context.sendBroadcast(intent);
 
