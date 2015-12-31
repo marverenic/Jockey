@@ -435,7 +435,8 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                 mediaPlayer.setDataSource(context, Uri.parse(getNowPlaying().location));
                 mediaPlayer.prepareAsync();
             } catch (IOException e) {
-                Crashlytics.logException(e);
+                Crashlytics.logException(
+                        new IOException("Failed to play song " + getNowPlaying().location, e));
             }
         }
     }
