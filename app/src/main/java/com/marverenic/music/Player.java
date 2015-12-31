@@ -425,7 +425,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
      * Begin playback of a new song. Call this method after changing the queue or now playing track
      */
     public void begin() {
-        if (getFocus()) {
+        if (getNowPlaying() != null && getFocus()) {
             mediaPlayer.stop();
             mediaPlayer.reset();
 
