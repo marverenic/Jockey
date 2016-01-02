@@ -17,8 +17,11 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,10 +35,11 @@ import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.utils.Util;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.PlaylistDialog;
 import com.marverenic.music.utils.Themes;
+import com.marverenic.music.utils.Util;
+import com.marverenic.music.view.TimeView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -46,6 +50,14 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
     private MediaObserver observer = null;
     private boolean userTouchingProgressBar = false; // This probably shouldn't be here...
     private Song currentReference; // Used to reduce unnecessary view updates when an UPDATE broadcast is received
+
+    private SeekBar mSeekBar;
+    private TimeView mThumb;
+    private TextView songTitle;
+    private TextView artistName;
+    private TextView albumTitle;
+    private TimeView songDuration;
+    private TimeView songPosition;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,9 +95,18 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
         findViewById(R.id.nextButton).setOnClickListener(this);
         findViewById(R.id.previousButton).setOnClickListener(this);
         findViewById(R.id.songDetail).setOnClickListener(this);
-        ((SeekBar) findViewById(R.id.songSeekBar)).setOnSeekBarChangeListener(this);
+
+        songTitle = (TextView) findViewById(R.id.textSongTitle);
+        artistName = (TextView) findViewById(R.id.textArtistName);
+        albumTitle = (TextView) findViewById(R.id.textAlbumTitle);
+        songDuration = (TimeView) findViewById(R.id.songTimeMax);
+        songPosition = (TimeView) findViewById(R.id.songTimeCurr);
+
+        mSeekBar = ((SeekBar) findViewById(R.id.songSeekBar));
+        mSeekBar.setOnSeekBarChangeListener(this);
 
         observer = new MediaObserver(this);
+        mThumb = (TimeView) findViewById(R.id.seekThumb);
     }
 
     @Override
@@ -318,15 +339,15 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
 
             Drawable progress = seekBar.getProgressDrawable();
             progress.setTint(Themes.getAccent());
-
-            seekBar.setThumb(thumb);
-            seekBar.setProgressDrawable(progress);
         } else {
             // For whatever reason, the control frame seems to need a reminder as to what color it should be
             findViewById(R.id.playerControlFrame).setBackgroundColor(getResources().getColor(R.color.player_control_background));
             if (getSupportActionBar() != null)
                 getSupportActionBar().setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
         }
+
+        findViewById(R.id.seekThumb).getBackground()
+                .setColorFilter(Themes.getAccent(), PorterDuff.Mode.SRC_IN);
     }
 
     @Override
@@ -337,8 +358,9 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
         super.onUpdate();
 
         Song nowPlaying = PlayerController.getNowPlaying();
-        if (nowPlaying != null) {
+        mSeekBar.setEnabled(nowPlaying != null);
 
+        if (nowPlaying != null) {
             if (nowPlaying != currentReference) {
                 // The following code only needs to be executed when the song changes, which
                 // doesn't happen on every single UPDATE broadcast. Because of this, we can
@@ -347,10 +369,6 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
 
                 if (PlayerController.isPlaying() && !observer.isRunning())
                     new Thread(observer).start();
-
-                final TextView songTitle = (TextView) findViewById(R.id.textSongTitle);
-                final TextView artistName = (TextView) findViewById(R.id.textArtistName);
-                final TextView albumTitle = (TextView) findViewById(R.id.textAlbumTitle);
 
                 songTitle.setText(nowPlaying.songName);
                 artistName.setText(nowPlaying.artistName);
@@ -366,24 +384,30 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
                 currentReference = nowPlaying;
             }
 
-            final SeekBar seekBar = ((SeekBar) findViewById(R.id.songSeekBar));
-
             if ((PlayerController.isPlaying() || PlayerController.isPreparing())) {
                 ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_pause_circle_fill_56dp);
 
                 if (!PlayerController.isPreparing()) {
                     if (!observer.isRunning()) new Thread(observer).start();
-                    seekBar.setMax(PlayerController.getDuration());
+                    mSeekBar.setMax(PlayerController.getDuration());
+                    songDuration.setTime(nowPlaying.songDuration);
+                    songPosition.setTime(PlayerController.getCurrentPosition());
                 }
                 else{
                     observer.stop();
-                    seekBar.setProgress(0);
-                    seekBar.setMax(Integer.MAX_VALUE);
+                    mSeekBar.setProgress(0);
+                    mSeekBar.setMax(Integer.MAX_VALUE);
                 }
             }
             else {
-                seekBar.setMax(PlayerController.getDuration());
-                seekBar.setProgress(PlayerController.getCurrentPosition());
+                int duration = PlayerController.getDuration();
+                int progress = PlayerController.getCurrentPosition();
+
+                mSeekBar.setMax(duration);
+                songDuration.setTime(duration);
+                mSeekBar.setProgress(progress);
+                songPosition.setTime(progress);
+
                 ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_circle_fill_56dp);
             }
         }
@@ -391,35 +415,78 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        if (fromUser && !userTouchingProgressBar) {
-            // For keyboards and non-touch based things
-            onStartTrackingTouch(seekBar);
-            onStopTrackingTouch(seekBar);
+        if (fromUser) {
+            if (!userTouchingProgressBar) {
+                // For keyboards and non-touch based things
+                onStartTrackingTouch(seekBar);
+                onStopTrackingTouch(seekBar);
+            } else {
+                alignSeekThumb();
+            }
         }
     }
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
-        observer.stop();
         userTouchingProgressBar = true;
+        alignSeekThumb();
+        showSeekThumb();
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         PlayerController.seek(seekBar.getProgress());
-        observer = new MediaObserver(this);
-        new Thread(observer).start();
         userTouchingProgressBar = false;
+        hideSeekThumb();
+    }
 
+    private void showSeekThumb() {
+        Animation fabAnim = AnimationUtils.loadAnimation(this, R.anim.slider_thumb_in);
+        fabAnim.setDuration(300);
+        fabAnim.setInterpolator(this, android.R.interpolator.decelerate_quint);
+
+        mThumb.startAnimation(fabAnim);
+        mThumb.setVisibility(View.VISIBLE);
+    }
+
+    private void hideSeekThumb() {
+        Animation fabAnim = AnimationUtils.loadAnimation(this, R.anim.slider_thumb_out);
+        fabAnim.setDuration(300);
+        fabAnim.setInterpolator(this, android.R.interpolator.accelerate_quint);
+
+        mThumb.startAnimation(fabAnim);
+
+        // Make sure to hide the thumb after the animation finishes
+        mThumb.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!userTouchingProgressBar) mThumb.setVisibility(View.INVISIBLE);
+            }
+        }, 300);
+    }
+
+    private void alignSeekThumb() {
+        mThumb.setTime(mSeekBar.getProgress());
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mThumb.getLayoutParams();
+
+        double progress = mSeekBar.getProgress() / (double) mSeekBar.getMax();
+        int leftOffset = (int) (mSeekBar.getWidth() * progress) - mThumb.getWidth() / 2;
+        leftOffset = Math.min(leftOffset, mSeekBar.getWidth() - mThumb.getWidth());
+        leftOffset = Math.max(leftOffset, 0);
+
+        params.setMargins(leftOffset, params.topMargin, params.rightMargin, params.bottomMargin);
+        mThumb.setLayoutParams(params);
     }
 
     private class MediaObserver implements Runnable {
         private boolean stop = false;
         private SeekBar progress;
+        private TimeView timeStamp;
         private NowPlayingActivity parent;
 
         public MediaObserver(NowPlayingActivity parent) {
             progress = (SeekBar) findViewById(R.id.songSeekBar);
+            timeStamp = (TimeView) findViewById(R.id.songTimeCurr);
             this.parent = parent;
         }
 
@@ -434,7 +501,11 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        progress.setProgress(PlayerController.getCurrentPosition());
+                        if (PlayerController.getNowPlaying() != null) {
+                            int position = PlayerController.getCurrentPosition();
+                            if (!userTouchingProgressBar) progress.setProgress(position);
+                            timeStamp.setTime(position);
+                        }
                     }
                 });
                 try {

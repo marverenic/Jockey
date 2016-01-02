@@ -12,17 +12,53 @@
         android:src="@drawable/art_default_xl" />
 
     <FrameLayout
-        android:layout_width="fill_parent"
-        android:layout_height="168dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:background="@drawable/scrim_now_playing"
-        android:layout_marginTop="@dimen/scrimMargin">
+        android:layout_marginTop="@dimen/scrimMargin"
+        android:layout_alignParentTop="true"
+        android:layout_alignBottom="@id/imageArtwork">
 
-        <include layout="@layout/toolbar"
-            android:id="@+id/toolbar"
-            android:layout_height="wrap_content"
-            android:layout_width="fill_parent" />
+        <include layout="@layout/toolbar" />
 
     </FrameLayout>
+
+    <com.marverenic.music.view.TimeView
+        android:id="@+id/songTimeCurr"
+        style="@style/Base.TextAppearance.AppCompat.Small"
+        android:textColor="@android:color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/now_playing_time_padding"
+        android:layout_alignBottom="@id/imageArtwork"
+        android:layout_alignParentStart="true"/>
+
+    <com.marverenic.music.view.TimeView
+        android:id="@+id/songTimeMax"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Base.TextAppearance.AppCompat.Small"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="@dimen/seekbarMargin"
+        android:padding="@dimen/now_playing_time_padding"
+        android:layout_alignBottom="@id/imageArtwork"
+        android:layout_alignParentEnd="true"/>
+
+    <com.marverenic.music.view.TimeView
+        android:id="@+id/seekThumb"
+        android:layout_width="54dp"
+        android:layout_height="64dp"
+        style="@style/Base.TextAppearance.AppCompat.Small"
+        android:textColor="@android:color/white"
+        android:paddingTop="16dp"
+        android:paddingLeft="@dimen/now_playing_time_padding"
+        android:paddingRight="@dimen/now_playing_time_padding"
+        android:visibility="invisible"
+        android:singleLine="true"
+        android:gravity="center_horizontal"
+        android:background="@drawable/ic_thumb"
+        android:layout_above="@id/songSeekBar"
+        android:layout_marginBottom="@dimen/now_playing_thumb_margin"/>
 
     <SeekBar
         android:id="@+id/songSeekBar"

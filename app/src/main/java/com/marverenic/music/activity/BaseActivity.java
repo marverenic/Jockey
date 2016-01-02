@@ -145,10 +145,8 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         } else {
             Themes.setApplicationIcon(this);
             PlayerController.registerUpdateListener(this);
-            if (PlayerController.getNowPlaying() != null) {
-                onUpdate();
-                updateMiniplayer();
-            }
+            onUpdate();
+            updateMiniplayer();
         }
     }
 
