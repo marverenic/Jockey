@@ -263,10 +263,6 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
         else if (v.getId() == R.id.nextButton) {
             // Next song
             PlayerController.skip();
-            observer.stop();
-            SeekBar seekBar = (SeekBar)findViewById(R.id.songSeekBar);
-            seekBar.setMax(Integer.MAX_VALUE);
-            seekBar.setProgress(Integer.MAX_VALUE);
         }
         else if (v.getId() == R.id.previousButton) {
             // Previous song
@@ -387,17 +383,9 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
             if ((PlayerController.isPlaying() || PlayerController.isPreparing())) {
                 ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_pause_circle_fill_56dp);
 
-                if (!PlayerController.isPreparing()) {
-                    if (!observer.isRunning()) new Thread(observer).start();
-                    mSeekBar.setMax(PlayerController.getDuration());
-                    songDuration.setTime(nowPlaying.songDuration);
-                    songPosition.setTime(PlayerController.getCurrentPosition());
-                }
-                else{
-                    observer.stop();
-                    mSeekBar.setProgress(0);
-                    mSeekBar.setMax(Integer.MAX_VALUE);
-                }
+                if (!observer.isRunning()) new Thread(observer).start();
+                mSeekBar.setMax(PlayerController.getDuration());
+                songDuration.setTime(mSeekBar.getMax());
             }
             else {
                 int duration = PlayerController.getDuration();

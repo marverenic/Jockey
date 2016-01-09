@@ -377,7 +377,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             mediaPlayer.seekTo(0);
             play();
         }
-        else {
+        else if (hasNextInQueue(1)) {
             skip();
         }
         updateUi();
@@ -389,6 +389,30 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             mediaPlayer.start();
             updateUi();
             updateNowPlaying();
+        }
+    }
+
+    private boolean hasNextInQueue(int by) {
+        if (shuffle) {
+            return queuePositionShuffled + by < queueShuffled.size();
+        } else {
+            return queuePosition + by < queue.size();
+        }
+    }
+
+    private void setQueuePosition(int position) {
+        if (shuffle) {
+            queuePositionShuffled = position;
+        } else {
+            queuePosition = position;
+        }
+    }
+
+    private void incrementQueuePosition(int by) {
+        if (shuffle) {
+            queuePositionShuffled += by;
+        } else {
+            queuePosition += by;
         }
     }
 
@@ -598,22 +622,12 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
      */
     public void previous() {
         if (!isPreparing()) {
-            if (shuffle) {
-                if (mediaPlayer.getCurrentPosition() > 5000 || queuePositionShuffled < 1) {
-                    mediaPlayer.seekTo(0);
-                    updateNowPlaying();
-                } else {
-                    queuePositionShuffled--;
-                    begin();
-                }
+            if (mediaPlayer.getCurrentPosition() > 5000 || !hasNextInQueue(-1)) {
+                mediaPlayer.seekTo(0);
+                updateNowPlaying();
             } else {
-                if (mediaPlayer.getCurrentPosition() > 5000 || queuePosition < 1) {
-                    mediaPlayer.seekTo(0);
-                    updateNowPlaying();
-                } else {
-                    queuePosition--;
-                    begin();
-                }
+                incrementQueuePosition(-1);
+                begin();
             }
         }
     }
@@ -632,18 +646,11 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                 }
             }
 
-            if (shuffle && queuePositionShuffled + 1 < queueShuffled.size()) {
-                queuePositionShuffled++;
-                begin();
-            } else if (!shuffle && queuePosition + 1 < queue.size()) {
-                queuePosition++;
+            if (hasNextInQueue(1)) {
+                incrementQueuePosition(1);
                 begin();
             } else if (repeat == REPEAT_ALL) {
-                if (shuffle) {
-                    queuePositionShuffled = 0;
-                } else {
-                    queuePosition = 0;
-                }
+                setQueuePosition(0);
                 begin();
             } else {
                 mediaPlayer.complete();
