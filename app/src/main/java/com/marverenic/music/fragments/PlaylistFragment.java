@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.marverenic.music.Library;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.viewholder.BlankViewHolder;

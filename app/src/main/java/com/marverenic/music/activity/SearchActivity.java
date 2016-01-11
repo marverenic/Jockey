@@ -13,7 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 
-import com.marverenic.music.Library;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Album;
@@ -175,7 +175,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                     // If there is a playlist with this exact name, use it, otherwise fallback to the first result
                     Playlist playlist = adapter.playlistResults.get(0);
                     for (Playlist p : adapter.playlistResults) {
-                        if (p.playlistName.equalsIgnoreCase(intent.getStringExtra(SearchManager.QUERY))) {
+                        if (p.getPlaylistName().equalsIgnoreCase(intent.getStringExtra(SearchManager.QUERY))) {
                             playlist = p;
                             break;
                         }
@@ -203,7 +203,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                         // If we find one then use it, otherwise fallback to the first result
                         Album album = adapter.albumResults.get(0);
                         for (Album a : adapter.albumResults) {
-                            if (a.albumName.equalsIgnoreCase(intent.getStringExtra(SearchManager.QUERY))) {
+                            if (a.getAlbumName().equalsIgnoreCase(intent.getStringExtra(SearchManager.QUERY))) {
                                 album = a;
                                 break;
                             }
@@ -221,7 +221,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                         // If we find one then use it, otherwise fallback to the first result
                         Genre genre = adapter.genreResults.get(0);
                         for (Genre g : adapter.genreResults) {
-                            if (g.genreName.equalsIgnoreCase(intent.getStringExtra(SearchManager.QUERY))) {
+                            if (g.getGenreName().equalsIgnoreCase(intent.getStringExtra(SearchManager.QUERY))) {
                                 genre = g;
                                 break;
                             }
@@ -278,44 +278,45 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
 
             if (!query.equals("")) {
                 for(Album a : Library.getAlbums()){
-                    if (a.albumName.toLowerCase().contains(query) || a.artistName.toLowerCase().contains(query)) {
+                    if (a.getAlbumName().toLowerCase().contains(query)
+                            || a.getArtistName().toLowerCase().contains(query)) {
                         albumResults.add(a);
                     }
                 }
 
                 for(Artist a : Library.getArtists()){
-                    if (a.artistName.toLowerCase().contains(query)) {
+                    if (a.getArtistName().toLowerCase().contains(query)) {
                         artistResults.add(a);
                     }
                 }
 
                 for(Genre g : Library.getGenres()){
-                    if (g.genreName.toLowerCase().contains(query)) {
+                    if (g.getGenreName().toLowerCase().contains(query)) {
                         genreResults.add(g);
                     }
                 }
 
                 for(Song s : Library.getSongs()){
-                    if (s.songName.toLowerCase().contains(query)
-                            || s.artistName.toLowerCase().contains(query)
-                            || s.albumName.toLowerCase().contains(query)) {
+                    if (s.getSongName().toLowerCase().contains(query)
+                            || s.getArtistName().toLowerCase().contains(query)
+                            || s.getAlbumName().toLowerCase().contains(query)) {
                         songResults.add(s);
 
-                        if (s.genreId != -1) {
-                            Genre g = Library.findGenreById(s.genreId);
+                        if (s.getGenreId() != -1) {
+                            Genre g = Library.findGenreById(s.getGenreId());
                             if (!genreResults.contains(g)) genreResults.add(g);
                         }
 
-                        Album thisAlbum = Library.findAlbumById(s.albumId);
+                        Album thisAlbum = Library.findAlbumById(s.getAlbumId());
                         if(!albumResults.contains(thisAlbum)) albumResults.add(thisAlbum);
 
-                        Artist thisArtist = Library.findArtistById(s.artistId);
+                        Artist thisArtist = Library.findArtistById(s.getArtistId());
                         if(!artistResults.contains(thisArtist)) artistResults.add(thisArtist);
                     }
                 }
 
                 for(Playlist p : Library.getPlaylists()){
-                    if (p.playlistName.toLowerCase().contains(query)) {
+                    if (p.getPlaylistName().toLowerCase().contains(query)) {
                         playlistResults.add(p);
                     }
                 }
@@ -480,7 +481,8 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
 
         @Override
         public void onPlaylistAdded(Playlist added) {
-            if (lastQuery != null && lastQuery.length() > 0 && added.playlistName.toLowerCase().contains(lastQuery.toLowerCase().trim())){
+            if (lastQuery != null && lastQuery.length() > 0
+                    && added.getPlaylistName().toLowerCase().contains(lastQuery.toLowerCase().trim())) {
                 playlistResults.add(added);
                 Collections.sort(playlistResults);
 

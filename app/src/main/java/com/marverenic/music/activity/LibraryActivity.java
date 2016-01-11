@@ -16,7 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.marverenic.music.BuildConfig;
-import com.marverenic.music.Library;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
 import com.marverenic.music.fragments.AlbumFragment;
@@ -25,7 +25,7 @@ import com.marverenic.music.fragments.GenreFragment;
 import com.marverenic.music.fragments.PlaylistFragment;
 import com.marverenic.music.fragments.SongFragment;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.utils.PlaylistDialog;
+import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Updater;
 import com.marverenic.music.view.FABMenu;

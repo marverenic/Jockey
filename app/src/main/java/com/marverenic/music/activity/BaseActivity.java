@@ -20,7 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.marverenic.music.BuildConfig;
-import com.marverenic.music.Library;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Song;
@@ -237,8 +237,8 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
             else
                 artworkImageView.setImageResource(R.drawable.art_default);
 
-            songTextView.setText(nowPlaying.songName);
-            artistTextView.setText(nowPlaying.artistName);
+            songTextView.setText(nowPlaying.getSongName());
+            artistTextView.setText(nowPlaying.getArtistName());
             playButton.setImageResource((PlayerController.isPlaying())
                     ? R.drawable.ic_pause_36dp
                     : R.drawable.ic_play_arrow_36dp);

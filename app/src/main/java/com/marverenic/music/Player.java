@@ -21,6 +21,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 
 import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.activity.NowPlayingActivity;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.ManagedMediaPlayer;
 import com.marverenic.music.utils.Prefs;
@@ -34,6 +35,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Scanner;
@@ -55,8 +57,8 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     private HeadsetListener headphoneListener;
 
     // Queue information
-    private ArrayList<Song> queue;
-    private ArrayList<Song> queueShuffled = new ArrayList<>();
+    private List<Song> queue;
+    private List<Song> queueShuffled = new ArrayList<>();
     private int queuePosition;
     private int queuePositionShuffled;
 
@@ -164,7 +166,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             });
 
             art = Util.fetchFullArt(getNowPlaying());
-            mediaPlayer.setDataSource(getNowPlaying().location);
+            mediaPlayer.setDataSource(getNowPlaying().getLocation());
             mediaPlayer.prepareAsync();
         }
         catch (Exception e){
@@ -241,12 +243,12 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
         String queue = "";
         for (Song s : this.queue){
-            queue += " " + s.songId;
+            queue += " " + s.getSongId();
         }
 
         String queueShuffled = "";
         for (Song s : this.queueShuffled){
-            queueShuffled += " " + s.songId;
+            queueShuffled += " " + s.getSongId();
         }
 
         String output = currentPosition + " " + queuePosition + " " + queueLength + queue + queueShuffled;
@@ -372,7 +374,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        logPlayCount(getNowPlaying().songId, false);
+        logPlayCount(getNowPlaying().getSongId(), false);
         if(repeat == REPEAT_ONE){
             mediaPlayer.seekTo(0);
             play();
@@ -418,10 +420,10 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     /**
      * Change the queue and shuffle it if necessary
-     * @param newQueue An {@link ArrayList} of {@link Song}s to become the new queue
+     * @param newQueue A {@link List} of {@link Song}s to become the new queue
      * @param newPosition The queuePosition in the list to start playback from
      */
-    public void setQueue(final ArrayList<Song> newQueue, final int newPosition) {
+    public void setQueue(final List<Song> newQueue, final int newPosition) {
         queue = newQueue;
         queuePosition = newPosition;
         if (shuffle) shuffleQueue();
@@ -430,10 +432,10 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     /**
      * Replace the contents of the queue without affecting playback
-     * @param newQueue An {@link ArrayList} of {@link Song}s to become the new queue
+     * @param newQueue A {@link List} of {@link Song}s to become the new queue
      * @param newPosition The queuePosition in the list to start playback from
      */
-    public void editQueue(final ArrayList<Song> newQueue, final int newPosition) {
+    public void editQueue(final List<Song> newQueue, final int newPosition) {
         if (shuffle){
             queueShuffled = newQueue;
             queuePositionShuffled = newPosition;
@@ -456,11 +458,11 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             art = Util.fetchFullArt(getNowPlaying());
 
             try {
-                mediaPlayer.setDataSource(context, Uri.parse(getNowPlaying().location));
+                mediaPlayer.setDataSource(context, Uri.parse(getNowPlaying().getLocation()));
                 mediaPlayer.prepareAsync();
             } catch (IOException e) {
                 Crashlytics.logException(
-                        new IOException("Failed to play song " + getNowPlaying().location, e));
+                        new IOException("Failed to play song " + getNowPlaying().getLocation(), e));
             }
         }
     }
@@ -482,10 +484,10 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder();
             Song nowPlaying = getNowPlaying();
             metadataBuilder
-                    .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, nowPlaying.songName)
-                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, nowPlaying.songName)
-                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, nowPlaying.albumName)
-                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, nowPlaying.artistName)
+                    .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, nowPlaying.getSongName())
+                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, nowPlaying.getSongName())
+                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, nowPlaying.getAlbumName())
+                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, nowPlaying.getArtistName())
                     .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, getDuration())
                     .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, art);
             mediaSession.setMetadata(metadataBuilder.build());
@@ -640,9 +642,9 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             if (!mediaPlayer.isComplete() && getNowPlaying() != null) {
                 if (mediaPlayer.getCurrentPosition() > 24000
                         || mediaPlayer.getCurrentPosition() > mediaPlayer.getDuration() / 2) {
-                    logPlayCount(getNowPlaying().songId, false);
+                    logPlayCount(getNowPlaying().getSongId(), false);
                 } else if (getCurrentPosition() < 20000) {
-                    logPlayCount(getNowPlaying().songId, true);
+                    logPlayCount(getNowPlaying().getSongId(), true);
                 }
             }
 
@@ -686,10 +688,10 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         if (!mediaPlayer.isComplete()) {
             if (mediaPlayer.getCurrentPosition() > 24000
                     || mediaPlayer.getCurrentPosition() > mediaPlayer.getDuration() / 2) {
-                logPlayCount(getNowPlaying().songId, false);
+                logPlayCount(getNowPlaying().getSongId(), false);
             }
             else if (getCurrentPosition() < 20000) {
-                logPlayCount(getNowPlaying().songId, true);
+                logPlayCount(getNowPlaying().getSongId(), true);
             }
         }
 
@@ -724,7 +726,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                 queue.add(queuePosition + 1, song);
             }
         } else {
-            ArrayList<Song> newQueue = new ArrayList<>();
+            List<Song> newQueue = new ArrayList<>();
             newQueue.add(song);
             setQueue(newQueue, 0);
             begin();
@@ -743,7 +745,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             }
             queue.add(queue.size(), song);
         } else {
-            ArrayList<Song> newQueue = new ArrayList<>();
+            List<Song> newQueue = new ArrayList<>();
             newQueue.add(song);
             setQueue(newQueue, 0);
             begin();
@@ -753,9 +755,9 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     /**
      * Add songs to the queue so they play after the current track. If shuffle is enabled, then the
      * songs will also be added to the end of the unshuffled queue.
-     * @param songs an {@link ArrayList} of {@link Song}s to add
+     * @param songs a {@link List} of {@link Song}s to add
      */
-    public void queueNext(final ArrayList<Song> songs) {
+    public void queueNext(final List<Song> songs) {
         if (queue.size() != 0) {
             if (shuffle) {
                 queueShuffled.addAll(queuePositionShuffled + 1, songs);
@@ -764,7 +766,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                 queue.addAll(queuePosition + 1, songs);
             }
         } else {
-            ArrayList<Song> newQueue = new ArrayList<>();
+            List<Song> newQueue = new ArrayList<>();
             newQueue.addAll(songs);
             setQueue(newQueue, 0);
             begin();
@@ -775,9 +777,9 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     /**
      * Add songs to the end of the queue. If shuffle is enabled, then the songs will also be added
      * to the end of the unshuffled queue.
-     * @param songs an {@link ArrayList} of {@link Song}s to add
+     * @param songs an {@link List} of {@link Song}s to add
      */
-    public void queueLast(final ArrayList<Song> songs) {
+    public void queueLast(final List<Song> songs) {
         if (queue.size() != 0) {
             if (shuffle) {
                 queueShuffled.addAll(queueShuffled.size(), songs);
@@ -786,7 +788,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                 queue.addAll(queue.size(), songs);
             }
         } else {
-            ArrayList<Song> newQueue = new ArrayList<>();
+            List<Song> newQueue = new ArrayList<>();
             newQueue.addAll(songs);
             setQueue(newQueue, 0);
             begin();
@@ -808,7 +810,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             queuePositionShuffled = 0;
             queueShuffled.add(queue.get(queuePosition));
 
-            ArrayList<Song> randomHolder = new ArrayList<>();
+            List<Song> randomHolder = new ArrayList<>();
 
             for (int i = 0; i < queuePosition; i++) {
                 randomHolder.add(queue.get(i));
@@ -959,7 +961,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         return mediaPlayer.getDuration();
     }
 
-    public ArrayList<Song> getQueue() {
+    public List<Song> getQueue() {
         if (shuffle) return new ArrayList<>(queueShuffled);
         return new ArrayList<>(queue);
     }

@@ -7,16 +7,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.marverenic.music.Library;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.utils.PlaylistDialog;
+import com.marverenic.music.instances.PlaylistDialog;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class QueueSongViewHolder extends DraggableSongViewHolder {
 
@@ -62,21 +62,21 @@ public class QueueSongViewHolder extends DraggableSongViewHolder {
                         itemView.getContext(),
                         ArtistActivity.class,
                         ArtistActivity.ARTIST_EXTRA,
-                        Library.findArtistById(reference.artistId));
+                        Library.findArtistById(reference.getArtistId()));
                 return true;
             case 1: // Go to album
                 Navigate.to(
                         itemView.getContext(),
                         AlbumActivity.class,
                         AlbumActivity.ALBUM_EXTRA,
-                        Library.findAlbumById(reference.albumId));
+                        Library.findAlbumById(reference.getAlbumId()));
                 return true;
             case 2:
                 PlaylistDialog.AddToNormal.alert(itemView, reference, itemView.getContext()
                         .getString(R.string.header_add_song_name_to_playlist, reference));
                 return true;
             case 3: // Remove
-                ArrayList<Song> editedQueue = PlayerController.getQueue();
+                List<Song> editedQueue = PlayerController.getQueue();
                 if (editedQueue != null) {
                     int queuePosition = PlayerController.getQueuePosition();
                     int itemPosition = getAdapterPosition();

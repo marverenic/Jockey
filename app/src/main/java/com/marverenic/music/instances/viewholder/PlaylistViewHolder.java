@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.marverenic.music.Library;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
@@ -49,7 +49,7 @@ public class PlaylistViewHolder extends RecyclerView.ViewHolder implements View.
             moreButton.setVisibility(View.GONE);
         }
         else {
-            playlistName.setText(p.playlistName);
+            playlistName.setText(p.getPlaylistName());
             moreButton.setVisibility(View.VISIBLE);
         }
 

@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.marverenic.music.Library;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.viewholder.EmptyStateViewHolder;
 import com.marverenic.music.instances.viewholder.SongViewHolder;
@@ -81,7 +81,7 @@ public class SongFragment extends Fragment {
 
         @Override
         public int getItemViewType(int position){
-            if (Library.getAlbums().isEmpty()) return EMPTY;
+            if (Library.getSongs().isEmpty()) return EMPTY;
             return SONG;
         }
 

@@ -17,10 +17,10 @@ import android.view.ViewGroup;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.DraggableItemAdapter;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.ItemDraggableRange;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
-import com.marverenic.music.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.instances.AutoPlaylist;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.viewholder.DraggableSongViewHolder;
@@ -32,11 +32,12 @@ import com.marverenic.music.view.DividerDecoration;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuItemClickListener {
 
     public static final String PLAYLIST_EXTRA = "playlist";
-    private ArrayList<Song> data;
+    private List<Song> data;
     private Playlist reference;
     private Adapter adapter;
 
@@ -50,7 +51,7 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
         if (reference != null) {
             data = Library.getPlaylistEntries(this, reference);
             if (getSupportActionBar() != null)
-                getSupportActionBar().setTitle(reference.playlistName);
+                getSupportActionBar().setTitle(reference.getPlaylistName());
         } else {
             data = new ArrayList<>();
         }
@@ -155,7 +156,7 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
         }
 
         if (reference instanceof AutoPlaylist) {
-            ((AutoPlaylist) reference).sortMethod = sortFlag;
+            ((AutoPlaylist) reference).setSortMethod(sortFlag);
             Library.editAutoPlaylist(this, (AutoPlaylist) reference);
         } else {
             Library.editPlaylist(this, reference, data);
@@ -225,7 +226,7 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
         @Override
         public long getItemId(int position){
             if (data.isEmpty()) return 0;
-            return data.get(position).songId;
+            return data.get(position).getSongId();
         }
 
         @Override
@@ -299,7 +300,9 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
             Snackbar
                     .make(
                             view,
-                            getResources().getString(R.string.message_removed_song, song.songName),
+                            getResources().getString(
+                                    R.string.message_removed_song,
+                                    song.getSongName()),
                             Snackbar.LENGTH_LONG)
                     .setAction(R.string.action_undo, new View.OnClickListener() {
                         @Override

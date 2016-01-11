@@ -17,11 +17,13 @@ import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.utils.Util;
 import com.marverenic.music.utils.Prefs;
+import com.marverenic.music.utils.Util;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public final class PlayerController {
@@ -274,11 +276,11 @@ public final class PlayerController {
 
     /**
      * Replace the contents of the queue with a new list of songs
-     * @param newQueue An {@link ArrayList<Song>} to become the new queue
+     * @param newQueue An {@link List<Song>} to become the new queue
      * @param newPosition The index of the list to start playback from
-     * See {@link Player#setQueue(ArrayList, int)}
+     * See {@link Player#setQueue(List, int)}
      */
-    public static void setQueue(final ArrayList<Song> newQueue, final int newPosition) {
+    public static void setQueue(final List<Song> newQueue, final int newPosition) {
         if (Prefs.allowAnalytics(applicationContext)) {
             Answers.getInstance().logCustom(
                     new CustomEvent("Changed queue")
@@ -290,7 +292,7 @@ public final class PlayerController {
                                     newPosition)
                             .putCustomAttribute(
                                     "Song duration (sec)",
-                                    newQueue.get(newPosition).songDuration / 1000));
+                                    newQueue.get(newPosition).getSongDuration() / 1000));
         }
         if (playerService != null) {
             try {
@@ -321,11 +323,11 @@ public final class PlayerController {
 
     /**
      * Edit the contents of the queue without interrupting playback
-     * @param queue An {@link ArrayList<Song>} to become the new queue
+     * @param queue An {@link List<Song>} to become the new queue
      * @param queuePosition The index of the currently playing song in the new queue
-     * See {@link Player#editQueue(ArrayList, int)}
+     * See {@link Player#editQueue(List, int)}
      */
-    public static void editQueue(ArrayList<Song> queue, int queuePosition){
+    public static void editQueue(List<Song> queue, int queuePosition){
         if (playerService != null) {
             try {
                 playerService.editQueue(queue, queuePosition);
@@ -355,10 +357,10 @@ public final class PlayerController {
 
     /**
      * Enqueue a list of songs so that they play after the current songs
-     * @param songs A {@link ArrayList<Song>} to play next
-     * See {@link Player#queueNext(ArrayList)}
+     * @param songs A {@link List<Song>} to play next
+     * See {@link Player#queueNext(List)}
      */
-    public static void queueNext(final ArrayList<Song> songs) {
+    public static void queueNext(final List<Song> songs) {
         if (playerService != null) {
             try {
                 playerService.queueNextList(songs);
@@ -387,10 +389,10 @@ public final class PlayerController {
 
     /**
      * Add a list of songs to the end of the queue
-     * @param songs A {@link ArrayList<Song>} to place at the end of the queue
-     * See {@link Player#queueLast(ArrayList)}
+     * @param songs A {@link List<Song>} to place at the end of the queue
+     * See {@link Player#queueLast(List)}
      */
-    public static void queueLast(final ArrayList<Song> songs) {
+    public static void queueLast(final List<Song> songs) {
         if (playerService != null) {
             try {
                 playerService.queueLastList(songs);
@@ -488,7 +490,7 @@ public final class PlayerController {
     /**
      * @return The current queue of the player service
      */
-    public static ArrayList<Song> getQueue() {
+    public static List<Song> getQueue() {
         if (playerService == null) return new ArrayList<>();
 
         try {

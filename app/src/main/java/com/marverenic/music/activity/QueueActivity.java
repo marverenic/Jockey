@@ -18,16 +18,16 @@ import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.viewholder.QueueSongViewHolder;
-import com.marverenic.music.utils.PlaylistDialog;
+import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class QueueActivity extends BaseActivity {
 
-    private ArrayList<Song> data;
+    private List<Song> data;
     private Adapter adapter;
 
     @Override
@@ -134,7 +134,7 @@ public class QueueActivity extends BaseActivity {
 
         @Override
         public long getItemId(int position){
-            return data.get(position).songId;
+            return data.get(position).getSongId();
         }
 
         @Override

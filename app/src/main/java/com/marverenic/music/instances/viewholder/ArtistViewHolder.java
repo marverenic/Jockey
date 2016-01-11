@@ -10,13 +10,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.marverenic.music.Library;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.utils.PlaylistDialog;
+import com.marverenic.music.instances.PlaylistDialog;
 
 public class ArtistViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener{
 
@@ -38,7 +38,7 @@ public class ArtistViewHolder extends RecyclerView.ViewHolder implements View.On
 
     public void update(Artist a){
         reference = a;
-        artistName.setText(a.artistName);
+        artistName.setText(a.getArtistName());
     }
 
     @Override

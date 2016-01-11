@@ -1,4 +1,4 @@
-package com.marverenic.music.utils;
+package com.marverenic.music.instances;
 
 
 import android.content.Context;
@@ -12,13 +12,11 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.View;
 
-import com.marverenic.music.Library;
 import com.marverenic.music.R;
-import com.marverenic.music.instances.AutoPlaylist;
-import com.marverenic.music.instances.Playlist;
-import com.marverenic.music.instances.Song;
+import com.marverenic.music.utils.Themes;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class PlaylistDialog {
 
@@ -26,7 +24,7 @@ public class PlaylistDialog {
 
         private Context context;
         private View snackbarReturnView;
-        private ArrayList<Song> data;
+        private List<Song> data;
         private TextInputLayout inputLayout;
         private AppCompatEditText editText;
         private AlertDialog dialog;
@@ -35,11 +33,11 @@ public class PlaylistDialog {
             alert(view, null);
         }
 
-        public static void alert(View view, ArrayList<Song> songs) {
+        public static void alert(View view, List<Song> songs) {
             new MakeNormal(view, songs).prompt();
         }
 
-        private MakeNormal(View view, ArrayList<Song> songs) {
+        private MakeNormal(View view, List<Song> songs) {
             context = view.getContext();
             snackbarReturnView = view;
             data = songs;
@@ -119,9 +117,9 @@ public class PlaylistDialog {
 
         private Context context;
         private View snackbarReturnView;
-        private ArrayList<Song> data;
+        private List<Song> data;
         private Song singleData;
-        private ArrayList<Playlist> choices;
+        private List<Playlist> choices;
 
         public static void alert(View view, @StringRes int header) {
             alert(view, view.getContext().getString(header));
@@ -139,11 +137,11 @@ public class PlaylistDialog {
             new AddToNormal(view, song).prompt(header);
         }
 
-        public static void alert(View view, ArrayList<Song> songs, @StringRes int header) {
+        public static void alert(View view, List<Song> songs, @StringRes int header) {
             alert(view, songs, view.getContext().getString(header));
         }
 
-        public static void alert(View view, ArrayList<Song> songs, String header) {
+        public static void alert(View view, List<Song> songs, String header) {
             new AddToNormal(view, songs).prompt(header);
         }
 
@@ -154,7 +152,7 @@ public class PlaylistDialog {
             getChoices();
         }
 
-        private AddToNormal(View view, ArrayList<Song> data){
+        private AddToNormal(View view, List<Song> data){
             this(view);
             this.data = data;
         }
@@ -193,7 +191,7 @@ public class PlaylistDialog {
         public void onClick(DialogInterface dialog, int which) {
             if (which == 0){
                 if (singleData != null) {
-                    ArrayList<Song> wrappedSong = new ArrayList<>();
+                    List<Song> wrappedSong = new ArrayList<>();
                     wrappedSong.add(singleData);
 
                     new MakeNormal(snackbarReturnView, wrappedSong).prompt();

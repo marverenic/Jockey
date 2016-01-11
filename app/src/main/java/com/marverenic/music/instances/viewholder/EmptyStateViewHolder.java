@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.marverenic.music.BuildConfig;
-import com.marverenic.music.Library;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.R;
 
 public class EmptyStateViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

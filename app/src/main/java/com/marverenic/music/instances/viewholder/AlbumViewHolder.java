@@ -21,14 +21,14 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.marverenic.music.Library;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.instances.Album;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.utils.PlaylistDialog;
+import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.view.ViewUtils;
 
 import java.util.HashMap;
@@ -82,13 +82,13 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
         if (paletteTask != null && !paletteTask.isCancelled()) paletteTask.cancel(true);
 
         reference = a;
-        albumName.setText(a.albumName);
-        artistName.setText(a.artistName);
+        albumName.setText(a.getAlbumName());
+        artistName.setText(a.getArtistName());
 
         resetPalette();
 
         Glide.with(itemView.getContext())
-                .load("file://" + a.artUri)
+                .load("file://" + a.getArtUri())
                 .placeholder(R.drawable.art_default)
                 .animate(android.R.anim.fade_in)
                 .crossFade()
@@ -254,7 +254,7 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
                         itemView.getContext(),
                         ArtistActivity.class,
                         ArtistActivity.ARTIST_EXTRA,
-                        Library.findArtistById(reference.artistId));
+                        Library.findArtistById(reference.getArtistId()));
                 return true;
             case 3: //Add to playlist...
                 PlaylistDialog.AddToNormal.alert(

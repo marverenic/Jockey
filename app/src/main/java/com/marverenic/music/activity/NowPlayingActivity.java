@@ -26,7 +26,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.marverenic.music.Library;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.Player;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
@@ -36,7 +36,7 @@ import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.utils.PlaylistDialog;
+import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.TimeView;
@@ -296,11 +296,11 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
 
         switch (item.getItemId()) {
             case 0: //Go to artist
-                Artist artist = Library.findArtistById(nowPlaying.artistId);
+                Artist artist = Library.findArtistById(nowPlaying.getArtistId());
                 Navigate.to(this, ArtistActivity.class, ArtistActivity.ARTIST_EXTRA, artist);
                 return true;
             case 1: //Go to album
-                Album album = Library.findAlbumById(nowPlaying.albumId);
+                Album album = Library.findAlbumById(nowPlaying.getAlbumId());
 
                 Navigate.to(this, AlbumActivity.class, AlbumActivity.ALBUM_EXTRA, album);
                 return true;
@@ -310,7 +310,7 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
                         nowPlaying,
                         getString(
                                 R.string.header_add_song_name_to_playlist,
-                                nowPlaying.songName));
+                                nowPlaying.getSongName()));
                 return true;
         }
         return false;
@@ -366,9 +366,9 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
                 if (PlayerController.isPlaying() && !observer.isRunning())
                     new Thread(observer).start();
 
-                songTitle.setText(nowPlaying.songName);
-                artistName.setText(nowPlaying.artistName);
-                albumTitle.setText(nowPlaying.albumName);
+                songTitle.setText(nowPlaying.getSongName());
+                artistName.setText(nowPlaying.getArtistName());
+                albumTitle.setText(nowPlaying.getAlbumName());
 
                 ImageView artImageView = (ImageView) findViewById(R.id.imageArtwork);
                 Bitmap artwork = Util.fetchFullArt(nowPlaying);

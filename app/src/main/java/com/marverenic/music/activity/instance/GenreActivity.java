@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.instances.Genre;
-import com.marverenic.music.Library;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.viewholder.SongViewHolder;
 import com.marverenic.music.utils.Themes;
@@ -34,7 +34,7 @@ public class GenreActivity extends BaseActivity {
         if (reference != null) {
             data = Library.getGenreEntries(reference);
             if (getSupportActionBar() != null) {
-                getSupportActionBar().setTitle(reference.genreName);
+                getSupportActionBar().setTitle(reference.getGenreName());
             }
         } else {
             data = new ArrayList<>();

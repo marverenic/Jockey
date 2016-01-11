@@ -29,11 +29,11 @@ public class Query {
     public static LArtist getArtist(Context context, Artist artist)
             throws IOException, ParserConfigurationException, SAXException {
 
-        if (Cache.hasItem(context, artist.artistId)) {
-            return Cache.getCachedArtist(context, artist.artistId);
+        if (Cache.hasItem(context, artist.getArtistId())) {
+            return Cache.getCachedArtist(context, artist.getArtistId());
         }
 
-        String request = getQuery("artist.getInfo") + "&artist=" + artist.artistName;
+        String request = getQuery("artist.getInfo") + "&artist=" + artist.getArtistName();
 
         String data = getData(request);
         if (!data.equals("")) {
@@ -42,7 +42,7 @@ public class Query {
             Node artistTag = xmlResult.getElementsByTagName("artist").item(0);
             LArtist result = buildArtist(artistTag);
 
-            Cache.cacheArtist(context, artist.artistId, result);
+            Cache.cacheArtist(context, artist.getArtistId(), result);
             return result;
         } else {
             return null;

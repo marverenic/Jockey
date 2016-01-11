@@ -1,4 +1,4 @@
-package com.marverenic.music;
+package com.marverenic.music.instances;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -15,7 +15,6 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
-import android.util.SparseIntArray;
 import android.view.View;
 
 import com.crashlytics.android.Crashlytics;
@@ -23,12 +22,8 @@ import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.marverenic.music.instances.Album;
-import com.marverenic.music.instances.Artist;
-import com.marverenic.music.instances.AutoPlaylist;
-import com.marverenic.music.instances.Genre;
-import com.marverenic.music.instances.Playlist;
-import com.marverenic.music.instances.Song;
+import com.marverenic.music.Player;
+import com.marverenic.music.R;
 import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Themes;
 
@@ -42,6 +37,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 public class Library {
@@ -52,15 +50,16 @@ public class Library {
 
     private static final String AUTO_PLAYLIST_EXTENSION = ".jpl";
 
-    private static final ArrayList<Playlist> playlistLib = new ArrayList<>();
-    private static final ArrayList<Song> songLib = new ArrayList<>();
-    private static final ArrayList<Artist> artistLib = new ArrayList<>();
-    private static final ArrayList<Album> albumLib = new ArrayList<>();
-    private static final ArrayList<Genre> genreLib = new ArrayList<>();
+    private static final List<Playlist> playlistLib = new ArrayList<>();
+    private static final List<Song> songLib = new ArrayList<>();
+    private static final List<Artist> artistLib = new ArrayList<>();
+    private static final List<Album> albumLib = new ArrayList<>();
+    private static final List<Genre> genreLib = new ArrayList<>();
 
-    private static final SparseIntArray playCounts = new SparseIntArray();
-    private static final SparseIntArray skipCounts = new SparseIntArray();
-    private static final SparseIntArray playDates = new SparseIntArray();
+    // TODO use a better data structure
+    private static final Map<Long, Integer> playCounts = new HashMap<>();
+    private static final Map<Long, Integer> skipCounts = new HashMap<>();
+    private static final Map<Long, Integer> playDates = new HashMap<>();
 
     private static final String[] songProjection = new String[]{
             MediaStore.Audio.Media.TITLE,
@@ -102,7 +101,7 @@ public class Library {
 
     private static final String[] playlistEntryProjection = new String[]{
             MediaStore.Audio.Playlists.Members.TITLE,
-            MediaStore.Audio.Playlists.Members.AUDIO_ID,
+            MediaStore.Audio.Playlists.Members._ID,
             MediaStore.Audio.Playlists.Members.ARTIST,
             MediaStore.Audio.Playlists.Members.ALBUM,
             MediaStore.Audio.Playlists.Members.DURATION,
@@ -110,7 +109,8 @@ public class Library {
             MediaStore.Audio.Playlists.Members.YEAR,
             MediaStore.Audio.Playlists.Members.DATE_ADDED,
             MediaStore.Audio.Playlists.Members.ALBUM_ID,
-            MediaStore.Audio.Playlists.Members.ARTIST_ID
+            MediaStore.Audio.Playlists.Members.ARTIST_ID,
+            MediaStore.Audio.Playlists.Members.TRACK
     };
 
     //
@@ -203,7 +203,7 @@ public class Library {
         return Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
                 context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
                         == PackageManager.PERMISSION_GRANTED
-                && context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        && context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         == PackageManager.PERMISSION_GRANTED;
     }
 
@@ -264,9 +264,7 @@ public class Library {
      * @param context {@link Context} to use to open a {@link Cursor}
      * @return An {@link ArrayList} with the {@link Song}s in the MediaStore
      */
-    public static ArrayList<Song> scanSongs (Context context){
-        ArrayList<Song> songs = new ArrayList<>();
-
+    public static List<Song> scanSongs(Context context) {
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 songProjection,
@@ -275,37 +273,10 @@ public class Library {
                 MediaStore.Audio.Media.TITLE + " ASC");
 
         if (cur == null) {
-            return songs;
+            return new ArrayList<>();
         }
 
-        final int titleIndex = cur.getColumnIndex(MediaStore.Audio.Media.TITLE);
-        final int idIndex = cur.getColumnIndex(MediaStore.Audio.Media._ID);
-        final int artistIndex = cur.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-        final int albumIndex = cur.getColumnIndex(MediaStore.Audio.Media.ALBUM);
-        final int durationIndex = cur.getColumnIndex(MediaStore.Audio.Media.DURATION);
-        final int dataIndex = cur.getColumnIndex(MediaStore.Audio.Media.DATA);
-        final int yearIndex = cur.getColumnIndex(MediaStore.Audio.Media.YEAR);
-        final int dateIndex = cur.getColumnIndex(MediaStore.Audio.Media.DATE_ADDED);
-        final int albumIdIndex = cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
-        final int artistIdIndex = cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID);
-
-        for (int i = 0; i < cur.getCount(); i++) {
-            cur.moveToPosition(i);
-            Song s = new Song(
-                    cur.getString(titleIndex),
-                    cur.getInt(idIndex),
-                    parseUnknown(cur.getString(artistIndex), context.getString(R.string.no_artist)),
-                    cur.getString(albumIndex),
-                    cur.getInt(durationIndex),
-                    cur.getString(dataIndex),
-                    cur.getInt(yearIndex),
-                    cur.getInt(dateIndex),
-                    cur.getInt(albumIdIndex),
-                    cur.getInt(artistIdIndex));
-
-            s.trackNumber = cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.TRACK));
-            songs.add(s);
-        }
+        List<Song> songs = Song.buildSongList(cur, context.getResources());
         cur.close();
 
         return songs;
@@ -316,9 +287,7 @@ public class Library {
      * @param context {@link Context} to use to open a {@link Cursor}
      * @return An {@link ArrayList} with the {@link Artist}s in the MediaStore
      */
-    public static ArrayList<Artist> scanArtists (Context context){
-        ArrayList<Artist> artists = new ArrayList<>();
-
+    public static List<Artist> scanArtists(Context context) {
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
                 artistProjection,
@@ -327,20 +296,10 @@ public class Library {
                 MediaStore.Audio.Artists.ARTIST + " ASC");
 
         if (cur == null) {
-            return artists;
+            return new ArrayList<>();
         }
 
-        final int idIndex = cur.getColumnIndex(MediaStore.Audio.Artists._ID);
-        final int artistIndex = cur.getColumnIndex(MediaStore.Audio.Artists.ARTIST);
-
-        for (int i = 0; i < cur.getCount(); i++) {
-            cur.moveToPosition(i);
-            artists.add(new Artist(
-                    cur.getInt(idIndex),
-                    parseUnknown(
-                            cur.getString(artistIndex),
-                            context.getString(R.string.no_artist))));
-        }
+        List<Artist> artists = Artist.buildArtistList(cur, context.getResources());
         cur.close();
 
         return artists;
@@ -351,9 +310,7 @@ public class Library {
      * @param context {@link Context} to use to open a {@link Cursor}
      * @return An {@link ArrayList} with the {@link Album}s in the MediaStore
      */
-    public static ArrayList<Album> scanAlbums (Context context){
-        ArrayList<Album> albums = new ArrayList<>();
-
+    public static List<Album> scanAlbums(Context context) {
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                 albumProjection,
@@ -362,28 +319,10 @@ public class Library {
                 MediaStore.Audio.Albums.ALBUM + " ASC");
 
         if (cur == null) {
-            return albums;
+            return new ArrayList<>();
         }
 
-        final int idIndex = cur.getColumnIndex(MediaStore.Audio.Albums._ID);
-        final int albumIndex = cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM);
-        final int artistIndex = cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST);
-        final int artistIdIndex = cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID);
-        final int yearIndex = cur.getColumnIndex(MediaStore.Audio.Albums.LAST_YEAR);
-        final int artIndex = cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART);
-
-        for (int i = 0; i < cur.getCount(); i++) {
-            cur.moveToPosition(i);
-            albums.add(new Album(
-                    cur.getInt(idIndex),
-                    cur.getString(albumIndex),
-                    cur.getInt(artistIdIndex),
-                    parseUnknown(
-                            cur.getString(artistIndex),
-                            context.getString(R.string.no_artist)),
-                    cur.getString(yearIndex),
-                    cur.getString(artIndex)));
-        }
+        List<Album> albums = Album.buildAlbumList(cur, context.getResources());
         cur.close();
 
         return albums;
@@ -394,9 +333,7 @@ public class Library {
      * @param context {@link Context} to use to open a {@link Cursor}
      * @return An {@link ArrayList} with the {@link Playlist}s in the MediaStore
      */
-    public static ArrayList<Playlist> scanPlaylists (Context context){
-        ArrayList<Playlist> playlists = new ArrayList<>();
-
+    public static List<Playlist> scanPlaylists(Context context) {
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
                 playlistProjection,
@@ -405,16 +342,10 @@ public class Library {
                 MediaStore.Audio.Playlists.NAME + " ASC");
 
         if (cur == null) {
-            return playlists;
+            return new ArrayList<>();
         }
 
-        final int idIndex = cur.getColumnIndex(MediaStore.Audio.Playlists._ID);
-        final int nameIndex = cur.getColumnIndex(MediaStore.Audio.Playlists.NAME);
-
-        for (int i = 0; i < cur.getCount(); i++) {
-            cur.moveToPosition(i);
-            playlists.add(new Playlist(cur.getInt(idIndex), cur.getString(nameIndex)));
-        }
+        List<Playlist> playlists = Playlist.buildPlaylistList(cur);
         cur.close();
 
         for (Playlist p : scanAutoPlaylists(context)) {
@@ -423,7 +354,8 @@ public class Library {
             } else {
                 // If AutoPlaylists have been deleted outside of Jockey, delete its configuration
                 //noinspection ResultOfMethodCallIgnored
-                new File(context.getExternalFilesDir(null) + "/" + p.playlistName + AUTO_PLAYLIST_EXTENSION)
+                new File(context.getExternalFilesDir(null)
+                        + "/" + p.getPlaylistName() + AUTO_PLAYLIST_EXTENSION)
                         .delete();
             }
         }
@@ -464,8 +396,8 @@ public class Library {
      * @param context {@link Context} to use to open a {@link Cursor}
      * @return An {@link ArrayList} with the {@link Genre}s in the MediaStore
      */
-    public static ArrayList<Genre> scanGenres (Context context){
-        ArrayList<Genre> genres = new ArrayList<>();
+    public static List<Genre> scanGenres(Context context) {
+        List<Genre> genres = new ArrayList<>();
 
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI,
@@ -478,40 +410,7 @@ public class Library {
             return genres;
         }
 
-        final int idIndex = cur.getColumnIndex(MediaStore.Audio.Genres._ID);
-        final int nameIndex = cur.getColumnIndex(MediaStore.Audio.Genres.NAME);
-
-        for (int i = 0; i < cur.getCount(); i++) {
-            cur.moveToPosition(i);
-
-            int thisGenreId = cur.getInt(idIndex);
-            String thisName = cur.getString(nameIndex);
-
-            if (thisName == null || thisName.equalsIgnoreCase("Unknown")){
-                genres.add(new Genre(-1, context.getString(R.string.unknown)));
-            } else {
-                genres.add(new Genre(thisGenreId,thisName));
-
-                // Associate all songs in this genre by setting the genreID field of each song in the genre
-
-                Cursor genreCur = context.getContentResolver().query(
-                        MediaStore.Audio.Genres.Members.getContentUri("external", thisGenreId),
-                        new String[]{MediaStore.Audio.Media._ID},
-                        MediaStore.Audio.Media.IS_MUSIC + " != 0 ", null, null);
-
-                if (genreCur != null) {
-                    genreCur.moveToFirst();
-
-                    final int ID_INDEX = genreCur.getColumnIndex(MediaStore.Audio.Media._ID);
-                    for (int j = 0; j < genreCur.getCount(); j++) {
-                        genreCur.moveToPosition(j);
-                        final Song s = findSongById(genreCur.getInt(ID_INDEX));
-                        if (s != null) s.genreId = thisGenreId;
-                    }
-                    genreCur.close();
-                }
-            }
-        }
+        genres = Genre.buildGenreList(context, cur);
         cur.close();
 
         return genres;
@@ -524,8 +423,8 @@ public class Library {
      * @param convertValue The value to replace unknown Strings with
      * @return A String with localized unknown values if needed, otherwise the original value
      */
-    private static String parseUnknown(String value, String convertValue) {
-        if (value != null && value.equals(MediaStore.UNKNOWN_STRING)) {
+    protected static String parseUnknown(String value, String convertValue) {
+        if (value == null || value.equals(MediaStore.UNKNOWN_STRING)) {
             return convertValue;
         } else {
             return value;
@@ -551,7 +450,7 @@ public class Library {
      * Replace the playlist library in memory with another one
      * @param newLib The new playlist library
      */
-    public static void setPlaylistLib(ArrayList<Playlist> newLib){
+    public static void setPlaylistLib(List<Playlist> newLib){
         playlistLib.clear();
         playlistLib.addAll(newLib);
     }
@@ -560,7 +459,7 @@ public class Library {
      * Replace the song library in memory with another one
      * @param newLib The new song library
      */
-    public static void setSongLib(ArrayList<Song> newLib){
+    public static void setSongLib(List<Song> newLib){
         songLib.clear();
         songLib.addAll(newLib);
     }
@@ -569,7 +468,7 @@ public class Library {
      * Replace the album library in memory with another one
      * @param newLib The new album library
      */
-    public static void setAlbumLib(ArrayList<Album> newLib){
+    public static void setAlbumLib(List<Album> newLib){
         albumLib.clear();
         albumLib.addAll(newLib);
     }
@@ -578,7 +477,7 @@ public class Library {
      * Replace the artist library in memory with another one
      * @param newLib The new artist library
      */
-    public static void setArtistLib(ArrayList<Artist> newLib){
+    public static void setArtistLib(List<Artist> newLib){
         artistLib.clear();
         artistLib.addAll(newLib);
     }
@@ -587,7 +486,7 @@ public class Library {
      * Replace the genre library in memory with another one
      * @param newLib The new genre library
      */
-    public static void setGenreLib(ArrayList<Genre> newLib){
+    public static void setGenreLib(List<Genre> newLib){
         genreLib.clear();
         genreLib.addAll(newLib);
     }
@@ -613,35 +512,35 @@ public class Library {
     /**
      * @return An {@link ArrayList} of {@link Playlist}s in the MediaStore
      */
-    public static ArrayList<Playlist> getPlaylists(){
+    public static List<Playlist> getPlaylists(){
         return playlistLib;
     }
 
     /**
      * @return An {@link ArrayList} of {@link Song}s in the MediaStore
      */
-    public static ArrayList<Song> getSongs(){
+    public static List<Song> getSongs(){
         return songLib;
     }
 
     /**
      * @return An {@link ArrayList} of {@link Album}s in the MediaStore
      */
-    public static ArrayList<Album> getAlbums(){
+    public static List<Album> getAlbums(){
         return albumLib;
     }
 
     /**
      * @return An {@link ArrayList} of {@link Artist}s in the MediaStore
      */
-    public static ArrayList<Artist> getArtists(){
+    public static List<Artist> getArtists(){
         return artistLib;
     }
 
     /**
      * @return An {@link ArrayList} of {@link Genre}s in the MediaStore
      */
-    public static ArrayList<Genre> getGenres(){
+    public static List<Genre> getGenres(){
         return genreLib;
     }
 
@@ -656,7 +555,7 @@ public class Library {
      */
     public static Song findSongById (int songId){
         for (Song s : songLib){
-            if (s.songId == songId){
+            if (s.getSongId() == songId){
                 return s;
             }
         }
@@ -669,8 +568,8 @@ public class Library {
      * @param context The {@link Context} used to open a {@link Cursor}
      * @return An {@link ArrayList} of {@link Song}s with ids matching those of the songIDs parameter
      */
-    public static ArrayList<Song> buildSongListFromIds (int[] songIDs, Context context){
-        ArrayList<Song> contents = new ArrayList<>();
+    public static List<Song> buildSongListFromIds (int[] songIDs, Context context){
+        List<Song> contents = new ArrayList<>();
         if (songIDs.length == 0) return contents;
 
         String query = MediaStore.Audio.Media._ID + " IN(?";
@@ -694,38 +593,21 @@ public class Library {
             return contents;
         }
 
-        for (int i = 0; i < cur.getCount(); i++) {
-            cur.moveToPosition(i);
-            Song s = new Song(
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)),
-                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media._ID)),
-                    (cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST)).equals(MediaStore.UNKNOWN_STRING))
-                            ? context.getString(R.string.no_artist)
-                            : cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)),
-                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DURATION)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA)),
-                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.YEAR)),
-                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DATE_ADDED)),
-                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)),
-                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID)));
-
-            s.trackNumber = cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.TRACK));
-            contents.add(s);
-        }
+        contents = Song.buildSongList(cur, context.getResources());
         cur.close();
 
+        // TODO Is this necessary?
         // Sort the contents of the list so that it matches the order of the int array
-        ArrayList<Song> songs = new ArrayList<>();
+        /*List<Song> songs = new ArrayList<>();
         Song dummy = new Song(null, 0, null, null, 0, null, 0, 0, 0, 0);
         for (int i : songIDs){
             dummy.songId = i;
             // Because Songs are equal if their ids are equal, we can use a dummy song with the ID
             // we want to find it in the list
             songs.add(contents.get(contents.indexOf(dummy)));
-        }
+        }*/
 
-        return songs;
+        return contents;
     }
 
     /**
@@ -733,9 +615,9 @@ public class Library {
      * @param artistId the MediaStore Id of the {@link Artist}
      * @return A {@link Artist} with a matching Id
      */
-    public static Artist findArtistById (int artistId){
+    public static Artist findArtistById(long artistId) {
         for (Artist a : artistLib){
-            if (a.artistId == artistId){
+            if (a.getArtistId() == artistId){
                 return a;
             }
         }
@@ -747,10 +629,10 @@ public class Library {
      * @param albumId the MediaStore Id of the {@link Album}
      * @return A {@link Album} with a matching Id
      */
-    public static Album findAlbumById (int albumId){
+    public static Album findAlbumById(long albumId) {
         // Returns the first Artist object in the library with a matching id
         for (Album a : albumLib){
-            if (a.albumId == albumId){
+            if (a.getAlbumId() == albumId){
                 return a;
             }
         }
@@ -762,10 +644,10 @@ public class Library {
      * @param genreId the MediaStore Id of the {@link Genre}
      * @return A {@link Genre} with a matching Id
      */
-    public static Genre findGenreById (int genreId){
+    public static Genre findGenreById(long genreId) {
         // Returns the first Genre object in the library with a matching id
         for (Genre g : genreLib){
-            if (g.genreId == genreId){
+            if (g.getGenreId() == genreId){
                 return g;
             }
         }
@@ -775,7 +657,7 @@ public class Library {
     public static Artist findArtistByName (String artistName){
         final String trimmedQuery = artistName.trim();
         for (Artist a : artistLib){
-            if (a.artistName.equalsIgnoreCase(trimmedQuery))
+            if (a.getArtistName().equalsIgnoreCase(trimmedQuery))
                 return a;
         }
         return null;
@@ -791,17 +673,17 @@ public class Library {
      * @param playlist The {@link Playlist} to get the entries of
      * @return An {@link ArrayList} of {@link Song}s contained in the playlist
      */
-    public static ArrayList<Song> getPlaylistEntries (Context context, Playlist playlist){
+    public static List<Song> getPlaylistEntries (Context context, Playlist playlist){
         if (playlist instanceof AutoPlaylist){
             ArrayList<Song> entries = ((AutoPlaylist) playlist).generatePlaylist(context);
             editPlaylist(context, playlist, entries);
             return entries;
         }
 
-        ArrayList<Song> songEntries = new ArrayList<>();
+        List<Song> songEntries = new ArrayList<>();
 
         Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId),
+                MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.getPlaylistId()),
                 playlistEntryProjection,
                 MediaStore.Audio.Media.IS_MUSIC + " != 0", null, null);
 
@@ -809,20 +691,7 @@ public class Library {
             return songEntries;
         }
 
-        for (int i = 0; i < cur.getCount(); i++) {
-            cur.moveToPosition(i);
-            songEntries.add(new Song(
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.TITLE)),
-                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.AUDIO_ID)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.ARTIST)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.ALBUM)),
-                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.DURATION)),
-                    cur.getString(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.DATA)),
-                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.YEAR)),
-                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.DATE_ADDED)),
-                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.ALBUM_ID)),
-                    cur.getInt(cur.getColumnIndex(MediaStore.Audio.Playlists.Members.ARTIST_ID))));
-        }
+        songEntries = Song.buildSongList(cur, context.getResources());
         cur.close();
 
         return songEntries;
@@ -837,7 +706,7 @@ public class Library {
         ArrayList<Song> songEntries = new ArrayList<>();
 
         for (Song s : songLib){
-            if (s.albumId == album.albumId){
+            if (s.getAlbumId() == album.getAlbumId()){
                 songEntries.add(s);
             }
         }
@@ -845,7 +714,7 @@ public class Library {
         Collections.sort(songEntries, new Comparator<Song>() {
             @Override
             public int compare(Song o1, Song o2) {
-                return ((Integer) o1.trackNumber).compareTo(o2.trackNumber);
+                return ((Integer) o1.getTrackNumber()).compareTo(o2.getTrackNumber());
             }
         });
 
@@ -861,7 +730,7 @@ public class Library {
         ArrayList<Song> songEntries = new ArrayList<>();
 
         for(Song s : songLib){
-            if (s.artistId == artist.artistId){
+            if (s.getArtistId() == artist.getArtistId()){
                 songEntries.add(s);
             }
         }
@@ -878,7 +747,7 @@ public class Library {
         ArrayList<Album> albumEntries = new ArrayList<>();
 
         for (Album a : albumLib){
-            if (a.artistId == artist.artistId){
+            if (a.getArtistId() == artist.getArtistId()){
                 albumEntries.add(a);
             }
         }
@@ -895,7 +764,7 @@ public class Library {
         ArrayList<Song> songEntries = new ArrayList<>();
 
         for(Song s : songLib){
-            if (s.genreId == genre.genreId){
+            if (s.getGenreId() == genre.getGenreId()){
                 songEntries.add(s);
             }
         }
@@ -933,9 +802,9 @@ public class Library {
                     playDate = Integer.parseInt(originalValues[2]);
                 }
 
-                playCounts.put(Integer.parseInt(key), playCount);
-                skipCounts.put(Integer.parseInt(key), skipCount);
-                playDates.put(Integer.parseInt(key), playDate);
+                playCounts.put(Long.parseLong(key), playCount);
+                skipCounts.put(Long.parseLong(key), skipCount);
+                playDates.put(Long.parseLong(key), playDate);
             }
         }
         catch (IOException e){
@@ -974,8 +843,8 @@ public class Library {
      * @param songId The {@link Song#songId} as written in the MediaStore
      * @return The number of times a song has been skipped
      */
-    public static int getSkipCount (int songId){
-        return skipCounts.get(songId, 0);
+    protected static int getSkipCount(long songId) {
+        return skipCounts.get(songId);
     }
 
     /**
@@ -984,8 +853,8 @@ public class Library {
      * @param songId The {@link Song#songId} as written in the MediaStore
      * @return The number of times a song has been plays
      */
-    public static int getPlayCount (int songId){
-        return playCounts.get(songId, 0);
+    protected static int getPlayCount(long songId) {
+        return playCounts.get(songId);
     }
 
     /**
@@ -995,8 +864,8 @@ public class Library {
      * @return The last time a song was played given in seconds as a UTC timestamp
      *         (since midnight of January 1, 1970 UTC)
      */
-    public static int getPlayDate(int songId) {
-        return playDates.get(songId, 0);
+    protected static int getPlayDate(long songId) {
+        return playDates.get(songId);
     }
 
     //
@@ -1010,7 +879,7 @@ public class Library {
      * @param songList An {@link ArrayList} of {@link Song}s to populate the new playlist
      * @return The Playlist that was added to the library
      */
-    public static Playlist createPlaylist(final View view, final String playlistName, @Nullable final ArrayList<Song> songList){
+    public static Playlist createPlaylist(final View view, final String playlistName, @Nullable final List<Song> songList){
         final Context context = view.getContext();
         String trimmedName = playlistName.trim();
 
@@ -1063,7 +932,7 @@ public class Library {
         }
 
         for (Playlist p : playlistLib){
-            if (p.playlistName.equalsIgnoreCase(trimmedName)){
+            if (p.getPlaylistName().equalsIgnoreCase(trimmedName)){
                 return context.getResources().getString(R.string.error_hint_duplicate_playlist);
             }
         }
@@ -1077,7 +946,7 @@ public class Library {
      */
     public static void removePlaylist(final View view, final Playlist playlist){
         final Context context = view.getContext();
-        final ArrayList<Song> entries = getPlaylistEntries(context, playlist);
+        final List<Song> entries = getPlaylistEntries(context, playlist);
 
         deletePlaylist(context, playlist);
 
@@ -1094,7 +963,7 @@ public class Library {
                                 if (playlist instanceof AutoPlaylist) {
                                     createAutoPlaylist(context, (AutoPlaylist) playlist);
                                 } else {
-                                    addPlaylist(context, playlist.playlistName, entries);
+                                    addPlaylist(context, playlist.getPlaylistName(), entries);
                                 }
                             }
                         })
@@ -1107,9 +976,10 @@ public class Library {
      * @param playlist The {@link Playlist} to edit in the MediaStore
      * @param newSongList An {@link ArrayList} of {@link Song}s to overwrite the list contained in the MediaStore
      */
-    public static void editPlaylist(final Context context, final Playlist playlist, final ArrayList<Song> newSongList){
+    public static void editPlaylist(final Context context, final Playlist playlist, final List<Song> newSongList){
         // Clear the playlist...
-        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId);
+        Uri uri = MediaStore.Audio.Playlists.Members
+                .getContentUri("external", playlist.getPlaylistId());
         ContentResolver resolver = context.getContentResolver();
         resolver.delete(uri, null, null);
 
@@ -1118,7 +988,9 @@ public class Library {
         for (int i = 0; i < newSongList.size(); i++) {
             values[i] = new ContentValues();
             values[i].put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, i + 1);
-            values[i].put(MediaStore.Audio.Playlists.Members.AUDIO_ID, newSongList.get(i).songId);
+            values[i].put(
+                    MediaStore.Audio.Playlists.Members.AUDIO_ID,
+                    newSongList.get(i).getSongId());
         }
         resolver.bulkInsert(uri, values);
         resolver.notifyChange(Uri.parse("content://media"), null);
@@ -1180,15 +1052,15 @@ public class Library {
      * @param playlist The {@link Playlist} to edit in the MediaStore
      * @param songs The {@link ArrayList} of {@link Song}s to be added to the playlist in the MediaStore
      */
-    public static void addPlaylistEntries(final View view, final Playlist playlist, final ArrayList<Song> songs){
+    public static void addPlaylistEntries(final View view, final Playlist playlist, final List<Song> songs){
         // Public method to add songs to a playlist
         // Checks the playlist for duplicate entries
 
         final Context context = view.getContext();
 
         int duplicateCount = 0;
-        final ArrayList<Song> currentEntries = getPlaylistEntries(context, playlist);
-        final ArrayList<Song> newEntries = new ArrayList<>();
+        final List<Song> currentEntries = getPlaylistEntries(context, playlist);
+        final List<Song> newEntries = new ArrayList<>();
 
         for (Song s : songs){
             if (currentEntries.contains(s))duplicateCount++;
@@ -1207,7 +1079,10 @@ public class Library {
                                 addSongsToEndOfPlaylist(context, playlist, songs);
                                 Snackbar.make(
                                         view,
-                                        context.getString(R.string.confirm_add_songs, songs.size(), playlist.playlistName),
+                                        context.getString(
+                                                R.string.confirm_add_songs,
+                                                songs.size(),
+                                                playlist.getPlaylistName()),
                                         Snackbar.LENGTH_LONG)
                                         .setAction(context.getString(R.string.action_undo), new View.OnClickListener() {
                                             @Override
@@ -1231,7 +1106,10 @@ public class Library {
                                 addSongsToEndOfPlaylist(context, playlist, newEntries);
                                 Snackbar.make(
                                         view,
-                                        context.getString(R.string.confirm_add_songs, newEntries.size(), playlist.playlistName),
+                                        context.getString(
+                                                R.string.confirm_add_songs,
+                                                newEntries.size(),
+                                                playlist.getPlaylistName()),
                                         Snackbar.LENGTH_LONG)
                                         .setAction(R.string.action_undo, new View.OnClickListener() {
                                             @Override
@@ -1250,7 +1128,10 @@ public class Library {
                                 addSongsToEndOfPlaylist(context, playlist, songs);
                                 Snackbar.make(
                                         view,
-                                        context.getString(R.string.confirm_add_songs, songs.size(), playlist.playlistName),
+                                        context.getString(
+                                                R.string.confirm_add_songs,
+                                                songs.size(),
+                                                playlist.getPlaylistName()),
                                         Snackbar.LENGTH_LONG)
                                         .setAction(R.string.action_undo, new View.OnClickListener() {
                                             @Override
@@ -1272,7 +1153,10 @@ public class Library {
             addSongsToEndOfPlaylist(context, playlist, songs);
             Snackbar.make(
                     view,
-                    context.getString(R.string.confirm_add_songs, newEntries.size(), playlist.playlistName),
+                    context.getString(
+                            R.string.confirm_add_songs,
+                            newEntries.size(),
+                            playlist.getPlaylistName()),
                     Snackbar.LENGTH_LONG)
                     .setAction(R.string.action_undo, new View.OnClickListener() {
                         @Override
@@ -1296,7 +1180,7 @@ public class Library {
     /**
      * Add a new playlist to the MediaStore and to the application's current library instance. Use
      * this when making regular playlists.
-     * Outside of this class, use {@link Library#createPlaylist(View, String, ArrayList)} instead
+     * Outside of this class, use {@link Library#createPlaylist(View, String, List)} instead
      * <b>This method DOES NOT validate inputs or display a confirmation message to the user</b>.
      * @param context A {@link Context} used to edit the MediaStore
      * @param playlistName The name of the new playlist
@@ -1304,7 +1188,7 @@ public class Library {
      * @return The Playlist that was added to the library
      */
     private static Playlist addPlaylist(final Context context, final String playlistName,
-                                        @Nullable final ArrayList<Song> songList) {
+                                        @Nullable final List<Song> songList) {
         final Playlist added = makePlaylist(context, playlistName, songList);
         playlistLib.add(added);
         Collections.sort(playlistLib);
@@ -1318,10 +1202,10 @@ public class Library {
      * @param playlistName The name of the new playlist
      * @param songList An {@link ArrayList} of {@link Song}s to populate the new playlist
      * @return The Playlist that was added to the library
-     * @see Library#addPlaylist(Context, String, ArrayList) for playlist creation
+     * @see Library#addPlaylist(Context, String, List) for playlist creation
      * @see Library#createAutoPlaylist(Context, AutoPlaylist) for AutoPlaylist creation
      */
-    private static Playlist makePlaylist(final Context context, final String playlistName, @Nullable final ArrayList<Song> songList){
+    private static Playlist makePlaylist(final Context context, final String playlistName, @Nullable final List<Song> songList){
         String trimmedName = playlistName.trim();
 
         // Add the playlist to the MediaStore
@@ -1357,10 +1241,10 @@ public class Library {
             for (int i = 0; i < songList.size(); i++) {
                 values[i] = new ContentValues();
                 values[i].put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, i);
-                values[i].put(MediaStore.Audio.Playlists.Members.AUDIO_ID, songList.get(i).songId);
+                values[i].put(MediaStore.Audio.Playlists.Members.AUDIO_ID, songList.get(i).getSongId());
             }
 
-            Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId);
+            Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.getPlaylistId());
             ContentResolver resolver = context.getContentResolver();
 
             resolver.bulkInsert(uri, values);
@@ -1380,12 +1264,13 @@ public class Library {
         context.getContentResolver().delete(
                 MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
                 MediaStore.Audio.Playlists._ID + "=?",
-                new String[]{playlist.playlistId + ""});
+                new String[]{playlist.getPlaylistId() + ""});
 
         // If the playlist is an AutoPlaylist, make sure to delete its configuration
         if (playlist instanceof AutoPlaylist) {
             //noinspection ResultOfMethodCallIgnored
-            new File(context.getExternalFilesDir(null) + "/"  + playlist.playlistName + AUTO_PLAYLIST_EXTENSION).delete();
+            new File(context.getExternalFilesDir(null)
+                    + "/" + playlist.getPlaylistName() + AUTO_PLAYLIST_EXTENSION).delete();
         }
 
         // Update the playlist library & resort it
@@ -1405,7 +1290,8 @@ public class Library {
         // Private method to add a song to a playlist
         // This method does the actual operation to the MediaStore
         Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId),
+                MediaStore.Audio.Playlists.Members
+                        .getContentUri("external", playlist.getPlaylistId()),
                 null, null, null,
                 MediaStore.Audio.Playlists.Members.TRACK + " ASC");
 
@@ -1419,9 +1305,10 @@ public class Library {
 
         ContentValues values = new ContentValues();
         values.put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, count + 1);
-        values.put(MediaStore.Audio.Playlists.Members.AUDIO_ID, song.songId);
+        values.put(MediaStore.Audio.Playlists.Members.AUDIO_ID, song.getSongId());
 
-        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId);
+        Uri uri = MediaStore.Audio.Playlists.Members
+                .getContentUri("external", playlist.getPlaylistId());
         ContentResolver resolver = context.getContentResolver();
         resolver.insert(uri, values);
         resolver.notifyChange(Uri.parse("content://media"), null);
@@ -1433,11 +1320,12 @@ public class Library {
      * @param playlist The {@link Playlist} to edit in the MediaStore
      * @param songs The {@link ArrayList} of {@link Song}s to be added to the playlist in the MediaStore
      */
-    private static void addSongsToEndOfPlaylist(final Context context, final Playlist playlist, final ArrayList<Song> songs){
+    private static void addSongsToEndOfPlaylist(final Context context, final Playlist playlist, final List<Song> songs){
         // Private method to add a song to a playlist
         // This method does the actual operation to the MediaStore
         Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId),
+                MediaStore.Audio.Playlists.Members
+                        .getContentUri("external", playlist.getPlaylistId()),
                 null, null, null,
                 MediaStore.Audio.Playlists.Members.TRACK + " ASC");
 
@@ -1453,10 +1341,11 @@ public class Library {
         for (int i = 0; i < songs.size(); i++) {
             values[i] = new ContentValues();
             values[i].put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, count + 1);
-            values[i].put(MediaStore.Audio.Playlists.Members.AUDIO_ID, songs.get(i).songId);
+            values[i].put(MediaStore.Audio.Playlists.Members.AUDIO_ID, songs.get(i).getSongId());
         }
 
-        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlist.playlistId);
+        Uri uri = MediaStore.Audio.Playlists.Members
+                .getContentUri("external", playlist.getPlaylistId());
         ContentResolver resolver = context.getContentResolver();
         resolver.bulkInsert(uri, values);
         resolver.notifyChange(Uri.parse("content://media"), null);
@@ -1476,14 +1365,18 @@ public class Library {
     public static void createAutoPlaylist(Context context, AutoPlaylist playlist) {
         try {
             // Add the playlist to the MediaStore
-            Playlist p = makePlaylist(context, playlist.playlistName, playlist.generatePlaylist(context));
+            Playlist p = makePlaylist(
+                    context,
+                    playlist.getPlaylistName(),
+                    playlist.generatePlaylist(context));
 
             // Assign the auto playlist's ID to match the one in the MediaStore
-            playlist.playlistId = p.playlistId;
+            playlist.playlistId = p.getPlaylistId();
 
             // Save the playlist configuration with GSON
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            FileWriter playlistWriter = new FileWriter(context.getExternalFilesDir(null) + "/" + playlist.playlistName + AUTO_PLAYLIST_EXTENSION);
+            FileWriter playlistWriter = new FileWriter(context.getExternalFilesDir(null)
+                    + "/" + playlist.getPlaylistName() + AUTO_PLAYLIST_EXTENSION);
             playlistWriter.write(gson.toJson(playlist, AutoPlaylist.class));
             playlistWriter.close();
 
@@ -1500,7 +1393,7 @@ public class Library {
         try {
             // Save the playlist configuration with GSON
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            FileWriter playlistWriter = new FileWriter(context.getExternalFilesDir(null) + "/"  + playlist.playlistName + AUTO_PLAYLIST_EXTENSION);
+            FileWriter playlistWriter = new FileWriter(context.getExternalFilesDir(null) + "/"  + playlist.getPlaylistName() + AUTO_PLAYLIST_EXTENSION);
             playlistWriter.write(gson.toJson(playlist, AutoPlaylist.class));
             playlistWriter.close();
 
@@ -1513,12 +1406,12 @@ public class Library {
                     (AutoPlaylist) playlistLib.remove(playlistLib.indexOf(playlist));
 
             // If the user renamed the playlist, update it now
-            if (!oldReference.playlistName.equals(playlist.playlistName)) {
-                renamePlaylist(context, playlist.playlistId, playlist.playlistName);
+            if (!oldReference.getPlaylistName().equals(playlist.getPlaylistName())) {
+                renamePlaylist(context, playlist.getPlaylistId(), playlist.getPlaylistName());
                 // Delete the old config file so that it doesn't reappear on restart
                 //noinspection ResultOfMethodCallIgnored
                 new File(context.getExternalFilesDir(null) + "/" +
-                        oldReference.playlistName + AUTO_PLAYLIST_EXTENSION).delete();
+                        oldReference.getPlaylistName() + AUTO_PLAYLIST_EXTENSION).delete();
             }
 
             // Add the playlist again. This makes sure that if the values have been cloned before
@@ -1548,7 +1441,7 @@ public class Library {
      * @return The position that this list should be started from
      * @throws IOException
      */
-    public static int getSongListFromFile(Activity activity, File file, String type, final ArrayList<Song> queue) throws IOException{
+    public static int getSongListFromFile(Activity activity, File file, String type, final List<Song> queue) throws IOException{
         // A somewhat convoluted method for getting a list of songs from a path
 
         // Songs are put into the queue array list
@@ -1614,27 +1507,12 @@ public class Library {
             }
 
             // Create song objects to match those in the music library
-            for (int i = 0; i < cur.getCount(); i++) {
-                cur.moveToPosition(i);
-                queue.add(new Song(
-                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)),
-                        cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media._ID)),
-                        (cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)).equals(MediaStore.UNKNOWN_STRING))
-                                ? activity.getString(R.string.unknown_artist)
-                                : cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
-                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)),
-                        cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DURATION)),
-                        cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA)),
-                        cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.YEAR)),
-                        cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.DATE_ADDED)),
-                        cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)),
-                        cur.getInt(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID))));
-            }
+            queue.addAll(Song.buildSongList(cur, activity.getResources()));
             cur.close();
 
             // Find the position of the song that should be played
             for(int i = 0; i < queue.size(); i++){
-                if (queue.get(i).location.equals(file.getPath())) return i;
+                if (queue.get(i).getLocation().equals(file.getPath())) return i;
             }
         }
 

@@ -7,7 +7,7 @@ import com.h6ah4i.android.widget.advrecyclerview.draggable.DraggableItemViewHold
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Song;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class DraggableSongViewHolder extends SongViewHolder implements DraggableItemViewHolder {
 
@@ -15,7 +15,7 @@ public class DraggableSongViewHolder extends SongViewHolder implements Draggable
     public View itemView;
     private int flags = 0;
 
-    public DraggableSongViewHolder(View itemView, ArrayList<Song> songList) {
+    public DraggableSongViewHolder(View itemView, List<Song> songList) {
         super(itemView, songList);
         this.itemView = itemView;
         dragHandle = (ImageView) itemView.findViewById(R.id.handle);

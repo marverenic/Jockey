@@ -28,7 +28,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.crashlytics.android.Crashlytics;
-import com.marverenic.music.Library;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.instances.Album;
@@ -78,7 +78,7 @@ public class ArtistActivity extends BaseActivity {
         boolean allEntriesHaveYears = true;
         int i = 0;
         while (i < albums.size() && allEntriesHaveYears){
-            if (albums.get(i).year == null || albums.get(i).year.equals(""))
+            if (albums.get(i).getYear() == 0)
                 allEntriesHaveYears = false;
             i++;
         }
@@ -87,7 +87,7 @@ public class ArtistActivity extends BaseActivity {
             Collections.sort(albums, new Comparator<Album>() {
                 @Override
                 public int compare(Album a1, Album a2) {
-                    return a2.year.compareTo(a1.year);
+                    return a1.getYear() - a2.getYear();
                 }
             });
         }
@@ -96,7 +96,7 @@ public class ArtistActivity extends BaseActivity {
         }
 
         CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        collapsingToolbar.setTitle(reference.artistName);
+        collapsingToolbar.setTitle(reference.getArtistName());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);

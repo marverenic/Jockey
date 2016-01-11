@@ -22,7 +22,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.marverenic.music.Library;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
 import com.marverenic.music.instances.Album;
@@ -524,15 +524,15 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         public long getItemId(int position) {
             switch (type) {
                 case AutoPlaylist.Rule.Type.PLAYLIST:
-                    return Library.getPlaylists().get(position).playlistId;
+                    return Library.getPlaylists().get(position).getPlaylistId();
                 case AutoPlaylist.Rule.Type.SONG:
-                    return Library.getSongs().get(position).songId;
+                    return Library.getSongs().get(position).getSongId();
                 case AutoPlaylist.Rule.Type.ARTIST:
-                    return Library.getArtists().get(position).artistId;
+                    return Library.getArtists().get(position).getArtistId();
                 case AutoPlaylist.Rule.Type.ALBUM:
-                    return Library.getAlbums().get(position).albumId;
+                    return Library.getAlbums().get(position).getAlbumId();
                 case AutoPlaylist.Rule.Type.GENRE:
-                    return Library.getGenres().get(position).genreId;
+                    return Library.getGenres().get(position).getGenreId();
             }
             return 0;
         }
@@ -553,9 +553,9 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
             titleText.setText(reference.toString());
 
             if (reference instanceof Song) {
-                detailText.setText(((Song) reference).artistName);
+                detailText.setText(((Song) reference).getArtistName());
             } else if (reference instanceof Album) {
-                detailText.setText(((Album) reference).artistName);
+                detailText.setText(((Album) reference).getArtistName());
             } else {
                 detailText.setVisibility(View.GONE);
             }
@@ -579,9 +579,9 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
             titleText.setText(reference.toString());
 
             if (reference instanceof Song) {
-                detailText.setText(((Song) reference).artistName);
+                detailText.setText(((Song) reference).getArtistName());
             } else if (reference instanceof Album) {
-                detailText.setText(((Album) reference).artistName);
+                detailText.setText(((Album) reference).getArtistName());
             } else {
                 detailText.setVisibility(View.GONE);
             }

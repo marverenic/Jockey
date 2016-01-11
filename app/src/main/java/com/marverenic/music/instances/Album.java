@@ -1,9 +1,18 @@
 package com.marverenic.music.instances;
 
+import android.content.Context;
+import android.content.res.Resources;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 
+import com.marverenic.music.R;
+import com.marverenic.music.utils.Util;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class Album implements Parcelable, Comparable<Album> {
@@ -18,34 +27,92 @@ public class Album implements Parcelable, Comparable<Album> {
         }
     };
 
-    public int albumId;
-    public String albumName;
-    public int artistId;
-    public String artistName;
-    public String year;
-    public String artUri;
+    protected long albumId;
+    protected String albumName;
+    protected long artistId;
+    protected String artistName;
+    protected int year;
+    protected String artUri;
 
-    public Album(final int albumId, final String albumName, final int artistId, final String artistName, final String year, final String artUri) {
-        this.albumId = albumId;
-        this.albumName = albumName;
-        this.artistId = artistId;
-        this.artistName = artistName;
-        this.year = year;
-        this.artUri = artUri;
+    private Album() {
+
     }
 
     private Album(Parcel in) {
-        albumId = in.readInt();
+        albumId = in.readLong();
         albumName = in.readString();
-        artistId = in.readInt();
+        artistId = in.readLong();
         artistName = in.readString();
-        year = in.readString();
+        year = in.readInt();
         artUri = in.readString();
+    }
+
+    /**
+     * Builds a {@link List} of Albums from a Cursor
+     * @param cur A {@link Cursor} to use when reading the {@link MediaStore}. This Cursor may have
+     *            any filters and sorting, but MUST have AT LEAST the columns in
+     *            {@link Library#albumProjection}. The caller is responsible for closing this
+     *            Cursor.
+     * @param res A {@link Resources} Object from {@link Context#getResources()} used to get the
+     *            default values if an unknown value is encountered
+     * @return A List of albums populated by entries in the Cursor
+     */
+    public static List<Album> buildAlbumList(Cursor cur, Resources res) {
+        List<Album> albums = new ArrayList<>(cur.getCount());
+
+        final int idIndex = cur.getColumnIndex(MediaStore.Audio.Albums._ID);
+        final int albumIndex = cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM);
+        final int artistIndex = cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST);
+        final int artistIdIndex = cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID);
+        final int yearIndex = cur.getColumnIndex(MediaStore.Audio.Albums.LAST_YEAR);
+        final int artIndex = cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART);
+
+        final String unknownAlbum = res.getString(R.string.unknown_album);
+        final String unknownArtist = res.getString(R.string.unknown_artist);
+
+        for (int i = 0; i < cur.getCount(); i++) {
+            cur.moveToPosition(i);
+            Album next = new Album();
+            next.albumId = cur.getLong(idIndex);
+            next.albumName = Library.parseUnknown(cur.getString(albumIndex), unknownAlbum);
+            next.artistName = Library.parseUnknown(cur.getString(artistIndex), unknownArtist);
+            next.artistId = cur.getLong(artistIdIndex);
+            next.year = cur.getInt(yearIndex);
+            next.artUri = cur.getString(artIndex);
+
+            albums.add(next);
+        }
+
+        return albums;
+    }
+
+    public long getAlbumId() {
+        return albumId;
+    }
+
+    public String getAlbumName() {
+        return albumName;
+    }
+
+    public long getArtistId() {
+        return artistId;
+    }
+
+    public String getArtistName() {
+        return artistName;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public String getArtUri() {
+        return artUri;
     }
 
     @Override
     public int hashCode() {
-        return albumId;
+        return Util.hashLong(albumId);
     }
 
     @Override
@@ -65,11 +132,11 @@ public class Album implements Parcelable, Comparable<Album> {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(albumId);
+        dest.writeLong(albumId);
         dest.writeString(albumName);
-        dest.writeInt(artistId);
+        dest.writeLong(artistId);
         dest.writeString(artistName);
-        dest.writeString(year);
+        dest.writeInt(year);
         dest.writeString(artUri);
     }
 

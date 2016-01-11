@@ -15,7 +15,7 @@ import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.marverenic.music.Library;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.AutoPlaylist;
 
@@ -65,7 +65,7 @@ public class RuleHeaderViewHolder extends RecyclerView.ViewHolder implements Vie
         super(itemView);
 
         this.reference = reference;
-        this.originalName = reference.playlistName;
+        this.originalName = reference.getPlaylistName();
 
         // Initialize View references
         AppCompatEditText nameEditText = (AppCompatEditText) itemView.findViewById(R.id.playlist_name_input_text);
@@ -80,15 +80,15 @@ public class RuleHeaderViewHolder extends RecyclerView.ViewHolder implements Vie
         truncateMethodPrefix = (TextView) itemView.findViewById(R.id.playlist_chosen_by_prefix);
 
         // Update View contents to match those provided in the current reference
-        nameEditText.setText(reference.playlistName);
-        matchAllRulesSwitch.setChecked(reference.matchAllRules);
-        if (reference.maximumEntries > 0) {
-            maximumEditText.setText(Integer.toString(reference.maximumEntries));
+        nameEditText.setText(reference.getPlaylistName());
+        matchAllRulesSwitch.setChecked(reference.isMatchAllRules());
+        if (reference.getMaximumEntries() > 0) {
+            maximumEditText.setText(Integer.toString(reference.getMaximumEntries()));
         }
 
-        truncateMethodSpinner.setSelection(lookupTruncateMethod(reference.truncateMethod, reference.truncateAscending));
-        songCapCheckBox.setChecked(reference.maximumEntries > 0);
-        onCheckedChanged(songCapCheckBox, reference.maximumEntries > 0);
+        truncateMethodSpinner.setSelection(lookupTruncateMethod(reference.getTruncateMethod(), reference.isTruncateAscending()));
+        songCapCheckBox.setChecked(reference.getMaximumEntries() > 0);
+        onCheckedChanged(songCapCheckBox, reference.getMaximumEntries() > 0);
 
         // These view groups allow the entire description text to be clickable to toggle
         // the setting
@@ -115,7 +115,7 @@ public class RuleHeaderViewHolder extends RecyclerView.ViewHolder implements Vie
                     nameEditLayout.setError(null);
                     nameEditLayout.setErrorEnabled(false);
                 }
-                reference.playlistName = s.toString().trim();
+                reference.setPlaylistName(s.toString().trim());
             }
 
             @Override
@@ -132,9 +132,9 @@ public class RuleHeaderViewHolder extends RecyclerView.ViewHolder implements Vie
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 try {
-                    reference.maximumEntries = Integer.parseInt(s.toString().trim());
+                    reference.setMaximumEntries(Integer.parseInt(s.toString().trim()));
                 } catch (NumberFormatException e) {
-                    reference.maximumEntries = 0;
+                    reference.setMaximumEntries(0);
                 }
             }
 
@@ -173,27 +173,27 @@ public class RuleHeaderViewHolder extends RecyclerView.ViewHolder implements Vie
             truncateMethodSpinner.setEnabled(isChecked);
             truncateMethodPrefix.setEnabled(isChecked);
             if (!isChecked) {
-                reference.maximumEntries = AutoPlaylist.UNLIMITED_ENTRIES;
+                reference.setMaximumEntries(AutoPlaylist.UNLIMITED_ENTRIES);
             } else {
                 if (maximumEditText.getText().length() > 0) {
                     try {
-                        reference.maximumEntries =
-                                Integer.parseInt(maximumEditText.getText().toString().trim());
+                        reference.setMaximumEntries(
+                                Integer.parseInt(maximumEditText.getText().toString().trim()));
                     } catch (NumberFormatException e) {
-                        reference.maximumEntries = 0;
+                        reference.setMaximumEntries(0);
                     }
                 }
             }
         }
         if (buttonView == matchAllRulesSwitch) {
-            reference.matchAllRules = isChecked;
+            reference.setMatchAllRules(isChecked);
         }
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        reference.truncateMethod = TRUNCATE_CHOICES[(int) id];
-        reference.truncateAscending = TRUNCATE_ORDER_ASCENDING[(int) id];
+        reference.setTruncateMethod(TRUNCATE_CHOICES[(int) id]);
+        reference.setTruncateAscending(TRUNCATE_ORDER_ASCENDING[(int) id]);
     }
 
     @Override

@@ -20,7 +20,6 @@ import com.marverenic.music.activity.LibraryActivity;
 import com.marverenic.music.instances.Song;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerService extends Service {
@@ -146,14 +145,14 @@ public class PlayerService extends Service {
         // If the player is playing music, set the track info and the button intents
         if (player.getNowPlaying() != null) {
             // Update the info for the compact view
-            notificationView.setTextViewText(R.id.notificationContentTitle, player.getNowPlaying().songName);
-            notificationView.setTextViewText(R.id.notificationContentText, player.getNowPlaying().albumName);
-            notificationView.setTextViewText(R.id.notificationSubText, player.getNowPlaying().artistName);
+            notificationView.setTextViewText(R.id.notificationContentTitle, player.getNowPlaying().getSongName());
+            notificationView.setTextViewText(R.id.notificationContentText, player.getNowPlaying().getAlbumName());
+            notificationView.setTextViewText(R.id.notificationSubText, player.getNowPlaying().getArtistName());
 
             // Update the info for the expanded view
-            notificationViewExpanded.setTextViewText(R.id.notificationContentTitle, player.getNowPlaying().songName);
-            notificationViewExpanded.setTextViewText(R.id.notificationContentText, player.getNowPlaying().albumName);
-            notificationViewExpanded.setTextViewText(R.id.notificationSubText, player.getNowPlaying().artistName);
+            notificationViewExpanded.setTextViewText(R.id.notificationContentTitle, player.getNowPlaying().getSongName());
+            notificationViewExpanded.setTextViewText(R.id.notificationContentText, player.getNowPlaying().getAlbumName());
+            notificationViewExpanded.setTextViewText(R.id.notificationSubText, player.getNowPlaying().getArtistName());
         }
         else{
             // If the player isn't playing music, set the notification text to a hardcoded set of strings
@@ -371,7 +370,7 @@ public class PlayerService extends Service {
 
         @Override
         public void setQueue(List<Song> newQueue, int newPosition) throws RemoteException {
-            instance.player.setQueue(new ArrayList<>(newQueue), newPosition);
+            instance.player.setQueue(newQueue, newPosition);
         }
 
         @Override
@@ -381,7 +380,7 @@ public class PlayerService extends Service {
 
         @Override
         public void editQueue(List<Song> newQueue, int newPosition) throws RemoteException {
-            instance.player.editQueue(new ArrayList<>(newQueue), newPosition);
+            instance.player.editQueue(newQueue, newPosition);
         }
 
         @Override
@@ -391,7 +390,7 @@ public class PlayerService extends Service {
 
         @Override
         public void queueNextList(List<Song> songs) throws RemoteException {
-            instance.player.queueNext(new ArrayList<>(songs));
+            instance.player.queueNext(songs);
         }
 
         @Override
@@ -401,7 +400,7 @@ public class PlayerService extends Service {
 
         @Override
         public void queueLastList(List<Song> songs) throws RemoteException {
-            instance.player.queueLast(new ArrayList<>(songs));
+            instance.player.queueLast(songs);
         }
 
         @Override

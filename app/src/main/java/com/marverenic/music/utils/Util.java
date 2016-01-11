@@ -58,12 +58,11 @@ public class Util {
         return false;
     }
 
-
     public static Bitmap fetchFullArt(Song song){
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 
         try {
-            retriever.setDataSource(song.location);
+            retriever.setDataSource(song.getLocation());
             byte[] stream = retriever.getEmbeddedPicture();
             if (stream != null)
                 return BitmapFactory.decodeByteArray(stream, 0, stream.length);
@@ -72,6 +71,10 @@ public class Util {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static int hashLong(long value) {
+        return (int) (value ^ (value >>> 32));
     }
 
 }

@@ -1,12 +1,19 @@
 package com.marverenic.music.instances;
 
+import android.content.Context;
+import android.content.res.Resources;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 
-import com.marverenic.music.Library;
+import com.marverenic.music.R;
+import com.marverenic.music.utils.Util;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 
 public class Song implements Parcelable, Comparable<Song> {
@@ -21,47 +28,35 @@ public class Song implements Parcelable, Comparable<Song> {
         }
     };
 
-    public String songName;
-    public int songId;
-    public String artistName;
-    public String albumName;
-    public int songDuration;
-    public String location;
-    public int year;
-    public int dateAdded; // seconds since Jan 1, 1970
-    public int albumId;
-    public int artistId;
-    public int genreId = -1;
-    public int trackNumber = 0;
+    protected String songName;
+    protected long songId;
+    protected String artistName;
+    protected String albumName;
+    protected long songDuration;
+    protected String location;
+    protected int year;
+    protected long dateAdded; // seconds since Jan 1, 1970
+    protected long albumId;
+    protected long artistId;
+    protected long genreId;
+    protected int trackNumber;
 
-    public Song(final String songName, final int songId, final String artistName,
-                final String albumName, final int songDuration, final String location,
-                final int year, final int dateAdded, final int albumId, final int artistId) {
+    private Song() {
 
-        this.songName = songName;
-        this.songId = songId;
-        this.artistName = artistName;
-        this.albumName = albumName;
-        this.songDuration = songDuration;
-        this.location = location;
-        this.year = year;
-        this.dateAdded = dateAdded;
-        this.albumId = albumId;
-        this.artistId = artistId;
     }
 
     private Song(Parcel in) {
         songName = in.readString();
-        songId = in.readInt();
+        songId = in.readLong();
         albumName = in.readString();
         artistName = in.readString();
-        songDuration = in.readInt();
+        songDuration = in.readLong();
         location = in.readString();
         year = in.readInt();
-        dateAdded = in.readInt();
-        albumId = in.readInt();
-        artistId = in.readInt();
-        genreId = in.readInt();
+        dateAdded = in.readLong();
+        albumId = in.readLong();
+        artistId = in.readLong();
+        genreId = in.readLong();
     }
 
     public Song(Song s) {
@@ -79,21 +74,119 @@ public class Song implements Parcelable, Comparable<Song> {
         this.trackNumber = s.trackNumber;
     }
 
-    public int skipCount(){
+    /**
+     * Builds a {@link List} of Songs from a Cursor
+     * @param cur A {@link Cursor} to use when reading the {@link MediaStore}. This Cursor may have
+     *            any filters and sorting, but MUST have AT LEAST the columns in
+     *            {@link Library#songProjection}. The caller is responsible for closing this Cursor.
+     * @param res A {@link Resources} Object from {@link Context#getResources()} used to get the
+     *            default values if an unknown value is encountered
+     * @return A List of songs populated by entries in the Cursor
+     */
+    protected static List<Song> buildSongList(Cursor cur, Resources res) {
+        List<Song> songs = new ArrayList<>(cur.getCount());
+
+        final int titleIndex = cur.getColumnIndex(MediaStore.Audio.Media.TITLE);
+        final int idIndex = cur.getColumnIndex(MediaStore.Audio.Media._ID);
+        final int artistIndex = cur.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+        final int albumIndex = cur.getColumnIndex(MediaStore.Audio.Media.ALBUM);
+        final int durationIndex = cur.getColumnIndex(MediaStore.Audio.Media.DURATION);
+        final int dataIndex = cur.getColumnIndex(MediaStore.Audio.Media.DATA);
+        final int yearIndex = cur.getColumnIndex(MediaStore.Audio.Media.YEAR);
+        final int dateIndex = cur.getColumnIndex(MediaStore.Audio.Media.DATE_ADDED);
+        final int albumIdIndex = cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
+        final int artistIdIndex = cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID);
+        final int trackIndex = cur.getColumnIndex(MediaStore.Audio.Media.TRACK);
+
+        final String unknownSong = res.getString(R.string.unknown);
+        final String unknownArtist = res.getString(R.string.unknown_artist);
+        final String unknownAlbum = res.getString(R.string.unknown_album);
+        final String unknownData = "";
+
+        for (int i = 0; i < cur.getCount(); i++) {
+            cur.moveToPosition(i);
+            Song next = new Song();
+            next.songName = Library.parseUnknown(cur.getString(titleIndex), unknownSong);
+            next.songId = cur.getLong(idIndex);
+            next.artistName = Library.parseUnknown(cur.getString(artistIndex), unknownArtist);
+            next.albumName = Library.parseUnknown(cur.getString(albumIndex), unknownAlbum);
+            next.songDuration = cur.getLong(durationIndex);
+            next.location = Library.parseUnknown(cur.getString(dataIndex), unknownData);
+            next.year = cur.getInt(yearIndex);
+            next.dateAdded = cur.getLong(dateIndex);
+            next.albumId = cur.getLong(albumIdIndex);
+            next.artistId = cur.getLong(artistIdIndex);
+            next.trackNumber = cur.getInt(trackIndex);
+
+            songs.add(next);
+        }
+
+        return songs;
+    }
+
+    public String getSongName() {
+        return songName;
+    }
+
+    public long getSongId() {
+        return songId;
+    }
+
+    public String getArtistName() {
+        return artistName;
+    }
+
+    public String getAlbumName() {
+        return albumName;
+    }
+
+    public long getSongDuration() {
+        return songDuration;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public long getDateAdded() {
+        return dateAdded;
+    }
+
+    public long getAlbumId() {
+        return albumId;
+    }
+
+    public long getArtistId() {
+        return artistId;
+    }
+
+    public long getGenreId() {
+        return genreId;
+    }
+
+    public int getTrackNumber() {
+        return trackNumber;
+    }
+
+    public int getSkipCount(){
         return Library.getSkipCount(songId);
     }
 
-    public int playCount(){
+    public int getPlayCount(){
         return Library.getPlayCount(songId);
     }
 
-    public int playDate() {
+    public int getPlayDate() {
         return Library.getPlayDate(songId);
     }
 
     @Override
     public int hashCode() {
-        return songId;
+        return Util.hashLong(songId);
     }
 
     @Override
@@ -114,16 +207,16 @@ public class Song implements Parcelable, Comparable<Song> {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(songName);
-        dest.writeInt(songId);
+        dest.writeLong(songId);
         dest.writeString(albumName);
         dest.writeString(artistName);
-        dest.writeInt(songDuration);
+        dest.writeLong(songDuration);
         dest.writeString(location);
         dest.writeInt(year);
-        dest.writeInt(dateAdded);
-        dest.writeInt(albumId);
-        dest.writeInt(artistId);
-        dest.writeInt(genreId);
+        dest.writeLong(dateAdded);
+        dest.writeLong(albumId);
+        dest.writeLong(artistId);
+        dest.writeLong(genreId);
     }
 
     @Override
@@ -191,28 +284,28 @@ public class Song implements Parcelable, Comparable<Song> {
     public static final Comparator<Song> PLAY_COUNT_COMPARATOR = new Comparator<Song>() {
         @Override
         public int compare(Song s1, Song s2) {
-            return s2.playCount() - s1.playCount();
+            return s2.getPlayCount() - s1.getPlayCount();
         }
     };
 
     public static final Comparator<Song> SKIP_COUNT_COMPARATOR = new Comparator<Song>() {
         @Override
         public int compare(Song s1, Song s2) {
-            return s2.skipCount() - s1.skipCount();
+            return s2.getSkipCount() - s1.getSkipCount();
         }
     };
 
     public static final Comparator<Song> DATE_ADDED_COMPARATOR = new Comparator<Song>() {
         @Override
         public int compare(Song s1, Song s2) {
-            return s2.dateAdded - s1.dateAdded;
+            return s1.dateAdded < s2.dateAdded ? -1 : (s1.dateAdded == s2.dateAdded ? 0 : 1);
         }
     };
 
     public static final Comparator<Song> DATE_PLAYED_COMPARATOR = new Comparator<Song>() {
         @Override
         public int compare(Song s1, Song s2) {
-            return s2.playDate() - s1.playDate();
+            return s2.getPlayDate() - s1.getPlayDate();
         }
     };
 

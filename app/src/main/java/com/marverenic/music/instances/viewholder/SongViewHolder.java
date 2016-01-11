@@ -10,19 +10,19 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.marverenic.music.Library;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.utils.PlaylistDialog;
+import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.utils.Prefs;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener{
 
@@ -35,13 +35,13 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
     private Playlist playlistReference;
     private OnRemovedListener removalListener;
-    private ArrayList<Song> songList;
+    private List<Song> songList;
 
     public interface OnRemovedListener{
         void onSongRemoved(View view, Song song);
     }
 
-    public SongViewHolder(View itemView, ArrayList<Song> songList) {
+    public SongViewHolder(View itemView, List<Song> songList) {
         super(itemView);
         this.itemView = itemView;
         this.songList = songList;
@@ -64,8 +64,8 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         reference = s;
         this.index = index;
 
-        songName.setText(s.songName);
-        detailText.setText(s.artistName + " - " + s.albumName);
+        songName.setText(s.getSongName());
+        detailText.setText(s.getArtistName() + " - " + s.getAlbumName());
     }
 
     @Override
@@ -111,14 +111,14 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                         itemView.getContext(),
                         ArtistActivity.class,
                         ArtistActivity.ARTIST_EXTRA,
-                        Library.findArtistById(reference.artistId));
+                        Library.findArtistById(reference.getArtistId()));
                 return true;
             case 3: // Go to album
                 Navigate.to(
                         itemView.getContext(),
                         AlbumActivity.class,
                         AlbumActivity.ALBUM_EXTRA,
-                        Library.findAlbumById(reference.albumId));
+                        Library.findAlbumById(reference.getAlbumId()));
                 return true;
             case 4:
                 if (playlistReference == null) { //Add to playlist...

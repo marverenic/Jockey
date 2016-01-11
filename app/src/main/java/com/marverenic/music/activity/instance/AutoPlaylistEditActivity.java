@@ -10,7 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 
-import com.marverenic.music.Library;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.instances.AutoPlaylist;
@@ -51,7 +51,7 @@ public class AutoPlaylistEditActivity extends BaseActivity {
             if (reference == null){
                 getSupportActionBar().setTitle(R.string.playlist_auto_new);
             } else {
-                getSupportActionBar().setTitle(reference.playlistName);
+                getSupportActionBar().setTitle(reference.getPlaylistName());
             }
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_done_24dp);
         }
@@ -86,8 +86,8 @@ public class AutoPlaylistEditActivity extends BaseActivity {
 
     public void saveChanges() {
         AutoPlaylist.Rule[] modifiedRules = new AutoPlaylist.Rule[editedRules.size()];
-        editedReference.rules = editedRules.toArray(modifiedRules);
-        if (reference.playlistId == AutoPlaylist.EMPTY.playlistId) {
+        editedReference.setRules(editedRules.toArray(modifiedRules));
+        if (reference.getPlaylistId() == AutoPlaylist.EMPTY.getPlaylistId()) {
             Library.createAutoPlaylist(this, editedReference);
         } else {
             Library.editAutoPlaylist(this, editedReference);
@@ -109,8 +109,8 @@ public class AutoPlaylistEditActivity extends BaseActivity {
     }
 
     private boolean validateName() {
-        boolean valid = editedReference.playlistName.trim().equalsIgnoreCase(reference.playlistName.trim())
-                || Library.verifyPlaylistName(this, editedReference.playlistName) == null;
+        boolean valid = editedReference.getPlaylistName().trim().equalsIgnoreCase(reference.getPlaylistName().trim())
+                || Library.verifyPlaylistName(this, editedReference.getPlaylistName()) == null;
 
         if (!valid) {
             RecyclerView list = (RecyclerView) findViewById(R.id.list);

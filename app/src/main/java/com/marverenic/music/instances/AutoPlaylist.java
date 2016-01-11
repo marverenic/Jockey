@@ -6,7 +6,6 @@ import android.os.Parcelable;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.annotations.SerializedName;
-import com.marverenic.music.Library;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,40 +28,40 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      * How many items can be stored in this playlist. Default is unlimited
      */
     @SerializedName("maximumEntries")
-    public int maximumEntries;
+    protected int maximumEntries;
 
     /**
      * The field to look at when truncating the playlist. Must be a member of {@link Rule.Field}.
      * {@link Rule.Field#ID} will yield a random trim
      */
     @SerializedName("truncateMethod")
-    public int truncateMethod;
+    protected int truncateMethod;
 
     /**
      * Whether to trim the playlist ascending (A-Z, oldest to newest, or 0-infinity).
      * If false, sort descending (Z-A, newest to oldest, or infinity-0).
      */
     @SerializedName("truncateAscending")
-    public boolean truncateAscending;
+    protected boolean truncateAscending;
 
     /**
      * Whether or not a song has to match all rules in order to appear in the playlist.
      */
     @SerializedName("matchAllRules")
-    public boolean matchAllRules;
+    protected boolean matchAllRules;
 
     /**
      * The rules to match when building the playlist
      */
     @SerializedName("rules")
-    public Rule[] rules;
+    protected Rule[] rules;
 
     /**
      * The field to look at when sorting the playlist. Must be a member of {@link Rule.Field} and
      * cannot be {@link Rule.Field#ID}
      */
     @SerializedName("sortMethod")
-    public int sortMethod;
+    protected int sortMethod;
 
     /**
      * Whether to sort the playlist ascending (A-Z, oldest to newest, or 0-infinity).
@@ -70,7 +69,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      * Default is true.
      */
     @SerializedName("sortAscending")
-    public boolean sortAscending;
+    protected boolean sortAscending;
 
 
     /**
@@ -89,10 +88,12 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      *                      playlist
      * @param rules The rules that songs must follow in order to appear in this playlist
      */
-    public AutoPlaylist (int playlistId, String playlistName, int maximumEntries, int sortMethod,
+    public AutoPlaylist(long playlistId, String playlistName, int maximumEntries, int sortMethod,
                          int truncateMethod, boolean truncateAscending, boolean sortAscending,
-                         boolean matchAllRules, Rule... rules){
+                         boolean matchAllRules, Rule... rules) {
         super(playlistId, playlistName);
+        this.playlistId = playlistId;
+        this.playlistName = playlistName;
         this.maximumEntries = maximumEntries;
         this.matchAllRules = matchAllRules;
         this.rules = rules;
@@ -121,6 +122,62 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         for (int i = 0; i < this.rules.length; i++) {
             this.rules[i] = new Rule(playlist.rules[i]);
         }
+    }
+
+    public int getMaximumEntries() {
+        return maximumEntries;
+    }
+
+    public int getTruncateMethod() {
+        return truncateMethod;
+    }
+
+    public boolean isTruncateAscending() {
+        return truncateAscending;
+    }
+
+    public boolean isMatchAllRules() {
+        return matchAllRules;
+    }
+
+    public int getSortMethod() {
+        return sortMethod;
+    }
+
+    public boolean isSortAscending() {
+        return sortAscending;
+    }
+
+    public void setPlaylistName(String name) {
+        this.playlistName = name;
+    }
+
+    public void setMaximumEntries(int maximumEntries) {
+        this.maximumEntries = maximumEntries;
+    }
+
+    public void setTruncateMethod(int truncateMethod) {
+        this.truncateMethod = truncateMethod;
+    }
+
+    public void setTruncateAscending(boolean truncateAscending) {
+        this.truncateAscending = truncateAscending;
+    }
+
+    public void setMatchAllRules(boolean matchAllRules) {
+        this.matchAllRules = matchAllRules;
+    }
+
+    public void setRules(Rule[] rules) {
+        this.rules = rules;
+    }
+
+    public void setSortMethod(int sortMethod) {
+        this.sortMethod = sortMethod;
+    }
+
+    public void setSortAscending(boolean sortAscending) {
+        this.sortAscending = sortAscending;
     }
 
     /**
@@ -519,14 +576,14 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                     final long playCount = Long.parseLong(value);
                     if (match == Match.EQUALS || match == Match.NOT_EQUALS){
                         for (Song s : in){
-                            if (s.playCount() == playCount ^ match == Match.NOT_EQUALS){
+                            if (s.getPlayCount() == playCount ^ match == Match.NOT_EQUALS){
                                 filteredSongs.add(s);
                             }
                         }
                     }
                     else if (match == Match.LESS_THAN || match == Match.GREATER_THAN){
                         for (Song s : in){
-                            if (s.playCount() != playCount && (s.playCount() < playCount ^ match == Match.GREATER_THAN)){
+                            if (s.getPlayCount() != playCount && (s.getPlayCount() < playCount ^ match == Match.GREATER_THAN)){
                                 filteredSongs.add(s);
                             }
                         }
@@ -536,14 +593,14 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                     final long skipCount = Long.parseLong(value);
                     if (match == Match.EQUALS || match == Match.NOT_EQUALS){
                         for (Song s : in){
-                            if (s.skipCount() == skipCount ^ match == Match.NOT_EQUALS){
+                            if (s.getSkipCount() == skipCount ^ match == Match.NOT_EQUALS){
                                 filteredSongs.add(s);
                             }
                         }
                     }
                     else if (match == Match.LESS_THAN || match == Match.GREATER_THAN){
                         for (Song s : in){
-                            if (s.skipCount() != skipCount && (s.skipCount() < skipCount ^ match == Match.GREATER_THAN)){
+                            if (s.getSkipCount() != skipCount && (s.getSkipCount() < skipCount ^ match == Match.GREATER_THAN)){
                                 filteredSongs.add(s);
                             }
                         }
@@ -572,7 +629,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                         for (Song s : in){
                             // Look at the day the song was added, not the time
                             // (This value is still in seconds)
-                            int dayAdded = s.dateAdded - s.dateAdded % 86400; // 24 * 60 * 60
+                            int dayAdded = (int) (s.dateAdded - s.dateAdded % 86400);
                             if (dayAdded == date ^ match == Match.NOT_EQUALS){
                                 filteredSongs.add(s);
                             }
@@ -582,7 +639,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                         for (Song s : in){
                             // Look at the day the song was added, not the time
                             // (This value is still in seconds)
-                            int dayAdded = s.dateAdded - s.dateAdded % 86400; // 24 * 60 * 60
+                            int dayAdded = (int) (s.dateAdded - s.dateAdded % 86400);
                             if (dayAdded < date ^ match == Match.GREATER_THAN){
                                 filteredSongs.add(s);
                             }
@@ -595,7 +652,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                         for (Song s : in){
                             // Look at the day the song was added, not the time
                             // (This value is still in seconds)
-                            int dayAdded = s.playDate();
+                            int dayAdded = s.getPlayDate();
                             dayAdded -= dayAdded % 86400; // 24 * 60 * 60
                             if (dayAdded == playDate ^ match == Match.NOT_EQUALS) {
                                 filteredSongs.add(s);
@@ -606,7 +663,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                         for (Song s : in){
                             // Look at the day the song was added, not the time
                             // (This value is still in seconds)
-                            int dayAdded = s.playDate();
+                            int dayAdded = s.getPlayDate();
                             dayAdded -= dayAdded % 86400; // 24 * 60 * 60
                             if (dayAdded < playDate ^ match == Match.GREATER_THAN) {
                                 filteredSongs.add(s);

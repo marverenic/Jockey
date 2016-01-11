@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.marverenic.music.Library;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.instances.Album;
@@ -38,13 +38,13 @@ public class AlbumActivity extends BaseActivity {
         if (reference != null) {
             data = Library.getAlbumEntries(reference);
             if (getSupportActionBar() != null) {
-                getSupportActionBar().setTitle(reference.albumName);
+                getSupportActionBar().setTitle(reference.getAlbumName());
             }
         } else {
             data = new ArrayList<>();
         }
 
-        Glide.with(this).load(reference.artUri)
+        Glide.with(this).load(reference.getArtUri())
                 .centerCrop()
                 .into((ImageView) findViewById(R.id.backdrop));
 
