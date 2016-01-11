@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Confirmation messages -->
+    <string name="confirm_disable_shuffle">Disabled shuffle</string>
+    <string name="confirm_enable_shuffle">Enabled shuffle</string>
+    <string name="confirm_disable_repeat">Disabled repeat</string>
+    <string name="confirm_enable_repeat">Enabled repeat</string>
+    <string name="confirm_enable_repeat_one">Enabled repeat one</string>
+    <string name="confirm_refresh_library">Library refreshed</string>
+
+    <!-- Error messages -->
+    <string name="message_refresh_library_no_permission">Jockey doesn\'t have permission to read
+        your music</string>
+    <string name="message_create_playlist_error_no_name">Can\'t create a playlist with no name</string>
+    <string name="message_play_error_not_found">This song couldn\'t be played</string>
+    <string name="error_hint_duplicate_playlist">Enter a unique playlist name</string>
+    <string name="error_hint_empty_playlist">Enter a playlist name</string>
+
+    <!-- Formatted Messages -->
+    <string name="message_added_song">Added &#8220;%1$s&#8221; to &#8220;%2$s&#8221;</string>
+    <string name="message_created_playlist">Created playlist &#8220;%1$s&#8221;</string>
+    <string name="message_removed_playlist">Deleted playlist &#8220;%1$s&#8221;</string>
+    <string name="message_removed_song">Removed song &#8220;%1$s&#8221;</string>
+    <string name="message_create_playlist_error_exists">Couldn\'t create playlist &#8220;%1$s&#8221;
+        because it already exists</string>
+    <string name="message_sorted_playlist_random">Randomized &#8220;%1$s&#8221;</string>
+    <string name="message_sorted_playlist_name">Sorted &#8220;%1$s&#8221; by name</string>
+    <string name="message_sorted_playlist_artist">Sorted &#8220;%1$s&#8221; by artist name</string>
+    <string name="message_sorted_playlist_album">Sorted &#8220;%1$s&#8221; by album name</string>
+    <string name="message_sorted_playlist_play">Sorted &#8220;%1$s&#8221; by play count</string>
+    <string name="message_sorted_playlist_skip">Sorted &#8220;%1$s&#8221; by skip count</string>
+    <string name="message_sorted_playlist_date_added">Sorted &#8220;%1$s&#8221; by date added</string>
+    <string name="message_sorted_playlist_date_played">Sorted &#8220;%1$s&#8221; by date played</string>
+    <string name="header_add_song_name_to_playlist">Add &#8220;%1$s&#8221; to playlist</string>
+    <string name="confirm_add_songs">Added %1$s songs to playlist &#8220;%2$s&#8221;</string>
+
+
+</resources>

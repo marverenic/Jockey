@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <string name="app_name" translatable="false">Jockey</string>
 
@@ -24,53 +24,6 @@
     <string name="header_add_queue_to_playlist">Add queue to playlist</string>
     <string name="playlist_auto_new">New Smart Playlist</string>
 
-    <!-- Menu actions -->
-    <string name="action_refresh">Refresh Library</string>
-    <string name="action_go_to_queue">Queue</string>
-    <string name="action_search">Search Library</string>
-    <string name="action_export_playlist">Save as playlist&#8230;</string>
-    <string name="action_sort">Sort&#8230;</string>
-    <string name="action_sort_random">Randomize</string>
-    <string name="action_sort_name">Sort by name</string>
-    <string name="action_sort_artist">Sort by artist</string>
-    <string name="action_sort_album">Sort by album</string>
-    <string name="action_sort_play">Sort by play count</string>
-    <string name="action_sort_skip">Sort by skip count</string>
-    <string name="action_sort_date_added">Sort by date added</string>
-    <string name="action_sort_date_played">Sort by date played</string>
-    <string name="action_disable_shuffle">Disable shuffle</string>
-    <string name="action_enable_shuffle">Enable shuffle</string>
-    <string name="action_disable_repeat">Disable repeat</string>
-    <string name="action_enable_repeat">Enable repeat</string>
-    <string name="action_enable_repeat_one">Enable repeat one</string>
-    <string name="action_add_to_playlist">Add to playlist&#8230;</string>
-    <string name="action_done">Done</string>
-
-    <!-- Other Actions -->
-    <string name="action_skip">Skip</string>
-    <string name="action_play">Play</string>
-    <string name="action_pause">Pause</string>
-    <string name="action_previous">Previous</string>
-    <string name="action_undo">Undo</string>
-    <string name="action_info">Info</string>
-    <string name="action_create">Create</string>
-    <string name="action_cancel">Cancel</string>
-    <string name="action_add">Add</string>
-    <string name="action_add_all">Add all</string>
-    <string name="action_add_new">Add new</string>
-    <string name="action_agree">Agree</string>
-    <string name="action_try_again">Try again</string>
-    <string name="action_open_settings">Open settings</string>
-    <string name="action_make_new_playlist">Make new playlist&#8230;</string>
-    <string name="action_add_rule">Add rule</string>
-    <string name="action_discard_changes">Discard changes</string>
-
-    <!-- Content Descriptions (for accessibility) -->
-    <string name="description_album_art">Album Art</string>
-
-    <!-- Hints -->
-    <string name="hint_playlist_name">Playlist name</string>
-
     <!-- First start Strings -->
     <string name="first_launch_title">Welcome to Jockey</string>
     <string name="first_launch_detail"><![CDATA[By using this application, you agree to send
@@ -80,83 +33,7 @@
         <a href="http://try.crashlytics.com/terms/">Crashlytics privacy policy</a>]]>.
     </string>
 
-    <!-- Confirmation messages -->
-    <string name="confirm_disable_shuffle">Disabled shuffle</string>
-    <string name="confirm_enable_shuffle">Enabled shuffle</string>
-    <string name="confirm_disable_repeat">Disabled repeat</string>
-    <string name="confirm_enable_repeat">Enabled repeat</string>
-    <string name="confirm_enable_repeat_one">Enabled repeat one</string>
-    <string name="confirm_refresh_library">Library refreshed</string>
-
-    <!-- Error messages -->
-    <string name="message_refresh_library_no_permission">Jockey doesn\'t have permission to read
-        your music</string>
-    <string name="message_create_playlist_error_no_name">Can\'t create a playlist with no name</string>
-    <string name="message_play_error_not_found">This song couldn\'t be played</string>
-    <string name="error_hint_duplicate_playlist">Enter a unique playlist name</string>
-    <string name="error_hint_empty_playlist">Enter a playlist name</string>
-
-    <!-- Empty state & unknown strings -->
-    <string name="nothing_playing">Nothing is playing</string>
-    <string name="no_artist">Unknown artist</string>
-    <string name="no_album">Unknown album</string>
-    <string name="no_description">No description available</string>
-    <string name="various_artists">Various Artists</string>
-    <string name="unknown_artist">Unknown Artist</string>
-    <string name="unknown_album">Unknown Album</string>
-    <string name="unknown">Unknown</string>
-    <string name="empty_no_permission">Jockey needs permission to read your music library</string>
-    <string name="empty_no_permission_detail">To show your music, grant Jockey access to storage</string>
-    <string name="empty">Couldn\'t find any music here</string>
-    <string name="empty_detail">You can sync songs from your computer or download them from the Internet</string>
-    <string name="empty_playlists">You don\'t have any playlists</string>
-    <string name="empty_playlists_detail">You can make a new one by pressing the &#8220;+&#8221; button</string>
-    <string name="empty_playlist">This playlist is empty</string>
-    <string name="empty_playlist_detail">You can add songs from the library page</string>
-    <string name="empty_auto_playlist">This playlist is empty</string>
-    <string name="empty_auto_playlist_detail">No songs matched your filters</string>
-
-    <!-- Plurals -->
-    <plurals name="alert_confirm_duplicates">
-        <item quantity="one">Add duplicate song?</item>
-        <item quantity="other">Add duplicate songs?</item>
-    </plurals>
-    <plurals name="playlist_confirm_some_duplicates">
-        <item quantity="one">This playlist already contains one of these songs. Adding it again will
-            result in this playlist having a duplicated entry.</item>
-        <item quantity="other">This playlist already contains some of these songs. Adding them again
-            will result in this playlist having %d duplicated entries.</item>
-    </plurals>
-    <string name="playlist_confirm_duplicate">&#8220;%1$s&#8221; already contains &#8220;%2$s&#8221;.
-        Do you want to add it again?</string>
-    <string name="playlist_confirm_all_duplicates">This playlist already contains all of these
-        songs. Adding them again will result in %d duplicated entries.</string>
-    <plurals name="playlist_positive_add_duplicates">
-        <item quantity="one">Add duplicate</item>
-        <item quantity="other">Add duplicates</item>
-    </plurals>
-    <plurals name="message_added_songs">
-        <item quantity="one" >Added 1 song to &#8220;%2$s&#8221;</item>
-        <item quantity="other">Added %1$d songs to &#8220;%2$s&#8221;</item>
-    </plurals>
-
     <!-- Formatted Strings -->
-    <string name="message_added_song">Added &#8220;%1$s&#8221; to &#8220;%2$s&#8221;</string>
-    <string name="message_created_playlist">Created playlist &#8220;%1$s&#8221;</string>
-    <string name="message_removed_playlist">Deleted playlist &#8220;%1$s&#8221;</string>
-    <string name="message_removed_song">Removed song &#8220;%1$s&#8221;</string>
-    <string name="message_create_playlist_error_exists">Couldn\'t create playlist &#8220;%1$s&#8221;
-        because it already exists</string>
-    <string name="message_sorted_playlist_random">Randomized &#8220;%1$s&#8221;</string>
-    <string name="message_sorted_playlist_name">Sorted &#8220;%1$s&#8221; by name</string>
-    <string name="message_sorted_playlist_artist">Sorted &#8220;%1$s&#8221; by artist name</string>
-    <string name="message_sorted_playlist_album">Sorted &#8220;%1$s&#8221; by album name</string>
-    <string name="message_sorted_playlist_play">Sorted &#8220;%1$s&#8221; by play count</string>
-    <string name="message_sorted_playlist_skip">Sorted &#8220;%1$s&#8221; by skip count</string>
-    <string name="message_sorted_playlist_date_added">Sorted &#8220;%1$s&#8221; by date added</string>
-    <string name="message_sorted_playlist_date_played">Sorted &#8220;%1$s&#8221; by date played</string>
-    <string name="header_add_song_name_to_playlist">Add &#8220;%1$s&#8221; to playlist</string>
-    <string name="confirm_add_songs">Added %1$s songs to playlist &#8220;%2$s&#8221;</string>
     <string name="format_time">%1$s:%2$s</string>
 
     <!-- About Activity Strings -->
@@ -183,33 +60,6 @@
         under an Apache License, Version 2.0</string>
     <string name="uses_stackoverflow">Additional thanks to many helpful Stack Overflow users who are
         better at programming than I am.</string>
-
-    <!-- Accessibility Content Descriptions -->
-    <string name="button_play_description">Play Button</string>
-    <string name="button_pause_description">Pause Button</string>
-    <string name="button_previous_description">Previous Song Button</string>
-    <string name="button_skip_description">Next Song Button</string>
-    <string name="art_description">Album Art</string>
-
-    <!-- Preference Strings -->
-    <string name="settings_category_general">General</string>
-    <string name="appearance_header">Appearance</string>
-    <string name="playback_header">Playback</string>
-    <string name="default_page_pref">Default Page</string>
-    <string name="theme_primary">Primary Color</string>
-    <string name="theme_primary_description">Controls the accent color. Takes effect when you leave this page</string>
-    <string name="theme_base">Base Theme</string>
-    <string name="theme_base_description">Controls the background color. Takes effect when you leave this page</string>
-    <string name="add_shortcut">Add themed icon to launcher</string>
-    <string name="add_shortcut_description">Do you want to add a link to Jockey that matches your current theme to your launcher?</string>
-    <string name="switch_to_now_playing">Automatically Switch to Now Playing</string>
-    <string name="use_mobile">Use mobile data</string>
-    <string name="use_mobile_description_on">Album artwork and other data will be always be downloaded</string>
-    <string name="use_mobile_description_off">Album artwork and other data will only be downloaded on Wi-Fi networks</string>
-    <string name="enable_additional_logging_detailed">Help make Jockey better by sending anonymous usage data</string>
-    <string name="logging_on">Anonymous usage data and crash information will be sent to Marverenic</string>
-    <string name="logging_off">Only anonymous crash information will be sent to Marverenic</string>
-    <string name="logging_description">Help improve Jockey</string>
 
     <!-- Auto playlist Strings -->
     <string name="playlist_maximum_prefix">Allow no more than</string>
@@ -255,151 +105,5 @@
         <item>Was last played on</item>
         <item>Has been played since</item>
     </string-array>
-
-    <!-- Equalizer Strings -->
-    <string name="header_equalizer">Equalizer</string>
-    <string name="equalizerNoteSystem">It looks like you have another app that manages audio
-        effects. This may cause problems with Jockey\'s equalizer, so be prepared to
-        turn this off if you notice unexpected behavior.
-        \n\nTo use the global equalizer, disable Jockey\'s equalizer and tap Equalizer in the
-        settings page.
-        \nTo return to this page, tap and hold Equalizer in the settings page.
-    </string>
-    <string name="equalizerPresetPrefix">Preset:</string>
-    <string name="equalizerUnsupported">Your device doesn\'t support equalizers</string>
-
-    <!-- Arrays -->
-    <string-array name="queue_options_song">
-        <item>Queue next</item>
-        <item>Queue last</item>
-        <item>Go to artist</item>
-        <item>Go to album</item>
-        <item>Add to playlist&#8230;</item>
-    </string-array>
-    <string-array name="queue_options_song_playlist">
-        <item>Queue next</item>
-        <item>Queue last</item>
-        <item>Go to artist</item>
-        <item>Go to album</item>
-        <item>Remove</item>
-    </string-array>
-    <string-array name="queue_options_album">
-        <item>Queue next</item>
-        <item>Queue last</item>
-        <item>Go to artist</item>
-        <item>Add to playlist&#8230;</item>
-    </string-array>
-    <string-array name="queue_options_artist_page">
-        <item>Queue next</item>
-        <item>Queue last</item>
-        <item>Go to album</item>
-        <item>Add to playlist&#8230;</item>
-    </string-array>
-    <string-array name="queue_options_artist">
-        <item>Queue next</item>
-        <item>Queue last</item>
-        <item>Add to playlist&#8230;</item>
-    </string-array>
-    <string-array name="queue_options_genre">
-        <item>Queue next</item>
-        <item>Queue last</item>
-        <item>Add to playlist&#8230;</item>
-    </string-array>
-    <string-array name="queue_options_playlist">
-        <item>Queue next</item>
-        <item>Queue last</item>
-        <item>Delete</item>
-    </string-array>
-    <string-array name="queue_options_smart_playlist">
-        <item>Queue next</item>
-        <item>Queue last</item>
-        <item>Edit&#8230;</item>
-        <item>Delete</item>
-    </string-array>
-    <string-array name="now_playing_options">
-        <item>Go to artist</item>
-        <item>Go to album</item>
-        <item>Add to playlist&#8230;</item>
-    </string-array>
-    <string-array name="edit_playlist_options">
-        <item>Queue next</item>
-        <item>Queue last</item>
-        <item>Go to artist</item>
-        <item>Go to album</item>
-        <item>Add to playlist&#8230;</item>
-        <item>Remove</item>
-    </string-array>
-    <string-array name="edit_queue_options">
-        <item>Go to artist</item>
-        <item>Go to album</item>
-        <item>Add to playlist&#8230;</item>
-        <item>Remove</item>
-    </string-array>
-
-    <!-- String Arrays for Settings -->
-    <string-array name="pages">
-        <item name="0">Playlists</item>
-        <item name="1">Songs</item>
-        <item name="2">Artists</item>
-        <item name="3">Albums</item>
-        <item name="4">Genres</item>
-    </string-array>
-    <string-array name="page_values">
-        <item name="0">0</item>
-        <item name="1">1</item>
-        <item name="2">2</item>
-        <item name="3">3</item>
-        <item name="4">4</item>
-    </string-array>
-    <string-array name="colors">
-        <item name="0">Grey</item>
-        <item name="1">Red</item>
-        <item name="2">Orange</item>
-        <item name="3">Yellow</item>
-        <item name="4">Green</item>
-        <item name="5">Blue</item>
-        <item name="6">Purple</item>
-    </string-array>
-    <string-array name="color_values">
-        <item name="0">0</item>
-        <item name="1">1</item>
-        <item name="2">2</item>
-        <item name="3">3</item>
-        <item name="4">4</item>
-        <item name="5">5</item>
-        <item name="6">6</item>
-    </string-array>
-    <string-array name="themes">
-        <item name="0">Dark</item>
-        <item name="1">Light</item>
-    </string-array>
-    <string-array name="theme_values">
-        <item name="0">0</item>
-        <item name="1">1</item>
-    </string-array>
-
-    <!--
-            Jockey contains a theme for Apex and Nova launchers
-            This theme is intended to be used to manually select an icon for Jockey that
-            matches the chosen theme
-
-            These strings provide information to Apex & Nova
-    -->
-
-    <!-- Basic theme information -->
-    <string name="theme_title" tools:ignore="UnusedResources">Jockey Alternate Icons</string>
-    <string name="developer_name" tools:ignore="UnusedResources">marverenic</string>
-    <string name="theme_description" tools:ignore="UnusedResources">This theme contains alternate icons for Jockey.\n\nDon\'t set this as your launcher\'s theme. You should manually change Jockey\'s icon to your preference if desired.</string>
-
-    <!-- Theme settings -->
-    <bool name="config_iconpack" tools:ignore="UnusedResources">true</bool>
-    <bool name="config_apexskin" tools:ignore="UnusedResources">false</bool>
-
-    <!-- The feature graphic will appear above the theme description -->
-    <string name="theme_feature" tools:ignore="UnusedResources">ic_launcher_black</string>
-
-    <!-- Each theme may have up to 5 preview images -->
-    <string name="theme_preview1" tools:ignore="UnusedResources">ic_launcher_red</string>
-    <string name="theme_preview2" tools:ignore="UnusedResources">ic_launcher_amber</string>
 
 </resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Empty state & unknown strings -->
+    <string name="nothing_playing">Nothing is playing</string>
+    <string name="no_artist">Unknown artist</string>
+    <string name="no_album">Unknown album</string>
+    <string name="no_description">No description available</string>
+    <string name="various_artists">Various Artists</string>
+    <string name="unknown_artist">Unknown Artist</string>
+    <string name="unknown_album">Unknown Album</string>
+    <string name="unknown">Unknown</string>
+    <string name="empty_no_permission">Jockey needs permission to read your music library</string>
+    <string name="empty_no_permission_detail">To show your music, grant Jockey access to storage</string>
+    <string name="empty">Couldn\'t find any music here</string>
+    <string name="empty_detail">You can sync songs from your computer or download them from the Internet</string>
+    <string name="empty_playlists">You don\'t have any playlists</string>
+    <string name="empty_playlists_detail">You can make a new one by pressing the &#8220;+&#8221; button</string>
+    <string name="empty_playlist">This playlist is empty</string>
+    <string name="empty_playlist_detail">You can add songs from the library page</string>
+    <string name="empty_auto_playlist">This playlist is empty</string>
+    <string name="empty_auto_playlist_detail">No songs matched your filters</string>
+
+</resources>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Menu Arrays -->
+    <string-array name="queue_options_song">
+        <item>Queue next</item>
+        <item>Queue last</item>
+        <item>Go to artist</item>
+        <item>Go to album</item>
+        <item>Add to playlist&#8230;</item>
+    </string-array>
+    <string-array name="queue_options_song_playlist">
+        <item>Queue next</item>
+        <item>Queue last</item>
+        <item>Go to artist</item>
+        <item>Go to album</item>
+        <item>Remove</item>
+    </string-array>
+    <string-array name="queue_options_album">
+        <item>Queue next</item>
+        <item>Queue last</item>
+        <item>Go to artist</item>
+        <item>Add to playlist&#8230;</item>
+    </string-array>
+    <string-array name="queue_options_artist_page">
+        <item>Queue next</item>
+        <item>Queue last</item>
+        <item>Go to album</item>
+        <item>Add to playlist&#8230;</item>
+    </string-array>
+    <string-array name="queue_options_artist">
+        <item>Queue next</item>
+        <item>Queue last</item>
+        <item>Add to playlist&#8230;</item>
+    </string-array>
+    <string-array name="queue_options_genre">
+        <item>Queue next</item>
+        <item>Queue last</item>
+        <item>Add to playlist&#8230;</item>
+    </string-array>
+    <string-array name="queue_options_playlist">
+        <item>Queue next</item>
+        <item>Queue last</item>
+        <item>Delete</item>
+    </string-array>
+    <string-array name="queue_options_smart_playlist">
+        <item>Queue next</item>
+        <item>Queue last</item>
+        <item>Edit&#8230;</item>
+        <item>Delete</item>
+    </string-array>
+    <string-array name="now_playing_options">
+        <item>Go to artist</item>
+        <item>Go to album</item>
+        <item>Add to playlist&#8230;</item>
+    </string-array>
+    <string-array name="edit_playlist_options">
+        <item>Queue next</item>
+        <item>Queue last</item>
+        <item>Go to artist</item>
+        <item>Go to album</item>
+        <item>Add to playlist&#8230;</item>
+        <item>Remove</item>
+    </string-array>
+    <string-array name="edit_queue_options">
+        <item>Go to artist</item>
+        <item>Go to album</item>
+        <item>Add to playlist&#8230;</item>
+        <item>Remove</item>
+    </string-array>
+
+    <!-- Settings Arrays -->
+    <string-array name="pages">
+        <item name="0">Playlists</item>
+        <item name="1">Songs</item>
+        <item name="2">Artists</item>
+        <item name="3">Albums</item>
+        <item name="4">Genres</item>
+    </string-array>
+    <string-array name="page_values">
+        <item name="0">0</item>
+        <item name="1">1</item>
+        <item name="2">2</item>
+        <item name="3">3</item>
+        <item name="4">4</item>
+    </string-array>
+    <string-array name="colors">
+        <item name="0">Grey</item>
+        <item name="1">Red</item>
+        <item name="2">Orange</item>
+        <item name="3">Yellow</item>
+        <item name="4">Green</item>
+        <item name="5">Blue</item>
+        <item name="6">Purple</item>
+    </string-array>
+    <string-array name="color_values">
+        <item name="0">0</item>
+        <item name="1">1</item>
+        <item name="2">2</item>
+        <item name="3">3</item>
+        <item name="4">4</item>
+        <item name="5">5</item>
+        <item name="6">6</item>
+    </string-array>
+    <string-array name="themes">
+        <item name="0">Dark</item>
+        <item name="1">Light</item>
+    </string-array>
+    <string-array name="theme_values">
+        <item name="0">0</item>
+        <item name="1">1</item>
+    </string-array>
+
+</resources>

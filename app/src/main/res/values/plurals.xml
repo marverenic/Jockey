@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <plurals name="alert_confirm_duplicates">
+        <item quantity="one">Add duplicate song?</item>
+        <item quantity="other">Add duplicate songs?</item>
+    </plurals>
+    <plurals name="playlist_confirm_some_duplicates">
+        <item quantity="one">This playlist already contains one of these songs. Adding it again will
+            result in this playlist having a duplicated entry.</item>
+        <item quantity="other">This playlist already contains some of these songs. Adding them again
+            will result in this playlist having %d duplicated entries.</item>
+    </plurals>
+    <string name="playlist_confirm_duplicate">&#8220;%1$s&#8221; already contains &#8220;%2$s&#8221;.
+        Do you want to add it again?</string>
+    <string name="playlist_confirm_all_duplicates">This playlist already contains all of these
+        songs. Adding them again will result in %d duplicated entries.</string>
+    <plurals name="playlist_positive_add_duplicates">
+        <item quantity="one">Add duplicate</item>
+        <item quantity="other">Add duplicates</item>
+    </plurals>
+    <plurals name="message_added_songs">
+        <item quantity="one" >Added 1 song to &#8220;%2$s&#8221;</item>
+        <item quantity="other">Added %1$d songs to &#8220;%2$s&#8221;</item>
+    </plurals>
+
+</resources>

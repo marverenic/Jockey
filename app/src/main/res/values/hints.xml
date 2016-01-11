@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Hints -->
+    <string name="hint_playlist_name">Playlist name</string>
+
+    <!-- Accessibility Content Descriptions -->
+    <string name="button_play_description">Play Button</string>
+    <string name="button_pause_description">Pause Button</string>
+    <string name="button_previous_description">Previous Song Button</string>
+    <string name="button_skip_description">Next Song Button</string>
+    <string name="art_description">Album Art</string>
+    <string name="description_album_art">Album Art</string>
+
+</resources>

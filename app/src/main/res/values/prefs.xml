@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Preference Strings -->
+    <string name="settings_category_general">General</string>
+    <string name="appearance_header">Appearance</string>
+    <string name="playback_header">Playback</string>
+    <string name="default_page_pref">Default Page</string>
+    <string name="theme_primary">Primary Color</string>
+    <string name="theme_primary_description">Controls the accent color. Takes effect when you leave this page</string>
+    <string name="theme_base">Base Theme</string>
+    <string name="theme_base_description">Controls the background color. Takes effect when you leave this page</string>
+    <string name="add_shortcut">Add themed icon to launcher</string>
+    <string name="add_shortcut_description">Do you want to add a link to Jockey that matches your current theme to your launcher?</string>
+    <string name="switch_to_now_playing">Automatically Switch to Now Playing</string>
+    <string name="use_mobile">Use mobile data</string>
+    <string name="use_mobile_description_on">Album artwork and other data will be always be downloaded</string>
+    <string name="use_mobile_description_off">Album artwork and other data will only be downloaded on Wi-Fi networks</string>
+    <string name="enable_additional_logging_detailed">Help make Jockey better by sending anonymous usage data</string>
+    <string name="logging_on">Anonymous usage data and crash information will be sent to Marverenic</string>
+    <string name="logging_off">Only anonymous crash information will be sent to Marverenic</string>
+    <string name="logging_description">Help improve Jockey</string>
+
+    <!-- Equalizer Strings -->
+    <string name="header_equalizer">Equalizer</string>
+    <string name="equalizerNoteSystem">It looks like you have another app that manages audio
+        effects. This may cause problems with Jockey\'s equalizer, so be prepared to
+        turn this off if you notice unexpected behavior.
+        \n\nTo use the global equalizer, disable Jockey\'s equalizer and tap Equalizer in the
+        settings page.
+        \nTo return to this page, tap and hold Equalizer in the settings page.
+    </string>
+    <string name="equalizerPresetPrefix">Preset:</string>
+    <string name="equalizerUnsupported">Your device doesn\'t support equalizers</string>
+
+</resources>
