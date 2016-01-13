@@ -16,9 +16,9 @@ import com.h6ah4i.android.widget.advrecyclerview.draggable.ItemDraggableRange;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
+import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.viewholder.QueueSongViewHolder;
-import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
@@ -31,17 +31,17 @@ public class QueueActivity extends BaseActivity {
     private Adapter adapter;
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instance_no_miniplayer);
 
         data = PlayerController.getQueue();
 
-        RecyclerView songRecyclerView = (RecyclerView) findViewById(R.id.list);
+        RecyclerView list = (RecyclerView) findViewById(R.id.list);
 
-        this.adapter = new Adapter();
+        adapter = new Adapter();
         RecyclerViewDragDropManager dragDropManager = new RecyclerViewDragDropManager();
-        RecyclerView.Adapter adapter = dragDropManager.createWrappedAdapter(this.adapter);
+        RecyclerView.Adapter wrappedAdapter = dragDropManager.createWrappedAdapter(adapter);
 
         //noinspection deprecation
         dragDropManager.setDraggingItemShadowDrawable(
@@ -50,16 +50,16 @@ public class QueueActivity extends BaseActivity {
                                 ? R.drawable.list_drag_shadow_light
                                 : R.drawable.list_drag_shadow_dark));
 
-        songRecyclerView.setAdapter(adapter);
-        songRecyclerView.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
-        songRecyclerView.addItemDecoration(new DividerDecoration(this));
+        list.setAdapter(wrappedAdapter);
+        list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
+        list.addItemDecoration(new DividerDecoration(this));
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.scrollToPosition(PlayerController.getQueuePosition());
-        songRecyclerView.setLayoutManager(layoutManager);
+        list.setLayoutManager(layoutManager);
 
-        dragDropManager.attachRecyclerView(songRecyclerView);
+        dragDropManager.attachRecyclerView(list);
     }
 
     @Override
@@ -96,7 +96,9 @@ public class QueueActivity extends BaseActivity {
     }
 
     @Override
-    public void updateMiniplayer() {}
+    public void updateMiniplayer() {
+
+    }
 
     public class Adapter extends RecyclerView.Adapter<QueueSongViewHolder>
             implements DraggableItemAdapter<QueueSongViewHolder>,
@@ -105,7 +107,7 @@ public class QueueActivity extends BaseActivity {
         private static final int REGULAR_VIEW = 0;
         private static final int HIGHLIT_VIEW = 1;
 
-        public Adapter(){
+        public Adapter() {
             setHasStableIds(true);
         }
 
@@ -133,7 +135,7 @@ public class QueueActivity extends BaseActivity {
         }
 
         @Override
-        public long getItemId(int position){
+        public long getItemId(int position) {
             return data.get(position).getSongId();
         }
 
@@ -148,9 +150,10 @@ public class QueueActivity extends BaseActivity {
         }
 
         @Override
-        public boolean onCheckCanStartDrag(QueueSongViewHolder viewHolder, int position, int x, int y){
-            final View containerView = viewHolder.itemView;
-            final View dragHandleView = viewHolder.dragHandle;
+        public boolean onCheckCanStartDrag(QueueSongViewHolder viewHolder, int position,
+                                           int x, int y) {
+            final View containerView = viewHolder.getItemView();
+            final View dragHandleView = viewHolder.getDragHandle();
 
             final int offsetX = (int) (ViewCompat.getTranslationX(containerView) + 0.5f);
 
@@ -162,7 +165,8 @@ public class QueueActivity extends BaseActivity {
         }
 
         @Override
-        public ItemDraggableRange onGetItemDraggableRange(QueueSongViewHolder viewHolder, int position) {
+        public ItemDraggableRange onGetItemDraggableRange(QueueSongViewHolder viewHolder,
+                                                          int position) {
             return null;
         }
 
@@ -174,10 +178,15 @@ public class QueueActivity extends BaseActivity {
             final int nowPlayingIndex = data.indexOf(PlayerController.getNowPlaying());
             int futureNowPlayingIndex;
 
-            if (from == nowPlayingIndex) futureNowPlayingIndex = to;
-            else if (from < nowPlayingIndex && to >= nowPlayingIndex) futureNowPlayingIndex = nowPlayingIndex - 1;
-            else if (from > nowPlayingIndex && to <= nowPlayingIndex) futureNowPlayingIndex = nowPlayingIndex + 1;
-            else futureNowPlayingIndex = nowPlayingIndex;
+            if (from == nowPlayingIndex) {
+                futureNowPlayingIndex = to;
+            } else if (from < nowPlayingIndex && to >= nowPlayingIndex) {
+                futureNowPlayingIndex = nowPlayingIndex - 1;
+            } else if (from > nowPlayingIndex && to <= nowPlayingIndex) {
+                futureNowPlayingIndex = nowPlayingIndex + 1;
+            } else {
+                futureNowPlayingIndex = nowPlayingIndex;
+            }
 
             // Modify the Array and push the change to the service
             data.add(to, data.remove(from));

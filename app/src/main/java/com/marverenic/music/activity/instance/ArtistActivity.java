@@ -28,11 +28,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.crashlytics.android.Crashlytics;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.viewholder.AlbumViewHolder;
 import com.marverenic.music.instances.viewholder.HeaderViewHolder;
@@ -66,7 +66,7 @@ public class ArtistActivity extends BaseActivity {
     private ArrayList<Song> songs;
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instance_artwork);
 
@@ -74,12 +74,12 @@ public class ArtistActivity extends BaseActivity {
         albums = Library.getArtistAlbumEntries(reference);
         songs = Library.getArtistSongEntries(reference);
 
-        // Sort the album list chronologically if all albums have years, otherwise sort alphabetically
+        // Sort the album list chronologically if all albums have years,
+        // otherwise sort alphabetically
         boolean allEntriesHaveYears = true;
         int i = 0;
-        while (i < albums.size() && allEntriesHaveYears){
-            if (albums.get(i).getYear() == 0)
-                allEntriesHaveYears = false;
+        while (i < albums.size() && allEntriesHaveYears) {
+            if (albums.get(i).getYear() == 0) allEntriesHaveYears = false;
             i++;
         }
 
@@ -90,22 +90,23 @@ public class ArtistActivity extends BaseActivity {
                     return a1.getYear() - a2.getYear();
                 }
             });
-        }
-        else {
+        } else {
             Collections.sort(albums);
         }
 
-        CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        CollapsingToolbarLayout collapsingToolbar =
+                (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbar.setTitle(reference.getArtistName());
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.list);
+        RecyclerView list = (RecyclerView) findViewById(R.id.list);
         final Adapter adapter = new Adapter();
-        recyclerView.setAdapter(adapter);
+        list.setAdapter(adapter);
 
         final int numColumns = ViewUtils.getNumberOfGridColumns(this);
 
@@ -114,10 +115,15 @@ public class ArtistActivity extends BaseActivity {
         GridLayoutManager.SpanSizeLookup spanSizeLookup = new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                // Albums & related artists fill one column, all other view types fill the available width
-                if (adapter.getItemViewType(position) == Adapter.ALBUM_INSTANCE) return 1;
-                else if (adapter.getItemViewType(position) == Adapter.RELATED_ARTIST) return 1;
-                else return numColumns;
+                // Albums & related artists fill one column,
+                // all other view types fill the available width
+                if (adapter.getItemViewType(position) == Adapter.ALBUM_INSTANCE) {
+                    return 1;
+                } else if (adapter.getItemViewType(position) == Adapter.RELATED_ARTIST) {
+                    return 1;
+                } else {
+                    return numColumns;
+                }
             }
         };
 
@@ -125,13 +131,31 @@ public class ArtistActivity extends BaseActivity {
 
         // Attach the GridLayoutManager
         layoutManager.setSpanSizeLookup(spanSizeLookup);
-        recyclerView.setLayoutManager(layoutManager);
+        list.setLayoutManager(layoutManager);
 
         // Add decorations
-        recyclerView.addItemDecoration(new GridSpacingDecoration((int) getResources().getDimension(R.dimen.grid_margin), numColumns, Adapter.ALBUM_INSTANCE));
-        recyclerView.addItemDecoration(new GridSpacingDecoration((int) getResources().getDimension(R.dimen.card_margin), numColumns, Adapter.RELATED_ARTIST));
-        recyclerView.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated(), new int[]{R.id.loadingView, R.id.infoCard, R.id.relatedCard}));
-        recyclerView.addItemDecoration(new DividerDecoration(this, new int[]{R.id.infoCard, R.id.albumInstance, R.id.subheaderFrame, R.id.relatedCard}));
+        list.addItemDecoration(
+                new GridSpacingDecoration(
+                        (int) getResources().getDimension(R.dimen.grid_margin),
+                        numColumns,
+                        Adapter.ALBUM_INSTANCE));
+        list.addItemDecoration(
+                new GridSpacingDecoration(
+                        (int) getResources().getDimension(R.dimen.card_margin),
+                        numColumns,
+                        Adapter.RELATED_ARTIST));
+        list.addItemDecoration(
+                new BackgroundDecoration(
+                        Themes.getBackgroundElevated(),
+                        new int[]{R.id.loadingView, R.id.infoCard, R.id.relatedCard}));
+        list.addItemDecoration(
+                new DividerDecoration(
+                        this,
+                        new int[]{
+                                R.id.infoCard,
+                                R.id.albumInstance,
+                                R.id.subheaderFrame,
+                                R.id.relatedCard}));
     }
 
     /**
@@ -151,14 +175,14 @@ public class ArtistActivity extends BaseActivity {
         public static final int ALBUM_INSTANCE = 4;
         public static final int SONG_INSTANCE = 5;
 
-        public Adapter(){
+        public Adapter() {
             // Fetch the Artist Bio
             new AsyncTask<Artist, Void, Void>() {
                 @Override
                 protected Void doInBackground(Artist... params) {
                     try {
                         artist = Query.getArtist(ArtistActivity.this, params[0]);
-                    } catch (IOException|ParserConfigurationException|SAXException e) {
+                    } catch (IOException | ParserConfigurationException | SAXException e) {
                         e.printStackTrace();
                         Crashlytics.logException(e);
                         artist = null;
@@ -179,12 +203,11 @@ public class ArtistActivity extends BaseActivity {
             if (artist == null) {
                 hasBio = false;
                 notifyDataSetChanged();
-            }
-            else{
+            } else {
                 // Only show related artists if they exist in the library
-                for (LArtist a : artist.getRelatedArtists()){
+                for (LArtist a : artist.getRelatedArtists()) {
                     Artist localReference = Library.findArtistByName(a.getName());
-                    if (localReference != null){
+                    if (localReference != null) {
                         relatedArtists.add(a);
                         localRelatedArtists.add(localReference);
                     }
@@ -194,10 +217,10 @@ public class ArtistActivity extends BaseActivity {
                 notifyItemRangeInserted((hasBio) ? 1 : 0, relatedArtists.size());
 
                 // Set header image
-                String URL = artist.getImageURL(ImageList.SIZE_MEGA);
+                String url = artist.getImageURL(ImageList.SIZE_MEGA);
 
-                if (URL.trim().length() != 0) {
-                    Glide.with(ArtistActivity.this).load(URL)
+                if (url.trim().length() != 0) {
+                    Glide.with(ArtistActivity.this).load(url)
                             .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                             .centerCrop()
                             .animate(android.R.anim.fade_in)
@@ -208,17 +231,22 @@ public class ArtistActivity extends BaseActivity {
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            switch (viewType){
+            switch (viewType) {
                 case LOADING_BIO_VIEW:
-                    return new LoadingViewHolder(LayoutInflater.from(ArtistActivity.this).inflate(R.layout.instance_loading, parent, false));
+                    return new LoadingViewHolder(LayoutInflater.from(ArtistActivity.this)
+                            .inflate(R.layout.instance_loading, parent, false));
                 case BIO_VIEW:
-                    return new BioViewHolder(LayoutInflater.from(ArtistActivity.this).inflate(R.layout.instance_artist_bio, parent, false), this, artist);
+                    return new BioViewHolder(LayoutInflater.from(ArtistActivity.this)
+                            .inflate(R.layout.instance_artist_bio, parent, false), this, artist);
                 case RELATED_ARTIST:
-                    return new SuggestedArtistHolder(LayoutInflater.from(ArtistActivity.this).inflate(R.layout.instance_artist_suggested, parent, false));
+                    return new SuggestedArtistHolder(LayoutInflater.from(ArtistActivity.this)
+                            .inflate(R.layout.instance_artist_suggested, parent, false));
                 case HEADER_VIEW:
-                    return new HeaderViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.subheader, parent, false));
+                    return new HeaderViewHolder(LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.subheader, parent, false));
                 case ALBUM_INSTANCE:
-                    return new AlbumViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.instance_album, parent, false));
+                    return new AlbumViewHolder(LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.instance_album, parent, false));
                 case SONG_INSTANCE:
                     return new SongViewHolder(
                             LayoutInflater.from(parent.getContext())
@@ -238,20 +266,23 @@ public class ArtistActivity extends BaseActivity {
                     ((LoadingViewHolder) holder).update();
                     break;
                 case RELATED_ARTIST:
-                    ((SuggestedArtistHolder) holder).update(relatedArtists.get(position - (hasBio? 1 : 0)), localRelatedArtists.get(position - (hasBio? 1 : 0)));
+                    ((SuggestedArtistHolder) holder).update(
+                            relatedArtists.get(position - (hasBio ? 1 : 0)),
+                            localRelatedArtists.get(position - (hasBio ? 1 : 0)));
                     break;
                 case HEADER_VIEW:
                     ((HeaderViewHolder) holder).update(
-                            (position == (hasBio? relatedArtists.size() + 1 : 0))
+                            (position == (hasBio ? relatedArtists.size() + 1 : 0))
                                     ? getResources().getString(R.string.header_albums)
                                     : getResources().getString(R.string.header_songs));
                     break;
                 case ALBUM_INSTANCE:
-                    ((AlbumViewHolder) holder).update(albums.get(position - (hasBio ? 2 : 1) - relatedArtists.size()));
+                    ((AlbumViewHolder) holder).update(
+                            albums.get(position - (hasBio ? 2 : 1) - relatedArtists.size()));
                     break;
                 case SONG_INSTANCE:
                     int songIndex =
-                            position - albums.size() - (hasBio? 3 : 2) - relatedArtists.size();
+                            position - albums.size() - (hasBio ? 3 : 2) - relatedArtists.size();
                     ((SongViewHolder) holder).update(songs.get(songIndex), songIndex);
                     break;
             }
@@ -259,17 +290,23 @@ public class ArtistActivity extends BaseActivity {
 
         @Override
         public int getItemCount() {
-            return (hasBio? 1 : 0) + relatedArtists.size() + 2 + albums.size() + songs.size();
+            return (hasBio ? 1 : 0) + relatedArtists.size() + 2 + albums.size() + songs.size();
         }
 
         @Override
-        public int getItemViewType(int position){
-            if (hasBio && position == 0) return ((artist == null) ? LOADING_BIO_VIEW : BIO_VIEW);
-            else if (position < relatedArtists.size() + (hasBio? 1 : 0)) return RELATED_ARTIST;
-            else if (position == relatedArtists.size() + (hasBio? 1 : 0)) return HEADER_VIEW;
-            else if (position <= albums.size() + relatedArtists.size() + (hasBio? 1 : 0)) return ALBUM_INSTANCE;
-            else if (position == albums.size() + relatedArtists.size() + (hasBio? 2 : 1)) return HEADER_VIEW;
-            else return SONG_INSTANCE;
+        public int getItemViewType(int position) {
+            if (hasBio && position == 0) {
+                return ((artist == null) ? LOADING_BIO_VIEW : BIO_VIEW);
+            } else if (position < relatedArtists.size() + (hasBio ? 1 : 0)) {
+                return RELATED_ARTIST;
+            } else if (position == relatedArtists.size() + (hasBio ? 1 : 0)) {
+                return HEADER_VIEW;
+            } else if (position <= albums.size() + relatedArtists.size() + (hasBio ? 1 : 0)) {
+                return ALBUM_INSTANCE;
+            } else if (position == albums.size() + relatedArtists.size() + (hasBio ? 2 : 1)) {
+                return HEADER_VIEW;
+            }
+            return SONG_INSTANCE;
         }
     }
 
@@ -278,7 +315,7 @@ public class ArtistActivity extends BaseActivity {
      */
     public static class LoadingViewHolder extends RecyclerView.ViewHolder {
 
-        MaterialProgressDrawable spinner;
+        private MaterialProgressDrawable spinner;
 
         public LoadingViewHolder(View itemView) {
             super(itemView);
@@ -301,7 +338,8 @@ public class ArtistActivity extends BaseActivity {
     /**
      * ViewHolder class for artist bio
      */
-    public static class BioViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class BioViewHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener {
 
         private CardView cardView;
         private TextView bioText;
@@ -317,7 +355,7 @@ public class ArtistActivity extends BaseActivity {
             lfmButton.setOnClickListener(this);
 
             cardView.setCardBackgroundColor(Themes.getBackgroundElevated());
-            if (adapter.relatedArtists.size() != 0){
+            if (adapter.relatedArtists.size() != 0) {
                 ((GridLayoutManager.LayoutParams) itemView.getLayoutParams()).bottomMargin = 0;
             }
 
@@ -337,17 +375,19 @@ public class ArtistActivity extends BaseActivity {
 
             if (tags.length > 0) {
                 // Capitalize the first letter of the tag
-                tagList = tagNames[0].substring(0,1).toUpperCase() + tagNames[0].substring(1);
+                tagList = tagNames[0].substring(0, 1).toUpperCase() + tagNames[0].substring(1);
                 // Add up to 4 more tags (separated by commas)
-                int tagCount = (tags.length < 5)? tags.length : 5;
-                for (int i = 1; i < tagCount; i++){
-                    tagList += ", " + tagNames[i].substring(0,1).toUpperCase() + tagNames[i].substring(1);
+                int tagCount = (tags.length < 5) ? tags.length : 5;
+                for (int i = 1; i < tagCount; i++) {
+                    tagList += ", " + tagNames[i].substring(0, 1).toUpperCase()
+                            + tagNames[i].substring(1);
                 }
             }
 
             String summary = artist.getBio().getSummary();
             if (summary.length() > 0) {
-                // Trim the "read more" attribution since there's already a button linking to Last.fm
+                // Trim the "read more" attribution since there's already a button
+                // linking to Last.fm
                 summary = summary.substring(0, summary.lastIndexOf("<a href=\""));
             }
 
@@ -360,10 +400,13 @@ public class ArtistActivity extends BaseActivity {
 
         @Override
         public void onClick(View v) {
-            if (v.equals(lfmButton)){
+            if (v.equals(lfmButton)) {
                 Intent openLFMIntent = new Intent(Intent.ACTION_VIEW);
-                if (artistURL == null) openLFMIntent.setData(Uri.parse("http://www.last.fm/home"));
-                else openLFMIntent.setData(Uri.parse(artistURL));
+                if (artistURL == null) {
+                    openLFMIntent.setData(Uri.parse("http://www.last.fm/home"));
+                } else {
+                    openLFMIntent.setData(Uri.parse(artistURL));
+                }
                 itemView.getContext().startActivity(openLFMIntent);
             }
         }
@@ -372,7 +415,8 @@ public class ArtistActivity extends BaseActivity {
     /**
      * ViewHolder class for related artists
      */
-    public static class SuggestedArtistHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class SuggestedArtistHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener {
 
         private Artist localReference;
 
@@ -380,7 +424,7 @@ public class ArtistActivity extends BaseActivity {
         private ImageView artwork;
         private TextView artistName;
 
-        public SuggestedArtistHolder(View itemView){
+        public SuggestedArtistHolder(View itemView) {
             super(itemView);
             context = itemView.getContext();
 
@@ -391,7 +435,7 @@ public class ArtistActivity extends BaseActivity {
             artistName = (TextView) itemView.findViewById(R.id.textArtistName);
         }
 
-        public void update(LArtist artist, Artist localArtist){
+        public void update(LArtist artist, Artist localArtist) {
             localReference = localArtist;
 
             final String artURL = artist.getImageURL(ImageList.SIZE_MEDIUM);
@@ -426,8 +470,8 @@ public class ArtistActivity extends BaseActivity {
         }
 
         @Override
-        public void onClick(View v){
-            if (localReference != null){
+        public void onClick(View v) {
+            if (localReference != null) {
                 Navigate.to(context, ArtistActivity.class, ARTIST_EXTRA, localReference);
             }
         }

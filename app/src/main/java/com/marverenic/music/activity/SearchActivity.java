@@ -13,12 +13,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Genre;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.viewholder.AlbumViewHolder;
@@ -55,9 +55,12 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         // Calculate the number of columns that can fit on the screen
         final short screenWidth = (short) getResources().getConfiguration().screenWidthDp;
         final float density = getResources().getDisplayMetrics().density;
-        final short globalPadding = (short) (getResources().getDimension(R.dimen.global_padding) / density);
-        final short minWidth = (short) (getResources().getDimension(R.dimen.grid_width) / density);
-        final short gridPadding = (short) (getResources().getDimension(R.dimen.grid_margin) / density);
+        final short globalPadding =
+                (short) (getResources().getDimension(R.dimen.global_padding) / density);
+        final short minWidth =
+                (short) (getResources().getDimension(R.dimen.grid_width) / density);
+        final short gridPadding =
+                (short) (getResources().getDimension(R.dimen.grid_margin) / density);
 
         short availableWidth = (short) (screenWidth - 2 * globalPadding);
         final int numColumns = (availableWidth) / (minWidth + 2 * gridPadding);
@@ -66,7 +69,9 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         GridLayoutManager.SpanSizeLookup spanSizeLookup = new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                if (adapter.getItemViewType(position) == Adapter.ALBUM_VIEW) return 1;
+                if (adapter.getItemViewType(position) == Adapter.ALBUM_VIEW) {
+                    return 1;
+                }
                 return numColumns;
             }
         };
@@ -75,27 +80,30 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         list.setLayoutManager(layoutManager);
 
         // Add item decorations
-        list.addItemDecoration(new GridSpacingDecoration((int) getResources().getDimension(R.dimen.grid_margin), numColumns, Adapter.ALBUM_VIEW));
+        list.addItemDecoration(new GridSpacingDecoration(
+                (int) getResources().getDimension(R.dimen.grid_margin),
+                numColumns, Adapter.ALBUM_VIEW));
         list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
-        list.addItemDecoration(new DividerDecoration(this, new int[]{R.id.albumInstance, R.id.subheaderFrame}));
+        list.addItemDecoration(
+                new DividerDecoration(this, new int[]{R.id.albumInstance, R.id.subheaderFrame}));
 
         handleIntent(getIntent());
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         Library.addPlaylistListener(adapter);
     }
 
     @Override
-    public void onPause(){
+    public void onPause() {
         super.onPause();
         Library.removePlaylistListener(adapter);
     }
 
     @Override
-    public void onBackPressed(){
+    public void onBackPressed() {
         lastQuery = null;
         super.onBackPressed();
     }
@@ -109,10 +117,9 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         searchView.setOnQueryTextListener(this);
         searchView.setIconified(false);
 
-        if (lastQuery != null && !lastQuery.isEmpty()){
+        if (lastQuery != null && !lastQuery.isEmpty()) {
             searchView.setQuery(lastQuery, true);
-        }
-        else{
+        } else {
             searchView.requestFocus();
         }
         return true;
@@ -152,16 +159,16 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         handleIntent(intent);
     }
 
-    private void handleIntent(Intent intent){
+    private void handleIntent(Intent intent) {
         if (intent != null) {
             // Handle standard searches
             if (Intent.ACTION_SEARCH.equals(intent.getAction())
-                    || MediaStore.INTENT_ACTION_MEDIA_SEARCH.equals(intent.getAction())){
+                    || MediaStore.INTENT_ACTION_MEDIA_SEARCH.equals(intent.getAction())) {
                 adapter.search(intent.getStringExtra(SearchManager.QUERY));
             }
 
             /** Handle play from search actions */
-            else if (MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH.equals(intent.getAction())){
+            else if (MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH.equals(intent.getAction())) {
 
                 adapter.search(intent.getStringExtra(SearchManager.QUERY));
                 final String focus = intent.getStringExtra(MediaStore.EXTRA_MEDIA_FOCUS);
@@ -169,13 +176,16 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 /** PLAYLISTS */
                 // If there are playlists that match this search, and either the specified focus is
                 // playlists or there are only playlist results, then play the appropriate result
-                if (!adapter.playlistResults.isEmpty() && (focus.equals(MediaStore.Audio.Playlists.ENTRY_CONTENT_TYPE) ||
-                        (adapter.genreResults.isEmpty() && adapter.songResults.isEmpty()))) {
+                if (!adapter.playlistResults.isEmpty()
+                        && (focus.equals(MediaStore.Audio.Playlists.ENTRY_CONTENT_TYPE)
+                        || (adapter.genreResults.isEmpty() && adapter.songResults.isEmpty()))) {
 
-                    // If there is a playlist with this exact name, use it, otherwise fallback to the first result
+                    // If there is a playlist with this exact name, use it, otherwise fallback
+                    // to the first result
                     Playlist playlist = adapter.playlistResults.get(0);
                     for (Playlist p : adapter.playlistResults) {
-                        if (p.getPlaylistName().equalsIgnoreCase(intent.getStringExtra(SearchManager.QUERY))) {
+                        if (p.getPlaylistName().equalsIgnoreCase(
+                                intent.getStringExtra(SearchManager.QUERY))) {
                             playlist = p;
                             break;
                         }
@@ -184,26 +194,31 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                     PlayerController.begin();
                 }
                 /** ARTISTS **/
-                else if (!adapter.artistResults.isEmpty() && focus.equals(MediaStore.Audio.Artists.ENTRY_CONTENT_TYPE)) {
+                else if (!adapter.artistResults.isEmpty()
+                        && focus.equals(MediaStore.Audio.Artists.ENTRY_CONTENT_TYPE)) {
                     // If one or more artists with this name exist, play songs by all of them
-                    // (Ideally this only includes collaborating artists and keeps the search relevant)
+                    // (Ideally this only includes collaborating artists and keeps
+                    // the search relevant)
                     if (adapter.artistResults.size() > 0) {
                         ArrayList<Song> songs = new ArrayList<>();
-                        for (Artist a : adapter.artistResults)
+                        for (Artist a : adapter.artistResults) {
                             songs.addAll(Library.getArtistSongEntries(a));
+                        }
 
                         PlayerController.setQueue(songs, 0);
                         PlayerController.begin();
                     }
                 }
                 /** ALBUMS */
-                else if (!adapter.albumResults.isEmpty() && focus.equals(MediaStore.Audio.Albums.ENTRY_CONTENT_TYPE)) {
+                else if (!adapter.albumResults.isEmpty()
+                        && focus.equals(MediaStore.Audio.Albums.ENTRY_CONTENT_TYPE)) {
                     if (adapter.albumResults.size() > 0) {
                         // If albums with this name exist, look for an exact match
                         // If we find one then use it, otherwise fallback to the first result
                         Album album = adapter.albumResults.get(0);
                         for (Album a : adapter.albumResults) {
-                            if (a.getAlbumName().equalsIgnoreCase(intent.getStringExtra(SearchManager.QUERY))) {
+                            if (a.getAlbumName().equalsIgnoreCase(
+                                    intent.getStringExtra(SearchManager.QUERY))) {
                                 album = a;
                                 break;
                             }
@@ -213,7 +228,8 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                     }
                 }
                 /** GENRES */
-                else if (!adapter.genreResults.isEmpty() && (focus.equals(MediaStore.Audio.Genres.ENTRY_CONTENT_TYPE)
+                else if (!adapter.genreResults.isEmpty()
+                        && (focus.equals(MediaStore.Audio.Genres.ENTRY_CONTENT_TYPE)
                         || adapter.songResults.isEmpty())) {
 
                     if (adapter.genreResults.size() > 0) {
@@ -221,7 +237,8 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                         // If we find one then use it, otherwise fallback to the first result
                         Genre genre = adapter.genreResults.get(0);
                         for (Genre g : adapter.genreResults) {
-                            if (g.getGenreName().equalsIgnoreCase(intent.getStringExtra(SearchManager.QUERY))) {
+                            if (g.getGenreName().equalsIgnoreCase(
+                                    intent.getStringExtra(SearchManager.QUERY))) {
                                 genre = g;
                                 break;
                             }
@@ -243,7 +260,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         }
     }
 
-    public class Adapter extends RecyclerView.Adapter implements Library.PlaylistChangeListener{
+    public class Adapter extends RecyclerView.Adapter implements Library.PlaylistChangeListener {
 
         private final ArrayList<Playlist> playlistResults = new ArrayList<>();
         private final ArrayList<Song> songResults = new ArrayList<>();
@@ -266,7 +283,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         private static final int ARTIST_VIEW = 4;
         private static final int GENRE_VIEW = 5;
 
-        public void search(CharSequence searchInput){
+        public void search(CharSequence searchInput) {
             String query = searchInput.toString().trim().toLowerCase();
             lastQuery = searchInput.toString();
 
@@ -277,26 +294,26 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
             playlistResults.clear();
 
             if (!query.equals("")) {
-                for(Album a : Library.getAlbums()){
+                for (Album a : Library.getAlbums()) {
                     if (a.getAlbumName().toLowerCase().contains(query)
                             || a.getArtistName().toLowerCase().contains(query)) {
                         albumResults.add(a);
                     }
                 }
 
-                for(Artist a : Library.getArtists()){
+                for (Artist a : Library.getArtists()) {
                     if (a.getArtistName().toLowerCase().contains(query)) {
                         artistResults.add(a);
                     }
                 }
 
-                for(Genre g : Library.getGenres()){
+                for (Genre g : Library.getGenres()) {
                     if (g.getGenreName().toLowerCase().contains(query)) {
                         genreResults.add(g);
                     }
                 }
 
-                for(Song s : Library.getSongs()){
+                for (Song s : Library.getSongs()) {
                     if (s.getSongName().toLowerCase().contains(query)
                             || s.getArtistName().toLowerCase().contains(query)
                             || s.getAlbumName().toLowerCase().contains(query)) {
@@ -308,14 +325,14 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                         }
 
                         Album thisAlbum = Library.findAlbumById(s.getAlbumId());
-                        if(!albumResults.contains(thisAlbum)) albumResults.add(thisAlbum);
+                        if (!albumResults.contains(thisAlbum)) albumResults.add(thisAlbum);
 
                         Artist thisArtist = Library.findArtistById(s.getArtistId());
-                        if(!artistResults.contains(thisArtist)) artistResults.add(thisArtist);
+                        if (!artistResults.contains(thisArtist)) artistResults.add(thisArtist);
                     }
                 }
 
-                for(Playlist p : Library.getPlaylists()){
+                for (Playlist p : Library.getPlaylists()) {
                     if (p.getPlaylistName().toLowerCase().contains(query)) {
                         playlistResults.add(p);
                     }
@@ -329,22 +346,27 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            switch (viewType){
+            switch (viewType) {
                 case HEADER_VIEW:
-                    return new HeaderViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.subheader, parent, false));
+                    return new HeaderViewHolder(LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.subheader, parent, false));
                 case PLAYLIST_VIEW:
-                    return new PlaylistViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.instance_playlist, parent, false));
+                    return new PlaylistViewHolder(LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.instance_playlist, parent, false));
                 case SONG_VIEW:
                     return new SongViewHolder(
                             LayoutInflater.from(parent.getContext())
                                     .inflate(R.layout.instance_song, parent, false),
                             songResults);
                 case ALBUM_VIEW:
-                    return new AlbumViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.instance_album, parent, false));
+                    return new AlbumViewHolder(LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.instance_album, parent, false));
                 case ARTIST_VIEW:
-                    return new ArtistViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.instance_artist, parent, false));
+                    return new ArtistViewHolder(LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.instance_artist, parent, false));
                 case GENRE_VIEW:
-                    return new GenreViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.instance_genre, parent, false));
+                    return new GenreViewHolder(LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.instance_genre, parent, false));
                 default:
                     return null;
             }
@@ -352,7 +374,6 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-
             switch (getItemViewType(position)) {
                 case HEADER_VIEW:
                     ((HeaderViewHolder) viewHolder)
@@ -387,34 +408,35 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
          * @return The index of this view's corresponding data array for the given position
          */
         private int getTypeIndex(int position) {
-            if (!playlistResults.isEmpty() && position <= playlistResults.size()){
+            if (!playlistResults.isEmpty() && position <= playlistResults.size()) {
                 if (position == 0) return 0;
                 else return position - 1;
             }
 
-            //The number of views above the current section. This value is incremented later in the method
-            int leadingViewCount = (playlistResults.isEmpty()? 0 : playlistResults.size() + 1);
+            // The number of views above the current section.
+            // This value is incremented later in the method
+            int leadingViewCount = (playlistResults.isEmpty() ? 0 : playlistResults.size() + 1);
             if (!songResults.isEmpty() && position <= songResults.size() + leadingViewCount) {
                 if (position == leadingViewCount) return 1;
-                else return position - 1 - leadingViewCount;
+                return position - 1 - leadingViewCount;
             }
 
-            leadingViewCount += (songResults.isEmpty()? 0 : songResults.size() + 1);
+            leadingViewCount += (songResults.isEmpty() ? 0 : songResults.size() + 1);
             if (!albumResults.isEmpty() && position <= albumResults.size() + leadingViewCount) {
                 if (position == leadingViewCount) return 2;
-                else return position - 1 - leadingViewCount;
+                return position - 1 - leadingViewCount;
             }
 
-            leadingViewCount += (albumResults.isEmpty()? 0 : albumResults.size() + 1);
-            if (!artistResults.isEmpty() && position <= artistResults.size() + leadingViewCount){
+            leadingViewCount += (albumResults.isEmpty() ? 0 : albumResults.size() + 1);
+            if (!artistResults.isEmpty() && position <= artistResults.size() + leadingViewCount) {
                 if (position == leadingViewCount) return 3;
-                else return position - 1 - leadingViewCount;
+                return position - 1 - leadingViewCount;
             }
 
-            leadingViewCount += (artistResults.isEmpty()? 0 : artistResults.size() + 1);
-            if (!genreResults.isEmpty() && position <= genreResults.size() + leadingViewCount){
+            leadingViewCount += (artistResults.isEmpty() ? 0 : artistResults.size() + 1);
+            if (!genreResults.isEmpty() && position <= genreResults.size() + leadingViewCount) {
                 if (position == leadingViewCount) return 4;
-                else return position - 1 - leadingViewCount;
+                return position - 1 - leadingViewCount;
             }
 
             return 0;
@@ -430,33 +452,34 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         }
 
         @Override
-        public int getItemViewType(int position){
-            if (!playlistResults.isEmpty() && position <= playlistResults.size()){
+        public int getItemViewType(int position) {
+            if (!playlistResults.isEmpty() && position <= playlistResults.size()) {
                 if (position == 0) return HEADER_VIEW;
                 else return PLAYLIST_VIEW;
             }
 
-            //The number of views above the current section. This value is incremented later in the method
-            int leadingViewCount = (playlistResults.isEmpty()? 0 : playlistResults.size() + 1);
+            // The number of views above the current section
+            // This value is incremented later in the method
+            int leadingViewCount = (playlistResults.isEmpty() ? 0 : playlistResults.size() + 1);
             if (!songResults.isEmpty() && position <= songResults.size() + leadingViewCount) {
                 if (position == leadingViewCount) return HEADER_VIEW;
                 else return SONG_VIEW;
             }
 
-            leadingViewCount += (songResults.isEmpty()? 0 : songResults.size() + 1);
+            leadingViewCount += (songResults.isEmpty() ? 0 : songResults.size() + 1);
             if (!albumResults.isEmpty() && position <= albumResults.size() + leadingViewCount) {
                 if (position == leadingViewCount) return HEADER_VIEW;
                 else return ALBUM_VIEW;
             }
 
-            leadingViewCount += (albumResults.isEmpty()? 0 : albumResults.size() + 1);
-            if (!artistResults.isEmpty() && position <= artistResults.size() + leadingViewCount){
+            leadingViewCount += (albumResults.isEmpty() ? 0 : albumResults.size() + 1);
+            if (!artistResults.isEmpty() && position <= artistResults.size() + leadingViewCount) {
                 if (position == leadingViewCount) return HEADER_VIEW;
                 else return ARTIST_VIEW;
             }
 
-            leadingViewCount += (artistResults.isEmpty()? 0 : artistResults.size() + 1);
-            if (!genreResults.isEmpty() && position <= genreResults.size() + leadingViewCount){
+            leadingViewCount += (artistResults.isEmpty() ? 0 : artistResults.size() + 1);
+            if (!genreResults.isEmpty() && position <= genreResults.size() + leadingViewCount) {
                 if (position == leadingViewCount) return HEADER_VIEW;
                 else return GENRE_VIEW;
             }
@@ -467,11 +490,11 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         @Override
         public void onPlaylistRemoved(Playlist removed) {
             final int index = playlistResults.indexOf(removed);
-            if (index != -1){
+            if (index != -1) {
                 playlistResults.remove(index);
-                if (playlistResults.isEmpty()){
+                if (playlistResults.isEmpty()) {
                     // Remove the header as well as the entry if there aren't any playlist results
-                    notifyItemRangeRemoved(0,2);
+                    notifyItemRangeRemoved(0, 2);
                 }
                 else{
                     notifyItemRemoved(index + 1);
@@ -482,15 +505,15 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         @Override
         public void onPlaylistAdded(Playlist added) {
             if (lastQuery != null && lastQuery.length() > 0
-                    && added.getPlaylistName().toLowerCase().contains(lastQuery.toLowerCase().trim())) {
+                    && added.getPlaylistName().toLowerCase().contains(
+                    lastQuery.toLowerCase().trim())) {
                 playlistResults.add(added);
                 Collections.sort(playlistResults);
 
-                if (playlistResults.size() == 1){
+                if (playlistResults.size() == 1) {
                     // If we didn't have any results before, then we need to add the header as well
                     notifyItemRangeInserted(0, 2);
-                }
-                else {
+                } else {
                     notifyItemInserted(playlistResults.indexOf(added));
                 }
             }

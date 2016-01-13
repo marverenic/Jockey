@@ -10,16 +10,17 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
 import com.marverenic.music.activity.instance.PlaylistActivity;
 import com.marverenic.music.instances.AutoPlaylist;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.utils.Navigate;
 
-public class PlaylistViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener{
+public class PlaylistViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
+        PopupMenu.OnMenuItemClickListener {
 
     private Context context;
 
@@ -41,14 +42,13 @@ public class PlaylistViewHolder extends RecyclerView.ViewHolder implements View.
         context = itemView.getContext();
     }
 
-    public void update(Playlist p){
+    public void update(Playlist p) {
         reference = p;
 
-        if (p == null){
+        if (p == null) {
             playlistName.setText("");
             moreButton.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             playlistName.setText(p.getPlaylistName());
             moreButton.setVisibility(View.VISIBLE);
         }
@@ -61,13 +61,14 @@ public class PlaylistViewHolder extends RecyclerView.ViewHolder implements View.
     }
 
     @Override
-    public void onClick(View v){
-        switch (v.getId()){
+    public void onClick(View v) {
+        switch (v.getId()) {
             case R.id.instanceMore:
                 final PopupMenu menu = new PopupMenu(context, v, Gravity.END);
-                String[] options = (reference instanceof AutoPlaylist)
-                        ? context.getResources().getStringArray(R.array.queue_options_smart_playlist)
-                        : context.getResources().getStringArray(R.array.queue_options_playlist);
+                String[] options = context.getResources().getStringArray(
+                        (reference instanceof AutoPlaylist)
+                            ? R.array.queue_options_smart_playlist
+                            : R.array.queue_options_playlist);
                 for (int i = 0; i < options.length;  i++) {
                     menu.getMenu().add(Menu.NONE, i, i, options[i]);
                 }
@@ -75,7 +76,8 @@ public class PlaylistViewHolder extends RecyclerView.ViewHolder implements View.
                 menu.show();
                 break;
             default:
-                Navigate.to(context, PlaylistActivity.class, PlaylistActivity.PLAYLIST_EXTRA, reference);
+                Navigate.to(context, PlaylistActivity.class,
+                        PlaylistActivity.PLAYLIST_EXTRA, reference);
                 break;
         }
     }
@@ -93,7 +95,7 @@ public class PlaylistViewHolder extends RecyclerView.ViewHolder implements View.
                     return true;
             }
         }
-        switch (menuItem.getItemId()){
+        switch (menuItem.getItemId()) {
             case 0: //Queue this playlist next
                 PlayerController.queueNext(Library.getPlaylistEntries(context, reference));
                 return true;

@@ -16,6 +16,13 @@ public final class Cache {
     private static final String CACHE_EXTENSION = ".lfm";
     private static boolean initialized = false;
 
+    /**
+     * This class is never instantiated
+     */
+    private Cache() {
+
+    }
+
     private static void initializeCache(Context context) {
         //noinspection ResultOfMethodCallIgnored
         new File(context.getExternalCacheDir() + "/lastfm/").mkdirs();

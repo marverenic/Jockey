@@ -15,7 +15,7 @@ public class HeaderViewHolder extends RecyclerView.ViewHolder {
         subheaderText = (TextView) itemView.findViewById(R.id.subheader);
     }
 
-    public void update(String sectionName){
+    public void update(String sectionName) {
         subheaderText.setText(sectionName);
     }
 }

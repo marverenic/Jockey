@@ -24,17 +24,28 @@ public class ImageList {
     public String getUrl(byte size) {
         switch (size) {
             case SIZE_MEGA:
-                if (megaUrl != null) return megaUrl;
+                if (megaUrl != null) {
+                    return megaUrl;
+                }
             case SIZE_XLARGE:
-                if (xlargeUrl != null) return xlargeUrl;
+                if (xlargeUrl != null) {
+                    return xlargeUrl;
+                }
             case SIZE_LARGE:
-                if (largeUrl != null) return largeUrl;
+                if (largeUrl != null) {
+                    return largeUrl;
+                }
             case SIZE_MEDIUM:
-                if (mediumUrl != null) return mediumUrl;
+                if (mediumUrl != null) {
+                    return mediumUrl;
+                }
             case SIZE_SMALL:
-                if (smallUrl != null) return smallUrl;
+                if (smallUrl != null) {
+                    return smallUrl;
+                }
+            default:
+                return null;
         }
-        return null;
     }
 
 }

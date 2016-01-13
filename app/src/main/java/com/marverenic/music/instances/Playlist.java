@@ -78,8 +78,9 @@ public class Playlist implements Parcelable, Comparable<Playlist> {
 
     @Override
     public boolean equals(final Object obj) {
-        return this == obj ||
-                (obj != null && obj instanceof Playlist && playlistId == ((Playlist) obj).playlistId);
+        return this == obj
+                || (obj != null && obj instanceof Playlist
+                && playlistId == ((Playlist) obj).playlistId);
     }
 
     public String toString() {

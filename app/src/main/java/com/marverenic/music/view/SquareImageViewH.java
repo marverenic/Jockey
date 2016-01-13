@@ -20,7 +20,8 @@ public class SquareImageViewH extends ImageView {
     }
 
     @TargetApi(21)
-    public SquareImageViewH(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public SquareImageViewH(Context context, AttributeSet attrs, int defStyleAttr,
+                            int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 

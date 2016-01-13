@@ -50,7 +50,7 @@ public class GenreActivity extends BaseActivity {
         list.setLayoutManager(layoutManager);
     }
 
-    public class Adapter extends RecyclerView.Adapter<SongViewHolder>{
+    public class Adapter extends RecyclerView.Adapter<SongViewHolder> {
 
         @Override
         public SongViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {

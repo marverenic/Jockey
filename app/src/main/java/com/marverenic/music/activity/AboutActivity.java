@@ -27,18 +27,20 @@ public class AboutActivity extends BaseActivity implements View.OnClickListener 
     public void themeActivity() {
         super.themeActivity();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && getSupportActionBar() != null)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                && getSupportActionBar() != null) {
             getSupportActionBar().setElevation(0);
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            ((ImageView) findViewById(R.id.aboutAppIcon)).setImageBitmap(Themes.getLargeIcon(this, DisplayMetrics.DENSITY_XXXHIGH));
+            ((ImageView) findViewById(R.id.aboutAppIcon)).setImageBitmap(
+                    Themes.getLargeIcon(this, DisplayMetrics.DENSITY_XXXHIGH));
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            ((ImageView) findViewById(R.id.aboutAppIcon)).setImageBitmap(
+                    Themes.getLargeIcon(this, DisplayMetrics.DENSITY_XXHIGH));
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                ((ImageView) findViewById(R.id.aboutAppIcon)).setImageBitmap(Themes.getLargeIcon(this, DisplayMetrics.DENSITY_XXHIGH));
-            }
-            else{
-                ((ImageView) findViewById(R.id.aboutAppIcon)).setImageBitmap(Themes.getLargeIcon(this, DisplayMetrics.DENSITY_XHIGH));
-            }
+            ((ImageView) findViewById(R.id.aboutAppIcon)).setImageBitmap(
+                    Themes.getLargeIcon(this, DisplayMetrics.DENSITY_XHIGH));
         }
 
         findViewById(R.id.aboutMarverenicLogo).setOnClickListener(this);
@@ -46,12 +48,14 @@ public class AboutActivity extends BaseActivity implements View.OnClickListener 
 
 
     @Override
-    public void onClick(View v){
+    public void onClick(View v) {
         Intent webIntent = new Intent(Intent.ACTION_VIEW);
         webIntent.setData(Uri.parse("http://marverenic.github.io/Jockey/"));
         startActivity(webIntent);
     }
 
     @Override
-    public void updateMiniplayer(){}
+    public void updateMiniplayer() {
+
+    }
 }

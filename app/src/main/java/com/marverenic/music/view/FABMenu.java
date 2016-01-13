@@ -32,6 +32,9 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
 
     private static final String TAG = "FABMenu";
 
+    private static final int SIZE_L_DP = 56;
+    private static final int SIZE_S_DP = 40;
+
     private FrameLayout screen;
     private final List<FloatingActionButton> children = new ArrayList<>();
     private final List<TextView> labels = new ArrayList<>();
@@ -72,18 +75,20 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
         screen.setOnClickListener(this);
     }
 
-    public void addChild(@DrawableRes int icon, OnClickListener onClickListener, String label){
+    public void addChild(@DrawableRes int icon, OnClickListener onClickListener, String label) {
         children.add(buildChild(icon, onClickListener, label));
         labels.add(buildChildLabel(label));
     }
 
-    public void addChild(@DrawableRes int icon, OnClickListener onClickListener, @StringRes int label){
+    public void addChild(@DrawableRes int icon, OnClickListener onClickListener,
+                         @StringRes int label) {
         final String name = getResources().getString(label);
         children.add(buildChild(icon, onClickListener, name));
         labels.add(buildChildLabel(name));
     }
 
-    private FloatingActionButton buildChild(@DrawableRes int icon, final OnClickListener onClickListener, String label){
+    private FloatingActionButton buildChild(@DrawableRes int icon,
+                                            final OnClickListener onClickListener, String label) {
         FloatingActionButton button = (FloatingActionButton)
                 LayoutInflater.from(getContext())
                         .inflate(R.layout.mini_fab, (ViewGroup) getParent(), true)
@@ -100,13 +105,15 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
             }
         });
 
-        if (getParent() instanceof CoordinatorLayout){
+        if (getParent() instanceof CoordinatorLayout) {
             final float padding = getResources().getDimension(R.dimen.fab_margin);
             final float dpScale = getResources().getDisplayMetrics().density;
 
-            CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) button.getLayoutParams();
+            CoordinatorLayout.LayoutParams params =
+                    (CoordinatorLayout.LayoutParams) button.getLayoutParams();
             params.rightMargin += padding;
-            params.bottomMargin = (int) (56 * dpScale + padding * (2 + children.size()) + 40 * dpScale * children.size());
+            params.bottomMargin = (int) (SIZE_L_DP * dpScale + padding * (2 + children.size())
+                    + SIZE_S_DP * dpScale * children.size());
 
             // For some reason, the children are 12dp higher and 18dp further to the left on pre-L
             // devices than on L+ devices. I don't know for sure what causes this (I suspect it's
@@ -121,8 +128,7 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
             }
 
             button.setLayoutParams(params);
-        }
-        else{
+        } else {
             Log.e(TAG, "Parent must be a CoordinatorLayout to properly set margin");
         }
 
@@ -139,7 +145,7 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
         return button;
     }
 
-    private TextView buildChildLabel(String name){
+    private TextView buildChildLabel(String name) {
         TextView label = (TextView)
                 LayoutInflater.from(getContext())
                         .inflate(R.layout.mini_fab_label, (ViewGroup) getParent(), true)
@@ -149,17 +155,18 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
         label.setText(name);
         label.setVisibility(GONE);
 
-        if (getParent() instanceof CoordinatorLayout){
+        if (getParent() instanceof CoordinatorLayout) {
             final float padding = getResources().getDimension(R.dimen.fab_margin);
             final float dpScale = getResources().getDisplayMetrics().density;
 
-            CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) label.getLayoutParams();
+            CoordinatorLayout.LayoutParams params =
+                    (CoordinatorLayout.LayoutParams) label.getLayoutParams();
             params.rightMargin += padding + 40 * dpScale;
-            params.bottomMargin = (int) (56 * dpScale + 4 * dpScale + padding * (2 + labels.size()) + 40 * dpScale * labels.size());
+            params.bottomMargin = (int) (SIZE_L_DP * dpScale + 4 * dpScale
+                    + padding * (2 + labels.size()) + SIZE_S_DP * dpScale * labels.size());
 
             label.setLayoutParams(params);
-        }
-        else{
+        } else {
             Log.e(TAG, "Parent must be a CoordinatorLayout to properly set margin");
         }
 
@@ -167,7 +174,7 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
         return label;
     }
 
-    public void show(){
+    public void show() {
         Animation fabAnim = AnimationUtils.loadAnimation(getContext(), R.anim.fab_in);
         fabAnim.setDuration(300);
         fabAnim.setInterpolator(getContext(), android.R.interpolator.decelerate_quint);
@@ -178,8 +185,8 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
         setVisibility(View.VISIBLE);
     }
 
-    public void hide(){
-        if (childrenVisible){
+    public void hide() {
+        if (childrenVisible) {
             hideChildren();
             childrenVisible = false;
         }
@@ -200,8 +207,10 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
         }, 300);
     }
 
-    public void showChildren(){
-        if (childrenVisible || delayedRunnable != null) return;
+    public void showChildren() {
+        if (childrenVisible || delayedRunnable != null) {
+            return;
+        }
         childrenVisible = true;
 
         // Start a sliding animation on each child
@@ -269,8 +278,10 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
         screen.startAnimation(fadeAnimation);
     }
 
-    public void hideChildren(){
-        if (!childrenVisible || delayedRunnable != null) return;
+    public void hideChildren() {
+        if (!childrenVisible || delayedRunnable != null) {
+            return;
+        }
         childrenVisible = false;
 
         Animation fabAnim = AnimationUtils.loadAnimation(getContext(), R.anim.fab_out);
@@ -284,7 +295,7 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
         for (FloatingActionButton c : children) {
             c.startAnimation(fabAnim);
         }
-        for (TextView l : labels){
+        for (TextView l : labels) {
             l.startAnimation(labelAnim);
         }
 
@@ -296,7 +307,7 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
                     c.setVisibility(GONE);
                     ((ViewGroup) c.getParent()).removeView(c);
                 }
-                for (TextView l : labels){
+                for (TextView l : labels) {
                     l.setVisibility(GONE);
                     ((ViewGroup) l.getParent()).removeView(l);
                 }
@@ -346,50 +357,54 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
     // is in updateFabTranslationForSnackbar( ... )
     public static class Behavior extends FloatingActionButton.Behavior {
 
-        public Behavior () {
+        public Behavior() {
             super();
         }
 
-        public Behavior (Context context, AttributeSet attrs) {
+        public Behavior(Context context, AttributeSet attrs) {
             super();
         }
 
         @Override
-        public boolean onDependentViewChanged(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
-            if(dependency instanceof Snackbar.SnackbarLayout) {
+        public boolean onDependentViewChanged(CoordinatorLayout parent,
+                                              FloatingActionButton child, View dependency) {
+            if (dependency instanceof Snackbar.SnackbarLayout) {
                 updateFabTranslationForSnackbar(parent, child, dependency);
                 return false;
-            } else{
+            } else {
                 return super.onDependentViewChanged(parent, child, dependency);
             }
         }
 
-        private void updateFabTranslationForSnackbar(CoordinatorLayout parent, FloatingActionButton fab, View snackbar) {
-            if(fab.getVisibility() == VISIBLE) {
+        private void updateFabTranslationForSnackbar(CoordinatorLayout parent,
+                                                     FloatingActionButton fab, View snackbar) {
+            if (fab.getVisibility() == VISIBLE) {
                 float translationY = this.getFabTranslationYForSnackbar(parent, fab);
                 ViewCompat.setTranslationY(fab, translationY);
 
 
                 // The only thing I actually wanted to modify:
-                for (FloatingActionButton child : ((FABMenu) fab).children){
+                for (FloatingActionButton child : ((FABMenu) fab).children) {
                     ViewCompat.setTranslationY(child, translationY);
                 }
 
-                for (TextView label : ((FABMenu) fab).labels){
+                for (TextView label : ((FABMenu) fab).labels) {
                     ViewCompat.setTranslationY(label, translationY);
                 }
             }
         }
 
-        private float getFabTranslationYForSnackbar(CoordinatorLayout parent, FloatingActionButton fab) {
+        private float getFabTranslationYForSnackbar(CoordinatorLayout parent,
+                                                    FloatingActionButton fab) {
             float minOffset = 0.0F;
             List dependencies = parent.getDependencies(fab);
             int i = 0;
 
-            for(int z = dependencies.size(); i < z; ++i) {
-                View view = (View)dependencies.get(i);
-                if(view instanceof Snackbar.SnackbarLayout && parent.doViewsOverlap(fab, view)) {
-                    minOffset = Math.min(minOffset, ViewCompat.getTranslationY(view) - (float)view.getHeight());
+            for (int z = dependencies.size(); i < z; ++i) {
+                View view = (View) dependencies.get(i);
+                if (view instanceof Snackbar.SnackbarLayout && parent.doViewsOverlap(fab, view)) {
+                    minOffset = Math.min(
+                            minOffset, ViewCompat.getTranslationY(view) - (float) view.getHeight());
                 }
             }
 

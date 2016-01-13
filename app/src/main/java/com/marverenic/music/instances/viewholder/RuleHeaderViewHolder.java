@@ -15,11 +15,12 @@ import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.AutoPlaylist;
+import com.marverenic.music.instances.Library;
 
-public class RuleHeaderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, AdapterView.OnItemSelectedListener{
+public class RuleHeaderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
+        CompoundButton.OnCheckedChangeListener, AdapterView.OnItemSelectedListener {
 
     private static final int[] TRUNCATE_CHOICES = new int[] {
             AutoPlaylist.Rule.Field.ID,
@@ -68,14 +69,16 @@ public class RuleHeaderViewHolder extends RecyclerView.ViewHolder implements Vie
         this.originalName = reference.getPlaylistName();
 
         // Initialize View references
-        AppCompatEditText nameEditText = (AppCompatEditText) itemView.findViewById(R.id.playlist_name_input_text);
+        AppCompatEditText nameEditText =
+                (AppCompatEditText) itemView.findViewById(R.id.playlist_name_input_text);
         nameEditLayout = (TextInputLayout) itemView.findViewById(R.id.playlist_name_input);
 
         matchAllRulesSwitch = (SwitchCompat) itemView.findViewById(R.id.playlist_match_all);
 
         songCapCheckBox = (AppCompatCheckBox) itemView.findViewById(R.id.playlist_song_cap_check);
         songCapContainer = (RelativeLayout) itemView.findViewById(R.id.playlist_maximum);
-        maximumEditText = (AppCompatEditText) itemView.findViewById(R.id.playlist_maximum_input_text);
+        maximumEditText =
+                (AppCompatEditText) itemView.findViewById(R.id.playlist_maximum_input_text);
         truncateMethodSpinner = (AppCompatSpinner) itemView.findViewById(R.id.playlist_chosen_by);
         truncateMethodPrefix = (TextView) itemView.findViewById(R.id.playlist_chosen_by_prefix);
 
@@ -86,7 +89,8 @@ public class RuleHeaderViewHolder extends RecyclerView.ViewHolder implements Vie
             maximumEditText.setText(Integer.toString(reference.getMaximumEntries()));
         }
 
-        truncateMethodSpinner.setSelection(lookupTruncateMethod(reference.getTruncateMethod(), reference.isTruncateAscending()));
+        truncateMethodSpinner.setSelection(lookupTruncateMethod(
+                reference.getTruncateMethod(), reference.isTruncateAscending()));
         songCapCheckBox.setChecked(reference.getMaximumEntries() > 0);
         onCheckedChanged(songCapCheckBox, reference.getMaximumEntries() > 0);
 
@@ -108,7 +112,8 @@ public class RuleHeaderViewHolder extends RecyclerView.ViewHolder implements Vie
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // Validate playlist names to avoid collisions
-                if (originalName.length() == 0 || !originalName.equalsIgnoreCase(s.toString().trim())) {
+                if (originalName.length() == 0
+                        || !originalName.equalsIgnoreCase(s.toString().trim())) {
                     String error = Library.verifyPlaylistName(itemView.getContext(), s.toString());
                     nameEditLayout.setError(error);
                 } else {

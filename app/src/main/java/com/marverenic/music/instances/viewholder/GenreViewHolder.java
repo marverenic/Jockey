@@ -10,15 +10,16 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.GenreActivity;
 import com.marverenic.music.instances.Genre;
-import com.marverenic.music.utils.Navigate;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.PlaylistDialog;
+import com.marverenic.music.utils.Navigate;
 
-public class GenreViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener{
+public class GenreViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
+        PopupMenu.OnMenuItemClickListener {
 
     private Context context;
 
@@ -36,17 +37,18 @@ public class GenreViewHolder extends RecyclerView.ViewHolder implements View.OnC
         context = itemView.getContext();
     }
 
-    public void update(Genre g){
+    public void update(Genre g) {
         reference = g;
         genreName.setText(g.getGenreName());
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.instanceMore:
                 final PopupMenu menu = new PopupMenu(context, v, Gravity.END);
-                String[] options = context.getResources().getStringArray(R.array.queue_options_genre);
+                String[] options = context.getResources()
+                        .getStringArray(R.array.queue_options_genre);
                 for (int i = 0; i < options.length;  i++) {
                     menu.getMenu().add(Menu.NONE, i, i, options[i]);
                 }
@@ -61,7 +63,7 @@ public class GenreViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
-        switch (menuItem.getItemId()){
+        switch (menuItem.getItemId()) {
             case 0: //Queue this genre next
                 PlayerController.queueNext(Library.getGenreEntries(reference));
                 return true;

@@ -12,9 +12,9 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.instances.Library;
+import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.instances.PlaylistDialog;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class QueueSongViewHolder extends DraggableSongViewHolder {
     private Activity parentActivity;
     private OnRemovedListener removedListener;
 
-    public interface OnRemovedListener{
+    public interface OnRemovedListener {
         void onItemRemoved(int index);
     }
 
@@ -35,10 +35,10 @@ public class QueueSongViewHolder extends DraggableSongViewHolder {
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.instanceMore:
-                final PopupMenu menu = new PopupMenu(itemView.getContext(), v, Gravity.END);
-                String[] options = itemView.getResources()
+                final PopupMenu menu = new PopupMenu(getItemView().getContext(), v, Gravity.END);
+                String[] options = getItemView().getResources()
                         .getStringArray(R.array.edit_queue_options);
 
                 for (int i = 0; i < options.length;  i++) {
@@ -59,21 +59,22 @@ public class QueueSongViewHolder extends DraggableSongViewHolder {
         switch (menuItem.getItemId()) {
             case 0: //Go to artist
                 Navigate.to(
-                        itemView.getContext(),
+                        getItemView().getContext(),
                         ArtistActivity.class,
                         ArtistActivity.ARTIST_EXTRA,
                         Library.findArtistById(reference.getArtistId()));
                 return true;
             case 1: // Go to album
                 Navigate.to(
-                        itemView.getContext(),
+                        getItemView().getContext(),
                         AlbumActivity.class,
                         AlbumActivity.ALBUM_EXTRA,
                         Library.findAlbumById(reference.getAlbumId()));
                 return true;
             case 2:
-                PlaylistDialog.AddToNormal.alert(itemView, reference, itemView.getContext()
-                        .getString(R.string.header_add_song_name_to_playlist, reference));
+                PlaylistDialog.AddToNormal.alert(getItemView(), reference,
+                        getItemView().getContext().getString(
+                                R.string.header_add_song_name_to_playlist, reference));
                 return true;
             case 3: // Remove
                 List<Song> editedQueue = PlayerController.getQueue();

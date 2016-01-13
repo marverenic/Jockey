@@ -17,14 +17,15 @@ import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Playlist;
+import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.utils.Prefs;
 
 import java.util.List;
 
-public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener{
+public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
+        PopupMenu.OnMenuItemClickListener {
 
     private View itemView;
     private TextView songName;
@@ -37,7 +38,7 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     private OnRemovedListener removalListener;
     private List<Song> songList;
 
-    public interface OnRemovedListener{
+    public interface OnRemovedListener {
         void onSongRemoved(View view, Song song);
     }
 
@@ -54,15 +55,15 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         moreButton.setOnClickListener(this);
     }
 
-    public void setPlaylist(@NonNull Playlist playlist, @NonNull OnRemovedListener listener){
+    public void setPlaylist(@NonNull Playlist playlist, @NonNull OnRemovedListener listener) {
         // Set a playlist for this viewholder to add a remove button to the context menu
         this.playlistReference = playlist;
         this.removalListener = listener;
     }
 
-    public void update(Song s, int index) {
+    public void update(Song s, int position) {
         reference = s;
-        this.index = index;
+        index = position;
 
         songName.setText(s.getSongName());
         detailText.setText(s.getArtistName() + " - " + s.getAlbumName());
@@ -70,7 +71,7 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.instanceMore:
                 final PopupMenu menu = new PopupMenu(itemView.getContext(), v, Gravity.END);
                 String[] options = itemView.getResources()
@@ -90,8 +91,10 @@ public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                     PlayerController.setQueue(songList, index);
                     PlayerController.begin();
 
-                    if (Prefs.getPrefs(itemView.getContext()).getBoolean(Prefs.SWITCH_TO_PLAYING, true))
+                    if (Prefs.getPrefs(itemView.getContext())
+                            .getBoolean(Prefs.SWITCH_TO_PLAYING, true)) {
                         Navigate.to(itemView.getContext(), NowPlayingActivity.class);
+                    }
                 }
                 break;
         }

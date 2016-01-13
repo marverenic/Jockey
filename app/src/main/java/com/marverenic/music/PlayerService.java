@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.support.annotation.IdRes;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -25,7 +26,7 @@ import java.util.List;
 public class PlayerService extends Service {
 
     private static final String TAG = "PlayerService";
-    private static final boolean debug = BuildConfig.DEBUG;
+    private static final boolean DEBUG = BuildConfig.DEBUG;
 
     public static final int NOTIFICATION_ID = 1;
 
@@ -78,18 +79,17 @@ public class PlayerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (debug) Log.i(TAG, "onCreate() called");
+        if (DEBUG) Log.i(TAG, "onCreate() called");
 
-        if (instance == null){
+        if (instance == null) {
             instance = this;
-        }
-        else{
-            if (debug) Log.w(TAG, "Attempted to create a second PlayerService");
+        } else {
+            if (DEBUG) Log.w(TAG, "Attempted to create a second PlayerService");
             stopSelf();
             return;
         }
 
-        if (player == null){
+        if (player == null) {
             player = new Player(this);
         }
 
@@ -97,23 +97,24 @@ public class PlayerService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId ){
+    public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
 
     @Override
-    public void onDestroy(){
-        if (debug) Log.i(TAG, "Called onDestroy()");
-        try{
+    public void onDestroy() {
+        if (DEBUG) Log.i(TAG, "Called onDestroy()");
+        try {
             player.saveState("");
+        } catch (Exception ignored) {
+
         }
-        catch (Exception ignored){}
         finish();
         super.onDestroy();
     }
 
-    public static PlayerService getInstance(){
+    public static PlayerService getInstance() {
         return instance;
     }
 
@@ -122,68 +123,66 @@ public class PlayerService extends Service {
      * Posts the notification by starting the service in the foreground
      */
     public void notifyNowPlaying() {
-        if (debug) Log.i(TAG, "notifyNowPlaying() called");
-
-        // The intent to use for the notification buttons
-        Intent intent = new Intent(this, Listener.class);
+        if (DEBUG) Log.i(TAG, "notifyNowPlaying() called");
 
         // Create the compact view
         RemoteViews notificationView = new RemoteViews(getPackageName(), R.layout.notification);
         // Create the expanded view
-        RemoteViews notificationViewExpanded = new RemoteViews(getPackageName(), R.layout.notification_expanded);
+        RemoteViews notificationViewExpanded =
+                new RemoteViews(getPackageName(), R.layout.notification_expanded);
 
         // Set the artwork for the notification
         if (player.getArt() != null) {
             notificationView.setImageViewBitmap(R.id.notificationIcon, player.getArt());
             notificationViewExpanded.setImageViewBitmap(R.id.notificationIcon, player.getArt());
-        }
-        else {
+        } else {
             notificationView.setImageViewResource(R.id.notificationIcon, R.drawable.art_default);
-            notificationViewExpanded.setImageViewResource(R.id.notificationIcon, R.drawable.art_default);
+            notificationViewExpanded
+                    .setImageViewResource(R.id.notificationIcon, R.drawable.art_default);
         }
 
         // If the player is playing music, set the track info and the button intents
         if (player.getNowPlaying() != null) {
             // Update the info for the compact view
-            notificationView.setTextViewText(R.id.notificationContentTitle, player.getNowPlaying().getSongName());
-            notificationView.setTextViewText(R.id.notificationContentText, player.getNowPlaying().getAlbumName());
-            notificationView.setTextViewText(R.id.notificationSubText, player.getNowPlaying().getArtistName());
+            notificationView.setTextViewText(R.id.notificationContentTitle,
+                    player.getNowPlaying().getSongName());
+            notificationView.setTextViewText(R.id.notificationContentText,
+                    player.getNowPlaying().getAlbumName());
+            notificationView.setTextViewText(R.id.notificationSubText,
+                    player.getNowPlaying().getArtistName());
 
             // Update the info for the expanded view
-            notificationViewExpanded.setTextViewText(R.id.notificationContentTitle, player.getNowPlaying().getSongName());
-            notificationViewExpanded.setTextViewText(R.id.notificationContentText, player.getNowPlaying().getAlbumName());
-            notificationViewExpanded.setTextViewText(R.id.notificationSubText, player.getNowPlaying().getArtistName());
-        }
-        else{
-            // If the player isn't playing music, set the notification text to a hardcoded set of strings
-            notificationView.setTextViewText(R.id.notificationContentTitle, "Nothing is playing");
-            notificationView.setTextViewText(R.id.notificationContentText, "");
-            notificationView.setTextViewText(R.id.notificationSubText, "");
-
-            notificationViewExpanded.setTextViewText(R.id.notificationContentTitle, "Nothing is playing");
-            notificationViewExpanded.setTextViewText(R.id.notificationContentText, "");
-            notificationViewExpanded.setTextViewText(R.id.notificationSubText, "");
+            notificationViewExpanded.setTextViewText(R.id.notificationContentTitle,
+                    player.getNowPlaying().getSongName());
+            notificationViewExpanded.setTextViewText(R.id.notificationContentText,
+                    player.getNowPlaying().getAlbumName());
+            notificationViewExpanded.setTextViewText(R.id.notificationSubText,
+                    player.getNowPlaying().getArtistName());
         }
 
         // Set the button intents for the compact view
-        notificationView.setOnClickPendingIntent(R.id.notificationSkipPrevious, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_PREV), 0));
-        notificationView.setOnClickPendingIntent(R.id.notificationSkipNext, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_NEXT), 0));
-        notificationView.setOnClickPendingIntent(R.id.notificationPause, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_TOGGLE_PLAY), 0));
-        notificationView.setOnClickPendingIntent(R.id.notificationStop, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_STOP), 0));
+        setNotificationButton(notificationView, R.id.notificationSkipPrevious, ACTION_PREV);
+        setNotificationButton(notificationView, R.id.notificationSkipNext, ACTION_NEXT);
+        setNotificationButton(notificationView, R.id.notificationPause, ACTION_TOGGLE_PLAY);
+        setNotificationButton(notificationView, R.id.notificationStop, ACTION_STOP);
 
         // Set the button intents for the expanded view
-        notificationViewExpanded.setOnClickPendingIntent(R.id.notificationSkipPrevious, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_PREV), 0));
-        notificationViewExpanded.setOnClickPendingIntent(R.id.notificationSkipNext, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_NEXT), 0));
-        notificationViewExpanded.setOnClickPendingIntent(R.id.notificationPause, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_TOGGLE_PLAY), 0));
-        notificationViewExpanded.setOnClickPendingIntent(R.id.notificationStop, PendingIntent.getBroadcast(this, 1, intent.setAction(ACTION_STOP), 0));
+        setNotificationButton(notificationViewExpanded, R.id.notificationSkipPrevious, ACTION_PREV);
+        setNotificationButton(notificationViewExpanded, R.id.notificationSkipNext, ACTION_NEXT);
+        setNotificationButton(notificationViewExpanded, R.id.notificationPause, ACTION_TOGGLE_PLAY);
+        setNotificationButton(notificationViewExpanded, R.id.notificationStop, ACTION_STOP);
 
         // Update the play/pause button icon to reflect the player status
         if (!(player.isPlaying() || player.isPreparing())) {
-            notificationView.setImageViewResource(R.id.notificationPause, R.drawable.ic_play_arrow_36dp);
-            notificationViewExpanded.setImageViewResource(R.id.notificationPause, R.drawable.ic_play_arrow_36dp);
-        } else{
-            notificationView.setImageViewResource(R.id.notificationPause, R.drawable.ic_pause_36dp);
-            notificationViewExpanded.setImageViewResource(R.id.notificationPause, R.drawable.ic_pause_36dp);
+            notificationView.setImageViewResource(R.id.notificationPause,
+                    R.drawable.ic_play_arrow_36dp);
+            notificationViewExpanded.setImageViewResource(R.id.notificationPause,
+                    R.drawable.ic_play_arrow_36dp);
+        } else {
+            notificationView.setImageViewResource(R.id.notificationPause,
+                    R.drawable.ic_pause_36dp);
+            notificationViewExpanded.setImageViewResource(R.id.notificationPause,
+                    R.drawable.ic_pause_36dp);
         }
 
         // Build the notification
@@ -211,14 +210,22 @@ public class PlayerService extends Service {
         startForeground(NOTIFICATION_ID, notification);
     }
 
-    public void stop(){
-        if (debug) Log.i(TAG, "stop() called");
+    private void setNotificationButton(RemoteViews notificationView, @IdRes int viewId,
+                                       String action) {
+        notificationView.setOnClickPendingIntent(viewId,
+                PendingIntent.getBroadcast(this, 1,
+                        new Intent(this, Listener.class).setAction(action), 0));
+    }
 
-        // If the UI process is still running, don't kill the process -- only remove its notification
+    public void stop() {
+        if (DEBUG) Log.i(TAG, "stop() called");
+
+        // If the UI process is still running, don't kill the process, only remove its notification
         ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> procInfos = activityManager.getRunningAppProcesses();
-        for(int i = 0; i < procInfos.size(); i++){
-            if(procInfos.get(i).processName.equals(BuildConfig.APPLICATION_ID)){
+        List<ActivityManager.RunningAppProcessInfo> procInfos =
+                activityManager.getRunningAppProcesses();
+        for (int i = 0; i < procInfos.size(); i++) {
+            if (procInfos.get(i).processName.equals(BuildConfig.APPLICATION_ID)) {
                 player.pause();
                 stopForeground(true);
                 return;
@@ -230,7 +237,7 @@ public class PlayerService extends Service {
     }
 
     public void finish() {
-        if (debug) Log.i(TAG, "finish() called");
+        if (DEBUG) Log.i(TAG, "finish() called");
         if (!finished) {
             player.finish();
             player = null;
@@ -241,33 +248,32 @@ public class PlayerService extends Service {
         }
     }
 
-    public static class Listener extends BroadcastReceiver{
+    public static class Listener extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent == null || intent.getAction() == null){
-                if (debug) Log.i(TAG, "Intent received (action = null)");
+            if (intent == null || intent.getAction() == null) {
+                if (DEBUG) Log.i(TAG, "Intent received (action = null)");
                 return;
             }
 
-            if (debug) Log.i(TAG, "Intent received (action = \"" + intent.getAction() + "\")");
+            if (DEBUG) Log.i(TAG, "Intent received (action = \"" + intent.getAction() + "\")");
 
-            if (instance == null){
-                if (debug) Log.i(TAG, "Service not initialized");
+            if (instance == null) {
+                if (DEBUG) Log.i(TAG, "Service not initialized");
                 return;
             }
 
-            if (instance.player.getNowPlaying() != null){
+            if (instance.player.getNowPlaying() != null) {
                 try {
                     instance.player.saveState(intent.getAction());
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     Crashlytics.logException(e);
-                    if (debug) e.printStackTrace();
+                    if (DEBUG) e.printStackTrace();
                 }
             }
 
-            switch (intent.getAction()){
+            switch (intent.getAction()) {
                 case (ACTION_TOGGLE_PLAY):
                     instance.player.togglePlay();
                     instance.player.updateUi();

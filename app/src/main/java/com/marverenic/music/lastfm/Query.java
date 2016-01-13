@@ -20,7 +20,14 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-public class Query {
+public final class Query {
+
+    /**
+     * This class is never instantiated
+     */
+    private Query() {
+
+    }
 
     private static String getQuery(String method) {
         return "http://ws.audioscrobbler.com/2.0/?method=" + method + "&api_key=" + Config.API_KEY;

@@ -13,7 +13,7 @@ import com.marverenic.music.utils.Util;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Genre implements Parcelable, Comparable<Genre> {
+public final class Genre implements Parcelable, Comparable<Genre> {
 
     public static final Parcelable.Creator<Genre> CREATOR = new Parcelable.Creator<Genre>() {
         public Genre createFromParcel(Parcel in) {
@@ -74,12 +74,12 @@ public class Genre implements Parcelable, Comparable<Genre> {
             // has a genre called "Unknown", it won't be included in this if statement).
 
             //noinspection StringEquality
-            if (next.genreName.isEmpty() || next.genreName == unknownName){
+            if (next.genreName.isEmpty() || next.genreName == unknownName) {
                 next.genreId = -1;
             } else {
                 associateGenre(context, next);
             }
-            
+
             genres.add(next);
         }
         return genres;
@@ -95,11 +95,13 @@ public class Genre implements Parcelable, Comparable<Genre> {
         if (genreCur != null) {
             genreCur.moveToFirst();
 
-            final int ID_INDEX = genreCur.getColumnIndex(MediaStore.Audio.Media._ID);
+            final int idIndex = genreCur.getColumnIndex(MediaStore.Audio.Media._ID);
             for (int j = 0; j < genreCur.getCount(); j++) {
                 genreCur.moveToPosition(j);
-                final Song s = Library.findSongById(genreCur.getInt(ID_INDEX));
-                if (s != null) s.genreId = genre.genreId;
+                final Song s = Library.findSongById(genreCur.getInt(idIndex));
+                if (s != null) {
+                    s.genreId = genre.genreId;
+                }
             }
             genreCur.close();
         }
@@ -120,8 +122,8 @@ public class Genre implements Parcelable, Comparable<Genre> {
 
     @Override
     public boolean equals(final Object obj) {
-        return this == obj ||
-                (obj != null && obj instanceof Genre && genreId == ((Genre) obj).genreId);
+        return this == obj
+                || (obj != null && obj instanceof Genre && genreId == ((Genre) obj).genreId);
     }
 
     public String toString() {

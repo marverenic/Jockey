@@ -20,14 +20,14 @@ import java.util.List;
 
 public class PlaylistDialog {
 
-    public static class MakeNormal implements DialogInterface.OnClickListener, TextWatcher {
+    public static final class MakeNormal implements DialogInterface.OnClickListener, TextWatcher {
 
-        private Context context;
-        private View snackbarReturnView;
-        private List<Song> data;
-        private TextInputLayout inputLayout;
-        private AppCompatEditText editText;
-        private AlertDialog dialog;
+        private Context mContext;
+        private View mReturnView;
+        private List<Song> mData;
+        private TextInputLayout mInputLayout;
+        private AppCompatEditText mEditText;
+        private AlertDialog mDialog;
 
         public static void alert(View view) {
             alert(view, null);
@@ -38,88 +38,90 @@ public class PlaylistDialog {
         }
 
         private MakeNormal(View view, List<Song> songs) {
-            context = view.getContext();
-            snackbarReturnView = view;
-            data = songs;
+            mContext = view.getContext();
+            mReturnView = view;
+            mData = songs;
         }
 
-        private void buildLayout(){
-            inputLayout = new TextInputLayout(context);
-            editText = new AppCompatEditText(context);
-            editText.setInputType(InputType.TYPE_CLASS_TEXT);
-            editText.setHint(R.string.hint_playlist_name);
-            inputLayout.addView(editText);
-            inputLayout.setErrorEnabled(true);
-            editText.addTextChangedListener(this);
+        private void buildLayout() {
+            mInputLayout = new TextInputLayout(mContext);
+            mEditText = new AppCompatEditText(mContext);
+            mEditText.setInputType(InputType.TYPE_CLASS_TEXT);
+            mEditText.setHint(R.string.hint_playlist_name);
+            mInputLayout.addView(mEditText);
+            mInputLayout.setErrorEnabled(true);
+            mEditText.addTextChangedListener(this);
         }
 
-        private void prompt(){
+        private void prompt() {
             buildLayout();
 
-            dialog = new AlertDialog.Builder(context)
+            mDialog = new AlertDialog.Builder(mContext)
                     .setTitle(R.string.header_create_playlist)
-                    .setView(inputLayout)
+                    .setView(mInputLayout)
                     .setPositiveButton(R.string.action_create, this)
                     .setNegativeButton(R.string.action_cancel, this)
                     .show();
 
-            Themes.themeAlertDialog(dialog);
+            Themes.themeAlertDialog(mDialog);
 
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+            mDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
             //noinspection deprecation
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
-                    context.getResources().getColor((Themes.isLight(context)
+            mDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
+                    mContext.getResources().getColor((Themes.isLight(mContext)
                             ? R.color.secondary_text_disabled_material_light
                             : R.color.secondary_text_disabled_material_dark)));
 
-            int padding = (int) context.getResources().getDimension(R.dimen.alert_padding);
-            ((View) inputLayout.getParent()).setPadding(
-                    padding - inputLayout.getPaddingLeft(),
+            int padding = (int) mContext.getResources().getDimension(R.dimen.alert_padding);
+            ((View) mInputLayout.getParent()).setPadding(
+                    padding - mInputLayout.getPaddingLeft(),
                     padding,
-                    padding - inputLayout.getPaddingRight(),
-                    inputLayout.getPaddingBottom());
+                    padding - mInputLayout.getPaddingRight(),
+                    mInputLayout.getPaddingBottom());
         }
 
         @Override
         public void onClick(DialogInterface dialog, int which) {
-            switch (which) {
-                case DialogInterface.BUTTON_POSITIVE:
-                    Library.createPlaylist(snackbarReturnView, editText.getText().toString(), data);
-                    break;
+            if (which == DialogInterface.BUTTON_POSITIVE) {
+                Library.createPlaylist(mReturnView, mEditText.getText().toString(), mData);
             }
         }
 
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            String error = Library.verifyPlaylistName(context, s.toString());
-            inputLayout.setError(error);
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(error == null && s.length() > 0);
-            if (error == null && s.length() > 0){
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Themes.getAccent());
-            }
-            else{
+            String error = Library.verifyPlaylistName(mContext, s.toString());
+            mInputLayout.setError(error);
+            mDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(
+                    error == null && s.length() > 0);
+            if (error == null && s.length() > 0) {
+                mDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Themes.getAccent());
+            } else {
                 //noinspection deprecation
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
-                        context.getResources().getColor((Themes.isLight(context)
+                mDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
+                        mContext.getResources().getColor((Themes.isLight(mContext)
                                 ? R.color.secondary_text_disabled_material_light
                                 : R.color.secondary_text_disabled_material_dark)));
             }
         }
 
         @Override
-        public void afterTextChanged(Editable s) {}
+        public void afterTextChanged(Editable s) {
+
+        }
     }
 
-    public static class AddToNormal implements DialogInterface.OnClickListener {
+    public static final class AddToNormal implements DialogInterface.OnClickListener {
 
-        private Context context;
-        private View snackbarReturnView;
-        private List<Song> data;
-        private Song singleData;
-        private List<Playlist> choices;
+        private Context mContext;
+        private View mReturnView;
+        private List<Song> mData;
+        private Song mSingleData;
+        private List<Playlist> mChoices;
 
         public static void alert(View view, @StringRes int header) {
             alert(view, view.getContext().getString(header));
@@ -145,40 +147,42 @@ public class PlaylistDialog {
             new AddToNormal(view, songs).prompt(header);
         }
 
-        private AddToNormal(View view){
-            this.context = view.getContext();
-            this.snackbarReturnView = view;
+        private AddToNormal(View view) {
+            this.mContext = view.getContext();
+            this.mReturnView = view;
 
             getChoices();
         }
 
-        private AddToNormal(View view, List<Song> data){
+        private AddToNormal(View view, List<Song> data) {
             this(view);
-            this.data = data;
+            this.mData = data;
         }
 
-        private AddToNormal(View view, Song data){
+        private AddToNormal(View view, Song data) {
             this(view);
-            this.singleData = data;
+            this.mSingleData = data;
         }
 
-        private void getChoices(){
-            choices = new ArrayList<>();
-            choices.add(new Playlist(-1,
-                    context.getResources().getString(R.string.action_make_new_playlist)));
+        private void getChoices() {
+            mChoices = new ArrayList<>();
+            mChoices.add(new Playlist(-1,
+                    mContext.getResources().getString(R.string.action_make_new_playlist)));
 
-            for (Playlist p : Library.getPlaylists()){
-                if (!(p instanceof AutoPlaylist)) choices.add(p);
+            for (Playlist p : Library.getPlaylists()) {
+                if (!(p instanceof AutoPlaylist)) {
+                    mChoices.add(p);
+                }
             }
         }
 
-        public void prompt(String header){
-            String[] playlistNames = new String[choices.size()];
+        public void prompt(String header) {
+            String[] playlistNames = new String[mChoices.size()];
 
-            for (int i = 0; i < choices.size(); i++ ){
-                playlistNames[i] = choices.get(i).toString();
+            for (int i = 0; i < mChoices.size(); i++) {
+                playlistNames[i] = mChoices.get(i).toString();
             }
-            final AlertDialog addToPlaylistDialog = new AlertDialog.Builder(context)
+            final AlertDialog addToPlaylistDialog = new AlertDialog.Builder(mContext)
                     .setTitle(header)
                     .setItems(playlistNames, this)
                     .setNegativeButton(R.string.action_cancel, null)
@@ -189,26 +193,26 @@ public class PlaylistDialog {
 
         @Override
         public void onClick(DialogInterface dialog, int which) {
-            if (which == 0){
-                if (singleData != null) {
+            if (which == 0) {
+                if (mSingleData != null) {
                     List<Song> wrappedSong = new ArrayList<>();
-                    wrappedSong.add(singleData);
+                    wrappedSong.add(mSingleData);
 
-                    new MakeNormal(snackbarReturnView, wrappedSong).prompt();
+                    new MakeNormal(mReturnView, wrappedSong).prompt();
                 } else {
-                    new MakeNormal(snackbarReturnView, data).prompt();
+                    new MakeNormal(mReturnView, mData).prompt();
                 }
             } else {
-                if (singleData != null){
+                if (mSingleData != null) {
                     Library.addPlaylistEntry(
-                            context,
-                            choices.get(which),
-                            singleData);
+                            mContext,
+                            mChoices.get(which),
+                            mSingleData);
                 } else {
                     Library.addPlaylistEntries(
-                            snackbarReturnView,
-                            choices.get(which),
-                            data);
+                            mReturnView,
+                            mChoices.get(which),
+                            mData);
                 }
             }
         }

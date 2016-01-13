@@ -6,7 +6,7 @@ import android.media.audiofx.Equalizer;
 import android.net.ConnectivityManager;
 import android.preference.PreferenceManager;
 
-public class Prefs {
+public final class Prefs {
 
     // Preference keys
     /**
@@ -62,6 +62,12 @@ public class Prefs {
      */
     public static final String EQ_SETTINGS = "prefEqualizerSettings";
 
+    /**
+     * This class is never instantiated
+     */
+    private Prefs() {
+
+    }
 
     /**
      * Shorthand to get the default {@link SharedPreferences}. Equivalent to calling
@@ -69,7 +75,7 @@ public class Prefs {
      * @param context A {@link Context} used to open the preferences
      * @return The default {@link SharedPreferences}
      */
-    public static SharedPreferences getPrefs(Context context){
+    public static SharedPreferences getPrefs(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
@@ -79,11 +85,12 @@ public class Prefs {
      * @param context A {@link Context} used to query the current network configuration
      * @return Whether Jockey is permitted to use the network right now
      */
-    public static boolean allowNetwork(Context context){
+    public static boolean allowNetwork(Context context) {
         ConnectivityManager network =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        return network.getActiveNetworkInfo() != null && network.getActiveNetworkInfo().isAvailable()
+        return network.getActiveNetworkInfo() != null
+                && network.getActiveNetworkInfo().isAvailable()
                 && !network.getActiveNetworkInfo().isRoaming()
                 && (Prefs.getPrefs(context).getBoolean(Prefs.USE_MOBILE_NET, true)
                 || network.getActiveNetworkInfo().getType() != ConnectivityManager.TYPE_MOBILE);
@@ -95,7 +102,7 @@ public class Prefs {
      * @param context A {@link Context} used to verify this preference
      * @return Whether {@link Prefs#ALLOW_LOGGING} is true in the default {@link SharedPreferences}
      */
-    public static boolean allowAnalytics(Context context){
+    public static boolean allowAnalytics(Context context) {
         return getPrefs(context).getBoolean(ALLOW_LOGGING, false);
     }
 

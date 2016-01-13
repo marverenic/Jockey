@@ -14,7 +14,7 @@ import com.marverenic.music.instances.Song;
 
 import java.util.UUID;
 
-public class Util {
+public final class Util {
 
     /**
      * This UUID corresponds to the UUID of an Equalizer Audio Effect. It has been copied from
@@ -31,14 +31,21 @@ public class Util {
         }
     }
 
-    public static Intent getSystemEqIntent(Context c) {
-        Intent systemEqualizer = new Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
-        systemEqualizer.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, c.getPackageName());
-        systemEqualizer.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, PlayerController.getAudioSessionId());
+    /**
+     * This class is never instantiated
+     */
+    private Util() {
 
-        ActivityInfo info = systemEqualizer.resolveActivityInfo(c.getPackageManager(), 0);
+    }
+
+    public static Intent getSystemEqIntent(Context c) {
+        Intent systemEq = new Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
+        systemEq.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, c.getPackageName());
+        systemEq.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, PlayerController.getAudioSessionId());
+
+        ActivityInfo info = systemEq.resolveActivityInfo(c.getPackageManager(), 0);
         if (info != null && !info.name.startsWith("com.android.musicfx")) {
-            return systemEqualizer;
+            return systemEq;
         } else {
             return null;
         }
@@ -58,16 +65,16 @@ public class Util {
         return false;
     }
 
-    public static Bitmap fetchFullArt(Song song){
+    public static Bitmap fetchFullArt(Song song) {
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 
         try {
             retriever.setDataSource(song.getLocation());
             byte[] stream = retriever.getEmbeddedPicture();
-            if (stream != null)
+            if (stream != null) {
                 return BitmapFactory.decodeByteArray(stream, 0, stream.length);
-        }
-        catch (Exception e) {
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;

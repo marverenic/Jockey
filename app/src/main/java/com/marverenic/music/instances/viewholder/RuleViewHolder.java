@@ -22,11 +22,11 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.AutoPlaylist;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Themes;
 
@@ -34,7 +34,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
+        AdapterView.OnItemSelectedListener {
 
     private AutoPlaylistEditActivity.Adapter parent;
     private View itemView;
@@ -143,21 +144,22 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                 Calendar calendar = Calendar.getInstance();
                 try {
                     long timestamp = Long.parseLong(reference.value);
-                    calendar.setTimeInMillis(timestamp * 1000l);
+                    calendar.setTimeInMillis(timestamp * 1000L);
                 } catch (NumberFormatException ignored) {
                     // If the reference's value isn't valid, just use the current time as the
                     // selected date
                     calendar.setTimeInMillis(System.currentTimeMillis());
                 }
 
-                DatePickerDialog dateDialog = new DatePickerDialog (
+                DatePickerDialog dateDialog = new DatePickerDialog(
                         itemView.getContext(),
                         new DatePickerDialog.OnDateSetListener() {
                             @Override
-                            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                            public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                                  int dayOfMonth) {
                                 Calendar c = Calendar.getInstance();
                                 c.set(year, monthOfYear, dayOfMonth);
-                                reference.value = Long.toString(c.getTimeInMillis() / 1000l);
+                                reference.value = Long.toString(c.getTimeInMillis() / 1000L);
                                 update();
                             }
                         },
@@ -205,7 +207,8 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                                         + fieldDropDown.getSelectedItem().toString().toLowerCase())
                         .setView(inputLayout)
                         .setNegativeButton(R.string.action_cancel, null)
-                        .setPositiveButton(R.string.action_done, new DialogInterface.OnClickListener() {
+                        .setPositiveButton(R.string.action_done,
+                                new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 if (editText.getInputType() == InputType.TYPE_CLASS_NUMBER) {
@@ -257,8 +260,10 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     }
 
     @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (view == null) return;
+    public void onItemSelected(AdapterView<?> parentAdapter, View view, int position, long id) {
+        if (view == null) {
+            return;
+        }
 
         // When the type is selected, update the available options in the fieldDropDown and update
         // the rule this viewHolder refers to
@@ -298,7 +303,9 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     }
 
     @Override
-    public void onNothingSelected(AdapterView<?> parent) {}
+    public void onNothingSelected(AdapterView<?> parentAdapter) {
+
+    }
 
     private static class FieldAdapter extends BaseAdapter {
 
@@ -308,7 +315,7 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         // available in the spinner and the format that the autoplaylist looks at field and match
         // options. Duplicates are intentional. Any changes to R.array.auto_plist_fields must
         // be updated here.
-        private static final int[] fields = new int[]{
+        private static final int[] FIELDS = new int[]{
                 AutoPlaylist.Rule.Field.ID,
                 AutoPlaylist.Rule.Field.ID,
                 AutoPlaylist.Rule.Field.NAME,
@@ -329,7 +336,7 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                 AutoPlaylist.Rule.Field.DATE_PLAYED
         };
 
-        private static final int[] matches = new int[]{
+        private static final int[] MATCHES = new int[]{
                 AutoPlaylist.Rule.Match.EQUALS,
                 AutoPlaylist.Rule.Match.NOT_EQUALS,
                 AutoPlaylist.Rule.Match.EQUALS,
@@ -350,7 +357,7 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                 AutoPlaylist.Rule.Match.GREATER_THAN
         };
 
-        private static final int[] inputType = new int[] {
+        private static final int[] INPUT_TYPE = new int[] {
                 InputType.TYPE_NULL,
                 InputType.TYPE_NULL,
                 InputType.TYPE_CLASS_TEXT,
@@ -375,7 +382,7 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         private int type;
         private final String[] songChoices;
 
-        public FieldAdapter(Context context) {
+        FieldAdapter(Context context) {
             this.context = context;
             songChoices = context.getResources().getStringArray(R.array.auto_plist_fields);
         }
@@ -407,14 +414,14 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
         public int lookupIndex(int field, int match) {
             int index = 0;
-            for (int i = 0; i < fields.length; i++) {
-                if (fields[i] == field) {
+            for (int i = 0; i < FIELDS.length; i++) {
+                if (FIELDS[i] == field) {
                     index = i;
                     break;
                 }
             }
-            for (int i = index; i < matches.length; i++) {
-                if (matches[i] == match) {
+            for (int i = index; i < MATCHES.length; i++) {
+                if (MATCHES[i] == match) {
                     index = i;
                     break;
                 }
@@ -423,15 +430,15 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         }
 
         public int getRuleField(int position) {
-            return fields[position];
+            return FIELDS[position];
         }
 
         public int getRuleMatch(int position) {
-            return matches[position];
+            return MATCHES[position];
         }
 
         public int getInputType(int position) {
-            return inputType[position];
+            return INPUT_TYPE[position];
         }
 
         @Override
@@ -467,7 +474,7 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
         private int type;
 
-        public InstanceAdapter() {
+        InstanceAdapter() {
             type = AutoPlaylist.Rule.Type.SONG;
         }
 

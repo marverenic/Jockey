@@ -8,8 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.R;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.viewholder.EmptyStateViewHolder;
 import com.marverenic.music.instances.viewholder.GenreViewHolder;
 import com.marverenic.music.utils.Themes;
@@ -21,21 +21,22 @@ public class GenreFragment extends Fragment {
     private Adapter adapter;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.list, container, false);
-        RecyclerView genreRecyclerView = (RecyclerView) view.findViewById(R.id.list);
-        genreRecyclerView.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
-        genreRecyclerView.addItemDecoration(new DividerDecoration(getActivity()));
+        RecyclerView list = (RecyclerView) view.findViewById(R.id.list);
+        list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
+        list.addItemDecoration(new DividerDecoration(getActivity()));
 
-        int paddingH =(int) getActivity().getResources().getDimension(R.dimen.global_padding);
+        int paddingH = (int) getActivity().getResources().getDimension(R.dimen.global_padding);
         view.setPadding(paddingH, 0, paddingH, 0);
 
         adapter = new Adapter();
-        genreRecyclerView.setAdapter(adapter);
+        list.setAdapter(adapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        genreRecyclerView.setLayoutManager(layoutManager);
+        list.setLayoutManager(layoutManager);
 
         return view;
     }
@@ -79,8 +80,10 @@ public class GenreFragment extends Fragment {
         }
 
         @Override
-        public int getItemViewType(int position){
-            if (Library.getGenres().isEmpty()) return EMPTY;
+        public int getItemViewType(int position) {
+            if (Library.getGenres().isEmpty()) {
+                return EMPTY;
+            }
             return GENRE;
         }
 
@@ -88,9 +91,8 @@ public class GenreFragment extends Fragment {
         public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
             if (getItemViewType(position) == GENRE) {
                 ((GenreViewHolder) viewHolder).update(Library.getGenres().get(position));
-            }
-            else if (viewHolder instanceof EmptyStateViewHolder &&
-                    Library.hasRWPermission(getActivity())) {
+            } else if (viewHolder instanceof EmptyStateViewHolder
+                    && Library.hasRWPermission(getActivity())) {
                 EmptyStateViewHolder emptyHolder = ((EmptyStateViewHolder) viewHolder);
                 emptyHolder.setReason(R.string.empty);
                 emptyHolder.setDetail(R.string.empty_detail);
@@ -100,7 +102,7 @@ public class GenreFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return (Library.getGenres().isEmpty())? 1 : Library.getGenres().size();
+            return (Library.getGenres().isEmpty()) ? 1 : Library.getGenres().size();
         }
 
         @Override

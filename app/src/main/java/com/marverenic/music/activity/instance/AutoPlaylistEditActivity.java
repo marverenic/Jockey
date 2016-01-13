@@ -10,10 +10,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.instances.AutoPlaylist;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.viewholder.RuleHeaderViewHolder;
 import com.marverenic.music.instances.viewholder.RuleViewHolder;
 import com.marverenic.music.utils.Navigate;
@@ -47,8 +47,8 @@ public class AutoPlaylistEditActivity extends BaseActivity {
             }
         }
 
-        if (getSupportActionBar() != null){
-            if (reference == null){
+        if (getSupportActionBar() != null) {
+            if (reference == null) {
                 getSupportActionBar().setTitle(R.string.playlist_auto_new);
             } else {
                 getSupportActionBar().setTitle(reference.getPlaylistName());
@@ -95,7 +95,7 @@ public class AutoPlaylistEditActivity extends BaseActivity {
     }
 
     private boolean rulesChanged() {
-        if (editedRules.size() != reference.getRules().length){
+        if (editedRules.size() != reference.getRules().length) {
             return true;
         }
 
@@ -109,7 +109,9 @@ public class AutoPlaylistEditActivity extends BaseActivity {
     }
 
     private boolean validateName() {
-        boolean valid = editedReference.getPlaylistName().trim().equalsIgnoreCase(reference.getPlaylistName().trim())
+        boolean valid =
+                editedReference.getPlaylistName().trim().equalsIgnoreCase(
+                        reference.getPlaylistName().trim())
                 || Library.verifyPlaylistName(this, editedReference.getPlaylistName()) == null;
 
         if (!valid) {
@@ -120,8 +122,8 @@ public class AutoPlaylistEditActivity extends BaseActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        switch (item.getItemId()){
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
             case R.id.add:
                 adapter.rules.add(new AutoPlaylist.Rule(AutoPlaylist.Rule.EMPTY));
                 adapter.notifyItemInserted(adapter.rules.size());
@@ -187,7 +189,9 @@ public class AutoPlaylistEditActivity extends BaseActivity {
     }
 
     @Override
-    public void updateMiniplayer() {}
+    public void updateMiniplayer() {
+
+    }
 
     public static class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 

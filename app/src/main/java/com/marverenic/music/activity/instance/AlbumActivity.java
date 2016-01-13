@@ -11,10 +11,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.instances.Album;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.viewholder.SongViewHolder;
 import com.marverenic.music.utils.Themes;
@@ -48,22 +48,23 @@ public class AlbumActivity extends BaseActivity {
                 .centerCrop()
                 .into((ImageView) findViewById(R.id.backdrop));
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
 
-        RecyclerView songRecyclerView = (RecyclerView) findViewById(R.id.list);
-        songRecyclerView.setAdapter(new Adapter());
-        songRecyclerView.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
-        songRecyclerView.addItemDecoration(new DividerDecoration(this));
+        RecyclerView list = (RecyclerView) findViewById(R.id.list);
+        list.setAdapter(new Adapter());
+        list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
+        list.addItemDecoration(new DividerDecoration(this));
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        songRecyclerView.setLayoutManager(layoutManager);
+        list.setLayoutManager(layoutManager);
     }
 
-    public class Adapter extends RecyclerView.Adapter<SongViewHolder>{
+    public class Adapter extends RecyclerView.Adapter<SongViewHolder> {
 
         @Override
         public SongViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {

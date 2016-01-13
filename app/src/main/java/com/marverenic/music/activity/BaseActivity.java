@@ -20,15 +20,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.marverenic.music.BuildConfig;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Themes;
 
-public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener, PlayerController.UpdateListener {
+public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener,
+        PlayerController.UpdateListener {
 
     private static final boolean DEBUG = BuildConfig.DEBUG;
 
@@ -40,7 +41,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      * @inheritDoc
      */
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         if (DEBUG) Log.i(getClass().toString(), "Called onCreate");
 
         Themes.setTheme(this);
@@ -55,7 +56,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
 
         final SharedPreferences prefs = Prefs.getPrefs(this);
 
-        if (prefs.getBoolean(Prefs.SHOW_FIRST_START, true)){
+        if (prefs.getBoolean(Prefs.SHOW_FIRST_START, true)) {
             final View messageView = getLayoutInflater().inflate(R.layout.alert_pref, null);
             final TextView message = (TextView) messageView.findViewById(R.id.alertMessage);
             final CheckBox pref = (CheckBox) messageView.findViewById(R.id.alertPref);
@@ -69,7 +70,8 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
             AlertDialog privacyDialog = new AlertDialog.Builder(this)
                     .setTitle(R.string.first_launch_title)
                     .setView(messageView)
-                    .setPositiveButton(R.string.action_agree, new DialogInterface.OnClickListener() {
+                    .setPositiveButton(R.string.action_agree,
+                            new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             prefs.edit()
@@ -86,7 +88,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
             privacyDialog.show();
             Themes.themeAlertDialog(privacyDialog);
 
-        } else if (Library.isEmpty()){
+        } else if (Library.isEmpty()) {
             Library.scanAll(this);
         }
     }
@@ -108,7 +110,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      * @inheritDoc
      */
     @Override
-    public void setContentView(@LayoutRes int layoutResId){
+    public void setContentView(@LayoutRes int layoutResId) {
         super.setContentView(layoutResId);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -135,7 +137,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      * @inheritDoc
      */
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         if (DEBUG) Log.i(getClass().toString(), "Called onResume");
 
@@ -154,7 +156,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      * @inheritDoc
      */
     @Override
-    public void onPause(){
+    public void onPause() {
         super.onPause();
         if (DEBUG) Log.i(getClass().toString(), "Called onPause");
         PlayerController.unregisterUpdateListener(this);
@@ -164,7 +166,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      * @inheritDoc
      */
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
         if (DEBUG) Log.i(getClass().toString(), "Called onDestroy");
     }
@@ -173,8 +175,8 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      * @inheritDoc
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        if (item.getItemId() == android.R.id.home){
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
             Navigate.up(this);
             return true;
         }
@@ -185,7 +187,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      * @inheritDoc
      */
     @Override
-    public void onBackPressed(){
+    public void onBackPressed() {
         if (DEBUG) Log.i(getClass().toString(), "Called calledOnBackPressed");
         super.onBackPressed();
         Navigate.back(this);
@@ -196,7 +198,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      * sets the app's primary color, app icon, and background color. If the miniplayer is in the
      * hierarchy, it is also themed.
      */
-    public void themeActivity(){
+    public void themeActivity() {
         Themes.updateColors(this);
         Themes.setApplicationIcon(this);
 
@@ -221,21 +223,26 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      * exists in the view, override this method with an instance_empty code block.
      */
     @SuppressWarnings("ResourceType")
-    public void updateMiniplayer(){
+    public void updateMiniplayer() {
         if (DEBUG) Log.i(getClass().toString(), "Called updateMiniplayer");
         final View miniplayerView = findViewById(R.id.miniplayer_holder);
         final Song nowPlaying = PlayerController.getNowPlaying();
 
-        if (nowPlaying != null){
-            ImageView artworkImageView = (ImageView) miniplayerView.findViewById(R.id.imageArtwork);
-            TextView songTextView = (TextView) miniplayerView.findViewById(R.id.textNowPlayingTitle);
-            TextView artistTextView = (TextView) miniplayerView.findViewById(R.id.textNowPlayingDetail);
-            ImageView playButton = (ImageView) miniplayerView.findViewById(R.id.playButton);
+        if (nowPlaying != null) {
+            ImageView artworkImageView =
+                    (ImageView) miniplayerView.findViewById(R.id.imageArtwork);
+            TextView songTextView =
+                    (TextView) miniplayerView.findViewById(R.id.textNowPlayingTitle);
+            TextView artistTextView =
+                    (TextView) miniplayerView.findViewById(R.id.textNowPlayingDetail);
+            ImageView playButton =
+                    (ImageView) miniplayerView.findViewById(R.id.playButton);
 
-            if (PlayerController.getArtwork() != null)
+            if (PlayerController.getArtwork() != null) {
                 artworkImageView.setImageBitmap(PlayerController.getArtwork());
-            else
+            } else {
                 artworkImageView.setImageResource(R.drawable.art_default);
+            }
 
             songTextView.setText(nowPlaying.getSongName());
             artistTextView.setText(nowPlaying.getArtistName());
@@ -250,7 +257,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      * @inheritDoc
      */
     @Override
-    public void onClick(View view){
+    public void onClick(View view) {
         switch (view.getId()) {
             case R.id.miniplayer:
                 Navigate.to(this, NowPlayingActivity.class);

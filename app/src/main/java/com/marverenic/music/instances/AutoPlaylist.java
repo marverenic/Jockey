@@ -10,6 +10,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 public class AutoPlaylist extends Playlist implements Parcelable {
 
@@ -22,7 +23,8 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      * An empty auto playlist instance
      */
     public static final AutoPlaylist EMPTY =
-            new AutoPlaylist(-1, "", UNLIMITED_ENTRIES, Rule.Field.NAME, Rule.Field.NAME, true, true, true, Rule.EMPTY);
+            new AutoPlaylist(-1, "", UNLIMITED_ENTRIES, Rule.Field.NAME, Rule.Field.NAME,
+                    true, true, true, Rule.EMPTY);
 
     /**
      * How many items can be stored in this playlist. Default is unlimited
@@ -187,12 +189,12 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      * @return An {@link ArrayList} of Songs that contains all songs in the library which match
      *         the rules of this playlist
      */
-    public ArrayList<Song> generatePlaylist(Context context){
+    public List<Song> generatePlaylist(Context context) {
         // In the event that the play counts in this process have gone stale, make
         // sure they're current
         Library.loadPlayCounts(context);
 
-        ArrayList<Song> songs;
+        List<Song> songs;
         if (matchAllRules) {
             songs = new ArrayList<>(Library.getSongs());
             for (Rule r : rules) {
@@ -200,16 +202,17 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                     songs = r.evaluate(songs, context);
                 }
             }
-        }
-        else{
+        } else {
             HashSet<Song> songSet = new HashSet<>(); // Use a Set to prevent duplicates
-            final ArrayList<Song> allSongs = new ArrayList<>(Library.getSongs());
-            for (Rule r : rules){
+            final List<Song> allSongs = new ArrayList<>(Library.getSongs());
+            for (Rule r : rules) {
                 songSet.addAll(r.evaluate(allSongs, context));
             }
             songs = new ArrayList<>(songSet);
         }
-        return sort(trim(sort(songs, truncateMethod, truncateAscending)), sortMethod, sortAscending);
+        return sort(
+                trim(sort(songs, truncateMethod, truncateAscending)),
+                sortMethod, sortAscending);
     }
 
     /**
@@ -218,13 +221,11 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      * @param in The {@link ArrayList} to be sorted
      * @return The original, sorted, {@link ArrayList} for convenience
      */
-    private static ArrayList<Song> sort(ArrayList<Song> in, int sortMethod, final boolean sortAscending){
-        switch (sortMethod){
+    private static List<Song> sort(List<Song> in, int sortMethod,
+                                        final boolean sortAscending) {
+        switch (sortMethod) {
             case Rule.Field.ID:
                 Collections.shuffle(in);
-                break;
-            case Rule.Field.NAME:
-                Collections.sort(in);
                 break;
             case Rule.Field.PLAY_COUNT:
                 Collections.sort(in, Song.PLAY_COUNT_COMPARATOR);
@@ -241,6 +242,10 @@ public class AutoPlaylist extends Playlist implements Parcelable {
             case Rule.Field.YEAR:
                 Collections.sort(in, Song.YEAR_COMPARATOR);
                 break;
+            case Rule.Field.NAME:
+            default:
+                Collections.sort(in);
+                break;
         }
 
         if (sortAscending) {
@@ -256,13 +261,13 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      * @param in The {@link ArrayList} to be trimmed
      * @return A new {@link ArrayList} that satisfies the maximum entry size
      */
-    private ArrayList<Song> trim(ArrayList<Song> in){
-        if (in.size() <= maximumEntries || maximumEntries == UNLIMITED_ENTRIES){
+    private List<Song> trim(List<Song> in) {
+        if (in.size() <= maximumEntries || maximumEntries == UNLIMITED_ENTRIES) {
             return in;
         }
 
-        ArrayList<Song> trimmed = new ArrayList<>(maximumEntries);
-        for (int i = 0; i < maximumEntries; i++){
+        List<Song> trimmed = new ArrayList<>(maximumEntries);
+        for (int i = 0; i < maximumEntries; i++) {
             trimmed.add(in.get(i));
         }
 
@@ -285,7 +290,8 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                 && other.playlistName.equals(this.playlistName);
     }
 
-    public static final Parcelable.Creator<Parcelable> CREATOR = new Parcelable.Creator<Parcelable>() {
+    public static final Parcelable.Creator<Parcelable> CREATOR =
+            new Parcelable.Creator<Parcelable>() {
         public AutoPlaylist createFromParcel(Parcel in) {
             return new AutoPlaylist(in);
         }
@@ -320,7 +326,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         dest.writeInt(sortMethod);
         dest.writeInt(truncateMethod);
         dest.writeByte((byte) ((truncateAscending) ? 1 : 0));
-        dest.writeByte((byte) ((sortAscending)? 1 : 0));
+        dest.writeByte((byte) ((sortAscending) ? 1 : 0));
     }
 
     public Rule[] getRules() {
@@ -361,7 +367,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         public int field;
         public String value;
 
-        public Rule(int type, int field, int match, String value){
+        public Rule(int type, int field, int match, String value) {
             validate(type, field, match, value);
             this.type = type;
             this.field = field;
@@ -380,8 +386,9 @@ public class AutoPlaylist extends Playlist implements Parcelable {
             value = in.readString();
         }
 
+        @Override
         public boolean equals(Object o) {
-            if (!(o instanceof  Rule)){
+            if (!(o instanceof  Rule)) {
                 return false;
             }
             if (this == o) {
@@ -390,6 +397,15 @@ public class AutoPlaylist extends Playlist implements Parcelable {
             Rule other = (Rule) o;
             return this.type == other.type && this.field == other.field && this.match == other.match
                     && this.value.equals(other.value);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = type;
+            result = 31 * result + match;
+            result = 31 * result + field;
+            result = 31 * result + value.hashCode();
+            return result;
         }
 
         @Override
@@ -415,52 +431,52 @@ public class AutoPlaylist extends Playlist implements Parcelable {
             }
         };
 
-        private void validate(int type, int field, int match, String value){
+        private static void validate(int type, int field, int match, String value) {
             // Only Songs have play counts and skip counts
             if ((type != Type.SONG) && (field == Field.PLAY_COUNT || field == Field.SKIP_COUNT)) {
                 throw new IllegalArgumentException(type + " type does not have field " + field);
             }
             // Only Songs have years
-            if (type != Type.SONG && field == Field.YEAR){
+            if (type != Type.SONG && field == Field.YEAR) {
                 throw new IllegalArgumentException(type + " type does not have field " + field);
             }
             // Only Songs have dates added
-            if (type != Type.SONG && field == Field.DATE_ADDED){
+            if (type != Type.SONG && field == Field.DATE_ADDED) {
                 throw new IllegalArgumentException(type + " type does not have field " + field);
             }
 
-            if (field == Field.ID){
+            if (field == Field.ID) {
                 // IDs can only be compared by equals or !equals
-                if (match == Match.CONTAINS || match == Match.NOT_CONTAINS || match == Match.LESS_THAN || match == Match.GREATER_THAN){
+                if (match == Match.CONTAINS || match == Match.NOT_CONTAINS
+                        || match == Match.LESS_THAN || match == Match.GREATER_THAN) {
                     throw new IllegalArgumentException("ID cannot be compared by method " + match);
                 }
                 // Make sure the value is actually a number
-                try{
+                try {
                     //noinspection ResultOfMethodCallIgnored
                     Long.parseLong(value);
-                }
-                catch (NumberFormatException e){
+                } catch (NumberFormatException e) {
                     Crashlytics.logException(e);
                     throw new IllegalArgumentException("ID cannot be compared to value " + value);
                 }
-            }
-            else if (field == Field.NAME){
+            } else if (field == Field.NAME) {
                 // Names can't be compared by < or >... that doesn't even make sense...
-                if (match == Match.GREATER_THAN || match == Match.LESS_THAN){
-                    throw new IllegalArgumentException("Name cannot be compared by method " + match);
+                if (match == Match.GREATER_THAN || match == Match.LESS_THAN) {
+                    throw new IllegalArgumentException("Name cannot be compared by method "
+                            + match);
                 }
-            }
-            else if (field == Field.SKIP_COUNT || field == Field.PLAY_COUNT || field == Field.YEAR || field == Field.DATE_ADDED){
+            } else if (field == Field.SKIP_COUNT || field == Field.PLAY_COUNT
+                    || field == Field.YEAR || field == Field.DATE_ADDED) {
                 // Numeric values can't be compared by contains or !contains
-                if (match == Match.CONTAINS || match == Match.NOT_CONTAINS){
-                    throw new IllegalArgumentException(field + " cannot be compared by method " + match);
+                if (match == Match.CONTAINS || match == Match.NOT_CONTAINS) {
+                    throw new IllegalArgumentException(field + " cannot be compared by method "
+                            + match);
                 }
                 // Make sure the value is actually a number
-                try{
+                try {
                     //noinspection ResultOfMethodCallIgnored
                     Long.parseLong(value);
-                }
-                catch (NumberFormatException e){
+                } catch (NumberFormatException e) {
                     Crashlytics.logException(e);
                     throw new IllegalArgumentException("ID cannot be compared to value " + value);
                 }
@@ -471,11 +487,11 @@ public class AutoPlaylist extends Playlist implements Parcelable {
          * Evaluate this rule on a data set
          * @param in The data to evaluate this rule on. Items in this list will be returned by this
          *           method if they match the query. Nothing is removed from the original list.
-         * @return The filtered data as an {@link ArrayList<Song>} that only contains songs that
+         * @return The filtered data as a {@link List<Song>} that only contains songs that
          *         match this rule that were in the original data set
          */
-        public ArrayList<Song> evaluate (ArrayList<Song> in, Context context){
-            switch (type){
+        public List<Song> evaluate(List<Song> in, Context context) {
+            switch (type) {
                 case Type.PLAYLIST:
                     return evaluatePlaylist(in, context);
                 case Type.SONG:
@@ -486,48 +502,54 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                     return evaluateAlbum(in);
                 case Type.GENRE:
                     return evaluateGenre(in);
+                default:
+                    return null;
             }
-            return null;
         }
 
         /**
-         * Logic to evaluate playlist rules. See {@link AutoPlaylist.Rule#evaluate(ArrayList, Context)}
+         * Logic to evaluate playlist rules.
          * @param in The data to evaluate this rule on. Items in this list will be returned by this
          *           method if they match the query. Nothing is removed from the original list.
-         * @return The filtered data as an {@link ArrayList<Song>} that only contains songs that
+         * @return The filtered data as a {@link List<Song>} that only contains songs that
          *         match this rule that were in the original data set
+         * @see AutoPlaylist.Rule#evaluate(List, Context)
          */
-        private ArrayList<Song> evaluatePlaylist (ArrayList<Song> in, Context context){
-            ArrayList<Song> filteredSongs = new ArrayList<>();
-            switch (field){
+        private List<Song> evaluatePlaylist(List<Song> in, Context context) {
+            List<Song> filteredSongs = new ArrayList<>();
+            switch (field) {
                 case Field.ID:
                     final long id = Long.parseLong(value);
-                    for (Playlist p : Library.getPlaylists()){
-                        if (p.playlistId == id ^ match == Match.NOT_EQUALS){
-                            for (Song s : Library.getPlaylistEntries(context, p)){
-                                if (in.contains(s) && !filteredSongs.contains(s))
+                    for (Playlist p : Library.getPlaylists()) {
+                        if (p.playlistId == id ^ match == Match.NOT_EQUALS) {
+                            for (Song s : Library.getPlaylistEntries(context, p)) {
+                                if (in.contains(s) && !filteredSongs.contains(s)) {
                                     filteredSongs.add(s);
+                                }
                             }
                         }
                     }
                     break;
                 case Field.NAME:
-                    if (match == Match.EQUALS || match == Match.NOT_EQUALS){
-                        for (Playlist p : Library.getPlaylists()){
-                            if (p.playlistName.equalsIgnoreCase(value) ^ match == Match.NOT_EQUALS){
-                                for (Song s : Library.getPlaylistEntries(context, p)){
-                                    if (in.contains(s) && !filteredSongs.contains(s))
+                default:
+                    if (match == Match.EQUALS || match == Match.NOT_EQUALS) {
+                        for (Playlist p : Library.getPlaylists()) {
+                            if (p.playlistName.equalsIgnoreCase(value)
+                                    ^ match == Match.NOT_EQUALS) {
+                                for (Song s : Library.getPlaylistEntries(context, p)) {
+                                    if (in.contains(s) && !filteredSongs.contains(s)) {
                                         filteredSongs.add(s);
+                                    }
                                 }
                             }
                         }
-                    }
-                    else if (match == Match.CONTAINS || match == Match.NOT_CONTAINS){
-                        for (Playlist p : Library.getPlaylists()){
-                            if (p.playlistName.contains(value) ^ match == Match.NOT_EQUALS){
-                                for (Song s : Library.getPlaylistEntries(context, p)){
-                                    if (in.contains(s) && !filteredSongs.contains(s))
+                    } else if (match == Match.CONTAINS || match == Match.NOT_CONTAINS) {
+                        for (Playlist p : Library.getPlaylists()) {
+                            if (p.playlistName.contains(value) ^ match == Match.NOT_EQUALS) {
+                                for (Song s : Library.getPlaylistEntries(context, p)) {
+                                    if (in.contains(s) && !filteredSongs.contains(s)) {
                                         filteredSongs.add(s);
+                                    }
                                 }
                             }
                         }
@@ -538,35 +560,34 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         }
 
         /**
-         * Logic to evaluate song rules. See {@link AutoPlaylist.Rule#evaluate(ArrayList, Context)}
+         * Logic to evaluate song rules. See {@link AutoPlaylist.Rule#evaluate(List, Context)}
          * @param in The data to evaluate this rule on. Items in this list will be returned by this
          *           method if they match the query. Nothing is removed from the original list
          * @param context A Context used to scan play and skip counts if necessary
-         * @return The filtered data as an {@link ArrayList<Song>} that only contains songs that
+         * @return The filtered data as a {@link List<Song>} that only contains songs that
          *         match this rule that were in the original data set
          */
-        private ArrayList<Song> evaluateSong (ArrayList<Song> in, Context context){
-            ArrayList<Song> filteredSongs = new ArrayList<>();
-            switch (field){
+        private List<Song> evaluateSong(List<Song> in, Context context) {
+            List<Song> filteredSongs = new ArrayList<>();
+            switch (field) {
                 case Field.ID:
                     final long id = Long.parseLong(value);
-                    for (Song s : in){
-                        if (s.songId == id ^ match == Match.NOT_EQUALS){
+                    for (Song s : in) {
+                        if (s.songId == id ^ match == Match.NOT_EQUALS) {
                             filteredSongs.add(s);
                         }
                     }
                     break;
                 case Field.NAME:
-                    if (match == Match.EQUALS || match == Match.NOT_EQUALS){
-                        for (Song s : in){
-                            if (s.songName.equals(value) ^ match == Match.NOT_EQUALS){
+                    if (match == Match.EQUALS || match == Match.NOT_EQUALS) {
+                        for (Song s : in) {
+                            if (s.songName.equals(value) ^ match == Match.NOT_EQUALS) {
                                 filteredSongs.add(s);
                             }
                         }
-                    }
-                    else if (match == Match.CONTAINS || match == Match.NOT_CONTAINS){
-                        for (Song s : in){
-                            if (s.songName.contains(value) ^ match == Match.NOT_CONTAINS){
+                    } else if (match == Match.CONTAINS || match == Match.NOT_CONTAINS) {
+                        for (Song s : in) {
+                            if (s.songName.contains(value) ^ match == Match.NOT_CONTAINS) {
                                 filteredSongs.add(s);
                             }
                         }
@@ -574,16 +595,16 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                     break;
                 case Field.PLAY_COUNT:
                     final long playCount = Long.parseLong(value);
-                    if (match == Match.EQUALS || match == Match.NOT_EQUALS){
-                        for (Song s : in){
-                            if (s.getPlayCount() == playCount ^ match == Match.NOT_EQUALS){
+                    if (match == Match.EQUALS || match == Match.NOT_EQUALS) {
+                        for (Song s : in) {
+                            if (s.getPlayCount() == playCount ^ match == Match.NOT_EQUALS) {
                                 filteredSongs.add(s);
                             }
                         }
-                    }
-                    else if (match == Match.LESS_THAN || match == Match.GREATER_THAN){
-                        for (Song s : in){
-                            if (s.getPlayCount() != playCount && (s.getPlayCount() < playCount ^ match == Match.GREATER_THAN)){
+                    } else if (match == Match.LESS_THAN || match == Match.GREATER_THAN) {
+                        for (Song s : in) {
+                            if (s.getPlayCount() != playCount && (s.getPlayCount() < playCount
+                                    ^ match == Match.GREATER_THAN)) {
                                 filteredSongs.add(s);
                             }
                         }
@@ -591,16 +612,16 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                     break;
                 case Field.SKIP_COUNT:
                     final long skipCount = Long.parseLong(value);
-                    if (match == Match.EQUALS || match == Match.NOT_EQUALS){
-                        for (Song s : in){
-                            if (s.getSkipCount() == skipCount ^ match == Match.NOT_EQUALS){
+                    if (match == Match.EQUALS || match == Match.NOT_EQUALS) {
+                        for (Song s : in) {
+                            if (s.getSkipCount() == skipCount ^ match == Match.NOT_EQUALS) {
                                 filteredSongs.add(s);
                             }
                         }
-                    }
-                    else if (match == Match.LESS_THAN || match == Match.GREATER_THAN){
-                        for (Song s : in){
-                            if (s.getSkipCount() != skipCount && (s.getSkipCount() < skipCount ^ match == Match.GREATER_THAN)){
+                    } else if (match == Match.LESS_THAN || match == Match.GREATER_THAN) {
+                        for (Song s : in) {
+                            if (s.getSkipCount() != skipCount && (s.getSkipCount() < skipCount
+                                    ^ match == Match.GREATER_THAN)) {
                                 filteredSongs.add(s);
                             }
                         }
@@ -608,16 +629,15 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                     break;
                 case Field.YEAR:
                     final int year = Integer.parseInt(value);
-                    if (match == Match.EQUALS || match == Match.NOT_EQUALS){
-                        for (Song s : in){
-                            if (s.year == year ^ match == Match.NOT_EQUALS){
+                    if (match == Match.EQUALS || match == Match.NOT_EQUALS) {
+                        for (Song s : in) {
+                            if (s.year == year ^ match == Match.NOT_EQUALS) {
                                 filteredSongs.add(s);
                             }
                         }
-                    }
-                    else if (match == Match.LESS_THAN || match == Match.GREATER_THAN){
-                        for (Song s : in){
-                            if (s.year < year ^ match == Match.GREATER_THAN){
+                    } else if (match == Match.LESS_THAN || match == Match.GREATER_THAN) {
+                        for (Song s : in) {
+                            if (s.year < year ^ match == Match.GREATER_THAN) {
                                 filteredSongs.add(s);
                             }
                         }
@@ -625,22 +645,21 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                     break;
                 case Field.DATE_ADDED:
                     final int date = Integer.parseInt(value);
-                    if (match == Match.EQUALS || match == Match.NOT_EQUALS){
-                        for (Song s : in){
+                    if (match == Match.EQUALS || match == Match.NOT_EQUALS) {
+                        for (Song s : in) {
                             // Look at the day the song was added, not the time
                             // (This value is still in seconds)
                             int dayAdded = (int) (s.dateAdded - s.dateAdded % 86400);
-                            if (dayAdded == date ^ match == Match.NOT_EQUALS){
+                            if (dayAdded == date ^ match == Match.NOT_EQUALS) {
                                 filteredSongs.add(s);
                             }
                         }
-                    }
-                    else if (match == Match.LESS_THAN || match == Match.GREATER_THAN){
-                        for (Song s : in){
+                    } else if (match == Match.LESS_THAN || match == Match.GREATER_THAN) {
+                        for (Song s : in) {
                             // Look at the day the song was added, not the time
                             // (This value is still in seconds)
                             int dayAdded = (int) (s.dateAdded - s.dateAdded % 86400);
-                            if (dayAdded < date ^ match == Match.GREATER_THAN){
+                            if (dayAdded < date ^ match == Match.GREATER_THAN) {
                                 filteredSongs.add(s);
                             }
                         }
@@ -649,7 +668,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                 case Field.DATE_PLAYED:
                     final int playDate = Integer.parseInt(value);
                     if (match == Match.EQUALS || match == Match.NOT_EQUALS) {
-                        for (Song s : in){
+                        for (Song s : in) {
                             // Look at the day the song was added, not the time
                             // (This value is still in seconds)
                             int dayAdded = s.getPlayDate();
@@ -658,9 +677,8 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                                 filteredSongs.add(s);
                             }
                         }
-                    }
-                    else if (match == Match.LESS_THAN || match == Match.GREATER_THAN) {
-                        for (Song s : in){
+                    } else if (match == Match.LESS_THAN || match == Match.GREATER_THAN) {
+                        for (Song s : in) {
                             // Look at the day the song was added, not the time
                             // (This value is still in seconds)
                             int dayAdded = s.getPlayDate();
@@ -676,71 +694,35 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         }
 
         /**
-         * Logic to evaluate artist rules. See {@link AutoPlaylist.Rule#evaluate(ArrayList, Context)}
+         * Logic to evaluate artist rules
          * @param in The data to evaluate this rule on. Items in this list will be returned by this
          *           method if they match the query. Nothing is removed from the original list.
-         * @return The filtered data as an {@link ArrayList<Song>} that only contains songs that
+         * @return The filtered data as a {@link List<Song>} that only contains songs that
          *         match this rule that were in the original data set
+         * @see AutoPlaylist.Rule#evaluate(List, Context)
          */
-        private ArrayList<Song> evaluateArtist (ArrayList<Song> in){
-            ArrayList<Song> filteredSongs = new ArrayList<>();
-            switch (field){
-                case Field.ID:
-                    final long id = Long.parseLong(value);
-                    for (Song s : in){
-                        if (s.artistId == id ^ match == Match.NOT_EQUALS){
-                            filteredSongs.add(s);
-                        }
-                    }
-                    break;
-                case Field.NAME:
-                    if (match == Match.EQUALS || match == Match.NOT_EQUALS){
-                        for (Song s : in){
-                            if (s.artistName.equals(value) ^ match == Match.NOT_EQUALS){
-                                filteredSongs.add(s);
-                            }
-                        }
-                    }
-                    else if (match == Match.CONTAINS || match == Match.NOT_CONTAINS){
-                        for (Song s : in){
-                            if (s.artistName.contains(value) ^ match == Match.NOT_CONTAINS){
-                                filteredSongs.add(s);
-                            }
-                        }
-                    }
-                    break;
-            }
-            return filteredSongs;
-        }
-
-        /**
-         * Logic to evaluate album rules. See {@link AutoPlaylist.Rule#evaluate(ArrayList, Context)}
-         * @param in The data to evaluate this rule on. Items in this list will be returned by this
-         *           method if they match the query. Nothing is removed from the original list.
-         * @return The filtered data as an {@link ArrayList<Song>} that only contains songs that
-         *         match this rule that were in the original data set
-         */
-        private ArrayList<Song> evaluateAlbum (ArrayList<Song> in){
-            ArrayList<Song> filteredSongs = new ArrayList<>();
+        private List<Song> evaluateArtist(List<Song> in) {
+            List<Song> filteredSongs = new ArrayList<>();
             switch (field) {
                 case Field.ID:
                     final long id = Long.parseLong(value);
                     for (Song s : in) {
-                        if (s.albumId == id ^ match == Match.NOT_EQUALS){
+                        if (s.artistId == id ^ match == Match.NOT_EQUALS) {
                             filteredSongs.add(s);
                         }
                     }
                     break;
                 case Field.NAME:
+                default:
                     if (match == Match.EQUALS || match == Match.NOT_EQUALS) {
                         for (Song s : in) {
-                            if (s.albumName.equals(value) ^ match == Match.NOT_EQUALS){
+                            if (s.artistName.equals(value) ^ match == Match.NOT_EQUALS) {
                                 filteredSongs.add(s);
                             }
                         }
                     } else if (match == Match.CONTAINS || match == Match.NOT_CONTAINS) {
                         for (Song s : in) {
-                            if (s.albumName.contains(value) ^ match == Match.NOT_CONTAINS){
+                            if (s.artistName.contains(value) ^ match == Match.NOT_CONTAINS) {
                                 filteredSongs.add(s);
                             }
                         }
@@ -751,24 +733,67 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         }
 
         /**
-         * Logic to evaluate genre rules. See {@link AutoPlaylist.Rule#evaluate(ArrayList, Context)}
+         * Logic to evaluate album rules
          * @param in The data to evaluate this rule on. Items in this list will be returned by this
          *           method if they match the query. Nothing is removed from the original list.
-         * @return The filtered data as an {@link ArrayList<Song>} that only contains songs that
+         * @return The filtered data as a {@link List<Song>} that only contains songs that
          *         match this rule that were in the original data set
+         * @see AutoPlaylist.Rule#evaluate(List, Context)
          */
-        private ArrayList<Song> evaluateGenre (ArrayList<Song> in){
-            ArrayList<Song> filteredSongs = new ArrayList<>();
+        private List<Song> evaluateAlbum(List<Song> in) {
+            List<Song> filteredSongs = new ArrayList<>();
+            switch (field) {
+                case Field.ID:
+                    final long id = Long.parseLong(value);
+                    for (Song s : in) {
+                        if (s.albumId == id ^ match == Match.NOT_EQUALS) {
+                            filteredSongs.add(s);
+                        }
+                    }
+                    break;
+                case Field.NAME:
+                default:
+                    if (match == Match.EQUALS || match == Match.NOT_EQUALS) {
+                        for (Song s : in) {
+                            if (s.albumName.equals(value) ^ match == Match.NOT_EQUALS) {
+                                filteredSongs.add(s);
+                            }
+                        }
+                    } else if (match == Match.CONTAINS || match == Match.NOT_CONTAINS) {
+                        for (Song s : in) {
+                            if (s.albumName.contains(value) ^ match == Match.NOT_CONTAINS) {
+                                filteredSongs.add(s);
+                            }
+                        }
+                    }
+                    break;
+            }
+            return filteredSongs;
+        }
+
+        /**
+         * Logic to evaluate genre rules
+         * @param in The data to evaluate this rule on. Items in this list will be returned by this
+         *           method if they match the query. Nothing is removed from the original list.
+         * @return The filtered data as a {@link List<Song>} that only contains songs that
+         *         match this rule that were in the original data set
+         * @see AutoPlaylist.Rule#evaluate(List, Context)
+         */
+        private List<Song> evaluateGenre(List<Song> in) {
+            List<Song> filteredSongs = new ArrayList<>();
             switch (field) {
                 case Field.ID:
                     final Long id = Long.parseLong(value);
                     for (Song s : in) {
-                        if (s.genreId == id ^ match == Match.NOT_EQUALS) filteredSongs.add(s);
+                        if (s.genreId == id ^ match == Match.NOT_EQUALS) {
+                            filteredSongs.add(s);
+                        }
                     }
                     break;
                 case Field.NAME:
-                    if (match == Match.EQUALS || match == Match.NOT_EQUALS){
-                        for (Genre g : Library.getGenres()){
+                default:
+                    if (match == Match.EQUALS || match == Match.NOT_EQUALS) {
+                        for (Genre g : Library.getGenres()) {
                             if (g.genreName.equals(value) ^ match == Match.NOT_EQUALS) {
                                 for (Song s : in) {
                                     if (s.genreId == g.genreId) {
@@ -777,9 +802,8 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                                 }
                             }
                         }
-                    }
-                    else if (match == Match.CONTAINS || match == Match.NOT_CONTAINS){
-                        for (Genre g : Library.getGenres()){
+                    } else if (match == Match.CONTAINS || match == Match.NOT_CONTAINS) {
+                        for (Genre g : Library.getGenres()) {
                             if (g.genreName.contains(value) ^ match == Match.NOT_CONTAINS) {
                                 for (Song s : in) {
                                     if (s.genreId == g.genreId) {

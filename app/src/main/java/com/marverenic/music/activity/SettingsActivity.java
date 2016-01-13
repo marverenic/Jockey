@@ -30,8 +30,10 @@ public class SettingsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        if (getSupportActionBar() != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getSupportActionBar().setElevation(getResources().getDimension(R.dimen.header_elevation));
+        if (getSupportActionBar() != null
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getSupportActionBar()
+                    .setElevation(getResources().getDimension(R.dimen.header_elevation));
         }
 
         if (savedInstanceState == null) {
@@ -62,9 +64,12 @@ public class SettingsActivity extends BaseActivity {
     }
 
     @Override
-    public void updateMiniplayer() {}
+    public void updateMiniplayer() {
 
-    public static class PrefFragment extends PreferenceFragment implements AdapterView.OnItemLongClickListener {
+    }
+
+    public static class PrefFragment extends PreferenceFragment
+            implements AdapterView.OnItemLongClickListener {
 
         @Override
         public void onCreate(final Bundle savedInstanceState) {
@@ -73,7 +78,8 @@ public class SettingsActivity extends BaseActivity {
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
             View view = super.onCreateView(inflater, container, savedInstanceState);
             if (view != null) {
                 ((ListView) view.findViewById(android.R.id.list)).setOnItemLongClickListener(this);
@@ -91,11 +97,14 @@ public class SettingsActivity extends BaseActivity {
         }
 
         @Override
-        public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-            if ("com.marverenic.music.fragments.EqualizerFragment".equals(preference.getFragment())) {
+        public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
+                                             Preference preference) {
+            if ("com.marverenic.music.fragments.EqualizerFragment"
+                    .equals(preference.getFragment())) {
                 Intent eqIntent = Util.getSystemEqIntent(getActivity());
 
-                if (eqIntent != null && !Prefs.getPrefs(getActivity()).getBoolean(Prefs.EQ_ENABLED, false)) {
+                if (eqIntent != null
+                        && !Prefs.getPrefs(getActivity()).getBoolean(Prefs.EQ_ENABLED, false)) {
                     // If the system has an equalizer implementation already in place, use it
                     // to avoid weird problems and conflicts that can cause unexpected behavior
 
@@ -120,7 +129,8 @@ public class SettingsActivity extends BaseActivity {
                 AlertDialog prompt = new AlertDialog.Builder(getActivity())
                         .setTitle(R.string.add_shortcut)
                         .setMessage(R.string.add_shortcut_description)
-                        .setPositiveButton(R.string.action_add, new DialogInterface.OnClickListener() {
+                        .setPositiveButton(R.string.action_add,
+                                new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Themes.updateLauncherIcon(getActivity());

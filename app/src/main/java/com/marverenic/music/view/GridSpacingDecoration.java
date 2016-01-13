@@ -18,7 +18,7 @@ public class GridSpacingDecoration extends RecyclerView.ItemDecoration {
      * @param numColumns The number of columns in this grid. Use the same value as set by
      *                   {@link android.support.v7.widget.GridLayoutManager#setSpanCount(int)}
      */
-    public GridSpacingDecoration(int spacing, int numColumns){
+    public GridSpacingDecoration(int spacing, int numColumns) {
         this(spacing, numColumns, ANY_VIEW);
     }
 
@@ -30,14 +30,15 @@ public class GridSpacingDecoration extends RecyclerView.ItemDecoration {
      * @param viewType The type of view that should be padded in a grid. Use the same value as
      *                 {@link android.support.v7.widget.RecyclerView.Adapter#getItemViewType(int)}
      */
-    public GridSpacingDecoration(int spacing, int numColumns, int viewType){
+    public GridSpacingDecoration(int spacing, int numColumns, int viewType) {
         this.spacing = spacing;
         this.numColumns = numColumns;
         this.viewType = viewType;
     }
 
     @Override
-    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+    public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
+                               RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
 
         RecyclerView.Adapter adapter = parent.getAdapter();
@@ -50,16 +51,19 @@ public class GridSpacingDecoration extends RecyclerView.ItemDecoration {
             int childCount;
             int column;
 
-            if (viewType != ANY_VIEW){
+            if (viewType != ANY_VIEW) {
                 int leadingViews = 0;
-                while (adapter.getItemViewType(leadingViews) != viewType) ++leadingViews;
+                while (adapter.getItemViewType(leadingViews) != viewType) {
+                    ++leadingViews;
+                }
                 sectionPosition = adapterPosition - leadingViews;
                 column = sectionPosition % numColumns;
 
                 childCount = 0;
-                while(adapter.getItemViewType(childCount + leadingViews) == viewType) ++childCount;
-            }
-            else{
+                while (adapter.getItemViewType(childCount + leadingViews) == viewType) {
+                    ++childCount;
+                }
+            } else {
                 sectionPosition = adapterPosition;
                 childCount = parent.getAdapter().getItemCount();
                 column = adapterPosition % numColumns;

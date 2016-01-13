@@ -26,7 +26,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.Player;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
@@ -34,9 +33,10 @@ import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
+import com.marverenic.music.instances.Library;
+import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.TimeView;
@@ -49,7 +49,8 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
 
     private MediaObserver observer = null;
     private boolean userTouchingProgressBar = false; // This probably shouldn't be here...
-    private Song currentReference; // Used to reduce unnecessary view updates when an UPDATE broadcast is received
+    // Used to reduce unnecessary view updates when an UPDATE broadcast is received
+    private Song currentReference;
 
     private SeekBar mSeekBar;
     private TimeView mThumb;
@@ -64,11 +65,13 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
         boolean isTabletHorizontal = false;
         if (getResources().getConfiguration().smallestScreenWidthDp >= 600) {
             // If the activity is landscape on a tablet, use a different theme
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if (getResources().getConfiguration().orientation
+                    == Configuration.ORIENTATION_LANDSCAPE) {
                 isTabletHorizontal = true;
                 Themes.setTheme(this);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     getWindow().setStatusBarColor(Themes.getPrimaryDark());
+                }
             }
         } else {
             // For devices that aren't tablets
@@ -79,16 +82,18 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
         setContentView(R.layout.activity_now_playing);
         onNewIntent(getIntent());
 
-        if (!isTabletHorizontal && getSupportActionBar() != null){
+        if (!isTabletHorizontal && getSupportActionBar() != null) {
             getSupportActionBar().setTitle("");
             getSupportActionBar().setBackgroundDrawable(null);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getWindow().getDecorView().setSystemUiVisibility(
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
                 getWindow().setStatusBarColor(0x66000000);
             }
-        }
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && getSupportActionBar() != null) {
-            getSupportActionBar().setElevation(getResources().getDimension(R.dimen.header_elevation));
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                && getSupportActionBar() != null) {
+            getSupportActionBar().setElevation(
+                    getResources().getDimension(R.dimen.header_elevation));
         }
 
         findViewById(R.id.playButton).setOnClickListener(this);
@@ -116,28 +121,29 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
 
         // If this intent is a music intent, process it
         if (intent.getType().contains("audio") || intent.getType().contains("application/ogg")
-                || intent.getType().contains("application/x-ogg") || intent.getType().contains("application/itunes")){
+                || intent.getType().contains("application/x-ogg")
+                || intent.getType().contains("application/itunes")) {
 
             // The queue to be passed to the player service
             ArrayList<Song> queue = new ArrayList<>();
             int position = 0;
 
             // Have the LibraryScanner class get a song list for this file
-            try{
-                position = Library.getSongListFromFile(this, new File(intent.getData().getPath()), intent.getType(), queue);
-            }
-            catch (Exception e){
+            try {
+                position = Library.getSongListFromFile(this,
+                        new File(intent.getData().getPath()), intent.getType(), queue);
+            } catch (Exception e) {
                 e.printStackTrace();
                 queue = new ArrayList<>();
             }
 
-            if (queue.size() == 0){
+            if (queue.size() == 0) {
                 // No music was found
-                Toast toast = Toast.makeText(getApplicationContext(), R.string.message_play_error_not_found, Toast.LENGTH_SHORT);
+                Toast toast = Toast.makeText(this, R.string.message_play_error_not_found,
+                        Toast.LENGTH_SHORT);
                 toast.show();
                 finish();
-            }
-            else {
+            } else {
                 if (PlayerController.isServiceStarted()) {
                     PlayerController.setQueue(queue, position);
                     PlayerController.begin();
@@ -199,13 +205,15 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
                 if (PlayerController.isShuffle()) {
                     item.getIcon().setAlpha(255);
                     item.setTitle(getResources().getString(R.string.action_disable_shuffle));
-                    Toast toast = Toast.makeText(this, R.string.confirm_enable_shuffle, Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(this, R.string.confirm_enable_shuffle,
+                            Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
                 } else {
                     item.getIcon().setAlpha(128);
                     item.setTitle(getResources().getString(R.string.action_enable_shuffle));
-                    Toast toast = Toast.makeText(this, R.string.confirm_disable_shuffle, Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(this, R.string.confirm_disable_shuffle,
+                            Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
                 }
@@ -215,21 +223,24 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
                 if (PlayerController.isRepeat()) {
                     item.getIcon().setAlpha(255);
                     item.setTitle(getResources().getString(R.string.action_enable_repeat_one));
-                    Toast toast = Toast.makeText(this, R.string.confirm_enable_repeat, Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(this, R.string.confirm_enable_repeat,
+                            Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
                 } else {
                     if (PlayerController.isRepeatOne()) {
                         item.setIcon(R.drawable.ic_repeat_one_24dp);
                         item.setTitle(getResources().getString(R.string.action_disable_repeat));
-                        Toast toast = Toast.makeText(this, R.string.confirm_enable_repeat_one, Toast.LENGTH_SHORT);
+                        Toast toast = Toast.makeText(this, R.string.confirm_enable_repeat_one,
+                                Toast.LENGTH_SHORT);
                         toast.setGravity(Gravity.CENTER, 0, 0);
                         toast.show();
                     } else {
                         item.setIcon(R.drawable.ic_repeat_24dp);
                         item.getIcon().setAlpha(128);
                         item.setTitle(getResources().getString(R.string.action_enable_repeat));
-                        Toast toast = Toast.makeText(this, R.string.confirm_disable_repeat, Toast.LENGTH_SHORT);
+                        Toast toast = Toast.makeText(this, R.string.confirm_disable_repeat,
+                                Toast.LENGTH_SHORT);
                         toast.setGravity(Gravity.CENTER, 0, 0);
                         toast.show();
                     }
@@ -259,18 +270,15 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
     public void onClick(View v) {
         if (v.getId() == R.id.playButton) {
             PlayerController.togglePlay();
-        }
-        else if (v.getId() == R.id.nextButton) {
+        } else if (v.getId() == R.id.nextButton) {
             // Next song
             PlayerController.skip();
-        }
-        else if (v.getId() == R.id.previousButton) {
+        } else if (v.getId() == R.id.previousButton) {
             // Previous song
             PlayerController.previous();
             SeekBar seekBar = (SeekBar)findViewById(R.id.songSeekBar);
             seekBar.setProgress(0);
-        }
-        else if (v.getId() == R.id.songDetail){
+        } else if (v.getId() == R.id.songDetail) {
             // Song info
             final Song nowPlaying = PlayerController.getNowPlaying();
 
@@ -324,7 +332,8 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
 
     @Override
     public void themeActivity() {
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && getSupportActionBar() != null) {
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE
+                && getSupportActionBar() != null) {
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Themes.getPrimary()));
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -336,10 +345,15 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
             Drawable progress = seekBar.getProgressDrawable();
             progress.setTint(Themes.getAccent());
         } else {
-            // For whatever reason, the control frame seems to need a reminder as to what color it should be
-            findViewById(R.id.playerControlFrame).setBackgroundColor(getResources().getColor(R.color.player_control_background));
-            if (getSupportActionBar() != null)
-                getSupportActionBar().setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
+            // TODO Figure out why this happens and get rid of this
+            // For whatever reason, the control frame seems to need a reminder as to what
+            // color it should be
+            findViewById(R.id.playerControlFrame).setBackgroundColor(
+                    getResources().getColor(R.color.player_control_background));
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setIcon(new ColorDrawable(
+                        getResources().getColor(android.R.color.transparent)));
+            }
         }
 
         findViewById(R.id.seekThumb).getBackground()
@@ -347,7 +361,9 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
     }
 
     @Override
-    public void updateMiniplayer(){}
+    public void updateMiniplayer() {
+
+    }
 
     @Override
     public void onUpdate() {
@@ -381,13 +397,13 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
             }
 
             if ((PlayerController.isPlaying() || PlayerController.isPreparing())) {
-                ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_pause_circle_fill_56dp);
+                ((ImageButton) findViewById(R.id.playButton))
+                        .setImageResource(R.drawable.ic_pause_circle_fill_56dp);
 
                 if (!observer.isRunning()) new Thread(observer).start();
                 mSeekBar.setMax(PlayerController.getDuration());
                 songDuration.setTime(mSeekBar.getMax());
-            }
-            else {
+            } else {
                 int duration = PlayerController.getDuration();
                 int progress = PlayerController.getCurrentPosition();
 
@@ -396,7 +412,8 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
                 mSeekBar.setProgress(progress);
                 songPosition.setTime(progress);
 
-                ((ImageButton) findViewById(R.id.playButton)).setImageResource(R.drawable.ic_play_circle_fill_56dp);
+                ((ImageButton) findViewById(R.id.playButton))
+                        .setImageResource(R.drawable.ic_play_circle_fill_56dp);
             }
         }
     }
@@ -472,7 +489,7 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
         private TimeView timeStamp;
         private NowPlayingActivity parent;
 
-        public MediaObserver(NowPlayingActivity parent) {
+        MediaObserver(NowPlayingActivity parent) {
             progress = (SeekBar) findViewById(R.id.songSeekBar);
             timeStamp = (TimeView) findViewById(R.id.songTimeCurr);
             this.parent = parent;
@@ -491,7 +508,9 @@ public class NowPlayingActivity extends BaseActivity implements SeekBar.OnSeekBa
                     public void run() {
                         if (PlayerController.getNowPlaying() != null) {
                             int position = PlayerController.getCurrentPosition();
-                            if (!userTouchingProgressBar) progress.setProgress(position);
+                            if (!userTouchingProgressBar) {
+                                progress.setProgress(position);
+                            }
                             timeStamp.setTime(position);
                         }
                     }

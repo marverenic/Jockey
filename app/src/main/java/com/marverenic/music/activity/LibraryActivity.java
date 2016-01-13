@@ -16,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.marverenic.music.BuildConfig;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
 import com.marverenic.music.fragments.AlbumFragment;
@@ -24,15 +23,16 @@ import com.marverenic.music.fragments.ArtistFragment;
 import com.marverenic.music.fragments.GenreFragment;
 import com.marverenic.music.fragments.PlaylistFragment;
 import com.marverenic.music.fragments.SongFragment;
-import com.marverenic.music.utils.Navigate;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.PlaylistDialog;
+import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Updater;
 import com.marverenic.music.view.FABMenu;
 
-public class LibraryActivity extends BaseActivity implements View.OnClickListener{
+public class LibraryActivity extends BaseActivity implements View.OnClickListener {
 
-    PagerAdapter adapter;
+    private PagerAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,7 +48,9 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
 
         SharedPreferences prefs = Prefs.getPrefs(this);
         int page = Integer.parseInt(prefs.getString(Prefs.DEFAULT_PAGE, "1"));
-        if (page != 0 || !Library.hasRWPermission(this)) fab.setVisibility(View.GONE);
+        if (page != 0 || !Library.hasRWPermission(this)) {
+            fab.setVisibility(View.GONE);
+        }
 
         adapter = new PagerAdapter(getSupportFragmentManager());
         adapter.setFloatingActionButton(fab);
@@ -102,8 +104,13 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
                                         @Override
                                         public void onClick(View v) {
                                             Intent intent = new Intent()
-                                                .setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                                                .setData(Uri.fromParts("package", BuildConfig.APPLICATION_ID, null));
+                                                .setAction(
+                                                        Settings.
+                                                                ACTION_APPLICATION_DETAILS_SETTINGS)
+                                                .setData(Uri.fromParts(
+                                                        "package",
+                                                        BuildConfig.APPLICATION_ID,
+                                                        null));
                                             startActivity(intent);
                                         }
                                     })
@@ -122,18 +129,20 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
     }
 
     @Override
-    public void onClick(View v){
+    public void onClick(View v) {
         super.onClick(v);
         if (v.getTag() != null) {
             if (v.getTag().equals("fab-" + getString(R.string.playlist))) {
                 PlaylistDialog.MakeNormal.alert(findViewById(R.id.coordinator_layout));
             } else if (v.getTag().equals("fab-" + getString(R.string.playlist_auto))) {
-                Navigate.to(this, AutoPlaylistEditActivity.class, AutoPlaylistEditActivity.PLAYLIST_EXTRA, null);
+                Navigate.to(this, AutoPlaylistEditActivity.class,
+                        AutoPlaylistEditActivity.PLAYLIST_EXTRA, null);
             }
         }
     }
 
-    public class PagerAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener {
+    public class PagerAdapter extends FragmentPagerAdapter
+            implements ViewPager.OnPageChangeListener {
 
         private PlaylistFragment playlistFragment;
         private SongFragment songFragment;
@@ -147,35 +156,35 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
             super(fm);
         }
 
-        public void setFloatingActionButton(FABMenu fab){
-            this.fab = fab;
+        public void setFloatingActionButton(FABMenu view) {
+            fab = view;
         }
 
         @Override
         public Fragment getItem(int position) {
-            switch (position){
+            switch (position) {
                 case 0:
-                    if (playlistFragment == null){
+                    if (playlistFragment == null) {
                         playlistFragment = new PlaylistFragment();
                     }
                     return playlistFragment;
                 case 1:
-                    if (songFragment == null){
+                    if (songFragment == null) {
                         songFragment = new SongFragment();
                     }
                     return songFragment;
                 case 2:
-                    if (artistFragment == null){
+                    if (artistFragment == null) {
                         artistFragment = new ArtistFragment();
                     }
                     return artistFragment;
                 case 3:
-                    if (albumFragment == null){
+                    if (albumFragment == null) {
                         albumFragment = new AlbumFragment();
                     }
                     return albumFragment;
                 case 4:
-                    if (genreFragment == null){
+                    if (genreFragment == null) {
                         genreFragment = new GenreFragment();
                     }
                     return genreFragment;
@@ -221,10 +230,9 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
             // If the fab isn't supposed to change states, don't animate anything
             if (position != 0 && fab.getVisibility() == View.GONE) return;
 
-            if (position == 0){
+            if (position == 0) {
                 fab.show();
-            }
-            else{
+            } else {
                 fab.hide();
             }
         }

@@ -36,9 +36,10 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
      * @param excludedLayoutIDs an array of layoutIDs to exclude adding a divider to
      *                          null to add a divider to each entry in the RecyclerView
      */
-    public DividerDecoration(Context context, int[] excludedLayoutIDs){
-        dividerDrawable = new ColorDrawable(Themes.isLight(context)? 0x1E000000 : 0x1EFFFFFF);
-        measuredDividerHeight = (int) Math.ceil(DIVIDER_HEIGHT_DP * context.getResources().getDisplayMetrics().density);
+    public DividerDecoration(Context context, int[] excludedLayoutIDs) {
+        dividerDrawable = new ColorDrawable(Themes.isLight(context) ? 0x1E000000 : 0x1EFFFFFF);
+        measuredDividerHeight = (int) Math.ceil(
+                DIVIDER_HEIGHT_DP * context.getResources().getDisplayMetrics().density);
         excludedIDs = excludedLayoutIDs;
     }
 
@@ -52,30 +53,36 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
             final View child = parent.getChildAt(i);
             if (excludedIDs == null || includeView(child.getId())) {
 
-                final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
+                final RecyclerView.LayoutParams params =
+                        (RecyclerView.LayoutParams) child.getLayoutParams();
                 final int top = child.getBottom() + params.bottomMargin;
                 final int bottom = top + measuredDividerHeight;
 
                 dividerDrawable.setBounds(left, top, right, bottom);
 
                 // Don't draw separators under the last item in a section
-                if (excludedIDs == null || includeView(parent.getChildAt(i + 1).getId())) dividerDrawable.draw(c);
+                if (excludedIDs == null || includeView(parent.getChildAt(i + 1).getId())) {
+                    dividerDrawable.draw(c);
+                }
             }
         }
     }
 
     @Override
-    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+    public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
+                               RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
 
-        if (excludedIDs == null || includeView(view.getId())){
+        if (excludedIDs == null || includeView(view.getId())) {
             outRect.bottom = measuredDividerHeight;
         }
     }
 
-    private boolean includeView(int viewId){
-        for (int i : excludedIDs){
-            if (viewId == i) return false;
+    private boolean includeView(int viewId) {
+        for (int i : excludedIDs) {
+            if (viewId == i) {
+                return false;
+            }
         }
         return true;
     }

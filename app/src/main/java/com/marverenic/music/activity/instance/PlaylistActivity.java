@@ -42,7 +42,7 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
     private Adapter adapter;
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instance);
 
@@ -50,8 +50,9 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
 
         if (reference != null) {
             data = Library.getPlaylistEntries(this, reference);
-            if (getSupportActionBar() != null)
+            if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle(reference.getPlaylistName());
+            }
         } else {
             data = new ArrayList<>();
         }
@@ -59,8 +60,8 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
         RecyclerView list = (RecyclerView) findViewById(R.id.list);
 
         RecyclerViewDragDropManager dragDropManager = new RecyclerViewDragDropManager();
-        this.adapter = new Adapter();
-        RecyclerView.Adapter adapter = dragDropManager.createWrappedAdapter(this.adapter);
+        adapter = new Adapter();
+        RecyclerView.Adapter wrappedAdapter = dragDropManager.createWrappedAdapter(adapter);
 
         //noinspection deprecation
         dragDropManager.setDraggingItemShadowDrawable(
@@ -69,7 +70,7 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
                                 ? R.drawable.list_drag_shadow_light
                                 : R.drawable.list_drag_shadow_dark));
 
-        list.setAdapter(adapter);
+        list.setAdapter(wrappedAdapter);
         list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
         list.addItemDecoration(new DividerDecoration(this));
 
@@ -81,7 +82,7 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu){
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_playlist, menu);
         return super.onCreateOptionsMenu(menu);
     }
@@ -112,7 +113,7 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
         int sortFlag = -1;
         String result;
 
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.action_sort_random:
                 Collections.shuffle(data);
                 result = getResources().getString(R.string.message_sorted_playlist_random);
@@ -175,7 +176,8 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
                             @Override
                             public void onClick(View v) {
                                 data = unsortedData;
-                                Library.editPlaylist(PlaylistActivity.this, reference, unsortedData);
+                                Library.editPlaylist(
+                                        PlaylistActivity.this, reference, unsortedData);
                                 adapter.notifyDataSetChanged();
                             }
                         })
@@ -184,13 +186,15 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
         return true;
     }
 
-    public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements DraggableItemAdapter<DraggableSongViewHolder>, SongViewHolder.OnRemovedListener {
+    public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+            implements DraggableItemAdapter<DraggableSongViewHolder>,
+            SongViewHolder.OnRemovedListener {
 
         public static final int EMPTY = 0;
-        public static final int SONG = 1;
-        public static final int AUTO_SONG = 2;
+        public static final int PLAYLIST = 1;
+        public static final int AUTO_PLIST = 2;
 
-        public Adapter(){
+        public Adapter() {
             setHasStableIds(true);
         }
 
@@ -203,13 +207,13 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
                                     .from(viewGroup.getContext())
                                     .inflate(R.layout.instance_empty, viewGroup, false),
                             PlaylistActivity.this);
-                case AUTO_SONG:
+                case AUTO_PLIST:
                     return new SongViewHolder(
                             LayoutInflater
                                     .from(viewGroup.getContext())
                                     .inflate(R.layout.instance_song, viewGroup, false),
                             data);
-                case SONG:
+                case PLAYLIST:
                 default:
                     DraggableSongViewHolder vh = new DraggableSongViewHolder(
                             LayoutInflater.from(viewGroup.getContext())
@@ -224,24 +228,23 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
         }
 
         @Override
-        public long getItemId(int position){
+        public long getItemId(int position) {
             if (data.isEmpty()) return 0;
             return data.get(position).getSongId();
         }
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-            if (getItemViewType(position) == SONG || getItemViewType(position) == AUTO_SONG) {
+            if (getItemViewType(position) == PLAYLIST || getItemViewType(position) == AUTO_PLIST) {
                 ((SongViewHolder) viewHolder).update(data.get(position), position);
 
-            } else if (viewHolder instanceof EmptyStateViewHolder &&
-                    Library.hasRWPermission(PlaylistActivity.this)) {
-                if (reference instanceof AutoPlaylist){
+            } else if (viewHolder instanceof EmptyStateViewHolder
+                    && Library.hasRWPermission(PlaylistActivity.this)) {
+                if (reference instanceof AutoPlaylist) {
                     EmptyStateViewHolder emptyHolder = ((EmptyStateViewHolder) viewHolder);
                     emptyHolder.setReason(R.string.empty_auto_playlist);
                     emptyHolder.setDetail(R.string.empty_auto_playlist_detail);
-                }
-                else {
+                } else {
                     EmptyStateViewHolder emptyHolder = ((EmptyStateViewHolder) viewHolder);
                     emptyHolder.setReason(R.string.empty_playlist);
                     emptyHolder.setDetail(R.string.empty_playlist_detail);
@@ -250,22 +253,23 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
         }
 
         @Override
-        public int getItemViewType(int position){
+        public int getItemViewType(int position) {
             if (data.isEmpty()) return EMPTY;
-            return (reference instanceof AutoPlaylist)? AUTO_SONG : SONG;
+            return (reference instanceof AutoPlaylist) ? AUTO_PLIST : PLAYLIST;
         }
 
         @Override
         public int getItemCount() {
-            return (data.isEmpty())? 1 : data.size();
+            return (data.isEmpty()) ? 1 : data.size();
         }
 
         @Override
-        public boolean onCheckCanStartDrag(DraggableSongViewHolder viewHolder, int position, int x, int y){
-            final View containerView = viewHolder.itemView;
-            final View dragHandleView = viewHolder.dragHandle;
+        public boolean onCheckCanStartDrag(DraggableSongViewHolder viewHolder, int position,
+                                           int x, int y) {
+            final View containerView = viewHolder.getItemView();
+            final View dragHandleView = viewHolder.getDragHandle();
 
-            final int offsetX =(int) (ViewCompat.getTranslationX(containerView) + 0.5f);
+            final int offsetX = (int) (ViewCompat.getTranslationX(containerView) + 0.5f);
 
             final int tx = (int) (ViewCompat.getTranslationX(dragHandleView) + 0.5f);
             final int left = dragHandleView.getLeft() + tx;
@@ -275,7 +279,8 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
         }
 
         @Override
-        public ItemDraggableRange onGetItemDraggableRange(DraggableSongViewHolder songViewHolder, int position) {
+        public ItemDraggableRange onGetItemDraggableRange(DraggableSongViewHolder songViewHolder,
+                                                          int position) {
             return null;
         }
 

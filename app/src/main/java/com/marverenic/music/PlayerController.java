@@ -21,7 +21,6 @@ import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Util;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -160,7 +159,7 @@ public final class PlayerController {
      * Begin playback of a new song
      * See {@link Player#begin()}
      */
-    public static void begin(){
+    public static void begin() {
         if (playerService != null) {
             try {
                 playerService.begin();
@@ -224,12 +223,14 @@ public final class PlayerController {
      * Toggle repeat from {@link Player#REPEAT_NONE} to {@link Player#REPEAT_ALL},
      * from {@link Player#REPEAT_ALL} to {@link Player#REPEAT_ONE}
      * and from {@link Player#REPEAT_ONE} to {@link Player#REPEAT_NONE}
-     * in {@link android.content.SharedPreferences} and notify the service about the preference change
+     * in {@link android.content.SharedPreferences} and notify the service about the
+     * preference change
      * See {@link Player#setPrefs(boolean, short)}
      */
     public static void toggleRepeat() {
         short repeatOption;
-        switch ((short) PreferenceManager.getDefaultSharedPreferences(applicationContext).getInt(Player.PREFERENCE_REPEAT, Player.REPEAT_NONE)){
+        switch ((short) PreferenceManager.getDefaultSharedPreferences(applicationContext)
+                .getInt(Player.PREFERENCE_REPEAT, Player.REPEAT_NONE)) {
             case Player.REPEAT_ONE:
                 repeatOption = Player.REPEAT_NONE;
                 break;
@@ -246,7 +247,8 @@ public final class PlayerController {
 
         if (playerService  != null) {
             try {
-                playerService.setPrefs(prefs.getBoolean(Player.PREFERENCE_SHUFFLE, false), repeatOption);
+                playerService.setPrefs(
+                        prefs.getBoolean(Player.PREFERENCE_SHUFFLE, false), repeatOption);
             } catch (RemoteException e) {
                 Crashlytics.logException(e);
                 Log.w(TAG, e);
@@ -327,7 +329,7 @@ public final class PlayerController {
      * @param queuePosition The index of the currently playing song in the new queue
      * See {@link Player#editQueue(List, int)}
      */
-    public static void editQueue(List<Song> queue, int queuePosition){
+    public static void editQueue(List<Song> queue, int queuePosition) {
         if (playerService != null) {
             try {
                 playerService.editQueue(queue, queuePosition);
@@ -422,7 +424,9 @@ public final class PlayerController {
      * @return if the player service is currently playing music
      */
     public static boolean isPlaying() {
-        if (playerService == null) return false;
+        if (playerService == null) {
+            return false;
+        }
 
         try {
             return playerService.isPlaying();
@@ -437,7 +441,9 @@ public final class PlayerController {
      * @return if the player service is currently preparing to play a song
      */
     public static boolean isPreparing() {
-        if (playerService == null) return false;
+        if (playerService == null) {
+            return false;
+        }
 
         try {
             return playerService.isPreparing();
@@ -476,7 +482,9 @@ public final class PlayerController {
      * @return The song currently being played by the player service (null if nothing is playing)
      */
     public static Song getNowPlaying() {
-        if (playerService == null) return null;
+        if (playerService == null) {
+            return null;
+        }
 
         try {
             return playerService.getNowPlaying();
@@ -491,10 +499,12 @@ public final class PlayerController {
      * @return The current queue of the player service
      */
     public static List<Song> getQueue() {
-        if (playerService == null) return new ArrayList<>();
+        if (playerService == null) {
+            return new ArrayList<>();
+        }
 
         try {
-            return new ArrayList<>(playerService.getQueue());
+            return playerService.getQueue();
         } catch (RemoteException e) {
             Crashlytics.logException(e);
             Log.w(TAG, e);
@@ -507,7 +517,9 @@ public final class PlayerController {
      * @return The index of the currently playing song in the player service's queue
      */
     public static int getQueuePosition() {
-        if (playerService == null) return 0;
+        if (playerService == null) {
+            return 0;
+        }
 
         try {
             return playerService.getQueuePosition();
@@ -522,7 +534,9 @@ public final class PlayerController {
      * @return The current seek position of the now playing song in milliseconds
      */
     public static int getCurrentPosition() {
-        if (playerService == null) return 0;
+        if (playerService == null) {
+            return 0;
+        }
 
         try {
             return playerService.getCurrentPosition();
@@ -550,7 +564,9 @@ public final class PlayerController {
      * @return The album artwork for the current song
      */
     public static Bitmap getArtwork() {
-        if (artwork == null) artwork = Util.fetchFullArt(getNowPlaying());
+        if (artwork == null) {
+            artwork = Util.fetchFullArt(getNowPlaying());
+        }
         return artwork;
     }
 
@@ -569,15 +585,16 @@ public final class PlayerController {
     }
 
     /**
-     * A {@link BroadcastReceiver} class listening for intents with an {@link Player#UPDATE_BROADCAST}
-     * action. This broadcast must be sent ordered with this receiver being the highest priority
-     * so that the UI can access this class for accurate information from the player service
+     * A {@link BroadcastReceiver} class listening for intents with an
+     * {@link Player#UPDATE_BROADCAST} action. This broadcast must be sent ordered with this
+     * receiver being the highest priority so that the UI can access this class for accurate
+     * information from the player service
      */
-    public static class Listener extends BroadcastReceiver{
+    public static class Listener extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(Player.UPDATE_BROADCAST)){
+            if (intent.getAction().equals(Player.UPDATE_BROADCAST)) {
                 artwork = null;
                 updateUi();
             }

@@ -36,7 +36,8 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
     private SwitchCompat equalizerToggle;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         View layout = inflater.inflate(R.layout.fragment_equalizer, container, false);
         presetSpinnerPrefix = (TextView) layout.findViewById(R.id.equalizerPresetPrefix);
         presetSpinner = (Spinner) layout.findViewById(R.id.equalizerPresetSpinner);
@@ -75,7 +76,8 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
 
             for (short i = 0; i < bandCount; i++) {
                 inflater.inflate(R.layout.instance_eq_slider, equalizerPanel, true);
-                sliders[i] = new EqualizerFrame(equalizerPanel.getChildAt(i), equalizer, i, presetSpinner);
+                sliders[i] = new EqualizerFrame(equalizerPanel.getChildAt(i), equalizer,
+                        i, presetSpinner);
             }
 
             setEqualizerEnabled(prefs.getBoolean(Prefs.EQ_ENABLED, false));
@@ -84,7 +86,8 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
         // If this device already has an application that can handle equalizers system-wide, inform
         // the user of possible issues by using Jockey's built-in equalizer
         if (Util.getSystemEqIntent(getActivity()) != null) {
-            ((TextView) layout.findViewById(R.id.equalizerNotes)).setText(R.string.equalizerNoteSystem);
+            ((TextView) layout.findViewById(R.id.equalizerNotes))
+                    .setText(R.string.equalizerNoteSystem);
         }
 
         return layout;
@@ -148,14 +151,15 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
         setEqualizerEnabled(isChecked);
     }
 
-    private static class PresetAdapter extends BaseAdapter implements AdapterView.OnItemSelectedListener {
+    private static class PresetAdapter extends BaseAdapter
+            implements AdapterView.OnItemSelectedListener {
 
         private Context context;
         private Equalizer equalizer;
         private String[] presets;
         private EqualizerFrame[] sliders;
 
-        public PresetAdapter(Context context, Equalizer equalizer, EqualizerFrame[] sliders) {
+        PresetAdapter(Context context, Equalizer equalizer, EqualizerFrame[] sliders) {
             this.context = context;
             this.equalizer = equalizer;
             this.sliders = sliders;
@@ -220,7 +224,9 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
         }
 
         @Override
-        public void onNothingSelected(AdapterView<?> parent) {}
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
     }
 
     public static class EqualizerFrame implements SeekBar.OnSeekBarChangeListener {
@@ -274,7 +280,9 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
         }
 
         @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {}
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {

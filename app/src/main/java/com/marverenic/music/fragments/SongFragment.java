@@ -8,8 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.R;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.viewholder.EmptyStateViewHolder;
 import com.marverenic.music.instances.viewholder.SongViewHolder;
 import com.marverenic.music.utils.Themes;
@@ -21,21 +21,22 @@ public class SongFragment extends Fragment {
     private Adapter adapter;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.list, container, false);
-        RecyclerView songRecyclerView = (RecyclerView) view.findViewById(R.id.list);
-        songRecyclerView.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
-        songRecyclerView.addItemDecoration(new DividerDecoration(getActivity()));
+        RecyclerView list = (RecyclerView) view.findViewById(R.id.list);
+        list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
+        list.addItemDecoration(new DividerDecoration(getActivity()));
 
-        int paddingH =(int) getActivity().getResources().getDimension(R.dimen.global_padding);
+        int paddingH = (int) getActivity().getResources().getDimension(R.dimen.global_padding);
         view.setPadding(paddingH, 0, paddingH, 0);
 
         adapter = new Adapter();
-        songRecyclerView.setAdapter(adapter);
+        list.setAdapter(adapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        songRecyclerView.setLayoutManager(layoutManager);
+        list.setLayoutManager(layoutManager);
 
         return view;
     }
@@ -80,8 +81,10 @@ public class SongFragment extends Fragment {
         }
 
         @Override
-        public int getItemViewType(int position){
-            if (Library.getSongs().isEmpty()) return EMPTY;
+        public int getItemViewType(int position) {
+            if (Library.getSongs().isEmpty()) {
+                return EMPTY;
+            }
             return SONG;
         }
 
@@ -89,9 +92,8 @@ public class SongFragment extends Fragment {
         public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
             if (getItemViewType(position) == SONG) {
                 ((SongViewHolder) viewHolder).update(Library.getSongs().get(position), position);
-            }
-            else if (viewHolder instanceof EmptyStateViewHolder &&
-                    Library.hasRWPermission(getActivity())) {
+            } else if (viewHolder instanceof EmptyStateViewHolder
+                    && Library.hasRWPermission(getActivity())) {
                 EmptyStateViewHolder emptyHolder = ((EmptyStateViewHolder) viewHolder);
                 emptyHolder.setReason(R.string.empty);
                 emptyHolder.setDetail(R.string.empty_detail);
@@ -101,7 +103,7 @@ public class SongFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return (Library.getSongs().isEmpty())? 1 : Library.getSongs().size();
+            return (Library.getSongs().isEmpty()) ? 1 : Library.getSongs().size();
         }
 
         @Override

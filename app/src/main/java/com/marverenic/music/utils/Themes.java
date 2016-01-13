@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -20,7 +21,7 @@ import android.widget.Button;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.LibraryActivity;
 
-public class Themes {
+public final class Themes {
 
     private static int primary;
     private static int primaryDark;
@@ -29,6 +30,13 @@ public class Themes {
     private static int background;
     private static int backgroundElevated;
     private static int backgroundMiniplayer;
+
+    /**
+     * This class is never instantiated
+     */
+    private Themes() {
+
+    }
 
     // Get Methods
     public static int getPrimary() {
@@ -47,7 +55,7 @@ public class Themes {
         return background;
     }
 
-    public static int getBackgroundElevated(){
+    public static int getBackgroundElevated() {
         return backgroundElevated;
     }
 
@@ -118,14 +126,15 @@ public class Themes {
         }
     }
 
-    public static @StyleRes int getTheme(Context context) {
+    @StyleRes
+    public static int getTheme(Context context) {
         SharedPreferences prefs = Prefs.getPrefs(context);
-        int base = Integer.parseInt(prefs.getString(Prefs.BASE_COLOR, "1"));
-        int primary = Integer.parseInt(prefs.getString(Prefs.PRIMARY_COLOR, "5"));
+        int basePref = Integer.parseInt(prefs.getString(Prefs.BASE_COLOR, "1"));
+        int primaryPref = Integer.parseInt(prefs.getString(Prefs.PRIMARY_COLOR, "5"));
 
-        if (base == 1) {
+        if (basePref == 1) {
             // Light Base
-            switch (primary) {
+            switch (primaryPref) {
                 case 0: // Black
                     return R.style.AppThemeLight_Black;
                 case 1: // Red
@@ -143,7 +152,7 @@ public class Themes {
             }
         } else {
             // Dark or Unknown Base
-            switch (primary) {
+            switch (primaryPref) {
                 case 0: // Black
                     return R.style.AppTheme_Black;
                 case 1: // Red
@@ -168,13 +177,16 @@ public class Themes {
         activity.setTheme(getTheme(activity));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription(activity.getResources().getString(R.string.app_name), getIcon(activity), primary);
+            ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription(
+                    activity.getResources().getString(R.string.app_name),
+                    getIcon(activity),
+                    primary);
             activity.setTaskDescription(taskDescription);
         } else {
             if (activity.getActionBar() != null) {
                 activity.getActionBar().setBackgroundDrawable(new ColorDrawable(primary));
                 if (!activity.getClass().equals(LibraryActivity.class)) {
-                    activity.getActionBar().setIcon(new ColorDrawable(activity.getResources().getColor(android.R.color.transparent)));
+                    activity.getActionBar().setIcon(new ColorDrawable(Color.TRANSPARENT));
                 } else {
                     activity.getActionBar().setIcon(getIconId(activity));
                 }
@@ -210,14 +222,18 @@ public class Themes {
             }
 
             @SuppressWarnings("deprecation")
-            BitmapDrawable icon = (BitmapDrawable) context.getResources().getDrawableForDensity(getIconId(context), density);
-            if (icon != null) return icon.getBitmap();
+            BitmapDrawable icon = (BitmapDrawable) context.getResources()
+                    .getDrawableForDensity(getIconId(context), density);
 
+            if (icon != null) {
+                return icon.getBitmap();
+            }
         }
         return getIcon(context);
     }
 
-    public static @DrawableRes int getIconId(Context context) {
+    @DrawableRes
+    public static int getIconId(Context context) {
         switch (Integer.parseInt(Prefs.getPrefs(context).getString(Prefs.PRIMARY_COLOR, "5"))) {
             case 0:
                 return R.drawable.ic_launcher_grey;
@@ -236,25 +252,33 @@ public class Themes {
         }
     }
 
-    public static void themeAlertDialog(AlertDialog dialog){
+    public static void themeAlertDialog(AlertDialog dialog) {
         Button positive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
         Button negative = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
         Button neutral = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
 
-        if (positive != null) positive.setTextColor(getAccent());
-        if (negative != null) negative.setTextColor(getAccent());
-        if (neutral != null) neutral.setTextColor(getAccent());
+        if (positive != null) {
+            positive.setTextColor(getAccent());
+        }
+        if (negative != null) {
+            negative.setTextColor(getAccent());
+        }
+        if (neutral != null) {
+            neutral.setTextColor(getAccent());
+        }
     }
 
     public static void updateLauncherIcon(Context context) {
         Intent launcherIntent = new Intent(context, LibraryActivity.class);
 
         // Uncomment to delete Jockey icons from the launcher
-        // Don't forget to add permission "com.android.launcher.permission.UNINSTALL_SHORTCUT" to AndroidManifest
+        // Don't forget to add permission "com.android.launcher.permission.UNINSTALL_SHORTCUT"
+        // to AndroidManifest
         /*
         Intent delIntent = new Intent();
         delIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, launcherIntent);
-        delIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, context.getResources().getString(R.string.app_name));
+        delIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME,
+            context.getResources().getString(R.string.app_name));
         delIntent.setAction("com.android.launcher.action.UNINSTALL_SHORTCUT");
         context.sendBroadcast(delIntent);
         */
@@ -269,7 +293,10 @@ public class Themes {
 
     public static void setApplicationIcon(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription(activity.getResources().getString(R.string.app_name), getIcon(activity), primary);
+            ActivityManager.TaskDescription taskDescription =
+                    new ActivityManager.TaskDescription(
+                            activity.getResources().getString(R.string.app_name),
+                            getIcon(activity), primary);
             activity.setTaskDescription(taskDescription);
         }
     }

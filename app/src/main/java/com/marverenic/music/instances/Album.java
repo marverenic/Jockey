@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class Album implements Parcelable, Comparable<Album> {
+public final class Album implements Parcelable, Comparable<Album> {
 
     public static final Parcelable.Creator<Album> CREATOR = new Parcelable.Creator<Album>() {
         public Album createFromParcel(Parcel in) {
@@ -117,8 +117,8 @@ public class Album implements Parcelable, Comparable<Album> {
 
     @Override
     public boolean equals(final Object obj) {
-        return this == obj ||
-                (obj != null && obj instanceof Album && albumId == ((Album) obj).albumId);
+        return this == obj
+                || (obj != null && obj instanceof Album && albumId == ((Album) obj).albumId);
     }
 
     public String toString() {

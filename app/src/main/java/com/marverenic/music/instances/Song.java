@@ -172,11 +172,11 @@ public class Song implements Parcelable, Comparable<Song> {
         return trackNumber;
     }
 
-    public int getSkipCount(){
+    public int getSkipCount() {
         return Library.getSkipCount(songId);
     }
 
-    public int getPlayCount(){
+    public int getPlayCount() {
         return Library.getPlayCount(songId);
     }
 
@@ -191,8 +191,8 @@ public class Song implements Parcelable, Comparable<Song> {
 
     @Override
     public boolean equals(final Object obj) {
-        return this == obj ||
-                (obj != null && obj instanceof Song && songId == ((Song) obj).songId);
+        return this == obj
+                || (obj != null && obj instanceof Song && songId == ((Song) obj).songId);
     }
 
     public String toString() {

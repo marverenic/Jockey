@@ -10,15 +10,16 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.instances.Artist;
-import com.marverenic.music.utils.Navigate;
+import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.PlaylistDialog;
+import com.marverenic.music.utils.Navigate;
 
-public class ArtistViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener{
+public class ArtistViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
+        PopupMenu.OnMenuItemClickListener {
 
     private Context context;
 
@@ -36,17 +37,18 @@ public class ArtistViewHolder extends RecyclerView.ViewHolder implements View.On
         context = itemView.getContext();
     }
 
-    public void update(Artist a){
+    public void update(Artist a) {
         reference = a;
         artistName.setText(a.getArtistName());
     }
 
     @Override
-    public void onClick(View v){
-        switch (v.getId()){
+    public void onClick(View v) {
+        switch (v.getId()) {
             case R.id.instanceMore:
                 final PopupMenu menu = new PopupMenu(context, v, Gravity.END);
-                String[] options = context.getResources().getStringArray(R.array.queue_options_artist);
+                String[] options =
+                        context.getResources().getStringArray(R.array.queue_options_artist);
                 for (int i = 0; i < options.length;  i++) {
                     menu.getMenu().add(Menu.NONE, i, i, options[i]);
                 }
@@ -61,7 +63,7 @@ public class ArtistViewHolder extends RecyclerView.ViewHolder implements View.On
 
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
-        switch (menuItem.getItemId()){
+        switch (menuItem.getItemId()) {
             case 0: //Queue this artist next
                 PlayerController.queueNext(Library.getArtistSongEntries(reference));
                 return true;

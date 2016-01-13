@@ -11,8 +11,8 @@ import java.util.List;
 
 public class DraggableSongViewHolder extends SongViewHolder implements DraggableItemViewHolder {
 
-    public ImageView dragHandle;
-    public View itemView;
+    private ImageView dragHandle;
+    private View itemView;
     private int flags = 0;
 
     public DraggableSongViewHolder(View itemView, List<Song> songList) {
@@ -20,6 +20,14 @@ public class DraggableSongViewHolder extends SongViewHolder implements Draggable
         this.itemView = itemView;
         dragHandle = (ImageView) itemView.findViewById(R.id.handle);
         dragHandle.setOnClickListener(null);
+    }
+
+    public ImageView getDragHandle() {
+        return dragHandle;
+    }
+
+    public View getItemView() {
+        return itemView;
     }
 
     @Override

@@ -7,13 +7,21 @@ import android.os.Parcelable;
 
 import com.marverenic.music.activity.LibraryActivity;
 
-public class Navigate {
+public final class Navigate {
+
+    /**
+     * This class is never instantiated
+     */
+    private Navigate() {
+
+    }
 
     public static void to(Context parent, Class<?  extends Activity> target) {
         to(parent, target, null, null);
     }
 
-    public static void to(Context parent, Class<?  extends Activity> target, String extraName, Parcelable extra) {
+    public static void to(Context parent, Class<? extends Activity> target, String extraName,
+                          Parcelable extra) {
         Intent intent = new Intent(parent, target);
 
         if (extraName != null && extra != null) {
@@ -32,6 +40,7 @@ public class Navigate {
     }
 
     public static void home(Context parent) {
-        parent.startActivity(new Intent(parent, LibraryActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        parent.startActivity(new Intent(parent, LibraryActivity.class)
+                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
     }
 }

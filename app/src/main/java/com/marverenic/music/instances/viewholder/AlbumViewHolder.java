@@ -27,15 +27,15 @@ import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Library;
-import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.instances.PlaylistDialog;
+import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.view.ViewUtils;
 
 import java.util.HashMap;
 
 public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
         Palette.PaletteAsyncListener, PopupMenu.OnMenuItemClickListener,
-        RequestListener<String, GlideDrawable>{
+        RequestListener<String, GlideDrawable> {
 
     // Used to cache Palette values in memory
     private static HashMap<Album, int[]> colorCache = new HashMap<>();
@@ -78,8 +78,10 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
         moreButton.setOnClickListener(this);
     }
 
-    public void update(Album a){
-        if (paletteTask != null && !paletteTask.isCancelled()) paletteTask.cancel(true);
+    public void update(Album a) {
+        if (paletteTask != null && !paletteTask.isCancelled()) {
+            paletteTask.cancel(true);
+        }
 
         reference = a;
         albumName.setText(a.getAlbumName());
@@ -121,17 +123,19 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
     }
 
     private void resetPalette() {
-        if (paletteTask != null && !paletteTask.isCancelled()) paletteTask.cancel(true);
+        if (paletteTask != null && !paletteTask.isCancelled()) {
+            paletteTask.cancel(true);
+        }
 
-        if (backgroundAnimator != null){
+        if (backgroundAnimator != null) {
             backgroundAnimator.setDuration(0);
             backgroundAnimator.cancel();
         }
-        if (titleAnimator != null){
+        if (titleAnimator != null) {
             titleAnimator.setDuration(0);
             titleAnimator.cancel();
         }
-        if (detailAnimator != null){
+        if (detailAnimator != null) {
             detailAnimator.setDuration(0);
             detailAnimator.cancel();
         }
@@ -223,11 +227,12 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
     }
 
     @Override
-    public void onClick(View v){
-        switch (v.getId()){
+    public void onClick(View v) {
+        switch (v.getId()) {
             case R.id.instanceMore:
                 final PopupMenu menu = new PopupMenu(itemView.getContext(), v, Gravity.END);
-                String[] options = itemView.getResources().getStringArray(R.array.queue_options_album);
+                String[] options =
+                        itemView.getResources().getStringArray(R.array.queue_options_album);
                 for (int i = 0; i < options.length; i++) {
                     menu.getMenu().add(Menu.NONE, i, i, options[i]);
                 }
@@ -235,7 +240,8 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder implements View.OnC
                 menu.show();
                 break;
             default:
-                Navigate.to(itemView.getContext(), AlbumActivity.class, AlbumActivity.ALBUM_EXTRA, reference);
+                Navigate.to(itemView.getContext(), AlbumActivity.class,
+                        AlbumActivity.ALBUM_EXTRA, reference);
                 break;
         }
     }

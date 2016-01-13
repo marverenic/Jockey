@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class Artist implements Parcelable, Comparable<Artist> {
+public final class Artist implements Parcelable, Comparable<Artist> {
 
     public static final Parcelable.Creator<Artist> CREATOR = new Parcelable.Creator<Artist>() {
         public Artist createFromParcel(Parcel in) {
@@ -88,8 +88,8 @@ public class Artist implements Parcelable, Comparable<Artist> {
 
     @Override
     public boolean equals(final Object obj) {
-        return this == obj ||
-                (obj != null && obj instanceof Artist && artistId == ((Artist) obj).artistId);
+        return this == obj
+                || (obj != null && obj instanceof Artist && artistId == ((Artist) obj).artistId);
     }
 
     public String toString() {
