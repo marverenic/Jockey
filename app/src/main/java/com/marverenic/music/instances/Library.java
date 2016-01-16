@@ -102,7 +102,7 @@ public final class Library {
 
     private static final String[] playlistEntryProjection = new String[]{
             MediaStore.Audio.Playlists.Members.TITLE,
-            MediaStore.Audio.Playlists.Members._ID,
+            MediaStore.Audio.Playlists.Members.AUDIO_ID,
             MediaStore.Audio.Playlists.Members.ARTIST,
             MediaStore.Audio.Playlists.Members.ALBUM,
             MediaStore.Audio.Playlists.Members.DURATION,

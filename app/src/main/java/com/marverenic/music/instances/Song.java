@@ -86,17 +86,21 @@ public class Song implements Parcelable, Comparable<Song> {
     protected static List<Song> buildSongList(Cursor cur, Resources res) {
         List<Song> songs = new ArrayList<>(cur.getCount());
 
-        final int titleIndex = cur.getColumnIndex(MediaStore.Audio.Media.TITLE);
-        final int idIndex = cur.getColumnIndex(MediaStore.Audio.Media._ID);
-        final int artistIndex = cur.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-        final int albumIndex = cur.getColumnIndex(MediaStore.Audio.Media.ALBUM);
-        final int durationIndex = cur.getColumnIndex(MediaStore.Audio.Media.DURATION);
-        final int dataIndex = cur.getColumnIndex(MediaStore.Audio.Media.DATA);
-        final int yearIndex = cur.getColumnIndex(MediaStore.Audio.Media.YEAR);
-        final int dateIndex = cur.getColumnIndex(MediaStore.Audio.Media.DATE_ADDED);
-        final int albumIdIndex = cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
-        final int artistIdIndex = cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID);
-        final int trackIndex = cur.getColumnIndex(MediaStore.Audio.Media.TRACK);
+        int titleIndex = cur.getColumnIndex(MediaStore.Audio.Media.TITLE);
+        int idIndex = cur.getColumnIndex(MediaStore.Audio.Media._ID);
+        int artistIndex = cur.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+        int albumIndex = cur.getColumnIndex(MediaStore.Audio.Media.ALBUM);
+        int durationIndex = cur.getColumnIndex(MediaStore.Audio.Media.DURATION);
+        int dataIndex = cur.getColumnIndex(MediaStore.Audio.Media.DATA);
+        int yearIndex = cur.getColumnIndex(MediaStore.Audio.Media.YEAR);
+        int dateIndex = cur.getColumnIndex(MediaStore.Audio.Media.DATE_ADDED);
+        int albumIdIndex = cur.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
+        int artistIdIndex = cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID);
+        int trackIndex = cur.getColumnIndex(MediaStore.Audio.Media.TRACK);
+
+        if (idIndex == -1) {
+            idIndex = cur.getColumnIndex(MediaStore.Audio.Playlists.Members.AUDIO_ID);
+        }
 
         final String unknownSong = res.getString(R.string.unknown);
         final String unknownArtist = res.getString(R.string.unknown_artist);
