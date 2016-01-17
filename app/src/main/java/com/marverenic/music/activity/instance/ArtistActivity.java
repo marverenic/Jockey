@@ -149,13 +149,8 @@ public class ArtistActivity extends BaseActivity {
                         Themes.getBackgroundElevated(),
                         new int[]{R.id.loadingView, R.id.infoCard, R.id.relatedCard}));
         list.addItemDecoration(
-                new DividerDecoration(
-                        this,
-                        new int[]{
-                                R.id.infoCard,
-                                R.id.albumInstance,
-                                R.id.subheaderFrame,
-                                R.id.relatedCard}));
+                new DividerDecoration(this, R.id.infoCard, R.id.albumInstance, R.id.subheaderFrame,
+                        R.id.relatedCard));
     }
 
     /**

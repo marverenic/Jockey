@@ -31,7 +31,7 @@ public class PlaylistFragment extends Fragment {
         RecyclerView list = (RecyclerView) view.findViewById(R.id.list);
         list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
         list.addItemDecoration(
-                new DividerDecoration(getActivity(), new int[]{R.id.instance_blank}));
+                new DividerDecoration(getActivity(), R.id.instance_blank));
 
         int paddingH = (int) getActivity().getResources().getDimension(R.dimen.global_padding);
         view.setPadding(paddingH, 0, paddingH, 0);

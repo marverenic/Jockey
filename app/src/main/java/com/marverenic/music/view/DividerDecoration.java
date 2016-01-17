@@ -23,20 +23,12 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
     private int[] excludedIDs;
 
     /**
-     * Create a new ItemDecorator for use with a RecyclerView
-     * @param context A context held temporarily to get colors and display metrics
-     */
-    public DividerDecoration(Context context) {
-        this(context, null);
-    }
-
-    /**
      * Create an ItemDecorator for use with a RecyclerView
      * @param context A context held temporarily to get colors and display metrics
-     * @param excludedLayoutIDs an array of layoutIDs to exclude adding a divider to
-     *                          null to add a divider to each entry in the RecyclerView
+     * @param excludedLayoutIDs A list of layoutIDs to exclude adding a divider to
+     *                          none to add a divider to each entry in the RecyclerView
      */
-    public DividerDecoration(Context context, int[] excludedLayoutIDs) {
+    public DividerDecoration(Context context, int... excludedLayoutIDs) {
         dividerDrawable = new ColorDrawable(Themes.isLight(context) ? 0xFFE0E0E0 : 0xFF1F1F1F);
         measuredDividerHeight = (int) Math.ceil(
                 DIVIDER_HEIGHT_DP * context.getResources().getDisplayMetrics().density);
@@ -63,8 +55,7 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
                 // Don't draw separators under the last item in a section unless it's at the end
                 // of the list and it has a divider above it
                 View nextChild = parent.getChildAt(i + 1);
-                if (excludedIDs == null
-                        || (nextChild == null && includeView(child.getId()))
+                if ((nextChild == null && includeView(child.getId()))
                         || (nextChild != null && includeView(nextChild.getId()))) {
                     dividerDrawable.draw(c);
                 }
@@ -77,7 +68,7 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
                                RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
 
-        if (excludedIDs == null || includeView(view.getId())) {
+        if (includeView(view.getId())) {
             outRect.bottom = measuredDividerHeight;
         }
     }
