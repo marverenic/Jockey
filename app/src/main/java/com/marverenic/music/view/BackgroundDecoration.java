@@ -5,6 +5,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.NinePatchDrawable;
+import android.support.annotation.IdRes;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -26,7 +27,7 @@ public class BackgroundDecoration extends RecyclerView.ItemDecoration {
      * @param excludedLayoutIDs A list of layoutIDs to exclude adding a background color to
      *                          empty to add a background to the entire RecyclerView
      */
-    public BackgroundDecoration(int color, int... excludedLayoutIDs) {
+    public BackgroundDecoration(int color, @IdRes int... excludedLayoutIDs) {
         mBackground = new ColorDrawable(color);
         excludedIDs = excludedLayoutIDs;
     }

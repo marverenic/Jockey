@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.IdRes;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -28,7 +29,7 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
      * @param excludedLayoutIDs A list of layoutIDs to exclude adding a divider to
      *                          none to add a divider to each entry in the RecyclerView
      */
-    public DividerDecoration(Context context, int... excludedLayoutIDs) {
+    public DividerDecoration(Context context, @IdRes int... excludedLayoutIDs) {
         dividerDrawable = new ColorDrawable(Themes.isLight(context) ? 0xFFE0E0E0 : 0xFF1F1F1F);
         measuredDividerHeight = (int) Math.ceil(
                 DIVIDER_HEIGHT_DP * context.getResources().getDisplayMetrics().density);
