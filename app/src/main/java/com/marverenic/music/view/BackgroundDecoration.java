@@ -23,18 +23,10 @@ public class BackgroundDecoration extends RecyclerView.ItemDecoration {
     /**
      * Create an ItemDecorator for use with a RecyclerView
      * @param color the color of the background
+     * @param excludedLayoutIDs A list of layoutIDs to exclude adding a background color to
+     *                          empty to add a background to the entire RecyclerView
      */
-    public BackgroundDecoration(int color) {
-        this(color, null);
-    }
-
-    /**
-     * Create an ItemDecorator for use with a RecyclerView
-     * @param color the color of the background
-     * @param excludedLayoutIDs an array of layoutIDs to exclude adding a background color to
-     *                          null to add a background to the entire RecyclerView
-     */
-    public BackgroundDecoration(int color, int[] excludedLayoutIDs) {
+    public BackgroundDecoration(int color, int... excludedLayoutIDs) {
         mBackground = new ColorDrawable(color);
         excludedIDs = excludedLayoutIDs;
     }

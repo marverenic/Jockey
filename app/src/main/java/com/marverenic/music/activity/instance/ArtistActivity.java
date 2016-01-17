@@ -145,9 +145,8 @@ public class ArtistActivity extends BaseActivity {
                         numColumns,
                         Adapter.RELATED_ARTIST));
         list.addItemDecoration(
-                new BackgroundDecoration(
-                        Themes.getBackgroundElevated(),
-                        new int[]{R.id.loadingView, R.id.infoCard, R.id.relatedCard}));
+                new BackgroundDecoration(Themes.getBackgroundElevated(), R.id.loadingView,
+                        R.id.infoCard, R.id.relatedCard));
         list.addItemDecoration(
                 new DividerDecoration(this, R.id.infoCard, R.id.albumInstance, R.id.subheaderFrame,
                         R.id.relatedCard));
