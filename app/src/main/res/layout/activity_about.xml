@@ -146,29 +146,10 @@
                 android:textSize="@dimen/list_text_detail_size" />
 
             <TextView
-                android:id="@+id/aboutAdvRecycleViewHeader"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/aboutPicassoDetail"
-                android:layout_marginTop="16dp"
-                android:text="@string/uses_advrecyclerview_header"
-                android:textColor="@android:color/white"
-                android:textSize="@dimen/list_text_header_size" />
-
-            <TextView
-                android:id="@+id/aboutAdvRecycleViewDetail"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/aboutAdvRecycleViewHeader"
-                android:text="@string/uses_advrecyclerview_detail"
-                android:textColor="@color/about_detail_text"
-                android:textSize="@dimen/list_text_detail_size" />
-
-            <TextView
                 android:id="@+id/aboutVerticalSeekBarHeader"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutAdvRecycleViewDetail"
+                android:layout_below="@id/aboutPicassoDetail"
                 android:layout_marginTop="16dp"
                 android:text="@string/uses_vert_slider_header"
                 android:textColor="@android:color/white"

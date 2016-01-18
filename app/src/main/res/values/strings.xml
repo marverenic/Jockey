@@ -52,9 +52,6 @@
         Version 2.0</string>
     <string name="uses_glide_header">Glide</string>
     <string name="uses_glide_detail">Version 3.6.1; distributed by Google, Inc. under a BSD License</string>
-    <string name="uses_advrecyclerview_header">Advanced RecyclerView</string>
-    <string name="uses_advrecyclerview_detail">Version 0.7.1; distributed by Haruki Hasegawa
-        under an Apache License, Version 2.0</string>
     <string name="uses_vert_slider_header">VerticalSeekBar</string>
     <string name="uses_vert_slider_detail">Version 0.5.2; distributed by Haruki Hasegawa
         under an Apache License, Version 2.0</string>

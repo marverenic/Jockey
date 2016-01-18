@@ -66,7 +66,6 @@ dependencies {
     compile 'com.android.support:cardview-v7:23.1.1'
     compile 'com.github.bumptech.glide:glide:3.6.1'
     compile 'com.google.code.gson:gson:2.4'
-    compile 'com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.8.2'
     compile 'com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:0.5.2'
     compile('com.crashlytics.sdk.android:crashlytics:2.5.2@aar') {
         transitive = true;
