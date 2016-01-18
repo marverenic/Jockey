@@ -44,11 +44,12 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
         final int endIndex = parent.getChildCount();
         for (int i = 0; i < endIndex; i++) {
             final View child = parent.getChildAt(i);
-            if (excludedIDs == null || includeView(child.getId())) {
+            if (excludedIDs == null || includeView(child)) {
 
                 final RecyclerView.LayoutParams params =
                         (RecyclerView.LayoutParams) child.getLayoutParams();
-                final int top = child.getBottom() + params.bottomMargin;
+                final int top = child.getBottom() + params.bottomMargin
+                        + (int) child.getTranslationY();
                 final int bottom = top + measuredDividerHeight;
 
                 dividerDrawable.setBounds(left, top, right, bottom);
@@ -56,8 +57,8 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
                 // Don't draw separators under the last item in a section unless it's at the end
                 // of the list and it has a divider above it
                 View nextChild = parent.getChildAt(i + 1);
-                if ((nextChild == null && includeView(child.getId()))
-                        || (nextChild != null && includeView(nextChild.getId()))) {
+                if ((nextChild == null && includeView(child))
+                        || (nextChild != null && includeView(nextChild))) {
                     dividerDrawable.draw(c);
                 }
             }
@@ -69,12 +70,13 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
                                RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
 
-        if (includeView(view.getId())) {
+        if (includeView(view)) {
             outRect.bottom = measuredDividerHeight;
         }
     }
 
-    private boolean includeView(int viewId) {
+    protected boolean includeView(View view) {
+        int viewId = view.getId();
         for (int i : excludedIDs) {
             if (viewId == i) {
                 return false;

@@ -20,5 +20,9 @@
     <string name="empty_playlist_detail">You can add songs from the library page</string>
     <string name="empty_auto_playlist">This playlist is empty</string>
     <string name="empty_auto_playlist_detail">No songs matched your filters</string>
+    <string name="empty_search">No results found</string>
+    <string name="empty_error_album">Couldn\'t load album</string>
+    <string name="empty_error_artist">Couldn\'t load artist</string>
+    <string name="empty_error_genre">Couldn\'t load genre</string>
 
 </resources>

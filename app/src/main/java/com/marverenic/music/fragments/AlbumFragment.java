@@ -11,31 +11,33 @@ import android.view.ViewGroup;
 
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Library;
-import com.marverenic.music.instances.viewholder.AlbumViewHolder;
-import com.marverenic.music.instances.viewholder.EmptyStateViewHolder;
+import com.marverenic.music.instances.section.AlbumSection;
+import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
+import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 import com.marverenic.music.view.GridSpacingDecoration;
 import com.marverenic.music.view.ViewUtils;
 
-public class AlbumFragment extends Fragment {
+public class AlbumFragment extends Fragment implements Library.LibraryRefreshListener {
 
-    private Adapter adapter;
+    private HeterogeneousAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.list, container, false);
-        RecyclerView list = (RecyclerView) view.findViewById(R.id.list);
-        list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
 
         int paddingH = (int) getActivity().getResources().getDimension(R.dimen.global_padding);
         view.setPadding(paddingH, 0, paddingH, 0);
 
-        adapter = new Adapter();
-        list.setAdapter(adapter);
+        adapter = new HeterogeneousAdapter();
+        adapter.addSection(new AlbumSection(Library.getAlbums()));
+        adapter.setEmptyState(new LibraryEmptyState(getActivity()));
 
-        Library.addRefreshListener(adapter);
+        RecyclerView list = (RecyclerView) view.findViewById(R.id.list);
+        list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
+        list.setAdapter(adapter);
 
         final int numColumns = ViewUtils.getNumberOfGridColumns(getActivity());
 
@@ -58,71 +60,19 @@ public class AlbumFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Library.addRefreshListener(adapter);
+        Library.addRefreshListener(this);
         // Assume this fragment's data has gone stale since it was last in the foreground
-        adapter.onLibraryRefreshed();
+        onLibraryRefreshed();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Library.removeRefreshListener(adapter);
+        Library.removeRefreshListener(this);
     }
 
-    public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
-            implements Library.LibraryRefreshListener {
-
-        public static final int EMPTY = 0;
-        public static final int ALBUM = 1;
-
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-            switch (viewType) {
-                case EMPTY:
-                    return new EmptyStateViewHolder(
-                            LayoutInflater
-                                    .from(viewGroup.getContext())
-                                    .inflate(R.layout.instance_empty, viewGroup, false),
-                            getActivity());
-                case ALBUM:
-                default:
-                    return new AlbumViewHolder(
-                            LayoutInflater
-                                    .from(viewGroup.getContext())
-                                    .inflate(R.layout.instance_album, viewGroup, false));
-            }
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (Library.getAlbums().isEmpty()) {
-                return EMPTY;
-            }
-            return ALBUM;
-        }
-
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-            if (getItemViewType(position) == ALBUM) {
-                ((AlbumViewHolder) viewHolder).update(Library.getAlbums().get(position));
-            } else if (viewHolder instanceof EmptyStateViewHolder
-                    && Library.hasRWPermission(getActivity())) {
-                EmptyStateViewHolder emptyHolder = ((EmptyStateViewHolder) viewHolder);
-                emptyHolder.setReason(R.string.empty);
-                emptyHolder.setDetail(R.string.empty_detail);
-                emptyHolder.setButton1(R.string.action_try_again);
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            return (Library.getAlbums().isEmpty()) ? 1 : Library.getAlbums().size();
-        }
-
-        @Override
-        public void onLibraryRefreshed() {
-            notifyDataSetChanged();
-        }
+    @Override
+    public void onLibraryRefreshed() {
+        adapter.notifyDataSetChanged();
     }
-
 }

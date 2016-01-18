@@ -5,9 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -16,37 +14,39 @@ import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.instances.viewholder.SongViewHolder;
+import com.marverenic.music.instances.section.LibraryEmptyState;
+import com.marverenic.music.instances.section.SongSection;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
+import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AlbumActivity extends BaseActivity {
 
     public static final String ALBUM_EXTRA = "album";
-    private ArrayList<Song> data;
-    private Album reference;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instance_artwork);
 
-        reference = getIntent().getParcelableExtra(ALBUM_EXTRA);
+        final Album reference = getIntent().getParcelableExtra(ALBUM_EXTRA);
+        List<Song> data;
         if (reference != null) {
             data = Library.getAlbumEntries(reference);
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle(reference.getAlbumName());
             }
+
+            Glide.with(this).load(reference.getArtUri())
+                    .centerCrop()
+                    .into((ImageView) findViewById(R.id.backdrop));
         } else {
             data = new ArrayList<>();
         }
-
-        Glide.with(this).load(reference.getArtUri())
-                .centerCrop()
-                .into((ImageView) findViewById(R.id.backdrop));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().getDecorView().setSystemUiVisibility(
@@ -54,34 +54,40 @@ public class AlbumActivity extends BaseActivity {
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
 
+        HeterogeneousAdapter adapter = new HeterogeneousAdapter();
+        adapter.addSection(new SongSection(data))
+                .setEmptyState(new LibraryEmptyState(this) {
+                    @Override
+                    public String getEmptyMessage() {
+                        if (reference == null) {
+                            return getString(R.string.empty_error_album);
+                        } else {
+                            return super.getEmptyMessage();
+                        }
+                    }
+
+                    @Override
+                    public String getEmptyMessageDetail() {
+                        if (reference == null) {
+                            return "";
+                        } else {
+                            return super.getEmptyMessageDetail();
+                        }
+                    }
+
+                    @Override
+                    public String getEmptyAction1Label() {
+                        return "";
+                    }
+                });
+
         RecyclerView list = (RecyclerView) findViewById(R.id.list);
-        list.setAdapter(new Adapter());
+        list.setAdapter(adapter);
         list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
-        list.addItemDecoration(new DividerDecoration(this));
+        list.addItemDecoration(new DividerDecoration(this, R.id.empty_layout));
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         list.setLayoutManager(layoutManager);
-    }
-
-    public class Adapter extends RecyclerView.Adapter<SongViewHolder> {
-
-        @Override
-        public SongViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-            return new SongViewHolder(
-                    LayoutInflater.from(viewGroup.getContext())
-                            .inflate(R.layout.instance_song, viewGroup, false),
-                    data);
-        }
-
-        @Override
-        public void onBindViewHolder(SongViewHolder viewHolder, int i) {
-            viewHolder.update(data.get(i), i);
-        }
-
-        @Override
-        public int getItemCount() {
-            return data.size();
-        }
     }
 }

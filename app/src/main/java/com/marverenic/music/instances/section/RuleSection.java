@@ -1,14 +1,13 @@
-package com.marverenic.music.instances.viewholder;
+package com.marverenic.music.instances.section;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.design.widget.Snackbar;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatSpinner;
-import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -23,152 +22,163 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.marverenic.music.R;
-import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Themes;
+import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
+import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 
-public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
-        AdapterView.OnItemSelectedListener {
+public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylist.Rule> {
 
-    private AutoPlaylistEditActivity.Adapter parent;
-    private View itemView;
-    private AutoPlaylist.Rule reference;
+    public static final int ID = 121;
 
-    private AppCompatSpinner typeDropDown;
-    private AppCompatSpinner fieldDropDown;
-    private FrameLayout valueTextWrapper;
-    private TextView valueText;
-    private AppCompatSpinner valueSpinner;
+    private static OnRemovalListener mRemovalListener;
 
-    private final DateFormat dateFormat;
-
-    public RuleViewHolder(View itemView, AutoPlaylistEditActivity.Adapter adapter) {
-        super(itemView);
-        this.itemView = itemView;
-        parent = adapter;
-
-        ImageView removeButton = (ImageView) itemView.findViewById(R.id.instanceRemove);
-        removeButton.setOnClickListener(this);
-
-        typeDropDown = (AppCompatSpinner) itemView.findViewById(R.id.typeSelector);
-        fieldDropDown = (AppCompatSpinner) itemView.findViewById(R.id.fieldSelector);
-
-        valueText = (TextView) itemView.findViewById(R.id.valueText);
-        valueTextWrapper = (FrameLayout) itemView.findViewById(R.id.valueTextWrapper);
-        valueSpinner = (AppCompatSpinner) itemView.findViewById(R.id.valueSpinner);
-
-        fieldDropDown.setAdapter(new FieldAdapter(itemView.getContext()));
-        valueSpinner.setAdapter(new InstanceAdapter());
-
-        typeDropDown.setOnItemSelectedListener(this);
-        fieldDropDown.setOnItemSelectedListener(this);
-        valueSpinner.setOnItemSelectedListener(this);
-
-        valueTextWrapper.setOnClickListener(this);
-
-        // Set up a SimpleDate format
-        dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM);
+    public RuleSection(@NonNull List<AutoPlaylist.Rule> data, OnRemovalListener listener) {
+        super(ID, data);
+        mRemovalListener = listener;
     }
 
-    public void update(AutoPlaylist.Rule rule) {
-        reference = rule;
-        update();
-    }
-
-    public void update() {
-        typeDropDown.setSelection(reference.type);
-
-        FieldAdapter fieldAdapter = (FieldAdapter) fieldDropDown.getAdapter();
-        fieldDropDown.setSelection(fieldAdapter.lookupIndex(reference.field, reference.match));
-
-        if (reference.field == AutoPlaylist.Rule.Field.DATE_PLAYED
-                || reference.field == AutoPlaylist.Rule.Field.DATE_ADDED) {
-
-            Calendar c = Calendar.getInstance();
-            try {
-                c.setTimeInMillis(Long.parseLong(reference.value) * 1000);
-            } catch (NumberFormatException e) {
-                c.setTimeInMillis(System.currentTimeMillis());
-                reference.value = Long.toString(c.getTimeInMillis() / 1000);
-            }
-
-            valueText.setText(dateFormat.format(c.getTime()));
-
-        } else if (reference.field == AutoPlaylist.Rule.Field.ID) {
-            InstanceAdapter valueAdapter = ((InstanceAdapter) valueSpinner.getAdapter());
-            valueAdapter.setType(reference.type);
-            valueSpinner.setSelection(
-                    valueAdapter.lookupIndexForId(Long.parseLong(reference.value)));
-        } else {
-            valueText.setText(reference.value);
-        }
-
-        if (reference.field == AutoPlaylist.Rule.Field.ID) {
-            valueTextWrapper.setVisibility(View.GONE);
-            valueSpinner.setVisibility(View.VISIBLE);
-        } else {
-            valueTextWrapper.setVisibility(View.VISIBLE);
-            valueSpinner.setVisibility(View.GONE);
-        }
+    public interface OnRemovalListener {
+        void onRuleRemoved(AutoPlaylist.Rule rule, int index);
     }
 
     @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.instanceRemove) {
-            final int index = getAdapterPosition();
+    public EnhancedViewHolder<AutoPlaylist.Rule> createViewHolder(
+            HeterogeneousAdapter adapter, ViewGroup parent) {
+        return new ViewHolder(
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.instance_rule, parent, false),
+                mRemovalListener);
+    }
 
-            parent.removeRule(index - 1);
-            parent.notifyItemRemoved(index);
+    public static class ViewHolder extends EnhancedViewHolder<AutoPlaylist.Rule>
+            implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
-            Snackbar.make(v, "Removed rule", Snackbar.LENGTH_LONG)
-                    .setAction(R.string.action_undo, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            parent.addRule(index - 1, reference);
-                            parent.notifyItemInserted(index);
-                        }
-                    })
-                    .show();
-        } else if (v.getId() == R.id.valueTextWrapper) {
-            // Show a date picker if relevant, otherwise use a regular AlertDialog to get user input
-            if (reference.field == AutoPlaylist.Rule.Field.DATE_ADDED
-                    || reference.field == AutoPlaylist.Rule.Field.DATE_PLAYED) {
-                // Calculate the date stored in the reference
-                Calendar calendar = Calendar.getInstance();
+        private AutoPlaylist.Rule reference;
+        private OnRemovalListener removalListener;
+
+        private AppCompatSpinner typeDropDown;
+        private AppCompatSpinner fieldDropDown;
+        private FrameLayout valueTextWrapper;
+        private TextView valueText;
+        private AppCompatSpinner valueSpinner;
+
+        private final DateFormat dateFormat;
+
+        public ViewHolder(View itemView, OnRemovalListener removalListener) {
+            super(itemView);
+            this.removalListener = removalListener;
+
+            ImageView removeButton = (ImageView) itemView.findViewById(R.id.instanceRemove);
+            removeButton.setOnClickListener(this);
+
+            typeDropDown = (AppCompatSpinner) itemView.findViewById(R.id.typeSelector);
+            fieldDropDown = (AppCompatSpinner) itemView.findViewById(R.id.fieldSelector);
+
+            valueText = (TextView) itemView.findViewById(R.id.valueText);
+            valueTextWrapper = (FrameLayout) itemView.findViewById(R.id.valueTextWrapper);
+            valueSpinner = (AppCompatSpinner) itemView.findViewById(R.id.valueSpinner);
+
+            fieldDropDown.setAdapter(new FieldAdapter(itemView.getContext()));
+            valueSpinner.setAdapter(new InstanceAdapter());
+
+            typeDropDown.setOnItemSelectedListener(this);
+            fieldDropDown.setOnItemSelectedListener(this);
+            valueSpinner.setOnItemSelectedListener(this);
+
+            valueTextWrapper.setOnClickListener(this);
+
+            // Set up a SimpleDate format
+            dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM);
+        }
+
+        public void update(AutoPlaylist.Rule rule, int position) {
+            reference = rule;
+            update();
+        }
+
+        public void update() {
+            typeDropDown.setSelection(reference.type);
+
+            FieldAdapter fieldAdapter = (FieldAdapter) fieldDropDown.getAdapter();
+            fieldDropDown.setSelection(fieldAdapter.lookupIndex(reference.field, reference.match));
+
+            if (reference.field == AutoPlaylist.Rule.Field.DATE_PLAYED
+                    || reference.field == AutoPlaylist.Rule.Field.DATE_ADDED) {
+
+                Calendar c = Calendar.getInstance();
                 try {
-                    long timestamp = Long.parseLong(reference.value);
-                    calendar.setTimeInMillis(timestamp * 1000L);
-                } catch (NumberFormatException ignored) {
-                    // If the reference's value isn't valid, just use the current time as the
-                    // selected date
-                    calendar.setTimeInMillis(System.currentTimeMillis());
+                    c.setTimeInMillis(Long.parseLong(reference.value) * 1000);
+                } catch (NumberFormatException e) {
+                    c.setTimeInMillis(System.currentTimeMillis());
+                    reference.value = Long.toString(c.getTimeInMillis() / 1000);
                 }
 
-                DatePickerDialog dateDialog = new DatePickerDialog(
-                        itemView.getContext(),
-                        new DatePickerDialog.OnDateSetListener() {
-                            @Override
-                            public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                                  int dayOfMonth) {
-                                Calendar c = Calendar.getInstance();
-                                c.set(year, monthOfYear, dayOfMonth);
-                                reference.value = Long.toString(c.getTimeInMillis() / 1000L);
-                                update();
-                            }
-                        },
-                        calendar.get(Calendar.YEAR),
-                        calendar.get(Calendar.MONTH),
-                        calendar.get(Calendar.DAY_OF_MONTH));
-                dateDialog.show();
+                valueText.setText(dateFormat.format(c.getTime()));
 
+            } else if (reference.field == AutoPlaylist.Rule.Field.ID) {
+                InstanceAdapter valueAdapter = ((InstanceAdapter) valueSpinner.getAdapter());
+                valueAdapter.setType(reference.type);
+                valueSpinner.setSelection(
+                        valueAdapter.lookupIndexForId(Long.parseLong(reference.value)));
             } else {
+                valueText.setText(reference.value);
+            }
+
+            if (reference.field == AutoPlaylist.Rule.Field.ID) {
+                valueTextWrapper.setVisibility(View.GONE);
+                valueSpinner.setVisibility(View.VISIBLE);
+            } else {
+                valueTextWrapper.setVisibility(View.VISIBLE);
+                valueSpinner.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (v.getId() == R.id.instanceRemove) {
+                removalListener.onRuleRemoved(reference, getAdapterPosition());
+            } else if (v.getId() == R.id.valueTextWrapper) {
+                // Show a date picker if relevant, otherwise use a regular AlertDialog to get user input
+                if (reference.field == AutoPlaylist.Rule.Field.DATE_ADDED
+                        || reference.field == AutoPlaylist.Rule.Field.DATE_PLAYED) {
+                    // Calculate the date stored in the reference
+                    Calendar calendar = Calendar.getInstance();
+                    try {
+                        long timestamp = Long.parseLong(reference.value);
+                        calendar.setTimeInMillis(timestamp * 1000L);
+                    } catch (NumberFormatException ignored) {
+                        // If the reference's value isn't valid, just use the current time as the
+                        // selected date
+                        calendar.setTimeInMillis(System.currentTimeMillis());
+                    }
+
+                    DatePickerDialog dateDialog = new DatePickerDialog(
+                            itemView.getContext(),
+                            new DatePickerDialog.OnDateSetListener() {
+                                @Override
+                                public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                                      int dayOfMonth) {
+                                    Calendar c = Calendar.getInstance();
+                                    c.set(year, monthOfYear, dayOfMonth);
+                                    reference.value = Long.toString(c.getTimeInMillis() / 1000L);
+                                    update();
+                                }
+                            },
+                            calendar.get(Calendar.YEAR),
+                            calendar.get(Calendar.MONTH),
+                            calendar.get(Calendar.DAY_OF_MONTH));
+                    dateDialog.show();
+
+                } else {
                 /*
                  Ideally, the View that this ViewHolder wraps would have the EditText directly
                  in it without doing the trickery below where it disguises a TextView as an EditText
@@ -192,118 +202,120 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                  10/8/15
                  */
 
-                final TextInputLayout inputLayout = new TextInputLayout(itemView.getContext());
-                final AppCompatEditText editText = new AppCompatEditText(itemView.getContext());
+                    final TextInputLayout inputLayout = new TextInputLayout(itemView.getContext());
+                    final AppCompatEditText editText = new AppCompatEditText(itemView.getContext());
 
-                int type = ((FieldAdapter) fieldDropDown.getAdapter())
-                        .getInputType(fieldDropDown.getSelectedItemPosition());
+                    int type = ((FieldAdapter) fieldDropDown.getAdapter())
+                            .getInputType(fieldDropDown.getSelectedItemPosition());
 
-                editText.setInputType(type);
-                inputLayout.addView(editText);
+                    editText.setInputType(type);
+                    inputLayout.addView(editText);
 
-                final AlertDialog valueDialog = new AlertDialog.Builder(itemView.getContext())
-                        .setMessage(
-                                typeDropDown.getSelectedItem() + " "
-                                        + fieldDropDown.getSelectedItem().toString().toLowerCase())
-                        .setView(inputLayout)
-                        .setNegativeButton(R.string.action_cancel, null)
-                        .setPositiveButton(R.string.action_done,
-                                new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if (editText.getInputType() == InputType.TYPE_CLASS_NUMBER) {
-                                    try {
-                                        // Verify the input if this rule needs a numeric value
-                                        reference.value = Integer.toString(Integer.parseInt(
-                                                editText.getText().toString().trim()));
+                    final AlertDialog valueDialog = new AlertDialog.Builder(itemView.getContext())
+                            .setMessage(
+                                    typeDropDown.getSelectedItem() + " "
+                                            + fieldDropDown.getSelectedItem().toString().toLowerCase())
+                            .setView(inputLayout)
+                            .setNegativeButton(R.string.action_cancel, null)
+                            .setPositiveButton(R.string.action_done,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            if (editText.getInputType() == InputType.TYPE_CLASS_NUMBER) {
+                                                try {
+                                                    // Verify the input if this rule needs a numeric value
+                                                    reference.value = Integer.toString(Integer.parseInt(
+                                                            editText.getText().toString().trim()));
 
-                                    } catch (NumberFormatException e) {
-                                        // If the user inputted something that's not a number,
-                                        // reset it to 0
-                                        reference.value = "0";
-                                    }
-                                } else {
-                                    reference.value = editText.getText().toString().trim();
-                                }
-                                update();
+                                                } catch (NumberFormatException e) {
+                                                    // If the user inputted something that's not a number,
+                                                    // reset it to 0
+                                                    reference.value = "0";
+                                                }
+                                            } else {
+                                                reference.value = editText.getText().toString().trim();
+                                            }
+                                            update();
+                                        }
+                                    })
+                            .create();
+
+                    valueDialog.getWindow()
+                            .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+                    valueDialog.show();
+
+                    int padding = (int) itemView.getResources().getDimension(R.dimen.alert_padding);
+                    ((View) inputLayout.getParent()).setPadding(
+                            padding - inputLayout.getPaddingLeft(),
+                            0,
+                            padding - inputLayout.getPaddingRight(),
+                            0);
+
+                    Themes.themeAlertDialog(valueDialog);
+
+                    editText.setText(reference.value);
+                    editText.setSelection(reference.value.length());
+                    editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                        @Override
+                        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                            if (actionId == KeyEvent.KEYCODE_ENDCALL) {
+                                valueDialog.getButton(DialogInterface.BUTTON_POSITIVE).callOnClick();
                             }
-                        })
-                        .create();
-
-                valueDialog.getWindow()
-                        .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-
-                valueDialog.show();
-
-                int padding = (int) itemView.getResources().getDimension(R.dimen.alert_padding);
-                ((View) inputLayout.getParent()).setPadding(
-                        padding - inputLayout.getPaddingLeft(),
-                        0,
-                        padding - inputLayout.getPaddingRight(),
-                        0);
-
-                Themes.themeAlertDialog(valueDialog);
-
-                editText.setText(reference.value);
-                editText.setSelection(reference.value.length());
-                editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                    @Override
-                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                        if (actionId == KeyEvent.KEYCODE_ENDCALL) {
-                            valueDialog.getButton(DialogInterface.BUTTON_POSITIVE).callOnClick();
+                            return false;
                         }
-                        return false;
-                    }
-                });
-            }
-        }
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parentAdapter, View view, int position, long id) {
-        if (view == null) {
-            return;
-        }
-
-        // When the type is selected, update the available options in the fieldDropDown and update
-        // the rule this viewHolder refers to
-        if (view.getParent().equals(typeDropDown)) {
-            ((FieldAdapter) fieldDropDown.getAdapter()).setType(position);
-
-            if (reference.type != position) {
-                ((InstanceAdapter) valueSpinner.getAdapter()).setType(position);
-                valueSpinner.setSelection(0);
-            }
-
-            reference.type = position;
-        }
-        // When a field and match are chosen, update the rule that this viewholder refers to
-        if (view.getParent().equals(fieldDropDown)) {
-            FieldAdapter fieldAdapter = (FieldAdapter) fieldDropDown.getAdapter();
-            final int originalField = reference.field;
-            reference.field = fieldAdapter.getRuleField(position);
-            reference.match = fieldAdapter.getRuleMatch(position);
-
-            // If the field was switched from or to an ID match, reset the value
-            if (originalField == AutoPlaylist.Rule.Field.ID
-                    && reference.field != AutoPlaylist.Rule.Field.ID) {
-                reference.value = "";
-            } else if (originalField != AutoPlaylist.Rule.Field.ID
-                    && reference.field == AutoPlaylist.Rule.Field.ID) {
-                reference.value = "0";
-            }
-        }
-        if (view.getParent().equals(valueSpinner)) {
-            if (reference.field == AutoPlaylist.Rule.Field.ID) {
-                reference.value = Long.toString(id);
+                    });
+                }
             }
         }
 
-        update();
-    }
+        @Override
+        public void onItemSelected(AdapterView<?> parentAdapter, View view, int position, long id) {
+            if (view == null) {
+                return;
+            }
 
-    @Override
-    public void onNothingSelected(AdapterView<?> parentAdapter) {
+            // When the type is selected, update the available options in the fieldDropDown and update
+            // the rule this viewHolder refers to
+            if (view.getParent().equals(typeDropDown)) {
+                ((FieldAdapter) fieldDropDown.getAdapter()).setType(position);
+
+                if (reference.type != position) {
+                    ((InstanceAdapter) valueSpinner.getAdapter()).setType(position);
+                    valueSpinner.setSelection(0);
+                }
+
+                reference.type = position;
+            }
+            // When a field and match are chosen, update the rule that this viewholder refers to
+            if (view.getParent().equals(fieldDropDown)) {
+                FieldAdapter fieldAdapter = (FieldAdapter) fieldDropDown.getAdapter();
+                final int originalField = reference.field;
+                reference.field = fieldAdapter.getRuleField(position);
+                reference.match = fieldAdapter.getRuleMatch(position);
+
+                // If the field was switched from or to an ID match, reset the value
+                if (originalField == AutoPlaylist.Rule.Field.ID
+                        && reference.field != AutoPlaylist.Rule.Field.ID) {
+                    reference.value = "";
+                } else if (originalField != AutoPlaylist.Rule.Field.ID
+                        && reference.field == AutoPlaylist.Rule.Field.ID) {
+                    reference.value = "0";
+                }
+            }
+            if (view.getParent().equals(valueSpinner)) {
+                if (reference.field == AutoPlaylist.Rule.Field.ID) {
+                    reference.value = Long.toString(id);
+                }
+            }
+
+            update();
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parentAdapter) {
+
+        }
 
     }
 
@@ -398,8 +410,8 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                 return songChoices.length;
             }
             return 6; // Only the first 6 elements in the array are applicable to all data types
-                      // the rest only apply to songs. Thus, use the full list if we have a song,
-                      // otherwise, only show the first 6 options
+            // the rest only apply to songs. Thus, use the full list if we have a song,
+            // otherwise, only show the first 6 options
         }
 
         @Override

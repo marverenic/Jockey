@@ -56,6 +56,7 @@
         android:padding="8dp"
         android:src="@drawable/ic_play_circle_fill_24dp"
         android:tint="?attr/colorAccent"
+        android:visibility="gone"
         android:layout_toLeftOf="@+id/instanceMore"
         android:layout_toStartOf="@+id/instanceMore"
         android:layout_centerVertical="true"/>

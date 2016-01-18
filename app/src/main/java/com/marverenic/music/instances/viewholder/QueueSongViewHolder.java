@@ -1,9 +1,5 @@
 package com.marverenic.music.instances.viewholder;
 
-import android.app.Activity;
-import android.support.v7.widget.PopupMenu;
-import android.view.Gravity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -18,39 +14,25 @@ import com.marverenic.music.utils.Navigate;
 
 import java.util.List;
 
-public class QueueSongViewHolder extends DraggableSongViewHolder {
+public class QueueSongViewHolder extends DragDropSongViewHolder {
 
-    private Activity parentActivity;
     private OnRemovedListener removedListener;
+    private View nowPlayingIndicator;
 
-    public interface OnRemovedListener {
-        void onItemRemoved(int index);
-    }
-
-    public QueueSongViewHolder(Activity activity, View itemView, OnRemovedListener listener) {
-        super(itemView, null);
-        this.parentActivity = activity;
+    public QueueSongViewHolder(View itemView, OnRemovedListener listener) {
+        super(itemView, null, R.array.edit_queue_options);
         this.removedListener = listener;
+        this.nowPlayingIndicator = itemView.findViewById(R.id.instancePlayingIndicator);
     }
 
     @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.instanceMore:
-                final PopupMenu menu = new PopupMenu(getItemView().getContext(), v, Gravity.END);
-                String[] options = getItemView().getResources()
-                        .getStringArray(R.array.edit_queue_options);
+    public void update(Song item, int position) {
+        super.update(item, position);
 
-                for (int i = 0; i < options.length;  i++) {
-                    menu.getMenu().add(Menu.NONE, i, i, options[i]);
-                }
-                menu.setOnMenuItemClickListener(this);
-                menu.show();
-                break;
-            default:
-                PlayerController.changeSong(index);
-                parentActivity.finish();
-                break;
+        if (PlayerController.getQueuePosition() == position) {
+            nowPlayingIndicator.setVisibility(View.VISIBLE);
+        } else {
+            nowPlayingIndicator.setVisibility(View.GONE);
         }
     }
 
@@ -59,21 +41,21 @@ public class QueueSongViewHolder extends DraggableSongViewHolder {
         switch (menuItem.getItemId()) {
             case 0: //Go to artist
                 Navigate.to(
-                        getItemView().getContext(),
+                        itemView.getContext(),
                         ArtistActivity.class,
                         ArtistActivity.ARTIST_EXTRA,
                         Library.findArtistById(reference.getArtistId()));
                 return true;
             case 1: // Go to album
                 Navigate.to(
-                        getItemView().getContext(),
+                        itemView.getContext(),
                         AlbumActivity.class,
                         AlbumActivity.ALBUM_EXTRA,
                         Library.findAlbumById(reference.getAlbumId()));
                 return true;
             case 2:
-                PlaylistDialog.AddToNormal.alert(getItemView(), reference,
-                        getItemView().getContext().getString(
+                PlaylistDialog.AddToNormal.alert(itemView, reference,
+                        itemView.getResources().getString(
                                 R.string.header_add_song_name_to_playlist, reference));
                 return true;
             case 3: // Remove
@@ -98,5 +80,14 @@ public class QueueSongViewHolder extends DraggableSongViewHolder {
                 return true;
         }
         return false;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v == itemView) {
+            PlayerController.changeSong(index);
+        } else {
+            super.onClick(v);
+        }
     }
 }

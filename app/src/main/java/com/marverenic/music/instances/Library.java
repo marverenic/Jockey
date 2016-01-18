@@ -137,8 +137,8 @@ public final class Library {
     private static final ArrayList<LibraryRefreshListener> REFRESH_LISTENERS = new ArrayList<>();
 
     public interface PlaylistChangeListener {
-        void onPlaylistRemoved(Playlist removed);
-        void onPlaylistAdded(Playlist added);
+        void onPlaylistRemoved(Playlist removed, int index);
+        void onPlaylistAdded(Playlist added, int index);
     }
 
     public interface LibraryRefreshListener {
@@ -194,9 +194,9 @@ public final class Library {
      * Private method for notifying registered {@link PlaylistChangeListener}s
      * that the library has lost an entry. (Changing entries doesn't matter)
      */
-    private static void notifyPlaylistRemoved(Playlist removed) {
+    private static void notifyPlaylistRemoved(Playlist removed, int index) {
         for (PlaylistChangeListener l : PLAYLIST_LISTENERS) {
-            l.onPlaylistRemoved(removed);
+            l.onPlaylistRemoved(removed, index);
         }
     }
 
@@ -205,8 +205,9 @@ public final class Library {
      * that the library has gained an entry. (Changing entries doesn't matter)
      */
     private static void notifyPlaylistAdded(Playlist added) {
+        int index = playlistLib.indexOf(added);
         for (PlaylistChangeListener l : PLAYLIST_LISTENERS) {
-            l.onPlaylistAdded(added);
+            l.onPlaylistAdded(added, index);
         }
     }
 
@@ -237,6 +238,15 @@ public final class Library {
                         Manifest.permission.WRITE_EXTERNAL_STORAGE
                 },
                 PERMISSION_REQUEST_ID);
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    public static boolean previouslyRequestedRWPermission(Activity activity) {
+        return
+                activity.shouldShowRequestPermissionRationale(
+                        Manifest.permission.READ_EXTERNAL_STORAGE)
+                || activity.shouldShowRequestPermissionRationale(
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
     //
@@ -277,7 +287,7 @@ public final class Library {
                                 .putCustomAttribute("Album count", albumLib.size())
                                 .putCustomAttribute("Genre count", genreLib.size()));
             }
-        } else {
+        } else if (!previouslyRequestedRWPermission(activity)) {
             requestRWPermission(activity);
         }
     }
@@ -1321,6 +1331,8 @@ public final class Library {
      *                 from the MediaStore
      */
     public static void deletePlaylist(final Context context, final Playlist playlist) {
+        int index = playlistLib.indexOf(playlist);
+
         // Remove the playlist from the MediaStore
         context.getContentResolver().delete(
                 MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
@@ -1338,7 +1350,7 @@ public final class Library {
         playlistLib.clear();
         setPlaylistLib(scanPlaylists(context));
         Collections.sort(playlistLib);
-        notifyPlaylistRemoved(playlist);
+        notifyPlaylistRemoved(playlist, index);
     }
 
     /**

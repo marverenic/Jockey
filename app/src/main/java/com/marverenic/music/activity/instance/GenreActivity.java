@@ -3,26 +3,28 @@ package com.marverenic.music.activity.instance;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
 
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.instances.Genre;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.instances.viewholder.SongViewHolder;
+import com.marverenic.music.instances.section.LibraryEmptyState;
+import com.marverenic.music.instances.section.SongSection;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
+import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class GenreActivity extends BaseActivity {
 
-    public static final String GENRE_EXTRA = "album";
-    private ArrayList<Song> data;
+    public static final String GENRE_EXTRA = "genre";
     private Genre reference;
+    private List<Song> data;
+    private HeterogeneousAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,34 +42,40 @@ public class GenreActivity extends BaseActivity {
             data = new ArrayList<>();
         }
 
+        adapter = new HeterogeneousAdapter();
+        adapter.addSection(new SongSection(data));
+        adapter.setEmptyState(new LibraryEmptyState(this) {
+            @Override
+            public String getEmptyMessage() {
+                if (reference == null) {
+                    return getString(R.string.empty_error_genre);
+                } else {
+                    return super.getEmptyMessage();
+                }
+            }
+
+            @Override
+            public String getEmptyMessageDetail() {
+                if (reference == null) {
+                    return "";
+                } else {
+                    return super.getEmptyMessageDetail();
+                }
+            }
+
+            @Override
+            public String getEmptyAction1Label() {
+                return "";
+            }
+        });
+
         RecyclerView list = (RecyclerView) findViewById(R.id.list);
-        list.setAdapter(new Adapter());
+        list.setAdapter(adapter);
         list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
-        list.addItemDecoration(new DividerDecoration(this));
+        list.addItemDecoration(new DividerDecoration(this, R.id.empty_layout));
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         list.setLayoutManager(layoutManager);
-    }
-
-    public class Adapter extends RecyclerView.Adapter<SongViewHolder> {
-
-        @Override
-        public SongViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-            return new SongViewHolder(
-                    LayoutInflater.from(viewGroup.getContext())
-                            .inflate(R.layout.instance_song, viewGroup, false),
-                    data);
-        }
-
-        @Override
-        public void onBindViewHolder(SongViewHolder viewHolder, int i) {
-            viewHolder.update(data.get(i), i);
-        }
-
-        @Override
-        public int getItemCount() {
-            return data.size();
-        }
     }
 }

@@ -3,7 +3,6 @@ package com.marverenic.music.activity.instance;
 import android.graphics.drawable.NinePatchDrawable;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -14,32 +13,40 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.h6ah4i.android.widget.advrecyclerview.draggable.DraggableItemAdapter;
-import com.h6ah4i.android.widget.advrecyclerview.draggable.ItemDraggableRange;
-import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.instances.viewholder.DraggableSongViewHolder;
-import com.marverenic.music.instances.viewholder.EmptyStateViewHolder;
-import com.marverenic.music.instances.viewholder.SongViewHolder;
+import com.marverenic.music.instances.section.LibraryEmptyState;
+import com.marverenic.music.instances.section.SongSection;
+import com.marverenic.music.instances.viewholder.DragDropSongViewHolder;
+import com.marverenic.music.instances.viewholder.PlaylistSongViewHolder;
+import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
+import com.marverenic.music.view.EnhancedAdapters.DragBackgroundDecoration;
+import com.marverenic.music.view.EnhancedAdapters.DragDividerDecoration;
+import com.marverenic.music.view.EnhancedAdapters.DragDropAdapter;
+import com.marverenic.music.view.EnhancedAdapters.DragDropDecoration;
+import com.marverenic.music.view.EnhancedAdapters.EnhancedAdapter;
+import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
+import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuItemClickListener {
+public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuItemClickListener,
+        DragDropAdapter.ViewSupplier<Song>, DragDropAdapter.OnItemMovedListener,
+        DragDropSongViewHolder.OnRemovedListener {
 
     public static final String PLAYLIST_EXTRA = "playlist";
-    private List<Song> data;
+    private final List<Song> data = new ArrayList<>();
     private Playlist reference;
-    private Adapter adapter;
+    private EnhancedAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,36 +56,74 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
         reference = getIntent().getParcelableExtra(PLAYLIST_EXTRA);
 
         if (reference != null) {
-            data = Library.getPlaylistEntries(this, reference);
+            data.addAll(Library.getPlaylistEntries(this, reference));
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle(reference.getPlaylistName());
             }
-        } else {
-            data = new ArrayList<>();
         }
 
         RecyclerView list = (RecyclerView) findViewById(R.id.list);
 
-        RecyclerViewDragDropManager dragDropManager = new RecyclerViewDragDropManager();
-        adapter = new Adapter();
-        RecyclerView.Adapter wrappedAdapter = dragDropManager.createWrappedAdapter(adapter);
+        if (reference instanceof AutoPlaylist) {
+            adapter = new HeterogeneousAdapter().addSection(new SongSection(data));
+            list.setAdapter(adapter);
+            list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
+            list.addItemDecoration(new DividerDecoration(this, R.id.empty_layout));
+        } else {
+            adapter = new DragDropAdapter<>(data, this, this);
+            ((DragDropAdapter) adapter).attach(list);
+            list.addItemDecoration(new DragBackgroundDecoration(Themes.getBackgroundElevated()));
+            list.addItemDecoration(new DragDividerDecoration(this, R.id.empty_layout));
+        }
 
-        //noinspection deprecation
-        dragDropManager.setDraggingItemShadowDrawable(
-                (NinePatchDrawable) getResources().getDrawable(
-                        (Themes.isLight(this))
-                                ? R.drawable.list_drag_shadow_light
-                                : R.drawable.list_drag_shadow_dark));
+        list.addItemDecoration(new DragDropDecoration((NinePatchDrawable) getDrawableCompat(
+                (Themes.isLight(this))
+                        ? R.drawable.list_drag_shadow_light
+                        : R.drawable.list_drag_shadow_dark)));
 
-        list.setAdapter(wrappedAdapter);
-        list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
-        list.addItemDecoration(new DividerDecoration(this));
+        adapter.setEmptyState(new LibraryEmptyState(this) {
+            @Override
+            public String getEmptyMessage() {
+                if (reference instanceof AutoPlaylist) {
+                    return getString(R.string.empty_auto_playlist);
+                } else {
+                    return getString(R.string.empty_playlist);
+                }
+            }
+
+            @Override
+            public String getEmptyMessageDetail() {
+                if (reference instanceof AutoPlaylist) {
+                    return getString(R.string.empty_auto_playlist_detail);
+                } else {
+                    return getString(R.string.empty_playlist_detail);
+                }
+            }
+
+            @Override
+            public String getEmptyAction1Label() {
+                if (reference instanceof AutoPlaylist) {
+                    return getString(R.string.action_edit_playlist_rules);
+                } else {
+                    return "";
+                }
+            }
+
+            @Override
+            public void onAction1() {
+                if (reference instanceof AutoPlaylist
+                        && Library.hasRWPermission(PlaylistActivity.this)) {
+                    Navigate.to(PlaylistActivity.this, AutoPlaylistEditActivity.class,
+                            AutoPlaylistEditActivity.PLAYLIST_EXTRA, reference);
+                } else {
+                    super.onAction1();
+                }
+            }
+        });
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         list.setLayoutManager(layoutManager);
-
-        dragDropManager.attachRecyclerView(list);
     }
 
     @Override
@@ -175,7 +220,8 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                data = unsortedData;
+                                data.clear();
+                                data.addAll(unsortedData);
                                 Library.editPlaylist(
                                         PlaylistActivity.this, reference, unsortedData);
                                 adapter.notifyDataSetChanged();
@@ -186,143 +232,52 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
         return true;
     }
 
-    public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
-            implements DraggableItemAdapter<DraggableSongViewHolder>,
-            SongViewHolder.OnRemovedListener {
-
-        public static final int EMPTY = 0;
-        public static final int PLAYLIST = 1;
-        public static final int AUTO_PLIST = 2;
-
-        public Adapter() {
-            setHasStableIds(true);
-        }
-
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-            switch (viewType) {
-                case EMPTY:
-                    return new EmptyStateViewHolder(
-                            LayoutInflater
-                                    .from(viewGroup.getContext())
-                                    .inflate(R.layout.instance_empty, viewGroup, false),
-                            PlaylistActivity.this);
-                case AUTO_PLIST:
-                    return new SongViewHolder(
-                            LayoutInflater
-                                    .from(viewGroup.getContext())
-                                    .inflate(R.layout.instance_song, viewGroup, false),
-                            data);
-                case PLAYLIST:
-                default:
-                    DraggableSongViewHolder vh = new DraggableSongViewHolder(
-                            LayoutInflater.from(viewGroup.getContext())
-                                    .inflate(R.layout.instance_song_drag, viewGroup, false),
-                            data);
-                    if (!(reference instanceof AutoPlaylist)) {
-                        vh.setPlaylist(reference, this);
-                    }
-
-                    return vh;
-            }
-        }
-
-        @Override
-        public long getItemId(int position) {
-            if (data.isEmpty()) return 0;
-            return data.get(position).getSongId();
-        }
-
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-            if (getItemViewType(position) == PLAYLIST || getItemViewType(position) == AUTO_PLIST) {
-                ((SongViewHolder) viewHolder).update(data.get(position), position);
-
-            } else if (viewHolder instanceof EmptyStateViewHolder
-                    && Library.hasRWPermission(PlaylistActivity.this)) {
-                if (reference instanceof AutoPlaylist) {
-                    EmptyStateViewHolder emptyHolder = ((EmptyStateViewHolder) viewHolder);
-                    emptyHolder.setReason(R.string.empty_auto_playlist);
-                    emptyHolder.setDetail(R.string.empty_auto_playlist_detail);
-                } else {
-                    EmptyStateViewHolder emptyHolder = ((EmptyStateViewHolder) viewHolder);
-                    emptyHolder.setReason(R.string.empty_playlist);
-                    emptyHolder.setDetail(R.string.empty_playlist_detail);
-                }
-            }
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (data.isEmpty()) return EMPTY;
-            return (reference instanceof AutoPlaylist) ? AUTO_PLIST : PLAYLIST;
-        }
-
-        @Override
-        public int getItemCount() {
-            return (data.isEmpty()) ? 1 : data.size();
-        }
-
-        @Override
-        public boolean onCheckCanStartDrag(DraggableSongViewHolder viewHolder, int position,
-                                           int x, int y) {
-            final View containerView = viewHolder.getItemView();
-            final View dragHandleView = viewHolder.getDragHandle();
-
-            final int offsetX = (int) (ViewCompat.getTranslationX(containerView) + 0.5f);
-
-            final int tx = (int) (ViewCompat.getTranslationX(dragHandleView) + 0.5f);
-            final int left = dragHandleView.getLeft() + tx;
-            final int right = dragHandleView.getRight() + tx;
-
-            return (x - offsetX >= left) && (x - offsetX <= right);
-        }
-
-        @Override
-        public ItemDraggableRange onGetItemDraggableRange(DraggableSongViewHolder songViewHolder,
-                                                          int position) {
-            return null;
-        }
-
-        @Override
-        public void onMoveItem(int from, int to) {
-            if (from == to) return;
-
-            data.add(to, data.remove(from));
-            Library.editPlaylist(PlaylistActivity.this, reference, data);
-        }
-
-        @Override
-        public void onSongRemoved(View view, final Song song) {
-            RecyclerView recyclerView = (RecyclerView) view.getParent();
-            final int position = recyclerView.getChildAdapterPosition(view);
-
-            data.remove(position);
-
-            Library.editPlaylist(PlaylistActivity.this, reference, data);
-            notifyItemRemoved(position);
-
-            Snackbar
-                    .make(
-                            view,
-                            getResources().getString(
-                                    R.string.message_removed_song,
-                                    song.getSongName()),
-                            Snackbar.LENGTH_LONG)
-                    .setAction(R.string.action_undo, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            data.add(position, song);
-                            Library.editPlaylist(PlaylistActivity.this, reference, data);
-                            if (data.size() > 1) {
-                                notifyItemInserted(position);
-                            } else {
-                                notifyItemChanged(position);
-                            }
-                        }
-                    })
-                    .show();
-        }
+    @Override
+    public EnhancedViewHolder<Song> createViewHolder(ViewGroup parent) {
+        return new PlaylistSongViewHolder(
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.instance_song_drag, parent, false),
+                data, reference, this);
     }
 
+    @Override
+    public int getHandleId() {
+        return R.id.handle;
+    }
+
+    @Override
+    public void onItemMoved(int from, int to) {
+        if (from == to) return;
+
+        Library.editPlaylist(this, reference, data);
+    }
+
+    @Override
+    public void onItemRemoved(final int index) {
+        final Song removed = data.remove(index);
+
+        Library.editPlaylist(PlaylistActivity.this, reference, data);
+        adapter.notifyItemRemoved(index);
+
+        Snackbar
+                .make(
+                        findViewById(R.id.list),
+                        getResources().getString(
+                                R.string.message_removed_song,
+                                removed.getSongName()),
+                        Snackbar.LENGTH_LONG)
+                .setAction(R.string.action_undo, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        data.add(index, removed);
+                        Library.editPlaylist(PlaylistActivity.this, reference, data);
+                        if (data.size() > 1) {
+                            adapter.notifyItemInserted(index);
+                        } else {
+                            adapter.notifyItemChanged(index);
+                        }
+                    }
+                })
+                .show();
+    }
 }

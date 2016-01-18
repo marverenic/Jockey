@@ -41,5 +41,6 @@
     <string name="action_make_new_playlist">Make new playlist&#8230;</string>
     <string name="action_add_rule">Add rule</string>
     <string name="action_discard_changes">Discard changes</string>
+    <string name="action_edit_playlist_rules">Edit filters</string>
 
 </resources>

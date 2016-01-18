@@ -10,28 +10,32 @@ import android.view.ViewGroup;
 
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Library;
-import com.marverenic.music.instances.viewholder.EmptyStateViewHolder;
-import com.marverenic.music.instances.viewholder.SongViewHolder;
+import com.marverenic.music.instances.section.LibraryEmptyState;
+import com.marverenic.music.instances.section.SongSection;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
+import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 
-public class SongFragment extends Fragment {
+public class SongFragment extends Fragment implements Library.LibraryRefreshListener {
 
-    private Adapter adapter;
+    private HeterogeneousAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.list, container, false);
-        RecyclerView list = (RecyclerView) view.findViewById(R.id.list);
-        list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
-        list.addItemDecoration(new DividerDecoration(getActivity()));
 
         int paddingH = (int) getActivity().getResources().getDimension(R.dimen.global_padding);
         view.setPadding(paddingH, 0, paddingH, 0);
 
-        adapter = new Adapter();
+        adapter = new HeterogeneousAdapter();
+        adapter.addSection(new SongSection(Library.getSongs()));
+        adapter.setEmptyState(new LibraryEmptyState(getActivity()));
+
+        RecyclerView list = (RecyclerView) view.findViewById(R.id.list);
+        list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
+        list.addItemDecoration(new DividerDecoration(getActivity(), R.id.empty_layout));
         list.setAdapter(adapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
@@ -44,72 +48,19 @@ public class SongFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Library.addRefreshListener(adapter);
+        Library.addRefreshListener(this);
         // Assume this fragment's data has gone stale since it was last in the foreground
-        adapter.onLibraryRefreshed();
+        onLibraryRefreshed();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Library.removeRefreshListener(adapter);
+        Library.removeRefreshListener(this);
     }
 
-    public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
-            implements Library.LibraryRefreshListener {
-
-        public static final int EMPTY = 0;
-        public static final int SONG = 1;
-
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-            switch (viewType) {
-                case EMPTY:
-                    return new EmptyStateViewHolder(
-                            LayoutInflater
-                                    .from(viewGroup.getContext())
-                                    .inflate(R.layout.instance_empty, viewGroup, false),
-                            getActivity());
-                case SONG:
-                default:
-                    return new SongViewHolder(
-                            LayoutInflater
-                                    .from(viewGroup.getContext())
-                                    .inflate(R.layout.instance_song, viewGroup, false),
-                            Library.getSongs());
-            }
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (Library.getSongs().isEmpty()) {
-                return EMPTY;
-            }
-            return SONG;
-        }
-
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-            if (getItemViewType(position) == SONG) {
-                ((SongViewHolder) viewHolder).update(Library.getSongs().get(position), position);
-            } else if (viewHolder instanceof EmptyStateViewHolder
-                    && Library.hasRWPermission(getActivity())) {
-                EmptyStateViewHolder emptyHolder = ((EmptyStateViewHolder) viewHolder);
-                emptyHolder.setReason(R.string.empty);
-                emptyHolder.setDetail(R.string.empty_detail);
-                emptyHolder.setButton1(R.string.action_try_again);
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            return (Library.getSongs().isEmpty()) ? 1 : Library.getSongs().size();
-        }
-
-        @Override
-        public void onLibraryRefreshed() {
-            notifyDataSetChanged();
-        }
+    @Override
+    public void onLibraryRefreshed() {
+        adapter.notifyDataSetChanged();
     }
-
 }
