@@ -101,11 +101,10 @@ public class Playlist implements Parcelable, Comparable<Playlist> {
     @Override
     public int compareTo(@NonNull Playlist another) {
         if (!getClass().equals(another.getClass())) {
-            if (this instanceof AutoPlaylist) {
-                return -1;
-            }
-            if (this instanceof AutoPlaylist) {
+            if (another instanceof AutoPlaylist) {
                 return 1;
+            } else if (this instanceof AutoPlaylist) {
+                return -1;
             }
         }
         return playlistName.compareToIgnoreCase(another.playlistName);
