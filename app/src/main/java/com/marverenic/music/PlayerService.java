@@ -194,6 +194,7 @@ public class PlayerService extends Service {
                 .setOnlyAlertOnce(true)
                 .setOngoing(true)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setCategory(NotificationCompat.CATEGORY_TRANSPORT)
                 .setContentIntent(PendingIntent.getActivity(this, 0,
                         new Intent(this, LibraryActivity.class),
