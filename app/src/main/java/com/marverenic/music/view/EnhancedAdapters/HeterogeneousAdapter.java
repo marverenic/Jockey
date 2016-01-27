@@ -18,7 +18,7 @@ import java.util.List;
  * use {@link #addSection(Section)}. All data lookup and ViewHolder instantiation is handled by
  * Sections. Sections appear in the order that they are added.
  */
-public final class HeterogeneousAdapter extends EnhancedAdapter {
+public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolder> {
 
     /**
      * Used in {@link #lookupPos(int)} to denote an unknown result
@@ -42,6 +42,13 @@ public final class HeterogeneousAdapter extends EnhancedAdapter {
     }
 
     /**
+     * @return The number of Sections currently attached to this Adapter
+     */
+    public int getSectionCount() {
+        return mSections.size();
+    }
+
+    /**
      * Find the first section of a certain type in this Adapter
      * @param id The ID of the Section as set in the Section's constructor
      *           ({@link Section#Section(int)})
@@ -58,7 +65,7 @@ public final class HeterogeneousAdapter extends EnhancedAdapter {
      * @return this Adapter, for chain building
      */
     public HeterogeneousAdapter addSection(@NonNull Section section) {
-        return addSection(section, mSections.size());
+        return addSection(section, getSectionCount());
     }
 
     /**
@@ -99,7 +106,6 @@ public final class HeterogeneousAdapter extends EnhancedAdapter {
         return false;
     }
 
-    @Override
     public void setEmptyState(@Nullable EmptyState emptyState) {
         mEmptyState = emptyState;
     }
@@ -141,6 +147,17 @@ public final class HeterogeneousAdapter extends EnhancedAdapter {
         return (int) index;
     }
 
+    protected int getLeadingViewCount(int typeId) {
+        int count = 0;
+        for (Section s : mSections) {
+            if (s.getTypeId() == typeId) {
+                break;
+            }
+            count += s.getSize(this);
+        }
+        return count;
+    }
+
     @Override
     public int getItemViewType(int position) {
         if (getDataSize() == 0) {
@@ -164,7 +181,7 @@ public final class HeterogeneousAdapter extends EnhancedAdapter {
     }
 
     @Override
-    public final EnhancedViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public EnhancedViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == EMPTY_TYPE) {
             return mEmptyState.createViewHolder(this, parent);
         }
@@ -173,7 +190,7 @@ public final class HeterogeneousAdapter extends EnhancedAdapter {
 
     @Override
     @SuppressWarnings("unchecked")
-    public final void onBindViewHolder(EnhancedViewHolder holder, int position) {
+    public void onBindViewHolder(EnhancedViewHolder holder, int position) {
         if (holder instanceof EmptyState.EmptyViewHolder) {
             ((EmptyState.EmptyViewHolder) holder).update(null, position);
         } else {

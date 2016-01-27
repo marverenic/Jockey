@@ -1,60 +1,16 @@
 package com.marverenic.music.view.EnhancedAdapters;
 
 import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.List;
+public class DragDropAdapter extends HeterogeneousAdapter {
 
-/**
- * A {@link android.support.v7.widget.RecyclerView.Adapter} designed for homogeneous data sets with
- * drag and drop support.
- *
- * Because this class is final, {@link android.support.v7.widget.RecyclerView.ViewHolder}s are
- * supplied with the {@link com.marverenic.music.view.EnhancedAdapters.DragDropAdapter.ViewSupplier}
- * interface. Instead of overriding this entire adapter, implement the interface where convenient
- * and return a valid {@link EnhancedViewHolder}.
- *
- * When the adapter is setup, make sure to call {@link #attach(RecyclerView)} to link it to your
- * RecyclerView. Failing to do so will prevent drag and drop from working and will make you sad.
- *
- * @param <Type> The type of data that this adapter will manage
- */
-public final class DragDropAdapter<Type> extends EnhancedAdapter {
-
-    private static final int EMPTY_VIEW = 0;
-    private static final int DATA_VIEW = 1;
-
-    private List<Type> mData;
-    private ViewSupplier<Type> mSupplier;
+    private DragSection mDragSection;
     private ItemTouchHelper mTouchHelper;
-    private OnItemMovedListener mMovedListener;
-    private EmptyState mEmptyState;
-
-    /**
-     * @param data Your data set. If you need to change this data later, keep a reference to this
-     *             List and make modifications to it when your data changes. (Don't forget to call
-     *             {@link #notifyDataSetChanged()} if you do this, though)
-     * @param supplier A ViewSupplier that will be used to build the ViewHolders shown in the
-     *                 RecyclerView this adapter is attached to
-     * @param moveListener A callback when items are moved around in the list
-     */
-    public DragDropAdapter(@NonNull List<Type> data, @NonNull ViewSupplier<Type> supplier,
-                           @Nullable OnItemMovedListener moveListener) {
-        mData = data;
-        mSupplier = supplier;
-        mMovedListener = moveListener;
-    }
-
-    @Override
-    public void setEmptyState(EmptyState emptyState) {
-        mEmptyState = emptyState;
-    }
 
     /**
      * Attach this adapter to a View. You MUST call this method if you want drag and drop to work.
@@ -70,10 +26,10 @@ public final class DragDropAdapter<Type> extends EnhancedAdapter {
 
     @Override
     public EnhancedViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == DATA_VIEW) {
-            final EnhancedViewHolder viewHolder = mSupplier.createViewHolder(parent);
+        final EnhancedViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
 
-            View handle = viewHolder.itemView.findViewById(mSupplier.getHandleId());
+        if (mDragSection != null && viewType == mDragSection.getTypeId()) {
+            View handle = viewHolder.itemView.findViewById(mDragSection.getDragHandleId());
             handle.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
@@ -84,90 +40,88 @@ public final class DragDropAdapter<Type> extends EnhancedAdapter {
                     return false;
                 }
             });
-            return viewHolder;
-        } else if (viewType == EMPTY_VIEW) {
-            return mEmptyState.createViewHolder(this, parent);
-        } else {
-            return null;
         }
+        return viewHolder;
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public void onBindViewHolder(EnhancedViewHolder holder, int position) {
-        if (holder instanceof EmptyState.EmptyViewHolder) {
-            ((EmptyState.EmptyViewHolder) holder).update(null, position);
-        } else {
-            holder.update(mData.get(position), position);
-        }
+    public DragDropAdapter setDragSection(DragSection section) {
+        return setDragSection(section, getSectionCount());
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        if (mData.isEmpty() && mEmptyState != null) {
-            return EMPTY_VIEW;
-        } else {
-            return DATA_VIEW;
+    public DragDropAdapter setDragSection(DragSection section, int index) {
+        if (mDragSection != null) {
+            throw new IllegalStateException("A DragSection has already been attached. "
+                    + "You must remove it before setting a new drag section.");
         }
+
+        super.addSection(section, index);
+        mDragSection = section;
+        return this;
     }
 
-    @Override
-    public int getItemCount() {
-        if (mData.isEmpty() && mEmptyState != null) {
-            return 1;
-        } else {
-            return mData.size();
-        }
+    public void removeDragSection() {
+        super.removeSectionById(mDragSection.getTypeId());
+        mDragSection = null;
     }
 
-    private void move(int from, int to) {
-        mData.add(to, mData.remove(from));
+    private void drag(int from, int to) {
+        int leadingViews = getLeadingViewCount(mDragSection.getTypeId());
+        mDragSection.onDrag(from - leadingViews, to - leadingViews);
         notifyItemMoved(from, to);
     }
 
-    private void finishMove(RecyclerView.ViewHolder viewHolder) {
-        if (mMovedListener != null) {
-            mMovedListener.onItemMoved(
-                    ((DragMarker) viewHolder.itemView.getTag()).from,
-                    viewHolder.getAdapterPosition());
-        }
+    private void drop(RecyclerView.ViewHolder viewHolder) {
+        int leadingViews = getLeadingViewCount(mDragSection.getTypeId());
+        mDragSection.onDrop(
+                ((DragMarker) viewHolder.itemView.getTag()).from - leadingViews,
+                viewHolder.getAdapterPosition() - leadingViews);
         viewHolder.itemView.setTag(null);
     }
 
-    /**
-     * Interface to supply views to this adapter
-     * @param <T>
-     */
-    public interface ViewSupplier<T> {
-        /**
-         * Called with the attached adapter needs another ViewHolder
-         * @param parent The ViewGroup that this ViewHolder will be bound to
-         * @return A new ViewHolder
-         * @see android.support.v7.widget.RecyclerView.Adapter#createViewHolder(ViewGroup, int)
-         */
-        EnhancedViewHolder<T> createViewHolder(ViewGroup parent);
+    public static abstract class DragSection<Type> extends Section<Type> {
 
         /**
-         * Gets of the id region that can be touched to initiate a drag and drop gesture
-         * @return The ViewId of the drag handle. If the entire view can start a drag, return the
-         *         id of the itemView's parent.
+         * @param typeId The item type ID as used by
+         *               {@link RecyclerView.Adapter#getItemViewType(int)}. This ID is constant
+         *               for all items in this section. This value should be unique and constant
+         *               to the each class that extends Section. This value MUST be unique among
+         *               all Sections that are put in the same HeterogeneousAdapter.
          */
-        @IdRes int getHandleId();
-    }
+        public DragSection(int typeId) {
+            super(typeId);
+        }
 
-    /**
-     * A Callback used to inform a listener of drag and drop operations
-     */
-    public interface OnItemMovedListener {
         /**
-         * Called when a drag and drop operation has finished. The adapter this listener is attached
-         * to reorders data entries on its own. Because of this, implementations should NOT reorder
-         * their entries when this is called. Instead, they should update the data set that the
-         * adapter is populated from with this change.
+         * @return The view ID of that may be touched to begin a drag gesture. If the entire view
+         *         may be used, return its ID, otherwise return the ID of a specific view in
+         *         the itemView hierarchy
+         */
+        @IdRes
+        public abstract int getDragHandleId();
+
+        /**
+         * Called when a drag and drop operation has caused items in the Section to move.
+         * Implementors are only responsible for updating the backing data set.
+         * {@link android.support.v7.widget.RecyclerView.Adapter#notifyItemMoved(int, int)} will be
+         * called automatically. Because this method may be called many times throughout the
+         * lifecycle of a drag gesture, it should not be used to apply the change of this operation
+         * to the data's source.
+         *
+         * To implement behavior when the user has finished a drag and drop gesture, implement
+         * {@link #onDrop(int, int)} instead.
+         * @param from The index that an item was moved from
+         * @param to The index that an item was moved to
+         */
+        protected abstract void onDrag(int from, int to);
+
+        /**
+         * Called when a drag and drop operation has finished. This method isn't responsible for
+         * reordering the items in the data set, but {@link #onDrag(int, int)} is.
+         * This method should be used to apply any changes caused by rearranging items in the list
          * @param from The index that an item was moved from. May be equal to <code>to</code>.
          * @param to The index that an item was moved to. May be equal to <code>from</code>.
          */
-        void onItemMoved(int from, int to);
+        protected abstract void onDrop(int from, int to);
     }
 
     /**
@@ -189,8 +143,13 @@ public final class DragDropAdapter<Type> extends EnhancedAdapter {
         @Override
         public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
                               RecyclerView.ViewHolder target) {
-            mAdapter.move(viewHolder.getAdapterPosition(), target.getAdapterPosition());
-            return true;
+            if (viewHolder.getItemViewType() == target.getItemViewType()) {
+                mAdapter.drag(
+                        viewHolder.getAdapterPosition(),
+                        target.getAdapterPosition());
+                return true;
+            }
+            return false;
         }
 
         @Override
@@ -211,15 +170,15 @@ public final class DragDropAdapter<Type> extends EnhancedAdapter {
         @Override
         public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
             super.clearView(recyclerView, viewHolder);
-            mAdapter.finishMove(viewHolder);
+            mAdapter.drop(viewHolder);
         }
     }
 
     /**
      * Used as a tag on a ViewHolder's itemView to mark that it is currently being dragged. This
      * tag also encapsulates its starting position so that the attached
-     * {@link DragDropAdapter.OnItemMovedListener} doesn't have to be informed about every single
-     * transaction that the adapter handles when dragging an item, only the resulting modification.
+     * {@link DragDropAdapter.Section} can be informed about the net result of a transaction
+     * instead of having to update the original data set with every minor change
      */
     protected final static class DragMarker {
         private final int from;
@@ -228,4 +187,5 @@ public final class DragDropAdapter<Type> extends EnhancedAdapter {
             this.from = from;
         }
     }
+
 }

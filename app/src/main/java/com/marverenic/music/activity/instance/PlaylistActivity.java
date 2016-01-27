@@ -7,11 +7,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
@@ -20,19 +18,17 @@ import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.section.LibraryEmptyState;
+import com.marverenic.music.instances.section.PlaylistSongSection;
 import com.marverenic.music.instances.section.SongSection;
 import com.marverenic.music.instances.viewholder.DragDropSongViewHolder;
-import com.marverenic.music.instances.viewholder.PlaylistSongViewHolder;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 import com.marverenic.music.view.EnhancedAdapters.DragBackgroundDecoration;
 import com.marverenic.music.view.EnhancedAdapters.DragDividerDecoration;
-import com.marverenic.music.view.EnhancedAdapters.DragDropAdapter;
 import com.marverenic.music.view.EnhancedAdapters.DragDropDecoration;
-import com.marverenic.music.view.EnhancedAdapters.EnhancedAdapter;
-import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
+import com.marverenic.music.view.EnhancedAdapters.DragDropAdapter;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 
 import java.util.ArrayList;
@@ -40,13 +36,12 @@ import java.util.Collections;
 import java.util.List;
 
 public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuItemClickListener,
-        DragDropAdapter.ViewSupplier<Song>, DragDropAdapter.OnItemMovedListener,
         DragDropSongViewHolder.OnRemovedListener {
 
     public static final String PLAYLIST_EXTRA = "playlist";
     private final List<Song> data = new ArrayList<>();
     private Playlist reference;
-    private EnhancedAdapter adapter;
+    private HeterogeneousAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,8 +65,11 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
             list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
             list.addItemDecoration(new DividerDecoration(this, R.id.empty_layout));
         } else {
-            adapter = new DragDropAdapter<>(data, this, this);
-            ((DragDropAdapter) adapter).attach(list);
+            DragDropAdapter hAdapter = new DragDropAdapter();
+            hAdapter.setDragSection(new PlaylistSongSection(data, this, this, reference));
+            hAdapter.attach(list);
+            adapter = hAdapter;
+
             list.addItemDecoration(new DragBackgroundDecoration(Themes.getBackgroundElevated()));
             list.addItemDecoration(new DragDividerDecoration(this, R.id.empty_layout));
         }
@@ -230,26 +228,6 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
                 .show();
 
         return true;
-    }
-
-    @Override
-    public EnhancedViewHolder<Song> createViewHolder(ViewGroup parent) {
-        return new PlaylistSongViewHolder(
-                LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.instance_song_drag, parent, false),
-                data, reference, this);
-    }
-
-    @Override
-    public int getHandleId() {
-        return R.id.handle;
-    }
-
-    @Override
-    public void onItemMoved(int from, int to) {
-        if (from == to) return;
-
-        Library.editPlaylist(this, reference, data);
     }
 
     @Override

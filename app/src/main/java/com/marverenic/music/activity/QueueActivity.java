@@ -4,33 +4,29 @@ import android.graphics.drawable.NinePatchDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.instances.viewholder.DragDropSongViewHolder;
-import com.marverenic.music.instances.viewholder.QueueSongViewHolder;
+import com.marverenic.music.instances.section.LibraryEmptyState;
+import com.marverenic.music.instances.section.QueueSection;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.EnhancedAdapters.DragBackgroundDecoration;
 import com.marverenic.music.view.EnhancedAdapters.DragDividerDecoration;
-import com.marverenic.music.view.EnhancedAdapters.DragDropAdapter;
 import com.marverenic.music.view.EnhancedAdapters.DragDropDecoration;
-import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
+import com.marverenic.music.view.EnhancedAdapters.DragDropAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class QueueActivity extends BaseActivity implements DragDropAdapter.ViewSupplier<Song>,
-        DragDropAdapter.OnItemMovedListener, DragDropSongViewHolder.OnRemovedListener {
+public class QueueActivity extends BaseActivity {
 
     private final List<Song> data = new ArrayList<>();
     private int lastPlayIndex;
-    private DragDropAdapter<Song> adapter;
+    private DragDropAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,11 +38,28 @@ public class QueueActivity extends BaseActivity implements DragDropAdapter.ViewS
 
         RecyclerView list = (RecyclerView) findViewById(R.id.list);
 
-        adapter = new DragDropAdapter<>(data, this, this);
+        adapter = new DragDropAdapter();
+        adapter.setDragSection(new QueueSection(data));
+        adapter.setEmptyState(new LibraryEmptyState(this) {
+            @Override
+            public String getEmptyMessage() {
+                return getString(R.string.empty_queue);
+            }
+
+            @Override
+            public String getEmptyMessageDetail() {
+                return getString(R.string.empty_queue_detail);
+            }
+
+            @Override
+            public String getEmptyAction1Label() {
+                return "";
+            }
+        });
         adapter.attach(list);
 
         list.addItemDecoration(new DragBackgroundDecoration(Themes.getBackgroundElevated()));
-        list.addItemDecoration(new DragDividerDecoration(this));
+        list.addItemDecoration(new DragDividerDecoration(this, R.id.empty_layout));
         list.addItemDecoration(new DragDropDecoration((NinePatchDrawable) getDrawableCompat(
                 (Themes.isLight(this))
                         ? R.drawable.list_drag_shadow_light
@@ -95,45 +108,5 @@ public class QueueActivity extends BaseActivity implements DragDropAdapter.ViewS
     @Override
     public void updateMiniplayer() {
 
-    }
-
-    @Override
-    public void onItemMoved(int from, int to) {
-        if (from == to) return;
-
-        // Calculate where the current song index is moving to
-        final int nowPlayingIndex = PlayerController.getQueuePosition();
-        int futureNowPlayingIndex;
-
-        if (from == nowPlayingIndex) {
-            futureNowPlayingIndex = to;
-        } else if (from < nowPlayingIndex && to >= nowPlayingIndex) {
-            futureNowPlayingIndex = nowPlayingIndex - 1;
-        } else if (from > nowPlayingIndex && to <= nowPlayingIndex) {
-            futureNowPlayingIndex = nowPlayingIndex + 1;
-        } else {
-            futureNowPlayingIndex = nowPlayingIndex;
-        }
-
-        // Push the change to the service
-        PlayerController.editQueue(data, futureNowPlayingIndex);
-    }
-
-    @Override
-    public EnhancedViewHolder<Song> createViewHolder(ViewGroup parent) {
-        return new QueueSongViewHolder(
-                LayoutInflater.from(this).inflate(R.layout.instance_song_queue, parent, false),
-                this);
-    }
-
-    @Override
-    public int getHandleId() {
-        return R.id.handle;
-    }
-
-    @Override
-    public void onItemRemoved(int index) {
-        data.remove(index);
-        adapter.notifyItemRemoved(index);
     }
 }
