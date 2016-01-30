@@ -34,7 +34,8 @@ public class PlaylistFragment extends Fragment implements Library.PlaylistChange
 
         adapter = new HeterogeneousAdapter();
         adapter.addSection(new PlaylistSection(Library.getPlaylists()));
-        adapter.addSection(new SpacerSingleton(PlaylistSection.ID));
+        adapter.addSection(new SpacerSingleton(
+                PlaylistSection.ID, (int) getResources().getDimension(R.dimen.list_height)));
         adapter.setEmptyState(new LibraryEmptyState(getActivity()) {
             @Override
             public String getEmptyMessage() {

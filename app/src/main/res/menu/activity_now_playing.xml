@@ -14,9 +14,13 @@
         app:showAsAction="ifRoom"/>
 
     <item
-        android:id="@+id/action_queue"
-        android:icon="@drawable/ic_queue_music_24dp"
-        android:title="@string/action_go_to_queue"
-        app:showAsAction="ifRoom"/>
+        android:id="@+id/save"
+        android:title="@string/action_export_playlist"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/add_to_playlist"
+        android:title="@string/action_add_to_playlist"
+        app:showAsAction="never" />
 
 </menu>

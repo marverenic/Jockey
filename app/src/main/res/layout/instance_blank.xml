@@ -2,6 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/instance_blank"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/list_height">
+    android:layout_height="0dp">
 
 </RelativeLayout>

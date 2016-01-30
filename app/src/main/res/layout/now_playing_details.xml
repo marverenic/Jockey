@@ -16,7 +16,7 @@
         android:singleLine="true"
         android:text="@string/nothing_playing"
         android:textColor="@color/player_text_main"
-        android:textSize="20sp" />
+        style="@style/TextAppearance.AppCompat.Headline"/>
 
     <TextView
         android:id="@+id/textArtistName"
@@ -29,7 +29,7 @@
         android:singleLine="true"
         android:text="@string/no_artist"
         android:textColor="@color/player_text_detail"
-        android:textSize="16sp" />
+        style="@style/TextAppearance.AppCompat.Subhead"/>
 
     <TextView
         android:id="@+id/textAlbumTitle"
@@ -42,7 +42,7 @@
         android:singleLine="true"
         android:text="@string/no_album"
         android:textColor="@color/player_text_detail"
-        android:textSize="16sp" />
+        style="@style/TextAppearance.AppCompat.Subhead"/>
 
     <ImageButton
         android:id="@+id/songDetail"

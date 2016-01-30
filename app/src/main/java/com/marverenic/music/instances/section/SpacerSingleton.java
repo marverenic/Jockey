@@ -1,5 +1,6 @@
 package com.marverenic.music.instances.section;
 
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +15,16 @@ public class SpacerSingleton extends HeterogeneousAdapter.SingletonSection<Void>
     public static final int ALWAYS_SHOWN = -1;
 
     private int mLinkedTypeId;
+    private int mHeight;
 
-    public SpacerSingleton(int linkedTypeId) {
+    public SpacerSingleton(int linkedTypeId, int height) {
         super(ID, null);
         mLinkedTypeId = linkedTypeId;
+        mHeight = height;
+    }
+
+    public void setHeight(int height) {
+        mHeight = height;
     }
 
     @Override
@@ -33,21 +40,35 @@ public class SpacerSingleton extends HeterogeneousAdapter.SingletonSection<Void>
     @Override
     public EnhancedViewHolder<Void> createViewHolder(HeterogeneousAdapter adapter,
                                                                   ViewGroup parent) {
-        return new ViewHolder(
-                LayoutInflater
+        View itemView = LayoutInflater
                         .from(parent.getContext())
-                        .inflate(R.layout.instance_blank, parent, false));
+                        .inflate(R.layout.instance_blank, parent, false);
+
+
+        return new ViewHolder(itemView, (RecyclerView) parent);
     }
 
     public class ViewHolder extends EnhancedViewHolder<Void> {
 
-        public ViewHolder(View itemView) {
+        RecyclerView parent;
+
+        public ViewHolder(View itemView, RecyclerView parent) {
             super(itemView);
+            this.parent = parent;
         }
 
         @Override
         public void update(Void item, int sectionPosition) {
+            ViewGroup.MarginLayoutParams params =
+                    (ViewGroup.MarginLayoutParams) itemView.getLayoutParams();
 
+            int height = SpacerSingleton.this.mHeight;
+            if (height >= 0) {
+                params.height = height;
+            } else {
+                params.height = parent.getHeight() + height;
+            }
+            itemView.setLayoutParams(params);
         }
     }
 }

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/player_frame_info_height"
+        android:paddingBottom="24dp"
+        android:background="@color/player_frame_info_background">
+
+        <include
+            android:id="@+id/playerDetails"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            layout="@layout/now_playing_details" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/player_frame_ctrl_height"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/player_frame_info_height"
+        android:background="@color/player_frame_ctrl_background">
+
+        <include
+            android:id="@+id/playerControls"
+            android:layout_width="@dimen/now_playing_max_control_width"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            layout="@layout/now_playing_controls" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/player_frame_info_height"
+        android:layout_marginTop="@dimen/seekbarMargin"
+        android:translationY="@dimen/seekbarMargin">
+
+        <include layout="@layout/now_playing_scrubber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom" />
+
+    </FrameLayout>
+
+</RelativeLayout>

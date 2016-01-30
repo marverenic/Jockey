@@ -1,96 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="fill_parent">
 
-    <com.marverenic.music.view.SquareImageViewH
-        android:id="@+id/imageArtwork"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@android:color/black"
-        android:contentDescription="@string/art_description"
-        android:src="@drawable/art_default_xl" />
-
-    <FrameLayout
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/scrim_now_playing"
-        android:layout_alignParentTop="true"
-        android:layout_alignBottom="@id/imageArtwork">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:fitsSystemWindows="true">
 
-        <include layout="@layout/toolbar" />
-
-    </FrameLayout>
-
-    <com.marverenic.music.view.TimeView
-        android:id="@+id/songTimeCurr"
-        style="@style/Base.TextAppearance.AppCompat.Small"
-        android:textColor="@android:color/white"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/now_playing_time_padding"
-        android:layout_alignBottom="@id/imageArtwork"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"/>
-
-    <com.marverenic.music.view.TimeView
-        android:id="@+id/songTimeMax"
-        style="@style/Base.TextAppearance.AppCompat.Small"
-        android:textColor="@android:color/white"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/seekbarMargin"
-        android:padding="@dimen/now_playing_time_padding"
-        android:layout_alignBottom="@id/imageArtwork"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"/>
-
-    <com.marverenic.music.view.TimeView
-        android:id="@+id/seekThumb"
-        android:layout_width="54dp"
-        android:layout_height="64dp"
-        style="@style/Base.TextAppearance.AppCompat.Small"
-        android:textColor="@android:color/white"
-        android:paddingBottom="12dp"
-        android:paddingLeft="@dimen/now_playing_time_padding"
-        android:paddingRight="@dimen/now_playing_time_padding"
-        android:visibility="invisible"
-        android:singleLine="true"
-        android:gravity="center"
-        android:background="@drawable/ic_thumb"
-        android:layout_above="@+id/playerControlFrame"
-        android:layout_marginBottom="@dimen/now_playing_thumb_margin"/>
-
-    <RelativeLayout
-        android:id="@+id/playerControlFrame"
-        android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_below="@id/imageArtwork"
-        android:background="@color/player_control_background">
-
-        <include
-            android:id="@+id/playerDetails"
-            android:layout_width="fill_parent"
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            layout="@layout/now_playing_details" />
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+            app:contentScrim="?attr/colorPrimary"
+            android:fitsSystemWindows="true">
 
-        <include
-            android:id="@+id/playerControls"
-            android:layout_width="@dimen/now_playing_max_control_width"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/playerDetails"
-            android:layout_centerHorizontal="true"
-            layout="@layout/now_playing_controls" />
-    </RelativeLayout>
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_collapseMode="parallax"
+                android:foreground="@drawable/scrim_instance_artwork"
+                android:fitsSystemWindows="true">
 
-    <SeekBar
-        android:id="@+id/songSeekBar"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/imageArtwork"
-        android:layout_marginTop="@dimen/seekbarMargin"
-        android:padding="0dp" />
+                <com.marverenic.music.view.SquareImageViewH
+                    android:id="@+id/imageArtwork"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/art_default_xl"
+                    android:fitsSystemWindows="true"
+                    android:background="@android:color/black"/>
 
-</RelativeLayout>
+            </FrameLayout>
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:layout_collapseMode="pin"/>
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <fragment
+            android:id="@+id/controlFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:name="com.marverenic.music.fragments.PlayerControllerFragment"
+            tools:layout="@layout/fragment_player_controls" />
+
+    </android.support.v4.widget.NestedScrollView>
+
+    <fragment
+        android:id="@+id/listFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/player_frame_height"
+        android:name="com.marverenic.music.fragments.QueueFragment"
+        tools:layout="@layout/list"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+</android.support.design.widget.CoordinatorLayout>

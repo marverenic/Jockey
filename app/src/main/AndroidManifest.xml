@@ -59,14 +59,7 @@
         <!-- Now Playing Activity -->
         <activity
             android:name=".activity.NowPlayingActivity"
-            android:label="@string/header_now_playing"
-            android:screenOrientation="fullUser" />
-
-        <!-- Queue Activity -->
-        <activity
-            android:name=".activity.QueueActivity"
-            android:label="@string/header_now_playing"
-            android:windowSoftInputMode="adjustPan|adjustNothing"/>
+            android:label="@string/header_now_playing"/>
 
         <!-- Play with Jockey (from search) intent filter -->
         <activity-alias

@@ -15,12 +15,18 @@
     <dimen name="grid_padding">16dp</dimen>
     <dimen name="card_margin">8dp</dimen>
     <dimen name="now_playing_ticker_height">64dp</dimen>
-    <dimen name="now_playing_button_size">64dp</dimen>
+    <dimen name="now_playing_button_size">42dp</dimen>
     <dimen name="now_playing_max_control_width">280dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="alert_padding">24dp</dimen>
-    <dimen name="seekbarMargin">-16dp</dimen>
+    <dimen name="seekbarMargin">8dp</dimen>
+    <dimen name="seekbar_padding">0dp</dimen>
+    <dimen name="seekbar_thumb_offset">12dp</dimen>
     <dimen name="now_playing_time_padding">8dp</dimen>
-    <dimen name="now_playing_thumb_margin">14dp</dimen>
+    <dimen name="now_playing_time_padding_bottom">0dp</dimen>
+    <dimen name="now_playing_thumb_margin">8dp</dimen>
+    <dimen name="player_frame_height">192dp</dimen>
+    <dimen name="player_frame_info_height">128dp</dimen>
+    <dimen name="player_frame_ctrl_height">64dp</dimen>
 
 </resources>
