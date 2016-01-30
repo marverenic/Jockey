@@ -882,7 +882,10 @@ public final class Library {
      * @return The number of times a song has been skipped
      */
     protected static int getSkipCount(long songId) {
-        return skipCounts.get(songId);
+        if (skipCounts.containsKey(songId)) {
+            return skipCounts.get(songId);
+        }
+        return 0;
     }
 
     /**
@@ -892,7 +895,10 @@ public final class Library {
      * @return The number of times a song has been plays
      */
     protected static int getPlayCount(long songId) {
-        return playCounts.get(songId);
+        if (playCounts.containsKey(songId)) {
+            return playCounts.get(songId);
+        }
+        return 0;
     }
 
     /**
@@ -903,7 +909,10 @@ public final class Library {
      *         (since midnight of January 1, 1970 UTC)
      */
     protected static int getPlayDate(long songId) {
-        return playDates.get(songId);
+        if (playDates.containsKey(songId)) {
+            return playDates.get(songId);
+        }
+        return 0;
     }
 
     //
