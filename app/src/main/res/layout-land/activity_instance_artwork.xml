@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_height="match_parent"
-    android:layout_width="match_parent"
-    android:fitsSystemWindows="false">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:fitsSystemWindows="false">
 
     <FrameLayout
         android:id="@+id/miniplayer_holder"
@@ -46,10 +46,10 @@
                     android:foreground="@drawable/scrim_instance_artwork"
                     android:fitsSystemWindows="true">
 
-                    <com.marverenic.music.view.SquareImageViewH
+                    <ImageView
                         android:id="@+id/backdrop"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="@dimen/extended_actionbar_height"
                         android:fitsSystemWindows="true"/>
 
                 </FrameLayout>
