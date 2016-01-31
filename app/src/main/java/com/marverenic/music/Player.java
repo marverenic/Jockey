@@ -297,36 +297,43 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             @Override
             public void onPlay() {
                 play();
+                updateUi();
             }
 
             @Override
             public void onSkipToQueueItem(long id) {
                 changeSong((int) id);
+                updateUi();
             }
 
             @Override
             public void onPause() {
                 pause();
+                updateUi();
             }
 
             @Override
             public void onSkipToNext() {
                 skip();
+                updateUi();
             }
 
             @Override
             public void onSkipToPrevious() {
                 previous();
+                updateUi();
             }
 
             @Override
             public void onStop() {
                 stop();
+                updateUi();
             }
 
             @Override
             public void onSeekTo(long pos) {
                 seek((int) pos);
+                updateUi();
             }
         });
         mediaSession.setSessionActivity(
@@ -376,6 +383,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                 break;
         }
         updateNowPlaying();
+        updateUi();
     }
 
     @Override
@@ -1012,6 +1020,7 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                     && intent.getIntExtra("state", -1) == 0 && instance.isPlaying()) {
 
                 instance.pause();
+                instance.updateUi();
             }
         }
     }
