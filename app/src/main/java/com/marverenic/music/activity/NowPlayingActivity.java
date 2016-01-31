@@ -204,12 +204,12 @@ public class NowPlayingActivity extends BaseActivity {
                 return true;
             case R.id.save:
                 PlaylistDialog.MakeNormal.alert(
-                        findViewById(R.id.list),
+                        findViewById(R.id.imageArtwork),
                         PlayerController.getQueue());
                 return true;
             case R.id.add_to_playlist:
                 PlaylistDialog.AddToNormal.alert(
-                        findViewById(R.id.list),
+                        findViewById(R.id.imageArtwork),
                         PlayerController.getQueue(),
                         R.string.header_add_queue_to_playlist);
                 return true;
