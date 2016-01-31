@@ -470,7 +470,8 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             art = Util.fetchFullArt(getNowPlaying());
 
             try {
-                mediaPlayer.setDataSource(context, Uri.parse(getNowPlaying().getLocation()));
+                File source = new File(getNowPlaying().getLocation());
+                mediaPlayer.setDataSource(context, Uri.fromFile(source));
                 mediaPlayer.prepareAsync();
             } catch (IOException e) {
                 Crashlytics.logException(
