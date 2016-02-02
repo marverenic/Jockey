@@ -10,9 +10,9 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -161,17 +161,11 @@ public class NowPlayingActivity extends BaseActivity {
                 if (PlayerController.isShuffle()) {
                     item.getIcon().setAlpha(255);
                     item.setTitle(getResources().getString(R.string.action_disable_shuffle));
-                    Toast toast = Toast.makeText(this, R.string.confirm_enable_shuffle,
-                            Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.CENTER, 0, 0);
-                    toast.show();
+                    showSnackbar(R.string.confirm_enable_shuffle);
                 } else {
                     item.getIcon().setAlpha(128);
                     item.setTitle(getResources().getString(R.string.action_enable_shuffle));
-                    Toast toast = Toast.makeText(this, R.string.confirm_disable_shuffle,
-                            Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.CENTER, 0, 0);
-                    toast.show();
+                    showSnackbar(R.string.confirm_disable_shuffle);
                 }
                 queueFragment.updateShuffle();
                 return true;
@@ -180,26 +174,17 @@ public class NowPlayingActivity extends BaseActivity {
                 if (PlayerController.isRepeat()) {
                     item.getIcon().setAlpha(255);
                     item.setTitle(getResources().getString(R.string.action_enable_repeat_one));
-                    Toast toast = Toast.makeText(this, R.string.confirm_enable_repeat,
-                            Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.CENTER, 0, 0);
-                    toast.show();
+                    showSnackbar(R.string.confirm_enable_repeat);
                 } else {
                     if (PlayerController.isRepeatOne()) {
                         item.setIcon(R.drawable.ic_repeat_one_24dp);
                         item.setTitle(getResources().getString(R.string.action_disable_repeat));
-                        Toast toast = Toast.makeText(this, R.string.confirm_enable_repeat_one,
-                                Toast.LENGTH_SHORT);
-                        toast.setGravity(Gravity.CENTER, 0, 0);
-                        toast.show();
+                        showSnackbar(R.string.confirm_enable_repeat_one);
                     } else {
                         item.setIcon(R.drawable.ic_repeat_24dp);
                         item.getIcon().setAlpha(128);
                         item.setTitle(getResources().getString(R.string.action_enable_repeat));
-                        Toast toast = Toast.makeText(this, R.string.confirm_disable_repeat,
-                                Toast.LENGTH_SHORT);
-                        toast.setGravity(Gravity.CENTER, 0, 0);
-                        toast.show();
+                        showSnackbar(R.string.confirm_disable_repeat);
                     }
                 }
                 return true;
@@ -233,6 +218,10 @@ public class NowPlayingActivity extends BaseActivity {
 
             lastPlaying = nowPlaying;
         }
+    }
+
+    private void showSnackbar(@StringRes int stringId) {
+        showSnackbar(getString(stringId));
     }
 
     @Override
