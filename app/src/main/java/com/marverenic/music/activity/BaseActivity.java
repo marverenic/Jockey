@@ -11,6 +11,7 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -33,7 +34,7 @@ import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Themes;
 
 public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener,
-        PlayerController.UpdateListener {
+        PlayerController.UpdateListener, PlayerController.ErrorListener {
 
     private static final boolean DEBUG = BuildConfig.DEBUG;
 
@@ -151,6 +152,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         } else {
             Themes.setApplicationIcon(this);
             PlayerController.registerUpdateListener(this);
+            PlayerController.registerErrorListener(this);
             onUpdate();
             updateMiniplayer();
         }
@@ -164,6 +166,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         super.onPause();
         if (DEBUG) Log.i(getClass().toString(), "Called onPause");
         PlayerController.unregisterUpdateListener(this);
+        PlayerController.unregisterErrorListener(this);
     }
 
     /**
@@ -220,6 +223,20 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     public void onUpdate() {
         if (DEBUG) Log.i(getClass().toString(), "Called onUpdate");
         updateMiniplayer();
+    }
+
+    @Override
+    public void onError(String message) {
+        if (DEBUG) Log.i(getClass().toString(), "Called onError : " + message);
+        showSnackbar(message);
+    }
+
+    protected void showSnackbar(String message) {
+        View content = findViewById(R.id.list);
+        if (content == null) {
+            content = findViewById(android.R.id.content);
+        }
+        Snackbar.make(content, message, Snackbar.LENGTH_LONG).show();
     }
 
     /**

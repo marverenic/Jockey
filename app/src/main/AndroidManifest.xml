@@ -132,6 +132,7 @@
             android:exported="false">
             <intent-filter android:priority="999">
                 <action android:name="marverenic.jockey.player.REFRESH"/>
+                <action android:name="marverenic.jockey.player.ERROR"/>
             </intent-filter>
         </receiver>
     </application>

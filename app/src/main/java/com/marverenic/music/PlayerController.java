@@ -32,10 +32,12 @@ public final class PlayerController {
     private static Context applicationContext;
     private static IPlayerService playerService;
     private static Set<UpdateListener> updateListeners;
+    private static Set<ErrorListener> errorListeners;
     private static Bitmap artwork;
 
     static {
         updateListeners = new HashSet<>();
+        errorListeners = new HashSet<>();
     }
 
     // This class is never instantiated
@@ -97,11 +99,41 @@ public final class PlayerController {
     }
 
     /**
+     * Register a callback for when the Player Service encounters an exception that affects
+     * music playback that the user should be alerted of. Don't forget to unregister this listener
+     * when you're done, otherwise you'll probably leak an Activity or something bad.
+     * @param l The ErrorListener to be registered
+     * @see #unregisterErrorListener(ErrorListener)
+     */
+    public static void registerErrorListener(ErrorListener l) {
+        errorListeners.add(l);
+    }
+
+    /**
+     * Unregister an Error Listener callback set in {@link #registerErrorListener(ErrorListener)}
+     * @param l The Listener to be removed. If it's not currently registered, then nothing
+     *          interesting happens.
+     */
+    public static void unregisterErrorListener(ErrorListener l) {
+        errorListeners.remove(l);
+    }
+
+    /**
      * Called to alert all Update Listeners that the Player's state has changed
      */
     private static void updateUi() {
         for (UpdateListener l : updateListeners) {
             l.onUpdate();
+        }
+    }
+
+    /**
+     * Called to alert all Error Listeners that an error has occurred
+     * @param message The detailed message of the error that the Player Service sent
+     */
+    private static void alertError(String message) {
+        for (ErrorListener l : errorListeners) {
+            l.onError(message);
         }
     }
 
@@ -597,6 +629,8 @@ public final class PlayerController {
             if (intent.getAction().equals(Player.UPDATE_BROADCAST)) {
                 artwork = null;
                 updateUi();
+            } else if (intent.getAction().equals(Player.ERROR_BROADCAST)) {
+                alertError(intent.getExtras().getString(Player.ERROR_EXTRA_MSG));
             }
         }
 
@@ -604,5 +638,9 @@ public final class PlayerController {
 
     public interface UpdateListener {
         void onUpdate();
+    }
+
+    public interface ErrorListener {
+        void onError(String message);
     }
 }

@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.view.Gravity;
 import android.view.Menu;
@@ -232,6 +233,11 @@ public class NowPlayingActivity extends BaseActivity {
 
             lastPlaying = nowPlaying;
         }
+    }
+
+    @Override
+    protected void showSnackbar(String message) {
+        Snackbar.make(findViewById(R.id.imageArtwork), message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

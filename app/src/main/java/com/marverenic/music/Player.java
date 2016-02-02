@@ -29,6 +29,7 @@ import com.marverenic.music.utils.Util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,6 +46,8 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     // Sent to refresh views that use up-to-date player information
     public static final String UPDATE_BROADCAST = "marverenic.jockey.player.REFRESH";
+    public static final String ERROR_BROADCAST = "marverenic.jockey.player.ERROR";
+    public static final String ERROR_EXTRA_MSG = "marverenic.jockey.player.ERROR:MSG";
     private static final String TAG = "Player";
     private static final String QUEUE_FILE = ".queue";
 
@@ -476,6 +479,12 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             } catch (IOException e) {
                 Crashlytics.logException(
                         new IOException("Failed to play song " + getNowPlaying().getLocation(), e));
+
+                postError(context.getString(
+                        (e instanceof FileNotFoundException)
+                                ? R.string.message_play_error_not_found
+                                : R.string.message_play_error_io_exception,
+                        getNowPlaying().getSongName()));
             }
         }
     }
@@ -541,6 +550,15 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
      */
     public void updateUi() {
         context.sendBroadcast(new Intent(UPDATE_BROADCAST), null);
+    }
+
+    /**
+     * Called to notify the UI thread that an error has occurred. The typical listener will show the
+     * message passed in to the user.
+     * @param message A user-friendly message associated with this error that may be shown in the UI
+     */
+    public void postError(String message) {
+        context.sendBroadcast(new Intent(ERROR_BROADCAST).putExtra(ERROR_EXTRA_MSG, message), null);
     }
 
     /**

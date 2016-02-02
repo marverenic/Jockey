@@ -13,7 +13,8 @@
     <string name="message_refresh_library_no_permission">Jockey doesn\'t have permission to read
         your music</string>
     <string name="message_create_playlist_error_no_name">Can\'t create a playlist with no name</string>
-    <string name="message_play_error_not_found">This song couldn\'t be played</string>
+    <string name="message_play_error_not_found">Jockey couldn\'t find &#8220;%1$s&#8221;</string>
+    <string name="message_play_error_io_exception">&#8220;%1$s&#8221; couldn\'t be played</string>
     <string name="error_hint_duplicate_playlist">Enter a unique playlist name</string>
     <string name="error_hint_empty_playlist">Enter a playlist name</string>
 
