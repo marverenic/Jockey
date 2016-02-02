@@ -412,9 +412,11 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     private boolean hasNextInQueue(int by) {
         if (shuffle) {
-            return queuePositionShuffled + by < queueShuffled.size();
+            return queuePositionShuffled + by < queueShuffled.size()
+                    && (queuePositionShuffled + by >= 0 || repeat == REPEAT_ALL);
         } else {
-            return queuePosition + by < queue.size();
+            return queuePosition + by < queue.size()
+                    && (queuePosition + by >= 0 || repeat == REPEAT_ALL);
         }
     }
 
@@ -429,8 +431,14 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     private void incrementQueuePosition(int by) {
         if (shuffle) {
             queuePositionShuffled += by;
+            if (queuePositionShuffled < 0 && repeat == REPEAT_ALL) {
+                queuePositionShuffled += queueShuffled.size();
+            }
         } else {
             queuePosition += by;
+            if (queuePosition < 0 && repeat == REPEAT_ALL) {
+                queuePosition += queue.size();
+            }
         }
     }
 
