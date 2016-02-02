@@ -117,6 +117,7 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
         PlayerController.registerUpdateListener(this);
         // Assume this fragment's data has gone stale since it was last in the foreground
         onUpdate();
+        scrollToNowPlaying();
     }
 
     @Override
@@ -133,8 +134,24 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
             adapter.notifyItemChanged(currentIndex);
 
             lastPlayIndex = currentIndex;
-            scrollToNowPlaying();
+            if (shouldScrollToCurrent()) {
+                scrollToNowPlaying();
+            }
         }
+    }
+
+    /**
+     * @return true if the currently playing song is above or below the current item by the
+     *         list's height, if the queue has been restarted, or if repeat all is enabled and
+     *         the user wrapped from the front of the queue to the end of the queue
+     */
+    private boolean shouldScrollToCurrent() {
+        int topIndex = list.getChildAdapterPosition(list.getChildAt(0));
+        int bottomIndex = list.getChildAdapterPosition(list.getChildAt(list.getChildCount() - 1));
+
+        return Math.abs(topIndex - lastPlayIndex) <= (bottomIndex - topIndex)
+                || (queue.size() - bottomIndex <= 2 && lastPlayIndex == 0)
+                || (bottomIndex - queue.size() <= 2 && lastPlayIndex == queue.size() - 1);
     }
 
     private void scrollToNowPlaying() {
