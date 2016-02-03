@@ -163,6 +163,7 @@ public final class PlayerController {
         if (playerService != null) {
             try {
                 playerService.skip();
+                artwork = null;
                 updateUi();
             } catch (RemoteException e) {
                 Crashlytics.logException(e);
@@ -179,6 +180,7 @@ public final class PlayerController {
         if (playerService != null) {
             try {
                 playerService.previous();
+                artwork = null;
                 updateUi();
             } catch (RemoteException e) {
                 Crashlytics.logException(e);
@@ -195,6 +197,7 @@ public final class PlayerController {
         if (playerService != null) {
             try {
                 playerService.begin();
+                artwork = null;
                 updateUi();
             } catch (RemoteException e) {
                 Crashlytics.logException(e);
@@ -347,6 +350,7 @@ public final class PlayerController {
         if (playerService != null) {
             try {
                 playerService.changeSong(queuePosition);
+                artwork = null;
                 updateUi();
             } catch (RemoteException e) {
                 Crashlytics.logException(e);
