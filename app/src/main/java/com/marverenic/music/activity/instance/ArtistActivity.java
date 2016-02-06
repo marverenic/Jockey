@@ -203,6 +203,10 @@ public class ArtistActivity extends BaseActivity {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && isDestroyed()) {
+                return;
+            }
+
             adapter.removeSectionById(LoadingSingleton.ID);
             if (lfmReference == null) {
                 adapter.notifyItemRemoved(0);
