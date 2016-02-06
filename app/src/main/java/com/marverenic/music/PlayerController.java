@@ -350,6 +350,7 @@ public final class PlayerController {
         if (playerService != null) {
             try {
                 playerService.changeSong(queuePosition);
+                artwork = null;
                 updateUi();
             } catch (RemoteException e) {
                 Crashlytics.logException(e);
