@@ -130,7 +130,6 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
-        super.onClick(v);
         if (v.getTag() != null) {
             if (v.getTag().equals("fab-" + getString(R.string.playlist))) {
                 PlaylistDialog.MakeNormal.alert(findViewById(R.id.coordinator_layout));

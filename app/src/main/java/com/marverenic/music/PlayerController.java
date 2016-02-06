@@ -583,6 +583,9 @@ public final class PlayerController {
      * @return The total duration of the currently playing song
      */
     public static int getDuration() {
+        if (playerService == null) {
+            return Integer.MAX_VALUE;
+        }
         try {
             return playerService.getDuration();
         } catch (RemoteException e) {

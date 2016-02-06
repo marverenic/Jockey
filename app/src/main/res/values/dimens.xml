@@ -14,7 +14,7 @@
     <dimen name="grid_margin">4dp</dimen>
     <dimen name="grid_padding">16dp</dimen>
     <dimen name="card_margin">8dp</dimen>
-    <dimen name="now_playing_ticker_height">64dp</dimen>
+    <dimen name="miniplayer_height">56dp</dimen>
     <dimen name="now_playing_button_size">42dp</dimen>
     <dimen name="now_playing_max_control_width">280dp</dimen>
     <dimen name="fab_margin">16dp</dimen>

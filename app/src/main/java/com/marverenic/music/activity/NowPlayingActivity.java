@@ -228,9 +228,4 @@ public class NowPlayingActivity extends BaseActivity {
     protected void showSnackbar(String message) {
         Snackbar.make(findViewById(R.id.imageArtwork), message, Snackbar.LENGTH_SHORT).show();
     }
-
-    @Override
-    public void updateMiniplayer() {
-        // We can't update a miniplayer that doesn't exist, so override this to do nothing
-    }
 }

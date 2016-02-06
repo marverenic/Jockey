@@ -21,20 +21,18 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Library;
-import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Themes;
 
-public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener,
-        PlayerController.UpdateListener, PlayerController.ErrorListener {
+public abstract class BaseActivity extends AppCompatActivity
+        implements PlayerController.UpdateListener, PlayerController.ErrorListener {
 
     private static final boolean DEBUG = BuildConfig.DEBUG;
 
@@ -130,12 +128,6 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         }
 
         themeActivity();
-
-        if (findViewById(R.id.miniplayer) != null) {
-            findViewById(R.id.miniplayer).setOnClickListener(this);
-            findViewById(R.id.playButton).setOnClickListener(this);
-            findViewById(R.id.skipButton).setOnClickListener(this);
-        }
     }
 
     /**
@@ -154,7 +146,6 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
             PlayerController.registerUpdateListener(this);
             PlayerController.registerErrorListener(this);
             onUpdate();
-            updateMiniplayer();
         }
     }
 
@@ -222,7 +213,6 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     @Override
     public void onUpdate() {
         if (DEBUG) Log.i(getClass().toString(), "Called onUpdate");
-        updateMiniplayer();
     }
 
     @Override
@@ -237,59 +227,6 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
             content = findViewById(android.R.id.content);
         }
         Snackbar.make(content, message, Snackbar.LENGTH_LONG).show();
-    }
-
-    /**
-     * Update the miniplayer to reflect the most recent @link PlayerService status. If no miniplayer
-     * exists in the view, override this method with an instance_empty code block.
-     */
-    @SuppressWarnings("ResourceType")
-    public void updateMiniplayer() {
-        if (DEBUG) Log.i(getClass().toString(), "Called updateMiniplayer");
-        final View miniplayerView = findViewById(R.id.miniplayer_holder);
-        final Song nowPlaying = PlayerController.getNowPlaying();
-
-        if (nowPlaying != null) {
-            ImageView artworkImageView =
-                    (ImageView) miniplayerView.findViewById(R.id.imageArtwork);
-            TextView songTextView =
-                    (TextView) miniplayerView.findViewById(R.id.textNowPlayingTitle);
-            TextView artistTextView =
-                    (TextView) miniplayerView.findViewById(R.id.textNowPlayingDetail);
-            ImageView playButton =
-                    (ImageView) miniplayerView.findViewById(R.id.playButton);
-
-            if (PlayerController.getArtwork() != null) {
-                artworkImageView.setImageBitmap(PlayerController.getArtwork());
-            } else {
-                artworkImageView.setImageResource(R.drawable.art_default);
-            }
-
-            songTextView.setText(nowPlaying.getSongName());
-            artistTextView.setText(nowPlaying.getArtistName());
-            playButton.setImageResource((PlayerController.isPlaying())
-                    ? R.drawable.ic_pause_36dp
-                    : R.drawable.ic_play_arrow_36dp);
-
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.miniplayer:
-                Navigate.to(this, NowPlayingActivity.class);
-                break;
-            case R.id.playButton:
-                PlayerController.togglePlay();
-                break;
-            case R.id.skipButton:
-                PlayerController.skip();
-                break;
-        }
     }
 
     @Nullable

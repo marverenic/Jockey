@@ -20,6 +20,7 @@
     <color name="screen_overlay">#CCFFFFFF</color>
     <color name="background_elevated">#F5F5F5</color>
     <color name="background_miniplayer">#FAFAFA</color>
+    <color name="progress_empty">#08000000</color>
 
     <!-- Dark Base -->
     <color name="primary_text_dark">#FAFAFA</color>
@@ -28,6 +29,7 @@
     <color name="screen_overlay_dark">#CC212121</color>
     <color name="background_elevated_dark">#212121</color>
     <color name="background_miniplayer_dark">#333333</color>
+    <color name="progress_empty_dark">#08FFFFFF</color>
 
     <!-- Grey -->
     <color name="primary_grey">#37474F</color>
@@ -69,6 +71,7 @@
         <item name="android:windowBackground">@color/background_dark</item>
         <item name="textColorPrimary">@color/primary_text_dark</item>
         <item name="textColorSecondary">@color/secondary_text_dark</item>
+        <item name="progressEmptyColor">@color/progress_empty_dark</item>
         <item name="popupMenuStyle">@style/PopupMenu</item>
     </style>
 
@@ -131,6 +134,7 @@
         <item name="android:windowBackground">@color/background</item>
         <item name="textColorPrimary">@color/primary_text</item>
         <item name="textColorSecondary">@color/secondary_text</item>
+        <item name="progressEmptyColor">@color/progress_empty</item>
         <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
         <item name="popupMenuStyle">@style/PopupMenu.Light</item>
     </style>
@@ -217,6 +221,20 @@
     <style name="gridDetailText">
         <item name="android:textColor">@color/grid_detail_text</item>
         <item name="android:textSize">@dimen/grid_text_detail_size</item>
+    </style>
+
+    <style name="miniplayerTitleText">
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="miniplayerDetailText" parent="miniplayerTitleText">
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">16dp</item>
     </style>
 
 </resources>

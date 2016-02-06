@@ -196,11 +196,6 @@ public class AutoPlaylistEditActivity extends BaseActivity
     }
 
     @Override
-    public void updateMiniplayer() {
-
-    }
-
-    @Override
     public void onRuleRemoved(final AutoPlaylist.Rule rule, final int index) {
         editedRules.remove(index - 1);
         adapter.notifyItemRemoved(index);

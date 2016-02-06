@@ -53,9 +53,4 @@ public class AboutActivity extends BaseActivity implements View.OnClickListener 
         webIntent.setData(Uri.parse("http://marverenic.github.io/Jockey/"));
         startActivity(webIntent);
     }
-
-    @Override
-    public void updateMiniplayer() {
-
-    }
 }

@@ -63,11 +63,6 @@ public class SettingsActivity extends BaseActivity {
         }
     }
 
-    @Override
-    public void updateMiniplayer() {
-
-    }
-
     public static class PrefFragment extends PreferenceFragment
             implements AdapterView.OnItemLongClickListener {
 

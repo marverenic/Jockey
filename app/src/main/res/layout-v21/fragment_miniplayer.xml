@@ -2,17 +2,25 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/miniplayer"
     android:layout_width="fill_parent"
-    android:layout_height="@dimen/now_playing_ticker_height"
+    android:layout_height="@dimen/miniplayer_height"
     android:background="?android:attr/selectableItemBackgroundBorderless"
     android:gravity="center">
 
     <ImageView
         android:id="@+id/imageArtwork"
-        android:layout_width="@dimen/now_playing_ticker_height"
-        android:layout_height="@dimen/now_playing_ticker_height"
+        android:layout_width="@dimen/miniplayer_height"
+        android:layout_height="@dimen/miniplayer_height"
         android:background="@android:color/black"
         android:contentDescription="@string/description_album_art"
         android:src="@drawable/art_default" />
+
+    <ProgressBar
+        android:id="@+id/songProgress"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:progressDrawable="@drawable/progress_drawable"
+        android:layout_toEndOf="@id/imageArtwork"/>
 
     <ImageButton
         android:id="@+id/skipButton"
@@ -21,7 +29,7 @@
         android:padding="8dp"
         android:layout_alignParentEnd="true"
         android:layout_centerInParent="true"
-        android:src="@drawable/ic_skip_next_36dp"
+        android:src="@drawable/ic_skip_next_32dp"
         android:tint="?android:attr/textColorPrimary"
         android:background="?android:attr/selectableItemBackgroundBorderless"
         android:clickable="true"
@@ -35,7 +43,7 @@
         android:padding="8dp"
         android:layout_centerInParent="true"
         android:layout_toStartOf="@id/skipButton"
-        android:src="@drawable/ic_play_arrow_36dp"
+        android:src="@drawable/ic_play_arrow_32dp"
         android:tint="?android:attr/textColorPrimary"
         android:background="?android:attr/selectableItemBackgroundBorderless"
         android:clickable="true"
@@ -43,32 +51,26 @@
         android:onClick="onClick" />
 
     <LinearLayout
-        android:id="@+id/songInstance"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_centerVertical="true"
-        android:gravity="center"
-        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_centerInParent="true"
         android:layout_toEndOf="@+id/imageArtwork"
-        android:layout_toStartOf="@+id/playButton">
+        android:layout_toStartOf="@id/playButton">
 
         <TextView
             android:id="@+id/textNowPlayingTitle"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:text="@string/nothing_playing"
-            android:theme="@style/listTitleText" />
+            style="@style/miniplayerTitleText"
+            android:text="@string/nothing_playing"/>
 
         <TextView
             android:id="@+id/textNowPlayingDetail"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:text="@string/no_artist"
-            android:theme="@style/listDetailText" />
+            style="@style/miniplayerDetailText"
+            android:text="@string/no_artist"/>
 
     </LinearLayout>
 
