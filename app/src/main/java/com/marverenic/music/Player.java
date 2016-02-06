@@ -145,15 +145,15 @@ public class Player implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
             }
 
             int queueLength = scanner.nextInt();
-            int[] queueIDs = new int[queueLength];
+            long[] queueIDs = new long[queueLength];
             for (int i = 0; i < queueLength; i++) {
                 queueIDs[i] = scanner.nextInt();
             }
             queue = Library.buildSongListFromIds(queueIDs, context);
 
-            int[] shuffleQueueIDs;
+            long[] shuffleQueueIDs;
             if (scanner.hasNextInt()) {
-                shuffleQueueIDs = new int[queueLength];
+                shuffleQueueIDs = new long[queueLength];
                 for (int i = 0; i < queueLength; i++) {
                     shuffleQueueIDs[i] = scanner.nextInt();
                 }

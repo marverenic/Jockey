@@ -604,7 +604,7 @@ public final class Library {
      * @return An {@link ArrayList} of {@link Song}s with ids matching those of the
      *         songIDs parameter
      */
-    public static List<Song> buildSongListFromIds(int[] songIDs, Context context) {
+    public static List<Song> buildSongListFromIds(long[] songIDs, Context context) {
         List<Song> contents = new ArrayList<>();
         if (songIDs.length == 0) {
             return contents;
@@ -612,11 +612,11 @@ public final class Library {
 
         String query = MediaStore.Audio.Media._ID + " IN(?";
         String[] ids = new String[songIDs.length];
-        ids[0] = Integer.toString(songIDs[0]);
+        ids[0] = Long.toString(songIDs[0]);
 
         for (int i = 1; i < songIDs.length; i++) {
             query += ",?";
-            ids[i] = Integer.toString(songIDs[i]);
+            ids[i] = Long.toString(songIDs[i]);
         }
         query += ")";
 
@@ -634,18 +634,18 @@ public final class Library {
         contents = Song.buildSongList(cur, context.getResources());
         cur.close();
 
-        // TODO Is this necessary?
-        // Sort the contents of the list so that it matches the order of the int array
-        /*List<Song> songs = new ArrayList<>();
-        Song dummy = new Song(null, 0, null, null, 0, null, 0, 0, 0, 0);
-        for (int i : songIDs) {
-            dummy.songId = i;
-            // Because Songs are equal if their ids are equal, we can use a dummy song with the ID
-            // we want to find it in the list
-            songs.add(contents.get(contents.indexOf(dummy)));
-        }*/
+        // Sort the contents of the list so that it matches the order of the array
+        List<Song> songs = new ArrayList<>();
+        for (long i : songIDs) {
+            for (Song s : contents) {
+                if (s.getSongId() == i) {
+                    songs.add(s);
+                    break;
+                }
+            }
+        }
 
-        return contents;
+        return songs;
     }
 
     /**
