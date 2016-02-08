@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -53,8 +54,10 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/seekThumb"
+        android:splitTrack="false"
         android:paddingLeft="@dimen/seekbar_padding"
         android:paddingRight="@dimen/seekbar_padding"
-        android:layout_marginBottom="@dimen/seekbarMargin"/>
+        android:layout_marginBottom="@dimen/seekbarMargin"
+        tools:ignore="UnusedAttribute"/>
 
 </RelativeLayout>
