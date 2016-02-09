@@ -22,6 +22,7 @@ import com.marverenic.music.view.EnhancedAdapters.DragBackgroundDecoration;
 import com.marverenic.music.view.EnhancedAdapters.DragDividerDecoration;
 import com.marverenic.music.view.EnhancedAdapters.DragDropAdapter;
 import com.marverenic.music.view.EnhancedAdapters.DragDropDecoration;
+import com.marverenic.music.view.InsetDecoration;
 
 import java.util.List;
 
@@ -90,6 +91,14 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         list.setLayoutManager(layoutManager);
+
+        if (getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE
+                || getResources().getConfiguration().smallestScreenWidthDp < 600) {
+            // Add an inner shadow on phones and portrait tablets
+            list.addItemDecoration(new InsetDecoration(
+                    getResources().getDrawable(R.drawable.inset_shadow),
+                    (int) getResources().getDimension(R.dimen.inset_shadow_height)));
+        }
 
         /*
             Because of the way that CoordinatorLayout lays out children, there isn't a way to get
