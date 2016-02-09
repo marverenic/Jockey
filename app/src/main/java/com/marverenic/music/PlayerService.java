@@ -125,6 +125,11 @@ public class PlayerService extends Service {
     public void notifyNowPlaying() {
         if (DEBUG) Log.i(TAG, "notifyNowPlaying() called");
 
+        if (player.getNowPlaying() == null) {
+            if (DEBUG) Log.i(TAG, "Not showing notification -- nothing is playing");
+            return;
+        }
+
         // Create the compact view
         RemoteViews notificationView = new RemoteViews(getPackageName(), R.layout.notification);
         // Create the expanded view
