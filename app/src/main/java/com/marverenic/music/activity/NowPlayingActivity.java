@@ -39,6 +39,7 @@ public class NowPlayingActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        onNewIntent(getIntent());
         setContentView(R.layout.activity_now_playing);
 
         boolean landscape = getResources().getConfiguration().orientation
