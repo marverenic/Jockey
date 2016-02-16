@@ -193,6 +193,8 @@ public class GestureView extends FrameLayout {
             }
 
             if (indicator != null) {
+                indicator.mutate();
+
                 int indicatorSize = Math.min(radius, mIndicatorSize) / 2;
                 indicator.setBounds(
                         mOverlayOrigin.x - indicatorSize,
