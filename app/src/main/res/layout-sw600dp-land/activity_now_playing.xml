@@ -12,7 +12,7 @@
         android:id="@+id/artworkSwipeFrame"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:foreground="@drawable/scrim_instance_artwork"
+        android:foreground="@android:color/transparent"
         app:leftIndicator="@drawable/ic_skip_next_36dp"
         app:rightIndicator="@drawable/ic_skip_previous_36dp"
         app:tapIndicator="@drawable/ic_play_arrow_36dp"
