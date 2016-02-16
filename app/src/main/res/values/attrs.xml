@@ -5,4 +5,11 @@
     <attr name="textColorSecondary" format="color" />
     <attr name="progressEmptyColor" format="color" />
 
+    <declare-styleable name="GestureView">
+        <attr name="overlayColor" format="color"/>
+        <attr name="leftIndicator" format="reference"/>
+        <attr name="rightIndicator" format="reference"/>
+        <attr name="tapIndicator" format="reference"/>
+    </declare-styleable>
+
 </resources>

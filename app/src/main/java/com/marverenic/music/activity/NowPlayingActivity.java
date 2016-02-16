@@ -26,13 +26,15 @@ import com.marverenic.music.fragments.QueueFragment;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.instances.Song;
+import com.marverenic.music.view.GestureView;
 
 import java.io.File;
 import java.util.ArrayList;
 
-public class NowPlayingActivity extends BaseActivity {
+public class NowPlayingActivity extends BaseActivity implements GestureView.OnGestureListener {
 
     private ImageView artwork;
+    private GestureView artworkWrapper;
     private Song lastPlaying;
     private QueueFragment queueFragment;
 
@@ -66,6 +68,11 @@ public class NowPlayingActivity extends BaseActivity {
             }
             actionBar.setTitle("");
             actionBar.setHomeAsUpIndicator(R.drawable.ic_clear_24dp);
+        }
+
+        artworkWrapper = (GestureView) findViewById(R.id.artworkSwipeFrame);
+        if (artworkWrapper != null) {
+            artworkWrapper.setGestureListener(this);
         }
 
         onUpdate();
@@ -228,5 +235,26 @@ public class NowPlayingActivity extends BaseActivity {
     @Override
     protected void showSnackbar(String message) {
         Snackbar.make(findViewById(R.id.imageArtwork), message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onLeftSwipe() {
+        PlayerController.skip();
+    }
+
+    @Override
+    public void onRightSwipe() {
+        PlayerController.previous();
+    }
+
+    @Override
+    public void onTap() {
+        PlayerController.togglePlay();
+
+        //noinspection deprecation
+        artworkWrapper.setTapIndicator(getResources().getDrawable(
+                (PlayerController.isPlaying())
+                        ? R.drawable.ic_play_arrow_36dp
+                        : R.drawable.ic_pause_36dp));
     }
 }

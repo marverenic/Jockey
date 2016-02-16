@@ -8,13 +8,25 @@
 
     <include layout="@layout/toolbar"/>
 
-    <com.marverenic.music.view.SquareImageViewV
-        android:id="@+id/imageArtwork"
+    <com.marverenic.music.view.GestureView
+        android:id="@+id/artworkSwipeFrame"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize"
-        android:src="@drawable/art_default_xl"
-        android:background="@android:color/black"/>
+        android:foreground="@drawable/scrim_instance_artwork"
+        app:leftIndicator="@drawable/ic_skip_next_36dp"
+        app:rightIndicator="@drawable/ic_skip_previous_36dp"
+        app:tapIndicator="@drawable/ic_play_arrow_36dp"
+        app:overlayColor="?attr/colorAccent">
+
+        <com.marverenic.music.view.SquareImageViewV
+            android:id="@+id/imageArtwork"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:src="@drawable/art_default_xl"
+            android:background="@android:color/black"/>
+
+    </com.marverenic.music.view.GestureView>
 
     <fragment
         android:id="@+id/controlFragment"
@@ -24,8 +36,8 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@id/imageArtwork"
-        android:layout_toEndOf="@id/imageArtwork"
+        android:layout_toRightOf="@id/artworkSwipeFrame"
+        android:layout_toEndOf="@id/artworkSwipeFrame"
         tools:layout="@layout/fragment_player_controls" />
 
     <fragment
@@ -37,8 +49,8 @@
         android:layout_alignParentEnd="true"
         android:layout_below="@id/toolbar"
         android:layout_above="@id/controlFragment"
-        android:layout_toRightOf="@id/imageArtwork"
-        android:layout_toEndOf="@id/imageArtwork"
+        android:layout_toRightOf="@id/artworkSwipeFrame"
+        android:layout_toEndOf="@id/artworkSwipeFrame"
         tools:layout="@layout/list"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
