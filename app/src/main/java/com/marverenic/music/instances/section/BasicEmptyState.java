@@ -15,10 +15,14 @@ public abstract class BasicEmptyState extends EmptyState
 
     @Override
     public final View createView(RecyclerView.Adapter<EnhancedViewHolder> adapter,
-                                 ViewGroup parent) {
-        View layout = LayoutInflater
+                                 final ViewGroup parent) {
+
+        final View layout = LayoutInflater
                 .from(parent.getContext())
                 .inflate(R.layout.instance_empty, parent, false);
+
+        parent.requestLayout();
+        layout.setMinimumHeight(parent.getHeight());
 
         layout.findViewById(R.id.empty_button).setOnClickListener(this);
         layout.findViewById(R.id.empty_button2).setOnClickListener(this);
