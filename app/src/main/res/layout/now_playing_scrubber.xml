@@ -54,6 +54,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/seekThumb"
+        android:progressBackgroundTint="@android:color/transparent"
         android:splitTrack="false"
         android:paddingLeft="@dimen/seekbar_padding"
         android:paddingRight="@dimen/seekbar_padding"
