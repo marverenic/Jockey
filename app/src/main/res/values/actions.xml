@@ -5,7 +5,7 @@
     <string name="action_refresh">Refresh Library</string>
     <string name="action_go_to_queue">Queue</string>
     <string name="action_search">Search Library</string>
-    <string name="action_export_playlist">Save as playlist&#8230;</string>
+    <string name="action_export_playlist">Save queue as playlist&#8230;</string>
     <string name="action_sort">Sort&#8230;</string>
     <string name="action_sort_random">Randomize</string>
     <string name="action_sort_name">Sort by name</string>
@@ -20,7 +20,7 @@
     <string name="action_disable_repeat">Disable repeat</string>
     <string name="action_enable_repeat">Enable repeat</string>
     <string name="action_enable_repeat_one">Enable repeat one</string>
-    <string name="action_add_to_playlist">Add to playlist&#8230;</string>
+    <string name="action_add_to_playlist">Add queue to playlist&#8230;</string>
     <string name="action_done">Done</string>
 
     <!-- Other Actions -->
