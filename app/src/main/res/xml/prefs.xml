@@ -1,6 +1,7 @@
+<!--suppress AndroidElementNotAllowed -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="Appearance">
+    <PreferenceCategoryCompat android:title="Appearance">
         <ListPreference
             android:defaultValue="1"
             android:dialogTitle="@string/default_page_pref"
@@ -28,9 +29,9 @@
             android:defaultValue="false"
             android:key="prefAddShortcut"
             android:title="@string/add_shortcut" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="General">
-        <SwitchPreference
+    </PreferenceCategoryCompat>
+    <PreferenceCategoryCompat android:title="General">
+        <SwitchPreferenceCompat
             android:defaultValue="true"
             android:key="prefUseMobileData"
             android:summaryOn="@string/use_mobile_description_on"
@@ -42,8 +43,8 @@
             android:summaryOn="@string/logging_on"
             android:summaryOff="@string/logging_off"
             android:title="@string/logging_description"/>
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/playback_header">
+    </PreferenceCategoryCompat>
+    <PreferenceCategoryCompat android:title="@string/playback_header">
         <Preference
             android:title="Equalizer"
             android:fragment="com.marverenic.music.fragments.EqualizerFragment"/>
@@ -58,6 +59,6 @@
             android:key="prefEnableNowPlayingGestures"
             android:title="@string/gesture_description"
             android:summary="@string/gesture_detail"/>
-    </PreferenceCategory>
+    </PreferenceCategoryCompat>
 
 </PreferenceScreen>

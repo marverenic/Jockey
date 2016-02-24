@@ -28,6 +28,7 @@
 
     <!-- Equalizer Strings -->
     <string name="header_equalizer">Equalizer</string>
+    <string name="equalizer_more_options_detail">Tap and hold for more options</string>
     <string name="equalizerNoteSystem">It looks like you have another app that manages audio
         effects. This may cause problems with Jockey\'s equalizer, so be prepared to
         turn this off if you notice unexpected behavior.

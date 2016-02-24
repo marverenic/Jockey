@@ -73,6 +73,7 @@
         <item name="textColorSecondary">@color/secondary_text_dark</item>
         <item name="progressEmptyColor">@color/progress_empty_dark</item>
         <item name="popupMenuStyle">@style/PopupMenu</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
     <style name="PopupMenu" parent="@style/Widget.AppCompat.PopupMenu">
@@ -172,6 +173,7 @@
         <item name="progressEmptyColor">@color/progress_empty</item>
         <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
         <item name="popupMenuStyle">@style/PopupMenu.Light</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
     <style name="PopupMenu.Light" parent="@style/Widget.AppCompat.Light.PopupMenu">

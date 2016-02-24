@@ -20,6 +20,7 @@
 -keep class android.support.design.widget.** { *; }
 -keep interface android.support.design.widget.** { *; }
 -dontwarn android.support.design.**
+-keep class android.support.v7.preference.PreferenceCategoryCompat { *; }
 
 # Remove logcat logging
 -assumenosideeffects class android.util.Log {
