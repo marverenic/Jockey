@@ -16,13 +16,13 @@
     <string name="switch_to_now_playing_detail_on">When a new song is chosen, the Now Playing page will be opened</string>
     <string name="switch_to_now_playing_detail_off">Changing songs won\'t navigate to another page</string>
     <string name="use_mobile">Use mobile data</string>
-    <string name="use_mobile_description_on">Album artwork and other data will be always be downloaded</string>
-    <string name="use_mobile_description_off">Album artwork and other data will only be downloaded on Wi-Fi networks</string>
+    <string name="use_mobile_description_on">Album artwork and other data will always be downloaded</string>
+    <string name="use_mobile_description_off">Album artwork and other data will only be downloaded on Wi-Fi</string>
     <string name="enable_additional_logging_detailed">Help make Jockey better by sending anonymous usage data</string>
     <string name="logging_on">Anonymous usage data and crash information will be sent to Marverenic</string>
     <string name="logging_off">Only anonymous crash information will be sent to Marverenic</string>
     <string name="logging_description">Help improve Jockey</string>
-    <string name="gesture_description">Enable gestures on now playing page</string>
+    <string name="gesture_description">Enable now playing gestures</string>
     <string name="gesture_detail">Swipe across the album art to skip songs,
         or tap to play/pause music</string>
 
