@@ -53,6 +53,11 @@
             android:title="@string/switch_to_now_playing"
             android:summaryOn="@string/switch_to_now_playing_detail_on"
             android:summaryOff="@string/switch_to_now_playing_detail_off"/>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="prefEnableNowPlayingGestures"
+            android:title="@string/gesture_description"
+            android:summary="@string/gesture_detail"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -26,6 +26,7 @@ import com.marverenic.music.fragments.QueueFragment;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.instances.Song;
+import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.view.GestureView;
 
 import java.io.File;
@@ -73,6 +74,8 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         artworkWrapper = (GestureView) findViewById(R.id.artworkSwipeFrame);
         if (artworkWrapper != null) {
             artworkWrapper.setGestureListener(this);
+            artworkWrapper.setGesturesEnabled(
+                    Prefs.getPrefs(this).getBoolean(Prefs.ENABLE_NOW_PLAYING_GESTURES, true));
         }
 
         onUpdate();

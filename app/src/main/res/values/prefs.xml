@@ -22,6 +22,9 @@
     <string name="logging_on">Anonymous usage data and crash information will be sent to Marverenic</string>
     <string name="logging_off">Only anonymous crash information will be sent to Marverenic</string>
     <string name="logging_description">Help improve Jockey</string>
+    <string name="gesture_description">Enable gestures on now playing page</string>
+    <string name="gesture_detail">Swipe across the album art to skip songs,
+        or tap to play/pause music</string>
 
     <!-- Equalizer Strings -->
     <string name="header_equalizer">Equalizer</string>

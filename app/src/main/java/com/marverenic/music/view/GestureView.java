@@ -36,6 +36,8 @@ public class GestureView extends FrameLayout {
     private static final int TAP_DURATION_MS = 1000;
     private static final int MAX_TAP_MOVEMENT_DP = 10;
 
+    private boolean mEnabled;
+
     private OnGestureListener mGestureListener;
     private Paint mOverlayPaint;
     private Point mOverlayOrigin;
@@ -80,6 +82,10 @@ public class GestureView extends FrameLayout {
         } finally {
             a.recycle();
         }
+    }
+
+    public void setGesturesEnabled(boolean enable) {
+        mEnabled = enable;
     }
 
     public void setGestureListener(@Nullable OnGestureListener listener) {
@@ -143,6 +149,10 @@ public class GestureView extends FrameLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (!mEnabled) {
+            return false;
+        }
+
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             if (mOverlayOrigin == null) {
                 requestDisallowInterceptTouchEvent(true);

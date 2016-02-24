@@ -47,6 +47,10 @@ public final class Prefs {
      */
     public static final String SWITCH_TO_PLAYING = "prefSwitchToNowPlaying";
     /**
+     * Whether or not swipe and tap gestures should be enabled on the Now Playing page
+     */
+    public static final String ENABLE_NOW_PLAYING_GESTURES = "prefEnableNowPlayingGestures";
+    /**
      * An equalizer preset defined by the system that the user has selected as indexed by
      * {@link Equalizer#getPresetName(short)} and {@link Equalizer#usePreset(short)}.
      * -1 is saved to specify a custom equalizer configuration
