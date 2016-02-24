@@ -50,7 +50,9 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="prefSwitchToNowPlaying"
-            android:title="@string/switch_to_now_playing" />
+            android:title="@string/switch_to_now_playing"
+            android:summaryOn="@string/switch_to_now_playing_detail_on"
+            android:summaryOff="@string/switch_to_now_playing_detail_off"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

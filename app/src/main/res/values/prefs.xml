@@ -12,7 +12,9 @@
     <string name="theme_base_description">Controls the background color. Takes effect when you leave this page</string>
     <string name="add_shortcut">Add themed icon to launcher</string>
     <string name="add_shortcut_description">Do you want to add a link to Jockey that matches your current theme to your launcher?</string>
-    <string name="switch_to_now_playing">Automatically Switch to Now Playing</string>
+    <string name="switch_to_now_playing">Open Now Playing</string>
+    <string name="switch_to_now_playing_detail_on">When a new song is chosen, the Now Playing page will be opened</string>
+    <string name="switch_to_now_playing_detail_off">Changing songs won\'t navigate to another page</string>
     <string name="use_mobile">Use mobile data</string>
     <string name="use_mobile_description_on">Album artwork and other data will be always be downloaded</string>
     <string name="use_mobile_description_off">Album artwork and other data will only be downloaded on Wi-Fi networks</string>
