@@ -85,6 +85,11 @@
         <item name="colorPrimaryDark">@color/primary_dark_grey</item>
         <item name="colorAccent">@color/accent_grey</item>
         <item name="colorControlHighlight">@color/accent_grey</item>
+        <item name="alertDialogTheme">@style/AppTheme.Black.AlertDialog</item>
+    </style>
+
+    <style name="AppTheme.Black.AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="colorAccent">@color/accent_grey</item>
     </style>
 
     <style name="AppTheme.Red" parent="AppTheme">
@@ -92,6 +97,11 @@
         <item name="colorPrimaryDark">@color/primary_dark_red</item>
         <item name="colorAccent">@color/accent_red</item>
         <item name="colorControlHighlight">@color/accent_red</item>
+        <item name="alertDialogTheme">@style/AppTheme.Red.AlertDialog</item>
+    </style>
+
+    <style name="AppTheme.Red.AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="colorAccent">@color/accent_red</item>
     </style>
 
     <style name="AppTheme.Orange" parent="AppTheme">
@@ -99,6 +109,11 @@
         <item name="colorPrimaryDark">@color/primary_dark_orange</item>
         <item name="colorAccent">@color/accent_orange</item>
         <item name="colorControlHighlight">@color/accent_orange</item>
+        <item name="alertDialogTheme">@style/AppTheme.Orange.AlertDialog</item>
+    </style>
+
+    <style name="AppTheme.Orange.AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="colorAccent">@color/accent_orange</item>
     </style>
 
     <style name="AppTheme.Yellow" parent="AppTheme">
@@ -106,6 +121,11 @@
         <item name="colorPrimaryDark">@color/primary_dark_yellow</item>
         <item name="colorAccent">@color/accent_yellow</item>
         <item name="colorControlHighlight">@color/accent_yellow</item>
+        <item name="alertDialogTheme">@style/AppTheme.Yellow.AlertDialog</item>
+    </style>
+
+    <style name="AppTheme.Yellow.AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="colorAccent">@color/accent_yellow</item>
     </style>
 
     <style name="AppTheme.Green" parent="AppTheme">
@@ -113,6 +133,11 @@
         <item name="colorPrimaryDark">@color/primary_dark_green</item>
         <item name="colorAccent">@color/accent_green</item>
         <item name="colorControlHighlight">@color/accent_green</item>
+        <item name="alertDialogTheme">@style/AppTheme.Green.AlertDialog</item>
+    </style>
+
+    <style name="AppTheme.Green.AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="colorAccent">@color/accent_green</item>
     </style>
 
     <style name="AppTheme.Blue" parent="AppTheme">
@@ -120,6 +145,11 @@
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
         <item name="colorControlHighlight">@color/accent</item>
+        <item name="alertDialogTheme">@style/AppTheme.Blue.AlertDialog</item>
+    </style>
+
+    <style name="AppTheme.Blue.AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="colorAccent">@color/accent</item>
     </style>
 
     <style name="AppTheme.Purple" parent="AppTheme">
@@ -127,6 +157,11 @@
         <item name="colorPrimaryDark">@color/primary_dark_purple</item>
         <item name="colorAccent">@color/accent_purple</item>
         <item name="colorControlHighlight">@color/accent_purple</item>
+        <item name="alertDialogTheme">@style/AppTheme.Purple.AlertDialog</item>
+    </style>
+
+    <style name="AppTheme.Purple.AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="colorAccent">@color/accent_purple</item>
     </style>
 
     <!-- Light theme base -->
@@ -149,6 +184,11 @@
         <item name="colorPrimaryDark">@color/primary_dark_grey</item>
         <item name="colorAccent">@color/accent_grey</item>
         <item name="colorControlHighlight">@color/accent_grey</item>
+        <item name="alertDialogTheme">@style/AppThemeLight.Black.AlertDialog</item>
+    </style>
+
+    <style name="AppThemeLight.Black.AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/accent_grey</item>
     </style>
 
     <style name="AppThemeLight.Red" parent="AppThemeLight">
@@ -156,6 +196,11 @@
         <item name="colorPrimaryDark">@color/primary_dark_red</item>
         <item name="colorAccent">@color/accent_red</item>
         <item name="colorControlHighlight">@color/accent_red</item>
+        <item name="alertDialogTheme">@style/AppThemeLight.Red.AlertDialog</item>
+    </style>
+
+    <style name="AppThemeLight.Red.AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/accent_red</item>
     </style>
 
     <style name="AppThemeLight.Orange" parent="AppThemeLight">
@@ -163,6 +208,11 @@
         <item name="colorPrimaryDark">@color/primary_dark_orange</item>
         <item name="colorAccent">@color/accent_orange</item>
         <item name="colorControlHighlight">@color/accent_orange</item>
+        <item name="alertDialogTheme">@style/AppThemeLight.Orange.AlertDialog</item>
+    </style>
+
+    <style name="AppThemeLight.Orange.AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/accent_orange</item>
     </style>
 
     <style name="AppThemeLight.Yellow" parent="AppThemeLight">
@@ -170,6 +220,11 @@
         <item name="colorPrimaryDark">@color/primary_dark_yellow</item>
         <item name="colorAccent">@color/accent_yellow</item>
         <item name="colorControlHighlight">@color/accent_yellow</item>
+        <item name="alertDialogTheme">@style/AppThemeLight.Yellow.AlertDialog</item>
+    </style>
+
+    <style name="AppThemeLight.Yellow.AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/accent_yellow</item>
     </style>
 
     <style name="AppThemeLight.Green" parent="AppThemeLight">
@@ -177,6 +232,11 @@
         <item name="colorPrimaryDark">@color/primary_dark_green</item>
         <item name="colorAccent">@color/accent_green</item>
         <item name="colorControlHighlight">@color/accent_green</item>
+        <item name="alertDialogTheme">@style/AppThemeLight.Green.AlertDialog</item>
+    </style>
+
+    <style name="AppThemeLight.Green.AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/accent_green</item>
     </style>
 
     <style name="AppThemeLight.Blue" parent="AppThemeLight">
@@ -184,6 +244,11 @@
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
         <item name="colorControlHighlight">@color/accent</item>
+        <item name="alertDialogTheme">@style/AppThemeLight.Blue.AlertDialog</item>
+    </style>
+
+    <style name="AppThemeLight.Blue.AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/accent</item>
     </style>
 
     <style name="AppThemeLight.Purple" parent="AppThemeLight">
@@ -191,6 +256,11 @@
         <item name="colorPrimaryDark">@color/primary_dark_purple</item>
         <item name="colorAccent">@color/accent_purple</item>
         <item name="colorControlHighlight">@color/accent_purple</item>
+        <item name="alertDialogTheme">@style/AppThemeLight.Purple.AlertDialog</item>
+    </style>
+
+    <style name="AppThemeLight.Purple.AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/accent_purple</item>
     </style>
 
     <!-- Splash screen -->
