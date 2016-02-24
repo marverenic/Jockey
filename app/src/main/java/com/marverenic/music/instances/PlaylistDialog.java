@@ -63,8 +63,6 @@ public class PlaylistDialog {
                     .setNegativeButton(R.string.action_cancel, this)
                     .show();
 
-            Themes.themeAlertDialog(mDialog);
-
             mDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
             //noinspection deprecation
             mDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
@@ -182,13 +180,11 @@ public class PlaylistDialog {
             for (int i = 0; i < mChoices.size(); i++) {
                 playlistNames[i] = mChoices.get(i).toString();
             }
-            final AlertDialog addToPlaylistDialog = new AlertDialog.Builder(mContext)
+            new AlertDialog.Builder(mContext)
                     .setTitle(header)
                     .setItems(playlistNames, this)
                     .setNegativeButton(R.string.action_cancel, null)
                     .show();
-
-            Themes.themeAlertDialog(addToPlaylistDialog);
         }
 
         @Override

@@ -70,7 +70,7 @@ public abstract class BaseActivity extends AppCompatActivity
             pref.setChecked(true);
             pref.setText(R.string.enable_additional_logging_detailed);
 
-            AlertDialog privacyDialog = new AlertDialog.Builder(this)
+            new AlertDialog.Builder(this)
                     .setTitle(R.string.first_launch_title)
                     .setView(messageView)
                     .setPositiveButton(R.string.action_agree,
@@ -86,10 +86,7 @@ public abstract class BaseActivity extends AppCompatActivity
                         }
                     })
                     .setCancelable(false)
-                    .create();
-
-            privacyDialog.show();
-            Themes.themeAlertDialog(privacyDialog);
+                    .show();
 
         } else if (Library.isEmpty()) {
             Library.scanAll(this);

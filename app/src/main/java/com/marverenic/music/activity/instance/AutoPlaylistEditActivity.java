@@ -137,7 +137,7 @@ public class AutoPlaylistEditActivity extends BaseActivity
                 return true;
             case R.id.discard:
                 if (rulesChanged()) {
-                    AlertDialog dialog = new AlertDialog.Builder(this)
+                    new AlertDialog.Builder(this)
                             .setMessage("Discard changes?")
                             .setPositiveButton("Discard", new DialogInterface.OnClickListener() {
                                 @Override
@@ -147,8 +147,6 @@ public class AutoPlaylistEditActivity extends BaseActivity
                             })
                             .setNegativeButton(R.string.action_cancel, null)
                             .show();
-
-                    Themes.themeAlertDialog(dialog);
                 } else {
                     finish();
                 }
@@ -169,7 +167,7 @@ public class AutoPlaylistEditActivity extends BaseActivity
     @Override
     public void onBackPressed() {
         if (!editedReference.isEqual(reference) || rulesChanged()) {
-            AlertDialog dialog = new AlertDialog.Builder(this)
+            new AlertDialog.Builder(this)
                     .setMessage("Save changes?")
                     .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                         @Override
@@ -188,8 +186,6 @@ public class AutoPlaylistEditActivity extends BaseActivity
                     })
                     .setNeutralButton("Cancel", null)
                     .show();
-
-            Themes.themeAlertDialog(dialog);
         } else {
             super.onBackPressed();
         }

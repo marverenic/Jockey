@@ -26,7 +26,6 @@ import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 
@@ -251,8 +250,6 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylist.R
                             0,
                             padding - inputLayout.getPaddingRight(),
                             0);
-
-                    Themes.themeAlertDialog(valueDialog);
 
                     editText.setText(reference.value);
                     editText.setSelection(reference.value.length());

@@ -25,7 +25,6 @@ import com.google.gson.GsonBuilder;
 import com.marverenic.music.Player;
 import com.marverenic.music.R;
 import com.marverenic.music.utils.Prefs;
-import com.marverenic.music.utils.Themes;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -1083,7 +1082,7 @@ public final class Library {
         // Public method to add a song to a playlist
         // Checks the playlist for duplicate entries
         if (getPlaylistEntries(context, playlist).contains(song)) {
-            AlertDialog dialog = new AlertDialog.Builder(context)
+            new AlertDialog.Builder(context)
                     .setTitle(context.getResources().getQuantityString(
                             R.plurals.alert_confirm_duplicates, 1))
                     .setMessage(context.getString(
@@ -1096,8 +1095,6 @@ public final class Library {
                     })
                     .setNegativeButton(R.string.action_cancel, null)
                     .show();
-
-            Themes.themeAlertDialog(dialog);
         } else {
             addSongToEndOfPlaylist(context, playlist, song);
         }
@@ -1221,7 +1218,7 @@ public final class Library {
                         .setNeutralButton(R.string.action_cancel, null);
             }
 
-            Themes.themeAlertDialog(alert.show());
+            alert.show();
         } else {
             addSongsToEndOfPlaylist(context, playlist, songs);
             Snackbar.make(

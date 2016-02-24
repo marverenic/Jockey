@@ -121,7 +121,7 @@ public class SettingsActivity extends BaseActivity {
                 }
                 return true;
             } else if (preference.getKey().equals(Prefs.ADD_SHORTCUT)) {
-                AlertDialog prompt = new AlertDialog.Builder(getActivity())
+                new AlertDialog.Builder(getActivity())
                         .setTitle(R.string.add_shortcut)
                         .setMessage(R.string.add_shortcut_description)
                         .setPositiveButton(R.string.action_add,
@@ -133,8 +133,6 @@ public class SettingsActivity extends BaseActivity {
                         })
                         .setNegativeButton(R.string.action_cancel, null)
                         .show();
-
-                Themes.themeAlertDialog(prompt);
             }
             return super.onPreferenceTreeClick(preferenceScreen, preference);
         }
