@@ -2,7 +2,9 @@ package com.marverenic.music.fragments;
 
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.PopupMenu;
@@ -80,9 +82,15 @@ public class PlayerControllerFragment extends Fragment implements PlayerControll
         seekBar.setOnSeekBarChangeListener(this);
         scrubberThumb.getBackground().setColorFilter(Themes.getAccent(), PorterDuff.Mode.SRC_IN);
 
-        ((LayerDrawable) seekBar.getProgressDrawable())
-                .findDrawableByLayerId(android.R.id.background)
-                .setColorFilter(Color.TRANSPARENT, PorterDuff.Mode.SRC_IN);
+        Drawable progress = seekBar.getProgressDrawable();
+        if (progress instanceof StateListDrawable) {
+            progress = progress.getCurrent();
+        }
+        if (progress instanceof LayerDrawable) {
+            ((LayerDrawable) progress)
+                    .findDrawableByLayerId(android.R.id.background)
+                    .setColorFilter(Color.TRANSPARENT, PorterDuff.Mode.SRC_IN);
+        }
 
         return view;
     }
