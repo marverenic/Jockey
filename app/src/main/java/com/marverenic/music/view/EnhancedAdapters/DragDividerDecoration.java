@@ -24,6 +24,18 @@ public class DragDividerDecoration extends DividerDecoration {
         super(context, excludedLayoutIDs);
     }
 
+    /**
+     * Create an ItemDecorator for use with a RecyclerView
+     * @param context A context held temporarily to get colors and display metrics
+     * @param drawOnLastItem Whether or not to draw a divider under the last item in the list
+     * @param excludedLayoutIDs A list of layoutIDs to exclude adding a divider to
+     *                          none to add a divider to each entry in the RecyclerView
+     */
+    public DragDividerDecoration(Context context, boolean drawOnLastItem,
+                                 @IdRes int... excludedLayoutIDs) {
+        super(context, drawOnLastItem, excludedLayoutIDs);
+    }
+
     @Override
     protected boolean includeView(View view) {
         return !(view.getTag() instanceof DragDropAdapter.DragMarker) && super.includeView(view);

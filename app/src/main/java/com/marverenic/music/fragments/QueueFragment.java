@@ -79,16 +79,14 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
         list = (RecyclerView) view.findViewById(R.id.list);
         adapter.attach(list);
         list.addItemDecoration(new DragBackgroundDecoration(Themes.getBackgroundElevated()));
-        list.addItemDecoration(new DragDividerDecoration(getActivity(), R.id.empty_layout));
+        list.addItemDecoration(new DragDividerDecoration(getActivity(), true, R.id.instance_blank));
         //noinspection deprecation
         list.addItemDecoration(new DragDropDecoration(
                 (NinePatchDrawable) getResources().getDrawable((Themes.isLight(getContext()))
                         ? R.drawable.list_drag_shadow_light
                         : R.drawable.list_drag_shadow_dark)));
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        list.setLayoutManager(layoutManager);
+        list.setLayoutManager(new LinearLayoutManager(getContext()));
 
         if (getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE
                 || getResources().getConfiguration().smallestScreenWidthDp < 600) {
@@ -136,14 +134,45 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
     @Override
     public void onUpdate() {
         int currentIndex = PlayerController.getQueuePosition();
-        if (currentIndex != lastPlayIndex) {
-            adapter.notifyItemChanged(lastPlayIndex);
-            adapter.notifyItemChanged(currentIndex);
+        int previousIndex = lastPlayIndex;
 
+        if (currentIndex != lastPlayIndex) {
             lastPlayIndex = currentIndex;
+
+            updateView(previousIndex);
+            updateView(currentIndex);
+
             if (shouldScrollToCurrent()) {
                 scrollToNowPlaying();
             }
+        }
+    }
+
+    /**
+     * When views are being updated and scrolled passed at the same time, the attached
+     * {@link android.support.v7.widget.RecyclerView.ItemDecoration}s will not appear on the
+     * changed item because of its animation.
+     *
+     * Because this animation implies that items are being removed from the queue, this method
+     * will manually update a specific view in a RecyclerView if it's visible. If it's not visible,
+     * {@link android.support.v7.widget.RecyclerView.Adapter#notifyItemChanged(int)} will be
+     * called instead.
+     * @param index The index of the item in the attached RecyclerView adapter to be updated
+     */
+    private void updateView(int index) {
+        int start = list.getChildAdapterPosition(list.getChildAt(0));
+        int end = list.getChildAdapterPosition(list.getChildAt(list.getChildCount() - 1));
+
+        if (index - start >= 0 && index - start < end) {
+            ViewGroup itemView = (ViewGroup) list.getChildAt(index - start);
+            if (itemView != null) {
+                itemView.findViewById(R.id.instancePlayingIndicator)
+                        .setVisibility(index == lastPlayIndex
+                                ? View.VISIBLE
+                                : View.GONE);
+            }
+        } else {
+            adapter.notifyItemChanged(index);
         }
     }
 

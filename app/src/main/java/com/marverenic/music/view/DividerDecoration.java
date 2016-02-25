@@ -22,6 +22,7 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
     private Drawable dividerDrawable;
     private static int measuredDividerHeight;
     private int[] excludedIDs;
+    private boolean drawOnLastItem;
 
     /**
      * Create an ItemDecorator for use with a RecyclerView
@@ -30,10 +31,23 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
      *                          none to add a divider to each entry in the RecyclerView
      */
     public DividerDecoration(Context context, @IdRes int... excludedLayoutIDs) {
+        this(context, false, excludedLayoutIDs);
+    }
+
+    /**
+     * Create an ItemDecorator for use with a RecyclerView
+     * @param context A context held temporarily to get colors and display metrics
+     * @param drawOnLastItem Whether or not to draw a divider under the last item in the list
+     * @param excludedLayoutIDs A list of layoutIDs to exclude adding a divider to
+     *                          none to add a divider to each entry in the RecyclerView
+     */
+    public DividerDecoration(Context context, boolean drawOnLastItem,
+                             @IdRes int... excludedLayoutIDs) {
         dividerDrawable = new ColorDrawable(Themes.isLight(context) ? 0xFFE0E0E0 : 0xFF1F1F1F);
         measuredDividerHeight = (int) Math.ceil(
                 DIVIDER_HEIGHT_DP * context.getResources().getDisplayMetrics().density);
         excludedIDs = excludedLayoutIDs;
+        this.drawOnLastItem = drawOnLastItem;
     }
 
     @Override
@@ -55,9 +69,10 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
                 dividerDrawable.setBounds(left, top, right, bottom);
 
                 // Don't draw separators under the last item in a section unless it's at the end
-                // of the list and it has a divider above it
+                // of the list and it has a divider above it or unless we've been told to draw
+                // dividers on the last item
                 View nextChild = parent.getChildAt(i + 1);
-                if ((nextChild == null && includeView(child))
+                if (drawOnLastItem || (nextChild == null && includeView(child))
                         || (nextChild != null && includeView(nextChild))) {
                     dividerDrawable.draw(c);
                 }
