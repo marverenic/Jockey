@@ -55,6 +55,10 @@ public class DragDropDecoration extends RecyclerView.ItemDecoration {
             c.translate(child.getLeft() + child.getTranslationX(),
                     child.getTop() + child.getTranslationY());
             child.draw(c);
+
+            // Reset the translation matrix to avoid affecting other decorations
+            c.translate(-child.getLeft() - child.getTranslationX(),
+                    -child.getTop() - child.getTranslationY());
         }
     }
 }

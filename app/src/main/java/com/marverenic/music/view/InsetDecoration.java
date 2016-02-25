@@ -21,8 +21,7 @@ public class InsetDecoration extends RecyclerView.ItemDecoration {
 
     @Override
     public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
-        int top = parent.getChildAt(0).getTop();
-        mInset.setBounds(parent.getLeft(), top, parent.getRight(), top + mHeight);
+        mInset.setBounds(parent.getLeft(), 0, parent.getRight(), mHeight);
         mInset.draw(c);
     }
 }
