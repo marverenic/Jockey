@@ -63,6 +63,7 @@ public class QueueSection extends EditableSongSection {
                         PlayerController.editQueue(mData, playingIndex);
 
                         adapter.notifyItemRemoved(index);
+                        adapter.notifyItemChanged(index);
                     }
                 });
     }

@@ -16,7 +16,6 @@ import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.QueueSection;
 import com.marverenic.music.instances.section.SpacerSingleton;
-import com.marverenic.music.instances.viewholder.DragDropSongViewHolder;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.EnhancedAdapters.DragBackgroundDecoration;
 import com.marverenic.music.view.EnhancedAdapters.DragDividerDecoration;
@@ -26,8 +25,7 @@ import com.marverenic.music.view.InsetDecoration;
 
 import java.util.List;
 
-public class QueueFragment extends Fragment implements PlayerController.UpdateListener,
-        DragDropSongViewHolder.OnRemovedListener {
+public class QueueFragment extends Fragment implements PlayerController.UpdateListener {
 
     private final List<Song> queue = PlayerController.getQueue();
     private int lastPlayIndex;
@@ -178,11 +176,5 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
         adapter.notifyDataSetChanged();
         lastPlayIndex = PlayerController.getQueuePosition();
         scrollToNowPlaying();
-    }
-
-    @Override
-    public void onItemRemoved(int index) {
-        queue.remove(index);
-        adapter.notifyItemRemoved(index);
     }
 }
