@@ -7,13 +7,16 @@ import android.content.SharedPreferences;
 import android.media.audiofx.AudioEffect;
 import android.media.audiofx.Equalizer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.CompoundButton;
@@ -27,13 +30,20 @@ import com.marverenic.music.R;
 import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Util;
 
-public class EqualizerFragment extends Fragment implements CompoundButton.OnCheckedChangeListener {
+public class EqualizerFragment extends Fragment implements CompoundButton.OnCheckedChangeListener ,
+        FragmentManager.OnBackStackChangedListener{
 
     private Equalizer equalizer;
     private EqualizerFrame[] sliders;
     private TextView presetSpinnerPrefix;
     private Spinner presetSpinner;
     private SwitchCompat equalizerToggle;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getActivity().getSupportFragmentManager().addOnBackStackChangedListener(this);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -55,6 +65,11 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
             params.setMargins(padding, 0, padding, 0);
 
             toolbar.addView(equalizerToggle, params);
+
+            AlphaAnimation anim = new AlphaAnimation(0f, 1.0f);
+            anim.setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
+            anim.setInterpolator(getContext(), android.R.anim.decelerate_interpolator);
+            equalizerToggle.startAnimation(anim);
         }
 
         LinearLayout equalizerPanel = (LinearLayout) layout.findViewById(R.id.equalizer_panel);
@@ -102,25 +117,6 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
         }
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            toolbar.removeView(equalizerToggle);
-        }
-
-        if (equalizer != null) {
-            Prefs.getPrefs(getActivity()).edit()
-                    .putString(Prefs.EQ_SETTINGS, equalizer.getProperties().toString())
-                    .putBoolean(Prefs.EQ_ENABLED, equalizerToggle.isChecked())
-                    .putInt(Prefs.EQ_PRESET_ID, (int) presetSpinner.getSelectedItemId())
-                    .apply();
-
-            equalizer.release();
-        }
-    }
-
     private void setEqualizerEnabled(boolean enabled) {
         if (equalizerToggle.isChecked() != enabled) {
             equalizerToggle.setChecked(enabled);
@@ -149,6 +145,38 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         setEqualizerEnabled(isChecked);
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        if (isRemoving()) {
+            final Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+
+            if (toolbar != null) {
+                final int duration = getResources().getInteger(android.R.integer.config_mediumAnimTime);
+                AlphaAnimation anim = new AlphaAnimation(1.0f, 0f);
+                anim.setDuration(duration);
+                anim.setInterpolator(getContext(), android.R.anim.decelerate_interpolator);
+                equalizerToggle.startAnimation(anim);
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        toolbar.removeView(equalizerToggle);
+                    }
+                }, duration);
+            }
+
+            if (equalizer != null) {
+                Prefs.getPrefs(getActivity()).edit()
+                        .putString(Prefs.EQ_SETTINGS, equalizer.getProperties().toString())
+                        .putBoolean(Prefs.EQ_ENABLED, equalizerToggle.isChecked())
+                        .putInt(Prefs.EQ_PRESET_ID, (int) presetSpinner.getSelectedItemId())
+                        .apply();
+
+                equalizer.release();
+            }
+        }
     }
 
     private static class PresetAdapter extends BaseAdapter

@@ -141,8 +141,9 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements View
             } else if (Util.hasEqualizer()) {
                 // If there isn't a global equalizer or the user has already enabled our
                 // equalizer, navigate to the built-in implementation
-                // TODO animate this
                 getFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left,
+                                R.anim.slide_in_left, R.anim.slide_out_right)
                         .replace(R.id.prefFrame, new EqualizerFragment())
                         .addToBackStack(null)
                         .commit();
@@ -172,6 +173,8 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements View
     public boolean onLongClick(View v) {
         if (Util.hasEqualizer()) {
             getFragmentManager().beginTransaction()
+                    .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left,
+                            R.anim.slide_in_left, R.anim.slide_out_right)
                     .replace(R.id.prefFrame, new EqualizerFragment())
                     .addToBackStack(null)
                     .commit();
