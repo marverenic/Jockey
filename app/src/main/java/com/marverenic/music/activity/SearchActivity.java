@@ -100,7 +100,8 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         list.addItemDecoration(new GridSpacingDecoration(
                 (int) getResources().getDimension(R.dimen.grid_margin),
                 numColumns, AlbumSection.ID));
-        list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
+        list.addItemDecoration(
+                new BackgroundDecoration(Themes.getBackgroundElevated(), R.id.subheaderFrame));
         list.addItemDecoration(
                 new DividerDecoration(this,
                         R.id.albumInstance, R.id.subheaderFrame, R.id.empty_layout));
