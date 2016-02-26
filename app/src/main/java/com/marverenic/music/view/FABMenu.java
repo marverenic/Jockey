@@ -355,6 +355,7 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
     // A lot of code here is copied from FloatingActionButton.Behavior because I can't override the
     // methods since Google made them private. The only code that's actually functionally different
     // is in updateFabTranslationForSnackbar( ... )
+    @SuppressWarnings("unused")
     public static class Behavior extends FloatingActionButton.Behavior {
 
         public Behavior() {
@@ -378,19 +379,15 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
 
         private void updateFabTranslationForSnackbar(CoordinatorLayout parent,
                                                      FloatingActionButton fab, View snackbar) {
-            if (fab.getVisibility() == VISIBLE) {
-                float translationY = this.getFabTranslationYForSnackbar(parent, fab);
-                ViewCompat.setTranslationY(fab, translationY);
+            float translationY = this.getFabTranslationYForSnackbar(parent, fab);
+            ViewCompat.setTranslationY(fab, translationY);
 
+            for (FloatingActionButton child : ((FABMenu) fab).children) {
+                ViewCompat.setTranslationY(child, translationY);
+            }
 
-                // The only thing I actually wanted to modify:
-                for (FloatingActionButton child : ((FABMenu) fab).children) {
-                    ViewCompat.setTranslationY(child, translationY);
-                }
-
-                for (TextView label : ((FABMenu) fab).labels) {
-                    ViewCompat.setTranslationY(label, translationY);
-                }
+            for (TextView label : ((FABMenu) fab).labels) {
+                ViewCompat.setTranslationY(label, translationY);
             }
         }
 
