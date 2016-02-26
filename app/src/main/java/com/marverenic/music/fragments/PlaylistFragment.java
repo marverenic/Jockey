@@ -22,6 +22,7 @@ import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 public class PlaylistFragment extends Fragment implements Library.PlaylistChangeListener,
         Library.LibraryRefreshListener {
 
+    private RecyclerView list;
     private HeterogeneousAdapter adapter;
 
     @Override
@@ -58,7 +59,7 @@ public class PlaylistFragment extends Fragment implements Library.PlaylistChange
             }
         });
 
-        RecyclerView list = (RecyclerView) view.findViewById(R.id.list);
+        list = (RecyclerView) view.findViewById(R.id.list);
         list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
         list.addItemDecoration(
                 new DividerDecoration(getActivity(), R.id.instance_blank, R.id.empty_layout));
@@ -100,5 +101,13 @@ public class PlaylistFragment extends Fragment implements Library.PlaylistChange
     @Override
     public void onPlaylistAdded(Playlist added, int index) {
         adapter.notifyItemInserted(index);
+
+        // Scroll to the inserted item if it's not going to be visible
+        int firstIndex = list.getChildAdapterPosition(list.getChildAt(0));
+        int lastIndex = list.getChildAdapterPosition(list.getChildAt(list.getChildCount() - 1));
+
+        if (index < firstIndex || index > lastIndex) {
+            ((LinearLayoutManager) list.getLayoutManager()).scrollToPositionWithOffset(index, 0);
+        }
     }
 }

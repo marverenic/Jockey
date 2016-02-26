@@ -677,6 +677,20 @@ public final class Library {
     }
 
     /**
+     * Finds a {@link Playlist} in the library based on its ID
+     * @param playlistId The MediaStore ID of the {@link Playlist}
+     * @return A {@link Playlist} with a matching ID
+     */
+    public static Playlist findPlaylistById(long playlistId) {
+        for (Playlist p : playlistLib) {
+            if (p.getPlaylistId() == playlistId) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Finds a {@link Genre} in a library based on its Id
      * @param genreId the MediaStore Id of the {@link Genre}
      * @return A {@link Genre} with a matching Id
