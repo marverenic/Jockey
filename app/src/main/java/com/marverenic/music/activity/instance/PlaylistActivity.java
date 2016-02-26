@@ -27,8 +27,8 @@ import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 import com.marverenic.music.view.EnhancedAdapters.DragBackgroundDecoration;
 import com.marverenic.music.view.EnhancedAdapters.DragDividerDecoration;
-import com.marverenic.music.view.EnhancedAdapters.DragDropDecoration;
 import com.marverenic.music.view.EnhancedAdapters.DragDropAdapter;
+import com.marverenic.music.view.EnhancedAdapters.DragDropDecoration;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 
 import java.util.ArrayList;
@@ -39,9 +39,11 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
         DragDropSongViewHolder.OnRemovedListener {
 
     public static final String PLAYLIST_EXTRA = "playlist";
+    private static final String INVALIDATE_EXTRA = "invalidated";
     private final List<Song> data = new ArrayList<>();
     private Playlist reference;
     private HeterogeneousAdapter adapter;
+    private boolean invalidated = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,10 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
         reference = getIntent().getParcelableExtra(PLAYLIST_EXTRA);
 
         if (reference != null) {
+            if (savedInstanceState != null && savedInstanceState.getBoolean(INVALIDATE_EXTRA)) {
+                reference = Library.findPlaylistById(reference.getPlaylistId());
+            }
+
             data.addAll(Library.getPlaylistEntries(this, reference));
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle(reference.getPlaylistName());
@@ -111,6 +117,7 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
             public void onAction1() {
                 if (reference instanceof AutoPlaylist
                         && Library.hasRWPermission(PlaylistActivity.this)) {
+                    invalidated = true;
                     Navigate.to(PlaylistActivity.this, AutoPlaylistEditActivity.class,
                             AutoPlaylistEditActivity.PLAYLIST_EXTRA, reference);
                 } else {
@@ -125,9 +132,28 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (invalidated && reference != null) {
+            reference = Library.findPlaylistById(reference.getPlaylistId());
+            data.clear();
+            data.addAll(Library.getPlaylistEntries(this, reference));
+            adapter.notifyDataSetChanged();
+
+            invalidated = false;
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_playlist, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(INVALIDATE_EXTRA, invalidated);
     }
 
     @Override
