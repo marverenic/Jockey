@@ -68,12 +68,9 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
 
                 dividerDrawable.setBounds(left, top, right, bottom);
 
-                // Don't draw separators under the last item in a section unless it's at the end
-                // of the list and it has a divider above it or unless we've been told to draw
-                // dividers on the last item
+                // Don't draw separators under the last item in a section unless we've been told to
                 View nextChild = parent.getChildAt(i + 1);
-                if (drawOnLastItem || (nextChild == null && includeView(child))
-                        || (nextChild != null && includeView(nextChild))) {
+                if (drawOnLastItem || (nextChild != null && includeView(nextChild))) {
                     dividerDrawable.draw(c);
                 }
             }
