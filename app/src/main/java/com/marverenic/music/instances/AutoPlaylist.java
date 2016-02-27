@@ -248,7 +248,9 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                 break;
         }
 
-        if (sortAscending) {
+        // Names are already ascending, so invert their behavior by inverting sortAscending when
+        // we're looking at names
+        if (sortAscending ^ (sortMethod == Rule.Field.NAME)) {
             Collections.reverse(in);
         }
         return in;
