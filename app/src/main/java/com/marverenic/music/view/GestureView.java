@@ -215,6 +215,13 @@ public class GestureView extends FrameLayout {
                 float alphaMultiplier =  Math.min(radius / (float) mActivationThreshold, 1);
                 indicator.setAlpha((int) (mAlpha * alphaMultiplier));
                 indicator.draw(canvas);
+
+                /*
+                    Because RotateDrawable does not respect .mutate(), reset the alpha to make
+                    sure that it doesn't change the transparency of any Drawables elsewhere
+                    in the app
+                 */
+                indicator.setAlpha(255);
             }
         }
     }
