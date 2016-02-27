@@ -545,7 +545,8 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                         }
                     } else if (match == Match.CONTAINS || match == Match.NOT_CONTAINS) {
                         for (Playlist p : Library.getPlaylists()) {
-                            if (p.playlistName.contains(value) ^ match == Match.NOT_EQUALS) {
+                            if (p.playlistName.toLowerCase().contains(value.toLowerCase())
+                                    ^ match == Match.NOT_EQUALS) {
                                 for (Song s : Library.getPlaylistEntries(context, p)) {
                                     if (in.contains(s) && !filteredSongs.contains(s)) {
                                         filteredSongs.add(s);
@@ -587,7 +588,8 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                         }
                     } else if (match == Match.CONTAINS || match == Match.NOT_CONTAINS) {
                         for (Song s : in) {
-                            if (s.songName.contains(value) ^ match == Match.NOT_CONTAINS) {
+                            if (s.songName.toLowerCase().contains(value.toLowerCase())
+                                    ^ match == Match.NOT_CONTAINS) {
                                 filteredSongs.add(s);
                             }
                         }
@@ -722,7 +724,8 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                         }
                     } else if (match == Match.CONTAINS || match == Match.NOT_CONTAINS) {
                         for (Song s : in) {
-                            if (s.artistName.contains(value) ^ match == Match.NOT_CONTAINS) {
+                            if (s.artistName.toLowerCase().contains(value.toLowerCase())
+                                    ^ match == Match.NOT_CONTAINS) {
                                 filteredSongs.add(s);
                             }
                         }
@@ -761,7 +764,8 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                         }
                     } else if (match == Match.CONTAINS || match == Match.NOT_CONTAINS) {
                         for (Song s : in) {
-                            if (s.albumName.contains(value) ^ match == Match.NOT_CONTAINS) {
+                            if (s.albumName.toLowerCase().contains(value.toLowerCase())
+                                    ^ match == Match.NOT_CONTAINS) {
                                 filteredSongs.add(s);
                             }
                         }
@@ -804,7 +808,8 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                         }
                     } else if (match == Match.CONTAINS || match == Match.NOT_CONTAINS) {
                         for (Genre g : Library.getGenres()) {
-                            if (g.genreName.contains(value) ^ match == Match.NOT_CONTAINS) {
+                            if (g.genreName.toLowerCase().contains(value.toLowerCase())
+                                    ^ match == Match.NOT_CONTAINS) {
                                 for (Song s : in) {
                                     if (s.genreId == g.genreId) {
                                         filteredSongs.add(s);
