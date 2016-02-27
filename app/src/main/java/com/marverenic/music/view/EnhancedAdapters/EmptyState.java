@@ -5,8 +5,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * Generates Views that represent empty states in a {@link RecyclerView}
- * @see EnhancedAdapter#setEmptyState(EmptyState)
+ * Generates Views that represents empty states in a {@link RecyclerView}
+ * @see HeterogeneousAdapter#setEmptyState(EmptyState)
  */
 public abstract class EmptyState {
 

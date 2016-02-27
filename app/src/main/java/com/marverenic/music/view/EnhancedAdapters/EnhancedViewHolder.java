@@ -5,7 +5,7 @@ import android.view.View;
 
 /**
  * An extension of {@link android.support.v7.widget.RecyclerView.ViewHolder} used by
- * {@link EnhancedAdapter}s to add functionality to ViewHolders
+ * {@link HeterogeneousAdapter}s to add functionality to ViewHolders
  * @param <Type> The type of data that this ViewHolder will be used to display. Void may be used
  *              if this ViewHolder doesn't have a data type and doesn't need to be updated.
  */

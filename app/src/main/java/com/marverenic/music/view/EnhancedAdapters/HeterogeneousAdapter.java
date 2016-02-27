@@ -14,9 +14,8 @@ import java.util.List;
  * that have different kinds of data that are grouped together into sections and displayed after
  * each other.
  *
- * Unlike RecyclerView, this class cannot be extended. To populate this adapter,
- * use {@link #addSection(Section)}. All data lookup and ViewHolder instantiation is handled by
- * Sections. Sections appear in the order that they are added.
+ * To populate this adapter, use {@link #addSection(Section)}. All data lookup and ViewHolder
+ * instantiation is handled by Sections. Sections appear in the order that they are added.
  */
 public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolder> {
 
@@ -123,8 +122,8 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
      * {@link #sectionIndex(long)} and {@link #itemIndex(long)}.
      *
      * @param position The position to lookup an index for
-     * @return A formatted long with the section index in the left 16 bits and the position within
-     *         the section in the right 16 bits, or {@link #UNKNOWN_INDICES} if it's the specified
+     * @return A formatted long with the section index in the left 32 bits and the position within
+     *         the section in the right 32 bits, or {@link #UNKNOWN_INDICES} if it's the specified
      *         position isn't valid
      */
     private long lookupPos(int position) {
@@ -139,14 +138,30 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
         return UNKNOWN_INDICES;
     }
 
+    /**
+     * Returns the section that an item is in from a position long built by {@link #lookupPos(int)}
+     * @param index The position value to get the item index from
+     * @return The left 32 bits of the position value
+     */
     private static int sectionIndex(long index) {
         return (int) (index >> 32);
     }
 
+    /**
+     * Returns the index of an item within its section from a position long built by
+     * {@link #lookupPos(int)}
+     * @param index The position value to get the item index from
+     * @return The right 32 bits of the position value
+     */
     private static int itemIndex(long index) {
         return (int) index;
     }
 
+    /**
+     * Calculates the number of views contained in sections proceeding a given section
+     * @param typeId The ID of the section to get the leading view count of
+     * @return The number of views in this list that are above the first view in the given section
+     */
     protected int getLeadingViewCount(int typeId) {
         int count = 0;
         for (Section s : mSections) {
@@ -201,6 +216,10 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
         }
     }
 
+    /**
+     * @return The number of visible data entries in all sections. This value does not necessarily
+     *         correspond to the value returned by {@link #getItemCount()}
+     */
     private int getDataSize() {
         int sum = 0;
         for (Section s : mSections) {
@@ -301,8 +320,8 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
     /**
      * An extension of {@link HeterogeneousAdapter.Section} that always has exactly one item in
      * the set
-     * @param <Type> The class of the item that this Section shows. You may use Void if this Section
-     *              has no data
+     * @param <Type> The class of the item that this Section shows. You may use {@link Void}
+     *              if this Section has no data
      */
     public static abstract class SingletonSection<Type> extends Section<Type> {
 
