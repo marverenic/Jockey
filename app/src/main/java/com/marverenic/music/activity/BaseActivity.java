@@ -39,7 +39,7 @@ public abstract class BaseActivity extends AppCompatActivity
     // Used when resuming the Activity to respond to a potential theme change
     @StyleRes
     private int themeId;
-    private int nightMode;
+    private boolean night;
 
     /**
      * @inheritDoc
@@ -50,7 +50,7 @@ public abstract class BaseActivity extends AppCompatActivity
 
         Themes.setTheme(this);
         themeId = Themes.getTheme(this);
-        nightMode = Themes.getNightMode(this);
+        night = getResources().getBoolean(R.bool.night);
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
@@ -137,8 +137,10 @@ public abstract class BaseActivity extends AppCompatActivity
         super.onResume();
         if (DEBUG) Log.i(getClass().toString(), "Called onResume");
 
-        if (themeId != Themes.getTheme(this) || nightMode != Themes.getNightMode(this)) {
-            // If the theme was changed since this Activity was last started, recreate it
+        // If the theme was changed since this Activity was created, or the automatic day/night
+        // theme has changed state, recreate this activity
+        Themes.setNight(this);
+        if (themeId != Themes.getTheme(this) || night != getResources().getBoolean(R.bool.night)) {
             recreate();
         } else {
             Themes.setApplicationIcon(this);
