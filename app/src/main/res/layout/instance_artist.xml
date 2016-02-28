@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:scaleType="center"
-        android:src="@drawable/abc_ic_menu_moreoverflow_mtrl_alpha"
+        android:src="@drawable/ic_menu_24dp"
         android:tint="?textColorPrimary"
         android:background="?selectableItemBackgroundBorderless"
         android:layout_alignParentRight="true"
