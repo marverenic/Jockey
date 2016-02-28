@@ -1,86 +1,20 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Static Colors -->
-    <color name="grid_background_default">#ffb0bec5</color>
-    <color name="grid_text">#77000000</color>
-    <color name="grid_detail_text">#97000000</color>
-    <color name="about_detail_text">#B4FFFFFF</color>
-
-    <color name="player_frame_info_background">#37474f</color>
-    <color name="player_frame_ctrl_background">#455a64</color>
-    <color name="player_control_background">#212121</color>
-    <color name="player_text_main">#ffffff</color>
-    <color name="player_text_detail">#ffffff</color>
-
-    <!-- Theme Colors-->
-    <!-- Light Base -->
-    <color name="primary_text">#212121</color>
-    <color name="secondary_text">#757575</color>
-    <color name="background">#EEEEEE</color>
-    <color name="screen_overlay">#CCFFFFFF</color>
-    <color name="background_elevated">#F5F5F5</color>
-    <color name="background_miniplayer">#FAFAFA</color>
-    <color name="progress_empty">#08000000</color>
-
-    <!-- Dark Base -->
-    <color name="primary_text_dark">#FAFAFA</color>
-    <color name="secondary_text_dark">#E0E0E0</color>
-    <color name="background_dark">#111111</color>
-    <color name="screen_overlay_dark">#CC212121</color>
-    <color name="background_elevated_dark">#212121</color>
-    <color name="background_miniplayer_dark">#333333</color>
-    <color name="progress_empty_dark">#08FFFFFF</color>
-
-    <!-- Grey -->
-    <color name="primary_grey">#37474F</color>
-    <color name="primary_dark_grey">#263238</color>
-    <color name="accent_grey">#90A4AE</color>
-
-    <!-- Red -->
-    <color name="primary_red">#C62828</color>
-    <color name="primary_dark_red">#B71C1C</color>
-    <color name="accent_red">#FF5252</color>
-
-    <!-- Orange -->
-    <color name="primary_orange">#EF6C00</color>
-    <color name="primary_dark_orange">#E65100</color>
-    <color name="accent_orange">#FFAB40</color>
-
-    <!-- Yellow -->
-    <color name="primary_yellow">#F9A825</color>
-    <color name="primary_dark_yellow">#F57F17</color>
-    <color name="accent_yellow">#FFD600</color>
-
-    <!-- Green -->
-    <color name="primary_green">#2E7D32</color>
-    <color name="primary_dark_green">#1B5E20</color>
-    <color name="accent_green">#00C853</color>
-
-    <!-- Blue Colors -->
-    <color name="primary">#00838F</color>
-    <color name="primary_dark">#006064</color>
-    <color name="accent">#40C4FF</color>
-
-    <!-- Purple -->
-    <color name="primary_purple">#6A1B9A</color>
-    <color name="primary_dark_purple">#4A148C</color>
-    <color name="accent_purple">#AA00FF</color>
-
-    <!-- Dark Theme Base -->
-    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowBackground">@color/background_dark</item>
-        <item name="textColorPrimary">@color/primary_text_dark</item>
-        <item name="textColorSecondary">@color/secondary_text_dark</item>
-        <item name="progressEmptyColor">@color/progress_empty_dark</item>
+    <!-- App Theme Base -->
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/background</item>
+        <item name="textColorPrimary">@color/primary_text</item>
+        <item name="textColorSecondary">@color/secondary_text</item>
+        <item name="progressEmptyColor">@color/progress_empty</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
         <item name="popupMenuStyle">@style/PopupMenu</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
-    <style name="PopupMenu" parent="@style/Widget.AppCompat.PopupMenu">
+    <style name="PopupMenu" parent="@style/Widget.AppCompat.Light.PopupMenu">
         <item name="overlapAnchor">true</item>
     </style>
 
-    <!-- Dark themes -->
     <style name="AppTheme.Black" parent="AppTheme">
         <item name="colorPrimary">@color/primary_grey</item>
         <item name="colorPrimaryDark">@color/primary_dark_grey</item>
@@ -89,7 +23,7 @@
         <item name="alertDialogTheme">@style/AppTheme.Black.AlertDialog</item>
     </style>
 
-    <style name="AppTheme.Black.AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
+    <style name="AppTheme.Black.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
         <item name="colorAccent">@color/accent_grey</item>
     </style>
 
@@ -101,7 +35,7 @@
         <item name="alertDialogTheme">@style/AppTheme.Red.AlertDialog</item>
     </style>
 
-    <style name="AppTheme.Red.AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
+    <style name="AppTheme.Red.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
         <item name="colorAccent">@color/accent_red</item>
     </style>
 
@@ -113,7 +47,7 @@
         <item name="alertDialogTheme">@style/AppTheme.Orange.AlertDialog</item>
     </style>
 
-    <style name="AppTheme.Orange.AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
+    <style name="AppTheme.Orange.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
         <item name="colorAccent">@color/accent_orange</item>
     </style>
 
@@ -125,7 +59,7 @@
         <item name="alertDialogTheme">@style/AppTheme.Yellow.AlertDialog</item>
     </style>
 
-    <style name="AppTheme.Yellow.AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
+    <style name="AppTheme.Yellow.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
         <item name="colorAccent">@color/accent_yellow</item>
     </style>
 
@@ -137,7 +71,7 @@
         <item name="alertDialogTheme">@style/AppTheme.Green.AlertDialog</item>
     </style>
 
-    <style name="AppTheme.Green.AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
+    <style name="AppTheme.Green.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
         <item name="colorAccent">@color/accent_green</item>
     </style>
 
@@ -149,7 +83,7 @@
         <item name="alertDialogTheme">@style/AppTheme.Blue.AlertDialog</item>
     </style>
 
-    <style name="AppTheme.Blue.AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
+    <style name="AppTheme.Blue.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
         <item name="colorAccent">@color/accent</item>
     </style>
 
@@ -161,107 +95,7 @@
         <item name="alertDialogTheme">@style/AppTheme.Purple.AlertDialog</item>
     </style>
 
-    <style name="AppTheme.Purple.AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
-        <item name="colorAccent">@color/accent_purple</item>
-    </style>
-
-    <!-- Light theme base -->
-    <style name="AppThemeLight" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowBackground">@color/background</item>
-        <item name="textColorPrimary">@color/primary_text</item>
-        <item name="textColorSecondary">@color/secondary_text</item>
-        <item name="progressEmptyColor">@color/progress_empty</item>
-        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
-        <item name="popupMenuStyle">@style/PopupMenu.Light</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
-    </style>
-
-    <style name="PopupMenu.Light" parent="@style/Widget.AppCompat.Light.PopupMenu">
-        <item name="overlapAnchor">true</item>
-    </style>
-
-    <!-- More themes -->
-    <style name="AppThemeLight.Black" parent="AppThemeLight">
-        <item name="colorPrimary">@color/primary_grey</item>
-        <item name="colorPrimaryDark">@color/primary_dark_grey</item>
-        <item name="colorAccent">@color/accent_grey</item>
-        <item name="colorControlHighlight">@color/accent_grey</item>
-        <item name="alertDialogTheme">@style/AppThemeLight.Black.AlertDialog</item>
-    </style>
-
-    <style name="AppThemeLight.Black.AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorAccent">@color/accent_grey</item>
-    </style>
-
-    <style name="AppThemeLight.Red" parent="AppThemeLight">
-        <item name="colorPrimary">@color/primary_red</item>
-        <item name="colorPrimaryDark">@color/primary_dark_red</item>
-        <item name="colorAccent">@color/accent_red</item>
-        <item name="colorControlHighlight">@color/accent_red</item>
-        <item name="alertDialogTheme">@style/AppThemeLight.Red.AlertDialog</item>
-    </style>
-
-    <style name="AppThemeLight.Red.AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorAccent">@color/accent_red</item>
-    </style>
-
-    <style name="AppThemeLight.Orange" parent="AppThemeLight">
-        <item name="colorPrimary">@color/primary_orange</item>
-        <item name="colorPrimaryDark">@color/primary_dark_orange</item>
-        <item name="colorAccent">@color/accent_orange</item>
-        <item name="colorControlHighlight">@color/accent_orange</item>
-        <item name="alertDialogTheme">@style/AppThemeLight.Orange.AlertDialog</item>
-    </style>
-
-    <style name="AppThemeLight.Orange.AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorAccent">@color/accent_orange</item>
-    </style>
-
-    <style name="AppThemeLight.Yellow" parent="AppThemeLight">
-        <item name="colorPrimary">@color/primary_yellow</item>
-        <item name="colorPrimaryDark">@color/primary_dark_yellow</item>
-        <item name="colorAccent">@color/accent_yellow</item>
-        <item name="colorControlHighlight">@color/accent_yellow</item>
-        <item name="alertDialogTheme">@style/AppThemeLight.Yellow.AlertDialog</item>
-    </style>
-
-    <style name="AppThemeLight.Yellow.AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorAccent">@color/accent_yellow</item>
-    </style>
-
-    <style name="AppThemeLight.Green" parent="AppThemeLight">
-        <item name="colorPrimary">@color/primary_green</item>
-        <item name="colorPrimaryDark">@color/primary_dark_green</item>
-        <item name="colorAccent">@color/accent_green</item>
-        <item name="colorControlHighlight">@color/accent_green</item>
-        <item name="alertDialogTheme">@style/AppThemeLight.Green.AlertDialog</item>
-    </style>
-
-    <style name="AppThemeLight.Green.AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorAccent">@color/accent_green</item>
-    </style>
-
-    <style name="AppThemeLight.Blue" parent="AppThemeLight">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accent</item>
-        <item name="colorControlHighlight">@color/accent</item>
-        <item name="alertDialogTheme">@style/AppThemeLight.Blue.AlertDialog</item>
-    </style>
-
-    <style name="AppThemeLight.Blue.AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorAccent">@color/accent</item>
-    </style>
-
-    <style name="AppThemeLight.Purple" parent="AppThemeLight">
-        <item name="colorPrimary">@color/primary_purple</item>
-        <item name="colorPrimaryDark">@color/primary_dark_purple</item>
-        <item name="colorAccent">@color/accent_purple</item>
-        <item name="colorControlHighlight">@color/accent_purple</item>
-        <item name="alertDialogTheme">@style/AppThemeLight.Purple.AlertDialog</item>
-    </style>
-
-    <style name="AppThemeLight.Purple.AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+    <style name="AppTheme.Purple.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
         <item name="colorAccent">@color/accent_purple</item>
     </style>
 

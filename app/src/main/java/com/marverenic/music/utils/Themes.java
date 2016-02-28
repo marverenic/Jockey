@@ -14,6 +14,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StyleRes;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.app.NightMode;
 import android.util.DisplayMetrics;
 
 import com.marverenic.music.R;
@@ -59,11 +62,6 @@ public final class Themes {
 
     public static int getBackgroundMiniplayer() {
         return backgroundMiniplayer;
-    }
-
-    @SuppressWarnings("deprecation")
-    public static boolean isLight(Context context) {
-        return background == context.getResources().getColor(R.color.background);
     }
 
     // Update method
@@ -117,9 +115,9 @@ public final class Themes {
                 backgroundMiniplayer = resources.getColor(R.color.background_miniplayer);
                 break;
             default: // Material Dark
-                background = resources.getColor(R.color.background_dark);
-                backgroundElevated = resources.getColor(R.color.background_elevated_dark);
-                backgroundMiniplayer = resources.getColor(R.color.background_miniplayer_dark);
+                background = resources.getColor(R.color.background);
+                backgroundElevated = resources.getColor(R.color.background_elevated);
+                backgroundMiniplayer = resources.getColor(R.color.background_miniplayer);
                 break;
         }
     }
@@ -127,50 +125,30 @@ public final class Themes {
     @StyleRes
     public static int getTheme(Context context) {
         SharedPreferences prefs = Prefs.getPrefs(context);
-        int basePref = Integer.parseInt(prefs.getString(Prefs.BASE_COLOR, "1"));
         int primaryPref = Integer.parseInt(prefs.getString(Prefs.PRIMARY_COLOR, "5"));
 
-        if (basePref == 1) {
-            // Light Base
-            switch (primaryPref) {
-                case 0: // Black
-                    return R.style.AppThemeLight_Black;
-                case 1: // Red
-                    return R.style.AppThemeLight_Red;
-                case 2: // Orange
-                    return R.style.AppThemeLight_Orange;
-                case 3: // Yellow
-                    return R.style.AppThemeLight_Yellow;
-                case 4: // Green
-                    return R.style.AppThemeLight_Green;
-                case 6: // Purple
-                    return R.style.AppThemeLight_Purple;
-                default: // Blue or Unknown
-                    return R.style.AppThemeLight_Blue;
-            }
-        } else {
-            // Dark or Unknown Base
-            switch (primaryPref) {
-                case 0: // Black
-                    return R.style.AppTheme_Black;
-                case 1: // Red
-                    return R.style.AppTheme_Red;
-                case 2: // Orange
-                    return R.style.AppTheme_Orange;
-                case 3: // Yellow
-                    return R.style.AppTheme_Yellow;
-                case 4: // Green
-                    return R.style.AppTheme_Green;
-                case 6: // Purple
-                    return R.style.AppTheme_Purple;
-                default: // Blue or Unknown
-                    return R.style.AppTheme_Blue;
-            }
+        switch (primaryPref) {
+            case 0: // Black
+                return R.style.AppTheme_Black;
+            case 1: // Red
+                return R.style.AppTheme_Red;
+            case 2: // Orange
+                return R.style.AppTheme_Orange;
+            case 3: // Yellow
+                return R.style.AppTheme_Yellow;
+            case 4: // Green
+                return R.style.AppTheme_Green;
+            case 6: // Purple
+                return R.style.AppTheme_Purple;
+            default: // Blue or Unknown
+                return R.style.AppTheme_Blue;
         }
     }
 
     @SuppressWarnings("deprecation")
-    public static void setTheme(Activity activity) {
+    public static void setTheme(AppCompatActivity activity) {
+        setNight(activity);
+
         updateColors(activity);
         activity.setTheme(getTheme(activity));
 
@@ -190,6 +168,24 @@ public final class Themes {
                 }
             }
         }
+    }
+
+    @NightMode
+    public static int getNightMode(Context context) {
+        switch (Integer.parseInt(Prefs.getPrefs(context).getString(Prefs.BASE_COLOR, "1"))) {
+            case 2: // Auto
+                return AppCompatDelegate.MODE_NIGHT_AUTO;
+            case 0: // Dark
+                return AppCompatDelegate.MODE_NIGHT_YES;
+            case 1: // Light
+            default:
+                return AppCompatDelegate.MODE_NIGHT_NO;
+        }
+    }
+
+    public static void setNight(AppCompatActivity activity) {
+        AppCompatDelegate.setDefaultNightMode(getNightMode(activity));
+        activity.getDelegate().applyDayNight();
     }
 
     public static Bitmap getIcon(Context context) {

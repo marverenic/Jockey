@@ -82,9 +82,7 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
         list.addItemDecoration(new DragDividerDecoration(getActivity(), true, R.id.instance_blank));
         //noinspection deprecation
         list.addItemDecoration(new DragDropDecoration(
-                (NinePatchDrawable) getResources().getDrawable((Themes.isLight(getContext()))
-                        ? R.drawable.list_drag_shadow_light
-                        : R.drawable.list_drag_shadow_dark)));
+                (NinePatchDrawable) getResources().getDrawable(R.drawable.list_drag_shadow)));
 
         list.setLayoutManager(new LinearLayoutManager(getContext()));
 

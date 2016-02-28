@@ -9,7 +9,7 @@ import android.support.annotation.IdRes;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.marverenic.music.utils.Themes;
+import com.marverenic.music.R;
 
 /**
  * An {@link android.support.v7.widget.RecyclerView.ItemDecoration} that draws horizontal dividers
@@ -43,7 +43,8 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
      */
     public DividerDecoration(Context context, boolean drawOnLastItem,
                              @IdRes int... excludedLayoutIDs) {
-        dividerDrawable = new ColorDrawable(Themes.isLight(context) ? 0xFFE0E0E0 : 0xFF1F1F1F);
+        //noinspection deprecation
+        dividerDrawable = new ColorDrawable(context.getResources().getColor(R.color.divider));
         measuredDividerHeight = (int) Math.ceil(
                 DIVIDER_HEIGHT_DP * context.getResources().getDisplayMetrics().density);
         excludedIDs = excludedLayoutIDs;

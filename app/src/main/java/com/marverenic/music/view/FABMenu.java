@@ -23,7 +23,6 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.marverenic.music.R;
-import com.marverenic.music.utils.Themes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,11 +66,7 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
                         ViewGroup.LayoutParams.MATCH_PARENT));
 
         //noinspection deprecation
-        screen.setBackgroundColor(
-                Themes.isLight(context)
-                        ? context.getResources().getColor(R.color.screen_overlay)
-                        : context.getResources().getColor(R.color.screen_overlay_dark));
-
+        screen.setBackgroundColor(context.getResources().getColor(R.color.screen_overlay));
         screen.setOnClickListener(this);
     }
 

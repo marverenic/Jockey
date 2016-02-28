@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/miniplayer_height"
         android:layout_alignParentBottom="true"
-        android:background="@color/background_miniplayer_dark"
+        android:background="@color/background_miniplayer"
         android:elevation="@dimen/miniplayer_elevation">
 
         <fragment

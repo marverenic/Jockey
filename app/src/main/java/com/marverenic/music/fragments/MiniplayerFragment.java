@@ -49,12 +49,6 @@ public class MiniplayerFragment extends Fragment implements PlayerController.Upd
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             LayerDrawable progressDrawable = (LayerDrawable) songProgress.getProgressDrawable();
-            progressDrawable.findDrawableByLayerId(android.R.id.background).setColorFilter(
-                    Themes.isLight(getContext())
-                            ? 0xFF000000
-                            : 0xFFFFFFFF,
-                    PorterDuff.Mode.SRC_ATOP);
-
             progressDrawable.findDrawableByLayerId(android.R.id.progress).setColorFilter(
                     Themes.getAccent(), PorterDuff.Mode.SRC_ATOP);
         }

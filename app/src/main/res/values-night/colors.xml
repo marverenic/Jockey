@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base colors -->
+    <color name="primary_text">#FAFAFA</color>
+    <color name="secondary_text">#E0E0E0</color>
+    <color name="secondary_text_disabled">@color/secondary_text_disabled_material_dark</color>
+    <color name="background">#111111</color>
+    <color name="screen_overlay">#CC212121</color>
+    <color name="background_elevated">#212121</color>
+    <color name="background_miniplayer">#333333</color>
+    <color name="progress_empty">#08FFFFFF</color>
+    <color name="divider">#1EFFFFFF</color>
+
+</resources>

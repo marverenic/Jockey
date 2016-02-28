@@ -80,10 +80,8 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
             list.addItemDecoration(new DragDividerDecoration(this, R.id.empty_layout));
         }
 
-        list.addItemDecoration(new DragDropDecoration((NinePatchDrawable) getDrawableCompat(
-                (Themes.isLight(this))
-                        ? R.drawable.list_drag_shadow_light
-                        : R.drawable.list_drag_shadow_dark)));
+        list.addItemDecoration(new DragDropDecoration(
+                (NinePatchDrawable) getDrawableCompat(R.drawable.list_drag_shadow)));
 
         adapter.setEmptyState(new LibraryEmptyState(this) {
             @Override

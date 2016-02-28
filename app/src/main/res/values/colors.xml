@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Constant Colors -->
+    <color name="grid_background_default">#ffb0bec5</color>
+    <color name="grid_text">#77000000</color>
+    <color name="grid_detail_text">#97000000</color>
+    <color name="about_detail_text">#B4FFFFFF</color>
+
+    <color name="player_frame_info_background">#37474f</color>
+    <color name="player_frame_ctrl_background">#455a64</color>
+    <color name="player_control_background">#212121</color>
+    <color name="player_text_main">#ffffff</color>
+    <color name="player_text_detail">#ffffff</color>
+
+    <!-- Base colors -->
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#757575</color>
+    <color name="secondary_text_disabled">@color/secondary_text_disabled_material_light</color>
+    <color name="background">#EEEEEE</color>
+    <color name="screen_overlay">#CCFFFFFF</color>
+    <color name="background_elevated">#F5F5F5</color>
+    <color name="background_miniplayer">#FAFAFA</color>
+    <color name="progress_empty">#08000000</color>
+    <color name="divider">#1E000000</color>
+
+    <!-- Accent colors -->
+    <!-- Grey -->
+    <color name="primary_grey">#37474F</color>
+    <color name="primary_dark_grey">#263238</color>
+    <color name="accent_grey">#90A4AE</color>
+
+    <!-- Red -->
+    <color name="primary_red">#C62828</color>
+    <color name="primary_dark_red">#B71C1C</color>
+    <color name="accent_red">#FF5252</color>
+
+    <!-- Orange -->
+    <color name="primary_orange">#EF6C00</color>
+    <color name="primary_dark_orange">#E65100</color>
+    <color name="accent_orange">#FFAB40</color>
+
+    <!-- Yellow -->
+    <color name="primary_yellow">#F9A825</color>
+    <color name="primary_dark_yellow">#F57F17</color>
+    <color name="accent_yellow">#FFD600</color>
+
+    <!-- Green -->
+    <color name="primary_green">#2E7D32</color>
+    <color name="primary_dark_green">#1B5E20</color>
+    <color name="accent_green">#00C853</color>
+
+    <!-- Blue Colors -->
+    <color name="primary">#00838F</color>
+    <color name="primary_dark">#006064</color>
+    <color name="accent">#40C4FF</color>
+
+    <!-- Purple -->
+    <color name="primary_purple">#6A1B9A</color>
+    <color name="primary_dark_purple">#4A148C</color>
+    <color name="accent_purple">#AA00FF</color>
+
+</resources>

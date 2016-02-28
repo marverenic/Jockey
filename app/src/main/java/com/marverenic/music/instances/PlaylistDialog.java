@@ -66,9 +66,7 @@ public class PlaylistDialog {
             mDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
             //noinspection deprecation
             mDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
-                    mContext.getResources().getColor((Themes.isLight(mContext)
-                            ? R.color.secondary_text_disabled_material_light
-                            : R.color.secondary_text_disabled_material_dark)));
+                    mContext.getResources().getColor(R.color.secondary_text_disabled));
 
             int padding = (int) mContext.getResources().getDimension(R.dimen.alert_padding);
             ((View) mInputLayout.getParent()).setPadding(
@@ -101,9 +99,7 @@ public class PlaylistDialog {
             } else {
                 //noinspection deprecation
                 mDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
-                        mContext.getResources().getColor((Themes.isLight(mContext)
-                                ? R.color.secondary_text_disabled_material_light
-                                : R.color.secondary_text_disabled_material_dark)));
+                        mContext.getResources().getColor(R.color.secondary_text_disabled));
             }
         }
 
