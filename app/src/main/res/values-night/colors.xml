@@ -10,6 +10,6 @@
     <color name="background_elevated">#212121</color>
     <color name="background_miniplayer">#333333</color>
     <color name="progress_empty">#08FFFFFF</color>
-    <color name="divider">#1EFFFFFF</color>
+    <color name="divider">#3C3C3C</color>
 
 </resources>
