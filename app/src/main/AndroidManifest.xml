@@ -109,18 +109,18 @@
 
         <!-- Player Service -->
         <service
-            android:name=".PlayerService"
+            android:name=".player.PlayerService"
             android:process=":player"
             android:exported="false" />
 
         <!-- Broadcast Receivers -->
         <receiver
-            android:name=".PlayerService$Listener"
+            android:name=".player.PlayerService$Listener"
             android:process=":player"
             android:exported="false" />
 
         <receiver
-            android:name=".PlayerService$RemoteControlReceiver"
+            android:name=".player.PlayerService$RemoteControlReceiver"
             android:process=":player"
             android:exported="false">
             <intent-filter>
@@ -128,7 +128,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".PlayerController$Listener"
+        <receiver android:name=".player.PlayerController$Listener"
             android:exported="false">
             <intent-filter android:priority="999">
                 <action android:name="marverenic.jockey.player.REFRESH"/>

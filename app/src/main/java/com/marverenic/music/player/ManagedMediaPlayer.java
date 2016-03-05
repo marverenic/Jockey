@@ -1,12 +1,19 @@
-package com.marverenic.music.utils;
+package com.marverenic.music.player;
 
 import android.content.Context;
+import android.media.MediaDataSource;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.Log;
 
+import java.io.FileDescriptor;
 import java.io.IOException;
+import java.util.Map;
 
+/**
+ * An extension of {@link MediaPlayer} that keeps track of its state and does not throw errors
+ * (and therefore end playback) when a method is called in an invalid state.
+ */
 public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPreparedListener,
         MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
 
@@ -16,7 +23,6 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
 
     private static final String TAG = "ManagedMediaPlayer";
     private Status state;
-    private boolean effectivelyComplete;
     private OnPreparedListener onPreparedListener;
     private OnCompletionListener onCompletionListener;
     private OnErrorListener onErrorListener;
@@ -33,7 +39,6 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
     public void reset() {
         super.reset();
         state = Status.IDLE;
-        effectivelyComplete = false;
     }
 
     @Override
@@ -41,7 +46,6 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
         if (state == Status.IDLE) {
             super.setDataSource(context, uri);
             state = Status.INITIALIZED;
-            effectivelyComplete = false;
         } else {
             Log.i(TAG, "Attempted to set data source, but media player was in state " + state);
         }
@@ -52,7 +56,50 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
         if (state == Status.IDLE) {
             super.setDataSource(path);
             state = Status.INITIALIZED;
-            effectivelyComplete = false;
+        } else {
+            Log.i(TAG, "Attempted to set data source, but media player was in state " + state);
+        }
+    }
+
+    @Override
+    public void setDataSource(Context context, Uri uri, Map<String, String> headers)
+            throws IOException, IllegalArgumentException, SecurityException, IllegalStateException {
+        if (state == Status.IDLE) {
+            super.setDataSource(context, uri, headers);
+            state = Status.INITIALIZED;
+        } else {
+            Log.i(TAG, "Attempted to set data source, but media player was in state " + state);
+        }
+    }
+
+    @Override
+    public void setDataSource(FileDescriptor fd) throws IOException, IllegalArgumentException,
+            IllegalStateException {
+        if (state == Status.IDLE) {
+            super.setDataSource(fd);
+            state = Status.INITIALIZED;
+        } else {
+            Log.i(TAG, "Attempted to set data source, but media player was in state " + state);
+        }
+    }
+
+    @Override
+    public void setDataSource(FileDescriptor fd, long offset, long length) throws IOException,
+            IllegalArgumentException, IllegalStateException {
+        if (state == Status.IDLE) {
+            super.setDataSource(fd, offset, length);
+            state = Status.INITIALIZED;
+        } else {
+            Log.i(TAG, "Attempted to set data source, but media player was in state " + state);
+        }
+    }
+
+    @Override
+    public void setDataSource(MediaDataSource dataSource) throws IllegalArgumentException,
+            IllegalStateException {
+        if (state == Status.IDLE) {
+            super.setDataSource(dataSource);
+            state = Status.INITIALIZED;
         } else {
             Log.i(TAG, "Attempted to set data source, but media player was in state " + state);
         }
@@ -60,10 +107,9 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
 
     @Override
     public void prepareAsync() {
-        if (state == Status.INITIALIZED) {
+        if (state == Status.INITIALIZED || state == Status.STOPPED) {
             super.prepareAsync();
             state = Status.PREPARING;
-            effectivelyComplete = false;
         } else {
             Log.i(TAG, "Attempted to prepare async, but media player was in state " + state);
         }
@@ -74,7 +120,6 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
         if (state == Status.INITIALIZED) {
             super.prepare();
             state = Status.PREPARING;
-            effectivelyComplete = false;
         } else {
             Log.i(TAG, "Attempted to prepare, but media player was in state " + state);
         }
@@ -97,12 +142,8 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
     public void start() {
         if (state == Status.PREPARED || state == Status.STARTED || state == Status.PAUSED
                 || state == Status.COMPLETED) {
-            if (effectivelyComplete) {
-                seekTo(0);
-            }
             super.start();
             state = Status.STARTED;
-            effectivelyComplete = false;
         } else {
             Log.i(TAG, "Attempted to start, but media player was in state " + state);
         }
@@ -139,7 +180,6 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
     public void seekTo(int mSec) {
         if (state == Status.PREPARED || state == Status.STARTED || state == Status.PAUSED) {
             super.seekTo(mSec);
-            effectivelyComplete = false;
         } else if (state == Status.COMPLETED) {
             start();
             pause();
@@ -169,14 +209,9 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
         }
     }
 
-    public void complete() {
-        pause();
-        effectivelyComplete = true;
-    }
-
     @Override
     public int getCurrentPosition() {
-        if (state == Status.COMPLETED || effectivelyComplete) {
+        if (state == Status.COMPLETED) {
             return getDuration();
         } else if (state == Status.PREPARED || state == Status.STARTED || state == Status.PAUSED) {
             return super.getCurrentPosition();
@@ -187,18 +222,26 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
 
     @Override
     public int getDuration() {
-        if (state != Status.IDLE && state != Status.INITIALIZED) {
+        if (state == Status.PREPARED || state == Status.STARTED || state == Status.PAUSED
+                || state == Status.COMPLETED) {
             return super.getDuration();
         } else {
             return 0;
         }
     }
 
+    /**
+     * @return The current state of this ManagedMediaPlayer.
+     */
     public Status getState() {
         return state;
     }
 
     public boolean isComplete() {
-        return state == Status.COMPLETED || effectivelyComplete;
+        return state == Status.COMPLETED;
+    }
+
+    public boolean isPrepared() {
+        return state == Status.PREPARED;
     }
 }

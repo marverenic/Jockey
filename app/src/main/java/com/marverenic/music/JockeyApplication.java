@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.bumptech.glide.Glide;
 import com.crashlytics.android.Crashlytics;
+import com.marverenic.music.player.PlayerController;
 
 import io.fabric.sdk.android.Fabric;
 

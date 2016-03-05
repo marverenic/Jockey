@@ -3,7 +3,7 @@ package com.marverenic.music.instances.viewholder;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.marverenic.music.PlayerController;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;

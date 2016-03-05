@@ -1,4 +1,4 @@
-package com.marverenic.music;
+package com.marverenic.music.player;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -16,6 +16,7 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
+import com.marverenic.music.IPlayerService;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Util;
@@ -141,7 +142,7 @@ public final class PlayerController {
      * Stop playback completely and end the player service process. If you call this from the UI
      * thread make sure that you don't want to play music for the rest of the lifetime of the
      * process, otherwise you're going to have a bad time.
-     * See {@link PlayerService#stop()}
+     * See {@link MusicPlayer#stop()}
      */
     public static void stop() {
         if (playerService != null) {
@@ -157,7 +158,7 @@ public final class PlayerController {
 
     /**
      * Skip to the next song in the queue.
-     * See {@link Player#skip()}
+     * See {@link MusicPlayer#skip()}
      */
     public static void skip() {
         if (playerService != null) {
@@ -174,7 +175,7 @@ public final class PlayerController {
 
     /**
      * Skip to the previous song in the queue
-     * See {@link Player#previous()}
+     * See {@link MusicPlayer#skipPrevious()}
      */
     public static void previous() {
         if (playerService != null) {
@@ -191,7 +192,7 @@ public final class PlayerController {
 
     /**
      * Begin playback of a new song
-     * See {@link Player#begin()}
+     * See {@link MusicPlayer#prepare(boolean)}
      */
     public static void begin() {
         if (playerService != null) {
@@ -208,7 +209,7 @@ public final class PlayerController {
 
     /**
      * Toggle between play and pause states.
-     * See {@link Player#togglePlay()}
+     * See {@link MusicPlayer#togglePlay()}
      */
     public static void togglePlay() {
         if (playerService != null) {
@@ -224,7 +225,7 @@ public final class PlayerController {
 
     /**
      * Start music playback of the current song
-     * See {@link Player#play()}
+     * See {@link MusicPlayer#play()}
      */
     public static void play() {
         if (playerService != null) {
@@ -240,7 +241,7 @@ public final class PlayerController {
 
     /**
      * Pause music playback
-     * See {@link Player#pause()}
+     * See {@link MusicPlayer#pause()}
      */
     public static void pause() {
         if (playerService != null) {
@@ -255,35 +256,36 @@ public final class PlayerController {
     }
 
     /**
-     * Toggle repeat from {@link Player#REPEAT_NONE} to {@link Player#REPEAT_ALL},
-     * from {@link Player#REPEAT_ALL} to {@link Player#REPEAT_ONE}
-     * and from {@link Player#REPEAT_ONE} to {@link Player#REPEAT_NONE}
+     * Toggle repeat from {@link MusicPlayer#REPEAT_NONE} to {@link MusicPlayer#REPEAT_ALL},
+     * from {@link MusicPlayer#REPEAT_ALL} to {@link MusicPlayer#REPEAT_ONE}
+     * from {@link MusicPlayer#REPEAT_ONE} to {@link MusicPlayer#REPEAT_NONE}
+     * and from multi-repeat to {@link MusicPlayer#REPEAT_NONE}
      * in {@link android.content.SharedPreferences} and notify the service about the
      * preference change
-     * See {@link Player#setPrefs(boolean, short)}
+     *
+     * @see MusicPlayer#setRepeat(int)
      */
     public static void toggleRepeat() {
-        short repeatOption;
-        switch ((short) PreferenceManager.getDefaultSharedPreferences(applicationContext)
-                .getInt(Player.PREFERENCE_REPEAT, Player.REPEAT_NONE)) {
-            case Player.REPEAT_ONE:
-                repeatOption = Player.REPEAT_NONE;
+        int repeatOption;
+        switch (PreferenceManager.getDefaultSharedPreferences(applicationContext)
+                .getInt(MusicPlayer.PREFERENCE_REPEAT, MusicPlayer.REPEAT_NONE)) {
+            case MusicPlayer.REPEAT_NONE:
+                repeatOption = MusicPlayer.REPEAT_ALL;
                 break;
-            case Player.REPEAT_ALL:
-                repeatOption = Player.REPEAT_ONE;
+            case MusicPlayer.REPEAT_ALL:
+                repeatOption = MusicPlayer.REPEAT_ONE;
                 break;
-            case Player.REPEAT_NONE:
+            case MusicPlayer.REPEAT_ONE:
             default:
-                repeatOption = Player.REPEAT_ALL;
+            repeatOption = MusicPlayer.REPEAT_NONE;
         }
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext);
-        prefs.edit().putInt(Player.PREFERENCE_REPEAT, repeatOption).apply();
+        prefs.edit().putInt(MusicPlayer.PREFERENCE_REPEAT, repeatOption).apply();
 
-        if (playerService  != null) {
+        if (playerService != null) {
             try {
-                playerService.setPrefs(
-                        prefs.getBoolean(Player.PREFERENCE_SHUFFLE, false), repeatOption);
+                playerService.setRepeat(repeatOption);
             } catch (RemoteException e) {
                 Crashlytics.logException(e);
                 Log.w(TAG, e);
@@ -294,16 +296,17 @@ public final class PlayerController {
     /**
      * Toggle shuffle on or off in {@link android.content.SharedPreferences} and notify the service
      * about the preference change
-     * See {@link Player#setPrefs(boolean, short)}
+     *
+     * @see MusicPlayer#setShuffle(boolean)
      */
     public static void toggleShuffle() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext);
-        boolean shuffleOption = !prefs.getBoolean(Player.PREFERENCE_SHUFFLE, false);
-        prefs.edit().putBoolean(Player.PREFERENCE_SHUFFLE, shuffleOption).apply();
+        boolean shuffleOption = !prefs.getBoolean(MusicPlayer.PREFERENCE_SHUFFLE, false);
+        prefs.edit().putBoolean(MusicPlayer.PREFERENCE_SHUFFLE, shuffleOption).apply();
 
         if (playerService != null) {
             try {
-                playerService.setPrefs(shuffleOption, prefs.getInt(Player.PREFERENCE_REPEAT, 0));
+                playerService.setShuffle(shuffleOption);
             } catch (RemoteException e) {
                 Crashlytics.logException(e);
                 Log.w(TAG, e);
@@ -315,7 +318,7 @@ public final class PlayerController {
      * Replace the contents of the queue with a new list of songs
      * @param newQueue An {@link List<Song>} to become the new queue
      * @param newPosition The index of the list to start playback from
-     * See {@link Player#setQueue(List, int)}
+     * See {@link MusicPlayer#setQueue(List, int)}
      */
     public static void setQueue(final List<Song> newQueue, final int newPosition) {
         if (Prefs.allowAnalytics(applicationContext)) {
@@ -344,7 +347,7 @@ public final class PlayerController {
     /**
      * Change the current index of the queue to a new position
      * @param queuePosition The new index of the queue
-     * See {@link Player#changeSong(int)}
+     * See {@link MusicPlayer#changeSong(int)}
      */
     public static void changeSong(int queuePosition) {
         if (playerService != null) {
@@ -363,7 +366,7 @@ public final class PlayerController {
      * Edit the contents of the queue without interrupting playback
      * @param queue An {@link List<Song>} to become the new queue
      * @param queuePosition The index of the currently playing song in the new queue
-     * See {@link Player#editQueue(List, int)}
+     * See {@link MusicPlayer#editQueue(List, int)}
      */
     public static void editQueue(List<Song> queue, int queuePosition) {
         if (playerService != null) {
@@ -380,7 +383,7 @@ public final class PlayerController {
     /**
      * Enqueue a song so that it plays after the current song
      * @param song The {@link Song} to play next
-     * See {@link Player#queueNext(Song)}
+     * See {@link MusicPlayer#queueNext(Song)}
      */
     public static void queueNext(final Song song) {
         if (playerService != null) {
@@ -396,7 +399,7 @@ public final class PlayerController {
     /**
      * Enqueue a list of songs so that they play after the current songs
      * @param songs A {@link List<Song>} to play next
-     * See {@link Player#queueNext(List)}
+     * See {@link MusicPlayer#queueNext(List)}
      */
     public static void queueNext(final List<Song> songs) {
         if (playerService != null) {
@@ -412,7 +415,7 @@ public final class PlayerController {
     /**
      * Add a song to the end of the queue
      * @param song The {@link Song} to queue
-     * See {@link Player#queueLast(Song)}
+     * See {@link MusicPlayer#queueLast(Song)}
      */
     public static void queueLast(final Song song) {
         if (playerService != null) {
@@ -428,7 +431,7 @@ public final class PlayerController {
     /**
      * Add a list of songs to the end of the queue
      * @param songs A {@link List<Song>} to place at the end of the queue
-     * See {@link Player#queueLast(List)}
+     * See {@link MusicPlayer#queueLast(List)}
      */
     public static void queueLast(final List<Song> songs) {
         if (playerService != null) {
@@ -448,7 +451,7 @@ public final class PlayerController {
     public static void seek(final int position) {
         if (playerService != null) {
             try {
-                playerService.seek(position);
+                playerService.seekTo(position);
             } catch (RemoteException e) {
                 Crashlytics.logException(e);
                 Log.w(TAG, e);
@@ -474,28 +477,11 @@ public final class PlayerController {
     }
 
     /**
-     * @return if the player service is currently preparing to play a song
-     */
-    public static boolean isPreparing() {
-        if (playerService == null) {
-            return false;
-        }
-
-        try {
-            return playerService.isPreparing();
-        } catch (RemoteException e) {
-            Crashlytics.logException(e);
-            Log.w(TAG, e);
-            return false;
-        }
-    }
-
-    /**
      * @return if shuffle is enabled in {@link android.content.SharedPreferences}
      */
     public static boolean isShuffle() {
         return PreferenceManager.getDefaultSharedPreferences(applicationContext)
-                .getBoolean(Player.PREFERENCE_SHUFFLE, false);
+                .getBoolean(MusicPlayer.PREFERENCE_SHUFFLE, false);
     }
 
     /**
@@ -503,7 +489,7 @@ public final class PlayerController {
      */
     public static boolean isRepeat() {
         return PreferenceManager.getDefaultSharedPreferences(applicationContext)
-                .getInt(Player.PREFERENCE_REPEAT, Player.REPEAT_NONE) == Player.REPEAT_ALL;
+                .getInt(MusicPlayer.PREFERENCE_REPEAT, MusicPlayer.REPEAT_NONE) == MusicPlayer.REPEAT_ALL;
     }
 
     /**
@@ -511,7 +497,7 @@ public final class PlayerController {
      */
     public static boolean isRepeatOne() {
         return PreferenceManager.getDefaultSharedPreferences(applicationContext)
-                .getInt(Player.PREFERENCE_REPEAT, Player.REPEAT_NONE) == Player.REPEAT_ONE;
+                .getInt(MusicPlayer.PREFERENCE_REPEAT, MusicPlayer.REPEAT_NONE) == MusicPlayer.REPEAT_ONE;
     }
 
     /**
@@ -559,6 +545,23 @@ public final class PlayerController {
 
         try {
             return playerService.getQueuePosition();
+        } catch (RemoteException e) {
+            Crashlytics.logException(e);
+            Log.w(TAG, e);
+            return 0;
+        }
+    }
+
+    /**
+     * @return The number of items in the current queue
+     */
+    public static int getQueueSize() {
+        if (playerService == null) {
+            return 0;
+        }
+
+        try {
+            return playerService.getQueueSize();
         } catch (RemoteException e) {
             Crashlytics.logException(e);
             Log.w(TAG, e);
@@ -625,7 +628,7 @@ public final class PlayerController {
 
     /**
      * A {@link BroadcastReceiver} class listening for intents with an
-     * {@link Player#UPDATE_BROADCAST} action. This broadcast must be sent ordered with this
+     * {@link MusicPlayer#UPDATE_BROADCAST} action. This broadcast must be sent ordered with this
      * receiver being the highest priority so that the UI can access this class for accurate
      * information from the player service
      */
@@ -633,11 +636,11 @@ public final class PlayerController {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(Player.UPDATE_BROADCAST)) {
+            if (intent.getAction().equals(MusicPlayer.UPDATE_BROADCAST)) {
                 artwork = null;
                 updateUi();
-            } else if (intent.getAction().equals(Player.ERROR_BROADCAST)) {
-                alertError(intent.getExtras().getString(Player.ERROR_EXTRA_MSG));
+            } else if (intent.getAction().equals(MusicPlayer.ERROR_BROADCAST)) {
+                alertError(intent.getExtras().getString(MusicPlayer.ERROR_EXTRA_MSG));
             }
         }
 

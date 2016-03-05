@@ -12,7 +12,8 @@ interface IPlayerService {
     void togglePlay();
     void play();
     void pause();
-    void setPrefs(boolean shuffle, int repeat);
+    void setShuffle(boolean shuffle);
+    void setRepeat(int repeat);
     void setQueue(in List<Song> newQueue, int newPosition);
     void changeSong(int position);
     void editQueue(in List<Song> newQueue, int newPosition);
@@ -20,13 +21,13 @@ interface IPlayerService {
     void queueNextList(in List<Song> songs);
     void queueLast(in Song song);
     void queueLastList(in List<Song> songs);
-    void seek(int position);
+    void seekTo(int position);
 
     boolean isPlaying();
-    boolean isPreparing();
     Song getNowPlaying();
     List<Song> getQueue();
     int getQueuePosition();
+    int getQueueSize();
     int getCurrentPosition();
     int getDuration();
     int getAudioSessionId();

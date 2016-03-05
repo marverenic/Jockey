@@ -24,7 +24,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.marverenic.music.BuildConfig;
-import com.marverenic.music.PlayerController;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.utils.Navigate;

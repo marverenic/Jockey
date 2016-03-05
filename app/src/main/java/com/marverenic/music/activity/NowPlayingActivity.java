@@ -19,13 +19,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.marverenic.music.Player;
-import com.marverenic.music.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.fragments.QueueFragment;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.instances.Song;
+import com.marverenic.music.player.MusicPlayer;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.view.GestureView;
 
@@ -132,7 +132,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                             NowPlayingActivity.this.unregisterReceiver(this);
                         }
                     };
-                    registerReceiver(binderWaiter, new IntentFilter(Player.UPDATE_BROADCAST));
+                    registerReceiver(binderWaiter, new IntentFilter(MusicPlayer.UPDATE_BROADCAST));
                 }
             }
         }
@@ -249,7 +249,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     public void onRightSwipe() {
         int queuePosition = PlayerController.getQueuePosition() - 1;
         if (queuePosition < 0 && PlayerController.isRepeat()) {
-            queuePosition += PlayerController.getQueue().size();
+            queuePosition += PlayerController.getQueueSize();
         }
 
         if (queuePosition >= 0) {

@@ -25,7 +25,7 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.marverenic.music.PlayerController;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Util;

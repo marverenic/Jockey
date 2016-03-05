@@ -22,7 +22,7 @@ import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.marverenic.music.Player;
+import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.R;
 import com.marverenic.music.utils.Prefs;
 
@@ -830,7 +830,7 @@ public final class Library {
     //
 
     /**
-     * Reload the play counts as modified by {@link Player#logPlayCount(long, boolean)}
+     * Reload the play counts as modified by {@link MusicPlayer#logPlayCount(long, boolean)}
      * @param context Used to open a {@link Properties} from disk
      */
     public static void loadPlayCounts(Context context) {
@@ -868,10 +868,11 @@ public final class Library {
      * Returns a readable {@link Properties} to be used with {@link Library#loadPlayCounts(Context)}
      * @param context Used to read files from external storage
      * @return A {@link Properties} object that has been initialized with values saved by
-     *         {@link Player#logPlayCount(long, boolean)} and {@link Player#savePlayCountFile()}
+     *         {@link MusicPlayer#logPlayCount(long, boolean)} and
+     *         {@link MusicPlayer#savePlayCountFile()}
      * @throws IOException
      */
-    private static Properties openPlayCountFile(Context context) throws IOException {
+    public static Properties openPlayCountFile(Context context) throws IOException {
         File file = new File(context.getExternalFilesDir(null) + "/" + Library.PLAY_COUNT_FILENAME);
 
         if (file.exists() || file.createNewFile()) {

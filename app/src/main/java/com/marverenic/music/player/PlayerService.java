@@ -1,4 +1,4 @@
-package com.marverenic.music;
+package com.marverenic.music.player;
 
 import android.app.ActivityManager;
 import android.app.Notification;
@@ -17,13 +17,16 @@ import android.view.KeyEvent;
 import android.widget.RemoteViews;
 
 import com.crashlytics.android.Crashlytics;
+import com.marverenic.music.BuildConfig;
+import com.marverenic.music.IPlayerService;
+import com.marverenic.music.R;
 import com.marverenic.music.activity.LibraryActivity;
 import com.marverenic.music.instances.Song;
 
 import java.io.IOException;
 import java.util.List;
 
-public class PlayerService extends Service {
+public class PlayerService extends Service implements MusicPlayer.OnPlaybackChangeListener {
 
     private static final String TAG = "PlayerService";
     private static final boolean DEBUG = BuildConfig.DEBUG;
@@ -62,7 +65,7 @@ public class PlayerService extends Service {
     /**
      * The media player for the service instance
      */
-    private Player player;
+    private MusicPlayer musicPlayer;
     private boolean finished = false; // Don't attempt to release resources more than once
 
     @Override
@@ -89,11 +92,12 @@ public class PlayerService extends Service {
             return;
         }
 
-        if (player == null) {
-            player = new Player(this);
+        if (musicPlayer == null) {
+            musicPlayer = new MusicPlayer(this);
         }
 
-        player.reload();
+        musicPlayer.setPlaybackChangeListener(this);
+        musicPlayer.loadState();
     }
 
     @Override
@@ -106,7 +110,7 @@ public class PlayerService extends Service {
     public void onDestroy() {
         if (DEBUG) Log.i(TAG, "Called onDestroy()");
         try {
-            player.saveState("");
+            musicPlayer.saveState(null);
         } catch (Exception ignored) {
 
         }
@@ -125,7 +129,7 @@ public class PlayerService extends Service {
     public void notifyNowPlaying() {
         if (DEBUG) Log.i(TAG, "notifyNowPlaying() called");
 
-        if (player.getNowPlaying() == null) {
+        if (musicPlayer.getNowPlaying() == null) {
             if (DEBUG) Log.i(TAG, "Not showing notification -- nothing is playing");
             return;
         }
@@ -137,9 +141,9 @@ public class PlayerService extends Service {
                 new RemoteViews(getPackageName(), R.layout.notification_expanded);
 
         // Set the artwork for the notification
-        if (player.getArt() != null) {
-            notificationView.setImageViewBitmap(R.id.notificationIcon, player.getArt());
-            notificationViewExpanded.setImageViewBitmap(R.id.notificationIcon, player.getArt());
+        if (musicPlayer.getArtwork() != null) {
+            notificationView.setImageViewBitmap(R.id.notificationIcon, musicPlayer.getArtwork());
+            notificationViewExpanded.setImageViewBitmap(R.id.notificationIcon, musicPlayer.getArtwork());
         } else {
             notificationView.setImageViewResource(R.id.notificationIcon, R.drawable.art_default);
             notificationViewExpanded
@@ -147,22 +151,22 @@ public class PlayerService extends Service {
         }
 
         // If the player is playing music, set the track info and the button intents
-        if (player.getNowPlaying() != null) {
+        if (musicPlayer.getNowPlaying() != null) {
             // Update the info for the compact view
             notificationView.setTextViewText(R.id.notificationContentTitle,
-                    player.getNowPlaying().getSongName());
+                    musicPlayer.getNowPlaying().getSongName());
             notificationView.setTextViewText(R.id.notificationContentText,
-                    player.getNowPlaying().getAlbumName());
+                    musicPlayer.getNowPlaying().getAlbumName());
             notificationView.setTextViewText(R.id.notificationSubText,
-                    player.getNowPlaying().getArtistName());
+                    musicPlayer.getNowPlaying().getArtistName());
 
             // Update the info for the expanded view
             notificationViewExpanded.setTextViewText(R.id.notificationContentTitle,
-                    player.getNowPlaying().getSongName());
+                    musicPlayer.getNowPlaying().getSongName());
             notificationViewExpanded.setTextViewText(R.id.notificationContentText,
-                    player.getNowPlaying().getAlbumName());
+                    musicPlayer.getNowPlaying().getAlbumName());
             notificationViewExpanded.setTextViewText(R.id.notificationSubText,
-                    player.getNowPlaying().getArtistName());
+                    musicPlayer.getNowPlaying().getArtistName());
         }
 
         // Set the button intents for the compact view
@@ -178,7 +182,7 @@ public class PlayerService extends Service {
         setNotificationButton(notificationViewExpanded, R.id.notificationStop, ACTION_STOP);
 
         // Update the play/pause button icon to reflect the player status
-        if (!(player.isPlaying() || player.isPreparing())) {
+        if (!(musicPlayer.isPlaying() || musicPlayer.isPreparing())) {
             notificationView.setImageViewResource(R.id.notificationPause,
                     R.drawable.ic_play_arrow_36dp);
             notificationViewExpanded.setImageViewResource(R.id.notificationPause,
@@ -193,7 +197,7 @@ public class PlayerService extends Service {
         // Build the notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(
-                        (player.isPlaying() || player.isPreparing())
+                        (musicPlayer.isPlaying() || musicPlayer.isPreparing())
                                 ? R.drawable.ic_play_arrow_24dp
                                 : R.drawable.ic_pause_24dp)
                 .setOnlyAlertOnce(true)
@@ -232,7 +236,7 @@ public class PlayerService extends Service {
                 activityManager.getRunningAppProcesses();
         for (int i = 0; i < procInfos.size(); i++) {
             if (procInfos.get(i).processName.equals(BuildConfig.APPLICATION_ID)) {
-                player.pause();
+                musicPlayer.pause();
                 stopForeground(true);
                 return;
             }
@@ -245,13 +249,18 @@ public class PlayerService extends Service {
     public void finish() {
         if (DEBUG) Log.i(TAG, "finish() called");
         if (!finished) {
-            player.finish();
-            player = null;
+            musicPlayer.release();
+            musicPlayer = null;
             stopForeground(true);
             instance = null;
             stopSelf();
             finished = true;
         }
+    }
+
+    @Override
+    public void onPlaybackChange() {
+        notifyNowPlaying();
     }
 
     public static class Listener extends BroadcastReceiver {
@@ -270,9 +279,9 @@ public class PlayerService extends Service {
                 return;
             }
 
-            if (instance.player.getNowPlaying() != null) {
+            if (instance.musicPlayer.getNowPlaying() != null) {
                 try {
-                    instance.player.saveState(intent.getAction());
+                    instance.musicPlayer.saveState(intent.getAction());
                 } catch (IOException e) {
                     Crashlytics.logException(e);
                     if (DEBUG) e.printStackTrace();
@@ -281,21 +290,21 @@ public class PlayerService extends Service {
 
             switch (intent.getAction()) {
                 case (ACTION_TOGGLE_PLAY):
-                    instance.player.togglePlay();
-                    instance.player.updateUi();
+                    instance.musicPlayer.togglePlay();
+                    instance.musicPlayer.updateUi();
                     break;
                 case (ACTION_PREV):
-                    instance.player.previous();
-                    instance.player.updateUi();
+                    instance.musicPlayer.skipPrevious();
+                    instance.musicPlayer.updateUi();
                     break;
                 case (ACTION_NEXT):
-                    instance.player.skip();
-                    instance.player.updateUi();
+                    instance.musicPlayer.skip();
+                    instance.musicPlayer.updateUi();
                     break;
                 case (ACTION_STOP):
                     instance.stop();
                     if (instance != null) {
-                        instance.player.updateUi();
+                        instance.musicPlayer.updateUi();
                     }
                     break;
             }
@@ -318,19 +327,19 @@ public class PlayerService extends Service {
                 if (event.getAction() == KeyEvent.ACTION_UP) {
                     switch (event.getKeyCode()) {
                         case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-                            instance.player.togglePlay();
+                            instance.musicPlayer.togglePlay();
                             break;
                         case KeyEvent.KEYCODE_MEDIA_PLAY:
-                            instance.player.play();
+                            instance.musicPlayer.play();
                             break;
                         case KeyEvent.KEYCODE_MEDIA_PAUSE:
-                            instance.player.pause();
+                            instance.musicPlayer.pause();
                             break;
                         case KeyEvent.KEYCODE_MEDIA_NEXT:
-                            instance.player.skip();
+                            instance.musicPlayer.skip();
                             break;
                         case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
-                            instance.player.previous();
+                            instance.musicPlayer.skipPrevious();
                             break;
                     }
                 }
@@ -347,117 +356,122 @@ public class PlayerService extends Service {
 
         @Override
         public void skip() throws RemoteException {
-            instance.player.skip();
+            instance.musicPlayer.skip();
         }
 
         @Override
         public void previous() throws RemoteException {
-            instance.player.previous();
+            instance.musicPlayer.skipPrevious();
         }
 
         @Override
         public void begin() throws RemoteException {
-            instance.player.begin();
+            instance.musicPlayer.prepare(true);
         }
 
         @Override
         public void togglePlay() throws RemoteException {
-            instance.player.togglePlay();
+            instance.musicPlayer.togglePlay();
         }
 
         @Override
         public void play() throws RemoteException {
-            instance.player.play();
+            instance.musicPlayer.play();
         }
 
         @Override
         public void pause() throws RemoteException {
-            instance.player.play();
+            instance.musicPlayer.play();
         }
 
         @Override
-        public void setPrefs(boolean shuffle, int repeat) throws RemoteException {
-            instance.player.setPrefs(shuffle, (short) repeat);
+        public void setShuffle(boolean shuffle) throws RemoteException {
+            instance.musicPlayer.setShuffle(shuffle);
+        }
+
+        @Override
+        public void setRepeat(int repeat) throws RemoteException {
+            instance.musicPlayer.setRepeat(repeat);
         }
 
         @Override
         public void setQueue(List<Song> newQueue, int newPosition) throws RemoteException {
-            instance.player.setQueue(newQueue, newPosition);
+            instance.musicPlayer.setQueue(newQueue, newPosition);
         }
 
         @Override
         public void changeSong(int position) throws RemoteException {
-            instance.player.changeSong(position);
+            instance.musicPlayer.changeSong(position);
         }
 
         @Override
         public void editQueue(List<Song> newQueue, int newPosition) throws RemoteException {
-            instance.player.editQueue(newQueue, newPosition);
+            instance.musicPlayer.editQueue(newQueue, newPosition);
         }
 
         @Override
         public void queueNext(Song song) throws RemoteException {
-            instance.player.queueNext(song);
+            instance.musicPlayer.queueNext(song);
         }
 
         @Override
         public void queueNextList(List<Song> songs) throws RemoteException {
-            instance.player.queueNext(songs);
+            instance.musicPlayer.queueNext(songs);
         }
 
         @Override
         public void queueLast(Song song) throws RemoteException {
-            instance.player.queueLast(song);
+            instance.musicPlayer.queueLast(song);
         }
 
         @Override
         public void queueLastList(List<Song> songs) throws RemoteException {
-            instance.player.queueLast(songs);
+            instance.musicPlayer.queueLast(songs);
         }
 
         @Override
-        public void seek(int position) throws RemoteException {
-            instance.player.seek(position);
+        public void seekTo(int position) throws RemoteException {
+            instance.musicPlayer.seekTo(position);
         }
 
         @Override
         public boolean isPlaying() throws RemoteException {
-            return instance.player.isPlaying();
-        }
-
-        @Override
-        public boolean isPreparing() throws RemoteException {
-            return instance.player.isPreparing();
+            return instance.musicPlayer.isPlaying();
         }
 
         @Override
         public Song getNowPlaying() throws RemoteException {
-            return instance.player.getNowPlaying();
+            return instance.musicPlayer.getNowPlaying();
         }
 
         @Override
         public List<Song> getQueue() throws RemoteException {
-            return instance.player.getQueue();
+            return instance.musicPlayer.getQueue();
         }
 
         @Override
         public int getQueuePosition() throws RemoteException {
-            return instance.player.getQueuePosition();
+            return instance.musicPlayer.getQueuePosition();
+        }
+
+        @Override
+        public int getQueueSize() throws RemoteException {
+            return instance.musicPlayer.getQueueSize();
         }
 
         @Override
         public int getCurrentPosition() throws RemoteException {
-            return instance.player.getCurrentPosition();
+            return instance.musicPlayer.getCurrentPosition();
         }
 
         @Override
         public int getDuration() throws RemoteException {
-            return instance.player.getDuration();
+            return instance.musicPlayer.getDuration();
         }
 
         @Override
         public int getAudioSessionId() throws RemoteException {
-            return instance.player.getAudioSessionId();
+            return instance.musicPlayer.getAudioSessionId();
         }
     }
 }
