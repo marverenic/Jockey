@@ -36,7 +36,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Properties;
-import java.util.Random;
 import java.util.Scanner;
 
 /**
@@ -382,7 +381,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 }
                 mQueueShuffled = Library.buildSongListFromIds(shuffleQueueIDs, mContext);
             } else if (mShuffle) {
-                shuffleQueue();
+                shuffleQueue(queuePosition);
             }
 
             mMediaPlayer.seekTo(currentPosition);
@@ -589,29 +588,22 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     /**
      * Generates a new random permutation of the queue, and sets it as the backing
      * {@link QueuedMediaPlayer}'s queue
+     * @param currentIndex The index of the current song which will be moved to the top of the
+     *                     shuffled queue
      */
-    private void shuffleQueue() {
+    private void shuffleQueue(int currentIndex) {
         if (mQueueShuffled == null) {
-            mQueueShuffled = new ArrayList<>();
+            mQueueShuffled = new ArrayList<>(mQueue);
         } else {
             mQueueShuffled.clear();
+            mQueueShuffled.addAll(mQueue);
         }
 
-        if (mQueue.size() > 0) {
-            mQueueShuffled.add(mQueue.get(mMediaPlayer.getQueueIndex()));
+        if (mQueueShuffled.size() > 0) {
+            Song first = mQueueShuffled.remove(currentIndex);
 
-            List<Song> randomHolder = new ArrayList<>();
-
-            for (int i = 0; i < mMediaPlayer.getQueueIndex(); i++) {
-                randomHolder.add(mQueue.get(i));
-            }
-            for (int i = mMediaPlayer.getQueueIndex() + 1; i < mQueue.size(); i++) {
-                randomHolder.add(mQueue.get(i));
-            }
-
-            Collections.shuffle(randomHolder, new Random(System.nanoTime()));
-
-            mQueueShuffled.addAll(randomHolder);
+            Collections.shuffle(mQueueShuffled);
+            mQueueShuffled.add(0, first);
         }
     }
 
@@ -819,9 +811,11 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         // to prevent components from accidentally changing the backing queue
         mQueue = queue;
         if (mShuffle) {
-            shuffleQueue();
+            shuffleQueue(index);
+            setBackingQueue(0);
+        } else {
+            setBackingQueue(index);
         }
-        setBackingQueue(index);
     }
 
     /**
@@ -883,7 +877,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     public void setShuffle(boolean shuffle) {
         if (shuffle) {
-            shuffleQueue();
+            shuffleQueue(getQueuePosition());
             mMediaPlayer.setQueue(mQueueShuffled, 0);
         } else {
             int position = mQueue.indexOf(mQueueShuffled.get(mMediaPlayer.getQueueIndex()));
