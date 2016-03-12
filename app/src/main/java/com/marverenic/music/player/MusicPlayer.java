@@ -220,8 +220,18 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             Crashlytics.logException(e);
         }
 
+        loadPrefs();
         initMediaSession();
         initEqualizer();
+    }
+
+    /**
+     * Reloads shuffle and repeat preferences from {@link SharedPreferences}
+     */
+    private void loadPrefs() {
+        SharedPreferences prefs = Prefs.getPrefs(mContext);
+        mShuffle = prefs.getBoolean(PREFERENCE_SHUFFLE, false);
+        mRepeat = prefs.getInt(PREFERENCE_REPEAT, REPEAT_NONE);
     }
 
     /**
