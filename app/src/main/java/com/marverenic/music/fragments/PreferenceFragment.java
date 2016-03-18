@@ -23,6 +23,7 @@ import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.BackgroundDecoration;
+import com.marverenic.music.view.DividerDecoration;
 
 public class PreferenceFragment extends PreferenceFragmentCompat implements View.OnLongClickListener {
 
@@ -46,8 +47,12 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements View
             getListView().setPadding(padding, 0, padding, 0);
 
             getListView().setBackgroundColor(Themes.getBackground());
+            setDividerHeight(0); // use custom divider decoration
+
             getListView().addItemDecoration(new BackgroundDecoration(
                     Themes.getBackgroundElevated(), android.R.id.title));
+            getListView().addItemDecoration(
+                    new DividerDecoration(getContext(), R.id.subheaderFrame));
         }
         return view;
     }
