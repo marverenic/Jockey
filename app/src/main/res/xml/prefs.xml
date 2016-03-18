@@ -1,7 +1,7 @@
 <!--suppress AndroidElementNotAllowed -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategoryCompat android:title="Appearance">
+    <PreferenceCategoryCompat android:title="@string/appearance_header">
         <ListPreference
             android:defaultValue="1"
             android:dialogTitle="@string/default_page_pref"
@@ -30,7 +30,7 @@
             android:key="prefAddShortcut"
             android:title="@string/add_shortcut" />
     </PreferenceCategoryCompat>
-    <PreferenceCategoryCompat android:title="General">
+    <PreferenceCategoryCompat android:title="@string/settings_category_general">
         <SwitchPreferenceCompat
             android:defaultValue="true"
             android:key="prefUseMobileData"
