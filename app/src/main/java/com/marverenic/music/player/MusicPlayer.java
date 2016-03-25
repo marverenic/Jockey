@@ -397,64 +397,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         }
     }
 
-    /**
-     * Record a play or skip for a certain song
-     * @param songId the ID of the song written in the {@link android.provider.MediaStore}
-     * @param skip Whether the song was skipped (true if skipped, false if played)
-     */
-    private void logPlayCount(long songId, boolean skip) {
-        try {
-            final String originalValue = mPlayCountTable.getProperty(Long.toString(songId));
-            int playCount = 0;
-            int skipCount = 0;
-            int playDate = 0;
-
-            if (originalValue != null && !originalValue.isEmpty()) {
-                final String[] originalValues = originalValue.split(",");
-
-                playCount = Integer.parseInt(originalValues[0]);
-                skipCount = Integer.parseInt(originalValues[1]);
-
-                // Preserve backwards compatibility with play count files written with older
-                // versions of Jockey that didn't save this data
-                if (originalValues.length > 2) {
-                    playDate = Integer.parseInt(originalValues[2]);
-                }
-            }
-
-            if (skip) {
-                skipCount++;
-            } else {
-                playDate = (int) (System.currentTimeMillis() / 1000);
-                playCount++;
-            }
-
-            mPlayCountTable.setProperty(
-                    Long.toString(songId),
-                    playCount + "," + skipCount + "," + playDate);
-
-            savePlayCountFile();
-        } catch (IOException|NumberFormatException e) {
-            e.printStackTrace();
-            Crashlytics.logException(e);
-        }
-    }
-
-    /**
-     * Writes the current values in {@link #mPlayCountTable} to disk
-     * @throws IOException
-     */
-    private void savePlayCountFile() throws IOException {
-        OutputStream os = new FileOutputStream(mContext.getExternalFilesDir(null) + "/"
-                + Library.PLAY_COUNT_FILENAME);
-
-        try {
-            mPlayCountTable.store(os, Library.PLAY_COUNT_FILE_COMMENT);
-        } finally {
-            os.close();
-        }
-    }
-
     public void setPlaybackChangeListener(OnPlaybackChangeListener listener) {
         mCallback = listener;
     }
@@ -689,6 +631,64 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 // If we're not very far into this song, log a skip
                 logPlayCount(getNowPlaying().getSongId(), true);
             }
+        }
+    }
+
+    /**
+     * Record a play or skip for a certain song
+     * @param songId the ID of the song written in the {@link android.provider.MediaStore}
+     * @param skip Whether the song was skipped (true if skipped, false if played)
+     */
+    private void logPlayCount(long songId, boolean skip) {
+        try {
+            final String originalValue = mPlayCountTable.getProperty(Long.toString(songId));
+            int playCount = 0;
+            int skipCount = 0;
+            int playDate = 0;
+
+            if (originalValue != null && !originalValue.isEmpty()) {
+                final String[] originalValues = originalValue.split(",");
+
+                playCount = Integer.parseInt(originalValues[0]);
+                skipCount = Integer.parseInt(originalValues[1]);
+
+                // Preserve backwards compatibility with play count files written with older
+                // versions of Jockey that didn't save this data
+                if (originalValues.length > 2) {
+                    playDate = Integer.parseInt(originalValues[2]);
+                }
+            }
+
+            if (skip) {
+                skipCount++;
+            } else {
+                playDate = (int) (System.currentTimeMillis() / 1000);
+                playCount++;
+            }
+
+            mPlayCountTable.setProperty(
+                    Long.toString(songId),
+                    playCount + "," + skipCount + "," + playDate);
+
+            savePlayCountFile();
+        } catch (IOException|NumberFormatException e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
+    }
+
+    /**
+     * Writes the current values in {@link #mPlayCountTable} to disk
+     * @throws IOException
+     */
+    private void savePlayCountFile() throws IOException {
+        OutputStream os = new FileOutputStream(mContext.getExternalFilesDir(null) + "/"
+                + Library.PLAY_COUNT_FILENAME);
+
+        try {
+            mPlayCountTable.store(os, Library.PLAY_COUNT_FILE_COMMENT);
+        } finally {
+            os.close();
         }
     }
 
