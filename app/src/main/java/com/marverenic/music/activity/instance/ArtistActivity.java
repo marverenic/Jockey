@@ -228,7 +228,7 @@ public class ArtistActivity extends BaseActivity {
                 // Set header image
                 String url = lfmReference.getImageURL(ImageList.SIZE_MEGA);
 
-                if (url.trim().length() != 0) {
+                if (!url.trim().isEmpty()) {
                     Glide.with(ArtistActivity.this).load(url)
                             .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                             .centerCrop()

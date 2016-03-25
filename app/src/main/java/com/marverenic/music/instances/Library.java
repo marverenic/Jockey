@@ -991,7 +991,7 @@ public final class Library {
      */
     public static String verifyPlaylistName(final Context context, final String playlistName) {
         String trimmedName = playlistName.trim();
-        if (trimmedName.length() == 0) {
+        if (trimmedName.isEmpty()) {
             return context.getResources().getString(R.string.error_hint_empty_playlist);
         }
 

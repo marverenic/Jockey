@@ -84,14 +84,14 @@ public class ArtistBioSingleton extends HeterogeneousAdapter.SingletonSection<LA
             }
 
             String summary = item.getBio().getSummary();
-            if (summary.length() > 0) {
+            if (!summary.isEmpty()) {
                 // Trim the "read more" attribution since there's already a button
                 // linking to Last.fm
                 summary = summary.substring(0, summary.lastIndexOf("<a href=\""));
             }
 
             bioText.setText(tagList
-                    + ((tagList.trim().length() > 0 && summary.trim().length() > 0) ? "\n\n" : "")
+                    + ((!tagList.trim().isEmpty() && !summary.trim().isEmpty()) ? "\n\n" : "")
                     + summary);
 
             artistURL = item.getUrl();

@@ -104,7 +104,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                 queue = new ArrayList<>();
             }
 
-            if (queue.size() == 0) {
+            if (queue.isEmpty()) {
                 // No music was found
                 Toast toast = Toast.makeText(this, R.string.message_play_error_not_found,
                         Toast.LENGTH_SHORT);

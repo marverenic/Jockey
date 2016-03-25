@@ -14,6 +14,7 @@ import java.io.IOException;
 public final class Cache {
 
     private static final String CACHE_EXTENSION = ".lfm";
+    private static final int CACHE_DURATION = 7 * 24 * 60 * 60 * 1000; // 1 week in milliseconds
     private static boolean initialized = false;
 
     /**
@@ -39,7 +40,7 @@ public final class Cache {
     public static boolean hasItem(Context context, long id) {
         File reference = new File(getItemPath(context, id));
         return reference.exists()
-                && System.currentTimeMillis() - reference.lastModified() < 7 * 24 * 60 * 60 * 1000;
+                && System.currentTimeMillis() - reference.lastModified() < CACHE_DURATION;
     }
 
     protected static void cacheArtist(Context context, long artistId, LArtist artist) {

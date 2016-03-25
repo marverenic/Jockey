@@ -139,7 +139,7 @@ public class RuleHeaderSingleton extends HeterogeneousAdapter.SingletonSection<A
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                     // Validate playlist names to avoid collisions
-                    if (originalName.length() == 0
+                    if (originalName.isEmpty()
                             || !originalName.equalsIgnoreCase(s.toString().trim())) {
                         String error = Library.verifyPlaylistName(
                                 ViewHolder.this.itemView.getContext(), s.toString());

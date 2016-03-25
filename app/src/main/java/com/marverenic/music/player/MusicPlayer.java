@@ -146,6 +146,11 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     private static final int SKIP_COUNT_THRESHOLD = 20000;
 
+    /**
+     * The volume scalar to set when {@link AudioManager} causes a MusicPlayer instance to duck
+     */
+    private static final float DUCK_VOLUME = 0.5f;
+
     private QueuedMediaPlayer mMediaPlayer;
     private Equalizer mEqualizer;
     private Context mContext;
@@ -318,7 +323,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                     }
                     break;
                 case PlayerService.ACTION_PREV:
-                    if (mMediaPlayer.getDuration() < 5000 && reloadQueuePosition - 1 > 0) {
+                    if (mMediaPlayer.getDuration() < SKIP_PREVIOUS_THRESHOLD
+                            && reloadQueuePosition - 1 > 0) {
                         reloadQueuePosition--;
                     }
                     reloadSeekPosition = 0;
@@ -468,7 +474,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 stop();
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                mMediaPlayer.setVolume(0.5f, 0.5f);
+                mMediaPlayer.setVolume(DUCK_VOLUME, DUCK_VOLUME);
                 break;
             case AudioManager.AUDIOFOCUS_GAIN:
                 mMediaPlayer.setVolume(1f, 1f);
@@ -541,7 +547,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             mQueueShuffled.addAll(mQueue);
         }
 
-        if (mQueueShuffled.size() > 0) {
+        if (!mQueueShuffled.isEmpty()) {
             Song first = mQueueShuffled.remove(currentIndex);
 
             Collections.shuffle(mQueueShuffled);

@@ -218,7 +218,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                     // If one or more artists with this name exist, play songs by all of them
                     // (Ideally this only includes collaborating artists and keeps
                     // the search relevant)
-                    if (artistResults.size() > 0) {
+                    if (!artistResults.isEmpty()) {
                         ArrayList<Song> songs = new ArrayList<>();
                         for (Artist a : artistResults) {
                             songs.addAll(Library.getArtistSongEntries(a));
@@ -231,7 +231,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 /** ALBUMS */
                 else if (!albumResults.isEmpty()
                         && focus.equals(MediaStore.Audio.Albums.ENTRY_CONTENT_TYPE)) {
-                    if (albumResults.size() > 0) {
+                    if (!albumResults.isEmpty()) {
                         // If albums with this name exist, look for an exact match
                         // If we find one then use it, otherwise fallback to the first result
                         Album album = albumResults.get(0);
@@ -251,7 +251,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                         && (focus.equals(MediaStore.Audio.Genres.ENTRY_CONTENT_TYPE)
                         || songResults.isEmpty())) {
 
-                    if (genreResults.size() > 0) {
+                    if (!genreResults.isEmpty()) {
                         // If genres with this name exist, look for an exact match
                         // If we find one then use it, otherwise fallback to the first result
                         Genre genre = genreResults.get(0);
@@ -270,7 +270,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 // If we can't figure out what's going on (And I can understand why) or if
                 // the focus is songs, then just play all of the song results
                 else {
-                    if (songResults.size() > 0) {
+                    if (!songResults.isEmpty()) {
                         PlayerController.setQueue(songResults, 0);
                         PlayerController.begin();
                     }
@@ -381,7 +381,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
 
     @Override
     public void onPlaylistAdded(Playlist added, int index) {
-        if (lastQuery != null && lastQuery.length() > 0
+        if (lastQuery != null && !lastQuery.isEmpty()
                 && added.getPlaylistName().toLowerCase().contains(
                 lastQuery.toLowerCase().trim())) {
             playlistResults.add(added);

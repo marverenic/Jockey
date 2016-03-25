@@ -118,6 +118,8 @@ public class MiniplayerFragment extends Fragment implements PlayerController.Upd
 
     private static class MediaObserver implements Runnable, PlayerController.UpdateListener {
 
+        private static final int UPDATE_FREQUENCY_MS = 200;
+
         private boolean run;
         private MiniplayerFragment parent;
         private final Runnable updater;
@@ -148,7 +150,7 @@ public class MiniplayerFragment extends Fragment implements PlayerController.Upd
             while (run) {
                 parent.getActivity().runOnUiThread(updater);
                 try {
-                    Thread.sleep(200);
+                    Thread.sleep(UPDATE_FREQUENCY_MS);
                 } catch (Exception ignored) {
                 }
             }
