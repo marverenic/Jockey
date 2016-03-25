@@ -402,14 +402,14 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @param songId the ID of the song written in the {@link android.provider.MediaStore}
      * @param skip Whether the song was skipped (true if skipped, false if played)
      */
-    public void logPlayCount(long songId, boolean skip) {
+    private void logPlayCount(long songId, boolean skip) {
         try {
             final String originalValue = mPlayCountTable.getProperty(Long.toString(songId));
             int playCount = 0;
             int skipCount = 0;
             int playDate = 0;
 
-            if (originalValue != null && !originalValue.equals("")) {
+            if (originalValue != null && !originalValue.isEmpty()) {
                 final String[] originalValues = originalValue.split(",");
 
                 playCount = Integer.parseInt(originalValues[0]);
@@ -434,7 +434,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                     playCount + "," + skipCount + "," + playDate);
 
             savePlayCountFile();
-        } catch (Exception e) {
+        } catch (IOException|NumberFormatException e) {
             e.printStackTrace();
             Crashlytics.logException(e);
         }
@@ -658,16 +658,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @see #setRepeat(int) to set the current repeat mode
      */
     public void skip() {
-        if (!mMediaPlayer.isComplete() && getNowPlaying() != null) {
-            if (getCurrentPosition() > PLAY_COUNT_THRESHOLD
-                    || getCurrentPosition() > getDuration() / 2) {
-                // Log a play if we're passed a certain threshold or more than 50% in a song
-                // (whichever is smaller)
-                logPlayCount(getNowPlaying().getSongId(), false);
-            } else if (getCurrentPosition() < SKIP_COUNT_THRESHOLD) {
-                // If we're not very far into this song, log a skip
-                logPlayCount(getNowPlaying().getSongId(), true);
-            }
+        if (!mMediaPlayer.isComplete()) {
+            logPlay();
         }
 
         if (mRepeat > 0) {
@@ -679,6 +671,24 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 || mRepeat == REPEAT_ALL) {
             // If we're in the middle of the queue, or repeat all is on, start the next song
             mMediaPlayer.skip();
+        }
+    }
+
+    /**
+     * Records a play or skip for the current song based on the current time of the backing
+     * {@link MediaPlayer} as returned by {@link #getCurrentPosition()}
+     */
+    private void logPlay() {
+        if (getNowPlaying() != null) {
+            if (getCurrentPosition() > PLAY_COUNT_THRESHOLD
+                    || getCurrentPosition() > getDuration() / 2) {
+                // Log a play if we're passed a certain threshold or more than 50% in a song
+                // (whichever is smaller)
+                logPlayCount(getNowPlaying().getSongId(), false);
+            } else if (getCurrentPosition() < SKIP_COUNT_THRESHOLD) {
+                // If we're not very far into this song, log a skip
+                logPlayCount(getNowPlaying().getSongId(), true);
+            }
         }
     }
 
@@ -987,6 +997,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
     @Override
     public void onCompletion() {
+        logPlay();
+
         if (mRepeat == REPEAT_NONE) {
             if (mMediaPlayer.getQueueIndex() < mMediaPlayer.getQueue().size()) {
                 skip();
