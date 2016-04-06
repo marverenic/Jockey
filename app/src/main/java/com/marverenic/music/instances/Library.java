@@ -61,6 +61,12 @@ public final class Library {
     private static final Map<Long, Integer> skipCounts = new HashMap<>();
     private static final Map<Long, Integer> playDates = new HashMap<>();
 
+    // This value is hardcoded into Android's sqlite implementation. If a query exceeds this many
+    // variables, an SQLiteException will be thrown, so when doing long queries be sure to check
+    // against this value. This value is defined as SQLITE_MAX_VARIABLE_NUMBER in
+    // https://raw.githubusercontent.com/android/platform_external_sqlite/master/dist/sqlite3.c
+    private static final int SQL_MAX_VARS = 999;
+
     private static final String[] songProjection = new String[]{
             MediaStore.Audio.Media.TITLE,
             MediaStore.Audio.Media._ID,
@@ -605,17 +611,49 @@ public final class Library {
      */
     public static List<Song> buildSongListFromIds(long[] songIDs, Context context) {
         List<Song> contents = new ArrayList<>();
+        for (int i = 0; i < songIDs.length / SQL_MAX_VARS; i++) {
+            contents.addAll(buildSongListFromIds(songIDs, context, i * SQL_MAX_VARS, (i + 1) * SQL_MAX_VARS));
+        }
+
+        // Sort the contents of the list so that it matches the order of the array
+        List<Song> songs = new ArrayList<>();
+        for (long i : songIDs) {
+            for (Song s : contents) {
+                if (s.getSongId() == i) {
+                    songs.add(s);
+                    break;
+                }
+            }
+        }
+
+        return songs;
+    }
+
+    /**
+     * Implementation of {@link #buildSongListFromIds(long[], Context)}. This method takes upper and
+     * lower bounds into account when looking at the song ids so that it can be partitioned into
+     * sections of size {@link #SQL_MAX_VARS} without the overhead of making array copies.
+     * @param songIDs The song ids build the list from
+     * @param context A Context to open a {@link Cursor} to query the {@link MediaStore}
+     * @param lowerBound The first index in the array to get IDs from
+     * @param upperBound The last index in the array to get IDs from
+     * @return An unsorted list of {@link Song Songs} with the same IDs as the ids that were passed
+     * into {@code songIDs}
+     */
+    private static List<Song> buildSongListFromIds(long[] songIDs, Context context, int lowerBound,
+                                                   int upperBound) {
+        List<Song> contents = new ArrayList<>();
         if (songIDs.length == 0) {
             return contents;
         }
 
         String query = MediaStore.Audio.Media._ID + " IN(?";
-        String[] ids = new String[songIDs.length];
-        ids[0] = Long.toString(songIDs[0]);
+        String[] ids = new String[upperBound - lowerBound];
+        ids[0] = Long.toString(songIDs[lowerBound]);
 
-        for (int i = 1; i < songIDs.length; i++) {
+        for (int i = 1; i < ids.length; i++) {
             query += ",?";
-            ids[i] = Long.toString(songIDs[i]);
+            ids[i] = Long.toString(songIDs[i + lowerBound]);
         }
         query += ")";
 
@@ -633,18 +671,7 @@ public final class Library {
         contents = Song.buildSongList(cur, context.getResources());
         cur.close();
 
-        // Sort the contents of the list so that it matches the order of the array
-        List<Song> songs = new ArrayList<>();
-        for (long i : songIDs) {
-            for (Song s : contents) {
-                if (s.getSongId() == i) {
-                    songs.add(s);
-                    break;
-                }
-            }
-        }
-
-        return songs;
+        return contents;
     }
 
     /**
