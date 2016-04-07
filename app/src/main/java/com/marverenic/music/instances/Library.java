@@ -22,8 +22,8 @@ import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.R;
+import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.utils.Prefs;
 
 import java.io.File;
@@ -611,9 +611,16 @@ public final class Library {
      */
     public static List<Song> buildSongListFromIds(long[] songIDs, Context context) {
         List<Song> contents = new ArrayList<>();
+        // Split this request into batches of size SQL_MAX_VARS
         for (int i = 0; i < songIDs.length / SQL_MAX_VARS; i++) {
-            contents.addAll(buildSongListFromIds(songIDs, context, i * SQL_MAX_VARS, (i + 1) * SQL_MAX_VARS));
+            contents.addAll(buildSongListFromIds(songIDs, context,
+                    i * SQL_MAX_VARS,
+                    (i + 1) * SQL_MAX_VARS));
         }
+        // Load the remaining songs (the last section that's not divisible by SQL_MAX_VARS)
+        contents.addAll(buildSongListFromIds(songIDs, context,
+                SQL_MAX_VARS * (songIDs.length / SQL_MAX_VARS),
+                songIDs.length));
 
         // Sort the contents of the list so that it matches the order of the array
         List<Song> songs = new ArrayList<>();
