@@ -1029,7 +1029,9 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
     @Override
     public boolean onError(int what, int extra) {
-        postError(mContext.getString(R.string.message_play_error_io_exception));
+        postError(mContext.getString(
+                R.string.message_play_error_io_exception,
+                getNowPlaying().getSongName()));
         return false;
     }
 
