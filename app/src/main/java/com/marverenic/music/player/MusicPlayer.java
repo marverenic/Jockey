@@ -392,8 +392,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
             mMediaPlayer.seekTo(currentPosition);
 
-            mArtwork = Util.fetchFullArt(getNowPlaying());
             setBackingQueue(queuePosition);
+            mArtwork = Util.fetchFullArt(getNowPlaying());
         } catch(FileNotFoundException ignored) {
             // If there's no queue file, just restore to an empty state
         } catch (NoSuchElementException e) {
