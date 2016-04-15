@@ -292,19 +292,23 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
                 case (ACTION_TOGGLE_PLAY):
                     instance.musicPlayer.togglePlay();
                     instance.musicPlayer.updateUi();
+                    instance.notifyNowPlaying();
                     break;
                 case (ACTION_PREV):
                     instance.musicPlayer.skipPrevious();
                     instance.musicPlayer.updateUi();
+                    instance.notifyNowPlaying();
                     break;
                 case (ACTION_NEXT):
                     instance.musicPlayer.skip();
                     instance.musicPlayer.updateUi();
+                    instance.notifyNowPlaying();
                     break;
                 case (ACTION_STOP):
                     instance.stop();
                     if (instance != null) {
                         instance.musicPlayer.updateUi();
+                        instance.notifyNowPlaying();
                     }
                     break;
             }
