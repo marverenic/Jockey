@@ -266,6 +266,9 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
         swapMediaPlayers();
         if (mCurrentPlayer.isPrepared() || mCurrentPlayer.isComplete()) {
             mCurrentPlayer.start();
+            if (mCallback != null) {
+                mCallback.onSongStart();
+            }
         } else {
             prepareCurrentPlayer(true);
         }
@@ -282,7 +285,8 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
     public void skipPrevious() {
         decrementQueueIndex();
 
-        mCurrentPlayer.stop();
+        mCurrentPlayer.seekTo(0);
+        mCurrentPlayer.pause();
 
         swapMediaPlayers();
         prepareCurrentPlayer(true);
