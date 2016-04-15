@@ -464,14 +464,12 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
     @Override
     public void onAudioFocusChange(int focusChange) {
-        mResumeOnFocusGain = isPlaying() || mResumeOnFocusGain;
-
         switch (focusChange) {
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                pause();
-                break;
+                mResumeOnFocusGain = isPlaying() || mResumeOnFocusGain;
             case AudioManager.AUDIOFOCUS_LOSS:
-                stop();
+                mFocused = false;
+                pause();
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                 mMediaPlayer.setVolume(DUCK_VOLUME, DUCK_VOLUME);
