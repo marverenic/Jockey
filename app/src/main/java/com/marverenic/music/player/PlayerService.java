@@ -311,42 +311,6 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
     }
 
-    /**
-     * Receives media button presses from in line remotes, input devices, and other sources
-     */
-    public static class RemoteControlReceiver extends BroadcastReceiver {
-
-        public RemoteControlReceiver() {
-        }
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // Handle Media button Intents
-            if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
-                KeyEvent event = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
-                if (event.getAction() == KeyEvent.ACTION_UP) {
-                    switch (event.getKeyCode()) {
-                        case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-                            instance.musicPlayer.togglePlay();
-                            break;
-                        case KeyEvent.KEYCODE_MEDIA_PLAY:
-                            instance.musicPlayer.play();
-                            break;
-                        case KeyEvent.KEYCODE_MEDIA_PAUSE:
-                            instance.musicPlayer.pause();
-                            break;
-                        case KeyEvent.KEYCODE_MEDIA_NEXT:
-                            instance.musicPlayer.skip();
-                            break;
-                        case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
-                            instance.musicPlayer.skipPrevious();
-                            break;
-                    }
-                }
-            }
-        }
-    }
-
     public static class Stub extends IPlayerService.Stub {
 
         @Override
