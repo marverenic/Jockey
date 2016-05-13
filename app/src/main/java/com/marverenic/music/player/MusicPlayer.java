@@ -559,7 +559,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @see QueuedMediaPlayer#prepare(boolean)
      */
     public void prepare(boolean playWhenReady) {
-        mMediaPlayer.prepare(playWhenReady);
+        mMediaPlayer.prepare(playWhenReady && getFocus());
     }
 
     /**
