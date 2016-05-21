@@ -259,10 +259,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 .setActions(PlaybackStateCompat.ACTION_PLAY
                         | PlaybackStateCompat.ACTION_PLAY_PAUSE
                         | PlaybackStateCompat.ACTION_SEEK_TO
-                        | PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID
                         | PlaybackStateCompat.ACTION_PAUSE
                         | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
-                        | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
+                        | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+                        | PlaybackStateCompat.ACTION_STOP)
                 .setState(PlaybackStateCompat.STATE_NONE, 0, 0f);
 
         mMediaSession.setPlaybackState(state.build());
@@ -420,16 +420,19 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     private void updateMediaSession() {
         if (getNowPlaying() != null) {
-            MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder();
             Song nowPlaying = getNowPlaying();
-            metadataBuilder
+            MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder()
                     .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE,
                             nowPlaying.getSongName())
                     .putString(MediaMetadataCompat.METADATA_KEY_TITLE,
                             nowPlaying.getSongName())
                     .putString(MediaMetadataCompat.METADATA_KEY_ALBUM,
                             nowPlaying.getAlbumName())
+                    .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION,
+                            nowPlaying.getAlbumName())
                     .putString(MediaMetadataCompat.METADATA_KEY_ARTIST,
+                            nowPlaying.getArtistName())
+                    .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE,
                             nowPlaying.getArtistName())
                     .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, getDuration())
                     .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, mArtwork);
@@ -491,10 +494,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * has occurred, and updates the attached {@link MediaSessionCompat}
      */
     private void updateNowPlaying() {
+        updateMediaSession();
         if (mCallback != null) {
             mCallback.onPlaybackChange();
         }
-        updateMediaSession();
     }
 
     /**
