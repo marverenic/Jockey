@@ -1,24 +1,18 @@
 package com.marverenic.music.player;
 
 import android.app.ActivityManager;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.support.annotation.IdRes;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.session.MediaButtonReceiver;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.widget.RemoteViews;
 
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.IPlayerService;
 import com.marverenic.music.R;
-import com.marverenic.music.activity.LibraryActivity;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.MediaStyleHelper;
 
@@ -137,96 +131,45 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
             return;
         }
 
-        // Create the compact view
-        RemoteViews notificationView = new RemoteViews(getPackageName(), R.layout.notification);
-        // Create the expanded view
-        RemoteViews notificationViewExpanded =
-                new RemoteViews(getPackageName(), R.layout.notification_expanded);
+        NotificationCompat.Builder builder =
+                MediaStyleHelper.from(this, musicPlayer.getMediaSession());
 
-        // Set the artwork for the notification
-        if (musicPlayer.getArtwork() != null) {
-            notificationView.setImageViewBitmap(R.id.notificationIcon, musicPlayer.getArtwork());
-            notificationViewExpanded.setImageViewBitmap(R.id.notificationIcon, musicPlayer.getArtwork());
-        } else {
-            notificationView.setImageViewResource(R.id.notificationIcon, R.drawable.art_default);
-            notificationViewExpanded
-                    .setImageViewResource(R.id.notificationIcon, R.drawable.art_default);
-        }
-
-        // If the player is playing music, set the track info and the button intents
-        if (musicPlayer.getNowPlaying() != null) {
-            // Update the info for the compact view
-            notificationView.setTextViewText(R.id.notificationContentTitle,
-                    musicPlayer.getNowPlaying().getSongName());
-            notificationView.setTextViewText(R.id.notificationContentText,
-                    musicPlayer.getNowPlaying().getAlbumName());
-            notificationView.setTextViewText(R.id.notificationSubText,
-                    musicPlayer.getNowPlaying().getArtistName());
-
-            // Update the info for the expanded view
-            notificationViewExpanded.setTextViewText(R.id.notificationContentTitle,
-                    musicPlayer.getNowPlaying().getSongName());
-            notificationViewExpanded.setTextViewText(R.id.notificationContentText,
-                    musicPlayer.getNowPlaying().getAlbumName());
-            notificationViewExpanded.setTextViewText(R.id.notificationSubText,
-                    musicPlayer.getNowPlaying().getArtistName());
-        }
-
-        // Set the button intents for the compact view
-        setNotificationButton(notificationView, R.id.notificationSkipPrevious, KeyEvent.KEYCODE_MEDIA_PREVIOUS);
-        setNotificationButton(notificationView, R.id.notificationSkipNext, KeyEvent.KEYCODE_MEDIA_NEXT);
-        setNotificationButton(notificationView, R.id.notificationPause, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
-        setNotificationButton(notificationView, R.id.notificationStop, KeyEvent.KEYCODE_MEDIA_STOP);
-
-        // Set the button intents for the expanded view
-        setNotificationButton(notificationViewExpanded, R.id.notificationSkipPrevious, KeyEvent.KEYCODE_MEDIA_PREVIOUS);
-        setNotificationButton(notificationViewExpanded, R.id.notificationSkipNext, KeyEvent.KEYCODE_MEDIA_NEXT);
-        setNotificationButton(notificationViewExpanded, R.id.notificationPause, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
-        setNotificationButton(notificationViewExpanded, R.id.notificationStop, KeyEvent.KEYCODE_MEDIA_STOP);
-
-        // Update the play/pause button icon to reflect the player status
-        if (!(musicPlayer.isPlaying() || musicPlayer.isPreparing())) {
-            notificationView.setImageViewResource(R.id.notificationPause,
-                    R.drawable.ic_play_arrow_36dp);
-            notificationViewExpanded.setImageViewResource(R.id.notificationPause,
-                    R.drawable.ic_play_arrow_36dp);
-        } else {
-            notificationView.setImageViewResource(R.id.notificationPause,
-                    R.drawable.ic_pause_36dp);
-            notificationViewExpanded.setImageViewResource(R.id.notificationPause,
-                    R.drawable.ic_pause_36dp);
-        }
-
-        // Build the notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+        // TODO set color
+        builder
                 .setSmallIcon(
                         (musicPlayer.isPlaying() || musicPlayer.isPreparing())
                                 ? R.drawable.ic_play_arrow_24dp
                                 : R.drawable.ic_pause_24dp)
-                .setOnlyAlertOnce(true)
-                .setOngoing(true)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setCategory(NotificationCompat.CATEGORY_TRANSPORT)
-                .setContentIntent(PendingIntent.getActivity(this, 0,
-                        new Intent(this, LibraryActivity.class),
-                        PendingIntent.FLAG_UPDATE_CURRENT));
+                .setDeleteIntent(
+                        MediaStyleHelper.getActionIntent(this, KeyEvent.KEYCODE_MEDIA_STOP));
 
-        Notification notification = builder.build();
+        builder.addAction(new NotificationCompat.Action(
+                        R.drawable.ic_skip_previous_36dp, getString(R.string.action_previous),
+                        MediaStyleHelper.getActionIntent(this, KeyEvent.KEYCODE_MEDIA_PREVIOUS)));
 
-        // Manually set the expanded and compact views
-        notification.contentView = notificationView;
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
-            notification.bigContentView = notificationViewExpanded;
+        if (musicPlayer.isPlaying()) {
+            builder.addAction(new NotificationCompat.Action(
+                    R.drawable.ic_pause_36dp, getString(R.string.action_pause),
+                    MediaStyleHelper.getActionIntent(this, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)));
+        } else {
+            builder.addAction(new NotificationCompat.Action(
+                    R.drawable.ic_play_arrow_36dp, getString(R.string.action_play),
+                    MediaStyleHelper.getActionIntent(this, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)));
         }
 
-        startForeground(NOTIFICATION_ID, notification);
-    }
+        builder.addAction(new NotificationCompat.Action(
+                R.drawable.ic_skip_next_36dp, getString(R.string.action_skip),
+                MediaStyleHelper.getActionIntent(this, KeyEvent.KEYCODE_MEDIA_NEXT)));
 
-    private void setNotificationButton(RemoteViews notificationView, @IdRes int viewId,
-                                       int keyEvent) {
-        notificationView.setOnClickPendingIntent(viewId,
-                MediaStyleHelper.getActionIntent(this, keyEvent));
+        builder.setStyle(new NotificationCompat.MediaStyle()
+                .setShowActionsInCompactView(1, 2)
+                .setShowCancelButton(true)
+                .setCancelButtonIntent(
+                        MediaStyleHelper.getActionIntent(this, KeyEvent.KEYCODE_MEDIA_STOP))
+                .setMediaSession(musicPlayer.getMediaSession().getSessionToken()));
+
+        // TODO handle stopForeground
+        startForeground(NOTIFICATION_ID, builder.build());
     }
 
     public void stop() {
