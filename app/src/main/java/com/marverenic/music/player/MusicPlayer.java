@@ -1002,6 +1002,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         return mMediaPlayer.getState();
     }
 
+    protected MediaSessionCompat getMediaSession() {
+        return mMediaSession;
+    }
+
     @Override
     public void onCompletion() {
         logPlay();

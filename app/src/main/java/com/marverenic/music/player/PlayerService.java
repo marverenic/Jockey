@@ -4,26 +4,24 @@ import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.IdRes;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.media.session.MediaButtonReceiver;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.RemoteViews;
 
-import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.IPlayerService;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.LibraryActivity;
 import com.marverenic.music.instances.Song;
+import com.marverenic.music.utils.MediaStyleHelper;
 
-import java.io.IOException;
 import java.util.List;
 
 public class PlayerService extends Service implements MusicPlayer.OnPlaybackChangeListener {
@@ -103,6 +101,11 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
+
+        if (intent != null) {
+            MediaButtonReceiver.handleIntent(musicPlayer.getMediaSession(), intent);
+            Log.i(TAG, intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT).toString());
+        }
         return START_STICKY;
     }
 
@@ -170,16 +173,16 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         // Set the button intents for the compact view
-        setNotificationButton(notificationView, R.id.notificationSkipPrevious, ACTION_PREV);
-        setNotificationButton(notificationView, R.id.notificationSkipNext, ACTION_NEXT);
-        setNotificationButton(notificationView, R.id.notificationPause, ACTION_TOGGLE_PLAY);
-        setNotificationButton(notificationView, R.id.notificationStop, ACTION_STOP);
+        setNotificationButton(notificationView, R.id.notificationSkipPrevious, KeyEvent.KEYCODE_MEDIA_PREVIOUS);
+        setNotificationButton(notificationView, R.id.notificationSkipNext, KeyEvent.KEYCODE_MEDIA_NEXT);
+        setNotificationButton(notificationView, R.id.notificationPause, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
+        setNotificationButton(notificationView, R.id.notificationStop, KeyEvent.KEYCODE_MEDIA_STOP);
 
         // Set the button intents for the expanded view
-        setNotificationButton(notificationViewExpanded, R.id.notificationSkipPrevious, ACTION_PREV);
-        setNotificationButton(notificationViewExpanded, R.id.notificationSkipNext, ACTION_NEXT);
-        setNotificationButton(notificationViewExpanded, R.id.notificationPause, ACTION_TOGGLE_PLAY);
-        setNotificationButton(notificationViewExpanded, R.id.notificationStop, ACTION_STOP);
+        setNotificationButton(notificationViewExpanded, R.id.notificationSkipPrevious, KeyEvent.KEYCODE_MEDIA_PREVIOUS);
+        setNotificationButton(notificationViewExpanded, R.id.notificationSkipNext, KeyEvent.KEYCODE_MEDIA_NEXT);
+        setNotificationButton(notificationViewExpanded, R.id.notificationPause, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
+        setNotificationButton(notificationViewExpanded, R.id.notificationStop, KeyEvent.KEYCODE_MEDIA_STOP);
 
         // Update the play/pause button icon to reflect the player status
         if (!(musicPlayer.isPlaying() || musicPlayer.isPreparing())) {
@@ -221,10 +224,9 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     }
 
     private void setNotificationButton(RemoteViews notificationView, @IdRes int viewId,
-                                       String action) {
+                                       int keyEvent) {
         notificationView.setOnClickPendingIntent(viewId,
-                PendingIntent.getBroadcast(this, 1,
-                        new Intent(this, Listener.class).setAction(action), 0));
+                MediaStyleHelper.getActionIntent(this, keyEvent));
     }
 
     public void stop() {
@@ -261,54 +263,6 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     @Override
     public void onPlaybackChange() {
         notifyNowPlaying();
-    }
-
-    public static class Listener extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent == null || intent.getAction() == null) {
-                if (DEBUG) Log.i(TAG, "Intent received (action = null)");
-                return;
-            }
-
-            if (DEBUG) Log.i(TAG, "Intent received (action = \"" + intent.getAction() + "\")");
-
-            if (instance == null) {
-                if (DEBUG) Log.i(TAG, "Service not initialized");
-                return;
-            }
-
-            if (instance.musicPlayer.getNowPlaying() != null) {
-                try {
-                    instance.musicPlayer.saveState(intent.getAction());
-                } catch (IOException e) {
-                    Crashlytics.logException(e);
-                    if (DEBUG) e.printStackTrace();
-                }
-            }
-
-            switch (intent.getAction()) {
-                case (ACTION_TOGGLE_PLAY):
-                    instance.musicPlayer.togglePlay();
-                    instance.musicPlayer.updateUi();
-                    break;
-                case (ACTION_PREV):
-                    instance.musicPlayer.skipPrevious();
-                    instance.musicPlayer.updateUi();
-                    break;
-                case (ACTION_NEXT):
-                    instance.musicPlayer.skip();
-                    instance.musicPlayer.updateUi();
-                    break;
-                case (ACTION_STOP):
-                    instance.stop();
-                    if (instance != null) {
-                        instance.musicPlayer.updateUi();
-                    }
-                    break;
-            }
-        }
     }
 
     public static class Stub extends IPlayerService.Stub {
