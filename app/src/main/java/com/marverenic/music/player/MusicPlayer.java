@@ -13,7 +13,6 @@ import android.media.audiofx.AudioEffect;
 import android.media.audiofx.Equalizer;
 import android.os.PowerManager;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -47,7 +46,7 @@ import java.util.Scanner;
  * {@link #setRepeat(int)}, respectively.
  *
  * MusicPlayer also provides play count logging and state reloading.
- * See {@link #logPlayCount(long, boolean)}, {@link #loadState()} and {@link #saveState(String)}
+ * See {@link #logPlayCount(long, boolean)}, {@link #loadState()} and {@link #saveState()}
  *
  * System integration is implemented by handling Audio Focus through {@link AudioManager}, attaching
  * a {@link MediaSessionCompat}, and with a {@link HeadsetListener} -- an implementation of
@@ -300,42 +299,14 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     /**
      * Saves the player's current state to a file with the name {@link #QUEUE_FILE} in
      * the app's external files directory specified by {@link Context#getExternalFilesDir(String)}
-     * @param intent An optional intent String (either {@link PlayerService#ACTION_NEXT},
-     *               {@link PlayerService#ACTION_PREV} or null) that this MusicPlayer is about to
-     *               process. The result of this intent will be written to disk
      * @throws IOException
      * @see #loadState()
      */
-    public void saveState(@Nullable String intent) throws IOException {
+    public void saveState() throws IOException {
         // Anticipate the outcome of a command so that if we're killed right after it executes,
         // we can restore to the proper state
-        int reloadSeekPosition;
+        int reloadSeekPosition = mMediaPlayer.getCurrentPosition();
         int reloadQueuePosition = mMediaPlayer.getQueueIndex();
-
-        if (intent != null) {
-            switch (intent) {
-                case PlayerService.ACTION_NEXT:
-                    if (reloadQueuePosition + 1 < mQueue.size()) {
-                        reloadSeekPosition = 0;
-                        reloadQueuePosition++;
-                    } else {
-                        reloadSeekPosition = mMediaPlayer.getDuration();
-                    }
-                    break;
-                case PlayerService.ACTION_PREV:
-                    if (mMediaPlayer.getDuration() < SKIP_PREVIOUS_THRESHOLD
-                            && reloadQueuePosition - 1 > 0) {
-                        reloadQueuePosition--;
-                    }
-                    reloadSeekPosition = 0;
-                    break;
-                default:
-                    reloadSeekPosition = mMediaPlayer.getCurrentPosition();
-                    break;
-            }
-        } else {
-            reloadSeekPosition = mMediaPlayer.getCurrentPosition();
-        }
 
         final String currentPosition = Integer.toString(reloadSeekPosition);
         final String queuePosition = Integer.toString(reloadQueuePosition);
@@ -362,7 +333,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
     /**
      * Reloads a saved state
-     * @see #saveState(String)
+     * @see #saveState()
      */
     public void loadState() {
         try {

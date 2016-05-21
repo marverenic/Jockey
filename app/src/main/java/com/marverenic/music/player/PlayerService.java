@@ -25,24 +25,6 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
     public static final int NOTIFICATION_ID = 1;
 
-    // Intent Action & Extra names
-    /**
-     * Toggle between play and pause
-     */
-    public static final String ACTION_TOGGLE_PLAY = "com.marverenic.music.action.TOGGLE_PLAY";
-    /**
-     * Skip to the previous song
-     */
-    public static final String ACTION_PREV = "com.marverenic.music.action.PREVIOUS";
-    /**
-     * Skip to the next song
-     */
-    public static final String ACTION_NEXT = "com.marverenic.music.action.NEXT";
-    /**
-     * Stop playback and kill service
-     */
-    public static final String ACTION_STOP = "com.marverenic.music.action.STOP";
-
     /**
      * The service instance in use (singleton)
      */
@@ -107,7 +89,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     public void onDestroy() {
         if (DEBUG) Log.i(TAG, "Called onDestroy()");
         try {
-            musicPlayer.saveState(null);
+            musicPlayer.saveState();
         } catch (Exception ignored) {
 
         }
