@@ -37,9 +37,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 public final class Library {
 
@@ -138,8 +140,8 @@ public final class Library {
     // parameter to methods that cause such changes since we don't have to instantiate
     // a single-use Object.
 
-    private static final ArrayList<PlaylistChangeListener> PLAYLIST_LISTENERS = new ArrayList<>();
-    private static final ArrayList<LibraryRefreshListener> REFRESH_LISTENERS = new ArrayList<>();
+    private static Set<PlaylistChangeListener> sPlaylistChangeListeners = new HashSet<>();
+    private static Set<LibraryRefreshListener> sRefreshListeners = new HashSet<>();
 
     public interface PlaylistChangeListener {
         void onPlaylistRemoved(Playlist removed, int index);
@@ -167,15 +169,11 @@ public final class Library {
      *                 when the library is changed in any way
      */
     public static void addPlaylistListener(PlaylistChangeListener listener) {
-        if (!PLAYLIST_LISTENERS.contains(listener)) {
-            PLAYLIST_LISTENERS.add(listener);
-        }
+        sPlaylistChangeListeners.add(listener);
     }
 
     public static void addRefreshListener(LibraryRefreshListener listener) {
-        if (!REFRESH_LISTENERS.contains(listener)) {
-            REFRESH_LISTENERS.add(listener);
-        }
+        sRefreshListeners.add(listener);
     }
 
     /**
@@ -186,13 +184,11 @@ public final class Library {
      *                 registered, then nothing will happen.
      */
     public static void removePlaylistListener(PlaylistChangeListener listener) {
-        if (PLAYLIST_LISTENERS.contains(listener)) {
-            PLAYLIST_LISTENERS.remove(listener);
-        }
+        sPlaylistChangeListeners.remove(listener);
     }
 
     public static void removeRefreshListener(LibraryRefreshListener listener) {
-        REFRESH_LISTENERS.remove(listener);
+        sRefreshListeners.remove(listener);
     }
 
     /**
@@ -200,7 +196,7 @@ public final class Library {
      * that the library has lost an entry. (Changing entries doesn't matter)
      */
     private static void notifyPlaylistRemoved(Playlist removed, int index) {
-        for (PlaylistChangeListener l : PLAYLIST_LISTENERS) {
+        for (PlaylistChangeListener l : sPlaylistChangeListeners) {
             l.onPlaylistRemoved(removed, index);
         }
     }
@@ -211,13 +207,13 @@ public final class Library {
      */
     private static void notifyPlaylistAdded(Playlist added) {
         int index = playlistLib.indexOf(added);
-        for (PlaylistChangeListener l : PLAYLIST_LISTENERS) {
+        for (PlaylistChangeListener l : sPlaylistChangeListeners) {
             l.onPlaylistAdded(added, index);
         }
     }
 
     private static void notifyLibraryRefreshed() {
-        for (LibraryRefreshListener l : REFRESH_LISTENERS) {
+        for (LibraryRefreshListener l : sRefreshListeners) {
             l.onLibraryRefreshed();
         }
     }
