@@ -28,13 +28,11 @@ import com.marverenic.music.utils.Prefs;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -50,13 +48,9 @@ public final class Library {
             "This file contains play count information for Jockey and should not be edited";
     public static final int PERMISSION_REQUEST_ID = 0x01;
 
-    private static final String AUTO_PLAYLIST_EXTENSION = ".jpl";
+    public static final String AUTO_PLAYLIST_EXTENSION = ".jpl";
 
-    private static final List<Playlist> playlistLib = new ArrayList<>();
-    private static final List<Song> songLib = new ArrayList<>();
-    private static final List<Artist> artistLib = new ArrayList<>();
-    private static final List<Album> albumLib = new ArrayList<>();
-    private static final List<Genre> genreLib = new ArrayList<>();
+    private static LibraryInstance sInstance = new LibraryInstance();
 
     // TODO use a better data structure
     private static final Map<Long, Integer> playCounts = new HashMap<>();
@@ -69,7 +63,7 @@ public final class Library {
     // https://raw.githubusercontent.com/android/platform_external_sqlite/master/dist/sqlite3.c
     private static final int SQL_MAX_VARS = 999;
 
-    private static final String[] songProjection = new String[]{
+    public static final String[] SONG_PROJECTION = new String[]{
             MediaStore.Audio.Media.TITLE,
             MediaStore.Audio.Media._ID,
             MediaStore.Audio.Media.ARTIST,
@@ -83,12 +77,12 @@ public final class Library {
             MediaStore.Audio.Media.TRACK
     };
 
-    private static final String[] artistProjection = new String[]{
+    public static final String[] ARTIST_PROJECTION = new String[]{
             MediaStore.Audio.Artists._ID,
             MediaStore.Audio.Artists.ARTIST,
     };
 
-    private static final String[] albumProjection = new String[]{
+    public static final String[] ALBUM_PROJECTION = new String[]{
             MediaStore.Audio.Albums._ID,
             MediaStore.Audio.Albums.ALBUM,
             MediaStore.Audio.Media.ARTIST_ID,
@@ -97,17 +91,17 @@ public final class Library {
             MediaStore.Audio.Albums.ALBUM_ART
     };
 
-    private static final String[] playlistProjection = new String[]{
+    public static final String[] PLAYLIST_PROJECTION = new String[]{
             MediaStore.Audio.Playlists._ID,
             MediaStore.Audio.Playlists.NAME
     };
 
-    private static final String[] genreProjection = new String[]{
+    public static final String[] GENRE_PROJECTION = new String[]{
             MediaStore.Audio.Genres._ID,
             MediaStore.Audio.Genres.NAME
     };
 
-    private static final String[] playlistEntryProjection = new String[]{
+    public static final String[] PLAYLIST_ENTRY_PROJECTION = new String[]{
             MediaStore.Audio.Playlists.Members.TITLE,
             MediaStore.Audio.Playlists.Members.AUDIO_ID,
             MediaStore.Audio.Playlists.Members.ARTIST,
@@ -206,7 +200,7 @@ public final class Library {
      * that the library has gained an entry. (Changing entries doesn't matter)
      */
     private static void notifyPlaylistAdded(Playlist added) {
-        int index = playlistLib.indexOf(added);
+        int index = getPlaylists().indexOf(added);
         for (PlaylistChangeListener l : sPlaylistChangeListeners) {
             l.onPlaylistAdded(added, index);
         }
@@ -262,18 +256,14 @@ public final class Library {
     public static void scanAll(final Activity activity) {
         if (hasRWPermission(activity)) {
             resetAll();
-            setPlaylistLib(scanPlaylists(activity));
-            setSongLib(scanSongs(activity));
-            setArtistLib(scanArtists(activity));
-            setAlbumLib(scanAlbums(activity));
-            setGenreLib(scanGenres(activity));
+            sInstance.scanAll(activity);
             sort();
             notifyLibraryRefreshed();
 
             // If the user permits it, log info about the size of their library
             if (Prefs.allowAnalytics(activity)) {
                 int autoPlaylistCount = 0;
-                for (Playlist p : playlistLib) {
+                for (Playlist p : getPlaylists()) {
                     if (p instanceof AutoPlaylist) {
                         autoPlaylistCount++;
                     }
@@ -281,173 +271,16 @@ public final class Library {
 
                 Answers.getInstance().logCustom(
                         new CustomEvent("Loaded library")
-                                .putCustomAttribute("Playlist count", playlistLib.size())
+                                .putCustomAttribute("Playlist count", getPlaylists().size())
                                 .putCustomAttribute("Auto Playlist count", autoPlaylistCount)
-                                .putCustomAttribute("Song count", songLib.size())
-                                .putCustomAttribute("Artist count", artistLib.size())
-                                .putCustomAttribute("Album count", albumLib.size())
-                                .putCustomAttribute("Genre count", genreLib.size()));
+                                .putCustomAttribute("Song count", getPlaylists().size())
+                                .putCustomAttribute("Artist count", getPlaylists().size())
+                                .putCustomAttribute("Album count", getPlaylists().size())
+                                .putCustomAttribute("Genre count", getPlaylists().size()));
             }
         } else if (!previouslyRequestedRWPermission(activity)) {
             requestRWPermission(activity);
         }
-    }
-
-    /**
-     * Scans the MediaStore for songs
-     * @param context {@link Context} to use to open a {@link Cursor}
-     * @return An {@link ArrayList} with the {@link Song}s in the MediaStore
-     */
-    public static List<Song> scanSongs(Context context) {
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                songProjection,
-                MediaStore.Audio.Media.IS_MUSIC + "!= 0",
-                null,
-                MediaStore.Audio.Media.TITLE + " ASC");
-
-        if (cur == null) {
-            return new ArrayList<>();
-        }
-
-        List<Song> songs = Song.buildSongList(cur, context.getResources());
-        cur.close();
-
-        return songs;
-    }
-
-    /**
-     * Scans the MediaStore for artists
-     * @param context {@link Context} to use to open a {@link Cursor}
-     * @return An {@link ArrayList} with the {@link Artist}s in the MediaStore
-     */
-    public static List<Artist> scanArtists(Context context) {
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
-                artistProjection,
-                null,
-                null,
-                MediaStore.Audio.Artists.ARTIST + " ASC");
-
-        if (cur == null) {
-            return new ArrayList<>();
-        }
-
-        List<Artist> artists = Artist.buildArtistList(cur, context.getResources());
-        cur.close();
-
-        return artists;
-    }
-
-    /**
-     * Scans the MediaStore for albums
-     * @param context {@link Context} to use to open a {@link Cursor}
-     * @return An {@link ArrayList} with the {@link Album}s in the MediaStore
-     */
-    public static List<Album> scanAlbums(Context context) {
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                albumProjection,
-                null,
-                null,
-                MediaStore.Audio.Albums.ALBUM + " ASC");
-
-        if (cur == null) {
-            return new ArrayList<>();
-        }
-
-        List<Album> albums = Album.buildAlbumList(cur, context.getResources());
-        cur.close();
-
-        return albums;
-    }
-
-    /**
-     * Scans the MediaStore for playlists
-     * @param context {@link Context} to use to open a {@link Cursor}
-     * @return An {@link ArrayList} with the {@link Playlist}s in the MediaStore
-     */
-    public static List<Playlist> scanPlaylists(Context context) {
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
-                playlistProjection,
-                null,
-                null,
-                MediaStore.Audio.Playlists.NAME + " ASC");
-
-        if (cur == null) {
-            return new ArrayList<>();
-        }
-
-        List<Playlist> playlists = Playlist.buildPlaylistList(cur);
-        cur.close();
-
-        for (Playlist p : scanAutoPlaylists(context)) {
-            if (playlists.remove(p)) {
-                playlists.add(p);
-            } else {
-                // If AutoPlaylists have been deleted outside of Jockey, delete its configuration
-                //noinspection ResultOfMethodCallIgnored
-                new File(context.getExternalFilesDir(null)
-                        + "/" + p.getPlaylistName() + AUTO_PLAYLIST_EXTENSION)
-                        .delete();
-            }
-        }
-        return playlists;
-    }
-
-    /**
-     * Scans storage for Auto Playlist configurations
-     * @param context {@link Context} to use to read files on the device
-     * @return An {@link ArrayList} with the loaded {@link AutoPlaylist}s
-     */
-    public static ArrayList<AutoPlaylist> scanAutoPlaylists(Context context) {
-        ArrayList<AutoPlaylist> autoPlaylists = new ArrayList<>();
-        final Gson gson = new Gson();
-
-        try {
-            File externalFiles = new File(context.getExternalFilesDir(null) + "/");
-
-            if (externalFiles.exists() || externalFiles.mkdirs()) {
-                String[] files = externalFiles.list();
-                for (String s : files) {
-                    if (s.endsWith(AUTO_PLAYLIST_EXTENSION)) {
-                        autoPlaylists.add(gson.fromJson(
-                                new FileReader(externalFiles + "/" + s),
-                                AutoPlaylist.class));
-                    }
-                }
-            }
-        } catch (IOException e) {
-            Crashlytics.logException(e);
-        }
-
-        return autoPlaylists;
-    }
-
-    /**
-     * Scans the MediaStore for genres
-     * @param context {@link Context} to use to open a {@link Cursor}
-     * @return An {@link ArrayList} with the {@link Genre}s in the MediaStore
-     */
-    public static List<Genre> scanGenres(Context context) {
-        List<Genre> genres = new ArrayList<>();
-
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI,
-                genreProjection,
-                null,
-                null,
-                MediaStore.Audio.Genres.NAME + " ASC");
-
-        if (cur == null) {
-            return genres;
-        }
-
-        genres = Genre.buildGenreList(context, cur);
-        cur.close();
-
-        return genres;
     }
 
     /**
@@ -473,110 +306,56 @@ public final class Library {
      * Remove all library entries from memory
      */
     public static void resetAll() {
-        playlistLib.clear();
-        songLib.clear();
-        artistLib.clear();
-        albumLib.clear();
-        genreLib.clear();
-    }
-
-    /**
-     * Replace the playlist library in memory with another one
-     * @param newLib The new playlist library
-     */
-    public static void setPlaylistLib(List<Playlist> newLib) {
-        playlistLib.clear();
-        playlistLib.addAll(newLib);
-    }
-
-    /**
-     * Replace the song library in memory with another one
-     * @param newLib The new song library
-     */
-    public static void setSongLib(List<Song> newLib) {
-        songLib.clear();
-        songLib.addAll(newLib);
-    }
-
-    /**
-     * Replace the album library in memory with another one
-     * @param newLib The new album library
-     */
-    public static void setAlbumLib(List<Album> newLib) {
-        albumLib.clear();
-        albumLib.addAll(newLib);
-    }
-
-    /**
-     * Replace the artist library in memory with another one
-     * @param newLib The new artist library
-     */
-    public static void setArtistLib(List<Artist> newLib) {
-        artistLib.clear();
-        artistLib.addAll(newLib);
-    }
-
-    /**
-     * Replace the genre library in memory with another one
-     * @param newLib The new genre library
-     */
-    public static void setGenreLib(List<Genre> newLib) {
-        genreLib.clear();
-        genreLib.addAll(newLib);
+        sInstance.clear();
     }
 
     /**
      * Sorts the libraries in memory using the default {@link Library} sort methods
      */
     public static void sort() {
-        Collections.sort(songLib);
-        Collections.sort(albumLib);
-        Collections.sort(artistLib);
-        Collections.sort(playlistLib);
-        Collections.sort(genreLib);
+        sInstance.sort();
     }
 
     /**
      * @return true if the library is populated with any entries
      */
     public static boolean isEmpty() {
-        return songLib.isEmpty() && albumLib.isEmpty() && artistLib.isEmpty()
-                && playlistLib.isEmpty() && genreLib.isEmpty();
+        return sInstance.isEmpty();
     }
 
     /**
      * @return An {@link ArrayList} of {@link Playlist}s in the MediaStore
      */
     public static List<Playlist> getPlaylists() {
-        return playlistLib;
+        return sInstance.getPlayists();
     }
 
     /**
      * @return An {@link ArrayList} of {@link Song}s in the MediaStore
      */
     public static List<Song> getSongs() {
-        return songLib;
+        return sInstance.getSongs();
     }
 
     /**
      * @return An {@link ArrayList} of {@link Album}s in the MediaStore
      */
     public static List<Album> getAlbums() {
-        return albumLib;
+        return sInstance.getAlbums();
     }
 
     /**
      * @return An {@link ArrayList} of {@link Artist}s in the MediaStore
      */
     public static List<Artist> getArtists() {
-        return artistLib;
+        return sInstance.getArtists();
     }
 
     /**
      * @return An {@link ArrayList} of {@link Genre}s in the MediaStore
      */
     public static List<Genre> getGenres() {
-        return genreLib;
+        return sInstance.getGenres();
     }
 
     //
@@ -589,12 +368,7 @@ public final class Library {
      * @return A {@link Song} with a matching Id
      */
     public static Song findSongById(int songId) {
-        for (Song s : songLib) {
-            if (s.getSongId() == songId) {
-                return s;
-            }
-        }
-        return null;
+        return sInstance.findSongById(songId);
     }
 
     /**
@@ -662,7 +436,7 @@ public final class Library {
 
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                songProjection,
+                SONG_PROJECTION,
                 query,
                 ids,
                 MediaStore.Audio.Media.TITLE + " ASC");
@@ -683,12 +457,7 @@ public final class Library {
      * @return A {@link Artist} with a matching Id
      */
     public static Artist findArtistById(long artistId) {
-        for (Artist a : artistLib) {
-            if (a.getArtistId() == artistId) {
-                return a;
-            }
-        }
-        return null;
+        return sInstance.findArtistById(artistId);
     }
 
     /**
@@ -697,13 +466,7 @@ public final class Library {
      * @return A {@link Album} with a matching Id
      */
     public static Album findAlbumById(long albumId) {
-        // Returns the first Artist object in the library with a matching id
-        for (Album a : albumLib) {
-            if (a.getAlbumId() == albumId) {
-                return a;
-            }
-        }
-        return null;
+        return sInstance.findAlbumById(albumId);
     }
 
     /**
@@ -712,12 +475,7 @@ public final class Library {
      * @return A {@link Playlist} with a matching ID
      */
     public static Playlist findPlaylistById(long playlistId) {
-        for (Playlist p : playlistLib) {
-            if (p.getPlaylistId() == playlistId) {
-                return p;
-            }
-        }
-        return null;
+        return sInstance.findPlaylistById(playlistId);
     }
 
     /**
@@ -726,23 +484,11 @@ public final class Library {
      * @return A {@link Genre} with a matching Id
      */
     public static Genre findGenreById(long genreId) {
-        // Returns the first Genre object in the library with a matching id
-        for (Genre g : genreLib) {
-            if (g.getGenreId() == genreId) {
-                return g;
-            }
-        }
-        return null;
+        return sInstance.findGenreById(genreId);
     }
 
     public static Artist findArtistByName(String artistName) {
-        final String trimmedQuery = artistName.trim();
-        for (Artist a : artistLib) {
-            if (a.getArtistName().equalsIgnoreCase(trimmedQuery)) {
-                return a;
-            }
-        }
-        return null;
+       return sInstance.findArtistByName(artistName);
     }
 
     //
@@ -767,7 +513,7 @@ public final class Library {
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Playlists.Members
                         .getContentUri("external", playlist.getPlaylistId()),
-                playlistEntryProjection,
+                PLAYLIST_ENTRY_PROJECTION,
                 MediaStore.Audio.Media.IS_MUSIC + " != 0", null, null);
 
         if (cur == null) {
@@ -785,23 +531,8 @@ public final class Library {
      * @param album The {@link Album} to get the entries of
      * @return An {@link ArrayList} of {@link Song}s contained in the album
      */
-    public static ArrayList<Song> getAlbumEntries(Album album) {
-        ArrayList<Song> songEntries = new ArrayList<>();
-
-        for (Song s : songLib) {
-            if (s.getAlbumId() == album.getAlbumId()) {
-                songEntries.add(s);
-            }
-        }
-
-        Collections.sort(songEntries, new Comparator<Song>() {
-            @Override
-            public int compare(Song o1, Song o2) {
-                return ((Integer) o1.getTrackNumber()).compareTo(o2.getTrackNumber());
-            }
-        });
-
-        return songEntries;
+    public static List<Song> getAlbumEntries(Album album) {
+        return sInstance.getAlbumEntries(album);
     }
 
     /**
@@ -809,16 +540,8 @@ public final class Library {
      * @param artist The {@link Artist} to get the entries of
      * @return An {@link ArrayList} of {@link Song}s by the artist
      */
-    public static ArrayList<Song> getArtistSongEntries(Artist artist) {
-        ArrayList<Song> songEntries = new ArrayList<>();
-
-        for (Song s : songLib) {
-            if (s.getArtistId() == artist.getArtistId()) {
-                songEntries.add(s);
-            }
-        }
-
-        return songEntries;
+    public static List<Song> getArtistSongEntries(Artist artist) {
+        return sInstance.getArtistSongEntries(artist);
     }
 
     /**
@@ -826,16 +549,8 @@ public final class Library {
      * @param artist The {@link Artist} to get the entries of
      * @return An {@link ArrayList} of {@link Album}s by the artist
      */
-    public static ArrayList<Album> getArtistAlbumEntries(Artist artist) {
-        ArrayList<Album> albumEntries = new ArrayList<>();
-
-        for (Album a : albumLib) {
-            if (a.getArtistId() == artist.getArtistId()) {
-                albumEntries.add(a);
-            }
-        }
-
-        return albumEntries;
+    public static List<Album> getArtistAlbumEntries(Artist artist) {
+        return sInstance.getArtistAlbumEntries(artist);
     }
 
     /**
@@ -843,16 +558,8 @@ public final class Library {
      * @param genre The {@link Genre} to get the entries of
      * @return An {@link ArrayList} of {@link Song}s contained in the genre
      */
-    public static ArrayList<Song> getGenreEntries(Genre genre) {
-        ArrayList<Song> songEntries = new ArrayList<>();
-
-        for (Song s : songLib) {
-            if (s.getGenreId() == genre.getGenreId()) {
-                songEntries.add(s);
-            }
-        }
-
-        return songEntries;
+    public static List<Song> getGenreEntries(Genre genre) {
+        return sInstance.getGenreEntries(genre);
     }
 
     //
@@ -976,7 +683,7 @@ public final class Library {
         final Context context = view.getContext();
         String trimmedName = playlistName.trim();
 
-        setPlaylistLib(scanPlaylists(context));
+        sInstance.refreshPlaylists(context);
 
         String error = verifyPlaylistName(context, trimmedName);
         if (error != null) {
@@ -1025,7 +732,7 @@ public final class Library {
             return context.getResources().getString(R.string.error_hint_empty_playlist);
         }
 
-        for (Playlist p : playlistLib) {
+        for (Playlist p : getPlaylists()) {
             if (p.getPlaylistName().equalsIgnoreCase(trimmedName)) {
                 return context.getResources().getString(R.string.error_hint_duplicate_playlist);
             }
@@ -1305,8 +1012,8 @@ public final class Library {
     private static Playlist addPlaylist(final Context context, final String playlistName,
                                         @Nullable final List<Song> songList) {
         final Playlist added = makePlaylist(context, playlistName, songList);
-        playlistLib.add(added);
-        Collections.sort(playlistLib);
+        getPlaylists().add(added);
+        Collections.sort(getPlaylists());
         notifyPlaylistAdded(added);
         return added;
     }
@@ -1382,7 +1089,7 @@ public final class Library {
      *                 from the MediaStore
      */
     public static void deletePlaylist(final Context context, final Playlist playlist) {
-        int index = playlistLib.indexOf(playlist);
+        int index = getPlaylists().indexOf(playlist);
 
         // Remove the playlist from the MediaStore
         context.getContentResolver().delete(
@@ -1398,9 +1105,7 @@ public final class Library {
         }
 
         // Update the playlist library & resort it
-        playlistLib.clear();
-        setPlaylistLib(scanPlaylists(context));
-        Collections.sort(playlistLib);
+        sInstance.refreshPlaylists(context);
         notifyPlaylistRemoved(playlist, index);
     }
 
@@ -1512,8 +1217,8 @@ public final class Library {
             playlistWriter.close();
 
             // Add the playlist to the library and resort the playlist library
-            playlistLib.add(playlist);
-            Collections.sort(playlistLib);
+            getPlaylists().add(playlist);
+            Collections.sort(getPlaylists());
             notifyPlaylistAdded(playlist);
         } catch (IOException e) {
             Crashlytics.logException(e);
@@ -1535,7 +1240,7 @@ public final class Library {
             // Remove the old index of this playlist, but keep the Object for reference.
             // Since playlists are compared by Id's, this will remove the old index
             AutoPlaylist oldReference =
-                    (AutoPlaylist) playlistLib.remove(playlistLib.indexOf(playlist));
+                    (AutoPlaylist) getPlaylists().remove(getPlaylists().indexOf(playlist));
 
             // If the user renamed the playlist, update it now
             if (!oldReference.getPlaylistName().equals(playlist.getPlaylistName())) {
@@ -1549,9 +1254,9 @@ public final class Library {
             // Add the playlist again. This makes sure that if the values have been cloned before
             // being changed that their values will be updated without having to rescan the
             // entire library
-            playlistLib.add(playlist);
+            getPlaylists().add(playlist);
 
-            Collections.sort(playlistLib);
+            Collections.sort(getPlaylists());
         } catch (IOException e) {
             Crashlytics.logException(e);
         }

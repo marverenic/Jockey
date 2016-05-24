@@ -78,7 +78,7 @@ public class Song implements Parcelable, Comparable<Song> {
      * Builds a {@link List} of Songs from a Cursor
      * @param cur A {@link Cursor} to use when reading the {@link MediaStore}. This Cursor may have
      *            any filters and sorting, but MUST have AT LEAST the columns in
-     *            {@link Library#songProjection}. The caller is responsible for closing this Cursor.
+     *            {@link Library#SONG_PROJECTION}. The caller is responsible for closing this Cursor.
      * @param res A {@link Resources} Object from {@link Context#getResources()} used to get the
      *            default values if an unknown value is encountered
      * @return A List of songs populated by entries in the Cursor
@@ -317,6 +317,13 @@ public class Song implements Parcelable, Comparable<Song> {
         @Override
         public int compare(Song s1, Song s2) {
             return s2.year - s1.year;
+        }
+    };
+
+    public static final Comparator<Song> TRACK_COMPRATOR = new Comparator<Song>() {
+        @Override
+        public int compare(Song s1, Song s2) {
+            return s1.trackNumber - s2.trackNumber;
         }
     };
 }

@@ -9,9 +9,12 @@ import android.media.MediaMetadataRetriever;
 import android.media.audiofx.AudioEffect;
 import android.os.Build;
 
-import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.instances.Song;
+import com.marverenic.music.player.PlayerController;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.UUID;
 
 public final class Util {
@@ -82,6 +85,25 @@ public final class Util {
 
     public static int hashLong(long value) {
         return (int) (value ^ (value >>> 32));
+    }
+
+    public static <T extends Comparable<? super T>> void insertInOrder(List<T> list, T element) {
+        int pos = Collections.binarySearch(list, element);
+        if (pos < 0) {
+            list.add(-pos - 1, element);
+        } else {
+            list.add(pos, element);
+        }
+    }
+
+    public static <T> void insertInOrder(List<T> list, Comparator<? super T> comparator,
+                                         T element) {
+        int pos = Collections.binarySearch(list, element, comparator);
+        if (pos < 0) {
+            list.add(-pos - 1, element);
+        } else {
+            list.add(pos, element);
+        }
     }
 
 }

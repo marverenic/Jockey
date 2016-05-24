@@ -47,7 +47,7 @@ public final class Artist implements Parcelable, Comparable<Artist> {
      * Builds a {@link List} of Artists from a Cursor
      * @param cur A {@link Cursor} to use when reading the {@link MediaStore}. This Cursor may have
      *            any filters and sorting, but MUST have AT LEAST the columns in
-     *            {@link Library#artistProjection}. The caller is responsible for closing this
+     *            {@link Library#ARTIST_PROJECTION}. The caller is responsible for closing this
      *            Cursor.
      * @param res A {@link Resources} Object from {@link Context#getResources()} used to get the
      *            default values if an unknown value is encountered
