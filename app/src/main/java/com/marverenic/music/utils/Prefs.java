@@ -65,6 +65,16 @@ public final class Prefs {
      * {@link android.media.audiofx.Equalizer.Settings}
      */
     public static final String EQ_SETTINGS = "prefEqualizerSettings";
+    /**
+     * {@link SharedPreferences} key that maps to a String array representing directories to be
+     * excluded when scanning for media
+     */
+    public static final String DIR_EXCLUDED = "prefExcludedDirs";
+    /**
+     * {@link SharedPreferences} key that maps to a String array representing directories to be
+     * included when scanning for media
+     */
+    public static final String DIR_INCLUDED = "prefIncludedDirs";
 
     /**
      * This class is never instantiated

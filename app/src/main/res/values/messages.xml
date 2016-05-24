@@ -35,6 +35,21 @@
     <string name="message_sorted_playlist_date_played">Sorted &#8220;%1$s&#8221; by date played</string>
     <string name="header_add_song_name_to_playlist">Add &#8220;%1$s&#8221; to playlist</string>
     <string name="confirm_add_songs">Added %1$s songs to playlist &#8220;%2$s&#8221;</string>
+    <string name="confirm_dir_include_excluded">
+        &#8220;%1$s&#8221; is already being excluded.
+        Do you want to move it to your included folders?
+    </string>
+    <string name="confirm_dir_exclude_included">
+        &#8220;%1$s&#8221; is already being included.
+        Do you want to move it to your excluded folders?
+    </string>
+    <string name="confirm_dir_already_excluded">
+        &#8220;%1$s&#8221; is already being excluded
+    </string>
+    <string name="confirm_dir_already_included">
+        &#8220;%1$s&#8221; is already being included
+    </string>
+    <string name="message_removed_directory">Removed folder &#8220;%1$s&#8221;</string>
 
 
 </resources>

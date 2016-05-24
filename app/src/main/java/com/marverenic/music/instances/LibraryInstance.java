@@ -83,16 +83,18 @@ public final class LibraryInstance {
         mPlaylists = scanPlaylists(context);
     }
 
-    /**
-     * Scans the MediaStore for songs
-     * @param context {@link Context} to use to open a {@link Cursor}
-     * @return An {@link ArrayList} with the {@link Song}s in the MediaStore
-     */
-    private static List<Song> scanSongs(Context context) {
+    public static List<Song> scanSongs(Context context) {
+        String selection = Library.getDirectorySelection(context);
+        if (selection == null) {
+            selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
+        } else {
+            selection = MediaStore.Audio.Media.IS_MUSIC + " != 0 AND " + selection;
+        }
+
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 Library.SONG_PROJECTION,
-                MediaStore.Audio.Media.IS_MUSIC + "!= 0",
+                selection,
                 null,
                 MediaStore.Audio.Media.TITLE + " ASC");
 

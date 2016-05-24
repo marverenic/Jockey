@@ -7,6 +7,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -36,6 +37,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -296,6 +298,55 @@ public final class Library {
         } else {
             return value;
         }
+    }
+
+    protected static String getDirectorySelection(Context context) {
+        SharedPreferences prefs = Prefs.getPrefs(context);
+        Set<String> emptySet = Collections.emptySet();
+
+        Set<String> includedDirs = prefs.getStringSet(Prefs.DIR_INCLUDED, emptySet);
+        Set<String> excludedDirs = prefs.getStringSet(Prefs.DIR_EXCLUDED, emptySet);
+
+        if (includedDirs.isEmpty() && excludedDirs.isEmpty()) {
+            return null;
+        }
+
+        StringBuilder builder = new StringBuilder();
+
+        // Include directories
+        if (!includedDirs.isEmpty()) {
+            builder.append(dirSetToSqlQuery(true, includedDirs));
+        }
+
+        if (!includedDirs.isEmpty() && !excludedDirs.isEmpty()) {
+            builder.append(" AND ");
+        }
+
+        // Exclude directories
+        if (!excludedDirs.isEmpty()) {
+            builder.append(dirSetToSqlQuery(false, excludedDirs));
+        }
+
+        return builder.toString();
+    }
+
+    private static String dirSetToSqlQuery(boolean include, Set<String> set) {
+        StringBuilder builder = new StringBuilder("(");
+
+        for (Iterator<String> iterator = set.iterator(); iterator.hasNext(); ) {
+            String s = iterator.next();
+
+            builder
+                    .append(MediaStore.MediaColumns.DATA)
+                    .append((include) ? " LIKE \'" : " NOT LIKE \'")
+                    .append(s).append("%\'");
+
+            if (iterator.hasNext()) {
+                builder.append((include) ? " OR " : " AND ");
+            }
+        }
+
+        return builder.append(')').toString();
     }
 
     //

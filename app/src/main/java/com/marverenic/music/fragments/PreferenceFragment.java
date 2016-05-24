@@ -3,6 +3,7 @@ package com.marverenic.music.fragments;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.marverenic.music.R;
+import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.utils.Util;
@@ -127,8 +129,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements View
 
     @Override
     public boolean onPreferenceTreeClick(Preference preference) {
-        if ("com.marverenic.music.fragments.EqualizerFragment"
-                .equals(preference.getFragment())) {
+        if (EqualizerFragment.class.getName().equals(preference.getFragment())) {
             Intent eqIntent = Util.getSystemEqIntent(getActivity());
 
             if (eqIntent != null
@@ -143,18 +144,22 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements View
             } else if (Util.hasEqualizer()) {
                 // If there isn't a global equalizer or the user has already enabled our
                 // equalizer, navigate to the built-in implementation
-                getFragmentManager().beginTransaction()
-                        .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left,
-                                R.anim.slide_in_left, R.anim.slide_out_right)
-                        .replace(R.id.prefFrame, new EqualizerFragment())
-                        .addToBackStack(null)
-                        .commit();
+                Navigate.to(getActivity(), new EqualizerFragment(), R.id.prefFrame);
             } else {
                 Toast.makeText(getActivity(), R.string.equalizerUnsupported, Toast.LENGTH_LONG)
                         .show();
             }
             return true;
-        } else if (preference.getKey().equals(Prefs.ADD_SHORTCUT)) {
+        } else if (DirectoryListFragment.class.getName().equals(preference.getFragment())) {
+            Fragment fragment = new DirectoryListFragment();
+            Bundle args = new Bundle();
+            args.putString(DirectoryListFragment.PREFERENCE_EXTRA, preference.getKey());
+            args.putString(DirectoryListFragment.TITLE_EXTRA, preference.getTitle().toString());
+            fragment.setArguments(args);
+
+            Navigate.to(getActivity(), fragment, R.id.prefFrame);
+            return true;
+        } else if (Prefs.ADD_SHORTCUT.equals(preference.getKey())) {
             new AlertDialog.Builder(getActivity())
                     .setTitle(R.string.add_shortcut)
                     .setMessage(R.string.add_shortcut_description)
@@ -167,6 +172,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements View
                             })
                     .setNegativeButton(R.string.action_cancel, null)
                     .show();
+            return true;
         }
         return super.onPreferenceTreeClick(preference);
     }
@@ -174,12 +180,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements View
     @Override
     public boolean onLongClick(View v) {
         if (Util.hasEqualizer()) {
-            getFragmentManager().beginTransaction()
-                    .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left,
-                            R.anim.slide_in_left, R.anim.slide_out_right)
-                    .replace(R.id.prefFrame, new EqualizerFragment())
-                    .addToBackStack(null)
-                    .commit();
+            Navigate.to(getActivity(), new EqualizerFragment(), R.id.prefFrame);
         } else {
             Toast
                     .makeText(

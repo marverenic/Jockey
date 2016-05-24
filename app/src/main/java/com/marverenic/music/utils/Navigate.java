@@ -4,7 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
+import android.support.annotation.IdRes;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 
+import com.marverenic.music.R;
 import com.marverenic.music.activity.LibraryActivity;
 
 public final class Navigate {
@@ -29,6 +33,15 @@ public final class Navigate {
         }
 
         parent.startActivity(intent);
+    }
+
+    public static void to(FragmentActivity activity, Fragment fragment, @IdRes int viewId) {
+        activity.getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left,
+                        R.anim.slide_in_left, R.anim.slide_out_right)
+                .replace(viewId, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     public static void up(Activity parent) {

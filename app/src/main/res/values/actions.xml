@@ -22,6 +22,11 @@
     <string name="action_enable_repeat_one">Enable repeat one</string>
     <string name="action_add_to_playlist">Add queue to playlist&#8230;</string>
     <string name="action_done">Done</string>
+    <string name="action_select">Select</string>
+    <string name="action_navigate_up">Go up</string>
+    <string name="action_include">Include folder</string>
+    <string name="action_exclude">Exclude folder</string>
+    <string name="action_remove">Remove</string>
 
     <!-- Other Actions -->
     <string name="action_skip">Skip</string>
