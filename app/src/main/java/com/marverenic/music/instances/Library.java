@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+@Deprecated
 public final class Library {
 
     public static final String PLAY_COUNT_FILENAME = ".playcount";

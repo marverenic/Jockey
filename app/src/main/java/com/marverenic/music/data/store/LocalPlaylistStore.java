@@ -6,6 +6,7 @@ import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 
+import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
@@ -22,7 +23,14 @@ public class LocalPlaylistStore implements PlaylistStore {
     @Override
     public Observable<List<Playlist>> getPlaylists() {
         if (mPlaylists == null) {
-            mPlaylists = MediaStoreUtil.getAllPlaylists(mContext);
+            return MediaStoreUtil.hasPermission(mContext).map(granted -> {
+                if (granted) {
+                    mPlaylists = MediaStoreUtil.getAllPlaylists(mContext);
+                } else {
+                    mPlaylists = Collections.emptyList();
+                }
+                return mPlaylists;
+            });
         }
         return Observable.just(mPlaylists);
     }

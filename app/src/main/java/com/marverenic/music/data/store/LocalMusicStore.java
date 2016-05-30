@@ -8,6 +8,7 @@ import com.marverenic.music.instances.Genre;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 
+import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
@@ -15,6 +16,8 @@ import rx.Observable;
 public class LocalMusicStore implements MusicStore {
 
     private Context mContext;
+    private boolean mAlreadyRequestedPermission;
+
     private List<Song> mSongs;
     private List<Album> mAlbums;
     private List<Artist> mArtists;
@@ -22,12 +25,20 @@ public class LocalMusicStore implements MusicStore {
 
     public LocalMusicStore(Context context) {
         mContext = context;
+        mAlreadyRequestedPermission = false;
     }
 
     @Override
     public Observable<List<Song>> getSongs() {
         if (mSongs == null) {
-            mSongs = MediaStoreUtil.getAllSongs(mContext);
+            return MediaStoreUtil.hasPermission(mContext).map(granted -> {
+                if (granted) {
+                    mSongs = MediaStoreUtil.getAllSongs(mContext);
+                } else {
+                    mSongs = Collections.emptyList();
+                }
+                return mSongs;
+            });
         }
         return Observable.just(mSongs);
     }
@@ -35,7 +46,14 @@ public class LocalMusicStore implements MusicStore {
     @Override
     public Observable<List<Album>> getAlbums() {
         if (mAlbums == null) {
-            mAlbums = MediaStoreUtil.getAllAlbums(mContext);
+            return MediaStoreUtil.hasPermission(mContext).map(granted -> {
+                if (granted) {
+                    mAlbums = MediaStoreUtil.getAllAlbums(mContext);
+                } else {
+                    mAlbums = Collections.emptyList();
+                }
+                return mAlbums;
+            });
         }
         return Observable.just(mAlbums);
     }
@@ -43,7 +61,14 @@ public class LocalMusicStore implements MusicStore {
     @Override
     public Observable<List<Artist>> getArtists() {
         if (mArtists == null) {
-            mArtists = MediaStoreUtil.getAllArtists(mContext);
+            return MediaStoreUtil.hasPermission(mContext).map(granted -> {
+                if (granted) {
+                    mArtists = MediaStoreUtil.getAllArtists(mContext);
+                } else {
+                    mArtists = Collections.emptyList();
+                }
+                return mArtists;
+            });
         }
         return Observable.just(mArtists);
     }
@@ -51,7 +76,14 @@ public class LocalMusicStore implements MusicStore {
     @Override
     public Observable<List<Genre>> getGenres() {
         if (mGenres == null) {
-            mGenres = MediaStoreUtil.getAllGenres(mContext);
+            return MediaStoreUtil.hasPermission(mContext).map(granted -> {
+                if (granted) {
+                    mGenres = MediaStoreUtil.getAllGenres(mContext);
+                } else {
+                    mGenres = Collections.emptyList();
+                }
+                return mGenres;
+            });
         }
         return Observable.just(mGenres);
     }

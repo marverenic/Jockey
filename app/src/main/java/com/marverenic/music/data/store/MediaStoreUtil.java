@@ -1,7 +1,9 @@
 package com.marverenic.music.data.store;
 
+import android.Manifest;
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Build;
 import android.provider.MediaStore;
 
 import com.crashlytics.android.Crashlytics;
@@ -12,12 +14,16 @@ import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Genre;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
+import com.marverenic.music.utils.Util;
+import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import rx.Observable;
 
 public final class MediaStoreUtil {
 
@@ -81,10 +87,26 @@ public final class MediaStoreUtil {
             MediaStore.Audio.Playlists.Members.TRACK
     };
 
+    private static boolean sAlreadyRequestedPermission = false;
+
     /**
      * This class is never instantiated
      */
     private MediaStoreUtil() {
+    }
+
+    public static Observable<Boolean> hasPermission(Context context) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return Observable.just(true);
+        } else if (sAlreadyRequestedPermission) {
+            return Observable.just(Util.hasPermissions(context,
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE));
+        } else {
+            return RxPermissions.getInstance(context).request(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
     }
 
     public static List<Song> getAllSongs(Context context) {
