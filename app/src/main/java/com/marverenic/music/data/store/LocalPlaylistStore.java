@@ -23,7 +23,7 @@ public class LocalPlaylistStore implements PlaylistStore {
     @Override
     public Observable<List<Playlist>> getPlaylists() {
         if (mPlaylists == null) {
-            return MediaStoreUtil.hasPermission(mContext).map(granted -> {
+            return MediaStoreUtil.getPermission(mContext).map(granted -> {
                 if (granted) {
                     mPlaylists = MediaStoreUtil.getAllPlaylists(mContext);
                 } else {

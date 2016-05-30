@@ -12,85 +12,105 @@ import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
+import rx.subjects.BehaviorSubject;
 
 public class LocalMusicStore implements MusicStore {
 
     private Context mContext;
-    private boolean mAlreadyRequestedPermission;
 
-    private List<Song> mSongs;
-    private List<Album> mAlbums;
-    private List<Artist> mArtists;
-    private List<Genre> mGenres;
+    private BehaviorSubject<List<Song>> mSongs;
+    private BehaviorSubject<List<Album>> mAlbums;
+    private BehaviorSubject<List<Artist>> mArtists;
+    private BehaviorSubject<List<Genre>> mGenres;
 
     public LocalMusicStore(Context context) {
         mContext = context;
-        mAlreadyRequestedPermission = false;
     }
 
     @Override
-    public void refresh() {
-
+    public Observable<Boolean> refresh() {
+        return MediaStoreUtil.getPermission(mContext).map(
+                granted -> {
+                    if (granted) {
+                        if (mSongs != null) {
+                            mSongs.onNext(MediaStoreUtil.getAllSongs(mContext));
+                        }
+                        if (mArtists != null) {
+                            mArtists.onNext(MediaStoreUtil.getAllArtists(mContext));
+                        }
+                        if (mAlbums != null) {
+                            mAlbums.onNext(MediaStoreUtil.getAllAlbums(mContext));
+                        }
+                        if (mGenres != null) {
+                            mGenres.onNext(MediaStoreUtil.getAllGenres(mContext));
+                        }
+                    }
+                    return granted;
+                });
     }
 
     @Override
     public Observable<List<Song>> getSongs() {
         if (mSongs == null) {
-            return MediaStoreUtil.hasPermission(mContext).map(granted -> {
+            mSongs = BehaviorSubject.create();
+
+            MediaStoreUtil.getPermission(mContext).subscribe(granted -> {
                 if (granted) {
-                    mSongs = MediaStoreUtil.getAllSongs(mContext);
+                    mSongs.onNext(MediaStoreUtil.getAllSongs(mContext));
                 } else {
-                    mSongs = Collections.emptyList();
+                    mSongs.onNext(Collections.emptyList());
                 }
-                return mSongs;
             });
         }
-        return Observable.just(mSongs);
+        return mSongs;
     }
 
     @Override
     public Observable<List<Album>> getAlbums() {
         if (mAlbums == null) {
-            return MediaStoreUtil.hasPermission(mContext).map(granted -> {
+            mAlbums = BehaviorSubject.create();
+
+            MediaStoreUtil.getPermission(mContext).subscribe(granted -> {
                 if (granted) {
-                    mAlbums = MediaStoreUtil.getAllAlbums(mContext);
+                    mAlbums.onNext(MediaStoreUtil.getAllAlbums(mContext));
                 } else {
-                    mAlbums = Collections.emptyList();
+                    mAlbums.onNext(Collections.emptyList());
                 }
-                return mAlbums;
             });
         }
-        return Observable.just(mAlbums);
+        return mAlbums;
     }
 
     @Override
     public Observable<List<Artist>> getArtists() {
         if (mArtists == null) {
-            return MediaStoreUtil.hasPermission(mContext).map(granted -> {
+            mArtists = BehaviorSubject.create();
+
+            MediaStoreUtil.getPermission(mContext).subscribe(granted -> {
                 if (granted) {
-                    mArtists = MediaStoreUtil.getAllArtists(mContext);
+                    mArtists.onNext(MediaStoreUtil.getAllArtists(mContext));
                 } else {
-                    mArtists = Collections.emptyList();
+                    mArtists.onNext(Collections.emptyList());
                 }
-                return mArtists;
             });
         }
-        return Observable.just(mArtists);
+        return mArtists;
     }
 
     @Override
     public Observable<List<Genre>> getGenres() {
         if (mGenres == null) {
-            return MediaStoreUtil.hasPermission(mContext).map(granted -> {
+            mGenres = BehaviorSubject.create();
+
+            MediaStoreUtil.getPermission(mContext).subscribe(granted -> {
                 if (granted) {
-                    mGenres = MediaStoreUtil.getAllGenres(mContext);
+                    mGenres.onNext(MediaStoreUtil.getAllGenres(mContext));
                 } else {
-                    mGenres = Collections.emptyList();
+                    mGenres.onNext(Collections.emptyList());
                 }
-                return mGenres;
             });
         }
-        return Observable.just(mGenres);
+        return mGenres;
     }
 
     @Override

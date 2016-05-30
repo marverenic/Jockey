@@ -83,7 +83,7 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
         list.addItemDecoration(new DragDropDecoration(
                 (NinePatchDrawable) getDrawableCompat(R.drawable.list_drag_shadow)));
 
-        adapter.setEmptyState(new LibraryEmptyState(this) {
+        adapter.setEmptyState(new LibraryEmptyState(this, null) {
             @Override
             public String getEmptyMessage() {
                 if (reference instanceof AutoPlaylist) {

@@ -103,7 +103,7 @@ public class AlbumFragment extends Fragment {
 
             mAlbumSection = new AlbumSection(mAlbums);
             mAdapter.addSection(mAlbumSection);
-            mAdapter.setEmptyState(new LibraryEmptyState(getActivity()));
+            mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), mMusicStore));
         }
     }
 }

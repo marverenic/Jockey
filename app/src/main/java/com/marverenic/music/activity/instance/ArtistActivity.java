@@ -13,8 +13,10 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.crashlytics.android.Crashlytics;
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
+import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Library;
@@ -41,14 +43,16 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
 
 public class ArtistActivity extends BaseActivity {
 
     public static final String ARTIST_EXTRA = "artist";
+
+    @Inject MusicStore mMusicStore;
 
     private HeterogeneousAdapter adapter;
     private Worker lfmLoader;
@@ -60,6 +64,8 @@ public class ArtistActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instance_artwork);
+
+        JockeyApplication.getComponent(this).inject(this);
 
         reference = getIntent().getParcelableExtra(ARTIST_EXTRA);
         List<Album> albums = Library.getArtistAlbumEntries(reference);
@@ -76,12 +82,7 @@ public class ArtistActivity extends BaseActivity {
         }
 
         if (allEntriesHaveYears) {
-            Collections.sort(albums, new Comparator<Album>() {
-                @Override
-                public int compare(Album a1, Album a2) {
-                    return a1.getYear() - a2.getYear();
-                }
-            });
+            Collections.sort(albums, (a1, a2) -> a1.getYear() - a2.getYear());
         } else {
             Collections.sort(albums);
         }
@@ -104,7 +105,7 @@ public class ArtistActivity extends BaseActivity {
                 .addSection(new AlbumSection(albums))
                 .addSection(new HeaderSection(getString(R.string.header_songs), SongSection.ID))
                 .addSection(new SongSection(songs));
-        adapter.setEmptyState(new LibraryEmptyState(this) {
+        adapter.setEmptyState(new LibraryEmptyState(this, mMusicStore) {
             @Override
             public String getEmptyMessage() {
                 if (reference == null) {

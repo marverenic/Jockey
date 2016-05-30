@@ -90,7 +90,7 @@ public class ArtistFragment extends Fragment {
 
             mArtistSection = new ArtistSection(mArtists);
             mAdapter.addSection(mArtistSection);
-            mAdapter.setEmptyState(new LibraryEmptyState(getActivity()));
+            mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), mMusicStore));
         }
     }
 }

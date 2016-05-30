@@ -90,7 +90,7 @@ public class GenreFragment extends Fragment {
 
             mGenreSection = new GenreSection(mGenres);
             mAdapter.addSection(mGenreSection);
-            mAdapter.setEmptyState(new LibraryEmptyState(getActivity()));
+            mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), mMusicStore));
         }
     }
 }

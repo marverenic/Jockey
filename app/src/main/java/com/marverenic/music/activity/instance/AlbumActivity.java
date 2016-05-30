@@ -9,8 +9,10 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
+import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
@@ -24,14 +26,19 @@ import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class AlbumActivity extends BaseActivity {
 
     public static final String ALBUM_EXTRA = "album";
+
+    @Inject MusicStore mMusicStore;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instance_artwork);
+        JockeyApplication.getComponent(this).inject(this);
 
         final Album reference = getIntent().getParcelableExtra(ALBUM_EXTRA);
         List<Song> data;
@@ -56,7 +63,7 @@ public class AlbumActivity extends BaseActivity {
 
         HeterogeneousAdapter adapter = new HeterogeneousAdapter();
         adapter.addSection(new SongSection(data))
-                .setEmptyState(new LibraryEmptyState(this) {
+                .setEmptyState(new LibraryEmptyState(this, mMusicStore) {
                     @Override
                     public String getEmptyMessage() {
                         if (reference == null) {

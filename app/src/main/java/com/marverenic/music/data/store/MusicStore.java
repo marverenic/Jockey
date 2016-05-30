@@ -12,7 +12,7 @@ import rx.Observable;
 
 public interface MusicStore {
 
-    void refresh();
+    Observable<Boolean> refresh();
 
     Observable<List<Song>> getSongs();
 

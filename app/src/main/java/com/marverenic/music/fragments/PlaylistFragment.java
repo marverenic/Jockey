@@ -94,7 +94,7 @@ public class PlaylistFragment extends Fragment {
             mAdapter.addSection(mPlaylistSection);
             mAdapter.addSection(new SpacerSingleton(
                     PlaylistSection.ID, (int) getResources().getDimension(R.dimen.list_height)));
-            mAdapter.setEmptyState(new LibraryEmptyState(getActivity()) {
+            mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), null) {
                 @Override
                 public String getEmptyMessage() {
                     return getString(R.string.empty_playlists);

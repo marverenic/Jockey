@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,9 +41,11 @@ public class SongFragment extends Fragment {
         mMusicStore.getSongs().subscribe(
                 songs -> {
                     mSongs = songs;
+                    Log.i("SongFragment", "Got a new song library (" + mSongs.size() + " items)");
                     setupAdapter();
                 },
-                Throwable::printStackTrace);
+                Throwable::printStackTrace,
+                () -> Log.i("SongFragment", "onCompleted called"));
     }
 
     @Override
@@ -90,7 +93,7 @@ public class SongFragment extends Fragment {
 
             mSongSection = new SongSection(mSongs);
             mAdapter.addSection(new SongSection(mSongs));
-            mAdapter.setEmptyState(new LibraryEmptyState(getActivity()));
+            mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), mMusicStore));
         }
     }
 }

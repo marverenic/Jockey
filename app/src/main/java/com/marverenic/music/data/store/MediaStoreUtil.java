@@ -1,6 +1,7 @@
 package com.marverenic.music.data.store;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Build;
@@ -95,13 +96,18 @@ public final class MediaStoreUtil {
     private MediaStoreUtil() {
     }
 
-    public static Observable<Boolean> hasPermission(Context context) {
+    @TargetApi(Build.VERSION_CODES.M)
+    public static boolean hasPermission(Context context) {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Util.hasPermissions(context,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+
+    public static Observable<Boolean> getPermission(Context context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return Observable.just(true);
         } else if (sAlreadyRequestedPermission) {
-            return Observable.just(Util.hasPermissions(context,
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE));
+            return Observable.just(hasPermission(context));
         } else {
             return RxPermissions.getInstance(context).request(
                     Manifest.permission.READ_EXTERNAL_STORAGE,
