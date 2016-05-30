@@ -27,11 +27,7 @@ public class LocalMusicStore implements MusicStore {
     @Override
     public Observable<List<Song>> getSongs() {
         if (mSongs == null) {
-            return Observable.just(MediaStoreUtil.getAllSongs(mContext))
-                    .map(songs -> {
-                        mSongs = songs;
-                        return mSongs;
-                    });
+            mSongs = MediaStoreUtil.getAllSongs(mContext);
         }
         return Observable.just(mSongs);
     }
@@ -39,11 +35,7 @@ public class LocalMusicStore implements MusicStore {
     @Override
     public Observable<List<Album>> getAlbums() {
         if (mAlbums == null) {
-            return Observable.just(MediaStoreUtil.getAllAlbums(mContext))
-                    .map(albums -> {
-                        mAlbums = albums;
-                        return mAlbums;
-                    });
+            mAlbums = MediaStoreUtil.getAllAlbums(mContext);
         }
         return Observable.just(mAlbums);
     }
@@ -51,11 +43,7 @@ public class LocalMusicStore implements MusicStore {
     @Override
     public Observable<List<Artist>> getArtists() {
         if (mArtists == null) {
-            return Observable.just(MediaStoreUtil.getAllArtists(mContext))
-                    .map(artists -> {
-                        mArtists = artists;
-                        return mArtists;
-                    });
+            mArtists = MediaStoreUtil.getAllArtists(mContext);
         }
         return Observable.just(mArtists);
     }
