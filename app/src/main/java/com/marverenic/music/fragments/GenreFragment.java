@@ -13,7 +13,6 @@ import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.instances.Genre;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.section.GenreSection;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.utils.Themes;
@@ -69,9 +68,9 @@ public class GenreFragment extends Fragment {
             mGenreSection.setData(mGenres);
             mAdapter.notifyDataSetChanged();
         } else {
-
             mAdapter = new HeterogeneousAdapter();
-            mAdapter.addSection(new GenreSection(Library.getGenres()));
+            mGenreSection = new GenreSection(mGenres);
+            mAdapter.addSection(mGenreSection);
             mAdapter.setEmptyState(new LibraryEmptyState(getActivity()));
 
             mRecyclerView.addItemDecoration(
