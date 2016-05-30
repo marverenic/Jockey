@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
 
+import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Song;
 
 import java.util.ArrayList;
@@ -91,6 +92,24 @@ public final class MediaStoreUtil {
         cur.close();
 
         return songs;
+    }
+
+    public static List<Album> getAllAlbums(Context context) {
+        Cursor cur = context.getContentResolver().query(
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                ALBUM_PROJECTION,
+                null,
+                null,
+                MediaStore.Audio.Albums.ALBUM + " ASC");
+
+        if (cur == null) {
+            return new ArrayList<>();
+        }
+
+        List<Album> albums = Album.buildAlbumList(cur, context.getResources());
+        cur.close();
+
+        return albums;
     }
 
 }
