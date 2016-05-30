@@ -6,6 +6,7 @@ import android.provider.MediaStore;
 
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
+import com.marverenic.music.instances.Genre;
 import com.marverenic.music.instances.Song;
 
 import java.util.ArrayList;
@@ -129,6 +130,26 @@ public final class MediaStoreUtil {
         cur.close();
 
         return artists;
+    }
+
+    public static List<Genre> getAllGenres(Context context) {
+        List<Genre> genres = new ArrayList<>();
+
+        Cursor cur = context.getContentResolver().query(
+                MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI,
+                GENRE_PROJECTION,
+                null,
+                null,
+                MediaStore.Audio.Genres.NAME + " ASC");
+
+        if (cur == null) {
+            return genres;
+        }
+
+        genres = Genre.buildGenreList(context, cur);
+        cur.close();
+
+        return genres;
     }
 
 }
