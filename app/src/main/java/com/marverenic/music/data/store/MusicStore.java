@@ -12,6 +12,8 @@ import rx.Observable;
 
 public interface MusicStore {
 
+    void refresh();
+
     Observable<List<Song>> getSongs();
 
     Observable<List<Album>> getAlbums();

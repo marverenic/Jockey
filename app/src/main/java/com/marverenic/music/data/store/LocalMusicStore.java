@@ -29,6 +29,11 @@ public class LocalMusicStore implements MusicStore {
     }
 
     @Override
+    public void refresh() {
+
+    }
+
+    @Override
     public Observable<List<Song>> getSongs() {
         if (mSongs == null) {
             return MediaStoreUtil.hasPermission(mContext).map(granted -> {
