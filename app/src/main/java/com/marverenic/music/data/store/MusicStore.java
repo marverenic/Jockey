@@ -2,7 +2,6 @@ package com.marverenic.music.data.store;
 
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
-import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Genre;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
@@ -21,8 +20,6 @@ public interface MusicStore {
 
     Observable<List<Genre>> getGenres();
 
-    Observable<List<Playlist>> getPlaylists();
-
     Observable<List<Song>> getSongs(Artist artist);
 
     Observable<List<Song>> getSongs(Album album);
@@ -32,17 +29,5 @@ public interface MusicStore {
     Observable<List<Song>> getSongs(Playlist playlist);
 
     Observable<List<Album>> getAlbums(Artist artist);
-
-    void makePlaylist(String name);
-
-    void makeAutoPlaylist(AutoPlaylist playlist);
-
-    void removePlaylist(Playlist playlist);
-
-    void editPlaylist(Playlist playlist, List<Song> newSongs);
-
-    void addToPlaylist(Playlist playlist, Song song);
-
-    void addToPlaylist(Playlist playlist, List<Song> songs);
 
 }

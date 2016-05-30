@@ -3,7 +3,9 @@ package com.marverenic.music.data.inject;
 import android.content.Context;
 
 import com.marverenic.music.data.store.LocalMusicStore;
+import com.marverenic.music.data.store.LocalPlaylistStore;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 
 import javax.inject.Singleton;
 
@@ -13,10 +15,15 @@ import dagger.Provides;
 @Module
 public class MediaStoreModule {
 
-    @Singleton
     @Provides
+    @Singleton
     public MusicStore provideMusicStore(Context context) {
         return new LocalMusicStore(context);
     }
 
+    @Provides
+    @Singleton
+    public PlaylistStore providePlaylistStore(Context context) {
+        return new LocalPlaylistStore(context);
+    }
 }
