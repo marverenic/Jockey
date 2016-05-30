@@ -18,6 +18,7 @@ public class LocalMusicStore implements MusicStore {
     private Context mContext;
     private List<Song> mSongs;
     private List<Album> mAlbums;
+    private List<Artist> mArtists;
 
     public LocalMusicStore(Context context) {
         mContext = context;
@@ -49,7 +50,14 @@ public class LocalMusicStore implements MusicStore {
 
     @Override
     public Observable<List<Artist>> getArtists() {
-        return null;
+        if (mArtists == null) {
+            return Observable.just(MediaStoreUtil.getAllArtists(mContext))
+                    .map(artists -> {
+                        mArtists = artists;
+                        return mArtists;
+                    });
+        }
+        return Observable.just(mArtists);
     }
 
     @Override
