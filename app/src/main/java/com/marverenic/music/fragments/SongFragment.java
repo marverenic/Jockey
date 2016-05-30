@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.SongSection;
@@ -25,7 +24,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class SongFragment extends Fragment implements Library.LibraryRefreshListener {
+public class SongFragment extends Fragment {
 
     @Inject MusicStore mMusicStore;
 
@@ -83,24 +82,5 @@ public class SongFragment extends Fragment implements Library.LibraryRefreshList
             layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
             mRecyclerView.setLayoutManager(layoutManager);
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Library.addRefreshListener(this);
-        // Assume this fragment's data has gone stale since it was last in the foreground
-        onLibraryRefreshed();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Library.removeRefreshListener(this);
-    }
-
-    @Override
-    public void onLibraryRefreshed() {
-        mAdapter.notifyDataSetChanged();
     }
 }
