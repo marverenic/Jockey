@@ -51,12 +51,29 @@ public class SongFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.list, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.list);
-        setupAdapter();
+        mRecyclerView.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
+        mRecyclerView.addItemDecoration(new DividerDecoration(getContext(), R.id.empty_layout));
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(layoutManager);
+
+        if (mAdapter == null) {
+            setupAdapter();
+        } else {
+            mRecyclerView.setAdapter(mAdapter);
+        }
 
         int paddingH = (int) getActivity().getResources().getDimension(R.dimen.global_padding);
         view.setPadding(paddingH, 0, paddingH, 0);
 
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mRecyclerView = null;
     }
 
     private void setupAdapter() {
@@ -69,18 +86,11 @@ public class SongFragment extends Fragment {
             mAdapter.notifyDataSetChanged();
         } else {
             mAdapter = new HeterogeneousAdapter();
+            mRecyclerView.setAdapter(mAdapter);
+
             mSongSection = new SongSection(mSongs);
             mAdapter.addSection(new SongSection(mSongs));
             mAdapter.setEmptyState(new LibraryEmptyState(getActivity()));
-
-            mRecyclerView.addItemDecoration(
-                    new BackgroundDecoration(Themes.getBackgroundElevated()));
-            mRecyclerView.addItemDecoration(new DividerDecoration(getContext(), R.id.empty_layout));
-            mRecyclerView.setAdapter(mAdapter);
-
-            LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-            mRecyclerView.setLayoutManager(layoutManager);
         }
     }
 }

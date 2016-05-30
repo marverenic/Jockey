@@ -54,12 +54,39 @@ public class AlbumFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.list, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.list);
-        setupAdapter();
+
+        final int numColumns = ViewUtils.getNumberOfGridColumns(getActivity());
+
+        GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), numColumns);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                return (Library.getAlbums().isEmpty()) ? numColumns : 1;
+            }
+        });
+        mRecyclerView.setLayoutManager(layoutManager);
+
+        mRecyclerView.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
+        mRecyclerView.addItemDecoration(new GridSpacingDecoration(
+                (int) getResources().getDimension(R.dimen.grid_margin), numColumns));
+
+        if (mAdapter == null) {
+            setupAdapter();
+        } else {
+            mRecyclerView.setAdapter(mAdapter);
+        }
 
         int paddingH = (int) getActivity().getResources().getDimension(R.dimen.global_padding);
         view.setPadding(paddingH, 0, paddingH, 0);
 
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mRecyclerView = null;
     }
 
     private void setupAdapter() {
@@ -72,28 +99,11 @@ public class AlbumFragment extends Fragment {
             mAdapter.notifyDataSetChanged();
         } else {
             mAdapter = new HeterogeneousAdapter();
+            mRecyclerView.setAdapter(mAdapter);
+
             mAlbumSection = new AlbumSection(mAlbums);
             mAdapter.addSection(mAlbumSection);
             mAdapter.setEmptyState(new LibraryEmptyState(getActivity()));
-
-            mRecyclerView.addItemDecoration(
-                    new BackgroundDecoration(Themes.getBackgroundElevated()));
-            mRecyclerView.setAdapter(mAdapter);
-
-            final int numColumns = ViewUtils.getNumberOfGridColumns(getActivity());
-
-            GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), numColumns);
-            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-            layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-                @Override
-                public int getSpanSize(int position) {
-                    return (Library.getAlbums().isEmpty()) ? numColumns : 1;
-                }
-            });
-            mRecyclerView.setLayoutManager(layoutManager);
-
-            mRecyclerView.addItemDecoration(new GridSpacingDecoration(
-                    (int) getResources().getDimension(R.dimen.grid_margin), numColumns));
         }
     }
 

@@ -52,12 +52,31 @@ public class PlaylistFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.list, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.list);
-        setupAdapter();
+        mRecyclerView.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
+        mRecyclerView.addItemDecoration(
+                new DividerDecoration(getActivity(), R.id.instance_blank, R.id.empty_layout));
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(layoutManager);
+
+
+        if (mAdapter == null) {
+            setupAdapter();
+        } else {
+            mRecyclerView.setAdapter(mAdapter);
+        }
 
         int paddingH = (int) getActivity().getResources().getDimension(R.dimen.global_padding);
         view.setPadding(paddingH, 0, paddingH, 0);
 
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mRecyclerView = null;
     }
 
     private void setupAdapter() {
@@ -70,6 +89,8 @@ public class PlaylistFragment extends Fragment {
             mAdapter.notifyDataSetChanged();
         } else {
             mAdapter = new HeterogeneousAdapter();
+            mRecyclerView.setAdapter(mAdapter);
+
             mPlaylistSection = new PlaylistSection(mPlaylists);
             mAdapter.addSection(mPlaylistSection);
             mAdapter.addSection(new SpacerSingleton(
@@ -95,16 +116,6 @@ public class PlaylistFragment extends Fragment {
                     return "";
                 }
             });
-
-            mRecyclerView.addItemDecoration(
-                    new BackgroundDecoration(Themes.getBackgroundElevated()));
-            mRecyclerView.addItemDecoration(
-                    new DividerDecoration(getActivity(), R.id.instance_blank, R.id.empty_layout));
-            mRecyclerView.setAdapter(mAdapter);
-
-            LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-            mRecyclerView.setLayoutManager(layoutManager);
         }
     }
 
