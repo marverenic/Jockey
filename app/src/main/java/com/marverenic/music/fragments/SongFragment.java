@@ -41,7 +41,6 @@ public class SongFragment extends Fragment {
         mMusicStore.getSongs().subscribe(
                 songs -> {
                     mSongs = songs;
-                    Log.i("SongFragment", "Got a new song library (" + mSongs.size() + " items)");
                     setupAdapter();
                 },
                 Throwable::printStackTrace,
