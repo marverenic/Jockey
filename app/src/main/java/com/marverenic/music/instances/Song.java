@@ -83,7 +83,7 @@ public class Song implements Parcelable, Comparable<Song> {
      *            default values if an unknown value is encountered
      * @return A List of songs populated by entries in the Cursor
      */
-    protected static List<Song> buildSongList(Cursor cur, Resources res) {
+    public static List<Song> buildSongList(Cursor cur, Resources res) {
         List<Song> songs = new ArrayList<>(cur.getCount());
 
         int titleIndex = cur.getColumnIndex(MediaStore.Audio.Media.TITLE);

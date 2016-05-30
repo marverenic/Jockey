@@ -16,6 +16,7 @@ import rx.Observable;
 public class LocalMusicStore implements MusicStore {
 
     private Context mContext;
+    private List<Song> mSongs;
 
     public LocalMusicStore(Context context) {
         mContext = context;
@@ -23,7 +24,14 @@ public class LocalMusicStore implements MusicStore {
 
     @Override
     public Observable<List<Song>> getSongs() {
-        return null;
+        if (mSongs == null) {
+            return Observable.just(MediaStoreUtil.getAllSongs(mContext))
+                    .map(songs -> {
+                        mSongs = songs;
+                        return mSongs;
+                    });
+        }
+        return Observable.just(mSongs);
     }
 
     @Override

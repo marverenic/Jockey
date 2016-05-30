@@ -1,6 +1,7 @@
 package com.marverenic.music.fragments;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,17 +29,14 @@ public class SongFragment extends Fragment implements Library.LibraryRefreshList
 
     @Inject MusicStore mMusicStore;
 
-    private HeterogeneousAdapter adapter;
+    private RecyclerView mRecyclerView;
+    private HeterogeneousAdapter mAdapter;
+    private SongSection mSongSection;
     private List<Song> mSongs;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.list, container, false);
-
-        int paddingH = (int) getActivity().getResources().getDimension(R.dimen.global_padding);
-        view.setPadding(paddingH, 0, paddingH, 0);
-
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         JockeyApplication.getComponent(this).inject(this);
         mMusicStore.getSongs().subscribe(
                 songs -> {
@@ -46,24 +44,45 @@ public class SongFragment extends Fragment implements Library.LibraryRefreshList
                     setupAdapter();
                 },
                 Throwable::printStackTrace);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.list, container, false);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.list);
+        setupAdapter();
+
+        int paddingH = (int) getActivity().getResources().getDimension(R.dimen.global_padding);
+        view.setPadding(paddingH, 0, paddingH, 0);
 
         return view;
     }
 
     private void setupAdapter() {
-        adapter = new HeterogeneousAdapter();
-        adapter.addSection(new SongSection(mSongs));
-        adapter.setEmptyState(new LibraryEmptyState(getActivity()));
+        if (mRecyclerView == null || mSongs == null) {
+            return;
+        }
 
-        // noinspection ConstantConditions
-        RecyclerView list = (RecyclerView) getView().findViewById(R.id.list);
-        list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
-        list.addItemDecoration(new DividerDecoration(getActivity(), R.id.empty_layout));
-        list.setAdapter(adapter);
+        if (mSongSection != null) {
+            mSongSection.setData(mSongs);
+            mAdapter.notifyDataSetChanged();
+        } else {
+            mAdapter = new HeterogeneousAdapter();
+            mSongSection = new SongSection(mSongs);
+            mAdapter.addSection(new SongSection(mSongs));
+            mAdapter.setEmptyState(new LibraryEmptyState(getActivity()));
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        list.setLayoutManager(layoutManager);
+            mRecyclerView.addItemDecoration(
+                    new BackgroundDecoration(Themes.getBackgroundElevated()));
+            mRecyclerView.addItemDecoration(new DividerDecoration(getContext(), R.id.empty_layout));
+            mRecyclerView.setAdapter(mAdapter);
+
+            LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+            mRecyclerView.setLayoutManager(layoutManager);
+        }
     }
 
     @Override
@@ -82,6 +101,6 @@ public class SongFragment extends Fragment implements Library.LibraryRefreshList
 
     @Override
     public void onLibraryRefreshed() {
-        adapter.notifyDataSetChanged();
+        mAdapter.notifyDataSetChanged();
     }
 }
