@@ -92,7 +92,7 @@ public class SongFragment extends Fragment {
             mRecyclerView.setAdapter(mAdapter);
 
             mSongSection = new SongSection(mSongs);
-            mAdapter.addSection(new SongSection(mSongs));
+            mAdapter.addSection(mSongSection);
             mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), mMusicStore));
         }
     }
