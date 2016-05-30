@@ -6,5 +6,5 @@ import dagger.Component;
 
 @Singleton
 @Component(modules = {ContextModule.class, MediaStoreModule.class})
-public interface JockeyComponent {
+public interface JockeyComponent extends JockeyGraph {
 }
