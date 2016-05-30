@@ -76,12 +76,14 @@ public class LibraryEmptyState extends BasicEmptyState {
     @Override
     public void onAction1() {
         mMusicStore.refresh().subscribe(successful -> {
-            Snackbar
-                    .make(
-                            mActivity.findViewById(R.id.list),
-                            R.string.confirm_refresh_library,
-                            Snackbar.LENGTH_SHORT)
-                    .show();
+            if (successful) {
+                Snackbar
+                        .make(
+                                mActivity.findViewById(R.id.list),
+                                R.string.confirm_refresh_library,
+                                Snackbar.LENGTH_SHORT)
+                        .show();
+            }
         });
     }
 
