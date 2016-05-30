@@ -13,6 +13,7 @@ import rx.Observable;
 public class LocalPlaylistStore implements PlaylistStore {
 
     private Context mContext;
+    private List<Playlist> mPlaylists;
 
     public LocalPlaylistStore(Context context) {
         mContext = context;
@@ -20,7 +21,10 @@ public class LocalPlaylistStore implements PlaylistStore {
 
     @Override
     public Observable<List<Playlist>> getPlaylists() {
-        return null;
+        if (mPlaylists == null) {
+            mPlaylists = MediaStoreUtil.getAllPlaylists(mContext);
+        }
+        return Observable.just(mPlaylists);
     }
 
     @Override

@@ -4,15 +4,24 @@ import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
 
+import com.crashlytics.android.Crashlytics;
+import com.google.gson.Gson;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
+import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Genre;
+import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public final class MediaStoreUtil {
+
+    private static final String AUTO_PLAYLIST_EXTENSION = ".jpl";
 
     // This value is hardcoded into Android's sqlite implementation. If a query exceeds this many
     // variables, an SQLiteException will be thrown, so when doing long queries be sure to check
@@ -150,6 +159,66 @@ public final class MediaStoreUtil {
         cur.close();
 
         return genres;
+    }
+
+    public static List<Playlist> getAllPlaylists(Context context) {
+        List<Playlist> playlists = getMediaStorePlaylists(context);
+
+        for (Playlist p : getAutoPlaylists(context)) {
+            if (playlists.remove(p)) {
+                playlists.add(p);
+            } else {
+                // If AutoPlaylists have been deleted outside of Jockey, delete its configuration
+                //noinspection ResultOfMethodCallIgnored
+                new File(context.getExternalFilesDir(null)
+                        + "/" + p.getPlaylistName() + AUTO_PLAYLIST_EXTENSION)
+                        .delete();
+            }
+        }
+
+        return playlists;
+    }
+
+    public static List<Playlist> getMediaStorePlaylists(Context context) {
+        Cursor cur = context.getContentResolver().query(
+                MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
+                PLAYLIST_PROJECTION,
+                null,
+                null,
+                MediaStore.Audio.Playlists.NAME + " ASC");
+
+        if (cur == null) {
+            return new ArrayList<>();
+        }
+
+        List<Playlist> playlists = Playlist.buildPlaylistList(cur);
+        cur.close();
+
+        return playlists;
+    }
+
+    public static List<AutoPlaylist> getAutoPlaylists(Context context) {
+        List<AutoPlaylist> autoPlaylists = new ArrayList<>();
+        Gson gson = new Gson();
+
+        try {
+            File externalFiles = new File(context.getExternalFilesDir(null) + "/");
+
+            if (externalFiles.exists() || externalFiles.mkdirs()) {
+                String[] files = externalFiles.list();
+                for (String s : files) {
+                    if (s.endsWith(AUTO_PLAYLIST_EXTENSION)) {
+                        autoPlaylists.add(gson.fromJson(
+                                new FileReader(externalFiles + "/" + s),
+                                AutoPlaylist.class));
+                    }
+                }
+            }
+        } catch (IOException e) {
+            Crashlytics.logException(e);
+        }
+
+        return autoPlaylists;
     }
 
 }
