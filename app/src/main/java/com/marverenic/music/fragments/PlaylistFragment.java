@@ -60,7 +60,6 @@ public class PlaylistFragment extends Fragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
 
-
         if (mAdapter == null) {
             setupAdapter();
         } else {
@@ -118,6 +117,4 @@ public class PlaylistFragment extends Fragment {
             });
         }
     }
-
-
 }

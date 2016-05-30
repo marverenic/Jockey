@@ -106,5 +106,4 @@ public class AlbumFragment extends Fragment {
             mAdapter.setEmptyState(new LibraryEmptyState(getActivity()));
         }
     }
-
 }
