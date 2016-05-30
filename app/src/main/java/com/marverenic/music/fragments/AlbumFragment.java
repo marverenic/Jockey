@@ -72,7 +72,8 @@ public class AlbumFragment extends Fragment {
             mAdapter.notifyDataSetChanged();
         } else {
             mAdapter = new HeterogeneousAdapter();
-            mAdapter.addSection(new AlbumSection(Library.getAlbums()));
+            mAlbumSection = new AlbumSection(mAlbums);
+            mAdapter.addSection(mAlbumSection);
             mAdapter.setEmptyState(new LibraryEmptyState(getActivity()));
 
             mRecyclerView.addItemDecoration(
