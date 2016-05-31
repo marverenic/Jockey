@@ -273,4 +273,25 @@ public final class MediaStoreUtil {
         return songs;
     }
 
+    public static List<Song> getGenreSongs(Context context, Genre genre) {
+        return getGenreSongs(context, genre.getGenreId());
+    }
+
+    public static List<Song> getGenreSongs(Context context, long genreId) {
+        Cursor cur = context.getContentResolver().query(
+                MediaStore.Audio.Genres.Members.getContentUri("external", genreId),
+                SONG_PROJECTION,
+                MediaStore.Audio.Media.IS_MUSIC + " != 0",
+                null, null);
+
+        if (cur == null) {
+            return Collections.emptyList();
+        }
+
+        List<Song> songs = Song.buildSongList(cur, context.getResources());
+        cur.close();
+
+        return songs;
+    }
+
 }

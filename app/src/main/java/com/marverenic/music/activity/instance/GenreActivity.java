@@ -9,7 +9,6 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.instances.Genre;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.SongSection;
@@ -30,8 +29,9 @@ public class GenreActivity extends BaseActivity {
     @Inject MusicStore mMusicStore;
 
     private Genre reference;
-    private List<Song> data;
-    private HeterogeneousAdapter adapter;
+    private List<Song> mSongs;
+    private HeterogeneousAdapter mAdapter;
+    private SongSection mSongSection;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,17 +42,22 @@ public class GenreActivity extends BaseActivity {
         reference = getIntent().getParcelableExtra(GENRE_EXTRA);
 
         if (reference != null) {
-            data = Library.getGenreEntries(reference);
+            mMusicStore.getSongs(reference).subscribe(
+                    songs -> {
+                        mSongs = songs;
+                        setupAdapter();
+                    });
+
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle(reference.getGenreName());
             }
         } else {
-            data = new ArrayList<>();
+            mSongs = new ArrayList<>();
         }
 
-        adapter = new HeterogeneousAdapter();
-        adapter.addSection(new SongSection(data));
-        adapter.setEmptyState(new LibraryEmptyState(this, mMusicStore) {
+        mAdapter = new HeterogeneousAdapter();
+        setupAdapter();
+        mAdapter.setEmptyState(new LibraryEmptyState(this, mMusicStore) {
             @Override
             public String getEmptyMessage() {
                 if (reference == null) {
@@ -78,12 +83,26 @@ public class GenreActivity extends BaseActivity {
         });
 
         RecyclerView list = (RecyclerView) findViewById(R.id.list);
-        list.setAdapter(adapter);
+        list.setAdapter(mAdapter);
         list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
         list.addItemDecoration(new DividerDecoration(this, R.id.empty_layout));
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         list.setLayoutManager(layoutManager);
+    }
+
+    private void setupAdapter() {
+        if (mAdapter == null || mSongs == null) {
+            return;
+        }
+
+        if (mSongSection != null) {
+            mSongSection.setData(mSongs);
+            mAdapter.notifyDataSetChanged();
+        } else {
+            mSongSection = new SongSection(mSongs);
+            mAdapter.addSection(mSongSection);
+        }
     }
 }
