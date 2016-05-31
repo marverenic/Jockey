@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
@@ -247,6 +248,29 @@ public final class MediaStoreUtil {
         }
 
         return autoPlaylists;
+    }
+
+    public static List<Song> getAlbumSongs(Context context, Album album) {
+        return getAlbumSongs(context, album.getAlbumId());
+    }
+
+    public static List<Song> getAlbumSongs(Context context, long albumId) {
+        Cursor cur = context.getContentResolver().query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                SONG_PROJECTION,
+                MediaStore.Audio.Media.IS_MUSIC + " != 0 "
+                        + " AND " + MediaStore.Audio.AlbumColumns.ALBUM_ID + " = " + albumId,
+                null,
+                MediaStore.Audio.Media.TITLE + " ASC");
+
+        if (cur == null) {
+            return Collections.emptyList();
+        }
+
+        List<Song> songs = Song.buildSongList(cur, context.getResources());
+        cur.close();
+
+        return songs;
     }
 
 }
