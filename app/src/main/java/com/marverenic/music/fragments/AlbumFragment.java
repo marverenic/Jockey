@@ -14,7 +14,6 @@ import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.instances.Album;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.section.AlbumSection;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.utils.Themes;
@@ -62,7 +61,7 @@ public class AlbumFragment extends Fragment {
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                return (Library.getAlbums().isEmpty()) ? numColumns : 1;
+                return mAlbums.isEmpty() ? numColumns : 1;
             }
         });
         mRecyclerView.setLayoutManager(layoutManager);
