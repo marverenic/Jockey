@@ -229,7 +229,7 @@ public class ArtistActivity extends BaseActivity {
                         R.id.relatedCard, R.id.empty_layout));
     }
     private void setupLoadingAdapter() {
-        if (mLoadingSection == null && mLfmReference != null) {
+        if (mLoadingSection == null && mLfmReference == null) {
             mLoadingSection = new LoadingSingleton();
             mAdapter.addSection(mLoadingSection, 0);
         }
