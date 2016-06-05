@@ -9,6 +9,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.utils.Util;
 
 import java.util.ArrayList;
@@ -53,8 +54,8 @@ public final class Album implements Parcelable, Comparable<Album> {
      * Builds a {@link List} of Albums from a Cursor
      * @param cur A {@link Cursor} to use when reading the {@link MediaStore}. This Cursor may have
      *            any filters and sorting, but MUST have AT LEAST the columns in
-     *            {@link Library#albumProjection}. The caller is responsible for closing this
-     *            Cursor.
+     *            {@link MediaStoreUtil#ALBUM_PROJECTION}. The caller is responsible for closing
+     *            this Cursor.
      * @param res A {@link Resources} Object from {@link Context#getResources()} used to get the
      *            default values if an unknown value is encountered
      * @return A List of albums populated by entries in the Cursor

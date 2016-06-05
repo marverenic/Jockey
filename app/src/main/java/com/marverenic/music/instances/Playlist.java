@@ -7,6 +7,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
+import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.utils.Util;
 
 import java.util.ArrayList;
@@ -44,8 +45,8 @@ public class Playlist implements Parcelable, Comparable<Playlist> {
      * are ignored by this scan and will be loaded into the List as a regular playlist.
      * @param cur A {@link Cursor} to use when reading the {@link MediaStore}. This Cursor may have
      *            any filters and sorting, but MUST have AT LEAST the columns in
-     *            {@link Library#playlistProjection}. The caller is responsible for closing this
-     *            Cursor.
+     *            {@link MediaStoreUtil#PLAYLIST_PROJECTION}. The caller is responsible for closing
+     *            this Cursor.
      * @return A List of songs populated by entries in the Cursor
      */
     public static List<Playlist> buildPlaylistList(Cursor cur) {

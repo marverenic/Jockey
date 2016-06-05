@@ -8,6 +8,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.utils.Util;
 
 import java.util.ArrayList;
@@ -42,15 +43,11 @@ public final class Genre implements Parcelable, Comparable<Genre> {
     /**
      * Builds a {@link List} of Genres from a Cursor
      * @param context A Context used to get default unknown values and to associate songs with
-     *                genres. Since a song's genre isn't accessible from the MediaStore but the
-     *                songs in a genre are, a new Cursor will be opened for all genres and each
-     *                song in {@link Library#songLib} will have its genre id set to the proper
-     *                value. For this reason, when loading Jockey it's important to set the Song
-     *                library before calling this method.
+     *                genres.
      * @param cur A {@link Cursor} to use when reading the {@link MediaStore}. This Cursor may have
      *            any filters and sorting, but MUST have AT LEAST the columns in
-     *            {@link Library#genreProjection}. The caller is responsible for closing this
-     *            Cursor.
+     *            {@link MediaStoreUtil#GENRE_PROJECTION}. The caller is responsible for closing
+     *            this Cursor.
      * @return A List of songs populated by entries in the Cursor
      */
     public static List<Genre> buildGenreList(Context context, Cursor cur) {

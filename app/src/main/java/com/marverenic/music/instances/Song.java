@@ -9,6 +9,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.utils.Util;
 
 import java.util.ArrayList;
@@ -80,7 +81,8 @@ public class Song implements Parcelable, Comparable<Song> {
      * Builds a {@link List} of Songs from a Cursor
      * @param cur A {@link Cursor} to use when reading the {@link MediaStore}. This Cursor may have
      *            any filters and sorting, but MUST have AT LEAST the columns in
-     *            {@link Library#songProjection}. The caller is responsible for closing this Cursor.
+     *            {@link MediaStoreUtil#SONG_PROJECTION}. The caller is responsible for closing
+     *            this Cursor.
      * @param res A {@link Resources} Object from {@link Context#getResources()} used to get the
      *            default values if an unknown value is encountered
      * @return A List of songs populated by entries in the Cursor
