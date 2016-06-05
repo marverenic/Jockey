@@ -7,7 +7,10 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
@@ -24,6 +27,7 @@ import com.marverenic.music.instances.section.LoadingSingleton;
 import com.marverenic.music.instances.section.RelatedArtistSection;
 import com.marverenic.music.instances.section.SongSection;
 import com.marverenic.music.lastfm2.data.store.LastFmStore;
+import com.marverenic.music.lastfm2.model.Image;
 import com.marverenic.music.lastfm2.model.LfmArtist;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
@@ -120,6 +124,17 @@ public class ArtistActivity extends BaseActivity {
             }
         }
         setupAdapter();
+
+        Image hero = mLfmReference.getImageBySize(Image.Size.MEGA);
+
+        if (hero != null) {
+            Glide.with(this)
+                    .load(hero.getUrl())
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                    .centerCrop()
+                    .animate(android.R.anim.fade_in)
+                    .into((ImageView) findViewById(R.id.backdrop));
+        }
     }
 
     private void setupAdapter() {
