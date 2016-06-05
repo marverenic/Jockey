@@ -74,29 +74,29 @@ public class AlbumActivity extends BaseActivity {
         mAdapter = new HeterogeneousAdapter();
         setupAdapter();
         mAdapter.setEmptyState(new LibraryEmptyState(this, mMusicStore) {
-                    @Override
-                    public String getEmptyMessage() {
-                        if (reference == null) {
-                            return getString(R.string.empty_error_album);
-                        } else {
-                            return super.getEmptyMessage();
-                        }
-                    }
+            @Override
+            public String getEmptyMessage() {
+                if (reference == null) {
+                    return getString(R.string.empty_error_album);
+                } else {
+                    return super.getEmptyMessage();
+                }
+            }
 
-                    @Override
-                    public String getEmptyMessageDetail() {
-                        if (reference == null) {
-                            return "";
-                        } else {
-                            return super.getEmptyMessageDetail();
-                        }
-                    }
+            @Override
+            public String getEmptyMessageDetail() {
+                if (reference == null) {
+                    return "";
+                } else {
+                    return super.getEmptyMessageDetail();
+                }
+            }
 
-                    @Override
-                    public String getEmptyAction1Label() {
-                        return "";
-                    }
-                });
+            @Override
+            public String getEmptyAction1Label() {
+                return "";
+            }
+        });
 
         RecyclerView list = (RecyclerView) findViewById(R.id.list);
         list.setAdapter(mAdapter);
