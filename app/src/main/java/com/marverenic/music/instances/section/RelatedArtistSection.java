@@ -20,8 +20,8 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Library;
-import com.marverenic.music.lastfm.ImageList;
-import com.marverenic.music.lastfm.LArtist;
+import com.marverenic.music.lastfm.model.Image;
+import com.marverenic.music.lastfm.model.LfmArtist;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
@@ -29,23 +29,23 @@ import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 
 import java.util.List;
 
-public class RelatedArtistSection extends HeterogeneousAdapter.ListSection<LArtist> {
+public class RelatedArtistSection extends HeterogeneousAdapter.ListSection<LfmArtist> {
 
     public static final int ID = 634;
 
-    public RelatedArtistSection(@NonNull List<LArtist> data) {
+    public RelatedArtistSection(@NonNull List<LfmArtist> data) {
         super(ID, data);
     }
 
     @Override
-    public EnhancedViewHolder<LArtist> createViewHolder(HeterogeneousAdapter adapter,
+    public EnhancedViewHolder<LfmArtist> createViewHolder(HeterogeneousAdapter adapter,
                                                         ViewGroup parent) {
         return new ViewHolder(
                 LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.instance_artist_suggested, parent, false));
     }
 
-    public static class ViewHolder extends EnhancedViewHolder<LArtist>
+    public static class ViewHolder extends EnhancedViewHolder<LfmArtist>
             implements View.OnClickListener {
 
         private Artist localReference;
@@ -66,13 +66,14 @@ public class RelatedArtistSection extends HeterogeneousAdapter.ListSection<LArti
         }
 
         @Override
-        public void update(LArtist item, int sectionPosition) {
+        public void update(LfmArtist item, int sectionPosition) {
             localReference = Library.findArtistByName(item.getName());
 
-            final String artURL = item.getImageURL(ImageList.SIZE_MEDIUM);
+            Image image = item.getImageBySize(Image.Size.MEDIUM);
+            String artUrl = (image == null) ? null : image.getUrl();
 
             Glide.with(context)
-                    .load(artURL)
+                    .load(artUrl)
                     .asBitmap()
                     .error(R.drawable.art_default)
                     .into(new BitmapImageViewTarget(artwork) {
