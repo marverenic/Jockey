@@ -8,6 +8,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.instances.Album;
@@ -20,6 +21,7 @@ import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.LoadingSingleton;
 import com.marverenic.music.instances.section.RelatedArtistSection;
 import com.marverenic.music.instances.section.SongSection;
+import com.marverenic.music.lastfm2.data.store.LastFmStore;
 import com.marverenic.music.lastfm2.model.LfmArtist;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
@@ -31,9 +33,13 @@ import com.marverenic.music.view.ViewUtils;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class ArtistActivity extends BaseActivity {
 
     public static final String ARTIST_EXTRA = "artist";
+
+    @Inject LastFmStore mLfmStore;
 
     private RecyclerView mRecyclerView;
     private HeterogeneousAdapter mAdapter;
@@ -53,6 +59,7 @@ public class ArtistActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instance_artwork);
 
+        JockeyApplication.getComponent(this).inject(this);
         mReference = getIntent().getParcelableExtra(ARTIST_EXTRA);
 
         CollapsingToolbarLayout collapsingToolbar =

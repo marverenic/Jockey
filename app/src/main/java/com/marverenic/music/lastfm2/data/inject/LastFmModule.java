@@ -19,6 +19,8 @@ public class LastFmModule {
         return LastFmApi.getService();
     }
 
+    @Provides
+    @Singleton
     public LastFmStore provideLastFmStore(LastFmService service) {
         return new NetworkLastFmStore(service);
     }
