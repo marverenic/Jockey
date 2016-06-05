@@ -18,6 +18,7 @@ import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.section.AlbumSection;
 import com.marverenic.music.instances.section.ArtistBioSingleton;
+import com.marverenic.music.instances.section.HeaderSection;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.LoadingSingleton;
 import com.marverenic.music.instances.section.RelatedArtistSection;
@@ -247,7 +248,10 @@ public class ArtistActivity extends BaseActivity {
 
         if (mSongSection == null) {
             mSongSection = new SongSection(mSongs);
-            mAdapter.addSection(mSongSection);
+
+            mAdapter
+                    .addSection(new HeaderSection(getString(R.string.header_songs), SongSection.ID))
+                    .addSection(mSongSection);
         } else {
             mSongSection.setData(mSongs);
         }
@@ -260,7 +264,10 @@ public class ArtistActivity extends BaseActivity {
 
         if (mAlbumSection == null) {
             mAlbumSection = new AlbumSection(mAlbums);
-            mAdapter.addSection(mAlbumSection);
+            mAdapter
+                    .addSection(
+                            new HeaderSection(getString(R.string.header_albums), AlbumSection.ID))
+                    .addSection(mAlbumSection);
         } else {
             mAlbumSection.setData(mAlbums);
         }
