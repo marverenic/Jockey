@@ -13,6 +13,8 @@ import com.marverenic.music.utils.Util;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.marverenic.music.instances.Util.parseUnknown;
+
 public final class Genre implements Parcelable, Comparable<Genre> {
 
     public static final Parcelable.Creator<Genre> CREATOR = new Parcelable.Creator<Genre>() {
@@ -64,7 +66,7 @@ public final class Genre implements Parcelable, Comparable<Genre> {
 
             Genre next = new Genre();
             next.genreId = cur.getLong(idIndex);
-            next.genreName = Library.parseUnknown(cur.getString(nameIndex), unknownName);
+            next.genreName = parseUnknown(cur.getString(nameIndex), unknownName);
 
             // Comparing these two strings using == instead of .equals() is fine here, because
             // if an unknown genre is encountered, the call to Library.parseUnknown(...) will return

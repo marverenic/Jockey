@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import static com.marverenic.music.instances.Util.parseUnknown;
+
 public final class Album implements Parcelable, Comparable<Album> {
 
     public static final Parcelable.Creator<Album> CREATOR = new Parcelable.Creator<Album>() {
@@ -74,8 +76,8 @@ public final class Album implements Parcelable, Comparable<Album> {
             cur.moveToPosition(i);
             Album next = new Album();
             next.albumId = cur.getLong(idIndex);
-            next.albumName = Library.parseUnknown(cur.getString(albumIndex), unknownAlbum);
-            next.artistName = Library.parseUnknown(cur.getString(artistIndex), unknownArtist);
+            next.albumName = parseUnknown(cur.getString(albumIndex), unknownAlbum);
+            next.artistName = parseUnknown(cur.getString(artistIndex), unknownArtist);
             next.artistId = cur.getLong(artistIdIndex);
             next.year = cur.getInt(yearIndex);
             next.artUri = cur.getString(artIndex);

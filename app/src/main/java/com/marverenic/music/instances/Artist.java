@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import static com.marverenic.music.instances.Util.parseUnknown;
+
 public final class Artist implements Parcelable, Comparable<Artist> {
 
     public static final Parcelable.Creator<Artist> CREATOR = new Parcelable.Creator<Artist>() {
@@ -65,7 +67,7 @@ public final class Artist implements Parcelable, Comparable<Artist> {
             cur.moveToPosition(i);
             Artist next = new Artist();
             next.artistId = cur.getInt(idIndex);
-            next.artistName = Library.parseUnknown(cur.getString(artistIndex), unknownName);
+            next.artistName = parseUnknown(cur.getString(artistIndex), unknownName);
 
             artists.add(next);
         }

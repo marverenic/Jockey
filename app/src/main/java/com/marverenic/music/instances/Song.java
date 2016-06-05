@@ -16,6 +16,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
+import static com.marverenic.music.instances.Util.parseUnknown;
+
 public class Song implements Parcelable, Comparable<Song> {
 
     public static final Parcelable.Creator<Song> CREATOR = new Parcelable.Creator<Song>() {
@@ -110,12 +112,12 @@ public class Song implements Parcelable, Comparable<Song> {
         for (int i = 0; i < cur.getCount(); i++) {
             cur.moveToPosition(i);
             Song next = new Song();
-            next.songName = Library.parseUnknown(cur.getString(titleIndex), unknownSong);
+            next.songName = parseUnknown(cur.getString(titleIndex), unknownSong);
             next.songId = cur.getLong(idIndex);
-            next.artistName = Library.parseUnknown(cur.getString(artistIndex), unknownArtist);
-            next.albumName = Library.parseUnknown(cur.getString(albumIndex), unknownAlbum);
+            next.artistName = parseUnknown(cur.getString(artistIndex), unknownArtist);
+            next.albumName = parseUnknown(cur.getString(albumIndex), unknownAlbum);
             next.songDuration = cur.getLong(durationIndex);
-            next.location = Library.parseUnknown(cur.getString(dataIndex), unknownData);
+            next.location = parseUnknown(cur.getString(dataIndex), unknownData);
             next.year = cur.getInt(yearIndex);
             next.dateAdded = cur.getLong(dateIndex);
             next.albumId = cur.getLong(albumIdIndex);
