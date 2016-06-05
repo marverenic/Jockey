@@ -2,10 +2,14 @@ package com.marverenic.music.data.store;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
@@ -357,6 +361,142 @@ public final class MediaStoreUtil {
         cur.close();
 
         return songs;
+    }
+
+    public static Playlist createPlaylist(Context context, String playlistName,
+                                          @Nullable List<Song> songs) {
+
+        String name = playlistName.trim();
+
+        // Add the playlist to the MediaStore
+        ContentValues mInserts = new ContentValues();
+        mInserts.put(MediaStore.Audio.Playlists.NAME, name);
+        mInserts.put(MediaStore.Audio.Playlists.DATE_ADDED, System.currentTimeMillis());
+        mInserts.put(MediaStore.Audio.Playlists.DATE_MODIFIED, System.currentTimeMillis());
+
+        Uri newPlaylistUri = context.getContentResolver()
+                .insert(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, mInserts);
+
+        if (newPlaylistUri == null) {
+            throw new RuntimeException("Content resolver insert returned null");
+        }
+
+        // Get the id of the new playlist
+        Cursor cursor = context.getContentResolver().query(
+                newPlaylistUri,
+                new String[] {MediaStore.Audio.Playlists._ID},
+                null, null, null);
+
+        if (cursor == null) {
+            throw new RuntimeException("Content resolver query returned null");
+        }
+
+        cursor.moveToFirst();
+        Playlist playlist = new Playlist(cursor);
+        cursor.close();
+
+        // If we have a list of songs, associate it with the playlist
+        if (songs != null) {
+            ContentValues[] values = new ContentValues[songs.size()];
+
+            for (int i = 0; i < songs.size(); i++) {
+                values[i] = new ContentValues();
+                values[i].put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, i);
+                values[i].put(
+                        MediaStore.Audio.Playlists.Members.AUDIO_ID,
+                        songs.get(i).getSongId());
+            }
+
+            Uri uri = MediaStore.Audio.Playlists.Members
+                    .getContentUri("external", playlist.getPlaylistId());
+            ContentResolver resolver = context.getContentResolver();
+
+            resolver.bulkInsert(uri, values);
+            resolver.notifyChange(Uri.parse("content://media"), null);
+        }
+
+        return playlist;
+    }
+
+    public static void deletePlaylist(Context context, Playlist playlist) {
+        // Remove the playlist from the MediaStore
+        context.getContentResolver().delete(
+                MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
+                MediaStore.Audio.Playlists._ID + "=?",
+                new String[]{playlist.getPlaylistId() + ""});
+    }
+
+    public static void editPlaylist(Context context, Playlist playlist,
+                                    @Nullable List<Song> songs) {
+        // Clear the playlist...
+        Uri uri = MediaStore.Audio.Playlists.Members
+                .getContentUri("external", playlist.getPlaylistId());
+        ContentResolver resolver = context.getContentResolver();
+        resolver.delete(uri, null, null);
+
+        if (songs != null) {
+            // ... Then add all of the songs to it
+            ContentValues[] values = new ContentValues[songs.size()];
+            for (int i = 0; i < songs.size(); i++) {
+                values[i] = new ContentValues();
+                values[i].put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, i + 1);
+                values[i].put(
+                        MediaStore.Audio.Playlists.Members.AUDIO_ID,
+                        songs.get(i).getSongId());
+            }
+            resolver.bulkInsert(uri, values);
+            resolver.notifyChange(Uri.parse("content://media"), null);
+        }
+    }
+
+    private static int getPlaylistSize(Context context, long playlistId) {
+        Cursor cur = context.getContentResolver().query(
+                MediaStore.Audio.Playlists.Members.getContentUri("external", playlistId),
+                new String[]{MediaStore.Audio.Playlists.Members.AUDIO_ID},
+                null, null, null);
+
+        if (cur == null) {
+            throw new RuntimeException("Couldn\'t open Cursor");
+        }
+
+        int count = cur.getCount();
+        cur.close();
+
+        return count;
+    }
+
+    public static void appendToPlaylist(Context context, Playlist playlist, Song song) {
+        Uri uri = MediaStore.Audio.Playlists.Members
+                .getContentUri("external", playlist.getPlaylistId());
+        ContentResolver resolver = context.getContentResolver();
+
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Audio.Playlists.Members.PLAY_ORDER,
+                getPlaylistSize(context, playlist.getPlaylistId()));
+        values.put(MediaStore.Audio.Playlists.Members.AUDIO_ID, song.getSongId());
+
+        resolver.insert(uri, values);
+        resolver.notifyChange(Uri.parse("content://media"), null);
+    }
+
+    public static void appendToPlaylist(Context context, Playlist playlist, List<Song> songs) {
+        Uri uri = MediaStore.Audio.Playlists.Members
+                .getContentUri("external", playlist.getPlaylistId());
+        ContentResolver resolver = context.getContentResolver();
+
+        int startingCount = getPlaylistSize(context, playlist.getPlaylistId());
+
+        ContentValues[] values = new ContentValues[songs.size()];
+        for (int i = 0; i < songs.size(); i++) {
+            values[i] = new ContentValues();
+            values[i].put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, startingCount + i);
+            values[i].put(
+                    MediaStore.Audio.Playlists.Members.AUDIO_ID,
+                    songs.get(i).getSongId());
+        }
+
+        resolver.bulkInsert(uri, values);
+        resolver.notifyChange(Uri.parse("content://media"), null);
     }
 
 }

@@ -1,8 +1,8 @@
 package com.marverenic.music.data.store;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 
-import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 
@@ -42,31 +42,31 @@ public class LocalPlaylistStore implements PlaylistStore {
 
     @Override
     public void makePlaylist(String name) {
-
+        makePlaylist(name, null);
     }
 
     @Override
-    public void makeAutoPlaylist(AutoPlaylist playlist) {
-
+    public void makePlaylist(String name, @Nullable List<Song> songs) {
+        MediaStoreUtil.createPlaylist(mContext, name, songs);
     }
 
     @Override
     public void removePlaylist(Playlist playlist) {
-
+        MediaStoreUtil.deletePlaylist(mContext, playlist);
     }
 
     @Override
     public void editPlaylist(Playlist playlist, List<Song> newSongs) {
-
+        MediaStoreUtil.editPlaylist(mContext, playlist, newSongs);
     }
 
     @Override
     public void addToPlaylist(Playlist playlist, Song song) {
-
+        MediaStoreUtil.appendToPlaylist(mContext, playlist, song);
     }
 
     @Override
     public void addToPlaylist(Playlist playlist, List<Song> songs) {
-
+        MediaStoreUtil.appendToPlaylist(mContext, playlist, songs);
     }
 }

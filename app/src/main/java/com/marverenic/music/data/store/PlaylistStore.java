@@ -1,6 +1,7 @@
 package com.marverenic.music.data.store;
 
-import com.marverenic.music.instances.AutoPlaylist;
+import android.support.annotation.Nullable;
+
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 
@@ -16,7 +17,7 @@ public interface PlaylistStore {
 
     void makePlaylist(String name);
 
-    void makeAutoPlaylist(AutoPlaylist playlist);
+    void makePlaylist(String name, @Nullable List<Song> songs);
 
     void removePlaylist(Playlist playlist);
 

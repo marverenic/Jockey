@@ -37,6 +37,11 @@ public class Playlist implements Parcelable, Comparable<Playlist> {
         this.playlistName = playlistName;
     }
 
+    public Playlist(Cursor cursor) {
+        playlistId = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID));
+        playlistName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME));
+    }
+
     public Playlist(Parcel in) {
         playlistId = in.readLong();
         playlistName = in.readString();
