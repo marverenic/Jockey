@@ -8,6 +8,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
@@ -29,11 +30,14 @@ import com.marverenic.music.view.DividerDecoration;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 import com.marverenic.music.view.GridSpacingDecoration;
 import com.marverenic.music.view.ViewUtils;
+import com.trello.rxlifecycle.RxLifecycle;
 
 import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import rx.android.schedulers.AndroidSchedulers;
 
 public class ArtistActivity extends BaseActivity {
 
@@ -74,6 +78,16 @@ public class ArtistActivity extends BaseActivity {
 
         mAlbums = Library.getArtistAlbumEntries(mReference);
         mSongs = Library.getArtistSongEntries(mReference);
+
+        mLfmStore.getArtistInfo(mReference.getArtistName())
+                .compose(RxLifecycle.bindActivity(lifecycle()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        lfmArtist -> {
+                            mLfmReference = lfmArtist;
+                            setupAdapter();
+                        },
+                        Crashlytics::logException);
 
         // Sort the album list chronologically if all albums have years,
         // otherwise sort alphabetically
