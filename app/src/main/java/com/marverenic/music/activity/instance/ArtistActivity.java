@@ -85,16 +85,27 @@ public class ArtistActivity extends BaseActivity {
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
 
-        mAlbums = Library.getArtistAlbumEntries(mReference);
-        mSongs = Library.getArtistSongEntries(mReference);
+        mMusicStore.getSongs(mReference)
+                .subscribe(
+                        songs -> {
+                            mSongs = songs;
+                            setupAdapter();
+                        });
+        mMusicStore.getAlbums(mReference)
+                .subscribe(
+                        albums -> {
+                            mAlbums = albums;
 
-        // Sort the album list chronologically if all albums have years,
-        // otherwise sort alphabetically
-        if (allEntriesHaveYears()) {
-            Collections.sort(mAlbums, (a1, a2) -> a1.getYear() - a2.getYear());
-        } else {
-            Collections.sort(mAlbums);
-        }
+                            // Sort the album list chronologically if all albums have years,
+                            // otherwise sort alphabetically
+                            if (allEntriesHaveYears()) {
+                                Collections.sort(mAlbums, (a1, a2) -> a1.getYear() - a2.getYear());
+                            } else {
+                                Collections.sort(mAlbums);
+                            }
+
+                            setupAdapter();
+                        });
 
         mRecyclerView = (RecyclerView) findViewById(R.id.list);
         setupAdapter();
