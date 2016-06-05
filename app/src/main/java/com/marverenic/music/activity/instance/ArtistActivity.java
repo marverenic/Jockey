@@ -29,6 +29,7 @@ import com.marverenic.music.instances.section.SongSection;
 import com.marverenic.music.lastfm2.data.store.LastFmStore;
 import com.marverenic.music.lastfm2.model.Image;
 import com.marverenic.music.lastfm2.model.LfmArtist;
+import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
@@ -86,13 +87,6 @@ public class ArtistActivity extends BaseActivity {
         mAlbums = Library.getArtistAlbumEntries(mReference);
         mSongs = Library.getArtistSongEntries(mReference);
 
-        mLfmStore.getArtistInfo(mReference.getArtistName())
-                .compose(RxLifecycle.bindActivity(lifecycle()))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        this::setLastFmReference,
-                        Crashlytics::logException);
-
         // Sort the album list chronologically if all albums have years,
         // otherwise sort alphabetically
         if (allEntriesHaveYears()) {
@@ -103,6 +97,18 @@ public class ArtistActivity extends BaseActivity {
 
         mRecyclerView = (RecyclerView) findViewById(R.id.list);
         setupAdapter();
+
+        if (Prefs.allowNetwork(this)) {
+            setupLoadingAdapter();
+
+            mLfmStore
+                    .getArtistInfo(mReference.getArtistName())
+                    .compose(RxLifecycle.bindActivity(lifecycle()))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            this::setLastFmReference,
+                            Crashlytics::logException);
+        }
     }
 
     private boolean allEntriesHaveYears() {
@@ -174,7 +180,7 @@ public class ArtistActivity extends BaseActivity {
             mRecyclerView.setAdapter(mAdapter);
         }
 
-        setupNetworkAdapter();
+        setupLastFmAdapter();
         setupAlbumAdapter();
         setupSongAdapter();
 
@@ -225,23 +231,18 @@ public class ArtistActivity extends BaseActivity {
                 new DividerDecoration(this, R.id.infoCard, R.id.albumInstance, R.id.subheaderFrame,
                         R.id.relatedCard, R.id.empty_layout));
     }
-
-    private void setupNetworkAdapter() {
-        if (mLfmReference == null) {
-            setupLoadingAdapter();
-        } else {
-            setupLastFmAdapter();
-        }
-    }
-
     private void setupLoadingAdapter() {
-        if (mLoadingSection == null) {
+        if (mLoadingSection == null && mLfmReference != null) {
             mLoadingSection = new LoadingSingleton();
             mAdapter.addSection(mLoadingSection, 0);
         }
     }
 
     private void setupLastFmAdapter() {
+        if (mLfmReference == null) {
+            return;
+        }
+
         if (mLoadingSection != null) {
             mAdapter.removeSectionById(LoadingSingleton.ID);
             mLoadingSection = null;
