@@ -1,5 +1,7 @@
 package com.marverenic.music.lastfm2.data.inject;
 
+import android.content.Context;
+
 import com.marverenic.music.lastfm2.api.LastFmApi;
 import com.marverenic.music.lastfm2.api.LastFmService;
 import com.marverenic.music.lastfm2.data.store.LastFmStore;
@@ -15,8 +17,8 @@ public class LastFmModule {
 
     @Provides
     @Singleton
-    public LastFmService provideLastFmService() {
-        return LastFmApi.getService();
+    public LastFmService provideLastFmService(Context context) {
+        return LastFmApi.getService(context);
     }
 
     @Provides
