@@ -32,6 +32,7 @@ import com.marverenic.music.view.GridSpacingDecoration;
 import com.marverenic.music.view.ViewUtils;
 import com.trello.rxlifecycle.RxLifecycle;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -55,6 +56,7 @@ public class ArtistActivity extends BaseActivity {
 
     private Artist mReference;
     private LfmArtist mLfmReference;
+    private List<LfmArtist> mRelatedArtists;
     private List<Song> mSongs;
     private List<Album> mAlbums;
 
@@ -85,6 +87,13 @@ public class ArtistActivity extends BaseActivity {
                 .subscribe(
                         lfmArtist -> {
                             mLfmReference = lfmArtist;
+                            mRelatedArtists = new ArrayList<>();
+
+                            for (LfmArtist relatedArtist : lfmArtist.getSimilarArtists()) {
+                                if (Library.findArtistByName(relatedArtist.getName()) != null) {
+                                    mRelatedArtists.add(relatedArtist);
+                                }
+                            }
                             setupAdapter();
                         },
                         Crashlytics::logException);
@@ -200,7 +209,35 @@ public class ArtistActivity extends BaseActivity {
     }
 
     private void setupNetworkAdapter() {
+        if (mLfmReference == null) {
+            setupLoadingAdapter();
+        } else {
+            setupLastFmAdapter();
+        }
+    }
 
+    private void setupLoadingAdapter() {
+        if (mLoadingSection == null) {
+            mLoadingSection = new LoadingSingleton();
+            mAdapter.addSection(mLoadingSection, 0);
+        }
+    }
+
+    private void setupLastFmAdapter() {
+        if (mLoadingSection != null) {
+            mAdapter.removeSectionById(LoadingSingleton.ID);
+            mLoadingSection = null;
+        }
+
+        if (mBioSection == null) {
+            mBioSection = new ArtistBioSingleton(mLfmReference, !mRelatedArtists.isEmpty());
+            mAdapter.addSection(mBioSection, 0);
+        }
+
+        if (mRelatedArtistSection == null) {
+            mRelatedArtistSection = new RelatedArtistSection(mRelatedArtists);
+            mAdapter.addSection(mRelatedArtistSection, 1);
+        }
     }
 
     private void setupSongAdapter() {

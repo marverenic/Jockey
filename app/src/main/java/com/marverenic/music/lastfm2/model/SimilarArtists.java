@@ -1,12 +1,11 @@
 package com.marverenic.music.lastfm2.model;
 
 import com.google.gson.annotations.SerializedName;
-import com.marverenic.music.instances.Artist;
 
 public class SimilarArtists {
 
     @SerializedName("artist")
-    private Artist[] mArtists;
+    private LfmArtist[] mArtists;
 
     /**
      * This class is instantiated by GSON with reflection, and therefore doesn't have a public
@@ -16,7 +15,7 @@ public class SimilarArtists {
 
     }
 
-    public Artist[] getArtists() {
+    public LfmArtist[] getArtists() {
         return mArtists;
     }
 
