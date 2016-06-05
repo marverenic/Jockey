@@ -36,7 +36,6 @@ import com.marverenic.music.view.DividerDecoration;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 import com.marverenic.music.view.GridSpacingDecoration;
 import com.marverenic.music.view.ViewUtils;
-import com.trello.rxlifecycle.RxLifecycle;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -103,7 +102,7 @@ public class ArtistActivity extends BaseActivity {
 
             mLfmStore
                     .getArtistInfo(mReference.getArtistName())
-                    .compose(RxLifecycle.bindActivity(lifecycle()))
+                    .compose(bindToLifecycle())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             this::setLastFmReference,
