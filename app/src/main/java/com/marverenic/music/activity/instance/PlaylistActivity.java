@@ -159,10 +159,7 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
 
         if (item.getItemId() == R.id.action_sort) {
             PopupMenu sortMenu = new PopupMenu(this, findViewById(R.id.action_sort), Gravity.END);
-            sortMenu.inflate(
-                    (mReference instanceof AutoPlaylist)
-                            ? R.menu.sort_options_auto_playlist
-                            : R.menu.sort_options);
+            sortMenu.inflate(R.menu.sort_options);
             sortMenu.setOnMenuItemClickListener(this);
             sortMenu.show();
             return true;
