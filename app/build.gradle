@@ -81,11 +81,7 @@ dependencies {
     compile 'com.trello:rxlifecycle-components:0.6.1'
     compile 'com.trello:rxlifecycle:0.6.1'
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
-    compile ('com.squareup.retrofit2:converter-simplexml:2.0.2') {
-        exclude group: 'xpp3', module: 'xpp3'
-        exclude group: 'stax', module: 'stax-api'
-        exclude group: 'stax', module: 'stax'
-    }
+    compile 'com.squareup.retrofit2:converter-gson:2.0.2'
     apt 'com.google.dagger:dagger-compiler:2.4'
     compile('com.crashlytics.sdk.android:crashlytics:2.5.2@aar') {
         transitive = true;
