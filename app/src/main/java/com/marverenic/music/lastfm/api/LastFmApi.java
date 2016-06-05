@@ -1,4 +1,4 @@
-package com.marverenic.music.lastfm2.api;
+package com.marverenic.music.lastfm.api;
 
 import android.content.Context;
 

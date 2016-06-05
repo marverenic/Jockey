@@ -1,6 +1,6 @@
-package com.marverenic.music.lastfm2.data.store;
+package com.marverenic.music.lastfm.data.store;
 
-import com.marverenic.music.lastfm2.model.LfmArtist;
+import com.marverenic.music.lastfm.model.LfmArtist;
 
 import rx.Observable;
 

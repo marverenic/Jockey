@@ -12,8 +12,8 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.marverenic.music.R;
-import com.marverenic.music.lastfm2.model.LfmArtist;
-import com.marverenic.music.lastfm2.model.Tag;
+import com.marverenic.music.lastfm.model.LfmArtist;
+import com.marverenic.music.lastfm.model.Tag;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;

@@ -1,4 +1,4 @@
-package com.marverenic.music.lastfm2.model;
+package com.marverenic.music.lastfm.model;
 
 import com.google.gson.annotations.SerializedName;
 

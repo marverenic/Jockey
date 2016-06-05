@@ -1,11 +1,11 @@
-package com.marverenic.music.lastfm2.data.inject;
+package com.marverenic.music.lastfm.data.inject;
 
 import android.content.Context;
 
-import com.marverenic.music.lastfm2.api.LastFmApi;
-import com.marverenic.music.lastfm2.api.LastFmService;
-import com.marverenic.music.lastfm2.data.store.LastFmStore;
-import com.marverenic.music.lastfm2.data.store.NetworkLastFmStore;
+import com.marverenic.music.lastfm.api.LastFmApi;
+import com.marverenic.music.lastfm.api.LastFmService;
+import com.marverenic.music.lastfm.data.store.LastFmStore;
+import com.marverenic.music.lastfm.data.store.NetworkLastFmStore;
 
 import javax.inject.Singleton;
 

@@ -1,6 +1,6 @@
 package com.marverenic.music.data.inject;
 
-import com.marverenic.music.lastfm2.data.inject.LastFmModule;
+import com.marverenic.music.lastfm.data.inject.LastFmModule;
 
 import javax.inject.Singleton;
 

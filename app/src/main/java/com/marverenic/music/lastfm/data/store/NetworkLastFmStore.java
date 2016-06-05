@@ -1,11 +1,11 @@
-package com.marverenic.music.lastfm2.data.store;
+package com.marverenic.music.lastfm.data.store;
 
 import android.support.v4.util.SimpleArrayMap;
 import android.util.Log;
 
 import com.marverenic.music.BuildConfig;
-import com.marverenic.music.lastfm2.api.LastFmService;
-import com.marverenic.music.lastfm2.model.LfmArtist;
+import com.marverenic.music.lastfm.api.LastFmService;
+import com.marverenic.music.lastfm.model.LfmArtist;
 
 import java.io.IOException;
 

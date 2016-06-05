@@ -1,8 +1,8 @@
-package com.marverenic.music.lastfm2.api.model;
+package com.marverenic.music.lastfm.api.model;
 
 import com.google.gson.annotations.SerializedName;
-import com.marverenic.music.lastfm2.api.LastFmService;
-import com.marverenic.music.lastfm2.model.LfmArtist;
+import com.marverenic.music.lastfm.api.LastFmService;
+import com.marverenic.music.lastfm.model.LfmArtist;
 
 /**
  * Wrapper class for calls to {@link LastFmService#getArtistInfo(String)} to allow responses to be

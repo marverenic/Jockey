@@ -1,4 +1,4 @@
-package com.marverenic.music.lastfm2.model;
+package com.marverenic.music.lastfm.model;
 
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;

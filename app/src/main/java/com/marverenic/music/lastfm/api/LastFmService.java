@@ -1,6 +1,6 @@
-package com.marverenic.music.lastfm2.api;
+package com.marverenic.music.lastfm.api;
 
-import com.marverenic.music.lastfm2.api.model.LfmArtistResponse;
+import com.marverenic.music.lastfm.api.model.LfmArtistResponse;
 
 import retrofit2.Response;
 import retrofit2.http.GET;
