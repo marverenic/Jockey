@@ -46,11 +46,13 @@ public class AlbumActivity extends BaseActivity {
         Album reference = getIntent().getParcelableExtra(ALBUM_EXTRA);
 
         if (reference != null) {
-            mMusicStore.getSongs(reference).subscribe(
-                    songs -> {
-                        mSongs = songs;
-                        setupAdapter();
-                    });
+            mMusicStore.getSongs(reference)
+                    .compose(bindToLifecycle())
+                    .subscribe(
+                            songs -> {
+                                mSongs = songs;
+                                setupAdapter();
+                            });
 
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle(reference.getAlbumName());

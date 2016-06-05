@@ -42,11 +42,13 @@ public class GenreActivity extends BaseActivity {
         reference = getIntent().getParcelableExtra(GENRE_EXTRA);
 
         if (reference != null) {
-            mMusicStore.getSongs(reference).subscribe(
-                    songs -> {
-                        mSongs = songs;
-                        setupAdapter();
-                    });
+            mMusicStore.getSongs(reference)
+                    .compose(bindToLifecycle())
+                    .subscribe(
+                            songs -> {
+                                mSongs = songs;
+                                setupAdapter();
+                            });
 
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle(reference.getGenreName());

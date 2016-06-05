@@ -86,12 +86,14 @@ public class ArtistActivity extends BaseActivity {
         }
 
         mMusicStore.getSongs(mReference)
+                .compose(bindToLifecycle())
                 .subscribe(
                         songs -> {
                             mSongs = songs;
                             setupAdapter();
                         });
         mMusicStore.getAlbums(mReference)
+                .compose(bindToLifecycle())
                 .subscribe(
                         albums -> {
                             mAlbums = albums;
@@ -113,8 +115,7 @@ public class ArtistActivity extends BaseActivity {
         if (Prefs.allowNetwork(this)) {
             setupLoadingAdapter();
 
-            mLfmStore
-                    .getArtistInfo(mReference.getArtistName())
+            mLfmStore.getArtistInfo(mReference.getArtistName())
                     .compose(bindToLifecycle())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(this::setLastFmReference, Crashlytics::logException);

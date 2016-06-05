@@ -2,7 +2,6 @@ package com.marverenic.music.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -24,7 +23,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class GenreFragment extends Fragment {
+public class GenreFragment extends BaseFragment {
 
     @Inject MusicStore mMusicStore;
 
@@ -37,12 +36,14 @@ public class GenreFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         JockeyApplication.getComponent(this).inject(this);
-        mMusicStore.getGenres().subscribe(
-                genres -> {
-                    mGenres = genres;
-                    setupAdapter();
-                },
-                Throwable::printStackTrace);
+        mMusicStore.getGenres()
+                .compose(bindToLifecycle())
+                .subscribe(
+                        genres -> {
+                            mGenres = genres;
+                            setupAdapter();
+                        },
+                        Throwable::printStackTrace);
     }
 
     @Override
