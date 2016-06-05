@@ -18,4 +18,11 @@ public class Tag {
 
     }
 
+    public String getName() {
+        return mName;
+    }
+
+    public String getUrl() {
+        return mUrl;
+    }
 }
