@@ -10,6 +10,8 @@ buildscript {
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'io.fabric'
 
 repositories {
@@ -20,6 +22,12 @@ repositories {
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     //noinspection GroovyMissingReturnStatement
     defaultConfig {
         applicationId "com.marverenic.music"
@@ -68,6 +76,14 @@ dependencies {
     compile 'com.github.bumptech.glide:glide:3.6.1'
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:0.5.2'
+    compile 'com.google.dagger:dagger:2.4'
+    compile 'io.reactivex:rxandroid:1.2.0'
+    compile 'com.trello:rxlifecycle-components:0.6.1'
+    compile 'com.trello:rxlifecycle:0.6.1'
+    compile 'com.squareup.retrofit2:retrofit:2.0.2'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.2'
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.0.2'
+    apt 'com.google.dagger:dagger-compiler:2.4'
     compile('com.crashlytics.sdk.android:crashlytics:2.5.2@aar') {
         transitive = true;
     }

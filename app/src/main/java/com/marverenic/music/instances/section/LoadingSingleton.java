@@ -15,8 +15,8 @@ public class LoadingSingleton extends HeterogeneousAdapter.SingletonSection<Void
 
     public static final int ID = 79;
 
-    public LoadingSingleton(Void data) {
-        super(ID, data);
+    public LoadingSingleton() {
+        super(ID, null);
     }
 
     @Override
