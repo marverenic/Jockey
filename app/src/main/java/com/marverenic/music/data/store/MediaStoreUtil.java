@@ -318,6 +318,26 @@ public final class MediaStoreUtil {
         return albums;
     }
 
+    public static List<Song> getPlaylistSongs(Context context, Playlist playlist) {
+        return getPlaylistSongs(context, playlist.getPlaylistId());
+    }
+
+    public static List<Song> getPlaylistSongs(Context context, long playlistId) {
+        Cursor cur = context.getContentResolver().query(
+                MediaStore.Audio.Playlists.Members.getContentUri("external", playlistId),
+                PLAYLIST_ENTRY_PROJECTION,
+                null, null, null);
+
+        if (cur == null) {
+            return Collections.emptyList();
+        }
+
+        List<Song> songs = Song.buildSongList(cur, context.getResources());
+        cur.close();
+
+        return songs;
+    }
+
     public static List<Song> getGenreSongs(Context context, Genre genre) {
         return getGenreSongs(context, genre.getGenreId());
     }

@@ -5,7 +5,6 @@ import android.content.Context;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Genre;
-import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 
 import java.util.Collections;
@@ -126,11 +125,6 @@ public class LocalMusicStore implements MusicStore {
     @Override
     public Observable<List<Song>> getSongs(Genre genre) {
         return Observable.just(MediaStoreUtil.getGenreSongs(mContext, genre));
-    }
-
-    @Override
-    public Observable<List<Song>> getSongs(Playlist playlist) {
-        return null;
     }
 
     @Override

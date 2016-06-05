@@ -45,6 +45,9 @@
             android:name=".activity.instance.PlaylistActivity"
             android:windowSoftInputMode="adjustPan|adjustNothing"/>
         <activity
+            android:name=".activity.instance.AutoPlaylistActivity"
+            android:windowSoftInputMode="adjustPan|adjustNothing"/>
+        <activity
             android:name=".activity.instance.AlbumActivity"
             android:windowSoftInputMode="adjustPan|adjustNothing"/>
         <activity

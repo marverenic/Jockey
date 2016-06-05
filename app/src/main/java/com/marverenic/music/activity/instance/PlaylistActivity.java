@@ -9,137 +9,140 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
+import com.marverenic.music.data.store.MediaStoreUtil;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.AutoPlaylist;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.PlaylistSongSection;
-import com.marverenic.music.instances.section.SongSection;
 import com.marverenic.music.instances.viewholder.DragDropSongViewHolder;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
-import com.marverenic.music.view.BackgroundDecoration;
-import com.marverenic.music.view.DividerDecoration;
 import com.marverenic.music.view.EnhancedAdapters.DragBackgroundDecoration;
 import com.marverenic.music.view.EnhancedAdapters.DragDividerDecoration;
 import com.marverenic.music.view.EnhancedAdapters.DragDropAdapter;
 import com.marverenic.music.view.EnhancedAdapters.DragDropDecoration;
-import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuItemClickListener,
         DragDropSongViewHolder.OnRemovedListener {
 
     public static final String PLAYLIST_EXTRA = "playlist";
-    private static final String INVALIDATE_EXTRA = "invalidated";
-    private final List<Song> data = new ArrayList<>();
-    private Playlist reference;
-    private HeterogeneousAdapter adapter;
-    private boolean invalidated = false;
+
+    @Inject PlaylistStore mPlaylistStore;
+
+    private List<Song> mSongs;
+    private Playlist mReference;
+    private RecyclerView mRecyclerView;
+    private DragDropAdapter mAdapter;
+    private PlaylistSongSection mSongSection;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instance);
+        JockeyApplication.getComponent(this).inject(this);
 
-        reference = getIntent().getParcelableExtra(PLAYLIST_EXTRA);
+        mReference = getIntent().getParcelableExtra(PLAYLIST_EXTRA);
 
-        if (reference != null) {
-            if (savedInstanceState != null && savedInstanceState.getBoolean(INVALIDATE_EXTRA)) {
-                reference = Library.findPlaylistById(reference.getPlaylistId());
-            }
+        mPlaylistStore.getSongs(mReference)
+                .compose(bindToLifecycle())
+                .subscribe(
+                        songs -> {
+                            mSongs = songs;
+                            setupAdapter();
+                        });
 
-            data.addAll(Library.getPlaylistEntries(this, reference));
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setTitle(reference.getPlaylistName());
-            }
+        getSupportActionBar().setTitle(mReference.getPlaylistName());
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.list);
+        setupRecyclerView();
+        setupAdapter();
+    }
+
+    private void setupAdapter() {
+        if (mRecyclerView == null) {
+            return;
         }
 
-        RecyclerView list = (RecyclerView) findViewById(R.id.list);
+        if (mAdapter == null) {
+            mAdapter = new DragDropAdapter();
+            mAdapter.attach(mRecyclerView);
 
-        if (reference instanceof AutoPlaylist) {
-            adapter = new HeterogeneousAdapter().addSection(new SongSection(data));
-            list.setAdapter(adapter);
-            list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
-            list.addItemDecoration(new DividerDecoration(this, R.id.empty_layout));
+            mAdapter.setEmptyState(new LibraryEmptyState(this, null) {
+                @Override
+                public String getEmptyMessage() {
+                    if (mReference instanceof AutoPlaylist) {
+                        return getString(R.string.empty_auto_playlist);
+                    } else {
+                        return getString(R.string.empty_playlist);
+                    }
+                }
+
+                @Override
+                public String getEmptyMessageDetail() {
+                    if (mReference instanceof AutoPlaylist) {
+                        return getString(R.string.empty_auto_playlist_detail);
+                    } else {
+                        return getString(R.string.empty_playlist_detail);
+                    }
+                }
+
+                @Override
+                public String getEmptyAction1Label() {
+                    if (mReference instanceof AutoPlaylist) {
+                        return getString(R.string.action_edit_playlist_rules);
+                    } else {
+                        return "";
+                    }
+                }
+
+                @Override
+                public void onAction1() {
+                    if (mReference instanceof AutoPlaylist
+                            && MediaStoreUtil.hasPermission(PlaylistActivity.this)) {
+                        Navigate.to(PlaylistActivity.this, AutoPlaylistEditActivity.class,
+                                AutoPlaylistEditActivity.PLAYLIST_EXTRA, mReference);
+                    } else {
+                        super.onAction1();
+                    }
+                }
+            });
+        }
+
+        if (mSongs == null) {
+            mSongs = Collections.emptyList();
+        }
+
+        if (mSongSection == null) {
+            mSongSection = new PlaylistSongSection(mSongs, this, this, mReference);
+            mAdapter.setDragSection(mSongSection);
         } else {
-            DragDropAdapter hAdapter = new DragDropAdapter();
-            hAdapter.setDragSection(new PlaylistSongSection(data, this, this, reference));
-            hAdapter.attach(list);
-            adapter = hAdapter;
-
-            list.addItemDecoration(new DragBackgroundDecoration(Themes.getBackgroundElevated()));
-            list.addItemDecoration(new DragDividerDecoration(this, R.id.empty_layout));
+            mSongSection.setData(mSongs);
+            mAdapter.notifyDataSetChanged();
         }
+    }
 
-        list.addItemDecoration(new DragDropDecoration(
+    private void setupRecyclerView() {
+        mRecyclerView.addItemDecoration(
+                new DragBackgroundDecoration(Themes.getBackgroundElevated()));
+        mRecyclerView.addItemDecoration(new DragDividerDecoration(this, R.id.empty_layout));
+        mRecyclerView.addItemDecoration(new DragDropDecoration(
                 (NinePatchDrawable) getDrawableCompat(R.drawable.list_drag_shadow)));
-
-        adapter.setEmptyState(new LibraryEmptyState(this, null) {
-            @Override
-            public String getEmptyMessage() {
-                if (reference instanceof AutoPlaylist) {
-                    return getString(R.string.empty_auto_playlist);
-                } else {
-                    return getString(R.string.empty_playlist);
-                }
-            }
-
-            @Override
-            public String getEmptyMessageDetail() {
-                if (reference instanceof AutoPlaylist) {
-                    return getString(R.string.empty_auto_playlist_detail);
-                } else {
-                    return getString(R.string.empty_playlist_detail);
-                }
-            }
-
-            @Override
-            public String getEmptyAction1Label() {
-                if (reference instanceof AutoPlaylist) {
-                    return getString(R.string.action_edit_playlist_rules);
-                } else {
-                    return "";
-                }
-            }
-
-            @Override
-            public void onAction1() {
-                if (reference instanceof AutoPlaylist
-                        && Library.hasRWPermission(PlaylistActivity.this)) {
-                    invalidated = true;
-                    Navigate.to(PlaylistActivity.this, AutoPlaylistEditActivity.class,
-                            AutoPlaylistEditActivity.PLAYLIST_EXTRA, reference);
-                } else {
-                    super.onAction1();
-                }
-            }
-        });
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        list.setLayoutManager(layoutManager);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (invalidated && reference != null) {
-            reference = Library.findPlaylistById(reference.getPlaylistId());
-            data.clear();
-            data.addAll(Library.getPlaylistEntries(this, reference));
-            adapter.notifyDataSetChanged();
-
-            invalidated = false;
-        }
+        mRecyclerView.setLayoutManager(layoutManager);
     }
 
     @Override
@@ -149,21 +152,15 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(INVALIDATE_EXTRA, invalidated);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (reference == null) {
+        if (mReference == null) {
             return super.onOptionsItemSelected(item);
         }
 
         if (item.getItemId() == R.id.action_sort) {
             PopupMenu sortMenu = new PopupMenu(this, findViewById(R.id.action_sort), Gravity.END);
             sortMenu.inflate(
-                    (reference instanceof AutoPlaylist)
+                    (mReference instanceof AutoPlaylist)
                             ? R.menu.sort_options_auto_playlist
                             : R.menu.sort_options);
             sortMenu.setOnMenuItemClickListener(this);
@@ -176,78 +173,61 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        final ArrayList<Song> unsortedData = new ArrayList<>(data);
-        int sortFlag = -1;
+        final List<Song> unsortedData = new ArrayList<>(mSongs);
         String result;
 
         switch (item.getItemId()) {
             case R.id.action_sort_random:
-                Collections.shuffle(data);
+                Collections.shuffle(mSongs);
                 result = getResources().getString(R.string.message_sorted_playlist_random);
-                sortFlag = AutoPlaylist.Rule.Field.ID;
                 break;
             case R.id.action_sort_name:
-                Collections.sort(data);
+                Collections.sort(mSongs);
                 result = getResources().getString(R.string.message_sorted_playlist_name);
-                sortFlag = AutoPlaylist.Rule.Field.NAME;
                 break;
             case R.id.action_sort_artist:
-                Collections.sort(data, Song.ARTIST_COMPARATOR);
+                Collections.sort(mSongs, Song.ARTIST_COMPARATOR);
                 result = getResources().getString(R.string.message_sorted_playlist_artist);
                 break;
             case R.id.action_sort_album:
-                Collections.sort(data, Song.ALBUM_COMPARATOR);
+                Collections.sort(mSongs, Song.ALBUM_COMPARATOR);
                 result = getResources().getString(R.string.message_sorted_playlist_album);
                 break;
             case R.id.action_sort_play:
-                Collections.sort(data, Song.PLAY_COUNT_COMPARATOR);
+                Collections.sort(mSongs, Song.PLAY_COUNT_COMPARATOR);
                 result = getResources().getString(R.string.message_sorted_playlist_play);
-                sortFlag = AutoPlaylist.Rule.Field.PLAY_COUNT;
                 break;
             case R.id.action_sort_skip:
-                Collections.sort(data, Song.SKIP_COUNT_COMPARATOR);
+                Collections.sort(mSongs, Song.SKIP_COUNT_COMPARATOR);
                 result = getResources().getString(R.string.message_sorted_playlist_skip);
-                sortFlag = AutoPlaylist.Rule.Field.SKIP_COUNT;
                 break;
             case R.id.action_sort_date_added:
-                Collections.sort(data, Song.DATE_ADDED_COMPARATOR);
+                Collections.sort(mSongs, Song.DATE_ADDED_COMPARATOR);
                 result = getResources().getString(R.string.message_sorted_playlist_date_added);
-                sortFlag = AutoPlaylist.Rule.Field.DATE_ADDED;
                 break;
             case R.id.action_sort_date_played:
-                Collections.sort(data, Song.DATE_PLAYED_COMPARATOR);
+                Collections.sort(mSongs, Song.DATE_PLAYED_COMPARATOR);
                 result = getResources().getString(R.string.message_sorted_playlist_date_played);
-                sortFlag = AutoPlaylist.Rule.Field.DATE_PLAYED;
                 break;
             default:
                 return false;
         }
 
-        if (reference instanceof AutoPlaylist) {
-            ((AutoPlaylist) reference).setSortMethod(sortFlag);
-            Library.editAutoPlaylist(this, (AutoPlaylist) reference);
-        } else {
-            Library.editPlaylist(this, reference, data);
-        }
-
-        adapter.notifyDataSetChanged();
+        mPlaylistStore.editPlaylist(mReference, mSongs);
+        mAdapter.notifyDataSetChanged();
 
         Snackbar
                 .make(
-                        findViewById(R.id.list),
-                        String.format(result, reference),
+                        mRecyclerView,
+                        String.format(result, mReference),
                         Snackbar.LENGTH_LONG)
                 .setAction(
                         getResources().getString(R.string.action_undo),
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                data.clear();
-                                data.addAll(unsortedData);
-                                Library.editPlaylist(
-                                        PlaylistActivity.this, reference, unsortedData);
-                                adapter.notifyDataSetChanged();
-                            }
+                        v -> {
+                            mSongs.clear();
+                            mSongs.addAll(unsortedData);
+                            mPlaylistStore.editPlaylist(mReference, unsortedData);
+                            mAdapter.notifyDataSetChanged();
                         })
                 .show();
 
@@ -256,28 +236,25 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
 
     @Override
     public void onItemRemoved(final int index) {
-        final Song removed = data.remove(index);
+        final Song removed = mSongs.remove(index);
 
-        Library.editPlaylist(PlaylistActivity.this, reference, data);
-        adapter.notifyItemRemoved(index);
+        mPlaylistStore.editPlaylist(mReference, mSongs);
+        mAdapter.notifyItemRemoved(index);
 
         Snackbar
                 .make(
-                        findViewById(R.id.list),
+                        mRecyclerView,
                         getResources().getString(
                                 R.string.message_removed_song,
                                 removed.getSongName()),
                         Snackbar.LENGTH_LONG)
-                .setAction(R.string.action_undo, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        data.add(index, removed);
-                        Library.editPlaylist(PlaylistActivity.this, reference, data);
-                        if (data.size() > 1) {
-                            adapter.notifyItemInserted(index);
-                        } else {
-                            adapter.notifyItemChanged(index);
-                        }
+                .setAction(R.string.action_undo, v -> {
+                    mSongs.add(index, removed);
+                    mPlaylistStore.editPlaylist(mReference, mSongs);
+                    if (mSongs.size() > 1) {
+                        mAdapter.notifyItemInserted(index);
+                    } else {
+                        mAdapter.notifyItemChanged(index);
                     }
                 })
                 .show();

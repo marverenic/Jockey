@@ -36,6 +36,11 @@ public class LocalPlaylistStore implements PlaylistStore {
     }
 
     @Override
+    public Observable<List<Song>> getSongs(Playlist playlist) {
+        return Observable.just(MediaStoreUtil.getPlaylistSongs(mContext, playlist));
+    }
+
+    @Override
     public void makePlaylist(String name) {
 
     }

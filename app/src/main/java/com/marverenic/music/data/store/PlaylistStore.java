@@ -12,6 +12,8 @@ public interface PlaylistStore {
 
     Observable<List<Playlist>> getPlaylists();
 
+    Observable<List<Song>> getSongs(Playlist playlist);
+
     void makePlaylist(String name);
 
     void makeAutoPlaylist(AutoPlaylist playlist);
