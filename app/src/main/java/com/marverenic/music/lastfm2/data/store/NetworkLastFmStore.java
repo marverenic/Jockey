@@ -40,7 +40,7 @@ public class NetworkLastFmStore implements LastFmStore {
                             throw Exceptions.propagate(new IOException(message));
                         }
 
-                        return response.body();
+                        return response.body().getArtist();
                     })
                     .cache();
 
