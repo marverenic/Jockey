@@ -1,5 +1,7 @@
 package com.marverenic.music.lastfm2.model;
 
+import android.support.annotation.StringDef;
+
 import com.google.gson.annotations.SerializedName;
 
 public class Image {
@@ -22,6 +24,7 @@ public class Image {
         return mUrl;
     }
 
+    @Size
     public String getSize() {
         return mSize;
     }
@@ -30,20 +33,14 @@ public class Image {
      * Class of enumerated values that may be used as image sizes returned by the Last.fm server.
      * @see Image#mSize
      */
-    public static final class Size {
+    @StringDef(value = {Size.SMALL, Size.MEDIUM, Size.LARGE, Size.X_LARGE, Size.MEGA})
+    public @interface Size {
 
-        public static final String SMALL = "small";
-        public static final String MEDIUM = "medium";
-        public static final String LARGE = "large";
-        public static final String X_LARGE = "extralarge";
-        public static final String MEGA = "mega";
-
-        /**
-         * This class is never instantiated
-         */
-        private Size() {
-
-        }
+        String SMALL = "small";
+        String MEDIUM = "medium";
+        String LARGE = "large";
+        String X_LARGE = "extralarge";
+        String MEGA = "mega";
 
     }
 
