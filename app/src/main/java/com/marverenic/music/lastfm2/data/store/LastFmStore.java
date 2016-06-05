@@ -1,11 +1,11 @@
 package com.marverenic.music.lastfm2.data.store;
 
-import com.marverenic.music.instances.Artist;
+import com.marverenic.music.lastfm2.model.LfmArtist;
 
 import rx.Observable;
 
 public interface LastFmStore {
 
-    Observable<Artist> getArtistInfo(String artistName);
+    Observable<LfmArtist> getArtistInfo(String artistName);
 
 }
