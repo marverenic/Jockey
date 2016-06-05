@@ -14,8 +14,8 @@ import com.marverenic.music.utils.Util;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
+import static com.marverenic.music.instances.Util.compareTitle;
 import static com.marverenic.music.instances.Util.parseUnknown;
 
 public final class Album implements Parcelable, Comparable<Album> {
@@ -145,22 +145,6 @@ public final class Album implements Parcelable, Comparable<Album> {
 
     @Override
     public int compareTo(@NonNull Album another) {
-        String o1c = (albumName == null)
-                ? ""
-                : albumName.toLowerCase(Locale.ENGLISH);
-        String o2c = (another.albumName == null)
-                ? ""
-                : another.albumName.toLowerCase(Locale.ENGLISH);
-        if (o1c.startsWith("the ")) {
-            o1c = o1c.substring(4);
-        } else if (o1c.startsWith("a ")) {
-            o1c = o1c.substring(2);
-        }
-        if (o2c.startsWith("the ")) {
-            o2c = o2c.substring(4);
-        } else if (o2c.startsWith("a ")) {
-            o2c = o2c.substring(2);
-        }
-        return o1c.compareTo(o2c);
+        return compareTitle(getAlbumName(), another.getAlbumName());
     }
 }

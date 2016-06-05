@@ -13,8 +13,8 @@ import com.marverenic.music.data.store.MediaStoreUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
+import static com.marverenic.music.instances.Util.compareTitle;
 import static com.marverenic.music.instances.Util.parseUnknown;
 
 public final class Artist implements Parcelable, Comparable<Artist> {
@@ -112,22 +112,6 @@ public final class Artist implements Parcelable, Comparable<Artist> {
 
     @Override
     public int compareTo(@NonNull Artist another) {
-        String o1c = (artistName == null)
-                ? ""
-                : artistName.toLowerCase(Locale.ENGLISH);
-        String o2c = (another.artistName == null)
-                ? ""
-                : another.artistName.toLowerCase(Locale.ENGLISH);
-        if (o1c.startsWith("the ")) {
-            o1c = o1c.substring(4);
-        } else if (o1c.startsWith("a ")) {
-            o1c = o1c.substring(2);
-        }
-        if (o2c.startsWith("the ")) {
-            o2c = o2c.substring(4);
-        } else if (o2c.startsWith("a ")) {
-            o2c = o2c.substring(2);
-        }
-        return o1c.compareTo(o2c);
+        return compareTitle(getArtistName(), another.getArtistName());
     }
 }

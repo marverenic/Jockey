@@ -13,6 +13,8 @@ import com.marverenic.music.utils.Util;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.marverenic.music.instances.Util.compareTitle;
+
 public class Playlist implements Parcelable, Comparable<Playlist> {
 
     public static final Parcelable.Creator<Playlist> CREATOR = new Parcelable.Creator<Playlist>() {
@@ -108,6 +110,6 @@ public class Playlist implements Parcelable, Comparable<Playlist> {
                 return -1;
             }
         }
-        return playlistName.compareToIgnoreCase(another.playlistName);
+        return compareTitle(getPlaylistName(), another.getPlaylistName());
     }
 }

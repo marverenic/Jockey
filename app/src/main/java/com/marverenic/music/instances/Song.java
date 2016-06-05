@@ -15,9 +15,9 @@ import com.marverenic.music.utils.Util;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 
 import static com.marverenic.music.instances.Util.compareLong;
+import static com.marverenic.music.instances.Util.compareTitle;
 import static com.marverenic.music.instances.Util.parseUnknown;
 
 public class Song implements Parcelable, Comparable<Song> {
@@ -230,65 +230,14 @@ public class Song implements Parcelable, Comparable<Song> {
 
     @Override
     public int compareTo(@NonNull Song another) {
-        String o1c = songName.toLowerCase(Locale.ENGLISH);
-        String o2c = another.songName.toLowerCase(Locale.ENGLISH);
-
-        if (o1c.startsWith("the ")) {
-            o1c = o1c.substring(4);
-        } else if (o1c.startsWith("a ")) {
-            o1c = o1c.substring(2);
-        }
-        if (o2c.startsWith("the ")) {
-            o2c = o2c.substring(4);
-        } else if (o2c.startsWith("a ")) {
-            o2c = o2c.substring(2);
-        }
-        return o1c.compareTo(o2c);
+        return compareTitle(getSongName(), another.getSongName());
     }
 
-    public static final Comparator<Song> ARTIST_COMPARATOR = new Comparator<Song>() {
-        @Override
-        public int compare(Song s1, Song s2) {
-            String o1c = s1.artistName.toLowerCase(Locale.ENGLISH);
-            String o2c = s2.artistName.toLowerCase(Locale.ENGLISH);
-            if (o1c.startsWith("the ")) {
-                o1c = o1c.substring(4);
-            } else if (o1c.startsWith("a ")) {
-                o1c = o1c.substring(2);
-            }
-            if (o2c.startsWith("the ")) {
-                o2c = o2c.substring(4);
-            } else if (o2c.startsWith("a ")) {
-                o2c = o2c.substring(2);
-            }
-            if (!o1c.matches("[a-z]") && o2c.matches("[a-z]")) {
-                return o2c.compareTo(o1c);
-            }
-            return o1c.compareTo(o2c);
-        }
-    };
+    public static final Comparator<Song> ARTIST_COMPARATOR = (s1, s2) ->
+            compareTitle(s1.getArtistName(), s2.getArtistName());
 
-    public static final Comparator<Song> ALBUM_COMPARATOR = new Comparator<Song>() {
-        @Override
-        public int compare(Song o1, Song o2) {
-            String o1c = o1.albumName.toLowerCase(Locale.ENGLISH);
-            String o2c = o2.albumName.toLowerCase(Locale.ENGLISH);
-            if (o1c.startsWith("the ")) {
-                o1c = o1c.substring(4);
-            } else if (o1c.startsWith("a ")) {
-                o1c = o1c.substring(2);
-            }
-            if (o2c.startsWith("the ")) {
-                o2c = o2c.substring(4);
-            } else if (o2c.startsWith("a ")) {
-                o2c = o2c.substring(2);
-            }
-            if (!o1c.matches("[a-z]") && o2c.matches("[a-z]")) {
-                return o2c.compareTo(o1c);
-            }
-            return o1c.compareTo(o2c);
-        }
-    };
+    public static final Comparator<Song> ALBUM_COMPARATOR = (o1, o2) ->
+            compareTitle(o1.getAlbumName(), o2.getAlbumName());
 
     public static final Comparator<Song> PLAY_COUNT_COMPARATOR = (s1, s2) ->
             s2.getPlayCount() - s1.getPlayCount();

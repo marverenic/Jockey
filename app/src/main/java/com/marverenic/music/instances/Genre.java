@@ -14,6 +14,7 @@ import com.marverenic.music.utils.Util;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.marverenic.music.instances.Util.compareTitle;
 import static com.marverenic.music.instances.Util.parseUnknown;
 
 public final class Genre implements Parcelable, Comparable<Genre> {
@@ -142,6 +143,6 @@ public final class Genre implements Parcelable, Comparable<Genre> {
 
     @Override
     public int compareTo(@NonNull Genre another) {
-        return genreName.compareTo(another.genreName);
+        return compareTitle(getGenreName(), another.getGenreName());
     }
 }
