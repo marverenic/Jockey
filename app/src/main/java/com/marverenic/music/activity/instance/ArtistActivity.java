@@ -86,17 +86,7 @@ public class ArtistActivity extends BaseActivity {
                 .compose(RxLifecycle.bindActivity(lifecycle()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        lfmArtist -> {
-                            mLfmReference = lfmArtist;
-                            mRelatedArtists = new ArrayList<>();
-
-                            for (LfmArtist relatedArtist : lfmArtist.getSimilarArtists()) {
-                                if (Library.findArtistByName(relatedArtist.getName()) != null) {
-                                    mRelatedArtists.add(relatedArtist);
-                                }
-                            }
-                            setupAdapter();
-                        },
+                        this::setLastFmReference,
                         Crashlytics::logException);
 
         // Sort the album list chronologically if all albums have years,
@@ -118,6 +108,18 @@ public class ArtistActivity extends BaseActivity {
             }
         }
         return true;
+    }
+
+    private void setLastFmReference(LfmArtist lfmArtist) {
+        mLfmReference = lfmArtist;
+        mRelatedArtists = new ArrayList<>();
+
+        for (LfmArtist relatedArtist : lfmArtist.getSimilarArtists()) {
+            if (Library.findArtistByName(relatedArtist.getName()) != null) {
+                mRelatedArtists.add(relatedArtist);
+            }
+        }
+        setupAdapter();
     }
 
     private void setupAdapter() {
