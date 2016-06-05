@@ -9,12 +9,12 @@ import android.support.annotation.NonNull;
 
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MediaStoreUtil;
-import com.marverenic.music.utils.Util;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.marverenic.music.instances.Util.compareTitle;
+import static com.marverenic.music.instances.Util.hashLong;
 import static com.marverenic.music.instances.Util.parseUnknown;
 
 public final class Genre implements Parcelable, Comparable<Genre> {
@@ -117,7 +117,7 @@ public final class Genre implements Parcelable, Comparable<Genre> {
 
     @Override
     public int hashCode() {
-        return Util.hashLong(genreId);
+        return hashLong(genreId);
     }
 
     @Override

@@ -97,8 +97,4 @@ public final class Util {
         return null;
     }
 
-    public static int hashLong(long value) {
-        return (int) (value ^ (value >>> 32));
-    }
-
 }

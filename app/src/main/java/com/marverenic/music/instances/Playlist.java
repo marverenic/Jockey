@@ -8,12 +8,12 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 import com.marverenic.music.data.store.MediaStoreUtil;
-import com.marverenic.music.utils.Util;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.marverenic.music.instances.Util.compareTitle;
+import static com.marverenic.music.instances.Util.hashLong;
 
 public class Playlist implements Parcelable, Comparable<Playlist> {
 
@@ -76,7 +76,7 @@ public class Playlist implements Parcelable, Comparable<Playlist> {
 
     @Override
     public int hashCode() {
-        return Util.hashLong(playlistId);
+        return hashLong(playlistId);
     }
 
     @Override

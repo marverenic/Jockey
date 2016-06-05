@@ -54,4 +54,8 @@ class Util {
             return title;
         }
     }
+
+    protected static int hashLong(long value) {
+        return (int) (value ^ (value >>> 32));
+    }
 }

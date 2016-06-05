@@ -10,7 +10,6 @@ import android.support.annotation.NonNull;
 
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MediaStoreUtil;
-import com.marverenic.music.utils.Util;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -18,6 +17,7 @@ import java.util.List;
 
 import static com.marverenic.music.instances.Util.compareLong;
 import static com.marverenic.music.instances.Util.compareTitle;
+import static com.marverenic.music.instances.Util.hashLong;
 import static com.marverenic.music.instances.Util.parseUnknown;
 
 public class Song implements Parcelable, Comparable<Song> {
@@ -195,7 +195,7 @@ public class Song implements Parcelable, Comparable<Song> {
 
     @Override
     public int hashCode() {
-        return Util.hashLong(songId);
+        return hashLong(songId);
     }
 
     @Override
