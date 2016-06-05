@@ -273,6 +273,29 @@ public final class MediaStoreUtil {
         return songs;
     }
 
+    public static List<Song> getArtistSongs(Context context, Artist artist) {
+        return getArtistSongs(context, artist.getArtistId());
+    }
+
+    public static List<Song> getArtistSongs(Context context, long artistId) {
+        Cursor cur = context.getContentResolver().query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                SONG_PROJECTION,
+                MediaStore.Audio.Media.IS_MUSIC  + " != 0 "
+                        + " AND " + MediaStore.Audio.AudioColumns.ARTIST_ID + " = " + artistId,
+                null, null);
+
+        if (cur == null) {
+            return Collections.emptyList();
+        }
+
+        List<Song> songs = Song.buildSongList(cur, context.getResources());
+        Collections.sort(songs);
+        cur.close();
+
+        return songs;
+    }
+
     public static List<Song> getGenreSongs(Context context, Genre genre) {
         return getGenreSongs(context, genre.getGenreId());
     }
