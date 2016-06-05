@@ -104,9 +104,7 @@ public class ArtistActivity extends BaseActivity {
                     .getArtistInfo(mReference.getArtistName())
                     .compose(bindToLifecycle())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            this::setLastFmReference,
-                            Crashlytics::logException);
+                    .subscribe(this::setLastFmReference, Crashlytics::logException);
         }
     }
 
