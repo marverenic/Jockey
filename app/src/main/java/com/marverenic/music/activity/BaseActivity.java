@@ -12,7 +12,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -28,8 +27,9 @@ import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Themes;
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
-public abstract class BaseActivity extends AppCompatActivity
+public abstract class BaseActivity extends RxAppCompatActivity
         implements PlayerController.UpdateListener, PlayerController.ErrorListener {
 
     private static final boolean DEBUG = BuildConfig.DEBUG;

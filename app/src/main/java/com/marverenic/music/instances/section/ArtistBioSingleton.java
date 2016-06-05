@@ -12,25 +12,25 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.marverenic.music.R;
-import com.marverenic.music.lastfm.LArtist;
-import com.marverenic.music.lastfm.Tag;
+import com.marverenic.music.lastfm.model.LfmArtist;
+import com.marverenic.music.lastfm.model.Tag;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 
-public class ArtistBioSingleton extends HeterogeneousAdapter.SingletonSection<LArtist> {
+public class ArtistBioSingleton extends HeterogeneousAdapter.SingletonSection<LfmArtist> {
 
     public static final int ID = 28;
 
     private boolean mHasRelatedArtists;
 
-    public ArtistBioSingleton(LArtist data, boolean hasRelatedArtists) {
+    public ArtistBioSingleton(LfmArtist data, boolean hasRelatedArtists) {
         super(ID, data);
         mHasRelatedArtists = hasRelatedArtists;
     }
 
     @Override
-    public EnhancedViewHolder<LArtist> createViewHolder(HeterogeneousAdapter adapter,
+    public EnhancedViewHolder<LfmArtist> createViewHolder(HeterogeneousAdapter adapter,
                                                         ViewGroup parent) {
         return new ViewHolder(
                 LayoutInflater.from(parent.getContext())
@@ -38,7 +38,7 @@ public class ArtistBioSingleton extends HeterogeneousAdapter.SingletonSection<LA
                 mHasRelatedArtists);
     }
 
-    public static class ViewHolder extends EnhancedViewHolder<LArtist>
+    public static class ViewHolder extends EnhancedViewHolder<LfmArtist>
             implements View.OnClickListener {
 
         private CardView cardView;
@@ -62,7 +62,7 @@ public class ArtistBioSingleton extends HeterogeneousAdapter.SingletonSection<LA
 
         @Override
         @SuppressLint("SetTextI18n")
-        public void update(LArtist item, int sectionPosition) {
+        public void update(LfmArtist item, int sectionPosition) {
             Tag[] tags = item.getTags();
             String[] tagNames = new String[tags.length];
 
