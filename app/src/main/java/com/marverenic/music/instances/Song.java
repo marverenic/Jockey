@@ -17,6 +17,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
+import static com.marverenic.music.instances.Util.compareLong;
 import static com.marverenic.music.instances.Util.parseUnknown;
 
 public class Song implements Parcelable, Comparable<Song> {
@@ -289,38 +290,18 @@ public class Song implements Parcelable, Comparable<Song> {
         }
     };
 
-    public static final Comparator<Song> PLAY_COUNT_COMPARATOR = new Comparator<Song>() {
-        @Override
-        public int compare(Song s1, Song s2) {
-            return s2.getPlayCount() - s1.getPlayCount();
-        }
-    };
+    public static final Comparator<Song> PLAY_COUNT_COMPARATOR = (s1, s2) ->
+            s2.getPlayCount() - s1.getPlayCount();
 
-    public static final Comparator<Song> SKIP_COUNT_COMPARATOR = new Comparator<Song>() {
-        @Override
-        public int compare(Song s1, Song s2) {
-            return s2.getSkipCount() - s1.getSkipCount();
-        }
-    };
+    public static final Comparator<Song> SKIP_COUNT_COMPARATOR = (s1, s2) ->
+            s2.getSkipCount() - s1.getSkipCount();
 
-    public static final Comparator<Song> DATE_ADDED_COMPARATOR = new Comparator<Song>() {
-        @Override
-        public int compare(Song s1, Song s2) {
-            return s1.dateAdded < s2.dateAdded ? -1 : (s1.dateAdded == s2.dateAdded ? 0 : 1);
-        }
-    };
+    public static final Comparator<Song> DATE_ADDED_COMPARATOR = (s1, s2) ->
+            compareLong(s1.getDateAdded(), s2.getDateAdded());
 
-    public static final Comparator<Song> DATE_PLAYED_COMPARATOR = new Comparator<Song>() {
-        @Override
-        public int compare(Song s1, Song s2) {
-            return s2.getPlayDate() - s1.getPlayDate();
-        }
-    };
+    public static final Comparator<Song> DATE_PLAYED_COMPARATOR = (s1, s2) ->
+            s2.getPlayDate() - s1.getPlayDate();
 
-    public static final Comparator<Song> YEAR_COMPARATOR = new Comparator<Song>() {
-        @Override
-        public int compare(Song s1, Song s2) {
-            return s2.year - s1.year;
-        }
-    };
+    public static final Comparator<Song> YEAR_COMPARATOR = (s1, s2) ->
+            s2.getYear() - s1.getYear();
 }
