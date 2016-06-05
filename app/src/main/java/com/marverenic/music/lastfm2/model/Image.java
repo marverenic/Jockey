@@ -1,5 +1,6 @@
 package com.marverenic.music.lastfm2.model;
 
+import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
 
 import com.google.gson.annotations.SerializedName;
@@ -27,6 +28,24 @@ public class Image {
     @Size
     public String getSize() {
         return mSize;
+    }
+
+    @Size
+    @Nullable
+    protected static String smaller(@Size String imageSize) {
+        switch (imageSize) {
+            case Size.MEGA:
+                return Size.X_LARGE;
+            case Size.X_LARGE:
+                return Size.LARGE;
+            case Size.LARGE:
+                return Size.MEDIUM;
+            case Size.MEDIUM:
+                return Size.SMALL;
+            case Size.SMALL:
+            default:
+                return null;
+        }
     }
 
     /**

@@ -69,10 +69,11 @@ public class RelatedArtistSection extends HeterogeneousAdapter.ListSection<LfmAr
         public void update(LfmArtist item, int sectionPosition) {
             localReference = Library.findArtistByName(item.getName());
 
-            final String artURL = item.getImageURL(Image.Size.MEDIUM);
+            Image image = item.getImageBySize(Image.Size.MEDIUM);
+            String artUrl = (image == null) ? null : image.getUrl();
 
             Glide.with(context)
-                    .load(artURL)
+                    .load(artUrl)
                     .asBitmap()
                     .error(R.drawable.art_default)
                     .into(new BitmapImageViewTarget(artwork) {
