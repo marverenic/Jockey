@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 
 import com.jakewharton.rxrelay.BehaviorRelay;
+import com.marverenic.music.R;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 
@@ -41,6 +42,19 @@ public class LocalPlaylistStore implements PlaylistStore {
     @Override
     public Observable<List<Song>> getSongs(Playlist playlist) {
         return Observable.just(MediaStoreUtil.getPlaylistSongs(mContext, playlist));
+    }
+
+    @Override
+    public String verifyPlaylistName(String playlistName) {
+        if (playlistName == null || playlistName.trim().isEmpty()) {
+            return mContext.getString(R.string.error_hint_empty_playlist);
+        }
+
+        if (MediaStoreUtil.findPlaylistByName(mContext, playlistName) != null) {
+            return mContext.getString(R.string.error_hint_duplicate_playlist);
+        }
+
+        return null;
     }
 
     @Override

@@ -18,6 +18,7 @@ import com.marverenic.music.utils.Themes;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 public class PlaylistDialog {
 
     public static final class MakeNormal implements DialogInterface.OnClickListener, TextWatcher {

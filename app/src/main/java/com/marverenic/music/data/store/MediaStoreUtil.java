@@ -363,6 +363,23 @@ public final class MediaStoreUtil {
         return songs;
     }
 
+    public static Playlist findPlaylistByName(Context context, String playlistName) {
+        Cursor cur = context.getContentResolver().query(
+                MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
+                PLAYLIST_PROJECTION,
+                "UPPER(" + MediaStore.Audio.Playlists.NAME + ") = ?",
+                new String[]{playlistName.toUpperCase()}, null);
+
+        if (cur == null) {
+            return null;
+        }
+
+        Playlist found = (cur.moveToFirst()) ? new Playlist(cur) : null;
+        cur.close();
+
+        return found;
+    }
+
     public static Playlist createPlaylist(Context context, String playlistName,
                                           @Nullable List<Song> songs) {
 
@@ -384,7 +401,7 @@ public final class MediaStoreUtil {
         // Get the id of the new playlist
         Cursor cursor = context.getContentResolver().query(
                 newPlaylistUri,
-                new String[] {MediaStore.Audio.Playlists._ID},
+                PLAYLIST_PROJECTION,
                 null, null, null);
 
         if (cursor == null) {

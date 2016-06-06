@@ -15,6 +15,8 @@ public interface PlaylistStore {
 
     Observable<List<Song>> getSongs(Playlist playlist);
 
+    String verifyPlaylistName(String playlistName);
+
     Playlist makePlaylist(String name);
 
     Playlist makePlaylist(String name, @Nullable List<Song> songs);

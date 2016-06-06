@@ -23,12 +23,12 @@ import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
 import com.marverenic.music.fragments.AlbumFragment;
 import com.marverenic.music.fragments.ArtistFragment;
 import com.marverenic.music.fragments.GenreFragment;
 import com.marverenic.music.fragments.PlaylistFragment;
 import com.marverenic.music.fragments.SongFragment;
-import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Updater;
@@ -38,6 +38,8 @@ import com.marverenic.music.view.FABMenu;
 import javax.inject.Inject;
 
 public class LibraryActivity extends BaseActivity implements View.OnClickListener {
+
+    private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
 
     @Inject MusicStore mMusicStore;
 
@@ -145,7 +147,8 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
     public void onClick(View v) {
         if (v.getTag() != null) {
             if (v.getTag().equals("fab-" + getString(R.string.playlist))) {
-                PlaylistDialog.MakeNormal.alert(findViewById(R.id.coordinator_layout));
+                CreatePlaylistDialogFragment.newInstance()
+                        .show(getSupportFragmentManager(), TAG_MAKE_PLAYLIST);
             } else if (v.getTag().equals("fab-" + getString(R.string.playlist_auto))) {
                 Navigate.to(this, AutoPlaylistEditActivity.class,
                         AutoPlaylistEditActivity.PLAYLIST_EXTRA, null);
