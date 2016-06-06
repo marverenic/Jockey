@@ -11,7 +11,10 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Genre;
@@ -38,7 +41,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class SearchActivity extends BaseActivity implements SearchView.OnQueryTextListener {
+
+    @Inject MusicStore mMusicStore;
+    @Inject PlaylistStore mPlaylistStore;
 
     private static String lastQuery = null;
     private SearchView searchView;
@@ -54,6 +62,8 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instance);
+
+        JockeyApplication.getComponent(this).inject(this);
 
         // Set up the RecyclerView's adapter
         RecyclerView list = (RecyclerView) findViewById(R.id.list);

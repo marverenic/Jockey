@@ -1,6 +1,7 @@
 package com.marverenic.music.data.inject;
 
 import com.marverenic.music.activity.LibraryActivity;
+import com.marverenic.music.activity.SearchActivity;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.activity.instance.AutoPlaylistActivity;
@@ -17,6 +18,7 @@ import com.marverenic.music.fragments.SongFragment;
 public interface JockeyGraph {
 
     void inject(LibraryActivity activity);
+    void inject(SearchActivity activity);
     void inject(AlbumActivity activity);
     void inject(ArtistActivity activity);
     void inject(GenreActivity activity);

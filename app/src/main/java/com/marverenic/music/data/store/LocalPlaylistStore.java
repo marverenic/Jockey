@@ -45,6 +45,11 @@ public class LocalPlaylistStore implements PlaylistStore {
     }
 
     @Override
+    public Observable<List<Playlist>> searchForPlaylists(String query) {
+        return null;
+    }
+
+    @Override
     public String verifyPlaylistName(String playlistName) {
         if (playlistName == null || playlistName.trim().isEmpty()) {
             return mContext.getString(R.string.error_hint_empty_playlist);

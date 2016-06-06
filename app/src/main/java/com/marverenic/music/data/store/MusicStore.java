@@ -29,4 +29,12 @@ public interface MusicStore {
 
     Observable<List<Album>> getAlbums(Artist artist);
 
+    Observable<List<Song>> searchForSongs(String query);
+
+    Observable<List<Artist>> searchForArtists(String query);
+
+    Observable<List<Album>> searchForAlbums(String query);
+
+    Observable<List<Genre>> searchForGenres(String query);
+
 }
