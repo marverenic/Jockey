@@ -46,8 +46,9 @@ public class CreatePlaylistDialogFragment extends DialogFragment implements Text
         return new CreatePlaylistDialogFragment();
     }
 
-    public void setSongs(List<Song> songs) {
+    public CreatePlaylistDialogFragment setSongs(List<Song> songs) {
         mSongs = songs;
+        return this;
     }
 
     public Observable<Playlist> getCreated() {

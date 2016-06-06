@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.marverenic.music.R;
+import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
 import com.marverenic.music.fragments.QueueFragment;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.PlaylistDialog;
@@ -33,6 +34,8 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class NowPlayingActivity extends BaseActivity implements GestureView.OnGestureListener {
+
+    private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
 
     private ImageView artwork;
     private GestureView artworkWrapper;
@@ -200,9 +203,8 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                 }
                 return true;
             case R.id.save:
-                PlaylistDialog.MakeNormal.alert(
-                        findViewById(R.id.imageArtwork),
-                        PlayerController.getQueue());
+                CreatePlaylistDialogFragment.newInstance().setSongs(PlayerController.getQueue())
+                        .show(getSupportFragmentManager(), TAG_MAKE_PLAYLIST);
                 return true;
             case R.id.add_to_playlist:
                 PlaylistDialog.AddToNormal.alert(
