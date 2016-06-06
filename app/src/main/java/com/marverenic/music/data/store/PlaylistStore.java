@@ -15,9 +15,9 @@ public interface PlaylistStore {
 
     Observable<List<Song>> getSongs(Playlist playlist);
 
-    void makePlaylist(String name);
+    Playlist makePlaylist(String name);
 
-    void makePlaylist(String name, @Nullable List<Song> songs);
+    Playlist makePlaylist(String name, @Nullable List<Song> songs);
 
     void removePlaylist(Playlist playlist);
 

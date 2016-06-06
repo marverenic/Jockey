@@ -81,6 +81,7 @@ dependencies {
     compile 'com.tbruyelle.rxpermissions:rxpermissions:0.7.0@aar'
     compile 'com.trello:rxlifecycle-components:0.6.1'
     compile 'com.trello:rxlifecycle:0.6.1'
+    compile 'com.jakewharton.rxrelay:rxrelay:1.1.0'
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
     compile 'com.squareup.retrofit2:adapter-rxjava:2.0.2'
