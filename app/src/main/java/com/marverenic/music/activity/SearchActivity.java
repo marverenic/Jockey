@@ -38,8 +38,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class SearchActivity extends BaseActivity implements SearchView.OnQueryTextListener,
-        Library.PlaylistChangeListener {
+public class SearchActivity extends BaseActivity implements SearchView.OnQueryTextListener {
 
     private static String lastQuery = null;
     private SearchView searchView;
@@ -352,34 +351,6 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         for (Playlist p : Library.getPlaylists()) {
             if (p.getPlaylistName().toLowerCase().contains(query)) {
                 playlistResults.add(p);
-            }
-        }
-    }
-
-    @Override
-    public void onPlaylistRemoved(Playlist removed, int index) {
-        playlistResults.remove(index);
-        if (playlistResults.isEmpty()) {
-            // Remove the header as well as the entry if there aren't any playlist results
-            adapter.notifyItemRangeRemoved(0, 2);
-        } else {
-           adapter.notifyItemRemoved(index + 1);
-        }
-    }
-
-    @Override
-    public void onPlaylistAdded(Playlist added, int index) {
-        if (lastQuery != null && !lastQuery.isEmpty()
-                && added.getPlaylistName().toLowerCase().contains(
-                lastQuery.toLowerCase().trim())) {
-            playlistResults.add(added);
-            Collections.sort(playlistResults);
-
-            if (playlistResults.size() == 1) {
-                // If we didn't have any results before, then we need to add the header as well
-                adapter.notifyItemRangeInserted(0, 2);
-            } else {
-                adapter.notifyItemInserted(playlistResults.indexOf(added));
             }
         }
     }
