@@ -43,6 +43,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.subjects.BehaviorSubject;
+
 public class SearchActivity extends BaseActivity implements SearchView.OnQueryTextListener {
 
     @Inject MusicStore mMusicStore;
@@ -50,13 +52,16 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
 
     private static String lastQuery = null;
     private SearchView searchView;
-    private HeterogeneousAdapter adapter;
+    private BehaviorSubject<String> mQueryObservable;
 
-    private final List<Playlist> playlistResults = new ArrayList<>();
-    private final List<Song> songResults = new ArrayList<>();
-    private final List<Album> albumResults = new ArrayList<>();
-    private final List<Artist> artistResults = new ArrayList<>();
-    private final List<Genre> genreResults = new ArrayList<>();
+    private RecyclerView mRecyclerView;
+    private HeterogeneousAdapter mAdapter;
+
+    private PlaylistSection mPlaylistSection;
+    private SongSection mSongSection;
+    private AlbumSection mAlbumSection;
+    private ArtistSection mArtistSection;
+    private GenreSection mGenreSection;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,23 +69,76 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         setContentView(R.layout.activity_instance);
 
         JockeyApplication.getComponent(this).inject(this);
+        mQueryObservable = BehaviorSubject.create("");
 
         // Set up the RecyclerView's adapter
-        RecyclerView list = (RecyclerView) findViewById(R.id.list);
-        adapter = new HeterogeneousAdapter()
+        mRecyclerView = (RecyclerView) findViewById(R.id.list);
+        initAdapter();
+
+        mQueryObservable
+                .flatMap(query -> mPlaylistStore.searchForPlaylists(query))
+                .compose(bindToLifecycle())
+                .subscribe(playlists -> {
+                    mPlaylistSection.setData(playlists);
+                    mAdapter.notifyDataSetChanged();
+                });
+
+        mQueryObservable
+                .flatMap(query -> mMusicStore.searchForSongs(query))
+                .compose(bindToLifecycle())
+                .subscribe(songs -> {
+                    mSongSection.setData(songs);
+                    mAdapter.notifyDataSetChanged();
+                });
+
+        mQueryObservable
+                .flatMap(query -> mMusicStore.searchForAlbums(query))
+                .compose(bindToLifecycle())
+                .subscribe(albums -> {
+                    mAlbumSection.setData(albums);
+                    mAdapter.notifyDataSetChanged();
+                });
+
+        mQueryObservable
+                .flatMap(query -> mMusicStore.searchForArtists(query))
+                .compose(bindToLifecycle())
+                .subscribe(artists -> {
+                    mArtistSection.setData(artists);
+                    mAdapter.notifyDataSetChanged();
+                });
+
+        mQueryObservable
+                .flatMap(query -> mMusicStore.searchForGenres(query))
+                .compose(bindToLifecycle())
+                .subscribe(genres -> {
+                    mGenreSection.setData(genres);
+                    mAdapter.notifyDataSetChanged();
+                });
+
+        handleIntent(getIntent());
+    }
+
+    private void initAdapter() {
+        mPlaylistSection = new PlaylistSection(Collections.emptyList());
+        mSongSection = new SongSection(Collections.emptyList());
+        mAlbumSection = new AlbumSection(Collections.emptyList());
+        mArtistSection = new ArtistSection(Collections.emptyList());
+        mGenreSection = new GenreSection(Collections.emptyList());
+
+        mAdapter = new HeterogeneousAdapter()
                 .addSection(
                         new HeaderSection(getString(R.string.header_playlists), PlaylistSection.ID))
-                .addSection(new PlaylistSection(playlistResults))
+                .addSection(mPlaylistSection)
                 .addSection(new HeaderSection(getString(R.string.header_songs), SongSection.ID))
-                .addSection(new SongSection(songResults))
+                .addSection(mSongSection)
                 .addSection(new HeaderSection(getString(R.string.header_albums), AlbumSection.ID))
-                .addSection(new AlbumSection(albumResults))
+                .addSection(mAlbumSection)
                 .addSection(new HeaderSection(getString(R.string.header_artists), ArtistSection.ID))
-                .addSection(new ArtistSection(artistResults))
+                .addSection(mArtistSection)
                 .addSection(new HeaderSection(getString(R.string.header_genres), GenreSection.ID))
-                .addSection(new GenreSection(genreResults));
+                .addSection(mGenreSection);
 
-        adapter.setEmptyState(new BasicEmptyState() {
+        mAdapter.setEmptyState(new BasicEmptyState() {
             @Override
             public String getMessage() {
                 return (lastQuery == null || lastQuery.isEmpty())
@@ -89,7 +147,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
             }
         });
 
-        list.setAdapter(adapter);
+        mRecyclerView.setAdapter(mAdapter);
 
         final int numColumns = ViewUtils.getNumberOfGridColumns(this);
 
@@ -97,25 +155,23 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                if (adapter.getItemViewType(position) == AlbumSection.ID) {
+                if (mAdapter.getItemViewType(position) == AlbumSection.ID) {
                     return 1;
                 }
                 return numColumns;
             }
         });
-        list.setLayoutManager(layoutManager);
+        mRecyclerView.setLayoutManager(layoutManager);
 
         // Add item decorations
-        list.addItemDecoration(new GridSpacingDecoration(
+        mRecyclerView.addItemDecoration(new GridSpacingDecoration(
                 (int) getResources().getDimension(R.dimen.grid_margin),
                 numColumns, AlbumSection.ID));
-        list.addItemDecoration(
+        mRecyclerView.addItemDecoration(
                 new BackgroundDecoration(Themes.getBackgroundElevated(), R.id.subheaderFrame));
-        list.addItemDecoration(
+        mRecyclerView.addItemDecoration(
                 new DividerDecoration(this,
                         R.id.albumInstance, R.id.subheaderFrame, R.id.empty_layout));
-
-        handleIntent(getIntent());
     }
 
     @Override
@@ -169,10 +225,36 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         return true;
     }
 
+    private void search(String query) {
+        if (!mQueryObservable.getValue().equals(query)) {
+            mQueryObservable.onNext(query);
+        }
+    }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         handleIntent(intent);
+    }
+
+    private List<Playlist> getPlaylistResults() {
+        return mPlaylistSection.getData();
+    }
+
+    private List<Song> getSongResults() {
+        return mSongSection.getData();
+    }
+
+    private List<Artist> getArtistResults() {
+        return mArtistSection.getData();
+    }
+
+    private List<Album> getAlbumResults() {
+        return mAlbumSection.getData();
+    }
+
+    private List<Genre> getGenreResults() {
+        return mGenreSection.getData();
     }
 
     private void handleIntent(Intent intent) {
@@ -192,14 +274,14 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 /** PLAYLISTS */
                 // If there are playlists that match this search, and either the specified focus is
                 // playlists or there are only playlist results, then play the appropriate result
-                if (!playlistResults.isEmpty()
+                if (!getPlaylistResults().isEmpty()
                         && (focus.equals(MediaStore.Audio.Playlists.ENTRY_CONTENT_TYPE)
-                        || (genreResults.isEmpty() && songResults.isEmpty()))) {
+                        || (getGenreResults().isEmpty() && getSongResults().isEmpty()))) {
 
                     // If there is a playlist with this exact name, use it, otherwise fallback
                     // to the first result
-                    Playlist playlist = playlistResults.get(0);
-                    for (Playlist p : playlistResults) {
+                    Playlist playlist = getPlaylistResults().get(0);
+                    for (Playlist p : getPlaylistResults()) {
                         if (p.getPlaylistName().equalsIgnoreCase(
                                 intent.getStringExtra(SearchManager.QUERY))) {
                             playlist = p;
@@ -210,14 +292,14 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                     PlayerController.begin();
                 }
                 /** ARTISTS **/
-                else if (!artistResults.isEmpty()
+                else if (!getArtistResults().isEmpty()
                         && focus.equals(MediaStore.Audio.Artists.ENTRY_CONTENT_TYPE)) {
                     // If one or more artists with this name exist, play songs by all of them
                     // (Ideally this only includes collaborating artists and keeps
                     // the search relevant)
-                    if (!artistResults.isEmpty()) {
+                    if (!getArtistResults().isEmpty()) {
                         ArrayList<Song> songs = new ArrayList<>();
-                        for (Artist a : artistResults) {
+                        for (Artist a : getArtistResults()) {
                             songs.addAll(Library.getArtistSongEntries(a));
                         }
 
@@ -226,13 +308,13 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                     }
                 }
                 /** ALBUMS */
-                else if (!albumResults.isEmpty()
+                else if (!getAlbumResults().isEmpty()
                         && focus.equals(MediaStore.Audio.Albums.ENTRY_CONTENT_TYPE)) {
-                    if (!albumResults.isEmpty()) {
+                    if (!getAlbumResults().isEmpty()) {
                         // If albums with this name exist, look for an exact match
                         // If we find one then use it, otherwise fallback to the first result
-                        Album album = albumResults.get(0);
-                        for (Album a : albumResults) {
+                        Album album = getAlbumResults().get(0);
+                        for (Album a : getAlbumResults()) {
                             if (a.getAlbumName().equalsIgnoreCase(
                                     intent.getStringExtra(SearchManager.QUERY))) {
                                 album = a;
@@ -244,15 +326,15 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                     }
                 }
                 /** GENRES */
-                else if (!genreResults.isEmpty()
+                else if (!getGenreResults().isEmpty()
                         && (focus.equals(MediaStore.Audio.Genres.ENTRY_CONTENT_TYPE)
-                        || songResults.isEmpty())) {
+                        || getSongResults().isEmpty())) {
 
-                    if (!genreResults.isEmpty()) {
+                    if (!getGenreResults().isEmpty()) {
                         // If genres with this name exist, look for an exact match
                         // If we find one then use it, otherwise fallback to the first result
-                        Genre genre = genreResults.get(0);
-                        for (Genre g : genreResults) {
+                        Genre genre = getGenreResults().get(0);
+                        for (Genre g : getGenreResults()) {
                             if (g.getGenreName().equalsIgnoreCase(
                                     intent.getStringExtra(SearchManager.QUERY))) {
                                 genre = g;
@@ -267,100 +349,11 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 // If we can't figure out what's going on (And I can understand why) or if
                 // the focus is songs, then just play all of the song results
                 else {
-                    if (!songResults.isEmpty()) {
-                        PlayerController.setQueue(songResults, 0);
+                    if (!getSongResults().isEmpty()) {
+                        PlayerController.setQueue(getSongResults(), 0);
                         PlayerController.begin();
                     }
                 }
-            }
-        }
-    }
-
-    public void search(CharSequence searchInput) {
-        String query = searchInput.toString().trim().toLowerCase();
-        lastQuery = searchInput.toString();
-
-        clearAll();
-
-        if (!query.isEmpty()) {
-            searchAlbums(query);
-            searchArtists(query);
-            searchGenres(query);
-            searchSongs(query);
-            searchPlaylists(query);
-        }
-
-        adapter.notifyDataSetChanged();
-    }
-
-    private void clearAll() {
-        albumResults.clear();
-        artistResults.clear();
-        genreResults.clear();
-        songResults.clear();
-        playlistResults.clear();
-    }
-
-    private void searchAlbums(String query) {
-        for (Album a : Library.getAlbums()) {
-            if (a.getAlbumName().toLowerCase().contains(query)
-                    || a.getArtistName().toLowerCase().contains(query)) {
-                albumResults.add(a);
-            }
-        }
-    }
-
-    private void searchArtists(String query) {
-        for (Artist a : Library.getArtists()) {
-            if (a.getArtistName().toLowerCase().contains(query)) {
-                artistResults.add(a);
-            }
-        }
-    }
-
-    private void searchGenres(String query) {
-        for (Genre g : Library.getGenres()) {
-            if (g.getGenreName().toLowerCase().contains(query)) {
-                genreResults.add(g);
-            }
-        }
-    }
-
-    private void searchSongs(String query) {
-        for (Song s : Library.getSongs()) {
-            if (s.getSongName().toLowerCase().contains(query)
-                    || s.getArtistName().toLowerCase().contains(query)
-                    || s.getAlbumName().toLowerCase().contains(query)) {
-                songResults.add(s);
-
-                if (s.getGenreId() != -1) {
-                    Genre currGenre = Library.findGenreById(s.getGenreId());
-                    if (currGenre != null && !genreResults.contains(currGenre)) {
-                        genreResults.add(currGenre);
-                    }
-                }
-
-                Album currAlbum = Library.findAlbumById(s.getAlbumId());
-                if (currAlbum != null && !albumResults.contains(currAlbum)) {
-                    albumResults.add(currAlbum);
-                }
-
-                Artist currArtist = Library.findArtistById(s.getArtistId());
-                if (currArtist != null && !artistResults.contains(currArtist)) {
-                    artistResults.add(currArtist);
-                }
-            }
-        }
-
-        Collections.sort(genreResults);
-        Collections.sort(albumResults);
-        Collections.sort(artistResults);
-    }
-
-    private void searchPlaylists(String query) {
-        for (Playlist p : Library.getPlaylists()) {
-            if (p.getPlaylistName().toLowerCase().contains(query)) {
-                playlistResults.add(p);
             }
         }
     }
