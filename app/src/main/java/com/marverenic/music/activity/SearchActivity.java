@@ -11,7 +11,6 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
@@ -26,6 +25,7 @@ import com.marverenic.music.instances.section.GenreSection;
 import com.marverenic.music.instances.section.HeaderSection;
 import com.marverenic.music.instances.section.PlaylistSection;
 import com.marverenic.music.instances.section.SongSection;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
@@ -107,18 +107,6 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                         R.id.albumInstance, R.id.subheaderFrame, R.id.empty_layout));
 
         handleIntent(getIntent());
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Library.addPlaylistListener(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Library.removePlaylistListener(this);
     }
 
     @Override

@@ -37,11 +37,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 @Deprecated
 public final class Library {
@@ -130,96 +128,6 @@ public final class Library {
     }
 
     //
-    //          LIBRARY LISTENERS
-    //
-
-    // Since it's important to know when the Library has entries added or removed so we can update
-    // the UI accordingly, associate listeners to receive callbacks for such events. These listeners
-    // will get called only when entries are added or removed -- not changed. This lets us do a lot
-    // of things on the UI like adding and removing playlists without having to create the
-    // associated Snackbars, AlertDialogs, etc. and is slightly cleaner than passing a callback as a
-    // parameter to methods that cause such changes since we don't have to instantiate
-    // a single-use Object.
-
-    private static Set<PlaylistChangeListener> sPlaylistChangeListeners = new HashSet<>();
-    private static Set<LibraryRefreshListener> sRefreshListeners = new HashSet<>();
-
-    public interface PlaylistChangeListener {
-        void onPlaylistRemoved(Playlist removed, int index);
-        void onPlaylistAdded(Playlist added, int index);
-    }
-
-    public interface LibraryRefreshListener {
-        void onLibraryRefreshed();
-    }
-
-    /**
-     * In certain cases like in {@link com.marverenic.music.fragments.PlaylistFragment}, editing the
-     * library can break a lot of things if not done carefully. (i.e. if
-     * {@link android.support.v7.widget.RecyclerView.Adapter#notifyDataSetChanged()} (or similar)
-     * isn't called after adding a playlist, then the UI process can throw an exception and crash)
-     *
-     * If this is the case, call this method to set a callback whenever the library gets updated
-     * (Not all library update calls will be relevant to the context, but better safe than sorry).
-     *
-     * <b>When using this method MAKE SURE TO CALL
-     * {@link Library#removePlaylistListener(PlaylistChangeListener)} WHEN THE ACTIVITY PAUSES --
-     * OTHERWISE YOU WILL CAUSE A LEAK.</b>
-     *
-     * @param listener A {@link PlaylistChangeListener} to act as a callback
-     *                 when the library is changed in any way
-     */
-    public static void addPlaylistListener(PlaylistChangeListener listener) {
-        sPlaylistChangeListeners.add(listener);
-    }
-
-    public static void addRefreshListener(LibraryRefreshListener listener) {
-        sRefreshListeners.add(listener);
-    }
-
-    /**
-     * Remove a {@link PlaylistChangeListener} previously added to listen
-     * for library updates.
-     * @param listener A {@link PlaylistChangeListener} currently registered
-     *                 to recieve a callback when the library gets modified. If it's not already
-     *                 registered, then nothing will happen.
-     */
-    public static void removePlaylistListener(PlaylistChangeListener listener) {
-        sPlaylistChangeListeners.remove(listener);
-    }
-
-    public static void removeRefreshListener(LibraryRefreshListener listener) {
-        sRefreshListeners.remove(listener);
-    }
-
-    /**
-     * Private method for notifying registered {@link PlaylistChangeListener}s
-     * that the library has lost an entry. (Changing entries doesn't matter)
-     */
-    private static void notifyPlaylistRemoved(Playlist removed, int index) {
-        for (PlaylistChangeListener l : sPlaylistChangeListeners) {
-            l.onPlaylistRemoved(removed, index);
-        }
-    }
-
-    /**
-     * Private method for notifying registered {@link PlaylistChangeListener}s
-     * that the library has gained an entry. (Changing entries doesn't matter)
-     */
-    private static void notifyPlaylistAdded(Playlist added) {
-        int index = playlistLib.indexOf(added);
-        for (PlaylistChangeListener l : sPlaylistChangeListeners) {
-            l.onPlaylistAdded(added, index);
-        }
-    }
-
-    private static void notifyLibraryRefreshed() {
-        for (LibraryRefreshListener l : sRefreshListeners) {
-            l.onLibraryRefreshed();
-        }
-    }
-
-    //
     //          PERMISSION METHODS
     //
 
@@ -269,7 +177,6 @@ public final class Library {
             setAlbumLib(scanAlbums(activity));
             setGenreLib(scanGenres(activity));
             sort();
-            notifyLibraryRefreshed();
 
             // If the user permits it, log info about the size of their library
             if (Prefs.allowAnalytics(activity)) {
@@ -693,20 +600,6 @@ public final class Library {
     }
 
     /**
-     * Finds a {@link Playlist} in the library based on its ID
-     * @param playlistId The MediaStore ID of the {@link Playlist}
-     * @return A {@link Playlist} with a matching ID
-     */
-    public static Playlist findPlaylistById(long playlistId) {
-        for (Playlist p : playlistLib) {
-            if (p.getPlaylistId() == playlistId) {
-                return p;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Finds a {@link Genre} in a library based on its Id
      * @param genreId the MediaStore Id of the {@link Genre}
      * @return A {@link Genre} with a matching Id
@@ -805,23 +698,6 @@ public final class Library {
         }
 
         return songEntries;
-    }
-
-    /**
-     * Get a list of albums by a certain artist
-     * @param artist The {@link Artist} to get the entries of
-     * @return An {@link ArrayList} of {@link Album}s by the artist
-     */
-    public static ArrayList<Album> getArtistAlbumEntries(Artist artist) {
-        ArrayList<Album> albumEntries = new ArrayList<>();
-
-        for (Album a : albumLib) {
-            if (a.getArtistId() == artist.getArtistId()) {
-                albumEntries.add(a);
-            }
-        }
-
-        return albumEntries;
     }
 
     /**
@@ -1293,7 +1169,6 @@ public final class Library {
         final Playlist added = makePlaylist(context, playlistName, songList);
         playlistLib.add(added);
         Collections.sort(playlistLib);
-        notifyPlaylistAdded(added);
         return added;
     }
 
@@ -1387,7 +1262,6 @@ public final class Library {
         playlistLib.clear();
         setPlaylistLib(scanPlaylists(context));
         Collections.sort(playlistLib);
-        notifyPlaylistRemoved(playlist, index);
     }
 
     /**
@@ -1500,7 +1374,6 @@ public final class Library {
             // Add the playlist to the library and resort the playlist library
             playlistLib.add(playlist);
             Collections.sort(playlistLib);
-            notifyPlaylistAdded(playlist);
         } catch (IOException e) {
             Crashlytics.logException(e);
         }
