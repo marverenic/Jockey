@@ -20,10 +20,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.marverenic.music.R;
+import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
 import com.marverenic.music.fragments.QueueFragment;
 import com.marverenic.music.instances.Library;
-import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.PlayerController;
@@ -36,6 +36,7 @@ import java.util.ArrayList;
 public class NowPlayingActivity extends BaseActivity implements GestureView.OnGestureListener {
 
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
+    private static final String TAG_APPEND_PLAYLIST = "AppendPlaylistDialog";
 
     private ImageView artwork;
     private GestureView artworkWrapper;
@@ -207,10 +208,10 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                         .show(getSupportFragmentManager(), TAG_MAKE_PLAYLIST);
                 return true;
             case R.id.add_to_playlist:
-                PlaylistDialog.AddToNormal.alert(
-                        findViewById(R.id.imageArtwork),
-                        PlayerController.getQueue(),
-                        R.string.header_add_queue_to_playlist);
+                AppendPlaylistDialogFragment.newInstance()
+                        .setTitle(getString(R.string.header_add_queue_to_playlist))
+                        .setSongs(PlayerController.getQueue())
+                        .show(getSupportFragmentManager(), TAG_APPEND_PLAYLIST);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

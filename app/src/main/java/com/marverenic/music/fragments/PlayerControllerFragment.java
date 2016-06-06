@@ -21,21 +21,23 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
+import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Library;
-import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.instances.Song;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.TimeView;
 
 public class PlayerControllerFragment extends Fragment implements PlayerController.UpdateListener,
         View.OnClickListener, PopupMenu.OnMenuItemClickListener, SeekBar.OnSeekBarChangeListener {
+
+    private static final String TAG_APPEND_PLAYLIST = "AppendPlaylistDialog";
 
     private TextView songTitle;
     private TextView songArtist;
@@ -184,12 +186,11 @@ public class PlayerControllerFragment extends Fragment implements PlayerControll
                 Navigate.to(getContext(), AlbumActivity.class, AlbumActivity.ALBUM_EXTRA, album);
                 return true;
             case 2: //Add to playlist
-                PlaylistDialog.AddToNormal.alert(
-                        getView(),
-                        nowPlaying,
-                        getString(
-                                R.string.header_add_song_name_to_playlist,
-                                nowPlaying.getSongName()));
+                AppendPlaylistDialogFragment.newInstance()
+                        .setTitle(getString(R.string.header_add_song_name_to_playlist,
+                                nowPlaying.getSongName()))
+                        .setSong(nowPlaying)
+                        .show(getFragmentManager(), TAG_APPEND_PLAYLIST);
                 return true;
         }
         return false;
