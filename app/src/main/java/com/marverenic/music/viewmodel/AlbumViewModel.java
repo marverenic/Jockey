@@ -35,6 +35,8 @@ import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.view.ViewUtils;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AlbumViewModel extends BaseObservable {
 
@@ -210,9 +212,15 @@ public class AlbumViewModel extends BaseObservable {
 
     private static class PaletteListener implements RequestListener<File, GlideDrawable> {
 
+        private static Map<File, Palette.Swatch> sColorMap;
+
         private ObservableInt mTitleTextColor;
         private ObservableInt mArtistTextColor;
         private ObservableInt mBackgroundColor;
+
+        static {
+            sColorMap = new HashMap<>();
+        }
 
         public PaletteListener(ObservableInt title, ObservableInt artist,
                                ObservableInt background) {
@@ -232,14 +240,27 @@ public class AlbumViewModel extends BaseObservable {
                                        Target<GlideDrawable> target, boolean isFromMemoryCache,
                                        boolean isFirstResource) {
 
-            Palette.from(ViewUtils.drawableToBitmap(resource)).generate(palette -> {
+            if (sColorMap.containsKey(model)) {
+                Palette.Swatch swatch = sColorMap.get(model);
                 if (isFromMemoryCache) {
-                    setSwatch(pickSwatch(palette));
+                    setSwatch(swatch);
                 } else {
-                    animateSwatch(pickSwatch(palette));
+                    animateSwatch(swatch);
                 }
-            });
+            } else {
+                generateSwatch(model, resource);
+            }
+
             return false;
+        }
+
+        private void generateSwatch(File source, Drawable image) {
+            Palette.from(ViewUtils.drawableToBitmap(image)).generate(palette -> {
+                Palette.Swatch swatch = pickSwatch(palette);
+
+                sColorMap.put(source, swatch);
+                animateSwatch(swatch);
+            });
         }
 
         private void setSwatch(Palette.Swatch swatch) {
