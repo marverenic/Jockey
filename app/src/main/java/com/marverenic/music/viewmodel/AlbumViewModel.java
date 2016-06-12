@@ -1,5 +1,7 @@
 package com.marverenic.music.viewmodel;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.databinding.BaseObservable;
@@ -7,6 +9,7 @@ import android.databinding.ObservableField;
 import android.databinding.ObservableInt;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.support.annotation.ColorInt;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.PopupMenu;
@@ -250,7 +253,19 @@ public class AlbumViewModel extends BaseObservable {
         }
 
         private void animateSwatch(Palette.Swatch swatch) {
-            setSwatch(swatch);
+            if (swatch == null) {
+                return;
+            }
+
+            animateColorValue(mBackgroundColor, swatch.getRgb());
+            animateColorValue(mTitleTextColor, swatch.getTitleTextColor());
+            animateColorValue(mArtistTextColor, swatch.getBodyTextColor());
+        }
+
+        private void animateColorValue(ObservableInt target, @ColorInt int toColor) {
+            ObjectAnimator.ofObject(target, "", new ArgbEvaluator(), target.get(), toColor)
+                    .setDuration(300)
+                    .start();
         }
 
         private Palette.Swatch pickSwatch(Palette palette) {
