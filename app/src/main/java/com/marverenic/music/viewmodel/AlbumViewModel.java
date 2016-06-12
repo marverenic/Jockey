@@ -4,6 +4,7 @@ import android.content.Context;
 import android.databinding.BaseObservable;
 import android.databinding.ObservableField;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.Gravity;
@@ -47,8 +48,7 @@ public class AlbumViewModel extends BaseObservable {
         Glide.with(mContext)
                 .load(new File(mAlbum.getArtUri()))
                 .placeholder(R.drawable.art_default)
-                .animate(android.R.anim.fade_in)
-                .crossFade()
+                .error(R.drawable.art_default)
                 .into(new ObservableTarget(imageSize, mArtistImage));
 
         notifyChange();
@@ -130,6 +130,25 @@ public class AlbumViewModel extends BaseObservable {
         @Override
         public void onResourceReady(GlideDrawable resource,
                                     GlideAnimation<? super GlideDrawable> glideAnimation) {
+
+            Drawable start = mTarget.get();
+
+            if (start != null) {
+                setDrawableWithFade(start, resource);
+            } else {
+                setDrawable(resource);
+            }
+        }
+
+        private void setDrawableWithFade(Drawable start, Drawable end) {
+            TransitionDrawable transition = new TransitionDrawable(new Drawable[]{start, end});
+            transition.setCrossFadeEnabled(true);
+            transition.startTransition(300);
+
+            setDrawable(transition);
+        }
+
+        private void setDrawable(Drawable resource) {
             mTarget.set(resource);
         }
     }
