@@ -1,45 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/songInstance"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/list_height"
-    android:layout_centerVertical="true"
-    android:background="?selectableItemBackground"
-    android:gravity="center">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <data>
+        <variable name="viewModel" type="com.marverenic.music.viewmodel.SongViewModel"/>
+    </data>
 
-    <TextView
-        android:id="@+id/instanceTitle"
-        style="@style/listTitleText"
+    <RelativeLayout
+        android:id="@+id/songInstance"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/instanceMore"
-        android:layout_toStartOf="@id/instanceMore"
-        android:ellipsize="end"
-        android:singleLine="true" />
+        android:layout_height="@dimen/list_height"
+        android:background="?selectableItemBackground"
+        android:gravity="center"
+        android:onClick="@{viewModel.onClickSong}">
 
-    <TextView
-        android:id="@+id/instanceDetail"
-        style="@style/listDetailText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/instanceTitle"
-        android:layout_toLeftOf="@id/instanceMore"
-        android:layout_toStartOf="@id/instanceMore"
-        android:ellipsize="end"
-        android:singleLine="true" />
+        <TextView
+            android:id="@+id/instanceTitle"
+            style="@style/listTitleText"
+            android:text="@{viewModel.title}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/instanceMore"
+            android:layout_toStartOf="@id/instanceMore"
+            android:ellipsize="end"
+            android:singleLine="true" />
 
-    <ImageView
-        android:id="@+id/instanceMore"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:scaleType="center"
-        android:src="@drawable/ic_menu_24dp"
-        android:tint="?textColorPrimary"
-        android:background="?selectableItemBackgroundBorderless"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignBottom="@id/instanceDetail" />
+        <TextView
+            android:id="@+id/instanceDetail"
+            style="@style/listDetailText"
+            android:text="@{viewModel.detail}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/instanceTitle"
+            android:layout_toLeftOf="@id/instanceMore"
+            android:layout_toStartOf="@id/instanceMore"
+            android:ellipsize="end"
+            android:singleLine="true" />
 
-</RelativeLayout>
+        <ImageView
+            android:id="@+id/instanceMore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:scaleType="center"
+            android:src="@drawable/ic_menu_24dp"
+            android:tint="?textColorPrimary"
+            android:background="?selectableItemBackgroundBorderless"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignBottom="@id/instanceDetail"
+            android:onClick="@{viewModel.onClickMenu}"/>
+
+    </RelativeLayout>
+
+</layout>

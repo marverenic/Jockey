@@ -1,70 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/albumInstance"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:foreground="?android:attr/selectableItemBackground"
-    android:background="@color/grid_background_default">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <RelativeLayout
+    <data>
+        <variable name="viewModel" type="com.marverenic.music.viewmodel.AlbumViewModel" />
+    </data>
+
+    <FrameLayout
+        android:id="@+id/albumInstance"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <com.marverenic.music.view.SquareImageViewH
-            android:id="@+id/instanceArt"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_margin="0dp"
-            android:contentDescription="@string/description_album_art"
-            android:background="@android:color/black"
-            android:src="@drawable/art_default" />
+        android:foreground="?android:attr/selectableItemBackground"
+        android:background="@{viewModel.backgroundColor}"
+        android:onClick="@{viewModel.onClickAlbum()}">
 
         <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="68dp"
-            android:paddingLeft="@dimen/grid_padding"
-            android:layout_below="@id/instanceArt">
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/instanceMore"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/grid_padding"
-                android:scaleType="center"
-                android:src="@drawable/ic_menu_24dp"
-                android:background="?selectableItemBackgroundBorderless"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true" />
-
-            <TextView
-                android:id="@+id/instanceTitle"
-                style="@style/gridTitleText"
-                android:layout_alignParentTop="true"
-                android:paddingTop="@dimen/grid_padding"
+            <com.marverenic.music.view.SquareImageViewH
+                android:id="@+id/instanceArt"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:layout_toLeftOf="@id/instanceMore"
-                android:layout_toStartOf="@id/instanceMore"
-                android:text="Album" />
+                android:layout_height="fill_parent"
+                android:layout_margin="0dp"
+                android:contentDescription="@string/description_album_art"
+                android:background="@android:color/black"
+                android:src="@{viewModel.artistImage}" />
 
-            <TextView
-                android:id="@+id/instanceDetail"
-                style="@style/gridDetailText"
-                android:layout_alignParentBottom="true"
-                android:paddingBottom="@dimen/grid_padding"
+            <RelativeLayout
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:layout_toLeftOf="@id/instanceMore"
-                android:layout_toStartOf="@+id/instanceMore"
-                android:text="Artist" />
+                android:layout_height="68dp"
+                android:paddingLeft="@dimen/grid_padding"
+                android:paddingStart="@dimen/grid_padding"
+                android:layout_below="@id/instanceArt">
 
+                <ImageView
+                    android:id="@+id/instanceMore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/grid_padding"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_menu_24dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:onClick="@{viewModel.onClickMenu()}" />
+
+                <TextView
+                    android:id="@+id/instanceTitle"
+                    style="@style/gridTitleText"
+                    android:textColor="@{viewModel.titleTextColor}"
+                    android:text="@{viewModel.albumTitle}"
+                    android:layout_alignParentTop="true"
+                    android:paddingTop="@dimen/grid_padding"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:layout_toLeftOf="@id/instanceMore"
+                    android:layout_toStartOf="@id/instanceMore" />
+
+                <TextView
+                    android:id="@+id/instanceDetail"
+                    style="@style/gridDetailText"
+                    android:textColor="@{viewModel.artistTextColor}"
+                    android:text="@{viewModel.albumArtist}"
+                    android:layout_alignParentBottom="true"
+                    android:paddingBottom="@dimen/grid_padding"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:layout_toLeftOf="@id/instanceMore"
+                    android:layout_toStartOf="@+id/instanceMore" />
+
+            </RelativeLayout>
         </RelativeLayout>
-    </RelativeLayout>
-</FrameLayout>
+    </FrameLayout>
+
+</layout>
