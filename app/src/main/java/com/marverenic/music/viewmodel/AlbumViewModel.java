@@ -43,14 +43,13 @@ public class AlbumViewModel extends BaseObservable {
         mArtistImage = new ObservableField<>();
 
         int imageSize = mContext.getResources().getDimensionPixelSize(R.dimen.grid_width);
-        ObservableTarget mTarget = new ObservableTarget(imageSize, mArtistImage);
 
         Glide.with(mContext)
                 .load(new File(mAlbum.getArtUri()))
                 .placeholder(R.drawable.art_default)
                 .animate(android.R.anim.fade_in)
                 .crossFade()
-                .into(mTarget);
+                .into(new ObservableTarget(imageSize, mArtistImage));
 
         notifyChange();
     }
