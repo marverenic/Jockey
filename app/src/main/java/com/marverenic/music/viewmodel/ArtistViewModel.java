@@ -28,6 +28,7 @@ public class ArtistViewModel extends BaseObservable {
 
     public void setArtist(Artist artist) {
         mArtist = artist;
+        notifyChange();
     }
 
     public String getName() {
