@@ -8,6 +8,7 @@ import android.databinding.ObservableInt;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.Gravity;
@@ -16,8 +17,10 @@ import android.view.View;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
@@ -26,6 +29,7 @@ import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
+import com.marverenic.music.view.ViewUtils;
 
 import java.io.File;
 
@@ -43,24 +47,27 @@ public class AlbumViewModel extends BaseObservable {
 
     public AlbumViewModel(Context context) {
         mContext = context;
-
-        mTitleTextColor = new ObservableInt();
-        mArtistTextColor = new ObservableInt();
-        mBackgroundColor = new ObservableInt();
     }
 
     public void setAlbum(Album album) {
         mAlbum = album;
+
         mArtistImage = new ObservableField<>();
+        mTitleTextColor = new ObservableInt();
+        mArtistTextColor = new ObservableInt();
+        mBackgroundColor = new ObservableInt();
+
         defaultColors();
 
-        int imageSize = mContext.getResources().getDimensionPixelSize(R.dimen.grid_width);
-
         if (mAlbum.getArtUri() != null) {
+            int imageSize = mContext.getResources().getDimensionPixelSize(R.dimen.grid_width);
+
             Glide.with(mContext)
                     .load(new File(mAlbum.getArtUri()))
                     .placeholder(R.drawable.art_default)
                     .error(R.drawable.art_default)
+                    .listener(new PaletteListener(mTitleTextColor, mArtistTextColor,
+                            mBackgroundColor))
                     .into(new ObservableTarget(imageSize, mArtistImage));
         } else {
             Drawable fallback = ResourcesCompat.getDrawable(mContext.getResources(),
@@ -195,6 +202,74 @@ public class AlbumViewModel extends BaseObservable {
 
         private void setDrawable(Drawable resource) {
             mTarget.set(resource);
+        }
+    }
+
+    private static class PaletteListener implements RequestListener<File, GlideDrawable> {
+
+        private ObservableInt mTitleTextColor;
+        private ObservableInt mArtistTextColor;
+        private ObservableInt mBackgroundColor;
+
+        public PaletteListener(ObservableInt title, ObservableInt artist,
+                               ObservableInt background) {
+            mTitleTextColor = title;
+            mArtistTextColor = artist;
+            mBackgroundColor = background;
+        }
+
+        @Override
+        public boolean onException(Exception e, File model, Target<GlideDrawable> target,
+                                   boolean isFirstResource) {
+            return false;
+        }
+
+        @Override
+        public boolean onResourceReady(GlideDrawable resource, File model,
+                                       Target<GlideDrawable> target, boolean isFromMemoryCache,
+                                       boolean isFirstResource) {
+
+            Palette.from(ViewUtils.drawableToBitmap(resource)).generate(palette -> {
+                if (isFromMemoryCache) {
+                    setSwatch(pickSwatch(palette));
+                } else {
+                    animateSwatch(pickSwatch(palette));
+                }
+            });
+            return false;
+        }
+
+        private void setSwatch(Palette.Swatch swatch) {
+            if (swatch == null) {
+                return;
+            }
+
+            mBackgroundColor.set(swatch.getRgb());
+            mTitleTextColor.set(swatch.getTitleTextColor());
+            mArtistTextColor.set(swatch.getBodyTextColor());
+        }
+
+        private void animateSwatch(Palette.Swatch swatch) {
+            setSwatch(swatch);
+        }
+
+        private Palette.Swatch pickSwatch(Palette palette) {
+            if (palette.getVibrantSwatch() != null) {
+                return palette.getVibrantSwatch();
+            }
+            if (palette.getLightVibrantSwatch() != null) {
+                return palette.getLightVibrantSwatch();
+            }
+            if (palette.getDarkVibrantSwatch() != null) {
+                return palette.getDarkVibrantSwatch();
+            }
+            if (palette.getLightMutedSwatch() != null) {
+                return palette.getLightMutedSwatch();
+            }
+            if (palette.getDarkMutedSwatch() != null) {
+                return palette.getDarkMutedSwatch();
+            }
+            return null;
         }
     }
 }
