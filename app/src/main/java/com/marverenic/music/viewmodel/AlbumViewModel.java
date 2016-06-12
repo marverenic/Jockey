@@ -45,11 +45,13 @@ public class AlbumViewModel extends BaseObservable {
 
         int imageSize = mContext.getResources().getDimensionPixelSize(R.dimen.grid_width);
 
-        Glide.with(mContext)
-                .load(new File(mAlbum.getArtUri()))
-                .placeholder(R.drawable.art_default)
-                .error(R.drawable.art_default)
-                .into(new ObservableTarget(imageSize, mArtistImage));
+        if (mAlbum.getArtUri() != null) {
+            Glide.with(mContext)
+                    .load(new File(mAlbum.getArtUri()))
+                    .placeholder(R.drawable.art_default)
+                    .error(R.drawable.art_default)
+                    .into(new ObservableTarget(imageSize, mArtistImage));
+        }
 
         notifyChange();
     }
