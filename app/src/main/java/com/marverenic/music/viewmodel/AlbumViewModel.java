@@ -33,7 +33,6 @@ public class AlbumViewModel extends BaseObservable {
     private Album mAlbum;
 
     private ObservableField<Drawable> mArtistImage;
-    private ObservableTarget mTarget;
 
     public AlbumViewModel(Context context) {
         mContext = context;
@@ -44,7 +43,7 @@ public class AlbumViewModel extends BaseObservable {
         mArtistImage = new ObservableField<>();
 
         int imageSize = mContext.getResources().getDimensionPixelSize(R.dimen.grid_width);
-        mTarget = new ObservableTarget(imageSize, mArtistImage);
+        ObservableTarget mTarget = new ObservableTarget(imageSize, mArtistImage);
 
         Glide.with(mContext)
                 .load(new File(mAlbum.getArtUri()))
