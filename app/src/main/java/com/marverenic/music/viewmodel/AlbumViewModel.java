@@ -5,6 +5,7 @@ import android.databinding.BaseObservable;
 import android.databinding.ObservableField;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.Gravity;
@@ -51,6 +52,11 @@ public class AlbumViewModel extends BaseObservable {
                     .placeholder(R.drawable.art_default)
                     .error(R.drawable.art_default)
                     .into(new ObservableTarget(imageSize, mArtistImage));
+        } else {
+            Drawable fallback = ResourcesCompat.getDrawable(mContext.getResources(),
+                    R.drawable.art_default, mContext.getTheme());
+
+            mArtistImage.set(fallback);
         }
 
         notifyChange();
