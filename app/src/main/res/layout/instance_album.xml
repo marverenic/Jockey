@@ -26,7 +26,7 @@
                 android:layout_margin="0dp"
                 android:contentDescription="@string/description_album_art"
                 android:background="@android:color/black"
-                android:src="@drawable/art_default" />
+                android:src="@{viewModel.artistImage}" />
 
             <RelativeLayout
                 android:layout_width="fill_parent"

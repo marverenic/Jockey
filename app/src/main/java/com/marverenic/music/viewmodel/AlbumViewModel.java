@@ -2,11 +2,18 @@ package com.marverenic.music.viewmodel;
 
 import android.content.Context;
 import android.databinding.BaseObservable;
+import android.databinding.ObservableField;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.PopupMenu;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
@@ -16,10 +23,17 @@ import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
 
+import java.io.File;
+
 public class AlbumViewModel extends BaseObservable {
+
+    private static final String TAG = "AlbumViewModel";
 
     private Context mContext;
     private Album mAlbum;
+
+    private ObservableField<Drawable> mArtistImage;
+    private ObservableTarget mTarget;
 
     public AlbumViewModel(Context context) {
         mContext = context;
@@ -27,6 +41,18 @@ public class AlbumViewModel extends BaseObservable {
 
     public void setAlbum(Album album) {
         mAlbum = album;
+        mArtistImage = new ObservableField<>();
+
+        int imageSize = mContext.getResources().getDimensionPixelSize(R.dimen.grid_width);
+        mTarget = new ObservableTarget(imageSize, mArtistImage);
+
+        Glide.with(mContext)
+                .load(new File(mAlbum.getArtUri()))
+                .placeholder(R.drawable.art_default)
+                .animate(android.R.anim.fade_in)
+                .crossFade()
+                .into(mTarget);
+
         notifyChange();
     }
 
@@ -36,6 +62,10 @@ public class AlbumViewModel extends BaseObservable {
 
     public String getAlbumArtist() {
         return mAlbum.getArtistName();
+    }
+
+    public ObservableField<Drawable> getArtistImage() {
+        return mArtistImage;
     }
 
     public View.OnClickListener onClickAlbum() {
@@ -77,5 +107,32 @@ public class AlbumViewModel extends BaseObservable {
             }
             return false;
         };
+    }
+
+    private static class ObservableTarget extends SimpleTarget<GlideDrawable> {
+
+        private ObservableField<Drawable> mTarget;
+
+        public ObservableTarget(int size, ObservableField<Drawable> target) {
+            super(size, size);
+            mTarget = target;
+        }
+
+        @Override
+        public void onLoadStarted(Drawable placeholder) {
+            mTarget.set(placeholder);
+        }
+
+        @Override
+        public void onLoadFailed(Exception e, Drawable errorDrawable) {
+            mTarget.set(errorDrawable);
+            Log.e(TAG, "failed to load thumbnail", e);
+        }
+
+        @Override
+        public void onResourceReady(GlideDrawable resource,
+                                    GlideAnimation<? super GlideDrawable> glideAnimation) {
+            mTarget.set(resource);
+        }
     }
 }
