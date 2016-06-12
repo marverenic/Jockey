@@ -10,7 +10,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:foreground="?android:attr/selectableItemBackground"
-        android:background="@color/grid_background_default"
+        android:background="@{viewModel.backgroundColor}"
         android:onClick="@{viewModel.onClickAlbum()}">
 
         <RelativeLayout
@@ -51,6 +51,7 @@
                 <TextView
                     android:id="@+id/instanceTitle"
                     style="@style/gridTitleText"
+                    android:textColor="@{viewModel.titleTextColor}"
                     android:text="@{viewModel.albumTitle}"
                     android:layout_alignParentTop="true"
                     android:paddingTop="@dimen/grid_padding"
@@ -64,6 +65,7 @@
                 <TextView
                     android:id="@+id/instanceDetail"
                     style="@style/gridDetailText"
+                    android:textColor="@{viewModel.artistTextColor}"
                     android:text="@{viewModel.albumArtist}"
                     android:layout_alignParentBottom="true"
                     android:paddingBottom="@dimen/grid_padding"

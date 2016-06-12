@@ -1,8 +1,10 @@
 package com.marverenic.music.viewmodel;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.databinding.BaseObservable;
 import android.databinding.ObservableField;
+import android.databinding.ObservableInt;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.support.v4.content.res.ResourcesCompat;
@@ -35,14 +37,22 @@ public class AlbumViewModel extends BaseObservable {
     private Album mAlbum;
 
     private ObservableField<Drawable> mArtistImage;
+    private ObservableInt mTitleTextColor;
+    private ObservableInt mArtistTextColor;
+    private ObservableInt mBackgroundColor;
 
     public AlbumViewModel(Context context) {
         mContext = context;
+
+        mTitleTextColor = new ObservableInt();
+        mArtistTextColor = new ObservableInt();
+        mBackgroundColor = new ObservableInt();
     }
 
     public void setAlbum(Album album) {
         mAlbum = album;
         mArtistImage = new ObservableField<>();
+        defaultColors();
 
         int imageSize = mContext.getResources().getDimensionPixelSize(R.dimen.grid_width);
 
@@ -62,6 +72,21 @@ public class AlbumViewModel extends BaseObservable {
         notifyChange();
     }
 
+    private void defaultColors() {
+        defaultColors(mContext, mTitleTextColor, mArtistTextColor, mBackgroundColor);
+    }
+
+    private static void defaultColors(Context context, ObservableInt title, ObservableInt artist,
+                                      ObservableInt background) {
+
+        Resources res = context.getResources();
+        Resources.Theme theme = context.getTheme();
+
+        title.set(ResourcesCompat.getColor(res, R.color.grid_text, theme));
+        artist.set(ResourcesCompat.getColor(res, R.color.grid_detail_text, theme));
+        background.set(ResourcesCompat.getColor(res, R.color.grid_background_default, theme));
+    }
+
     public String getAlbumTitle() {
         return mAlbum.getAlbumName();
     }
@@ -72,6 +97,18 @@ public class AlbumViewModel extends BaseObservable {
 
     public ObservableField<Drawable> getArtistImage() {
         return mArtistImage;
+    }
+
+    public ObservableInt getTitleTextColor() {
+        return mTitleTextColor;
+    }
+
+    public ObservableInt getArtistTextColor() {
+        return mArtistTextColor;
+    }
+
+    public ObservableInt getBackgroundColor() {
+        return mBackgroundColor;
     }
 
     public View.OnClickListener onClickAlbum() {
