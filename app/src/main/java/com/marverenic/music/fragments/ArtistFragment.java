@@ -89,7 +89,7 @@ public class ArtistFragment extends BaseFragment {
             mAdapter = new HeterogeneousAdapter();
             mRecyclerView.setAdapter(mAdapter);
 
-            mArtistSection = new ArtistSection(mArtists);
+            mArtistSection = new ArtistSection(this, mArtists);
             mAdapter.addSection(mArtistSection);
             mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), mMusicStore));
         }
