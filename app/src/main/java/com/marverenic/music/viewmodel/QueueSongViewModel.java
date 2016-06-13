@@ -10,8 +10,8 @@ import android.view.View;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
+import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.instances.Library;
-import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
@@ -19,6 +19,8 @@ import com.marverenic.music.utils.Navigate;
 import java.util.List;
 
 public class QueueSongViewModel extends SongViewModel {
+
+    private static final String TAG_PLAYLIST_DIALOG = "QueueSongViewModel.PlaylistDialog";
 
     private Context mContext;
     private FragmentManager mFragmentManager;
@@ -82,9 +84,11 @@ public class QueueSongViewModel extends SongViewModel {
                             Library.findAlbumById(getReference().getAlbumId()));
                     return true;
                 case 2: // Add to playlist
-                    PlaylistDialog.AddToNormal.alert(view, getReference(),
-                            mContext.getResources().getString(
-                                    R.string.header_add_song_name_to_playlist, getReference()));
+                    AppendPlaylistDialogFragment.newInstance()
+                            .setTitle(mContext.getResources().getString(
+                                    R.string.header_add_song_name_to_playlist, getReference()))
+                            .setSongs(getSongs())
+                            .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
                     return true;
                 case 3: // Remove
                     int queuePosition = PlayerController.getQueuePosition();
