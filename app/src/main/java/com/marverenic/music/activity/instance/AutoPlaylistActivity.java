@@ -80,7 +80,7 @@ public class AutoPlaylistActivity extends BaseActivity
             });
         }
 
-        mAdapter = new HeterogeneousAdapter().addSection(new SongSection(mSongs));
+        mAdapter = new HeterogeneousAdapter().addSection(new SongSection(this, mSongs));
         mRecyclerView.setAdapter(mAdapter);
     }
 

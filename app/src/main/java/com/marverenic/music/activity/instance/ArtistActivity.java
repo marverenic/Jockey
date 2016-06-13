@@ -276,7 +276,7 @@ public class ArtistActivity extends BaseActivity {
         }
 
         if (mSongSection == null) {
-            mSongSection = new SongSection(mSongs);
+            mSongSection = new SongSection(this, mSongs);
 
             mAdapter
                     .addSection(new HeaderSection(getString(R.string.header_songs), SongSection.ID))

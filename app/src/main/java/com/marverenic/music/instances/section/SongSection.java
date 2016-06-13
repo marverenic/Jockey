@@ -1,6 +1,10 @@
 package com.marverenic.music.instances.section;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -16,32 +20,40 @@ public class SongSection extends HeterogeneousAdapter.ListSection<Song> {
 
     public static final int ID = 9149;
 
-    public SongSection(@NonNull List<Song> data) {
+    private FragmentManager mFragmentManager;
+
+    public SongSection(AppCompatActivity activity, @NonNull List<Song> data) {
+        this(activity.getSupportFragmentManager(), data);
+    }
+
+    public SongSection(Fragment fragment, @NonNull List<Song> data) {
+        this(fragment.getFragmentManager(), data);
+    }
+
+    public SongSection(FragmentManager fragmentManager, @NonNull List<Song> data) {
         super(ID, data);
+        mFragmentManager = fragmentManager;
     }
 
     @Override
     public EnhancedViewHolder<Song> createViewHolder(HeterogeneousAdapter adapter,
                                                                   ViewGroup parent) {
-        return ViewHolder.createViewHolder(parent, getData());
+        InstanceSongBinding binding = InstanceSongBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false);
+
+        return new ViewHolder(binding, getData());
     }
 
-    public static class ViewHolder extends EnhancedViewHolder<Song> {
+    private class ViewHolder extends EnhancedViewHolder<Song> {
 
         private InstanceSongBinding mBinding;
-
-        public static ViewHolder createViewHolder(ViewGroup parent, List<Song> songList) {
-            InstanceSongBinding binding = InstanceSongBinding.inflate(
-                    LayoutInflater.from(parent.getContext()), parent, false);
-
-            return new ViewHolder(binding, songList);
-        }
 
         public ViewHolder(InstanceSongBinding binding, List<Song> songList) {
             super(binding.getRoot());
             mBinding = binding;
 
-            binding.setViewModel(new SongViewModel(itemView.getContext(), songList));
+            Context context = itemView.getContext();
+            binding.setViewModel(new SongViewModel(context, mFragmentManager, songList));
         }
 
         @Override

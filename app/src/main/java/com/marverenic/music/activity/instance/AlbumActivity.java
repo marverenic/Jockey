@@ -117,7 +117,7 @@ public class AlbumActivity extends BaseActivity {
             mSongSection.setData(mSongs);
             mAdapter.notifyDataSetChanged();
         } else {
-            mSongSection = new SongSection(mSongs);
+            mSongSection = new SongSection(this, mSongs);
             mAdapter.addSection(mSongSection);
         }
     }

@@ -2,6 +2,7 @@ package com.marverenic.music.viewmodel;
 
 import android.content.Context;
 import android.databinding.BaseObservable;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.Menu;
@@ -11,8 +12,8 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
+import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.instances.Library;
-import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
@@ -22,13 +23,18 @@ import java.util.List;
 
 public class SongViewModel extends BaseObservable {
 
+    private static final String TAG_PLAYLIST_DIALOG = "SongViewModel.PlaylistDialog";
+
     private Context mContext;
+    private FragmentManager mFragmentManager;
+
     private List<Song> mSongList;
     private int mIndex;
     private Song mReference;
 
-    public SongViewModel(Context context, List<Song> songs) {
+    public SongViewModel(Context context, FragmentManager fragmentManager, List<Song> songs) {
         mContext = context;
+        mFragmentManager = fragmentManager;
         mSongList = songs;
     }
 
@@ -103,8 +109,11 @@ public class SongViewModel extends BaseObservable {
                             Library.findAlbumById(mReference.getAlbumId()));
                     return true;
                 case 4: //Add to playlist...
-                    PlaylistDialog.AddToNormal.alert(view, mReference, mContext.getString(
-                            R.string.header_add_song_name_to_playlist, mReference));
+                    AppendPlaylistDialogFragment.newInstance()
+                            .setSong(mReference)
+                            .setTitle(mContext.getString(R.string.header_add_song_name_to_playlist,
+                                    mReference))
+                            .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
                     return true;
             }
             return false;

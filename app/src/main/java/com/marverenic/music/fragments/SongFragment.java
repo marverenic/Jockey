@@ -91,7 +91,7 @@ public class SongFragment extends BaseFragment {
             mAdapter = new HeterogeneousAdapter();
             mRecyclerView.setAdapter(mAdapter);
 
-            mSongSection = new SongSection(mSongs);
+            mSongSection = new SongSection(this, mSongs);
             mAdapter.addSection(mSongSection);
             mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), mMusicStore));
         }
