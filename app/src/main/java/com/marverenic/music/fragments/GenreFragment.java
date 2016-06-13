@@ -89,7 +89,7 @@ public class GenreFragment extends BaseFragment {
             mAdapter = new HeterogeneousAdapter();
             mRecyclerView.setAdapter(mAdapter);
 
-            mGenreSection = new GenreSection(mGenres);
+            mGenreSection = new GenreSection(this, mGenres);
             mAdapter.addSection(mGenreSection);
             mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), mMusicStore));
         }

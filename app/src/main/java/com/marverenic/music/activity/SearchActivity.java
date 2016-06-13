@@ -123,7 +123,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         mSongSection = new SongSection(this, Collections.emptyList());
         mAlbumSection = new AlbumSection(Collections.emptyList());
         mArtistSection = new ArtistSection(Collections.emptyList());
-        mGenreSection = new GenreSection(Collections.emptyList());
+        mGenreSection = new GenreSection(this, Collections.emptyList());
 
         mAdapter = new HeterogeneousAdapter()
                 .addSection(
