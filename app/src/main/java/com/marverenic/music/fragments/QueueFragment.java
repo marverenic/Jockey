@@ -52,7 +52,7 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
         bottomSpacer = new SpacerSingleton(QueueSection.ID, 0);
 
         adapter = new DragDropAdapter();
-        adapter.setDragSection(new QueueSection(queue));
+        adapter.setDragSection(new QueueSection(this, queue));
         adapter.addSection(bottomSpacer);
         adapter.setEmptyState(new LibraryEmptyState(getActivity(), null) {
             @Override

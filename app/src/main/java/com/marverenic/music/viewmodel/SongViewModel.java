@@ -42,6 +42,18 @@ public class SongViewModel extends BaseObservable {
         setSong(mSongList, index);
     }
 
+    protected int getIndex() {
+        return mIndex;
+    }
+
+    protected Song getReference() {
+        return mReference;
+    }
+
+    protected List<Song> getSongs() {
+        return mSongList;
+    }
+
     public void setSong(List<Song> songList, int index) {
         mSongList = songList;
         mIndex = index;

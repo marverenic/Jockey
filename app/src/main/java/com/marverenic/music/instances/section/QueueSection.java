@@ -1,15 +1,17 @@
 package com.marverenic.music.instances.section;
 
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.marverenic.music.player.PlayerController;
-import com.marverenic.music.R;
+import com.marverenic.music.databinding.InstanceSongQueueBinding;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.instances.viewholder.DragDropSongViewHolder;
-import com.marverenic.music.instances.viewholder.QueueSongViewHolder;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
+import com.marverenic.music.viewmodel.QueueSongViewModel;
 
 import java.util.List;
 
@@ -17,8 +19,19 @@ public class QueueSection extends EditableSongSection {
 
     public static final int ID = 721;
 
-    public QueueSection(List<Song> data) {
+    private FragmentManager mFragmentManager;
+
+    public QueueSection(AppCompatActivity activity, List<Song> data) {
+        this(activity.getSupportFragmentManager(), data);
+    }
+
+    public QueueSection(Fragment fragment, List<Song> data) {
+        this(fragment.getFragmentManager(), data);
+    }
+
+    public QueueSection(FragmentManager fragmentManager, List<Song> data) {
         super(ID, data);
+        mFragmentManager = fragmentManager;
     }
 
     @Override
@@ -44,27 +57,30 @@ public class QueueSection extends EditableSongSection {
     }
 
     @Override
-    public EnhancedViewHolder<Song> createViewHolder(final HeterogeneousAdapter adapter, ViewGroup parent) {
-        return new QueueSongViewHolder(
-                LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.instance_song_queue, parent, false),
-                new DragDropSongViewHolder.OnRemovedListener() {
-                    @Override
-                    public void onItemRemoved(int index) {
-                        mData.remove(index);
+    public EnhancedViewHolder<Song> createViewHolder(HeterogeneousAdapter adapter,
+                                                     ViewGroup parent) {
+        InstanceSongQueueBinding binding = InstanceSongQueueBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false);
 
-                        // Calculate the new song index of the track that's currently playing
-                        int playingIndex = PlayerController.getQueuePosition();
-                        if (index < playingIndex) {
-                            playingIndex--;
-                        }
+        return new ViewHolder(binding, getData(), adapter);
+    }
 
-                        // push the change to the service
-                        PlayerController.editQueue(mData, playingIndex);
+    private class ViewHolder extends EnhancedViewHolder<Song> {
 
-                        adapter.notifyItemRemoved(index);
-                        adapter.notifyItemChanged(index);
-                    }
-                });
+        private InstanceSongQueueBinding mBinding;
+
+        public ViewHolder(InstanceSongQueueBinding binding, List<Song> songList,
+                          HeterogeneousAdapter adapter) {
+            super(binding.getRoot());
+            mBinding = binding;
+
+            binding.setViewModel(new QueueSongViewModel(itemView.getContext(), mFragmentManager,
+                    songList, adapter::notifyDataSetChanged));
+        }
+
+        @Override
+        public void update(Song s, int sectionPosition) {
+            mBinding.getViewModel().setIndex(sectionPosition);
+        }
     }
 }

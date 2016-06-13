@@ -20,7 +20,6 @@ import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.PlaylistSongSection;
-import com.marverenic.music.instances.viewholder.DragDropSongViewHolder;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.EnhancedAdapters.DragBackgroundDecoration;
@@ -34,8 +33,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuItemClickListener,
-        DragDropSongViewHolder.OnRemovedListener {
+public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuItemClickListener {
 
     public static final String PLAYLIST_EXTRA = "playlist";
 
@@ -125,7 +123,7 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
         }
 
         if (mSongSection == null) {
-            mSongSection = new PlaylistSongSection(mSongs, this, this, mReference);
+            mSongSection = new PlaylistSongSection(this, mSongs, mReference);
             mAdapter.setDragSection(mSongSection);
         } else {
             mSongSection.setData(mSongs);
@@ -229,31 +227,5 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
                 .show();
 
         return true;
-    }
-
-    @Override
-    public void onItemRemoved(final int index) {
-        final Song removed = mSongs.remove(index);
-
-        mPlaylistStore.editPlaylist(mReference, mSongs);
-        mAdapter.notifyItemRemoved(index);
-
-        Snackbar
-                .make(
-                        mRecyclerView,
-                        getResources().getString(
-                                R.string.message_removed_song,
-                                removed.getSongName()),
-                        Snackbar.LENGTH_LONG)
-                .setAction(R.string.action_undo, v -> {
-                    mSongs.add(index, removed);
-                    mPlaylistStore.editPlaylist(mReference, mSongs);
-                    if (mSongs.size() > 1) {
-                        mAdapter.notifyItemInserted(index);
-                    } else {
-                        mAdapter.notifyItemChanged(index);
-                    }
-                })
-                .show();
     }
 }

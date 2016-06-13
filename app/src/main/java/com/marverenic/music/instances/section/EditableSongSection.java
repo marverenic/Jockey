@@ -23,6 +23,10 @@ public abstract class EditableSongSection extends DragDropAdapter.DragSection<So
         mData = data;
     }
 
+    public List<Song> getData() {
+        return mData;
+    }
+
     @Override
     public int getDragHandleId() {
         return R.id.handle;
