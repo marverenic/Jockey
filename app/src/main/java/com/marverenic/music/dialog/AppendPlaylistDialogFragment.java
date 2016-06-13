@@ -67,8 +67,10 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
 
             if (savedInstanceState.containsKey(SAVED_SONG)) {
                 mSong = savedInstanceState.getParcelable(SAVED_SONG);
+                mSingle = true;
             } else if (savedInstanceState.containsKey(SAVED_SONGS)) {
                 mSongs = savedInstanceState.getParcelableArrayList(SAVED_SONGS);
+                mSingle = false;
             }
         }
 
