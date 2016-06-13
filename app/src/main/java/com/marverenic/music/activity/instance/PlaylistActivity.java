@@ -20,7 +20,6 @@ import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.PlaylistSongSection;
 import com.marverenic.music.instances.section.SongSection;
-import com.marverenic.music.instances.viewholder.DragDropSongViewHolder;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
@@ -35,8 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuItemClickListener,
-        DragDropSongViewHolder.OnRemovedListener {
+public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuItemClickListener {
 
     public static final String PLAYLIST_EXTRA = "playlist";
     private static final String INVALIDATE_EXTRA = "invalidated";
@@ -72,7 +70,7 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
             list.addItemDecoration(new DividerDecoration(this, R.id.empty_layout));
         } else {
             DragDropAdapter hAdapter = new DragDropAdapter();
-            hAdapter.setDragSection(new PlaylistSongSection(data, this, this, reference));
+            hAdapter.setDragSection(new PlaylistSongSection(data, this, reference));
             hAdapter.attach(list);
             adapter = hAdapter;
 
@@ -252,34 +250,5 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
                 .show();
 
         return true;
-    }
-
-    @Override
-    public void onItemRemoved(final int index) {
-        final Song removed = data.remove(index);
-
-        Library.editPlaylist(PlaylistActivity.this, reference, data);
-        adapter.notifyItemRemoved(index);
-
-        Snackbar
-                .make(
-                        findViewById(R.id.list),
-                        getResources().getString(
-                                R.string.message_removed_song,
-                                removed.getSongName()),
-                        Snackbar.LENGTH_LONG)
-                .setAction(R.string.action_undo, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        data.add(index, removed);
-                        Library.editPlaylist(PlaylistActivity.this, reference, data);
-                        if (data.size() > 1) {
-                            adapter.notifyItemInserted(index);
-                        } else {
-                            adapter.notifyItemChanged(index);
-                        }
-                    }
-                })
-                .show();
     }
 }
