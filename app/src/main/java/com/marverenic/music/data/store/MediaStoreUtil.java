@@ -109,15 +109,23 @@ public final class MediaStoreUtil {
     }
 
     public static Observable<Boolean> getPermission(Context context) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return Observable.just(true);
-        } else if (sAlreadyRequestedPermission) {
+        if (sAlreadyRequestedPermission) {
             return Observable.just(hasPermission(context));
         } else {
-            return RxPermissions.getInstance(context).request(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            return promptPermission(context);
         }
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    public static Observable<Boolean> promptPermission(Context context) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return Observable.just(true);
+        }
+
+        sAlreadyRequestedPermission = true;
+        return RxPermissions.getInstance(context).request(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
     public static List<Song> getAllSongs(Context context) {

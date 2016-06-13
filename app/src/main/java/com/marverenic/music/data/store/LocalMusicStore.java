@@ -28,7 +28,7 @@ public class LocalMusicStore implements MusicStore {
 
     @Override
     public Observable<Boolean> refresh() {
-        return MediaStoreUtil.getPermission(mContext).map(
+        return MediaStoreUtil.promptPermission(mContext).map(
                 granted -> {
                     if (granted) {
                         if (mSongs != null) {
