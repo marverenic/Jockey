@@ -101,7 +101,7 @@ public class AlbumFragment extends BaseFragment {
             mAdapter = new HeterogeneousAdapter();
             mRecyclerView.setAdapter(mAdapter);
 
-            mAlbumSection = new AlbumSection(mAlbums);
+            mAlbumSection = new AlbumSection(this, mAlbums);
             mAdapter.addSection(mAlbumSection);
             mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), mMusicStore));
         }

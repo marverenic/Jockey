@@ -292,7 +292,7 @@ public class ArtistActivity extends BaseActivity {
         }
 
         if (mAlbumSection == null) {
-            mAlbumSection = new AlbumSection(mAlbums);
+            mAlbumSection = new AlbumSection(this, mAlbums);
             mAdapter
                     .addSection(
                             new HeaderSection(getString(R.string.header_albums), AlbumSection.ID))

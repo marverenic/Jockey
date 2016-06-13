@@ -10,6 +10,7 @@ import android.databinding.ObservableInt;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.support.annotation.ColorInt;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.PopupMenu;
@@ -27,9 +28,9 @@ import com.bumptech.glide.request.target.Target;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
+import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Library;
-import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.view.ViewUtils;
@@ -41,8 +42,10 @@ import java.util.Map;
 public class AlbumViewModel extends BaseObservable {
 
     private static final String TAG = "AlbumViewModel";
+    private static final String TAG_PLAYLIST_DIALOG = "SongViewModel.PlaylistDialog";
 
     private Context mContext;
+    private FragmentManager mFragmentManager;
     private Album mAlbum;
 
     private ObservableField<Drawable> mArtistImage;
@@ -50,8 +53,9 @@ public class AlbumViewModel extends BaseObservable {
     private ObservableInt mArtistTextColor;
     private ObservableInt mBackgroundColor;
 
-    public AlbumViewModel(Context context) {
+    public AlbumViewModel(Context context, FragmentManager fragmentManager) {
         mContext = context;
+        mFragmentManager = fragmentManager;
     }
 
     public void setAlbum(Album album) {
@@ -156,8 +160,11 @@ public class AlbumViewModel extends BaseObservable {
                             Library.findArtistById(mAlbum.getArtistId()));
                     return true;
                 case 3: //Add to playlist...
-                    PlaylistDialog.AddToNormal.alert(view, Library.getAlbumEntries(mAlbum),
-                            mContext.getString(R.string.header_add_song_name_to_playlist, mAlbum));
+                    AppendPlaylistDialogFragment.newInstance()
+                            .setSongs(Library.getAlbumEntries(mAlbum))
+                            .setTitle(mContext.getString(R.string.header_add_song_name_to_playlist,
+                                    mAlbum))
+                            .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
                     return true;
             }
             return false;
