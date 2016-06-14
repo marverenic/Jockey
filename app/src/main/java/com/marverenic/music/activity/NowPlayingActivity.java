@@ -20,10 +20,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
 import com.marverenic.music.fragments.QueueFragment;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.PlayerController;
@@ -99,9 +99,8 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
             ArrayList<Song> queue = new ArrayList<>();
             int position = 0;
 
-            // Have the LibraryScanner class get a song list for this file
             try {
-                position = Library.getSongListFromFile(this,
+                position = MediaStoreUtil.getSongListFromFile(this,
                         new File(intent.getData().getPath()), intent.getType(), queue);
             } catch (Exception e) {
                 e.printStackTrace();

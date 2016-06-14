@@ -2,6 +2,7 @@ package com.marverenic.music.data.store;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -639,4 +640,81 @@ public final class MediaStoreUtil {
         resolver.notifyChange(Uri.parse("content://media"), null);
     }
 
+    /**
+     * Get a list of songs to play for a certain input file. If a song is passed as the file, then
+     * the list will include other songs in the same directory. If a playlist is passed as the file,
+     * then the playlist will be opened as a regular playlist.
+     *
+     * @param activity An {@link Activity} to use when building the list
+     * @param file The {@link File} which the list will be built around
+     * @param type The MIME type of the file being opened
+     * @param queue An {@link ArrayList} which will be populated with the {@link Song}s
+     * @return The position that this list should be started from
+     * @throws IOException
+     */
+    public static int getSongListFromFile(Activity activity, File file, String type,
+                                          final List<Song> queue) throws IOException {
+        // PLAYLISTS
+        if (type.equals("audio/x-mpegurl") || type.equals("audio/x-scpls")
+                || type.equals("application/vnd.ms-wpl")) {
+            // If a playlist was opened, try to find and play its entry from the MediaStore
+            Cursor cur = activity.getContentResolver().query(
+                    MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
+                    null,
+                    MediaStore.Audio.Playlists.DATA + "=?",
+                    new String[] {file.getPath()},
+                    MediaStore.Audio.Playlists.NAME + " ASC");
+
+            if (cur == null) {
+                throw new RuntimeException("Content resolver query returned null");
+            }
+
+            // If the media store contains this playlist, play it like a regular playlist
+            if (cur.getCount() > 0) {
+                cur.moveToFirst();
+                queue.addAll(getPlaylistSongs(activity, new Playlist(cur)));
+            }
+            //TODO Attempt to manually read common playlist writing schemes
+            /*else{
+                // If the MediaStore doesn't contain this playlist, attempt to read it manually
+                Scanner sc = new Scanner(file);
+                ArrayList<String> lines = new ArrayList<>();
+                while (sc.hasNextLine()) {
+                    lines.add(sc.nextLine());
+                }
+
+                if (lines.size() > 0) {
+                    // Do stuff
+                }
+
+            }*/
+            cur.close();
+            // Return 0 to start at the beginning of the playlist
+            return 0;
+        } else { // ALL OTHER TYPES OF MEDIA
+            // If the file isn't a playlist, use a content resolver to find the song and play it
+            // Find all songs in the directory
+            Cursor cur = activity.getContentResolver().query(
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                    null,
+                    MediaStore.Audio.Media.DATA + " like ?",
+                    new String[] {"%" + file.getParent() + "/%"},
+                    MediaStore.Audio.Media.DATA + " ASC");
+
+            if (cur == null) {
+                throw new RuntimeException("Content resolver query returned null");
+            }
+
+            // Create song objects to match those in the music library
+            queue.addAll(Song.buildSongList(cur, activity.getResources()));
+            cur.close();
+
+            // Find the position of the song that should be played
+            for (int i = 0; i < queue.size(); i++) {
+                if (queue.get(i).getLocation().equals(file.getPath())) return i;
+            }
+        }
+
+        return 0;
+    }
 }
