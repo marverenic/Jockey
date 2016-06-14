@@ -58,7 +58,7 @@ public class SongSection extends HeterogeneousAdapter.ListSection<Song> {
 
         @Override
         public void update(Song s, int sectionPosition) {
-            mBinding.getViewModel().setIndex(sectionPosition);
+            mBinding.getViewModel().setSong(getData(), sectionPosition);
         }
     }
 }
