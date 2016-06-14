@@ -266,127 +266,130 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
             if (Intent.ACTION_SEARCH.equals(intent.getAction())
                     || MediaStore.INTENT_ACTION_MEDIA_SEARCH.equals(intent.getAction())) {
                 search(intent.getStringExtra(SearchManager.QUERY));
-            }
 
-            /** Handle play from search actions */
-            else if (MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH.equals(intent.getAction())) {
-
+            } else if (MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH.equals(intent.getAction())) {
+                // Handle play from search actions
                 search(intent.getStringExtra(SearchManager.QUERY));
-                final String focus = intent.getStringExtra(MediaStore.EXTRA_MEDIA_FOCUS);
+                String focus = intent.getStringExtra(MediaStore.EXTRA_MEDIA_FOCUS);
 
-                /** PLAYLISTS */
-                // If there are playlists that match this search, and either the specified focus is
-                // playlists or there are only playlist results, then play the appropriate result
-                if (!getPlaylistResults().isEmpty()
-                        && (focus.equals(MediaStore.Audio.Playlists.ENTRY_CONTENT_TYPE)
-                        || (getGenreResults().isEmpty() && getSongResults().isEmpty()))) {
-
-                    // If there is a playlist with this exact name, use it, otherwise fallback
-                    // to the first result
-                    Playlist playlist = getPlaylistResults().get(0);
-                    for (Playlist p : getPlaylistResults()) {
-                        if (p.getPlaylistName().equalsIgnoreCase(
-                                intent.getStringExtra(SearchManager.QUERY))) {
-                            playlist = p;
-                            break;
-                        }
-                    }
-
-                    mPlaylistStore.getSongs(playlist).subscribe(
-                            songs -> {
-                                PlayerController.setQueue(songs, 0);
-                                PlayerController.begin();
-                            }, throwable -> {
-                                Log.e(TAG, "Failed to play playlist from intent", throwable);
-                            });
-
-                }
-                /** ARTISTS **/
-                else if (!getArtistResults().isEmpty()
-                        && focus.equals(MediaStore.Audio.Artists.ENTRY_CONTENT_TYPE)) {
-                    // If one or more artists with this name exist, play songs by all of them
-                    // (Ideally this only includes collaborating artists and keeps
-                    // the search relevant)
-                    if (!getArtistResults().isEmpty()) {
-                        Observable<List<Song>> combinedSongs = Observable.just(new ArrayList<>());
-                        for (Artist a : getArtistResults()) {
-                            combinedSongs = Observable.combineLatest(
-                                    combinedSongs, mMusicStore.getSongs(a), (left, right) -> {
-                                        left.addAll(right);
-                                        return left;
-                                    });
-                        }
-
-                        combinedSongs.subscribe(
-                                songs -> {
-                                    PlayerController.setQueue(songs, 0);
-                                    PlayerController.begin();
-                                },
-                                throwable -> {
-                                    Log.e(TAG, "Failed to play artist from intent", throwable);
-                                });
-                    }
-                }
-                /** ALBUMS */
-                else if (!getAlbumResults().isEmpty()
-                        && focus.equals(MediaStore.Audio.Albums.ENTRY_CONTENT_TYPE)) {
-                    if (!getAlbumResults().isEmpty()) {
-                        // If albums with this name exist, look for an exact match
-                        // If we find one then use it, otherwise fallback to the first result
-                        Album album = getAlbumResults().get(0);
-                        for (Album a : getAlbumResults()) {
-                            if (a.getAlbumName().equalsIgnoreCase(
-                                    intent.getStringExtra(SearchManager.QUERY))) {
-                                album = a;
-                                break;
-                            }
-                        }
-
-                        mMusicStore.getSongs(album).subscribe(
-                                songs -> {
-                                    PlayerController.setQueue(songs, 0);
-                                    PlayerController.begin();
-                                }, throwable -> {
-                                    Log.e(TAG, "Failed to play album from intent", throwable);
-                                });
-                    }
-                }
-                /** GENRES */
-                else if (!getGenreResults().isEmpty()
-                        && (focus.equals(MediaStore.Audio.Genres.ENTRY_CONTENT_TYPE)
-                        || getSongResults().isEmpty())) {
-
-                    if (!getGenreResults().isEmpty()) {
-                        // If genres with this name exist, look for an exact match
-                        // If we find one then use it, otherwise fallback to the first result
-                        Genre genre = getGenreResults().get(0);
-                        for (Genre g : getGenreResults()) {
-                            if (g.getGenreName().equalsIgnoreCase(
-                                    intent.getStringExtra(SearchManager.QUERY))) {
-                                genre = g;
-                                break;
-                            }
-                        }
-
-                        mMusicStore.getSongs(genre).subscribe(
-                                songs -> {
-                                    PlayerController.setQueue(songs, 0);
-                                    PlayerController.begin();
-                                }, throwable -> {
-                                    Log.e(TAG, "Failed to play genre from intent", throwable);
-                                });
-                    }
-                }
-                /** SONGS */
-                // If we can't figure out what's going on (And I can understand why) or if
-                // the focus is songs, then just play all of the song results
-                else {
-                    if (!getSongResults().isEmpty()) {
-                        PlayerController.setQueue(getSongResults(), 0);
-                        PlayerController.begin();
-                    }
+                if (MediaStore.Audio.Playlists.ENTRY_CONTENT_TYPE.equals(focus)) {
+                    playPlaylistResults();
+                } else if (MediaStore.Audio.Artists.ENTRY_CONTENT_TYPE.equals(focus)) {
+                    playArtistResults();
+                } else if (MediaStore.Audio.Albums.ENTRY_CONTENT_TYPE.equals(focus)) {
+                    playAlbumResults();
+                } else if (focus.equals(MediaStore.Audio.Genres.ENTRY_CONTENT_TYPE)) {
+                    playGenreResults();
+                } else {
+                    playSongResults();
                 }
             }
         }
     }
+
+    private void playSongResults() {
+        if (!getSongResults().isEmpty()) {
+            PlayerController.setQueue(getSongResults(), 0);
+            PlayerController.begin();
+        }
+    }
+
+    private void playPlaylistResults() {
+        if (getPlaylistResults().isEmpty()) {
+            return;
+        }
+
+        // If there is a playlist with this exact name, use it, otherwise fallback
+        // to the first result
+        Playlist playlist = getPlaylistResults().get(0);
+        for (Playlist p : getPlaylistResults()) {
+            if (p.getPlaylistName().equalsIgnoreCase(lastQuery)) {
+                playlist = p;
+                break;
+            }
+        }
+
+        mPlaylistStore.getSongs(playlist).subscribe(
+                songs -> {
+                    PlayerController.setQueue(songs, 0);
+                    PlayerController.begin();
+                }, throwable -> {
+                    Log.e(TAG, "Failed to play playlist from intent", throwable);
+                });
+    }
+
+    private void playArtistResults() {
+        if (getGenreResults().isEmpty()) {
+            return;
+        }
+
+        // If one or more artists with this name exist, play songs by all of them (Ideally this only
+        // includes collaborating artists and keeps the search relevant)
+        Observable<List<Song>> combinedSongs = Observable.just(new ArrayList<>());
+        for (Artist a : getArtistResults()) {
+            combinedSongs = Observable.combineLatest(
+                    combinedSongs, mMusicStore.getSongs(a), (left, right) -> {
+                        left.addAll(right);
+                        return left;
+                    });
+        }
+
+        combinedSongs.subscribe(
+                songs -> {
+                    PlayerController.setQueue(songs, 0);
+                    PlayerController.begin();
+                },
+                throwable -> {
+                    Log.e(TAG, "Failed to play artist from intent", throwable);
+                });
+    }
+
+    private void playAlbumResults() {
+        if (getAlbumResults().isEmpty()) {
+            return;
+        }
+
+        // If albums with this name exist, look for an exact match
+        // If we find one then use it, otherwise fallback to the first result
+        Album album = getAlbumResults().get(0);
+        for (Album a : getAlbumResults()) {
+            if (a.getAlbumName().equalsIgnoreCase(lastQuery)) {
+                album = a;
+                break;
+            }
+        }
+
+        mMusicStore.getSongs(album).subscribe(
+                songs -> {
+                    PlayerController.setQueue(songs, 0);
+                    PlayerController.begin();
+                }, throwable -> {
+                    Log.e(TAG, "Failed to play album from intent", throwable);
+                });
+    }
+
+    private void playGenreResults() {
+        if (!getGenreResults().isEmpty()) {
+            return;
+        }
+        // If genres with this name exist, look for an exact match
+        // If we find one then use it, otherwise fallback to the first result
+        Genre genre = getGenreResults().get(0);
+        for (Genre g : getGenreResults()) {
+            if (g.getGenreName().equalsIgnoreCase(lastQuery)) {
+                genre = g;
+                break;
+            }
+        }
+
+        mMusicStore.getSongs(genre).subscribe(
+                songs -> {
+                    PlayerController.setQueue(songs, 0);
+                    PlayerController.begin();
+                }, throwable -> {
+                    Log.e(TAG, "Failed to play genre from intent", throwable);
+                });
+    }
+
+
 }
