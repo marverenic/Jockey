@@ -8,6 +8,7 @@ import android.provider.MediaStore;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -18,7 +19,6 @@ import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Genre;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.section.AlbumSection;
@@ -43,9 +43,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import rx.subjects.BehaviorSubject;
 
 public class SearchActivity extends BaseActivity implements SearchView.OnQueryTextListener {
+
+    private static final String TAG = "SearchActivity";
 
     @Inject MusicStore mMusicStore;
     @Inject PlaylistStore mPlaylistStore;
@@ -288,8 +291,15 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                             break;
                         }
                     }
-                    PlayerController.setQueue(Library.getPlaylistEntries(this, playlist), 0);
-                    PlayerController.begin();
+
+                    mPlaylistStore.getSongs(playlist).subscribe(
+                            songs -> {
+                                PlayerController.setQueue(songs, 0);
+                                PlayerController.begin();
+                            }, throwable -> {
+                                Log.e(TAG, "Failed to play playlist from intent", throwable);
+                            });
+
                 }
                 /** ARTISTS **/
                 else if (!getArtistResults().isEmpty()
@@ -298,13 +308,23 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                     // (Ideally this only includes collaborating artists and keeps
                     // the search relevant)
                     if (!getArtistResults().isEmpty()) {
-                        ArrayList<Song> songs = new ArrayList<>();
+                        Observable<List<Song>> combinedSongs = Observable.just(new ArrayList<>());
                         for (Artist a : getArtistResults()) {
-                            songs.addAll(Library.getArtistSongEntries(a));
+                            combinedSongs = Observable.combineLatest(
+                                    combinedSongs, mMusicStore.getSongs(a), (left, right) -> {
+                                        left.addAll(right);
+                                        return left;
+                                    });
                         }
 
-                        PlayerController.setQueue(songs, 0);
-                        PlayerController.begin();
+                        combinedSongs.subscribe(
+                                songs -> {
+                                    PlayerController.setQueue(songs, 0);
+                                    PlayerController.begin();
+                                },
+                                throwable -> {
+                                    Log.e(TAG, "Failed to play artist from intent", throwable);
+                                });
                     }
                 }
                 /** ALBUMS */
@@ -321,8 +341,14 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                                 break;
                             }
                         }
-                        PlayerController.setQueue(Library.getAlbumEntries(album), 0);
-                        PlayerController.begin();
+
+                        mMusicStore.getSongs(album).subscribe(
+                                songs -> {
+                                    PlayerController.setQueue(songs, 0);
+                                    PlayerController.begin();
+                                }, throwable -> {
+                                    Log.e(TAG, "Failed to play album from intent", throwable);
+                                });
                     }
                 }
                 /** GENRES */
@@ -341,8 +367,14 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                                 break;
                             }
                         }
-                        PlayerController.setQueue(Library.getGenreEntries(genre), 0);
-                        PlayerController.begin();
+
+                        mMusicStore.getSongs(genre).subscribe(
+                                songs -> {
+                                    PlayerController.setQueue(songs, 0);
+                                    PlayerController.begin();
+                                }, throwable -> {
+                                    Log.e(TAG, "Failed to play genre from intent", throwable);
+                                });
                     }
                 }
                 /** SONGS */
