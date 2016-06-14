@@ -480,6 +480,29 @@ public final class MediaStoreUtil {
         return found;
     }
 
+    public static List<Playlist> searchForPlaylists(Context context, String query) {
+        if (query == null || query.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Cursor cur = context.getContentResolver().query(
+                MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
+                PLAYLIST_PROJECTION,
+                "UPPER(" + MediaStore.Audio.Playlists.NAME + ") LIKE ?",
+                new String[]{"%" + query.toUpperCase() + "%"}, null);
+
+        if (cur == null) {
+            return Collections.emptyList();
+        }
+
+        List<Playlist> found = Playlist.buildPlaylistList(cur);
+        Collections.sort(found);
+
+        cur.close();
+
+        return found;
+    }
+
     public static Playlist createPlaylist(Context context, String playlistName,
                                           @Nullable List<Song> songs) {
 
