@@ -457,7 +457,7 @@ public final class MediaStoreUtil {
         return found;
     }
 
-    public static List<Genre> searchForGenre(Context context, String query) {
+    public static List<Genre> searchForGenres(Context context, String query) {
         if (query == null || query.isEmpty()) {
             return Collections.emptyList();
         }
