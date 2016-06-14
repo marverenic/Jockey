@@ -411,6 +411,29 @@ public final class MediaStoreUtil {
         return found;
     }
 
+    public static List<Artist> searchForArtists(Context context, String query) {
+        if (query == null || query.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Cursor cur = context.getContentResolver().query(
+                MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
+                ARTIST_PROJECTION,
+                "UPPER(" + MediaStore.Audio.Artists.ARTIST + ") LIKE ?",
+                new String[]{"%" + query.toUpperCase() + "%"}, null);
+
+        if (cur == null) {
+            return Collections.emptyList();
+        }
+
+        List<Artist> found = Artist.buildArtistList(cur, context.getResources());
+        Collections.sort(found);
+
+        cur.close();
+
+        return found;
+    }
+
     public static Playlist createPlaylist(Context context, String playlistName,
                                           @Nullable List<Song> songs) {
 
