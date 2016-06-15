@@ -275,7 +275,7 @@ public class ArtistActivity extends BaseActivity {
         }
 
         if (mRelatedArtistSection == null) {
-            mRelatedArtistSection = new RelatedArtistSection(mRelatedArtists);
+            mRelatedArtistSection = new RelatedArtistSection(mMusicStore, mRelatedArtists);
             mAdapter.addSection(mRelatedArtistSection, 1);
         }
     }
