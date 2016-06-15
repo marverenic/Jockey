@@ -706,15 +706,7 @@ public final class Library {
      * @return An {@link ArrayList} of {@link Song}s contained in the genre
      */
     public static ArrayList<Song> getGenreEntries(Genre genre) {
-        ArrayList<Song> songEntries = new ArrayList<>();
-
-        for (Song s : songLib) {
-            if (s.getGenreId() == genre.getGenreId()) {
-                songEntries.add(s);
-            }
-        }
-
-        return songEntries;
+        return null;
     }
 
     //

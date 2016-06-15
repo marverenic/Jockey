@@ -786,8 +786,9 @@ public class AutoPlaylist extends Playlist implements Parcelable {
          * @see AutoPlaylist.Rule#evaluate(List, Context)
          */
         private List<Song> evaluateGenre(List<Song> in) {
-            List<Song> filteredSongs = new ArrayList<>();
-            switch (field) {
+            List<Song> filteredSongs = new ArrayList<>(in);
+            // TODO reimplement this using MediaStoreUtil and/or MusicStore
+            /*switch (field) {
                 case Field.ID:
                     final Long id = Long.parseLong(value);
                     for (Song s : in) {
@@ -821,7 +822,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                         }
                     }
                     break;
-            }
+            }*/
             return filteredSongs;
         }
     }

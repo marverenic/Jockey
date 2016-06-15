@@ -42,7 +42,6 @@ public class Song implements Parcelable, Comparable<Song> {
     protected long dateAdded; // seconds since Jan 1, 1970
     protected long albumId;
     protected long artistId;
-    protected long genreId;
     protected int trackNumber;
 
     private Song() {
@@ -60,7 +59,6 @@ public class Song implements Parcelable, Comparable<Song> {
         dateAdded = in.readLong();
         albumId = in.readLong();
         artistId = in.readLong();
-        genreId = in.readLong();
     }
 
     public Song(Song s) {
@@ -74,7 +72,6 @@ public class Song implements Parcelable, Comparable<Song> {
         this.dateAdded = s.dateAdded;
         this.albumId = s.albumId;
         this.artistId = s.artistId;
-        this.genreId = s.genreId;
         this.trackNumber = s.trackNumber;
     }
 
@@ -173,9 +170,6 @@ public class Song implements Parcelable, Comparable<Song> {
         return artistId;
     }
 
-    public long getGenreId() {
-        return genreId;
-    }
 
     public int getTrackNumber() {
         return trackNumber;
@@ -225,7 +219,6 @@ public class Song implements Parcelable, Comparable<Song> {
         dest.writeLong(dateAdded);
         dest.writeLong(albumId);
         dest.writeLong(artistId);
-        dest.writeLong(genreId);
     }
 
     @Override
