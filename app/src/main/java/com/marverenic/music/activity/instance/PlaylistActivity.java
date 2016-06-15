@@ -123,7 +123,7 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
         }
 
         if (mSongSection == null) {
-            mSongSection = new PlaylistSongSection(this, mSongs, mReference);
+            mSongSection = new PlaylistSongSection(this, mPlaylistStore, mSongs, mReference);
             mAdapter.setDragSection(mSongSection);
         } else {
             mSongSection.setData(mSongs);

@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.databinding.InstanceSongDragBinding;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Playlist;
@@ -23,21 +24,26 @@ public class PlaylistSongSection extends EditableSongSection {
 
     private Context mContext;
     private FragmentManager mFragmentManager;
+    private PlaylistStore mPlaylistStore;
     private Playlist mReference;
 
-    public PlaylistSongSection(AppCompatActivity activity, List<Song> data, Playlist reference) {
-        this(activity, activity.getSupportFragmentManager(), data, reference);
+    public PlaylistSongSection(AppCompatActivity activity, PlaylistStore playlistStore,
+                               List<Song> data, Playlist reference) {
+        this(activity, activity.getSupportFragmentManager(), playlistStore, data, reference);
     }
 
-    public PlaylistSongSection(Fragment fragment, List<Song> data, Playlist reference) {
-        this(fragment.getContext(), fragment.getFragmentManager(), data, reference);
+    public PlaylistSongSection(Fragment fragment, PlaylistStore playlistStore, List<Song> data,
+                               Playlist reference) {
+        this(fragment.getContext(), fragment.getFragmentManager(), playlistStore, data, reference);
     }
 
-    public PlaylistSongSection(Context context, FragmentManager fragmentManager, List<Song> data,
+    public PlaylistSongSection(Context context, FragmentManager fragmentManager,
+                               PlaylistStore playlistStore, List<Song> data,
                                Playlist reference) {
         super(ID, data);
         mContext = context;
         mFragmentManager = fragmentManager;
+        mPlaylistStore = playlistStore;
         mReference = reference;
     }
 
@@ -45,7 +51,7 @@ public class PlaylistSongSection extends EditableSongSection {
     protected void onDrop(int from, int to) {
         if (from == to) return;
 
-        Library.editPlaylist(mContext, mReference, mData);
+        mPlaylistStore.editPlaylist(mReference, mData);
     }
 
     @Override
