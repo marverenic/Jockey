@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -18,7 +19,6 @@ import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.section.AlbumSection;
 import com.marverenic.music.instances.section.ArtistBioSingleton;
@@ -47,6 +47,8 @@ import javax.inject.Inject;
 import rx.android.schedulers.AndroidSchedulers;
 
 public class ArtistActivity extends BaseActivity {
+
+    private static final String TAG = "ArtistActivity";
 
     public static final String ARTIST_EXTRA = "artist";
 
@@ -136,9 +138,17 @@ public class ArtistActivity extends BaseActivity {
         mRelatedArtists = new ArrayList<>();
 
         for (LfmArtist relatedArtist : lfmArtist.getSimilarArtists()) {
-            if (Library.findArtistByName(relatedArtist.getName()) != null) {
-                mRelatedArtists.add(relatedArtist);
-            }
+            mMusicStore.findArtistByName(relatedArtist.getName())
+                    .subscribe(
+                            found -> {
+                                if (found != null) {
+                                    mRelatedArtists.add(relatedArtist);
+                                    setupAdapter();
+                                }
+                            },
+                            throwable -> {
+                                Log.e(TAG, "Failed to find artist", throwable);
+                            });
         }
         setupAdapter();
 

@@ -41,6 +41,11 @@ public final class Artist implements Parcelable, Comparable<Artist> {
         this.artistName = artistName;
     }
 
+    public Artist(Cursor cur) {
+        artistId = cur.getInt(cur.getColumnIndex(MediaStore.Audio.Artists._ID));
+        artistName = cur.getString(cur.getColumnIndex(MediaStore.Audio.Artists.ARTIST));
+    }
+
     private Artist(Parcel in) {
         artistId = in.readInt();
         artistName = in.readString();
