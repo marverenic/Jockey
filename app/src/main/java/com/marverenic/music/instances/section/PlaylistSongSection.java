@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.databinding.InstanceSongDragBinding;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
@@ -77,7 +76,7 @@ public class PlaylistSongSection extends EditableSongSection {
                     new PlaylistSongViewModel(itemView.getContext(), mFragmentManager, songList,
                             () -> {
                                 adapter.notifyDataSetChanged();
-                                Library.editPlaylist(mContext, mReference, getData());
+                                mPlaylistStore.editPlaylist(mReference, getData());
                             }));
         }
 
