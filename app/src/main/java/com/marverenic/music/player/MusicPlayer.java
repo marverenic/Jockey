@@ -21,6 +21,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.NowPlayingActivity;
+import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Prefs;
@@ -377,7 +378,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             for (int i = 0; i < queueLength; i++) {
                 queueIDs[i] = scanner.nextInt();
             }
-            mQueue = Library.buildSongListFromIds(queueIDs, mContext);
+            mQueue = MediaStoreUtil.buildSongListFromIds(queueIDs, mContext);
 
             long[] shuffleQueueIDs;
             if (scanner.hasNextInt()) {
@@ -385,7 +386,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 for (int i = 0; i < queueLength; i++) {
                     shuffleQueueIDs[i] = scanner.nextInt();
                 }
-                mQueueShuffled = Library.buildSongListFromIds(shuffleQueueIDs, mContext);
+                mQueueShuffled = MediaStoreUtil.buildSongListFromIds(shuffleQueueIDs, mContext);
             } else if (mShuffle) {
                 shuffleQueue(queuePosition);
             }
