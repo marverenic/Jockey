@@ -190,6 +190,11 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         notifyNowPlaying();
     }
 
+    @Override
+    public void onPlaybackStop() {
+        stop();
+    }
+
     public static class Stub extends IPlayerService.Stub {
 
         @Override
