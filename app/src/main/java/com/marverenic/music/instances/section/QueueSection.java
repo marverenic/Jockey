@@ -3,13 +3,12 @@ package com.marverenic.music.instances.section;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.marverenic.music.player.PlayerController;
-import com.marverenic.music.R;
+import com.marverenic.music.databinding.InstanceSongQueueBinding;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.instances.viewholder.DragDropSongViewHolder;
-import com.marverenic.music.instances.viewholder.QueueSongViewHolder;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
+import com.marverenic.music.viewmodel.QueueSongViewModel;
 
 import java.util.List;
 
@@ -44,27 +43,35 @@ public class QueueSection extends EditableSongSection {
     }
 
     @Override
-    public EnhancedViewHolder<Song> createViewHolder(final HeterogeneousAdapter adapter, ViewGroup parent) {
-        return new QueueSongViewHolder(
-                LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.instance_song_queue, parent, false),
-                new DragDropSongViewHolder.OnRemovedListener() {
-                    @Override
-                    public void onItemRemoved(int index) {
-                        mData.remove(index);
+    public EnhancedViewHolder<Song> createViewHolder(HeterogeneousAdapter adapter,
+                                                     ViewGroup parent) {
+        return ViewHolder.createViewHolder(adapter, parent, getData());
+    }
 
-                        // Calculate the new song index of the track that's currently playing
-                        int playingIndex = PlayerController.getQueuePosition();
-                        if (index < playingIndex) {
-                            playingIndex--;
-                        }
+    private static class ViewHolder extends EnhancedViewHolder<Song> {
 
-                        // push the change to the service
-                        PlayerController.editQueue(mData, playingIndex);
+        private InstanceSongQueueBinding mBinding;
 
-                        adapter.notifyItemRemoved(index);
-                        adapter.notifyItemChanged(index);
-                    }
-                });
+        public static ViewHolder createViewHolder(HeterogeneousAdapter adapter, ViewGroup parent,
+                                                  List<Song> songList) {
+            InstanceSongQueueBinding binding = InstanceSongQueueBinding.inflate(
+                    LayoutInflater.from(parent.getContext()), parent, false);
+
+            return new ViewHolder(binding, songList, adapter);
+        }
+
+        public ViewHolder(InstanceSongQueueBinding binding, List<Song> songList,
+                          HeterogeneousAdapter adapter) {
+            super(binding.getRoot());
+            mBinding = binding;
+
+            binding.setViewModel(new QueueSongViewModel(itemView.getContext(), songList,
+                    adapter::notifyDataSetChanged));
+        }
+
+        @Override
+        public void update(Song s, int sectionPosition) {
+            mBinding.getViewModel().setIndex(sectionPosition);
+        }
     }
 }

@@ -28,6 +28,10 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    dataBinding {
+        enabled = true
+    }
+
     //noinspection GroovyMissingReturnStatement
     defaultConfig {
         applicationId "com.marverenic.music"
