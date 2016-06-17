@@ -72,6 +72,7 @@ public final class PlayerController {
                 @Override
                 public void onServiceDisconnected(ComponentName name) {
                     playerService = null;
+                    applicationContext = null;
                 }
             }, Context.BIND_ABOVE_CLIENT);
         }
