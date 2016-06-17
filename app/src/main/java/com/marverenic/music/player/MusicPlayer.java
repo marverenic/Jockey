@@ -955,6 +955,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             mEqualizer.release();
         }
         mFocused = false;
+        mCallback = null;
         mMediaPlayer.stop();
         mMediaPlayer.release();
         mMediaSession.release();
@@ -1095,7 +1096,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         @Override
         public void onStop() {
             mMusicPlayer.stop();
-            mMusicPlayer.updateUi();
+            // Don't update the UI if this object has been released
+            if (mMusicPlayer.mContext != null) {
+                mMusicPlayer.updateUi();
+            }
         }
 
         @Override

@@ -1,8 +1,10 @@
 package com.marverenic.music.player;
 
-import android.app.ActivityManager;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.v4.media.session.MediaButtonReceiver;
@@ -40,13 +42,26 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
      * The media player for the service instance
      */
     private MusicPlayer musicPlayer;
-    private boolean finished = false; // Don't attempt to release resources more than once
+
+    /**
+     * Used to to prevent errors caused by freeing resources twice
+     */
+    private boolean finished;
+    /**
+     * Used to keep track of whether the main application window is open or not
+     */
+    private boolean mAppRunning;
+    /**
+     * Used to keep track of whether the notification has been dismissed or not
+     */
+    private boolean mStopped;
 
     @Override
     public IBinder onBind(Intent intent) {
         if (binder == null) {
             binder = new Stub();
         }
+        mAppRunning = true;
         return binder;
     }
 
@@ -70,6 +85,9 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
             musicPlayer = new MusicPlayer(this);
         }
 
+        mStopped = false;
+        finished = false;
+
         musicPlayer.setPlaybackChangeListener(this);
         musicPlayer.loadState();
     }
@@ -78,7 +96,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
 
-        if (intent != null) {
+        if (intent != null && intent.hasExtra(Intent.EXTRA_KEY_EVENT)) {
             MediaButtonReceiver.handleIntent(musicPlayer.getMediaSession(), intent);
             Log.i(TAG, intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT).toString());
         }
@@ -95,6 +113,17 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
         finish();
         super.onDestroy();
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        mAppRunning = false;
+
+        if (mStopped) {
+            stop();
+        } else {
+            notifyNowPlaying();
+        }
     }
 
     public static PlayerService getInstance() {
@@ -126,8 +155,8 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
                         MediaStyleHelper.getActionIntent(this, KeyEvent.KEYCODE_MEDIA_STOP));
 
         builder.addAction(new NotificationCompat.Action(
-                        R.drawable.ic_skip_previous_36dp, getString(R.string.action_previous),
-                        MediaStyleHelper.getActionIntent(this, KeyEvent.KEYCODE_MEDIA_PREVIOUS)));
+                R.drawable.ic_skip_previous_36dp, getString(R.string.action_previous),
+                MediaStyleHelper.getActionIntent(this, KeyEvent.KEYCODE_MEDIA_PREVIOUS)));
 
         if (musicPlayer.isPlaying()) {
             builder.addAction(new NotificationCompat.Action(
@@ -150,23 +179,34 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
                         MediaStyleHelper.getActionIntent(this, KeyEvent.KEYCODE_MEDIA_STOP))
                 .setMediaSession(musicPlayer.getMediaSession().getSessionToken()));
 
-        // TODO handle stopForeground
-        startForeground(NOTIFICATION_ID, builder.build());
+        showNotification(builder.build());
+    }
+
+    private void showNotification(Notification notification) {
+        mStopped = false;
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            startForeground(NOTIFICATION_ID, notification);
+        } else if (!musicPlayer.isPlaying() && !mAppRunning) {
+            stopForeground(false);
+
+            NotificationManager mgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            mgr.notify(NOTIFICATION_ID, notification);
+        } else {
+            startForeground(NOTIFICATION_ID, notification);
+        }
     }
 
     public void stop() {
         if (DEBUG) Log.i(TAG, "stop() called");
 
+        mStopped = true;
+
         // If the UI process is still running, don't kill the process, only remove its notification
-        ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> procInfos =
-                activityManager.getRunningAppProcesses();
-        for (int i = 0; i < procInfos.size(); i++) {
-            if (procInfos.get(i).processName.equals(BuildConfig.APPLICATION_ID)) {
-                musicPlayer.pause();
-                stopForeground(true);
-                return;
-            }
+        if (mAppRunning) {
+            musicPlayer.pause();
+            stopForeground(true);
+            return;
         }
 
         // If the UI process has already ended, kill the service and close the player
