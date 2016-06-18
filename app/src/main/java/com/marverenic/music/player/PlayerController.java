@@ -57,6 +57,11 @@ public final class PlayerController {
             applicationContext = context;
 
             Intent serviceIntent = new Intent(context, PlayerService.class);
+
+            // Manually start the service to ensure that it is associated with this task and can
+            // appropriately set its dismiss behavior
+            context.startService(serviceIntent);
+
             context.bindService(serviceIntent, new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName name, IBinder service) {
@@ -67,8 +72,9 @@ public final class PlayerController {
                 @Override
                 public void onServiceDisconnected(ComponentName name) {
                     playerService = null;
+                    applicationContext = null;
                 }
-            }, Context.BIND_AUTO_CREATE);
+            }, Context.BIND_ABOVE_CLIENT);
         }
     }
 

@@ -13,7 +13,6 @@ import android.media.audiofx.AudioEffect;
 import android.media.audiofx.Equalizer;
 import android.os.PowerManager;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -48,7 +47,7 @@ import java.util.Scanner;
  * {@link #setRepeat(int)}, respectively.
  *
  * MusicPlayer also provides play count logging and state reloading.
- * See {@link #logPlayCount(long, boolean)}, {@link #loadState()} and {@link #saveState(String)}
+ * See {@link #logPlayCount(long, boolean)}, {@link #loadState()} and {@link #saveState()}
  *
  * System integration is implemented by handling Audio Focus through {@link AudioManager}, attaching
  * a {@link MediaSessionCompat}, and with a {@link HeadsetListener} -- an implementation of
@@ -260,10 +259,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 .setActions(PlaybackStateCompat.ACTION_PLAY
                         | PlaybackStateCompat.ACTION_PLAY_PAUSE
                         | PlaybackStateCompat.ACTION_SEEK_TO
-                        | PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID
                         | PlaybackStateCompat.ACTION_PAUSE
                         | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
-                        | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
+                        | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+                        | PlaybackStateCompat.ACTION_STOP)
                 .setState(PlaybackStateCompat.STATE_NONE, 0, 0f);
 
         mMediaSession.setPlaybackState(state.build());
@@ -301,42 +300,14 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     /**
      * Saves the player's current state to a file with the name {@link #QUEUE_FILE} in
      * the app's external files directory specified by {@link Context#getExternalFilesDir(String)}
-     * @param intent An optional intent String (either {@link PlayerService#ACTION_NEXT},
-     *               {@link PlayerService#ACTION_PREV} or null) that this MusicPlayer is about to
-     *               process. The result of this intent will be written to disk
      * @throws IOException
      * @see #loadState()
      */
-    public void saveState(@Nullable String intent) throws IOException {
+    public void saveState() throws IOException {
         // Anticipate the outcome of a command so that if we're killed right after it executes,
         // we can restore to the proper state
-        int reloadSeekPosition;
+        int reloadSeekPosition = mMediaPlayer.getCurrentPosition();
         int reloadQueuePosition = mMediaPlayer.getQueueIndex();
-
-        if (intent != null) {
-            switch (intent) {
-                case PlayerService.ACTION_NEXT:
-                    if (reloadQueuePosition + 1 < mQueue.size()) {
-                        reloadSeekPosition = 0;
-                        reloadQueuePosition++;
-                    } else {
-                        reloadSeekPosition = mMediaPlayer.getDuration();
-                    }
-                    break;
-                case PlayerService.ACTION_PREV:
-                    if (mMediaPlayer.getDuration() < SKIP_PREVIOUS_THRESHOLD
-                            && reloadQueuePosition - 1 > 0) {
-                        reloadQueuePosition--;
-                    }
-                    reloadSeekPosition = 0;
-                    break;
-                default:
-                    reloadSeekPosition = mMediaPlayer.getCurrentPosition();
-                    break;
-            }
-        } else {
-            reloadSeekPosition = mMediaPlayer.getCurrentPosition();
-        }
 
         final String currentPosition = Integer.toString(reloadSeekPosition);
         final String queuePosition = Integer.toString(reloadQueuePosition);
@@ -363,7 +334,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
     /**
      * Reloads a saved state
-     * @see #saveState(String)
+     * @see #saveState()
      */
     public void loadState() {
         try {
@@ -421,16 +392,19 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     private void updateMediaSession() {
         if (getNowPlaying() != null) {
-            MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder();
             Song nowPlaying = getNowPlaying();
-            metadataBuilder
+            MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder()
                     .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE,
                             nowPlaying.getSongName())
                     .putString(MediaMetadataCompat.METADATA_KEY_TITLE,
                             nowPlaying.getSongName())
                     .putString(MediaMetadataCompat.METADATA_KEY_ALBUM,
                             nowPlaying.getAlbumName())
+                    .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION,
+                            nowPlaying.getAlbumName())
                     .putString(MediaMetadataCompat.METADATA_KEY_ARTIST,
+                            nowPlaying.getArtistName())
+                    .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE,
                             nowPlaying.getArtistName())
                     .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, getDuration())
                     .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, mArtwork);
@@ -440,7 +414,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                     PlaybackStateCompat.ACTION_PLAY
                             | PlaybackStateCompat.ACTION_PLAY_PAUSE
                             | PlaybackStateCompat.ACTION_SEEK_TO
-                            | PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID
+                            | PlaybackStateCompat.ACTION_STOP
                             | PlaybackStateCompat.ACTION_PAUSE
                             | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
                             | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS);
@@ -492,10 +466,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * has occurred, and updates the attached {@link MediaSessionCompat}
      */
     private void updateNowPlaying() {
+        updateMediaSession();
         if (mCallback != null) {
             mCallback.onPlaybackChange();
         }
-        updateMediaSession();
     }
 
     /**
@@ -719,7 +693,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * Stops music playback
      */
     public void stop() {
-        mMediaPlayer.stop();
+        pause();
+        seekTo(0);
     }
 
     /**
@@ -978,6 +953,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             mEqualizer.release();
         }
         mFocused = false;
+        mCallback = null;
         mMediaPlayer.stop();
         mMediaPlayer.release();
         mMediaSession.release();
@@ -998,6 +974,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     public ManagedMediaPlayer.Status getState() {
         return mMediaPlayer.getState();
+    }
+
+    protected MediaSessionCompat getMediaSession() {
+        return mMediaSession;
     }
 
     @Override
@@ -1106,7 +1086,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         @Override
         public void onStop() {
             mMusicPlayer.stop();
-            mMusicPlayer.updateUi();
+            // Don't update the UI if this object has been released
+            if (mMusicPlayer.mContext != null) {
+                mMusicPlayer.updateUi();
+            }
         }
 
         @Override

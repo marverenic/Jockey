@@ -46,6 +46,8 @@ public abstract class BaseActivity extends RxAppCompatActivity
     public void onCreate(Bundle savedInstanceState) {
         if (DEBUG) Log.i(getClass().toString(), "Called onCreate");
 
+        PlayerController.startService(getApplicationContext());
+
         Themes.setTheme(this);
         themeId = Themes.getTheme(this);
         night = getResources().getBoolean(R.bool.night);
