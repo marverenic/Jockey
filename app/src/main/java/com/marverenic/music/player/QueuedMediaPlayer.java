@@ -322,9 +322,9 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
             if (mPlayWhenPrepared) {
                 mPlayWhenPrepared = false;
                 play();
-                if (mCallback != null) {
-                    mCallback.onSongStart();
-                }
+            }
+            if (mCallback != null) {
+                mCallback.onSongStart();
             }
         }
     }
@@ -424,9 +424,10 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
         void onCompletion();
 
         /**
-         * Invoked when a new song has begun playback after calling {@link #skip()},
-         * {@link #skipPrevious()}, or any other method that directly changes the currently playing
-         * song.
+         * Invoked when a new song is currently loaded by the active media player after calling
+         * {@link #skip()}, {@link #skipPrevious()}, or any other method that directly changes the
+         * currently playing song. This is called even if the song isn't playing and only implies
+         * that {@link #getNowPlaying()} has a new value.
          *
          * Implementors may use this method to update the app's UI or preform additional work
          * dependent on song changes
