@@ -694,9 +694,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public void stop() {
         pause();
         seekTo(0);
-        if (mCallback != null) {
-            mCallback.onPlaybackStop();
-        }
     }
 
     /**
@@ -1045,14 +1042,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
          * {@link MediaPlayer} changes states.
          */
         void onPlaybackChange();
-
-        /**
-         * Called when a MusicPlayer stops playback. This method will always be called, even if the
-         * event was caused by an external source. This method should be implemented to handle
-         * any side effects of a MusicPlayer being stopped, which may happen due to user interaction
-         * from other components of the system.
-         */
-        void onPlaybackStop();
     }
 
     private static class MediaSessionCallback extends MediaSessionCompat.Callback {

@@ -2,6 +2,7 @@ package com.marverenic.music.player;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
@@ -26,6 +27,8 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
     private static final String TAG = "PlayerService";
     private static final boolean DEBUG = BuildConfig.DEBUG;
+
+    public static final String ACTION_STOP = "PlayerService.stop";
 
     public static final int NOTIFICATION_ID = 1;
 
@@ -98,9 +101,13 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
 
-        if (intent != null && intent.hasExtra(Intent.EXTRA_KEY_EVENT)) {
-            MediaButtonReceiver.handleIntent(musicPlayer.getMediaSession(), intent);
-            Log.i(TAG, intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT).toString());
+        if (intent != null) {
+            if (intent.hasExtra(Intent.EXTRA_KEY_EVENT)) {
+                MediaButtonReceiver.handleIntent(musicPlayer.getMediaSession(), intent);
+                Log.i(TAG, intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT).toString());
+            } else if (ACTION_STOP.equals(intent.getAction())) {
+                stop();
+            }
         }
         return START_STICKY;
     }
@@ -148,8 +155,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
                         (musicPlayer.isPlaying() || musicPlayer.isPreparing())
                                 ? R.drawable.ic_play_arrow_24dp
                                 : R.drawable.ic_pause_24dp)
-                .setDeleteIntent(
-                        MediaStyleHelper.getActionIntent(this, KeyEvent.KEYCODE_MEDIA_STOP));
+                .setDeleteIntent(getStopIntent());
 
         builder.addAction(new NotificationCompat.Action(
                 R.drawable.ic_skip_previous_36dp, getString(R.string.action_previous),
@@ -172,11 +178,17 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         builder.setStyle(new NotificationCompat.MediaStyle()
                 .setShowActionsInCompactView(1, 2)
                 .setShowCancelButton(true)
-                .setCancelButtonIntent(
-                        MediaStyleHelper.getActionIntent(this, KeyEvent.KEYCODE_MEDIA_STOP))
+                .setCancelButtonIntent(getStopIntent())
                 .setMediaSession(musicPlayer.getMediaSession().getSessionToken()));
 
         showNotification(builder.build());
+    }
+
+    private PendingIntent getStopIntent() {
+        Intent intent = new Intent(this, PlayerService.class);
+        intent.setAction(ACTION_STOP);
+
+        return PendingIntent.getService(this, 0, intent, 0);
     }
 
     private void showNotification(Notification notification) {
@@ -232,11 +244,6 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     @Override
     public void onPlaybackChange() {
         notifyNowPlaying();
-    }
-
-    @Override
-    public void onPlaybackStop() {
-        stop();
     }
 
     public static class Stub extends IPlayerService.Stub {
