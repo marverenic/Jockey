@@ -9,7 +9,6 @@ import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.data.inject.ContextModule;
 import com.marverenic.music.data.inject.DaggerJockeyComponent;
 import com.marverenic.music.data.inject.JockeyComponent;
-import com.marverenic.music.player.PlayerController;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -21,8 +20,6 @@ public class JockeyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         Fabric.with(this, new Crashlytics());
-
-        PlayerController.startService(getApplicationContext());
 
         mComponent = DaggerJockeyComponent.builder()
                 .contextModule(new ContextModule(this))
