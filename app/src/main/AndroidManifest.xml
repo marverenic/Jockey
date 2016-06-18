@@ -114,13 +114,18 @@
         <service
             android:name=".player.PlayerService"
             android:process=":player"
-            android:exported="false" />
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </service>
 
         <!-- Broadcast Receivers -->
-        <receiver
-            android:name=".player.PlayerService$Listener"
-            android:process=":player"
-            android:exported="false" />
+        <receiver android:name="android.support.v4.media.session.MediaButtonReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
 
         <receiver android:name=".player.PlayerController$Listener"
             android:exported="false">
