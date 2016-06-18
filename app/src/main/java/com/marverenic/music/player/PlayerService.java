@@ -12,12 +12,14 @@ import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 
+import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.IPlayerService;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.MediaStyleHelper;
 
+import java.io.IOException;
 import java.util.List;
 
 public class PlayerService extends Service implements MusicPlayer.OnPlaybackChangeListener {
@@ -106,11 +108,6 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     @Override
     public void onDestroy() {
         if (DEBUG) Log.i(TAG, "Called onDestroy()");
-        try {
-            musicPlayer.saveState();
-        } catch (Exception ignored) {
-
-        }
         finish();
         super.onDestroy();
     }
@@ -216,6 +213,13 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     public void finish() {
         if (DEBUG) Log.i(TAG, "finish() called");
         if (!finished) {
+            try {
+                musicPlayer.saveState();
+            } catch (IOException exception) {
+                Log.e(TAG, "Failed to save player state", exception);
+                Crashlytics.logException(exception);
+            }
+
             musicPlayer.release();
             musicPlayer = null;
             stopForeground(true);
