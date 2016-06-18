@@ -8,7 +8,10 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.StringRes;
 import android.support.v4.media.session.MediaButtonReceiver;
+import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -146,42 +149,54 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
             return;
         }
 
-        NotificationCompat.Builder builder =
-                MediaStyleHelper.from(this, musicPlayer.getMediaSession());
+        MediaSessionCompat mediaSession = musicPlayer.getMediaSession();
+        NotificationCompat.Builder builder = MediaStyleHelper.from(this, mediaSession);
 
-        // TODO set color
-        builder
-                .setSmallIcon(
-                        (musicPlayer.isPlaying() || musicPlayer.isPreparing())
-                                ? R.drawable.ic_play_arrow_24dp
-                                : R.drawable.ic_pause_24dp)
-                .setDeleteIntent(getStopIntent());
+        setupNotificationActions(builder);
 
-        builder.addAction(new NotificationCompat.Action(
-                R.drawable.ic_skip_previous_36dp, getString(R.string.action_previous),
-                MediaStyleHelper.getActionIntent(this, KeyEvent.KEYCODE_MEDIA_PREVIOUS)));
-
-        if (musicPlayer.isPlaying()) {
-            builder.addAction(new NotificationCompat.Action(
-                    R.drawable.ic_pause_36dp, getString(R.string.action_pause),
-                    MediaStyleHelper.getActionIntent(this, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)));
-        } else {
-            builder.addAction(new NotificationCompat.Action(
-                    R.drawable.ic_play_arrow_36dp, getString(R.string.action_play),
-                    MediaStyleHelper.getActionIntent(this, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)));
-        }
-
-        builder.addAction(new NotificationCompat.Action(
-                R.drawable.ic_skip_next_36dp, getString(R.string.action_skip),
-                MediaStyleHelper.getActionIntent(this, KeyEvent.KEYCODE_MEDIA_NEXT)));
-
-        builder.setStyle(new NotificationCompat.MediaStyle()
-                .setShowActionsInCompactView(1, 2)
-                .setShowCancelButton(true)
-                .setCancelButtonIntent(getStopIntent())
-                .setMediaSession(musicPlayer.getMediaSession().getSessionToken()));
+        builder.setSmallIcon(getNotificationIcon())
+                .setDeleteIntent(getStopIntent())
+                .setStyle(
+                        new NotificationCompat.MediaStyle()
+                                .setShowActionsInCompactView(1, 2)
+                                .setShowCancelButton(true)
+                                .setCancelButtonIntent(getStopIntent())
+                                .setMediaSession(musicPlayer.getMediaSession().getSessionToken()));
 
         showNotification(builder.build());
+    }
+
+    @DrawableRes
+    private int getNotificationIcon() {
+        if (musicPlayer.isPlaying() || musicPlayer.isPreparing()) {
+            return R.drawable.ic_play_arrow_24dp;
+        } else {
+            return R.drawable.ic_pause_24dp;
+        }
+    }
+
+    private void setupNotificationActions(NotificationCompat.Builder builder) {
+        addNotificationAction(builder, R.drawable.ic_skip_previous_36dp,
+                R.string.action_previous, KeyEvent.KEYCODE_MEDIA_PREVIOUS);
+
+        if (musicPlayer.isPlaying()) {
+            addNotificationAction(builder, R.drawable.ic_pause_36dp,
+                    R.string.action_pause, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
+        } else {
+            addNotificationAction(builder, R.drawable.ic_play_arrow_36dp,
+                    R.string.action_play, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
+        }
+
+        addNotificationAction(builder, R.drawable.ic_skip_next_36dp,
+                R.string.action_skip, KeyEvent.KEYCODE_MEDIA_NEXT);
+    }
+
+    private void addNotificationAction(NotificationCompat.Builder builder,
+                                       @DrawableRes int icon, @StringRes int string,
+                                       int keyEvent) {
+
+        PendingIntent intent = MediaStyleHelper.getActionIntent(this, keyEvent);
+        builder.addAction(new NotificationCompat.Action(icon, getString(string), intent));
     }
 
     private PendingIntent getStopIntent() {
