@@ -101,7 +101,8 @@
 
     <!-- Splash screen -->
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowNoTitle">true</item>
+        <item name="colorPrimaryDark">@color/background_material_dark</item>
+        <item name="colorPrimary">@color/background_material_dark</item>
         <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
 
