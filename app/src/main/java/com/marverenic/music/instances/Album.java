@@ -41,6 +41,23 @@ public final class Album implements Parcelable, Comparable<Album> {
 
     }
 
+    public Album(Context context, Cursor cur) {
+        this(context.getResources(), cur);
+    }
+
+    public Album(Resources res, Cursor cur) {
+        albumId = cur.getLong(cur.getColumnIndex(MediaStore.Audio.Albums._ID));
+        albumName = parseUnknown(
+                cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM)),
+                res.getString(R.string.unknown_album));
+        artistName = parseUnknown(
+                cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
+                res.getString(R.string.unknown_artist));
+        artistId = cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID));
+        year = cur.getInt(cur.getColumnIndex(MediaStore.Audio.Albums.LAST_YEAR));
+        artUri = cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
+    }
+
     private Album(Parcel in) {
         albumId = in.readLong();
         albumName = in.readString();

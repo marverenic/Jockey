@@ -406,6 +406,23 @@ public final class MediaStoreUtil {
         return found;
     }
 
+    public static Album findAlbumById(Context context, long albumId) {
+        Cursor cur = context.getContentResolver().query(
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                ALBUM_PROJECTION,
+                MediaStore.Audio.Albums._ID + " = ?",
+                new String[]{Long.toString(albumId)}, null);
+
+        if (cur == null) {
+            return null;
+        }
+
+        Album found = (cur.moveToFirst()) ? new Album(context, cur) : null;
+        cur.close();
+
+        return found;
+    }
+
     public static Playlist findPlaylistByName(Context context, String playlistName) {
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
