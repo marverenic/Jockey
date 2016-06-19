@@ -24,7 +24,7 @@ public class PlayerControllerFragment extends Fragment implements PlayerControll
                              Bundle savedInstanceState) {
 
         mBinding = ViewNowPlayingControlPanelBinding.inflate(inflater, container, false);
-        mBinding.setViewModel(new NowPlayingControllerViewModel(getContext()));
+        mBinding.setViewModel(new NowPlayingControllerViewModel(this));
 
         onUpdate();
 

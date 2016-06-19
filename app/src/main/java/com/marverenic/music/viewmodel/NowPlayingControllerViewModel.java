@@ -9,6 +9,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
@@ -26,6 +28,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
@@ -42,8 +45,10 @@ import rx.schedulers.Schedulers;
 public class NowPlayingControllerViewModel extends BaseObservable {
 
     private static final String TAG = "NowPlayingControllerViewModel";
+    private static final String TAG_PLAYLIST_DIALOG = "AppendPlaylistDialog";
 
     private Context mContext;
+    private FragmentManager mFragmentManager;
 
     @Inject MusicStore mMusicStore;
 
@@ -57,8 +62,14 @@ public class NowPlayingControllerViewModel extends BaseObservable {
     private final ObservableInt mCurrentPositionObservable;
     private Subscription mPositionSubscription;
 
-    public NowPlayingControllerViewModel(Context context) {
+    public NowPlayingControllerViewModel(Fragment fragment) {
+        this(fragment.getContext(), fragment.getFragmentManager());
+    }
+
+    public NowPlayingControllerViewModel(Context context, FragmentManager fragmentManager) {
         mContext = context;
+        mFragmentManager = fragmentManager;
+
         mCurrentPositionObservable = new ObservableInt();
         mSeekbarPosition = new ObservableInt();
 
@@ -260,7 +271,9 @@ public class NowPlayingControllerViewModel extends BaseObservable {
 
                     return true;
                 case 2: //Add to playlist
-                    // TODO implement this using DialogFragment
+                    AppendPlaylistDialogFragment.newInstance()
+                            .setSong(song)
+                            .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
                     return true;
             }
             return false;
