@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -13,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,6 +33,8 @@ import com.marverenic.music.view.GestureView;
 import java.io.File;
 import java.util.ArrayList;
 
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+
 public class NowPlayingActivity extends BaseActivity implements GestureView.OnGestureListener {
 
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
@@ -49,8 +51,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         onNewIntent(getIntent());
         setContentView(R.layout.activity_now_playing);
 
-        boolean landscape = getResources().getConfiguration().orientation
-                == Configuration.ORIENTATION_LANDSCAPE;
+        boolean landscape = getResources().getConfiguration().orientation == ORIENTATION_LANDSCAPE;
 
         if (!landscape) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -58,6 +59,9 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                         View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
                 getWindow().setStatusBarColor(Color.TRANSPARENT);
             }
+            findViewById(R.id.artworkSwipeFrame).getLayoutParams().height = getArtworkHeight();
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         }
 
         artwork = (ImageView) findViewById(R.id.imageArtwork);
@@ -83,6 +87,20 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         }
 
         onUpdate();
+    }
+
+    private int getArtworkHeight() {
+        int reservedHeight = (int) getResources().getDimension(R.dimen.player_frame_peek);
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        // Default to a square view, so set the height equal to the width
+        //noinspection SuspiciousNameCombination
+        int preferredHeight = metrics.widthPixels;
+        int maxHeight = metrics.heightPixels - reservedHeight;
+
+        return Math.min(preferredHeight, maxHeight);
     }
 
     @Override

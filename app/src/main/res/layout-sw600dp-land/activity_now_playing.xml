@@ -38,7 +38,7 @@
         android:layout_alignParentBottom="true"
         android:layout_toRightOf="@id/artworkSwipeFrame"
         android:layout_toEndOf="@id/artworkSwipeFrame"
-        tools:layout="@layout/fragment_player_controls" />
+        tools:layout="@layout/view_now_playing_control_panel" />
 
     <fragment
         android:id="@+id/listFragment"

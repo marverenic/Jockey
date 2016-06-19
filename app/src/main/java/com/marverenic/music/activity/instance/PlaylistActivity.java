@@ -3,6 +3,7 @@ package com.marverenic.music.activity.instance;
 import android.graphics.drawable.NinePatchDrawable;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -136,7 +137,7 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
                 new DragBackgroundDecoration(Themes.getBackgroundElevated()));
         mRecyclerView.addItemDecoration(new DragDividerDecoration(this, R.id.empty_layout));
         mRecyclerView.addItemDecoration(new DragDropDecoration(
-                (NinePatchDrawable) getDrawableCompat(R.drawable.list_drag_shadow)));
+                (NinePatchDrawable) ContextCompat.getDrawable(this, R.drawable.list_drag_shadow)));
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
