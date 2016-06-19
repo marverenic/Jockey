@@ -3,6 +3,7 @@ package com.marverenic.music.viewmodel;
 import android.content.Context;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
@@ -11,7 +12,6 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
@@ -20,6 +20,7 @@ import java.util.List;
 
 public class QueueSongViewModel extends SongViewModel {
 
+    private static final String TAG = "QueueSongViewModel";
     private static final String TAG_PLAYLIST_DIALOG = "QueueSongViewModel.PlaylistDialog";
 
     private Context mContext;
@@ -70,18 +71,24 @@ public class QueueSongViewModel extends SongViewModel {
         return menuItem -> {
             switch (menuItem.getItemId()) {
                 case 0: //Go to artist
-                    Navigate.to(
-                            mContext,
-                            ArtistActivity.class,
-                            ArtistActivity.ARTIST_EXTRA,
-                            Library.findArtistById(getReference().getArtistId()));
+                    mMusicStore.findArtistById(getReference().getArtistId()).subscribe(
+                            artist -> {
+                                Navigate.to(mContext, ArtistActivity.class,
+                                        ArtistActivity.ARTIST_EXTRA, artist);
+                            }, throwable -> {
+                                Log.e(TAG, "Failed to find artist", throwable);
+                            });
+
                     return true;
                 case 1: // Go to album
-                    Navigate.to(
-                            mContext,
-                            AlbumActivity.class,
-                            AlbumActivity.ALBUM_EXTRA,
-                            Library.findAlbumById(getReference().getAlbumId()));
+                    mMusicStore.findAlbumById(getReference().getAlbumId()).subscribe(
+                            album -> {
+                                Navigate.to(mContext, AlbumActivity.class,
+                                        AlbumActivity.ALBUM_EXTRA, album);
+                            }, throwable -> {
+                                Log.e(TAG, "Failed to find album", throwable);
+                            });
+
                     return true;
                 case 2: // Add to playlist
                     AppendPlaylistDialogFragment.newInstance()
