@@ -32,7 +32,6 @@ import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.instances.Album;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.view.ViewUtils;
@@ -155,24 +154,42 @@ public class AlbumViewModel extends BaseObservable {
         return menuItem -> {
             switch (menuItem.getItemId()) {
                 case 0: //Queue this album next
-                    PlayerController.queueNext(Library.getAlbumEntries(mAlbum));
+                    mMusicStore.getSongs(mAlbum).subscribe(
+                            PlayerController::queueNext,
+                            throwable -> {
+                                Log.e(TAG, "Failed to get songs", throwable);
+                            });
+
                     return true;
                 case 1: //Queue this album last
-                    PlayerController.queueLast(Library.getAlbumEntries(mAlbum));
+                    mMusicStore.getSongs(mAlbum).subscribe(
+                            PlayerController::queueLast,
+                            throwable -> {
+                                Log.e(TAG, "Failed to get songs", throwable);
+                            });
+
                     return true;
                 case 2: //Go to artist
-                    Navigate.to(
-                            mContext,
-                            ArtistActivity.class,
-                            ArtistActivity.ARTIST_EXTRA,
-                            Library.findArtistById(mAlbum.getArtistId()));
+                    mMusicStore.findArtistById(mAlbum.getArtistId()).subscribe(
+                            artist -> {
+                                Navigate.to(mContext, ArtistActivity.class,
+                                        ArtistActivity.ARTIST_EXTRA, artist);
+                            }, throwable -> {
+                                Log.e(TAG, "Failed to find artist", throwable);
+                            });
+
                     return true;
                 case 3: //Add to playlist...
-                    AppendPlaylistDialogFragment.newInstance()
-                            .setSongs(Library.getAlbumEntries(mAlbum))
-                            .setTitle(mContext.getString(R.string.header_add_song_name_to_playlist,
-                                    mAlbum))
-                            .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
+                    mMusicStore.getSongs(mAlbum).subscribe(
+                            songs -> {
+                                AppendPlaylistDialogFragment.newInstance()
+                                        .setSongs(songs)
+                                        .setCollectionName(mAlbum.getAlbumName())
+                                        .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
+                            }, throwable -> {
+                                Log.e(TAG, "Failed to get songs", throwable);
+                            });
+
                     return true;
             }
             return false;
