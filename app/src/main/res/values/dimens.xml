@@ -26,6 +26,7 @@
     <dimen name="now_playing_time_padding_bottom">0dp</dimen>
     <dimen name="now_playing_thumb_margin">8dp</dimen>
     <dimen name="player_frame_height">192dp</dimen>
+    <dimen name="player_frame_peek">208dp</dimen>
     <dimen name="player_frame_info_height">128dp</dimen>
     <dimen name="player_frame_ctrl_height">64dp</dimen>
     <dimen name="inset_shadow_height">3dp</dimen>
