@@ -65,6 +65,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
         notifyPropertyChanged(BR.songTitle);
         notifyPropertyChanged(BR.artistName);
         notifyPropertyChanged(BR.artistName);
+        notifyPropertyChanged(BR.songDuration);
     }
 
     public void setPlaying(boolean playing) {
@@ -75,6 +76,11 @@ public class NowPlayingControllerViewModel extends BaseObservable {
             pollPosition();
         } else {
             stopPollingPosition();
+        }
+
+        if (!mUserTouchingProgressBar) {
+            mSeekbarPosition.set(PlayerController.getCurrentPosition());
+            mCurrentPositionObservable.set(PlayerController.getCurrentPosition());
         }
     }
 
@@ -267,8 +273,8 @@ public class NowPlayingControllerViewModel extends BaseObservable {
         return new OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                mSeekbarPosition.set(progress);
                 if (fromUser) {
-                    mSeekbarPosition.set(progress);
                     notifyPropertyChanged(BR.seekBarHeadMarginLeft);
 
                     if (!mUserTouchingProgressBar) {
