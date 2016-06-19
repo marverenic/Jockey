@@ -2,14 +2,10 @@ package com.marverenic.music.activity;
 
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -230,15 +226,5 @@ public abstract class BaseActivity extends RxAppCompatActivity
             content = findViewById(android.R.id.content);
         }
         Snackbar.make(content, message, Snackbar.LENGTH_LONG).show();
-    }
-
-    @Nullable
-    @SuppressWarnings("deprecation")
-    public Drawable getDrawableCompat(@DrawableRes int id) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return getDrawable(id);
-        } else {
-            return getResources().getDrawable(id);
-        }
     }
 }
