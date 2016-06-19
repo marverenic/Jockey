@@ -21,9 +21,11 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import com.marverenic.music.BR;
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
+import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Library;
@@ -34,6 +36,8 @@ import com.marverenic.music.utils.Themes;
 
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
 import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
@@ -43,6 +47,8 @@ public class NowPlayingControllerViewModel extends BaseObservable {
     private static final String TAG = "NowPlayingControllerViewModel";
 
     private Context mContext;
+
+    @Inject MusicStore mMusicStore;
 
     @Nullable
     private Song mSong;
@@ -58,6 +64,8 @@ public class NowPlayingControllerViewModel extends BaseObservable {
         mContext = context;
         mCurrentPositionObservable = new ObservableInt();
         mSeekbarPosition = new ObservableInt();
+
+        JockeyApplication.getComponent(mContext).inject(this);
     }
 
     public void setSong(@Nullable Song song) {

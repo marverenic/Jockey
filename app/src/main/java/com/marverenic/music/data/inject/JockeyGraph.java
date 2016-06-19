@@ -14,6 +14,7 @@ import com.marverenic.music.fragments.ArtistFragment;
 import com.marverenic.music.fragments.GenreFragment;
 import com.marverenic.music.fragments.PlaylistFragment;
 import com.marverenic.music.fragments.SongFragment;
+import com.marverenic.music.viewmodel.NowPlayingControllerViewModel;
 
 public interface JockeyGraph {
 
@@ -33,5 +34,7 @@ public interface JockeyGraph {
 
     void inject(CreatePlaylistDialogFragment dialogFragment);
     void inject(AppendPlaylistDialogFragment dialogFragment);
+
+    void inject(NowPlayingControllerViewModel viewModel);
 
 }
