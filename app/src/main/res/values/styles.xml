@@ -100,7 +100,7 @@
     </style>
 
     <!-- Splash screen -->
-    <style name="SplashTheme" parent="android:Theme">
+    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
