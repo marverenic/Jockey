@@ -14,4 +14,8 @@
         <attr name="tapIndicator" format="reference"/>
     </declare-styleable>
 
+    <declare-styleable name="TimeView">
+        <attr name="time" format="integer"/>
+    </declare-styleable>
+
 </resources>

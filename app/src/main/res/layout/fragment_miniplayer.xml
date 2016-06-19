@@ -1,82 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/miniplayer"
-    android:layout_width="fill_parent"
-    android:layout_height="@dimen/miniplayer_height"
-    android:background="?android:attr/selectableItemBackground"
-    android:gravity="center">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ImageView
-        android:id="@+id/imageArtwork"
-        android:layout_width="@dimen/miniplayer_height"
+    <data>
+        <variable
+            name="viewModel"
+            type="com.marverenic.music.viewmodel.MiniplayerViewModel"/>
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/miniplayer"
+        android:layout_width="fill_parent"
         android:layout_height="@dimen/miniplayer_height"
-        android:background="@android:color/black"
-        android:contentDescription="@string/description_album_art"
-        android:src="@drawable/art_default" />
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:gravity="center"
+        android:onClick="@{viewModel.onClickMiniplayer()}">
 
-    <ProgressBar
-        android:id="@+id/songProgress"
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        android:progressDrawable="@drawable/progress_drawable"
-        android:layout_toRightOf="@id/imageArtwork"
-        android:layout_toEndOf="@id/imageArtwork"/>
+        <ImageView
+            android:id="@+id/imageArtwork"
+            android:layout_width="@dimen/miniplayer_height"
+            android:layout_height="@dimen/miniplayer_height"
+            android:background="@android:color/black"
+            android:contentDescription="@string/description_album_art"
+            app:bitmap="@{viewModel.artwork}"/>
 
-    <ImageButton
-        android:id="@+id/skipButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_centerInParent="true"
-        android:src="@drawable/ic_skip_next_32dp"
-        android:tint="?textColorPrimary"
-        android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
-        android:contentDescription="@string/button_skip_description"
-        android:onClick="onClick" />
+        <ProgressBar
+            android:id="@+id/songProgress"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:progressDrawable="@drawable/progress_drawable"
+            android:layout_toRightOf="@id/imageArtwork"
+            android:layout_toEndOf="@id/imageArtwork"
+            android:max="@{viewModel.songDuration}"
+            android:progress="@{viewModel.progress}"/>
 
-    <ImageButton
-        android:id="@+id/playButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:layout_centerInParent="true"
-        android:layout_toLeftOf="@+id/skipButton"
-        android:layout_toStartOf="@id/skipButton"
-        android:src="@drawable/ic_play_arrow_32dp"
-        android:tint="?textColorPrimary"
-        android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
-        android:contentDescription="@string/button_play_description"
-        android:onClick="onClick" />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_centerInParent="true"
-        android:layout_toRightOf="@id/imageArtwork"
-        android:layout_toEndOf="@+id/imageArtwork"
-        android:layout_toLeftOf="@id/playButton"
-        android:layout_toStartOf="@id/playButton">
-
-        <TextView
-            android:id="@+id/textNowPlayingTitle"
+        <ImageButton
+            android:id="@+id/skipButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/miniplayerTitleText"
-            android:text="@string/nothing_playing"/>
+            android:padding="8dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_skip_next_32dp"
+            android:tint="?textColorPrimary"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/button_skip_description"
+            android:onClick="@{viewModel.onClickSkip()}" />
 
-        <TextView
-            android:id="@+id/textNowPlayingDetail"
+        <ImageButton
+            android:id="@+id/playButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/miniplayerDetailText"
-            android:text="@string/no_artist"/>
+            android:padding="8dp"
+            android:layout_centerInParent="true"
+            android:layout_toLeftOf="@+id/skipButton"
+            android:layout_toStartOf="@id/skipButton"
+            android:src="@{viewModel.togglePlayIcon}"
+            android:tint="?textColorPrimary"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/button_play_description"
+            android:onClick="@{viewModel.onClickTogglePlay()}" />
 
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_centerInParent="true"
+            android:layout_toRightOf="@id/imageArtwork"
+            android:layout_toEndOf="@+id/imageArtwork"
+            android:layout_toLeftOf="@id/playButton"
+            android:layout_toStartOf="@id/playButton">
 
-</RelativeLayout>
+            <TextView
+                android:id="@+id/textNowPlayingTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/miniplayerTitleText"
+                android:text="@{viewModel.songTitle}"/>
+
+            <TextView
+                android:id="@+id/textNowPlayingDetail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/miniplayerDetailText"
+                android:text="@{viewModel.songArtist}"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+</layout>
