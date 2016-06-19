@@ -383,7 +383,7 @@ public final class MediaStoreUtil {
              return null;
         }
 
-        Artist found = (cur.moveToFirst()) ? new Artist(cur) : null;
+        Artist found = (cur.moveToFirst()) ? new Artist(context, cur) : null;
         cur.close();
 
         return found;
@@ -400,7 +400,7 @@ public final class MediaStoreUtil {
             return null;
         }
 
-        Artist found = (cur.moveToFirst()) ? new Artist(cur) : null;
+        Artist found = (cur.moveToFirst()) ? new Artist(context, cur) : null;
         cur.close();
 
         return found;
