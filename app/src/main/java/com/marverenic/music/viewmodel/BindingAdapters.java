@@ -1,6 +1,7 @@
 package com.marverenic.music.viewmodel;
 
 import android.databinding.BindingAdapter;
+import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
@@ -10,6 +11,11 @@ import android.view.animation.Animation;
 import android.widget.ImageView;
 
 public class BindingAdapters {
+
+    @BindingAdapter("bind:bitmap")
+    public static void bindBitmap(ImageView imageView, Bitmap bitmap) {
+        imageView.setImageBitmap(bitmap);
+    }
 
     @BindingAdapter("bind:tint")
     public static void bindImageViewTint(ImageView imageView, @ColorInt int color) {
