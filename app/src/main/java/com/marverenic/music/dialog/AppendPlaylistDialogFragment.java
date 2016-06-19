@@ -30,6 +30,7 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
 
     private Dialog mDialog;
     private String mTitle;
+    private String mCollectionName;
     private Playlist[] mChoices;
     private String[] mChoiceNames;
     private Song mSong;
@@ -38,6 +39,11 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
 
     public static AppendPlaylistDialogFragment newInstance() {
         return new AppendPlaylistDialogFragment();
+    }
+
+    public AppendPlaylistDialogFragment setCollectionName(String name) {
+        mCollectionName = name;
+        return this;
     }
 
     public AppendPlaylistDialogFragment setTitle(String title) {
@@ -116,8 +122,12 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
             getDialog().hide();
         }
 
-        if (mTitle == null && mSingle) {
-            setTitle(getString(R.string.header_add_song_name_to_playlist, mSong));
+        if (mTitle == null) {
+            if (mSingle) {
+                setTitle(getString(R.string.header_add_song_name_to_playlist, mSong));
+            } else if (mCollectionName != null) {
+                setTitle(getString(R.string.header_add_song_name_to_playlist, mCollectionName));
+            }
         }
 
         mDialog = new AlertDialog.Builder(getContext())
