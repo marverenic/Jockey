@@ -133,6 +133,11 @@ public class LocalMusicStore implements MusicStore {
     }
 
     @Override
+    public Observable<Artist> findArtistById(long artistId) {
+        return Observable.just(MediaStoreUtil.findArtistById(mContext, artistId));
+    }
+
+    @Override
     public Observable<Artist> findArtistByName(String artistName) {
         return Observable.just(MediaStoreUtil.findArtistByName(mContext, artistName));
     }

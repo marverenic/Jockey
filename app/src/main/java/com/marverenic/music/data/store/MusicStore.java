@@ -29,6 +29,8 @@ public interface MusicStore {
 
     Observable<List<Album>> getAlbums(Artist artist);
 
+    Observable<Artist> findArtistById(long artistId);
+
     Observable<Artist> findArtistByName(String artistName);
 
     Observable<List<Song>> searchForSongs(String query);

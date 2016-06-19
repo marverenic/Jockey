@@ -389,6 +389,23 @@ public final class MediaStoreUtil {
         return found;
     }
 
+    public static Artist findArtistById(Context context, long artistId) {
+        Cursor cur = context.getContentResolver().query(
+                MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
+                ARTIST_PROJECTION,
+                MediaStore.Audio.Artists._ID + " = ?",
+                new String[]{Long.toString(artistId)}, null);
+
+        if (cur == null) {
+            return null;
+        }
+
+        Artist found = (cur.moveToFirst()) ? new Artist(cur) : null;
+        cur.close();
+
+        return found;
+    }
+
     public static Playlist findPlaylistByName(Context context, String playlistName) {
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
