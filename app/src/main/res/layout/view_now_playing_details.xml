@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.marverenic.music.viewmodel.NowPlayingControllerViewModel"/>
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/songInfo"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
+
+        <TextView
+            android:id="@+id/textSongTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@+id/songDetail"
+            android:layout_toLeftOf="@+id/songDetail"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@{viewModel.songTitle}"
+            android:textColor="@color/player_text_main"
+            style="@style/TextAppearance.AppCompat.Headline"/>
+
+        <TextView
+            android:id="@+id/textArtistName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textSongTitle"
+            android:layout_toStartOf="@+id/songDetail"
+            android:layout_toLeftOf="@+id/songDetail"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@{viewModel.artistName}"
+            android:textColor="@color/player_text_detail"
+            style="@style/TextAppearance.AppCompat.Subhead"/>
+
+        <TextView
+            android:id="@+id/textAlbumTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textArtistName"
+            android:layout_toStartOf="@+id/songDetail"
+            android:layout_toLeftOf="@+id/songDetail"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@{viewModel.albumName}"
+            android:textColor="@color/player_text_detail"
+            style="@style/TextAppearance.AppCompat.Subhead"/>
+
+        <ImageButton
+            android:id="@+id/songDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:scaleType="center"
+            android:src="@drawable/ic_menu_24dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:tint="@color/player_text_main"
+            android:background="?selectableItemBackgroundBorderless"
+            android:onClick="@{viewModel.onMoreInfoClick()}"/>
+    </RelativeLayout>
+</layout>
