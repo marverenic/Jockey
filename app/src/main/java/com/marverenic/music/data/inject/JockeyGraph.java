@@ -14,6 +14,7 @@ import com.marverenic.music.fragments.ArtistFragment;
 import com.marverenic.music.fragments.GenreFragment;
 import com.marverenic.music.fragments.PlaylistFragment;
 import com.marverenic.music.fragments.SongFragment;
+import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.viewmodel.AlbumViewModel;
 import com.marverenic.music.viewmodel.ArtistViewModel;
 import com.marverenic.music.viewmodel.GenreViewModel;
@@ -46,5 +47,7 @@ public interface JockeyGraph {
     void inject(ArtistViewModel viewModel);
     void inject(GenreViewModel viewModel);
     void inject(PlaylistViewModel viewModel);
+
+    void inject(MusicPlayer musicPlayer);
 
 }

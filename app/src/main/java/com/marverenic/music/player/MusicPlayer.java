@@ -18,10 +18,11 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import com.crashlytics.android.Crashlytics;
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.data.store.MediaStoreUtil;
-import com.marverenic.music.instances.Library;
+import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Util;
@@ -30,13 +31,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Properties;
 import java.util.Scanner;
+
+import javax.inject.Inject;
 
 /**
  * High level implementation for a MediaPlayer. MusicPlayer is backed by a {@link QueuedMediaPlayer}
@@ -47,7 +48,7 @@ import java.util.Scanner;
  * {@link #setRepeat(int)}, respectively.
  *
  * MusicPlayer also provides play count logging and state reloading.
- * See {@link #logPlayCount(long, boolean)}, {@link #loadState()} and {@link #saveState()}
+ * See {@link #logPlayCount(Song, boolean)}, {@link #loadState()} and {@link #saveState()}
  *
  * System integration is implemented by handling Audio Focus through {@link AudioManager}, attaching
  * a {@link MediaSessionCompat}, and with a {@link HeadsetListener} -- an implementation of
@@ -180,14 +181,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     private Bitmap mArtwork;
 
-    /**
-     * A {@link Properties} object used as a hashtable for saving play and skip counts.
-     * See {@link #logPlayCount(long, boolean)}
-     *
-     * Keys are stored as strings in the form "song_id"
-     * Values are stored as strings in the form "play,skip,lastPlayDateAsUtcTimeStamp"
-     */
-    private Properties mPlayCountTable;
+    @Inject PlayCountStore mPlayCountStore;
 
     /**
      * Creates a new MusicPlayer with an empty queue. The backing {@link android.media.MediaPlayer}
@@ -198,6 +192,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     public MusicPlayer(Context context) {
         mContext = context;
+        JockeyApplication.getComponent(mContext).inject(this);
 
         // Initialize the media player
         mMediaPlayer = new QueuedMediaPlayer(context);
@@ -215,14 +210,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         filter.addAction(Intent.ACTION_MEDIA_BUTTON);
         filter.addAction(Intent.ACTION_HEADSET_PLUG);
         context.registerReceiver(mHeadphoneListener, filter);
-
-        // Prepare the Play Count table
-        try {
-            mPlayCountTable = Library.openPlayCountFile(context);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Crashlytics.logException(e);
-        }
 
         loadPrefs();
         initMediaSession();
@@ -605,70 +592,27 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                     || getCurrentPosition() > getDuration() / 2) {
                 // Log a play if we're passed a certain threshold or more than 50% in a song
                 // (whichever is smaller)
-                logPlayCount(getNowPlaying().getSongId(), false);
+                logPlayCount(getNowPlaying(), false);
             } else if (getCurrentPosition() < SKIP_COUNT_THRESHOLD) {
                 // If we're not very far into this song, log a skip
-                logPlayCount(getNowPlaying().getSongId(), true);
+                logPlayCount(getNowPlaying(), true);
             }
         }
     }
 
     /**
      * Record a play or skip for a certain song
-     * @param songId the ID of the song written in the {@link android.provider.MediaStore}
+     * @param song the song to change the play count of
      * @param skip Whether the song was skipped (true if skipped, false if played)
      */
-    private void logPlayCount(long songId, boolean skip) {
-        try {
-            final String originalValue = mPlayCountTable.getProperty(Long.toString(songId));
-            int playCount = 0;
-            int skipCount = 0;
-            int playDate = 0;
-
-            if (originalValue != null && !originalValue.isEmpty()) {
-                final String[] originalValues = originalValue.split(",");
-
-                playCount = Integer.parseInt(originalValues[0]);
-                skipCount = Integer.parseInt(originalValues[1]);
-
-                // Preserve backwards compatibility with play count files written with older
-                // versions of Jockey that didn't save this data
-                if (originalValues.length > 2) {
-                    playDate = Integer.parseInt(originalValues[2]);
-                }
-            }
-
-            if (skip) {
-                skipCount++;
-            } else {
-                playDate = (int) (System.currentTimeMillis() / 1000);
-                playCount++;
-            }
-
-            mPlayCountTable.setProperty(
-                    Long.toString(songId),
-                    playCount + "," + skipCount + "," + playDate);
-
-            savePlayCountFile();
-        } catch (IOException|NumberFormatException e) {
-            e.printStackTrace();
-            Crashlytics.logException(e);
+    private void logPlayCount(Song song, boolean skip) {
+        if (skip) {
+            mPlayCountStore.incrementSkipCount(song);
+        } else {
+            mPlayCountStore.incrementPlayCount(song);
+            mPlayCountStore.setPlayDateToNow(song);
         }
-    }
-
-    /**
-     * Writes the current values in {@link #mPlayCountTable} to disk
-     * @throws IOException
-     */
-    private void savePlayCountFile() throws IOException {
-        OutputStream os = new FileOutputStream(mContext.getExternalFilesDir(null) + "/"
-                + Library.PLAY_COUNT_FILENAME);
-
-        try {
-            mPlayCountTable.store(os, Library.PLAY_COUNT_FILE_COMMENT);
-        } finally {
-            os.close();
-        }
+        mPlayCountStore.save();
     }
 
     /**
