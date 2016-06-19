@@ -56,6 +56,8 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                 getWindow().setStatusBarColor(Color.TRANSPARENT);
             }
             findViewById(R.id.artworkSwipeFrame).getLayoutParams().height = getArtworkHeight();
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         }
 
         artwork = (ImageView) findViewById(R.id.imageArtwork);
