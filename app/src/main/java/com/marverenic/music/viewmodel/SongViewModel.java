@@ -123,8 +123,6 @@ public class SongViewModel extends BaseObservable {
                 case 4: //Add to playlist...
                     AppendPlaylistDialogFragment.newInstance()
                             .setSong(mReference)
-                            .setTitle(mContext.getString(R.string.header_add_song_name_to_playlist,
-                                    mReference))
                             .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
                     return true;
             }

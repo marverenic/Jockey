@@ -116,6 +116,10 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
             getDialog().hide();
         }
 
+        if (mTitle == null && mSingle) {
+            setTitle(getString(R.string.header_add_song_name_to_playlist, mSong));
+        }
+
         mDialog = new AlertDialog.Builder(getContext())
                 .setTitle(mTitle)
                 .setItems(mChoiceNames, (dialog, which) -> {onPlaylistSelected(which);})
