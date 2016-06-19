@@ -26,8 +26,6 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.data.store.MusicStore;
-import com.marverenic.music.instances.Album;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
@@ -240,7 +238,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
         return item -> {
             switch (item.getItemId()) {
                 case 0: //Go to artist
-                    mMusicStore.findArtistById(mSong.getArtistId()).subscribe(
+                    mMusicStore.findArtistById(song.getArtistId()).subscribe(
                             artist -> {
                                 Navigate.to(mContext, ArtistActivity.class,
                                         ArtistActivity.ARTIST_EXTRA, artist);
@@ -251,8 +249,15 @@ public class NowPlayingControllerViewModel extends BaseObservable {
 
                     return true;
                 case 1: //Go to album
-                    Album album = Library.findAlbumById(song.getAlbumId());
-                    Navigate.to(mContext, AlbumActivity.class, AlbumActivity.ALBUM_EXTRA, album);
+                    mMusicStore.findAlbumById(song.getAlbumId()).subscribe(
+                            album -> {
+                                Navigate.to(mContext, AlbumActivity.class,
+                                        AlbumActivity.ALBUM_EXTRA, album);
+                            },
+                            throwable -> {
+                                Log.e(TAG, "Failed to find album", throwable);
+                            });
+
                     return true;
                 case 2: //Add to playlist
                     // TODO implement this using DialogFragment
