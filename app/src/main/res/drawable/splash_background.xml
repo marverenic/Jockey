@@ -11,7 +11,7 @@
         <bitmap android:src="@drawable/ic_splash" android:gravity="center"/>
     </item>
 
-    <item android:bottom="30dp">
+    <item android:bottom="72dp">
         <bitmap android:src="@drawable/ic_marverenic" android:alpha="0.2" android:gravity="center_horizontal|bottom"/>
     </item>
 

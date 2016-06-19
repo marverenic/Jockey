@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/search"
-        android:icon="@drawable/abc_ic_search_api_mtrl_alpha"
+        android:icon="@drawable/ic_search_24dp"
         android:title="@string/header_search"
         app:showAsAction="ifRoom" />
 
