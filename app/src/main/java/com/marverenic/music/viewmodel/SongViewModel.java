@@ -8,10 +8,12 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
+import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
@@ -21,9 +23,13 @@ import com.marverenic.music.utils.Prefs;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class SongViewModel extends BaseObservable {
 
     private static final String TAG_PLAYLIST_DIALOG = "SongViewModel.PlaylistDialog";
+
+    @Inject MusicStore mMusicStore;
 
     private Context mContext;
     private FragmentManager mFragmentManager;
@@ -36,6 +42,8 @@ public class SongViewModel extends BaseObservable {
         mContext = context;
         mFragmentManager = fragmentManager;
         mSongList = songs;
+
+        JockeyApplication.getComponent(mContext).inject(this);
     }
 
     public void setIndex(int index) {

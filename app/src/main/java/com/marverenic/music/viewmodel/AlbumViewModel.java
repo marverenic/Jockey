@@ -25,9 +25,11 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
+import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Library;
@@ -39,10 +41,14 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 public class AlbumViewModel extends BaseObservable {
 
     private static final String TAG = "AlbumViewModel";
     private static final String TAG_PLAYLIST_DIALOG = "SongViewModel.PlaylistDialog";
+
+    @Inject MusicStore mMusicStore;
 
     private Context mContext;
     private FragmentManager mFragmentManager;
@@ -56,6 +62,8 @@ public class AlbumViewModel extends BaseObservable {
     public AlbumViewModel(Context context, FragmentManager fragmentManager) {
         mContext = context;
         mFragmentManager = fragmentManager;
+
+        JockeyApplication.getComponent(mContext).inject(this);
     }
 
     public void setAlbum(Album album) {

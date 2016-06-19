@@ -7,6 +7,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
 import com.marverenic.music.activity.instance.PlaylistActivity;
@@ -27,6 +28,7 @@ public class PlaylistViewModel extends BaseObservable {
 
     public PlaylistViewModel(Context context) {
         mContext = context;
+        JockeyApplication.getComponent(mContext).inject(this);
     }
 
     public void setPlaylist(Playlist playlist) {
