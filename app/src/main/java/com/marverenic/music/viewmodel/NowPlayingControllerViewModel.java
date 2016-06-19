@@ -27,7 +27,6 @@ import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.instances.Album;
-import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.PlayerController;
@@ -241,8 +240,15 @@ public class NowPlayingControllerViewModel extends BaseObservable {
         return item -> {
             switch (item.getItemId()) {
                 case 0: //Go to artist
-                    Artist artist = Library.findArtistById(song.getArtistId());
-                    Navigate.to(mContext, ArtistActivity.class, ArtistActivity.ARTIST_EXTRA, artist);
+                    mMusicStore.findArtistById(mSong.getArtistId()).subscribe(
+                            artist -> {
+                                Navigate.to(mContext, ArtistActivity.class,
+                                        ArtistActivity.ARTIST_EXTRA, artist);
+                            },
+                            throwable -> {
+                                Log.e(TAG, "Failed to find artist", throwable);
+                            });
+
                     return true;
                 case 1: //Go to album
                     Album album = Library.findAlbumById(song.getAlbumId());
