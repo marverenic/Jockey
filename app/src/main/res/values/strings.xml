@@ -48,9 +48,30 @@
     <string name="uses_aosp_detail">Support-v4 24.0.0, Appcompat-v7 24.0.0, RecyclerView 24.0.0,
         CardView 24.0.0, Design 24.0.0, Palette 24.0.0, Preference-v14 24.0.0; distributed by the
         Android Open Source Project under an Apache License, Version 2.0</string>
+    <string name="uses_dagger_header">Dagger</string>
+    <string name="uses_dagger_detail">Version 2.4; distributed by Google Inc. and Square Inc. under
+        an Apache License, Version 2.0</string>
+    <string name="uses_rx_java_header">RxJava</string>
+    <string name="uses_rx_java_detail">Version 1.6.1; distributed by Netflix, Inc. under an Apache
+        License, Version 2.0</string>
+    <string name="uses_rx_android_header">RxAndroid</string>
+    <string name="uses_rx_android_detail">Version 1.2.1; distributed by RxAndroid under an Apache
+        License, Version 2.0</string>
+    <string name="uses_rx_lifecycle_header">RxLifecycle</string>
+    <string name="uses_rx_lifecycle_detail">Version 0.6.1; distributed by Trello under an Apache
+        License, Version 2.0</string>
+    <string name="uses_rx_relay_header">RxRelay</string>
+    <string name="uses_rx_relay_detail">Version 1.1.0; distributed by Netflix, Inc. and Jake Wharton
+        under an Apache License, Version 2.0</string>
+    <string name="uses_rx_permissions_header">RxPermissions</string>
+    <string name="uses_rx_permissions_detail">Version 0.7.0; distributed by Thomas Bruyelle
+        (tbruyelle) under an Apache License, Version 2.0</string>
+    <string name="uses_retrofit_header">Retrofit</string>
+    <string name="uses_retrofit_detail">Version 2.0.2; distributed by Square, Inc. under an Apache
+        License, Version 2.0</string>
     <string name="uses_gson_header">Gson</string>
-    <string name="uses_gson_detail">Version 2.4 distributed by Google, Inc. under an Apache License,
-        Version 2.0</string>
+    <string name="uses_gson_detail">Version 2.4; distributed by Google, Inc. under an Apache
+        License, Version 2.0</string>
     <string name="uses_glide_header">Glide</string>
     <string name="uses_glide_detail">Version 3.6.1; distributed by Google, Inc. under a BSD License</string>
     <string name="uses_vert_slider_header">VerticalSeekBar</string>
