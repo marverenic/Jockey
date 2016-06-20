@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.jakewharton.rxrelay.BehaviorRelay;
 import com.marverenic.music.R;
+import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 
@@ -68,6 +69,12 @@ public class LocalPlaylistStore implements PlaylistStore {
     }
 
     @Override
+    public AutoPlaylist makePlaylist(AutoPlaylist model) {
+        // TODO implement AutoPlaylists
+        return null;
+    }
+
+    @Override
     public Playlist makePlaylist(String name, @Nullable List<Song> songs) {
         Playlist created = MediaStoreUtil.createPlaylist(mContext, name, songs);
 
@@ -97,6 +104,11 @@ public class LocalPlaylistStore implements PlaylistStore {
     @Override
     public void editPlaylist(Playlist playlist, List<Song> newSongs) {
         MediaStoreUtil.editPlaylist(mContext, playlist, newSongs);
+    }
+
+    @Override
+    public void editPlaylist(AutoPlaylist replacementModel) {
+        // TODO implement AutoPlaylists
     }
 
     @Override

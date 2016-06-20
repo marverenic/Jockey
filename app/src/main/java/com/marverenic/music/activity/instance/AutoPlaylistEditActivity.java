@@ -10,10 +10,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.AutoPlaylist;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.section.RuleHeaderSingleton;
 import com.marverenic.music.instances.section.RuleSection;
 import com.marverenic.music.utils.Navigate;
@@ -101,9 +102,9 @@ public class AutoPlaylistEditActivity extends BaseActivity
         AutoPlaylist.Rule[] modifiedRules = new AutoPlaylist.Rule[editedRules.size()];
         editedReference.setRules(editedRules.toArray(modifiedRules));
         if (reference.getPlaylistId() == AutoPlaylist.EMPTY.getPlaylistId()) {
-            Library.createAutoPlaylist(this, editedReference);
+            mPlaylistStore.makePlaylist(editedReference);
         } else {
-            Library.editAutoPlaylist(this, editedReference);
+            mPlaylistStore.editPlaylist(editedReference);
         }
     }
 
@@ -122,10 +123,11 @@ public class AutoPlaylistEditActivity extends BaseActivity
     }
 
     private boolean validateName() {
-        boolean valid =
-                editedReference.getPlaylistName().trim().equalsIgnoreCase(
-                        reference.getPlaylistName().trim())
-                || Library.verifyPlaylistName(this, editedReference.getPlaylistName()) == null;
+        String originalName = reference.getPlaylistName().trim();
+        String editedName = editedReference.getPlaylistName().trim();
+
+        boolean equal = originalName.equalsIgnoreCase(editedName);
+        boolean valid = equal || mPlaylistStore.verifyPlaylistName(editedName) == null;
 
         if (!valid) {
             RecyclerView list = (RecyclerView) findViewById(R.id.list);
