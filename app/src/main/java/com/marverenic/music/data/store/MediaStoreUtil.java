@@ -142,6 +142,7 @@ public final class MediaStoreUtil {
         }
 
         List<Song> songs = Song.buildSongList(cur, context.getResources());
+        Collections.sort(songs);
         cur.close();
 
         return songs;
@@ -160,6 +161,7 @@ public final class MediaStoreUtil {
         }
 
         List<Album> albums = Album.buildAlbumList(cur, context.getResources());
+        Collections.sort(albums);
         cur.close();
 
         return albums;
@@ -178,6 +180,7 @@ public final class MediaStoreUtil {
         }
 
         List<Artist> artists = Artist.buildArtistList(cur, context.getResources());
+        Collections.sort(artists);
         cur.close();
 
         return artists;
@@ -198,6 +201,7 @@ public final class MediaStoreUtil {
         }
 
         genres = Genre.buildGenreList(context, cur);
+        Collections.sort(genres);
         cur.close();
 
         return genres;
@@ -218,6 +222,7 @@ public final class MediaStoreUtil {
             }
         }
 
+        Collections.sort(playlists);
         return playlists;
     }
 
@@ -234,6 +239,7 @@ public final class MediaStoreUtil {
         }
 
         List<Playlist> playlists = Playlist.buildPlaylistList(cur);
+        Collections.sort(playlists);
         cur.close();
 
         return playlists;
@@ -260,6 +266,7 @@ public final class MediaStoreUtil {
             Crashlytics.logException(e);
         }
 
+        Collections.sort(autoPlaylists);
         return autoPlaylists;
     }
 
@@ -281,6 +288,7 @@ public final class MediaStoreUtil {
         }
 
         List<Song> songs = Song.buildSongList(cur, context.getResources());
+        Collections.sort(songs);
         cur.close();
 
         return songs;
@@ -367,6 +375,7 @@ public final class MediaStoreUtil {
         }
 
         List<Song> songs = Song.buildSongList(cur, context.getResources());
+        Collections.sort(songs);
         cur.close();
 
         return songs;
