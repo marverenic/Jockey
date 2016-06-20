@@ -290,19 +290,21 @@
 
             <RelativeLayout
                 android:id="@+id/aboutMarverenicLogo"
-                android:layout_width="fill_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/aboutStackOverflowHeader"
-                android:layout_margin="@dimen/list_padding"
-                android:background="?attr/selectableItemBackground">
+                android:layout_centerHorizontal="true"
+                android:layout_margin="32dp"
+                android:background="?attr/selectableItemBackgroundBorderless">
 
                 <ImageView
                     android:id="@+id/aboutMarverenicIcon"
-                    android:layout_width="fill_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingTop="@dimen/list_padding"
                     android:paddingLeft="@dimen/list_padding"
                     android:paddingRight="@dimen/list_padding"
+                    android:layout_centerHorizontal="true"
                     android:src="@drawable/ic_marverenic" />
 
                 <TextView
