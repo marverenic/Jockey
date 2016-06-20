@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.marverenic.music">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- Used to read music -->
@@ -19,7 +20,9 @@
         android:icon="@drawable/ic_launcher"
         android:fullBackupContent="false"
         android:label="@string/app_name"
-        android:name=".JockeyApplication">
+        android:name=".JockeyApplication"
+        android:resizeableActivity="true"
+        tools:ignore="UnusedAttribute">
 
         <!-- Library Activity -->
         <activity
@@ -45,6 +48,9 @@
             android:name=".activity.instance.PlaylistActivity"
             android:windowSoftInputMode="adjustPan|adjustNothing"/>
         <activity
+            android:name=".activity.instance.AutoPlaylistActivity"
+            android:windowSoftInputMode="adjustPan|adjustNothing"/>
+        <activity
             android:name=".activity.instance.AlbumActivity"
             android:windowSoftInputMode="adjustPan|adjustNothing"/>
         <activity
@@ -59,7 +65,8 @@
         <!-- Now Playing Activity -->
         <activity
             android:name=".activity.NowPlayingActivity"
-            android:label="@string/header_now_playing"/>
+            android:label="@string/header_now_playing"
+            android:windowSoftInputMode="adjustNothing"/>
 
         <!-- Play with Jockey (from search) intent filter -->
         <activity-alias
@@ -111,13 +118,18 @@
         <service
             android:name=".player.PlayerService"
             android:process=":player"
-            android:exported="false" />
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </service>
 
         <!-- Broadcast Receivers -->
-        <receiver
-            android:name=".player.PlayerService$Listener"
-            android:process=":player"
-            android:exported="false" />
+        <receiver android:name="android.support.v4.media.session.MediaButtonReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
 
         <receiver android:name=".player.PlayerController$Listener"
             android:exported="false">

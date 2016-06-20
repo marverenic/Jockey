@@ -35,6 +35,7 @@
                     android:id="@+id/imageArtwork"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:src="@drawable/art_default_xl"
                     android:fitsSystemWindows="true"
                     android:background="@android:color/black"/>
@@ -63,7 +64,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:name="com.marverenic.music.fragments.PlayerControllerFragment"
-            tools:layout="@layout/fragment_player_controls" />
+            tools:layout="@layout/view_now_playing_control_panel" />
 
     </android.support.v4.widget.NestedScrollView>
 

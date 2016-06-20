@@ -15,11 +15,14 @@ import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.AutoPlaylist;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
+
+import javax.inject.Inject;
 
 public class RuleHeaderSingleton extends HeterogeneousAdapter.SingletonSection<AutoPlaylist> {
 
@@ -67,6 +70,8 @@ public class RuleHeaderSingleton extends HeterogeneousAdapter.SingletonSection<A
                 true
         };
 
+        @Inject PlaylistStore mPlaylistStore;
+
         private AutoPlaylist reference;
         private final String originalName;
 
@@ -83,6 +88,8 @@ public class RuleHeaderSingleton extends HeterogeneousAdapter.SingletonSection<A
 
         public ViewHolder(View itemView, AutoPlaylist reference) {
             super(itemView);
+            JockeyApplication.getComponent(itemView.getContext()).inject(this);
+
             this.reference = reference;
             this.originalName = reference.getPlaylistName();
 
@@ -141,8 +148,7 @@ public class RuleHeaderSingleton extends HeterogeneousAdapter.SingletonSection<A
                     // Validate playlist names to avoid collisions
                     if (originalName.isEmpty()
                             || !originalName.equalsIgnoreCase(s.toString().trim())) {
-                        String error = Library.verifyPlaylistName(
-                                ViewHolder.this.itemView.getContext(), s.toString());
+                        String error = mPlaylistStore.verifyPlaylistName(s.toString());
                         nameEditLayout.setError(error);
                     } else {
                         nameEditLayout.setError(null);

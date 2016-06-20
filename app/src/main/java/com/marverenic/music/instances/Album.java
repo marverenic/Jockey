@@ -9,11 +9,14 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 
 import com.marverenic.music.R;
-import com.marverenic.music.utils.Util;
+import com.marverenic.music.data.store.MediaStoreUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+
+import static com.marverenic.music.instances.Util.compareTitle;
+import static com.marverenic.music.instances.Util.hashLong;
+import static com.marverenic.music.instances.Util.parseUnknown;
 
 public final class Album implements Parcelable, Comparable<Album> {
 
@@ -38,6 +41,23 @@ public final class Album implements Parcelable, Comparable<Album> {
 
     }
 
+    public Album(Context context, Cursor cur) {
+        this(context.getResources(), cur);
+    }
+
+    public Album(Resources res, Cursor cur) {
+        albumId = cur.getLong(cur.getColumnIndex(MediaStore.Audio.Albums._ID));
+        albumName = parseUnknown(
+                cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM)),
+                res.getString(R.string.unknown_album));
+        artistName = parseUnknown(
+                cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
+                res.getString(R.string.unknown_artist));
+        artistId = cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID));
+        year = cur.getInt(cur.getColumnIndex(MediaStore.Audio.Albums.LAST_YEAR));
+        artUri = cur.getString(cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
+    }
+
     private Album(Parcel in) {
         albumId = in.readLong();
         albumName = in.readString();
@@ -51,8 +71,8 @@ public final class Album implements Parcelable, Comparable<Album> {
      * Builds a {@link List} of Albums from a Cursor
      * @param cur A {@link Cursor} to use when reading the {@link MediaStore}. This Cursor may have
      *            any filters and sorting, but MUST have AT LEAST the columns in
-     *            {@link Library#ALBUM_PROJECTION}. The caller is responsible for closing this
-     *            Cursor.
+     *            {@link MediaStoreUtil#ALBUM_PROJECTION}. The caller is responsible for closing
+     *            this Cursor.
      * @param res A {@link Resources} Object from {@link Context#getResources()} used to get the
      *            default values if an unknown value is encountered
      * @return A List of albums populated by entries in the Cursor
@@ -74,8 +94,8 @@ public final class Album implements Parcelable, Comparable<Album> {
             cur.moveToPosition(i);
             Album next = new Album();
             next.albumId = cur.getLong(idIndex);
-            next.albumName = Library.parseUnknown(cur.getString(albumIndex), unknownAlbum);
-            next.artistName = Library.parseUnknown(cur.getString(artistIndex), unknownArtist);
+            next.albumName = parseUnknown(cur.getString(albumIndex), unknownAlbum);
+            next.artistName = parseUnknown(cur.getString(artistIndex), unknownArtist);
             next.artistId = cur.getLong(artistIdIndex);
             next.year = cur.getInt(yearIndex);
             next.artUri = cur.getString(artIndex);
@@ -112,7 +132,7 @@ public final class Album implements Parcelable, Comparable<Album> {
 
     @Override
     public int hashCode() {
-        return Util.hashLong(albumId);
+        return hashLong(albumId);
     }
 
     @Override
@@ -142,22 +162,6 @@ public final class Album implements Parcelable, Comparable<Album> {
 
     @Override
     public int compareTo(@NonNull Album another) {
-        String o1c = (albumName == null)
-                ? ""
-                : albumName.toLowerCase(Locale.ENGLISH);
-        String o2c = (another.albumName == null)
-                ? ""
-                : another.albumName.toLowerCase(Locale.ENGLISH);
-        if (o1c.startsWith("the ")) {
-            o1c = o1c.substring(4);
-        } else if (o1c.startsWith("a ")) {
-            o1c = o1c.substring(2);
-        }
-        if (o2c.startsWith("the ")) {
-            o2c = o2c.substring(4);
-        } else if (o2c.startsWith("a ")) {
-            o2c = o2c.substring(2);
-        }
-        return o1c.compareTo(o2c);
+        return compareTitle(getAlbumName(), another.getAlbumName());
     }
 }

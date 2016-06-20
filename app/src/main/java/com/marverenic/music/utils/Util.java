@@ -1,8 +1,10 @@
 package com.marverenic.music.utils;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
@@ -39,6 +41,21 @@ public final class Util {
      */
     private Util() {
 
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    public static boolean hasPermission(Context context, String permission) {
+        return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    public static boolean hasPermissions(Context context, String... permissions) {
+        for (String permission : permissions) {
+            if (!hasPermission(context, permission)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static Intent getSystemEqIntent(Context c) {

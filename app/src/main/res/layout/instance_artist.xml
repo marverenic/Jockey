@@ -1,31 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/list_height"
-    android:background="?selectableItemBackground">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <TextView
-        android:id="@+id/instanceTitle"
-        style="@style/listTitleText"
-        android:layout_toLeftOf="@+id/instanceMore"
-        android:layout_toStartOf="@+id/instanceMore"
+    <data>
+        <variable name="viewModel" type="com.marverenic.music.viewmodel.ArtistViewModel" />
+    </data>
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:ellipsize="end"
-        android:singleLine="true" />
+        android:layout_height="@dimen/list_height"
+        android:background="?selectableItemBackground"
+        android:onClick="@{viewModel.onClickArtist()}" >
 
-    <ImageView
-        android:id="@+id/instanceMore"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:scaleType="center"
-        android:src="@drawable/ic_menu_24dp"
-        android:tint="?textColorPrimary"
-        android:background="?selectableItemBackgroundBorderless"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true" />
+        <TextView
+            android:id="@+id/instanceTitle"
+            style="@style/listTitleText"
+            android:text="@{viewModel.name}"
+            android:layout_toLeftOf="@+id/instanceMore"
+            android:layout_toStartOf="@+id/instanceMore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:ellipsize="end"
+            android:singleLine="true" />
 
-</RelativeLayout>
+        <ImageView
+            android:id="@+id/instanceMore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:scaleType="center"
+            android:src="@drawable/ic_menu_24dp"
+            android:tint="?textColorPrimary"
+            android:background="?selectableItemBackgroundBorderless"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:onClick="@{viewModel.onClickMenu()}" />
+
+    </RelativeLayout>
+
+</layout>

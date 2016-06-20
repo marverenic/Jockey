@@ -60,7 +60,8 @@ public class GridSpacingDecoration extends RecyclerView.ItemDecoration {
                 column = sectionPosition % numColumns;
 
                 childCount = 0;
-                while (adapter.getItemViewType(childCount + leadingViews) == viewType) {
+                while (childCount + leadingViews < adapter.getItemCount()
+                        && adapter.getItemViewType(childCount + leadingViews) == viewType) {
                     ++childCount;
                 }
             } else {

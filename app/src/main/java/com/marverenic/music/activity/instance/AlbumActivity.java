@@ -9,10 +9,11 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
+import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.instances.Album;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.SongSection;
@@ -21,22 +22,38 @@ import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import javax.inject.Inject;
 
 public class AlbumActivity extends BaseActivity {
 
     public static final String ALBUM_EXTRA = "album";
 
+    @Inject MusicStore mMusicStore;
+
+    private HeterogeneousAdapter mAdapter;
+    private SongSection mSongSection;
+    private List<Song> mSongs;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instance_artwork);
+        JockeyApplication.getComponent(this).inject(this);
 
-        final Album reference = getIntent().getParcelableExtra(ALBUM_EXTRA);
-        List<Song> data;
+        Album reference = getIntent().getParcelableExtra(ALBUM_EXTRA);
+
         if (reference != null) {
-            data = Library.getAlbumEntries(reference);
+            mMusicStore.getSongs(reference)
+                    .compose(bindToLifecycle())
+                    .subscribe(
+                            songs -> {
+                                mSongs = songs;
+                                setupAdapter();
+                            });
+
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle(reference.getAlbumName());
             }
@@ -45,7 +62,7 @@ public class AlbumActivity extends BaseActivity {
                     .centerCrop()
                     .into((ImageView) findViewById(R.id.backdrop));
         } else {
-            data = new ArrayList<>();
+            mSongs = Collections.emptyList();
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -54,40 +71,54 @@ public class AlbumActivity extends BaseActivity {
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
 
-        HeterogeneousAdapter adapter = new HeterogeneousAdapter();
-        adapter.addSection(new SongSection(data))
-                .setEmptyState(new LibraryEmptyState(this) {
-                    @Override
-                    public String getEmptyMessage() {
-                        if (reference == null) {
-                            return getString(R.string.empty_error_album);
-                        } else {
-                            return super.getEmptyMessage();
-                        }
-                    }
+        mAdapter = new HeterogeneousAdapter();
+        setupAdapter();
+        mAdapter.setEmptyState(new LibraryEmptyState(this, mMusicStore) {
+            @Override
+            public String getEmptyMessage() {
+                if (reference == null) {
+                    return getString(R.string.empty_error_album);
+                } else {
+                    return super.getEmptyMessage();
+                }
+            }
 
-                    @Override
-                    public String getEmptyMessageDetail() {
-                        if (reference == null) {
-                            return "";
-                        } else {
-                            return super.getEmptyMessageDetail();
-                        }
-                    }
+            @Override
+            public String getEmptyMessageDetail() {
+                if (reference == null) {
+                    return "";
+                } else {
+                    return super.getEmptyMessageDetail();
+                }
+            }
 
-                    @Override
-                    public String getEmptyAction1Label() {
-                        return "";
-                    }
-                });
+            @Override
+            public String getEmptyAction1Label() {
+                return "";
+            }
+        });
 
         RecyclerView list = (RecyclerView) findViewById(R.id.list);
-        list.setAdapter(adapter);
+        list.setAdapter(mAdapter);
         list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
         list.addItemDecoration(new DividerDecoration(this, R.id.empty_layout));
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         list.setLayoutManager(layoutManager);
+    }
+
+    private void setupAdapter() {
+        if (mAdapter == null || mSongs == null) {
+            return;
+        }
+
+        if (mSongSection != null) {
+            mSongSection.setData(mSongs);
+            mAdapter.notifyDataSetChanged();
+        } else {
+            mSongSection = new SongSection(this, mSongs);
+            mAdapter.addSection(mSongSection);
+        }
     }
 }

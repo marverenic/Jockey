@@ -1,7 +1,7 @@
 package com.marverenic.music.view;
 
-import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
@@ -27,11 +27,14 @@ public class TimeView extends TextView {
 
     public TimeView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-    }
+        TypedArray a = context.getTheme().obtainStyledAttributes(
+                attrs, R.styleable.TimeView, 0, 0);
 
-    @TargetApi(21)
-    public TimeView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
+        try {
+            setTime(a.getInt(R.styleable.TimeView_time, 0));
+        } finally {
+            a.recycle();
+        }
     }
 
     /**

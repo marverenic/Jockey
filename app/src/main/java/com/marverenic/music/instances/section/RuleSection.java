@@ -24,7 +24,6 @@ import android.widget.TextView;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.AutoPlaylist;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
@@ -316,7 +315,7 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylist.R
 
     }
 
-    private static class FieldAdapter extends BaseAdapter {
+    public static class FieldAdapter extends BaseAdapter {
 
         // These two int arrays correspond to which fields and match types apply to which index
         // int the field string array. Since fields and matches are interwoven in this array, they
@@ -489,18 +488,7 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylist.R
 
         @Override
         public int getCount() {
-            switch (type) {
-                case AutoPlaylist.Rule.Type.PLAYLIST:
-                    return Library.getPlaylists().size();
-                case AutoPlaylist.Rule.Type.SONG:
-                    return Library.getSongs().size();
-                case AutoPlaylist.Rule.Type.ARTIST:
-                    return Library.getArtists().size();
-                case AutoPlaylist.Rule.Type.ALBUM:
-                    return Library.getAlbums().size();
-                case AutoPlaylist.Rule.Type.GENRE:
-                    return Library.getGenres().size();
-            }
+            // TODO implement this using MusicStore & PlaylistStore
             return 0;
         }
 
@@ -511,18 +499,7 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylist.R
 
         @Override
         public Object getItem(int position) {
-            switch (type) {
-                case AutoPlaylist.Rule.Type.PLAYLIST:
-                    return Library.getPlaylists().get(position);
-                case AutoPlaylist.Rule.Type.SONG:
-                    return Library.getSongs().get(position);
-                case AutoPlaylist.Rule.Type.ARTIST:
-                    return Library.getArtists().get(position);
-                case AutoPlaylist.Rule.Type.ALBUM:
-                    return Library.getAlbums().get(position);
-                case AutoPlaylist.Rule.Type.GENRE:
-                    return Library.getGenres().get(position);
-            }
+            // TODO implement this using MusicStore & PlaylistStore
             return null;
         }
 
@@ -538,18 +515,7 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylist.R
 
         @Override
         public long getItemId(int position) {
-            switch (type) {
-                case AutoPlaylist.Rule.Type.PLAYLIST:
-                    return Library.getPlaylists().get(position).getPlaylistId();
-                case AutoPlaylist.Rule.Type.SONG:
-                    return Library.getSongs().get(position).getSongId();
-                case AutoPlaylist.Rule.Type.ARTIST:
-                    return Library.getArtists().get(position).getArtistId();
-                case AutoPlaylist.Rule.Type.ALBUM:
-                    return Library.getAlbums().get(position).getAlbumId();
-                case AutoPlaylist.Rule.Type.GENRE:
-                    return Library.getGenres().get(position).getGenreId();
-            }
+            // TODO implement this using MusicStore & PlaylistStore
             return 0;
         }
 

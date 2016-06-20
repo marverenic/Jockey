@@ -7,10 +7,13 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
-import com.marverenic.music.utils.Util;
+import com.marverenic.music.data.store.MediaStoreUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.marverenic.music.instances.Util.compareTitle;
+import static com.marverenic.music.instances.Util.hashLong;
 
 public class Playlist implements Parcelable, Comparable<Playlist> {
 
@@ -34,6 +37,11 @@ public class Playlist implements Parcelable, Comparable<Playlist> {
         this.playlistName = playlistName;
     }
 
+    public Playlist(Cursor cursor) {
+        playlistId = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID));
+        playlistName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME));
+    }
+
     public Playlist(Parcel in) {
         playlistId = in.readLong();
         playlistName = in.readString();
@@ -44,8 +52,8 @@ public class Playlist implements Parcelable, Comparable<Playlist> {
      * are ignored by this scan and will be loaded into the List as a regular playlist.
      * @param cur A {@link Cursor} to use when reading the {@link MediaStore}. This Cursor may have
      *            any filters and sorting, but MUST have AT LEAST the columns in
-     *            {@link Library#PLAYLIST_PROJECTION}. The caller is responsible for closing this
-     *            Cursor.
+     *            {@link MediaStoreUtil#PLAYLIST_PROJECTION}. The caller is responsible for closing
+     *            this Cursor.
      * @return A List of songs populated by entries in the Cursor
      */
     public static List<Playlist> buildPlaylistList(Cursor cur) {
@@ -73,7 +81,7 @@ public class Playlist implements Parcelable, Comparable<Playlist> {
 
     @Override
     public int hashCode() {
-        return Util.hashLong(playlistId);
+        return hashLong(playlistId);
     }
 
     @Override
@@ -107,6 +115,6 @@ public class Playlist implements Parcelable, Comparable<Playlist> {
                 return -1;
             }
         }
-        return playlistName.compareToIgnoreCase(another.playlistName);
+        return compareTitle(getPlaylistName(), another.getPlaylistName());
     }
 }

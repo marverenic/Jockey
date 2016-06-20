@@ -4,100 +4,166 @@ import android.content.Context;
 
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
-import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Genre;
-import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 
+import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
+import rx.subjects.BehaviorSubject;
 
 public class LocalMusicStore implements MusicStore {
 
     private Context mContext;
+
+    private BehaviorSubject<List<Song>> mSongs;
+    private BehaviorSubject<List<Album>> mAlbums;
+    private BehaviorSubject<List<Artist>> mArtists;
+    private BehaviorSubject<List<Genre>> mGenres;
 
     public LocalMusicStore(Context context) {
         mContext = context;
     }
 
     @Override
+    public Observable<Boolean> refresh() {
+        return MediaStoreUtil.promptPermission(mContext).map(
+                granted -> {
+                    if (granted) {
+                        if (mSongs != null) {
+                            mSongs.onNext(MediaStoreUtil.getAllSongs(mContext));
+                        }
+                        if (mArtists != null) {
+                            mArtists.onNext(MediaStoreUtil.getAllArtists(mContext));
+                        }
+                        if (mAlbums != null) {
+                            mAlbums.onNext(MediaStoreUtil.getAllAlbums(mContext));
+                        }
+                        if (mGenres != null) {
+                            mGenres.onNext(MediaStoreUtil.getAllGenres(mContext));
+                        }
+                    }
+                    return granted;
+                });
+    }
+
+    @Override
     public Observable<List<Song>> getSongs() {
-        return null;
+        if (mSongs == null) {
+            mSongs = BehaviorSubject.create();
+
+            MediaStoreUtil.getPermission(mContext).subscribe(granted -> {
+                if (granted) {
+                    mSongs.onNext(MediaStoreUtil.getAllSongs(mContext));
+                } else {
+                    mSongs.onNext(Collections.emptyList());
+                }
+            });
+        }
+        return mSongs;
     }
 
     @Override
     public Observable<List<Album>> getAlbums() {
-        return null;
+        if (mAlbums == null) {
+            mAlbums = BehaviorSubject.create();
+
+            MediaStoreUtil.getPermission(mContext).subscribe(granted -> {
+                if (granted) {
+                    mAlbums.onNext(MediaStoreUtil.getAllAlbums(mContext));
+                } else {
+                    mAlbums.onNext(Collections.emptyList());
+                }
+            });
+        }
+        return mAlbums;
     }
 
     @Override
     public Observable<List<Artist>> getArtists() {
-        return null;
+        if (mArtists == null) {
+            mArtists = BehaviorSubject.create();
+
+            MediaStoreUtil.getPermission(mContext).subscribe(granted -> {
+                if (granted) {
+                    mArtists.onNext(MediaStoreUtil.getAllArtists(mContext));
+                } else {
+                    mArtists.onNext(Collections.emptyList());
+                }
+            });
+        }
+        return mArtists;
     }
 
     @Override
     public Observable<List<Genre>> getGenres() {
-        return null;
-    }
+        if (mGenres == null) {
+            mGenres = BehaviorSubject.create();
 
-    @Override
-    public Observable<List<Playlist>> getPlaylists() {
-        return null;
+            MediaStoreUtil.getPermission(mContext).subscribe(granted -> {
+                if (granted) {
+                    mGenres.onNext(MediaStoreUtil.getAllGenres(mContext));
+                } else {
+                    mGenres.onNext(Collections.emptyList());
+                }
+            });
+        }
+        return mGenres;
     }
 
     @Override
     public Observable<List<Song>> getSongs(Artist artist) {
-        return null;
+        return Observable.just(MediaStoreUtil.getArtistSongs(mContext, artist));
     }
 
     @Override
     public Observable<List<Song>> getSongs(Album album) {
-        return null;
+        return Observable.just(MediaStoreUtil.getAlbumSongs(mContext, album));
     }
 
     @Override
     public Observable<List<Song>> getSongs(Genre genre) {
-        return null;
-    }
-
-    @Override
-    public Observable<List<Song>> getSongs(Playlist playlist) {
-        return null;
+        return Observable.just(MediaStoreUtil.getGenreSongs(mContext, genre));
     }
 
     @Override
     public Observable<List<Album>> getAlbums(Artist artist) {
-        return null;
+        return Observable.just(MediaStoreUtil.getArtistAlbums(mContext, artist));
     }
 
     @Override
-    public void makePlaylist(String name) {
-
+    public Observable<Artist> findArtistById(long artistId) {
+        return Observable.just(MediaStoreUtil.findArtistById(mContext, artistId));
     }
 
     @Override
-    public void makeAutoPlaylist(AutoPlaylist playlist) {
-
+    public Observable<Album> findAlbumById(long albumId) {
+        return Observable.just(MediaStoreUtil.findAlbumById(mContext, albumId));
     }
 
     @Override
-    public void removePlaylist(Playlist playlist) {
-
+    public Observable<Artist> findArtistByName(String artistName) {
+        return Observable.just(MediaStoreUtil.findArtistByName(mContext, artistName));
     }
 
     @Override
-    public void editPlaylist(Playlist playlist, List<Song> newSongs) {
-
+    public Observable<List<Song>> searchForSongs(String query) {
+        return Observable.just(MediaStoreUtil.searchForSongs(mContext, query));
     }
 
     @Override
-    public void addToPlaylist(Playlist playlist, Song song) {
-
+    public Observable<List<Artist>> searchForArtists(String query) {
+        return Observable.just(MediaStoreUtil.searchForArtists(mContext, query));
     }
 
     @Override
-    public void addToPlaylist(Playlist playlist, List<Song> songs) {
+    public Observable<List<Album>> searchForAlbums(String query) {
+        return Observable.just(MediaStoreUtil.searchForAlbums(mContext, query));
+    }
 
+    @Override
+    public Observable<List<Genre>> searchForGenres(String query) {
+        return Observable.just(MediaStoreUtil.searchForGenres(mContext, query));
     }
 }

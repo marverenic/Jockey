@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/toolbar"
         android:layout_toRightOf="@+id/imageArtwork"
-        tools:layout="@layout/fragment_player_controls" />
+        tools:layout="@layout/view_now_playing_control_panel" />
 
     <fragment
         android:id="@+id/listFragment"

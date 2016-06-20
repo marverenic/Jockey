@@ -4,8 +4,8 @@ import android.view.ViewGroup;
 
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
 import com.marverenic.music.view.EnhancedAdapters.DragDropAdapter;
+import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 
 import java.util.List;
@@ -17,6 +17,14 @@ public abstract class EditableSongSection extends DragDropAdapter.DragSection<So
     public EditableSongSection(int typeId, List<Song> data) {
         super(typeId);
         mData = data;
+    }
+
+    public void setData(List<Song> data) {
+        mData = data;
+    }
+
+    public List<Song> getData() {
+        return mData;
     }
 
     @Override

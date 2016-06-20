@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -15,9 +16,9 @@ import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
+import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.section.AlbumSection;
 import com.marverenic.music.instances.section.ArtistBioSingleton;
@@ -47,8 +48,11 @@ import rx.android.schedulers.AndroidSchedulers;
 
 public class ArtistActivity extends BaseActivity {
 
+    private static final String TAG = "ArtistActivity";
+
     public static final String ARTIST_EXTRA = "artist";
 
+    @Inject MusicStore mMusicStore;
     @Inject LastFmStore mLfmStore;
 
     private RecyclerView mRecyclerView;
@@ -64,13 +68,13 @@ public class ArtistActivity extends BaseActivity {
     private List<LfmArtist> mRelatedArtists;
     private List<Song> mSongs;
     private List<Album> mAlbums;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instance_artwork);
 
         JockeyApplication.getComponent(this).inject(this);
+
         mReference = getIntent().getParcelableExtra(ARTIST_EXTRA);
 
         CollapsingToolbarLayout collapsingToolbar =
@@ -83,16 +87,29 @@ public class ArtistActivity extends BaseActivity {
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
 
-        mAlbums = Library.getArtistAlbumEntries(mReference);
-        mSongs = Library.getArtistSongEntries(mReference);
+        mMusicStore.getSongs(mReference)
+                .compose(bindToLifecycle())
+                .subscribe(
+                        songs -> {
+                            mSongs = songs;
+                            setupAdapter();
+                        });
+        mMusicStore.getAlbums(mReference)
+                .compose(bindToLifecycle())
+                .subscribe(
+                        albums -> {
+                            mAlbums = albums;
 
-        // Sort the album list chronologically if all albums have years,
-        // otherwise sort alphabetically
-        if (allEntriesHaveYears()) {
-            Collections.sort(mAlbums, (a1, a2) -> a1.getYear() - a2.getYear());
-        } else {
-            Collections.sort(mAlbums);
-        }
+                            // Sort the album list chronologically if all albums have years,
+                            // otherwise sort alphabetically
+                            if (allEntriesHaveYears()) {
+                                Collections.sort(mAlbums, (a1, a2) -> a1.getYear() - a2.getYear());
+                            } else {
+                                Collections.sort(mAlbums);
+                            }
+
+                            setupAdapter();
+                        });
 
         mRecyclerView = (RecyclerView) findViewById(R.id.list);
         setupAdapter();
@@ -100,8 +117,7 @@ public class ArtistActivity extends BaseActivity {
         if (Prefs.allowNetwork(this)) {
             setupLoadingAdapter();
 
-            mLfmStore
-                    .getArtistInfo(mReference.getArtistName())
+            mLfmStore.getArtistInfo(mReference.getArtistName())
                     .compose(bindToLifecycle())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(this::setLastFmReference, Crashlytics::logException);
@@ -122,9 +138,17 @@ public class ArtistActivity extends BaseActivity {
         mRelatedArtists = new ArrayList<>();
 
         for (LfmArtist relatedArtist : lfmArtist.getSimilarArtists()) {
-            if (Library.findArtistByName(relatedArtist.getName()) != null) {
-                mRelatedArtists.add(relatedArtist);
-            }
+            mMusicStore.findArtistByName(relatedArtist.getName())
+                    .subscribe(
+                            found -> {
+                                if (found != null) {
+                                    mRelatedArtists.add(relatedArtist);
+                                    setupAdapter();
+                                }
+                            },
+                            throwable -> {
+                                Log.e(TAG, "Failed to find artist", throwable);
+                            });
         }
         setupAdapter();
 
@@ -149,7 +173,7 @@ public class ArtistActivity extends BaseActivity {
             setupRecyclerView();
 
             mAdapter = new HeterogeneousAdapter();
-            mAdapter.setEmptyState(new LibraryEmptyState(this) {
+            mAdapter.setEmptyState(new LibraryEmptyState(this, mMusicStore) {
                 @Override
                 public String getEmptyMessage() {
                     if (mReference == null) {
@@ -251,7 +275,7 @@ public class ArtistActivity extends BaseActivity {
         }
 
         if (mRelatedArtistSection == null) {
-            mRelatedArtistSection = new RelatedArtistSection(mRelatedArtists);
+            mRelatedArtistSection = new RelatedArtistSection(mMusicStore, mRelatedArtists);
             mAdapter.addSection(mRelatedArtistSection, 1);
         }
     }
@@ -262,7 +286,7 @@ public class ArtistActivity extends BaseActivity {
         }
 
         if (mSongSection == null) {
-            mSongSection = new SongSection(mSongs);
+            mSongSection = new SongSection(this, mSongs);
 
             mAdapter
                     .addSection(new HeaderSection(getString(R.string.header_songs), SongSection.ID))
@@ -278,7 +302,7 @@ public class ArtistActivity extends BaseActivity {
         }
 
         if (mAlbumSection == null) {
-            mAlbumSection = new AlbumSection(mAlbums);
+            mAlbumSection = new AlbumSection(this, mAlbums);
             mAdapter
                     .addSection(
                             new HeaderSection(getString(R.string.header_albums), AlbumSection.ID))

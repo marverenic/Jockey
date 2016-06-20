@@ -2,14 +2,9 @@ package com.marverenic.music.activity;
 
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -24,7 +19,6 @@ import android.widget.TextView;
 
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.R;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Prefs;
@@ -47,6 +41,8 @@ public abstract class BaseActivity extends RxAppCompatActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         if (DEBUG) Log.i(getClass().toString(), "Called onCreate");
+
+        PlayerController.startService(getApplicationContext());
 
         Themes.setTheme(this);
         themeId = Themes.getTheme(this);
@@ -83,28 +79,10 @@ public abstract class BaseActivity extends RxAppCompatActivity
                                     .putBoolean(Prefs.SHOW_FIRST_START, false)
                                     .putBoolean(Prefs.ALLOW_LOGGING, pref.isChecked())
                                     .apply();
-
-                            Library.scanAll(BaseActivity.this);
                         }
                     })
                     .setCancelable(false)
                     .show();
-
-        } else if (Library.isEmpty()) {
-            Library.scanAll(this);
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantRequests) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantRequests);
-
-        if (requestCode == Library.PERMISSION_REQUEST_ID && Library.hasRWPermission(this)) {
-            Library.scanAll(this);
         }
     }
 
@@ -228,15 +206,5 @@ public abstract class BaseActivity extends RxAppCompatActivity
             content = findViewById(android.R.id.content);
         }
         Snackbar.make(content, message, Snackbar.LENGTH_LONG).show();
-    }
-
-    @Nullable
-    @SuppressWarnings("deprecation")
-    public Drawable getDrawableCompat(@DrawableRes int id) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return getDrawable(id);
-        } else {
-            return getResources().getDrawable(id);
-        }
     }
 }

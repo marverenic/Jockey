@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -13,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,9 +20,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.MediaStoreUtil;
+import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
+import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
 import com.marverenic.music.fragments.QueueFragment;
-import com.marverenic.music.instances.Library;
-import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.PlayerController;
@@ -32,7 +33,12 @@ import com.marverenic.music.view.GestureView;
 import java.io.File;
 import java.util.ArrayList;
 
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+
 public class NowPlayingActivity extends BaseActivity implements GestureView.OnGestureListener {
+
+    private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
+    private static final String TAG_APPEND_PLAYLIST = "AppendPlaylistDialog";
 
     private ImageView artwork;
     private GestureView artworkWrapper;
@@ -45,8 +51,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         onNewIntent(getIntent());
         setContentView(R.layout.activity_now_playing);
 
-        boolean landscape = getResources().getConfiguration().orientation
-                == Configuration.ORIENTATION_LANDSCAPE;
+        boolean landscape = getResources().getConfiguration().orientation == ORIENTATION_LANDSCAPE;
 
         if (!landscape) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -54,6 +59,9 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                         View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
                 getWindow().setStatusBarColor(Color.TRANSPARENT);
             }
+            findViewById(R.id.artworkSwipeFrame).getLayoutParams().height = getArtworkHeight();
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         }
 
         artwork = (ImageView) findViewById(R.id.imageArtwork);
@@ -81,6 +89,20 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         onUpdate();
     }
 
+    private int getArtworkHeight() {
+        int reservedHeight = (int) getResources().getDimension(R.dimen.player_frame_peek);
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        // Default to a square view, so set the height equal to the width
+        //noinspection SuspiciousNameCombination
+        int preferredHeight = metrics.widthPixels;
+        int maxHeight = metrics.heightPixels - reservedHeight;
+
+        return Math.min(preferredHeight, maxHeight);
+    }
+
     @Override
     public void onNewIntent(Intent intent) {
         // Handle incoming requests to play media from other applications
@@ -95,9 +117,8 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
             ArrayList<Song> queue = new ArrayList<>();
             int position = 0;
 
-            // Have the LibraryScanner class get a song list for this file
             try {
-                position = Library.getSongListFromFile(this,
+                position = MediaStoreUtil.getSongListFromFile(this,
                         new File(intent.getData().getPath()), intent.getType(), queue);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -200,15 +221,14 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                 }
                 return true;
             case R.id.save:
-                PlaylistDialog.MakeNormal.alert(
-                        findViewById(R.id.imageArtwork),
-                        PlayerController.getQueue());
+                CreatePlaylistDialogFragment.newInstance().setSongs(PlayerController.getQueue())
+                        .show(getSupportFragmentManager(), TAG_MAKE_PLAYLIST);
                 return true;
             case R.id.add_to_playlist:
-                PlaylistDialog.AddToNormal.alert(
-                        findViewById(R.id.imageArtwork),
-                        PlayerController.getQueue(),
-                        R.string.header_add_queue_to_playlist);
+                AppendPlaylistDialogFragment.newInstance()
+                        .setTitle(getString(R.string.header_add_queue_to_playlist))
+                        .setSongs(PlayerController.getQueue())
+                        .show(getSupportFragmentManager(), TAG_APPEND_PLAYLIST);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

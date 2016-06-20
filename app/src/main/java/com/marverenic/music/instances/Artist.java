@@ -9,10 +9,13 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.MediaStoreUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+
+import static com.marverenic.music.instances.Util.compareTitle;
+import static com.marverenic.music.instances.Util.parseUnknown;
 
 public final class Artist implements Parcelable, Comparable<Artist> {
 
@@ -38,6 +41,13 @@ public final class Artist implements Parcelable, Comparable<Artist> {
         this.artistName = artistName;
     }
 
+    public Artist(Context context, Cursor cur) {
+        artistId = cur.getInt(cur.getColumnIndex(MediaStore.Audio.Artists._ID));
+        artistName = parseUnknown(
+                cur.getString(cur.getColumnIndex(MediaStore.Audio.Artists.ARTIST)),
+                context.getResources().getString(R.string.unknown_artist));
+    }
+
     private Artist(Parcel in) {
         artistId = in.readInt();
         artistName = in.readString();
@@ -47,8 +57,8 @@ public final class Artist implements Parcelable, Comparable<Artist> {
      * Builds a {@link List} of Artists from a Cursor
      * @param cur A {@link Cursor} to use when reading the {@link MediaStore}. This Cursor may have
      *            any filters and sorting, but MUST have AT LEAST the columns in
-     *            {@link Library#ARTIST_PROJECTION}. The caller is responsible for closing this
-     *            Cursor.
+     *            {@link MediaStoreUtil#ARTIST_PROJECTION}. The caller is responsible for closing
+     *            this Cursor.
      * @param res A {@link Resources} Object from {@link Context#getResources()} used to get the
      *            default values if an unknown value is encountered
      * @return A List of artists populated by entries in the Cursor
@@ -65,7 +75,7 @@ public final class Artist implements Parcelable, Comparable<Artist> {
             cur.moveToPosition(i);
             Artist next = new Artist();
             next.artistId = cur.getInt(idIndex);
-            next.artistName = Library.parseUnknown(cur.getString(artistIndex), unknownName);
+            next.artistName = parseUnknown(cur.getString(artistIndex), unknownName);
 
             artists.add(next);
         }
@@ -109,22 +119,6 @@ public final class Artist implements Parcelable, Comparable<Artist> {
 
     @Override
     public int compareTo(@NonNull Artist another) {
-        String o1c = (artistName == null)
-                ? ""
-                : artistName.toLowerCase(Locale.ENGLISH);
-        String o2c = (another.artistName == null)
-                ? ""
-                : another.artistName.toLowerCase(Locale.ENGLISH);
-        if (o1c.startsWith("the ")) {
-            o1c = o1c.substring(4);
-        } else if (o1c.startsWith("a ")) {
-            o1c = o1c.substring(2);
-        }
-        if (o2c.startsWith("the ")) {
-            o2c = o2c.substring(4);
-        } else if (o2c.startsWith("a ")) {
-            o2c = o2c.substring(2);
-        }
-        return o1c.compareTo(o2c);
+        return compareTitle(getArtistName(), another.getArtistName());
     }
 }
