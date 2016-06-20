@@ -153,18 +153,15 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
     public void onDirectoryChosen(final File directory) {
         if (mOppositeDirectories.contains(directory.getAbsolutePath())) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            AlertDialog.OnClickListener clickListener = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (which == DialogInterface.BUTTON_POSITIVE) {
-                        mOppositeDirectories.remove(directory.getAbsolutePath());
-                        mDirectories.add(directory.getAbsolutePath());
+            AlertDialog.OnClickListener clickListener = (dialog, which) -> {
+                if (which == DialogInterface.BUTTON_POSITIVE) {
+                    mOppositeDirectories.remove(directory.getAbsolutePath());
+                    mDirectories.add(directory.getAbsolutePath());
 
-                        if (mDirectories.size() == 1) {
-                            mAdapter.notifyDataSetChanged();
-                        } else {
-                            mAdapter.notifyItemInserted(mDirectories.size() - 1);
-                        }
+                    if (mDirectories.size() == 1) {
+                        mAdapter.notifyDataSetChanged();
+                    } else {
+                        mAdapter.notifyItemInserted(mDirectories.size() - 1);
                     }
                 }
             };
@@ -282,21 +279,15 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
 
             // Prompt a confirmation Snackbar with undo button
             Snackbar
-                    .make(
-                            itemView,
-                            getString(R.string.message_removed_directory, reference),
+                    .make(itemView, getString(R.string.message_removed_directory, reference),
                             Snackbar.LENGTH_LONG)
-                    .setAction(
-                            R.string.action_undo,
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    mDirectories.add(removedIndex, removedReference);
-                                    if (mDirectories.size() == 1) {
-                                        mAdapter.notifyItemChanged(0);
-                                    } else {
-                                        mAdapter.notifyItemRemoved(removedIndex);
-                                    }
+                    .setAction(R.string.action_undo,
+                            v -> {
+                                mDirectories.add(removedIndex, removedReference);
+                                if (mDirectories.size() == 1) {
+                                    mAdapter.notifyItemChanged(0);
+                                } else {
+                                    mAdapter.notifyItemRemoved(removedIndex);
                                 }
                             })
                     .show();
