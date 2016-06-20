@@ -96,16 +96,13 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements View
         if (preference instanceof ListPreference) {
             final ListPreference listPref = (ListPreference) preference;
 
-            final AlertDialog dialog = new AlertDialog.Builder(getContext())
+            new AlertDialog.Builder(getContext())
                     .setSingleChoiceItems(
                             listPref.getEntries(),
                             listPref.findIndexOfValue(listPref.getValue()),
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    listPref.setValueIndex(which);
-                                    dialog.dismiss();
-                                }
+                            (dialog, which) -> {
+                                listPref.setValueIndex(which);
+                                dialog.dismiss();
                             }
                     )
                     .setTitle(preference.getTitle())
