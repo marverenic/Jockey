@@ -35,7 +35,7 @@ public class DirectoryDialog implements DialogInterface.OnClickListener {
     private void scanSubDirs() {
         mSubDirectories = new ArrayList<>();
         for (File f : mDirectory.listFiles()) {
-            if (f.isDirectory()) {
+            if (f.isDirectory() && f.canRead()) {
                 mSubDirectories.add(f);
             }
         }
