@@ -1,4 +1,4 @@
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<resources xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- App Theme Base -->
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
@@ -101,8 +101,9 @@
 
     <!-- Splash screen -->
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="colorPrimaryDark">@color/background_material_dark</item>
-        <item name="colorPrimary">@color/background_material_dark</item>
+        <item name="colorPrimaryDark">@color/splash_background</item>
+        <item name="colorPrimary">@color/splash_background</item>
+        <item name="android:navigationBarColor" tools:targetApi="21">@color/splash_background</item>
         <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
 
