@@ -77,6 +77,7 @@ public class DirectoryDialogFragment extends DialogFragment {
                 .setNeutralButton(R.string.action_navigate_up, (dialogInterface, i) -> {
                     new DirectoryDialogFragment()
                             .setDirectory(mDirectory.getParentFile())
+                            .setDirectoryPickListener(mCallback)
                             .show(getFragmentManager(), getTag());
                 });
 
@@ -87,6 +88,7 @@ public class DirectoryDialogFragment extends DialogFragment {
                 File directory = mSubDirectories.get(which);
                 new DirectoryDialogFragment()
                         .setDirectory(directory)
+                        .setDirectoryPickListener(mCallback)
                         .show(getFragmentManager(), getTag());
             });
         }
