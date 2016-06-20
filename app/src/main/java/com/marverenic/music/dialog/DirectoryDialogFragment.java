@@ -19,8 +19,6 @@ import java.util.List;
 
 public class DirectoryDialogFragment extends DialogFragment {
 
-    private static final String TAG_DIALOG = "DirectoryDialogFragment_Dialog";
-
     private static final String KEY_DIRECTORY = "Directory";
 
     private File mDirectory;
@@ -79,7 +77,7 @@ public class DirectoryDialogFragment extends DialogFragment {
                 .setNeutralButton(R.string.action_navigate_up, (dialogInterface, i) -> {
                     new DirectoryDialogFragment()
                             .setDirectory(mDirectory.getParentFile())
-                            .show(getFragmentManager(), TAG_DIALOG);
+                            .show(getFragmentManager(), getTag());
                 });
 
         if (mSubDirectories.isEmpty()) {
@@ -89,7 +87,7 @@ public class DirectoryDialogFragment extends DialogFragment {
                 File directory = mSubDirectories.get(which);
                 new DirectoryDialogFragment()
                         .setDirectory(directory)
-                        .show(getFragmentManager(), TAG_DIALOG);
+                        .show(getFragmentManager(), getTag());
             });
         }
 

@@ -77,6 +77,11 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
                 mOppositePrefKey, Collections.<String>emptySet());
 
         mDirectories = new ArrayList<>(dirs);
+
+        Fragment directoryPicker = getFragmentManager().findFragmentByTag(TAG_DIR_DIALOG);
+        if (directoryPicker instanceof DirectoryDialogFragment) {
+            ((DirectoryDialogFragment) directoryPicker).setDirectoryPickListener(this);
+        }
     }
 
     @Override
