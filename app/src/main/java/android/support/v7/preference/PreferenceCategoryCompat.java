@@ -21,18 +21,22 @@ public class PreferenceCategoryCompat extends PreferenceCategory {
 
     public PreferenceCategoryCompat(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        setViewId(android.R.id.title);
     }
 
     public PreferenceCategoryCompat(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        setViewId(android.R.id.title);
     }
 
     public PreferenceCategoryCompat(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setViewId(android.R.id.title);
     }
 
     public PreferenceCategoryCompat(Context context) {
         super(context);
+        setViewId(android.R.id.title);
     }
 
     @Override

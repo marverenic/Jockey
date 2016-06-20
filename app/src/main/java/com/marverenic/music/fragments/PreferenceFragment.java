@@ -1,6 +1,5 @@
 package com.marverenic.music.fragments;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -41,19 +40,28 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements View
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View view = super.onCreateView(inflater, container, savedInstanceState);
-        if (view != null) {
-            int padding = (int) getResources().getDimension(R.dimen.global_padding);
-            getListView().setPadding(padding, 0, padding, 0);
 
-            getListView().setBackgroundColor(Themes.getBackground());
-            setDividerHeight(0); // use custom divider decoration
+        View view = super.onCreateView(inflater, container, savedInstanceState);
 
-            getListView().addItemDecoration(new BackgroundDecoration(
-                    Themes.getBackgroundElevated(), android.R.id.title));
-            getListView().addItemDecoration(
-                    new DividerDecoration(getContext(), R.id.subheaderFrame));
-        }
+        setDivider(null);
+        setDividerHeight(0);
+
+        return view;
+    }
+
+    @Override
+    public RecyclerView onCreateRecyclerView(LayoutInflater inflater, ViewGroup parent,
+                                             Bundle savedInstanceState) {
+        RecyclerView view = super.onCreateRecyclerView(inflater, parent, savedInstanceState);
+        view.setBackgroundColor(Themes.getBackground());
+
+        int padding = (int) getResources().getDimension(R.dimen.global_padding);
+        view.setPadding(padding, 0, padding, 0);
+
+        view.addItemDecoration(new BackgroundDecoration(
+                Themes.getBackgroundElevated(), android.R.id.title));
+        view.addItemDecoration(new DividerDecoration(getContext(), android.R.id.title));
+
         return view;
     }
 
@@ -156,11 +164,8 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements View
                     .setTitle(R.string.add_shortcut)
                     .setMessage(R.string.add_shortcut_description)
                     .setPositiveButton(R.string.action_add,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Themes.updateLauncherIcon(getActivity());
-                                }
+                            (dialog, which) -> {
+                                Themes.updateLauncherIcon(getActivity());
                             })
                     .setNegativeButton(R.string.action_cancel, null)
                     .show();
