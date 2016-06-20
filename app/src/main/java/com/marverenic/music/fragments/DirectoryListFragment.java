@@ -21,8 +21,8 @@ import android.widget.TextView;
 
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.R;
+import com.marverenic.music.dialog.DirectoryDialogFragment;
 import com.marverenic.music.instances.section.BasicEmptyState;
-import com.marverenic.music.utils.DirectoryDialog;
 import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.EnhancedAdapters.DragBackgroundDecoration;
@@ -39,12 +39,13 @@ import java.util.List;
 import java.util.Set;
 
 public class DirectoryListFragment extends Fragment implements View.OnClickListener,
-        DirectoryDialog.OnDirectoryChosenListener {
+        DirectoryDialogFragment.OnDirectoryPickListener {
 
     public static final String PREFERENCE_EXTRA = "EXTRA_PREFERENCE_KEY";
     public static final String TITLE_EXTRA = "FRAGMENT_HEADER";
 
     private static final String TAG = "DirectoryListFragment";
+    private static final String TAG_DIR_DIALOG = "DirectoryListFragment_DirectoryDialog";
     private static final boolean D = BuildConfig.DEBUG;
 
     private String mPrefKey;
@@ -143,9 +144,9 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        DirectoryDialog picker = new DirectoryDialog(getContext());
-        picker.setOnDirectoryChosenListener(this);
-        picker.show();
+        new DirectoryDialogFragment()
+                .setDirectoryPickListener(this)
+                .show(getFragmentManager(), TAG_DIR_DIALOG);
     }
 
     @Override
