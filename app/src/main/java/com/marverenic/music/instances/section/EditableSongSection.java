@@ -19,6 +19,10 @@ public abstract class EditableSongSection extends DragDropAdapter.DragSection<So
         mData = data;
     }
 
+    public void setData(List<Song> data) {
+        mData = data;
+    }
+
     public List<Song> getData() {
         return mData;
     }

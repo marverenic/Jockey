@@ -1,6 +1,9 @@
 package com.marverenic.music.instances.section;
 
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -16,31 +19,38 @@ public class GenreSection extends HeterogeneousAdapter.ListSection<Genre> {
 
     public static final int ID = 9267;
 
-    public GenreSection(@NonNull List<Genre> data) {
+    private FragmentManager mFragmentManager;
+
+    public GenreSection(AppCompatActivity activity, @NonNull List<Genre> data) {
+        this(activity.getSupportFragmentManager(), data);
+    }
+
+    public GenreSection(Fragment fragment, @NonNull List<Genre> data) {
+        this(fragment.getFragmentManager(), data);
+    }
+
+    public GenreSection(FragmentManager fragmentManager, @NonNull List<Genre> data) {
         super(ID, data);
+        mFragmentManager = fragmentManager;
     }
 
     @Override
     public EnhancedViewHolder<Genre> createViewHolder(HeterogeneousAdapter adapter,
                                                       ViewGroup parent) {
-        return ViewHolder.createViewHolder(parent);
+        InstanceGenreBinding binding = InstanceGenreBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false);
+
+        return new ViewHolder(binding);
     }
 
-    public static class ViewHolder extends EnhancedViewHolder<Genre> {
+    private class ViewHolder extends EnhancedViewHolder<Genre> {
 
         private InstanceGenreBinding mBinding;
-
-        public static ViewHolder createViewHolder(ViewGroup parent) {
-            InstanceGenreBinding binding = InstanceGenreBinding.inflate(
-                    LayoutInflater.from(parent.getContext()), parent, false);
-
-            return new ViewHolder(binding);
-        }
 
         public ViewHolder(InstanceGenreBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
-            mBinding.setViewModel(new GenreViewModel(itemView.getContext()));
+            mBinding.setViewModel(new GenreViewModel(itemView.getContext(), mFragmentManager));
         }
 
         @Override

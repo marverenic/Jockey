@@ -10,12 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.QueueSection;
 import com.marverenic.music.instances.section.SpacerSingleton;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.EnhancedAdapters.DragBackgroundDecoration;
 import com.marverenic.music.view.EnhancedAdapters.DragDividerDecoration;
@@ -52,9 +52,9 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
         bottomSpacer = new SpacerSingleton(QueueSection.ID, 0);
 
         adapter = new DragDropAdapter();
-        adapter.setDragSection(new QueueSection(queue));
+        adapter.setDragSection(new QueueSection(this, queue));
         adapter.addSection(bottomSpacer);
-        adapter.setEmptyState(new LibraryEmptyState(getActivity()) {
+        adapter.setEmptyState(new LibraryEmptyState(getActivity(), null) {
             @Override
             public String getEmptyMessage() {
                 return getString(R.string.empty_queue);

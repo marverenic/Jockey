@@ -2,28 +2,42 @@ package com.marverenic.music.viewmodel;
 
 import android.content.Context;
 import android.databinding.BaseObservable;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.GenreActivity;
+import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.instances.Genre;
-import com.marverenic.music.instances.Library;
-import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
+
+import javax.inject.Inject;
 
 import static com.marverenic.music.activity.instance.GenreActivity.GENRE_EXTRA;
 
 public class GenreViewModel extends BaseObservable {
 
+    private static final String TAG = "GenreViewModel";
+    private static final String TAG_PLAYLIST_DIALOG = "GenreViewModel.PlaylistDialog";
+
+    @Inject MusicStore mMusicStore;
+
     private Context mContext;
+    private FragmentManager mFragmentManager;
     private Genre mGenre;
 
-    public GenreViewModel(Context context) {
+    public GenreViewModel(Context context, FragmentManager fragmentManager) {
         mContext = context;
+        mFragmentManager = fragmentManager;
+
+        JockeyApplication.getComponent(mContext).inject(this);
     }
 
     public void setGenre(Genre genre) {
@@ -56,14 +70,32 @@ public class GenreViewModel extends BaseObservable {
         return menuItem -> {
             switch (menuItem.getItemId()) {
                 case 0: //Queue this genre next
-                    PlayerController.queueNext(Library.getGenreEntries(mGenre));
+                    mMusicStore.getSongs(mGenre).subscribe(
+                            PlayerController::queueNext,
+                            throwable -> {
+                                Log.e(TAG, "Failed to get songs", throwable);
+                            });
+
                     return true;
                 case 1: //Queue this genre last
-                    PlayerController.queueLast(Library.getGenreEntries(mGenre));
+                    mMusicStore.getSongs(mGenre).subscribe(
+                            PlayerController::queueLast,
+                            throwable -> {
+                                Log.e(TAG, "Failed to get songs", throwable);
+                            });
+
                     return true;
                 case 2: //Add to playlist
-                    PlaylistDialog.AddToNormal.alert(view, Library.getGenreEntries(mGenre),
-                            mContext.getString(R.string.header_add_song_name_to_playlist, mGenre));
+                    mMusicStore.getSongs(mGenre).subscribe(
+                            songs -> {
+                                AppendPlaylistDialogFragment.newInstance()
+                                        .setSongs(songs)
+                                        .setCollectionName(mGenre.getGenreName())
+                                        .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
+                            }, throwable -> {
+                                Log.e(TAG, "Failed to get songs", throwable);
+                            });
+
                     return true;
             }
             return false;

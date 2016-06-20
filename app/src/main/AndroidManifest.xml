@@ -48,6 +48,9 @@
             android:name=".activity.instance.PlaylistActivity"
             android:windowSoftInputMode="adjustPan|adjustNothing"/>
         <activity
+            android:name=".activity.instance.AutoPlaylistActivity"
+            android:windowSoftInputMode="adjustPan|adjustNothing"/>
+        <activity
             android:name=".activity.instance.AlbumActivity"
             android:windowSoftInputMode="adjustPan|adjustNothing"/>
         <activity
@@ -62,7 +65,8 @@
         <!-- Now Playing Activity -->
         <activity
             android:name=".activity.NowPlayingActivity"
-            android:label="@string/header_now_playing"/>
+            android:label="@string/header_now_playing"
+            android:windowSoftInputMode="adjustNothing"/>
 
         <!-- Play with Jockey (from search) intent filter -->
         <activity-alias

@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +19,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.ArtistActivity;
+import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.instances.Artist;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.lastfm.model.Image;
 import com.marverenic.music.lastfm.model.LfmArtist;
 import com.marverenic.music.utils.Navigate;
@@ -31,21 +32,26 @@ import java.util.List;
 
 public class RelatedArtistSection extends HeterogeneousAdapter.ListSection<LfmArtist> {
 
+    private static final String TAG = "RelatedArtistSection";
+
     public static final int ID = 634;
 
-    public RelatedArtistSection(@NonNull List<LfmArtist> data) {
+    private MusicStore mMusicStore;
+
+    public RelatedArtistSection(MusicStore musicStore, @NonNull List<LfmArtist> data) {
         super(ID, data);
+        mMusicStore = musicStore;
     }
 
     @Override
     public EnhancedViewHolder<LfmArtist> createViewHolder(HeterogeneousAdapter adapter,
-                                                        ViewGroup parent) {
+                                                          ViewGroup parent) {
         return new ViewHolder(
                 LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.instance_artist_suggested, parent, false));
     }
 
-    public static class ViewHolder extends EnhancedViewHolder<LfmArtist>
+    private class ViewHolder extends EnhancedViewHolder<LfmArtist>
             implements View.OnClickListener {
 
         private Artist localReference;
@@ -67,7 +73,14 @@ public class RelatedArtistSection extends HeterogeneousAdapter.ListSection<LfmAr
 
         @Override
         public void update(LfmArtist item, int sectionPosition) {
-            localReference = Library.findArtistByName(item.getName());
+            mMusicStore.findArtistByName(item.getName())
+                    .take(1)
+                    .subscribe(
+                            artist -> {
+                                localReference = artist;
+                            }, throwable -> {
+                                Log.e(TAG, "Failed to get local reference", throwable);
+                            });
 
             Image image = item.getImageBySize(Image.Size.MEDIUM);
             String artUrl = (image == null) ? null : image.getUrl();

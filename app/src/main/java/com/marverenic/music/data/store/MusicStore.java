@@ -2,9 +2,7 @@ package com.marverenic.music.data.store;
 
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
-import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Genre;
-import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 
 import java.util.List;
@@ -12,6 +10,8 @@ import java.util.List;
 import rx.Observable;
 
 public interface MusicStore {
+
+    Observable<Boolean> refresh();
 
     Observable<List<Song>> getSongs();
 
@@ -21,28 +21,26 @@ public interface MusicStore {
 
     Observable<List<Genre>> getGenres();
 
-    Observable<List<Playlist>> getPlaylists();
-
     Observable<List<Song>> getSongs(Artist artist);
 
     Observable<List<Song>> getSongs(Album album);
 
     Observable<List<Song>> getSongs(Genre genre);
 
-    Observable<List<Song>> getSongs(Playlist playlist);
-
     Observable<List<Album>> getAlbums(Artist artist);
 
-    void makePlaylist(String name);
+    Observable<Artist> findArtistById(long artistId);
 
-    void makeAutoPlaylist(AutoPlaylist playlist);
+    Observable<Album> findAlbumById(long albumId);
 
-    void removePlaylist(Playlist playlist);
+    Observable<Artist> findArtistByName(String artistName);
 
-    void editPlaylist(Playlist playlist, List<Song> newSongs);
+    Observable<List<Song>> searchForSongs(String query);
 
-    void addToPlaylist(Playlist playlist, Song song);
+    Observable<List<Artist>> searchForArtists(String query);
 
-    void addToPlaylist(Playlist playlist, List<Song> songs);
+    Observable<List<Album>> searchForAlbums(String query);
+
+    Observable<List<Genre>> searchForGenres(String query);
 
 }

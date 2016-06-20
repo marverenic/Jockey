@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
 import android.support.annotation.StyleRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -20,7 +19,6 @@ import android.widget.TextView;
 
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.R;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Prefs;
@@ -81,28 +79,10 @@ public abstract class BaseActivity extends RxAppCompatActivity
                                     .putBoolean(Prefs.SHOW_FIRST_START, false)
                                     .putBoolean(Prefs.ALLOW_LOGGING, pref.isChecked())
                                     .apply();
-
-                            Library.scanAll(BaseActivity.this);
                         }
                     })
                     .setCancelable(false)
                     .show();
-
-        } else if (Library.isEmpty()) {
-            Library.scanAll(this);
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantRequests) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantRequests);
-
-        if (requestCode == Library.PERMISSION_REQUEST_ID && Library.hasRWPermission(this)) {
-            Library.scanAll(this);
         }
     }
 

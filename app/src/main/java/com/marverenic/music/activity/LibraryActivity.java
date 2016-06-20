@@ -1,8 +1,11 @@
 package com.marverenic.music.activity;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
@@ -16,28 +19,36 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.marverenic.music.BuildConfig;
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
+import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
 import com.marverenic.music.fragments.AlbumFragment;
 import com.marverenic.music.fragments.ArtistFragment;
 import com.marverenic.music.fragments.GenreFragment;
 import com.marverenic.music.fragments.PlaylistFragment;
 import com.marverenic.music.fragments.SongFragment;
-import com.marverenic.music.instances.Library;
-import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Updater;
+import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.FABMenu;
+
+import javax.inject.Inject;
 
 public class LibraryActivity extends BaseActivity implements View.OnClickListener {
 
-    private PagerAdapter adapter;
+    private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
+
+    @Inject MusicStore mMusicStore;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_library);
+
+        JockeyApplication.getComponent(this).inject(this);
 
         // Setup the FAB
         FABMenu fab = (FABMenu) findViewById(R.id.fab);
@@ -48,11 +59,11 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
 
         SharedPreferences prefs = Prefs.getPrefs(this);
         int page = Integer.parseInt(prefs.getString(Prefs.DEFAULT_PAGE, "1"));
-        if (page != 0 || !Library.hasRWPermission(this)) {
+        if (page != 0 || !hasRwPermission()) {
             fab.setVisibility(View.GONE);
         }
 
-        adapter = new PagerAdapter(getSupportFragmentManager());
+        PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager());
         adapter.setFloatingActionButton(fab);
         pager.setAdapter(adapter);
         pager.addOnPageChangeListener(adapter);
@@ -69,6 +80,13 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
         new Updater(this, findViewById(R.id.coordinator_layout)).execute();
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
+    private boolean hasRwPermission() {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Util.hasPermissions(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -83,8 +101,8 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
                 Navigate.to(this, SettingsActivity.class);
                 return true;
             case R.id.action_refresh_library:
-                if (Library.hasRWPermission(LibraryActivity.this)) {
-                    Library.scanAll(this);
+                if (hasRwPermission()) {
+                    mMusicStore.refresh();
 
                     Snackbar
                             .make(
@@ -100,10 +118,8 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
                                     Snackbar.LENGTH_LONG)
                             .setAction(
                                     R.string.action_open_settings,
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            Intent intent = new Intent()
+                                    v -> {
+                                        Intent intent = new Intent()
                                                 .setAction(
                                                         Settings.
                                                                 ACTION_APPLICATION_DETAILS_SETTINGS)
@@ -111,8 +127,7 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
                                                         "package",
                                                         BuildConfig.APPLICATION_ID,
                                                         null));
-                                            startActivity(intent);
-                                        }
+                                        startActivity(intent);
                                     })
                             .show();
                 }
@@ -132,7 +147,8 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
     public void onClick(View v) {
         if (v.getTag() != null) {
             if (v.getTag().equals("fab-" + getString(R.string.playlist))) {
-                PlaylistDialog.MakeNormal.alert(findViewById(R.id.coordinator_layout));
+                CreatePlaylistDialogFragment.newInstance()
+                        .show(getSupportFragmentManager(), TAG_MAKE_PLAYLIST);
             } else if (v.getTag().equals("fab-" + getString(R.string.playlist_auto))) {
                 Navigate.to(this, AutoPlaylistEditActivity.class,
                         AutoPlaylistEditActivity.PLAYLIST_EXTRA, null);
@@ -224,7 +240,7 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
             // Hide the fab when outside of the Playlist fragment
 
             // Don't show the FAB if we can't write to the library
-            if (!Library.hasRWPermission(LibraryActivity.this)) return;
+            if (!hasRwPermission()) return;
 
             // If the fab isn't supposed to change states, don't animate anything
             if (position != 0 && fab.getVisibility() == View.GONE) return;

@@ -2,17 +2,20 @@ package com.marverenic.music.viewmodel;
 
 import android.content.Context;
 import android.databinding.BaseObservable;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
-import com.marverenic.music.instances.Library;
-import com.marverenic.music.instances.PlaylistDialog;
+import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
@@ -20,16 +23,28 @@ import com.marverenic.music.utils.Prefs;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class SongViewModel extends BaseObservable {
 
+    private static final String TAG = "SongViewModel";
+    private static final String TAG_PLAYLIST_DIALOG = "SongViewModel.PlaylistDialog";
+
+    @Inject MusicStore mMusicStore;
+
     private Context mContext;
+    private FragmentManager mFragmentManager;
+
     private List<Song> mSongList;
     private int mIndex;
     private Song mReference;
 
-    public SongViewModel(Context context, List<Song> songs) {
+    public SongViewModel(Context context, FragmentManager fragmentManager, List<Song> songs) {
         mContext = context;
+        mFragmentManager = fragmentManager;
         mSongList = songs;
+
+        JockeyApplication.getComponent(mContext).inject(this);
     }
 
     public void setIndex(int index) {
@@ -101,22 +116,29 @@ public class SongViewModel extends BaseObservable {
                     PlayerController.queueLast(mReference);
                     return true;
                 case 2: //Go to artist
-                    Navigate.to(
-                            mContext,
-                            ArtistActivity.class,
-                            ArtistActivity.ARTIST_EXTRA,
-                            Library.findArtistById(mReference.getArtistId()));
+                    mMusicStore.findArtistById(mReference.getArtistId()).subscribe(
+                            artist -> {
+                                Navigate.to(mContext, ArtistActivity.class,
+                                        ArtistActivity.ARTIST_EXTRA, artist);
+                            }, throwable -> {
+                                Log.e(TAG, "Failed to find artist", throwable);
+                            });
+
                     return true;
                 case 3: // Go to album
-                    Navigate.to(
-                            mContext,
-                            AlbumActivity.class,
-                            AlbumActivity.ALBUM_EXTRA,
-                            Library.findAlbumById(mReference.getAlbumId()));
+                    mMusicStore.findAlbumById(mReference.getAlbumId()).subscribe(
+                            album -> {
+                                Navigate.to(mContext, AlbumActivity.class,
+                                        AlbumActivity.ALBUM_EXTRA, album);
+                            }, throwable -> {
+                                Log.e(TAG, "Failed to find album", throwable);
+                            });
+
                     return true;
                 case 4: //Add to playlist...
-                    PlaylistDialog.AddToNormal.alert(view, mReference, mContext.getString(
-                            R.string.header_add_song_name_to_playlist, mReference));
+                    AppendPlaylistDialogFragment.newInstance()
+                            .setSong(mReference)
+                            .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
                     return true;
             }
             return false;

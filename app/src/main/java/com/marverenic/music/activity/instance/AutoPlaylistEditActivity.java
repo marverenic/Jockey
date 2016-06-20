@@ -10,10 +10,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.AutoPlaylist;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.section.RuleHeaderSingleton;
 import com.marverenic.music.instances.section.RuleSection;
 import com.marverenic.music.utils.Navigate;
@@ -25,8 +26,12 @@ import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import javax.inject.Inject;
+
 public class AutoPlaylistEditActivity extends BaseActivity
         implements RuleSection.OnRemovalListener {
+
+    @Inject PlaylistStore mPlaylistStore;
 
     public static final String PLAYLIST_EXTRA = "auto-playlist";
     private static final String EDITED_HEADER = "modified-header";
@@ -41,6 +46,8 @@ public class AutoPlaylistEditActivity extends BaseActivity
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instance_no_miniplayer);
+
+        JockeyApplication.getComponent(this).inject(this);
 
         reference = getIntent().getParcelableExtra(PLAYLIST_EXTRA);
         if (reference == null) {
@@ -95,9 +102,9 @@ public class AutoPlaylistEditActivity extends BaseActivity
         AutoPlaylist.Rule[] modifiedRules = new AutoPlaylist.Rule[editedRules.size()];
         editedReference.setRules(editedRules.toArray(modifiedRules));
         if (reference.getPlaylistId() == AutoPlaylist.EMPTY.getPlaylistId()) {
-            Library.createAutoPlaylist(this, editedReference);
+            mPlaylistStore.makePlaylist(editedReference);
         } else {
-            Library.editAutoPlaylist(this, editedReference);
+            mPlaylistStore.editPlaylist(editedReference);
         }
     }
 
@@ -116,10 +123,11 @@ public class AutoPlaylistEditActivity extends BaseActivity
     }
 
     private boolean validateName() {
-        boolean valid =
-                editedReference.getPlaylistName().trim().equalsIgnoreCase(
-                        reference.getPlaylistName().trim())
-                || Library.verifyPlaylistName(this, editedReference.getPlaylistName()) == null;
+        String originalName = reference.getPlaylistName().trim();
+        String editedName = editedReference.getPlaylistName().trim();
+
+        boolean equal = originalName.equalsIgnoreCase(editedName);
+        boolean valid = equal || mPlaylistStore.verifyPlaylistName(editedName) == null;
 
         if (!valid) {
             RecyclerView list = (RecyclerView) findViewById(R.id.list);

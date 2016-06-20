@@ -1,6 +1,9 @@
 package com.marverenic.music.instances.section;
 
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -16,31 +19,38 @@ public class ArtistSection extends HeterogeneousAdapter.ListSection<Artist> {
 
     public static final int ID = 3401;
 
-    public ArtistSection(@NonNull List<Artist> data) {
+    private FragmentManager mFragmentManager;
+
+    public ArtistSection(AppCompatActivity activity, @NonNull List<Artist> data) {
+        this(activity.getSupportFragmentManager(), data);
+    }
+
+    public ArtistSection(Fragment fragment, @NonNull List<Artist> data) {
+        this(fragment.getFragmentManager(), data);
+    }
+
+    public ArtistSection(FragmentManager fragmentManager, @NonNull List<Artist> data) {
         super(ID, data);
+        mFragmentManager = fragmentManager;
     }
 
     @Override
     public EnhancedViewHolder<Artist> createViewHolder(HeterogeneousAdapter adapter,
-                                                                    ViewGroup parent) {
-        return ViewHolder.createViewHolder(parent);
+                                                       ViewGroup parent) {
+        InstanceArtistBinding binding = InstanceArtistBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false);
+
+        return new ViewHolder(binding);
     }
 
-    public static class ViewHolder extends EnhancedViewHolder<Artist> {
+    public class ViewHolder extends EnhancedViewHolder<Artist> {
 
         private InstanceArtistBinding mBinding;
-
-        public static ViewHolder createViewHolder(ViewGroup parent) {
-            InstanceArtistBinding binding = InstanceArtistBinding.inflate(
-                    LayoutInflater.from(parent.getContext()), parent, false);
-
-            return new ViewHolder(binding);
-        }
 
         public ViewHolder(InstanceArtistBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
-            mBinding.setViewModel(new ArtistViewModel(itemView.getContext()));
+            mBinding.setViewModel(new ArtistViewModel(itemView.getContext(), mFragmentManager));
         }
 
         @Override

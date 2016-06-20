@@ -1,15 +1,16 @@
 package com.marverenic.music.fragments;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.instances.Library;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.PlaylistSection;
@@ -19,95 +20,102 @@ import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 
-public class PlaylistFragment extends Fragment implements Library.PlaylistChangeListener,
-        Library.LibraryRefreshListener {
+import java.util.List;
 
-    private RecyclerView list;
-    private HeterogeneousAdapter adapter;
+import javax.inject.Inject;
+
+public class PlaylistFragment extends BaseFragment {
+
+    @Inject PlaylistStore mPlaylistStore;
+
+    private RecyclerView mRecyclerView;
+    private HeterogeneousAdapter mAdapter;
+    private PlaylistSection mPlaylistSection;
+    private List<Playlist> mPlaylists;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        JockeyApplication.getComponent(this).inject(this);
+        mPlaylistStore.getPlaylists()
+                .compose(bindToLifecycle())
+                .subscribe(
+                        playlists -> {
+                            mPlaylists = playlists;
+                            setupAdapter();
+                        },
+                        Throwable::printStackTrace);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.list, container, false);
-
-        int paddingH = (int) getActivity().getResources().getDimension(R.dimen.global_padding);
-        view.setPadding(paddingH, 0, paddingH, 0);
-
-        adapter = new HeterogeneousAdapter();
-        adapter.addSection(new PlaylistSection(Library.getPlaylists()));
-        adapter.addSection(new SpacerSingleton(
-                PlaylistSection.ID, (int) getResources().getDimension(R.dimen.list_height)));
-        adapter.setEmptyState(new LibraryEmptyState(getActivity()) {
-            @Override
-            public String getEmptyMessage() {
-                return getString(R.string.empty_playlists);
-            }
-
-            @Override
-            public String getEmptyMessageDetail() {
-                return getString(R.string.empty_playlists_detail);
-            }
-
-            @Override
-            public String getEmptyAction1Label() {
-                return "";
-            }
-
-            @Override
-            public String getEmptyAction2Label() {
-                return "";
-            }
-        });
-
-        list = (RecyclerView) view.findViewById(R.id.list);
-        list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
-        list.addItemDecoration(
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.list);
+        mRecyclerView.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
+        mRecyclerView.addItemDecoration(
                 new DividerDecoration(getActivity(), R.id.instance_blank, R.id.empty_layout));
-        list.setAdapter(adapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        list.setLayoutManager(layoutManager);
+        mRecyclerView.setLayoutManager(layoutManager);
+
+        if (mAdapter == null) {
+            setupAdapter();
+        } else {
+            mRecyclerView.setAdapter(mAdapter);
+        }
+
+        int paddingH = (int) getActivity().getResources().getDimension(R.dimen.global_padding);
+        view.setPadding(paddingH, 0, paddingH, 0);
 
         return view;
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        Library.addPlaylistListener(this);
-        Library.addRefreshListener(this);
-        // Assume this fragment's data has gone stale since it was last in the foreground
-        onLibraryRefreshed();
+    public void onDestroyView() {
+        super.onDestroyView();
+        mRecyclerView = null;
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        Library.removePlaylistListener(this);
-        Library.removeRefreshListener(this);
-    }
+    private void setupAdapter() {
+        if (mRecyclerView == null || mPlaylists == null) {
+            return;
+        }
 
-    @Override
-    public void onLibraryRefreshed() {
-        adapter.notifyDataSetChanged();
-    }
+        if (mPlaylistSection != null) {
+            mPlaylistSection.setData(mPlaylists);
+            mAdapter.notifyDataSetChanged();
+        } else {
+            mAdapter = new HeterogeneousAdapter();
+            mRecyclerView.setAdapter(mAdapter);
 
-    @Override
-    public void onPlaylistRemoved(Playlist removed, int index) {
-        adapter.notifyItemRemoved(index);
-    }
+            mPlaylistSection = new PlaylistSection(mPlaylists);
+            mAdapter.addSection(mPlaylistSection);
+            mAdapter.addSection(new SpacerSingleton(
+                    PlaylistSection.ID, (int) getResources().getDimension(R.dimen.list_height)));
+            mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), null) {
+                @Override
+                public String getEmptyMessage() {
+                    return getString(R.string.empty_playlists);
+                }
 
-    @Override
-    public void onPlaylistAdded(Playlist added, int index) {
-        adapter.notifyItemInserted(index);
+                @Override
+                public String getEmptyMessageDetail() {
+                    return getString(R.string.empty_playlists_detail);
+                }
 
-        // Scroll to the inserted item if it's not going to be visible
-        int firstIndex = list.getChildAdapterPosition(list.getChildAt(0));
-        int lastIndex = list.getChildAdapterPosition(list.getChildAt(list.getChildCount() - 1));
+                @Override
+                public String getEmptyAction1Label() {
+                    return "";
+                }
 
-        if (index < firstIndex || index > lastIndex) {
-            ((LinearLayoutManager) list.getLayoutManager()).scrollToPositionWithOffset(index, 0);
+                @Override
+                public String getEmptyAction2Label() {
+                    return "";
+                }
+            });
         }
     }
 }

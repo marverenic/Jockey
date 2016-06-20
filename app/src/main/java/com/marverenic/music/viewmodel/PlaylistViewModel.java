@@ -3,18 +3,22 @@ package com.marverenic.music.viewmodel;
 import android.content.Context;
 import android.databinding.BaseObservable;
 import android.support.v7.widget.PopupMenu;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
 import com.marverenic.music.activity.instance.PlaylistActivity;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.AutoPlaylist;
-import com.marverenic.music.instances.Library;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
+
+import javax.inject.Inject;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -22,11 +26,16 @@ import static com.marverenic.music.activity.instance.PlaylistActivity.PLAYLIST_E
 
 public class PlaylistViewModel extends BaseObservable {
 
+    private static final String TAG = "PlaylistViewModel";
+
+    @Inject PlaylistStore mPlaylistStore;
+
     private Context mContext;
     private Playlist mPlaylist;
 
     public PlaylistViewModel(Context context) {
         mContext = context;
+        JockeyApplication.getComponent(mContext).inject(this);
     }
 
     public void setPlaylist(Playlist playlist) {
@@ -75,13 +84,23 @@ public class PlaylistViewModel extends BaseObservable {
         return menuItem -> {
             switch (menuItem.getItemId()) {
                 case 0: //Queue this playlist next
-                    PlayerController.queueNext(Library.getPlaylistEntries(mContext, mPlaylist));
+                    mPlaylistStore.getSongs(mPlaylist).subscribe(
+                            PlayerController::queueNext,
+                            throwable -> {
+                                Log.e(TAG, "Failed to get songs", throwable);
+                            });
+
                     return true;
                 case 1: //Queue this playlist last
-                    PlayerController.queueLast(Library.getPlaylistEntries(mContext, mPlaylist));
+                    mPlaylistStore.getSongs(mPlaylist).subscribe(
+                            PlayerController::queueLast,
+                            throwable -> {
+                                Log.e(TAG, "Failed to get songs", throwable);
+                            });
+
                     return true;
                 case 2: //Delete this playlist
-                    Library.removePlaylist(view, mPlaylist);
+                    mPlaylistStore.removePlaylist(mPlaylist);
                     return true;
             }
             return false;
@@ -92,17 +111,28 @@ public class PlaylistViewModel extends BaseObservable {
         return menuItem -> {
             switch (menuItem.getItemId()) {
                 case 0: //Queue this playlist next
-                    PlayerController.queueNext(Library.getPlaylistEntries(mContext, mPlaylist));
+                    mPlaylistStore.getSongs(mPlaylist).subscribe(
+                            PlayerController::queueNext,
+                            throwable -> {
+                                Log.e(TAG, "Failed to get songs", throwable);
+                            });
+
                     return true;
                 case 1: //Queue this playlist last
-                    PlayerController.queueLast(Library.getPlaylistEntries(mContext, mPlaylist));
+                    mPlaylistStore.getSongs(mPlaylist).subscribe(
+                            PlayerController::queueLast,
+                            throwable -> {
+                                Log.e(TAG, "Failed to get songs", throwable);
+                            });
+
                     return true;
                 case 2: //Edit this playlist
                     Navigate.to(mContext, AutoPlaylistEditActivity.class,
                             PLAYLIST_EXTRA, mPlaylist);
+
                     return true;
                 case 3: // Delete this playlist
-                    Library.removePlaylist(view, mPlaylist);
+                    mPlaylistStore.removePlaylist(mPlaylist);
                     return true;
             }
             return false;

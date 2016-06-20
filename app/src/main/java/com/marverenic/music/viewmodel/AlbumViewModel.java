@@ -10,6 +10,7 @@ import android.databinding.ObservableInt;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.support.annotation.ColorInt;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.PopupMenu;
@@ -24,12 +25,13 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
+import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.instances.Album;
-import com.marverenic.music.instances.Library;
-import com.marverenic.music.instances.PlaylistDialog;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.view.ViewUtils;
@@ -38,11 +40,17 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 public class AlbumViewModel extends BaseObservable {
 
     private static final String TAG = "AlbumViewModel";
+    private static final String TAG_PLAYLIST_DIALOG = "SongViewModel.PlaylistDialog";
+
+    @Inject MusicStore mMusicStore;
 
     private Context mContext;
+    private FragmentManager mFragmentManager;
     private Album mAlbum;
 
     private ObservableField<Drawable> mArtistImage;
@@ -50,8 +58,11 @@ public class AlbumViewModel extends BaseObservable {
     private ObservableInt mArtistTextColor;
     private ObservableInt mBackgroundColor;
 
-    public AlbumViewModel(Context context) {
+    public AlbumViewModel(Context context, FragmentManager fragmentManager) {
         mContext = context;
+        mFragmentManager = fragmentManager;
+
+        JockeyApplication.getComponent(mContext).inject(this);
     }
 
     public void setAlbum(Album album) {
@@ -143,21 +154,42 @@ public class AlbumViewModel extends BaseObservable {
         return menuItem -> {
             switch (menuItem.getItemId()) {
                 case 0: //Queue this album next
-                    PlayerController.queueNext(Library.getAlbumEntries(mAlbum));
+                    mMusicStore.getSongs(mAlbum).subscribe(
+                            PlayerController::queueNext,
+                            throwable -> {
+                                Log.e(TAG, "Failed to get songs", throwable);
+                            });
+
                     return true;
                 case 1: //Queue this album last
-                    PlayerController.queueLast(Library.getAlbumEntries(mAlbum));
+                    mMusicStore.getSongs(mAlbum).subscribe(
+                            PlayerController::queueLast,
+                            throwable -> {
+                                Log.e(TAG, "Failed to get songs", throwable);
+                            });
+
                     return true;
                 case 2: //Go to artist
-                    Navigate.to(
-                            mContext,
-                            ArtistActivity.class,
-                            ArtistActivity.ARTIST_EXTRA,
-                            Library.findArtistById(mAlbum.getArtistId()));
+                    mMusicStore.findArtistById(mAlbum.getArtistId()).subscribe(
+                            artist -> {
+                                Navigate.to(mContext, ArtistActivity.class,
+                                        ArtistActivity.ARTIST_EXTRA, artist);
+                            }, throwable -> {
+                                Log.e(TAG, "Failed to find artist", throwable);
+                            });
+
                     return true;
                 case 3: //Add to playlist...
-                    PlaylistDialog.AddToNormal.alert(view, Library.getAlbumEntries(mAlbum),
-                            mContext.getString(R.string.header_add_song_name_to_playlist, mAlbum));
+                    mMusicStore.getSongs(mAlbum).subscribe(
+                            songs -> {
+                                AppendPlaylistDialogFragment.newInstance()
+                                        .setSongs(songs)
+                                        .setCollectionName(mAlbum.getAlbumName())
+                                        .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
+                            }, throwable -> {
+                                Log.e(TAG, "Failed to get songs", throwable);
+                            });
+
                     return true;
             }
             return false;

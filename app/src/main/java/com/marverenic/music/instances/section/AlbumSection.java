@@ -1,6 +1,9 @@
 package com.marverenic.music.instances.section;
 
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -16,31 +19,38 @@ public class AlbumSection extends HeterogeneousAdapter.ListSection<Album> {
 
     public static final int ID = 7804;
 
-    public AlbumSection(@NonNull List<Album> data) {
+    private FragmentManager mFragmentManager;
+
+    public AlbumSection(AppCompatActivity activity, @NonNull List<Album> data) {
+        this(activity.getSupportFragmentManager(), data);
+    }
+
+    public AlbumSection(Fragment fragment, @NonNull List<Album> data) {
+        this(fragment.getFragmentManager(), data);
+    }
+
+    public AlbumSection(FragmentManager fragmentManager, @NonNull List<Album> data) {
         super(ID, data);
+        mFragmentManager = fragmentManager;
     }
 
     @Override
     public EnhancedViewHolder<Album> createViewHolder(HeterogeneousAdapter adapter,
                                                       ViewGroup parent) {
-        return ViewHolder.create(parent);
+        InstanceAlbumBinding binding = InstanceAlbumBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false);
+
+        return new ViewHolder(binding);
     }
 
-    public static class ViewHolder extends EnhancedViewHolder<Album> {
+    private class ViewHolder extends EnhancedViewHolder<Album> {
 
         private InstanceAlbumBinding mBinding;
-
-        public static ViewHolder create(ViewGroup parent) {
-            InstanceAlbumBinding binding = InstanceAlbumBinding.inflate(
-                    LayoutInflater.from(parent.getContext()), parent, false);
-
-            return new ViewHolder(binding);
-        }
 
         public ViewHolder(InstanceAlbumBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
-            mBinding.setViewModel(new AlbumViewModel(itemView.getContext()));
+            mBinding.setViewModel(new AlbumViewModel(itemView.getContext(), mFragmentManager));
         }
 
         @Override
