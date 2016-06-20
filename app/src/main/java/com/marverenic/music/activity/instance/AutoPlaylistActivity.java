@@ -11,6 +11,7 @@ import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.data.store.MediaStoreUtil;
+import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Song;
@@ -34,6 +35,7 @@ public class AutoPlaylistActivity extends BaseActivity
     public static final String PLAYLIST_EXTRA = "AutoPlaylistActivity.Playlist";
 
     @Inject PlaylistStore mPlaylistStore;
+    @Inject PlayCountStore mPlayCountStore;
 
     private List<Song> mSongs;
     private AutoPlaylist mReference;
@@ -119,12 +121,12 @@ public class AutoPlaylistActivity extends BaseActivity
                 result = getResources().getString(R.string.message_sorted_playlist_album);
                 break;
             case R.id.action_sort_play:
-                Collections.sort(mSongs, Song.PLAY_COUNT_COMPARATOR);
+                Collections.sort(mSongs, Song.playCountComparator(mPlayCountStore));
                 result = getResources().getString(R.string.message_sorted_playlist_play);
                 sortFlag = AutoPlaylist.Rule.Field.PLAY_COUNT;
                 break;
             case R.id.action_sort_skip:
-                Collections.sort(mSongs, Song.SKIP_COUNT_COMPARATOR);
+                Collections.sort(mSongs, Song.skipCountComparator(mPlayCountStore));
                 result = getResources().getString(R.string.message_sorted_playlist_skip);
                 sortFlag = AutoPlaylist.Rule.Field.SKIP_COUNT;
                 break;
@@ -134,7 +136,7 @@ public class AutoPlaylistActivity extends BaseActivity
                 sortFlag = AutoPlaylist.Rule.Field.DATE_ADDED;
                 break;
             case R.id.action_sort_date_played:
-                Collections.sort(mSongs, Song.DATE_PLAYED_COMPARATOR);
+                Collections.sort(mSongs, Song.playCountComparator(mPlayCountStore));
                 result = getResources().getString(R.string.message_sorted_playlist_date_played);
                 sortFlag = AutoPlaylist.Rule.Field.DATE_PLAYED;
                 break;

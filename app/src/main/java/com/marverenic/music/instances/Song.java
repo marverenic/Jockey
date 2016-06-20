@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MediaStoreUtil;
+import com.marverenic.music.data.store.PlayCountStore;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -232,17 +233,20 @@ public class Song implements Parcelable, Comparable<Song> {
     public static final Comparator<Song> ALBUM_COMPARATOR = (o1, o2) ->
             compareTitle(o1.getAlbumName(), o2.getAlbumName());
 
-    public static final Comparator<Song> PLAY_COUNT_COMPARATOR = (s1, s2) ->
-            s2.getPlayCount() - s1.getPlayCount();
+    public static Comparator<Song> playCountComparator(PlayCountStore countStore) {
+        return (s1, s2) -> countStore.getPlayCount(s2) - countStore.getPlayCount(s1);
+    }
 
-    public static final Comparator<Song> SKIP_COUNT_COMPARATOR = (s1, s2) ->
-            s2.getSkipCount() - s1.getSkipCount();
+    public static Comparator<Song> skipCountComparator(PlayCountStore countStore) {
+        return (s1, s2) -> countStore.getSkipCount(s2) - countStore.getSkipCount(s1);
+    }
 
     public static final Comparator<Song> DATE_ADDED_COMPARATOR = (s1, s2) ->
             compareLong(s1.getDateAdded(), s2.getDateAdded());
 
-    public static final Comparator<Song> DATE_PLAYED_COMPARATOR = (s1, s2) ->
-            s2.getPlayDate() - s1.getPlayDate();
+    public static Comparator<Song> playDateComparator(PlayCountStore countStore) {
+        return (s1, s2) -> compareLong(countStore.getPlayDate(s2), countStore.getPlayDate(s1));
+    }
 
     public static final Comparator<Song> YEAR_COMPARATOR = (s1, s2) ->
             s2.getYear() - s1.getYear();

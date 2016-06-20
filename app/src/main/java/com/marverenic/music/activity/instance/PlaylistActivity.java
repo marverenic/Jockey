@@ -15,6 +15,7 @@ import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.data.store.MediaStoreUtil;
+import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Playlist;
@@ -39,6 +40,7 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
     public static final String PLAYLIST_EXTRA = "playlist";
 
     @Inject PlaylistStore mPlaylistStore;
+    @Inject PlayCountStore mPlayCountStore;
 
     private List<Song> mSongs;
     private Playlist mReference;
@@ -190,11 +192,11 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
                 result = getResources().getString(R.string.message_sorted_playlist_album);
                 break;
             case R.id.action_sort_play:
-                Collections.sort(mSongs, Song.PLAY_COUNT_COMPARATOR);
+                Collections.sort(mSongs, Song.playCountComparator(mPlayCountStore));
                 result = getResources().getString(R.string.message_sorted_playlist_play);
                 break;
             case R.id.action_sort_skip:
-                Collections.sort(mSongs, Song.SKIP_COUNT_COMPARATOR);
+                Collections.sort(mSongs, Song.skipCountComparator(mPlayCountStore));
                 result = getResources().getString(R.string.message_sorted_playlist_skip);
                 break;
             case R.id.action_sort_date_added:
@@ -202,7 +204,7 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
                 result = getResources().getString(R.string.message_sorted_playlist_date_added);
                 break;
             case R.id.action_sort_date_played:
-                Collections.sort(mSongs, Song.DATE_PLAYED_COMPARATOR);
+                Collections.sort(mSongs, Song.playCountComparator(mPlayCountStore));
                 result = getResources().getString(R.string.message_sorted_playlist_date_played);
                 break;
             default:
