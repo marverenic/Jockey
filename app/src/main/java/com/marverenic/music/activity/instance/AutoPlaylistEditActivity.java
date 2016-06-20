@@ -25,8 +25,12 @@ import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import javax.inject.Inject;
+
 public class AutoPlaylistEditActivity extends BaseActivity
         implements RuleSection.OnRemovalListener {
+
+    @Inject PlaylistStore mPlaylistStore;
 
     public static final String PLAYLIST_EXTRA = "auto-playlist";
     private static final String EDITED_HEADER = "modified-header";
@@ -41,6 +45,8 @@ public class AutoPlaylistEditActivity extends BaseActivity
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instance_no_miniplayer);
+
+        JockeyApplication.getComponent(this).inject(this);
 
         reference = getIntent().getParcelableExtra(PLAYLIST_EXTRA);
         if (reference == null) {

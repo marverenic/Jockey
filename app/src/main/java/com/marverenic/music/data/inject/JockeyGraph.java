@@ -5,6 +5,7 @@ import com.marverenic.music.activity.SearchActivity;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.activity.instance.AutoPlaylistActivity;
+import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
 import com.marverenic.music.activity.instance.GenreActivity;
 import com.marverenic.music.activity.instance.PlaylistActivity;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
@@ -31,6 +32,7 @@ public interface JockeyGraph {
     void inject(GenreActivity activity);
     void inject(PlaylistActivity activity);
     void inject(AutoPlaylistActivity activity);
+    void inject(AutoPlaylistEditActivity activity);
 
     void inject(SongFragment fragment);
     void inject(AlbumFragment fragment);
