@@ -171,21 +171,8 @@ public class Song implements Parcelable, Comparable<Song> {
         return artistId;
     }
 
-
     public int getTrackNumber() {
         return trackNumber;
-    }
-
-    public int getSkipCount() {
-        return Library.getSkipCount(songId);
-    }
-
-    public int getPlayCount() {
-        return Library.getPlayCount(songId);
-    }
-
-    public int getPlayDate() {
-        return Library.getPlayDate(songId);
     }
 
     @Override
