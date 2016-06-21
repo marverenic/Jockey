@@ -74,7 +74,7 @@ public final class PlayerController {
                     playerService = null;
                     applicationContext = null;
                 }
-            }, Context.BIND_ABOVE_CLIENT);
+            }, Context.BIND_WAIVE_PRIORITY);
         }
     }
 

@@ -130,6 +130,31 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         if (DEBUG) Log.i(TAG, "onTaskRemoved() called");
         mAppRunning = false;
 
+        /*
+            When the application is removed from the overview page, we make the notification
+            dismissible on Lollipop and higher devices if music is paused. To do this, we have to
+            move the service out of the foreground state. As soon as this happens, ActivityManager
+            will kill the service because it isn't in the foreground. Because the service is
+            sticky, it will get queued to be restarted.
+
+            Because our service has a chance of getting recreated as a result of this event in
+            the lifecycle, we have to save the state of the media player under the assumption that
+            we're about to be killed. If we are killed, this state will just be reloaded when the
+            service is recreated, and all the user sees is their notification temporarily
+            disappearing when they pause music and swipe Jockey out of their recent apps.
+
+            There is no other way I'm aware of to implement a remote service that transitions
+            between the foreground and background (as required by the platform's media style since
+            it can't have a close button on L+ devices) without being recreated and requiring
+            this workaround.
+         */
+        try {
+            musicPlayer.saveState();
+        } catch (IOException exception) {
+            Log.e(TAG, "Failed to save music player state", exception);
+            Crashlytics.logException(exception);
+        }
+
         if (mStopped) {
             stop();
         } else {
