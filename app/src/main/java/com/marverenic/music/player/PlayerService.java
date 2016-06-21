@@ -66,6 +66,8 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
     @Override
     public IBinder onBind(Intent intent) {
+        if (DEBUG) Log.i(TAG, "onBind called");
+
         if (binder == null) {
             binder = new Stub();
         }
@@ -102,6 +104,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (DEBUG) Log.i(TAG, "onStartCommand() called");
         super.onStartCommand(intent, flags, startId);
 
         if (intent != null) {
@@ -124,6 +127,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
+        if (DEBUG) Log.i(TAG, "onTaskRemoved() called");
         mAppRunning = false;
 
         if (mStopped) {
