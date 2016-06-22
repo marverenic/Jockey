@@ -17,19 +17,27 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 
+import javax.inject.Inject;
+
 public class PreferenceFragment extends PreferenceFragmentCompat
         implements View.OnLongClickListener {
+
+    @Inject PreferencesStore mPrefStore;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        JockeyApplication.getComponent(this).inject(this);
+
         addPreferencesFromResource(R.xml.prefs);
     }
 
@@ -140,8 +148,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat
                 .equals(preference.getFragment())) {
             Intent eqIntent = Util.getSystemEqIntent(getActivity());
 
-            if (eqIntent != null
-                    && !Prefs.getPrefs(getActivity()).getBoolean(Prefs.EQ_ENABLED, false)) {
+            if (eqIntent != null && !mPrefStore.getEqualizerEnabled()) {
                 // If the system has an equalizer implementation already in place, use it
                 // to avoid weird problems and conflicts that can cause unexpected behavior
 
