@@ -6,6 +6,7 @@ import android.media.audiofx.Equalizer;
 import android.net.ConnectivityManager;
 import android.preference.PreferenceManager;
 
+@Deprecated
 public final class Prefs {
 
     // Preference keys
