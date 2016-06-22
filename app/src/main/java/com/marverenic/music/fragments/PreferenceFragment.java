@@ -24,7 +24,8 @@ import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 
-public class PreferenceFragment extends PreferenceFragmentCompat implements View.OnLongClickListener {
+public class PreferenceFragment extends PreferenceFragmentCompat
+        implements View.OnLongClickListener {
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -74,19 +75,22 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements View
 
                 // Override Equalizer preference attachment to add a long click listener
                 // and to change the detail text at runtime
-                if ("com.marverenic.music.fragments.EqualizerFragment"
-                        .equals(getItem(position).getFragment())) {
+                String fragment = getItem(position).getFragment();
+                if ("com.marverenic.music.fragments.EqualizerFragment".equals(fragment)) {
 
                     ViewGroup itemView = (ViewGroup) holder.itemView;
                     TextView title = (TextView) itemView.findViewById(android.R.id.title);
                     TextView detail = (TextView) itemView.findViewById(android.R.id.summary);
 
-                    if (Util.getSystemEqIntent(getContext()) != null && Util.hasEqualizer()) {
+                    boolean hasSystemEq = Util.getSystemEqIntent(getContext()) != null;
+
+                    if (hasSystemEq && Util.hasEqualizer()) {
                         // If we have Jockey's Equalizer and another Equalizer
                         itemView.setOnLongClickListener(PreferenceFragment.this);
                         detail.setText(R.string.equalizer_more_options_detail);
                         detail.setVisibility(View.VISIBLE);
-                    } else if (Util.getSystemEqIntent(getContext()) == null && !Util.hasEqualizer()) {
+
+                    } else if (hasSystemEq && !Util.hasEqualizer()) {
                         // If we don't have any equalizers
                         detail.setText(R.string.equalizerUnsupported);
                         detail.setVisibility(View.VISIBLE);
