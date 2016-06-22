@@ -30,8 +30,8 @@ import com.marverenic.music.R;
 import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Util;
 
-public class EqualizerFragment extends Fragment implements CompoundButton.OnCheckedChangeListener ,
-        FragmentManager.OnBackStackChangedListener{
+public class EqualizerFragment extends Fragment implements CompoundButton.OnCheckedChangeListener,
+        FragmentManager.OnBackStackChangedListener {
 
     private Equalizer equalizer;
     private EqualizerFrame[] sliders;
@@ -159,12 +159,7 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
                 anim.setInterpolator(getContext(), android.R.anim.decelerate_interpolator);
                 equalizerToggle.startAnimation(anim);
 
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        toolbar.removeView(equalizerToggle);
-                    }
-                }, duration);
+                new Handler().postDelayed(() -> toolbar.removeView(equalizerToggle), duration);
             }
 
             if (equalizer != null) {
