@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.R;
-import com.marverenic.music.data.store.PreferenceStore;
+import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.data.store.SharedPreferencesStore;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
@@ -49,14 +49,14 @@ public abstract class BaseActivity extends RxAppCompatActivity
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-        PreferenceStore preferenceStore = new SharedPreferencesStore(this);
+        PreferencesStore preferencesStore = new SharedPreferencesStore(this);
 
-        if (preferenceStore.showFirstStart()) {
-            showFirstRunDialog(preferenceStore);
+        if (preferencesStore.showFirstStart()) {
+            showFirstRunDialog(preferencesStore);
         }
     }
 
-    private void showFirstRunDialog(PreferenceStore preferenceStore) {
+    private void showFirstRunDialog(PreferencesStore preferencesStore) {
         View messageView = getLayoutInflater().inflate(R.layout.alert_pref, null);
         TextView message = (TextView) messageView.findViewById(R.id.alertMessage);
         CheckBox pref = (CheckBox) messageView.findViewById(R.id.alertPref);
@@ -72,8 +72,8 @@ public abstract class BaseActivity extends RxAppCompatActivity
                 .setView(messageView)
                 .setPositiveButton(R.string.action_agree,
                         (dialog, which) -> {
-                            preferenceStore.setAllowLogging(pref.isChecked());
-                            preferenceStore.setShowFirstStart(false);
+                            preferencesStore.setAllowLogging(pref.isChecked());
+                            preferencesStore.setShowFirstStart(false);
                         })
                 .setCancelable(false)
                 .show();

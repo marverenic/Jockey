@@ -2,7 +2,7 @@ package com.marverenic.music.data.inject;
 
 import android.content.Context;
 
-import com.marverenic.music.data.store.PreferenceStore;
+import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.data.store.SharedPreferencesStore;
 
 import javax.inject.Singleton;
@@ -26,7 +26,7 @@ public class ContextModule {
 
     @Provides
     @Singleton
-    public PreferenceStore providePreferenceStore(Context context) {
+    public PreferencesStore providePreferencesStore(Context context) {
         return new SharedPreferencesStore(context);
     }
 

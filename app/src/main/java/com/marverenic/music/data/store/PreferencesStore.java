@@ -3,7 +3,7 @@ package com.marverenic.music.data.store;
 import android.media.audiofx.Equalizer;
 import android.support.annotation.IntDef;
 
-public interface PreferenceStore {
+public interface PreferencesStore {
 
     boolean showFirstStart();
     boolean allowLogging();

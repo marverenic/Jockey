@@ -10,7 +10,7 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.R;
 
-public class SharedPreferencesStore implements PreferenceStore {
+public class SharedPreferencesStore implements PreferencesStore {
 
     private static final String TAG = "SharedPreferencesStore";
 
