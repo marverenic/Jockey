@@ -9,12 +9,16 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.media.audiofx.AudioEffect;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.PlayerController;
 
 import java.util.UUID;
+
+import static android.content.Context.CONNECTIVITY_SERVICE;
 
 public final class Util {
 
@@ -38,6 +42,38 @@ public final class Util {
      */
     private Util() {
 
+    }
+
+    /**
+     * Checks whether the device is in a state where we're able to access the internet. If the
+     * device is not connected to the internet, this will return {@code false}. If the device is
+     * only connected to a mobile network, this will return {@code allowMobileNetwork}. If the
+     * device is connected to an active WiFi network, this will return {@code true.}
+     * @param context A context used to check the current network status
+     * @param allowMobileNetwork Whether or not the user allows the application to use mobile
+     *                           data. This is an internal implementation that is not enforced
+     *                           by the system, but is exposed to the user in our app's settings.
+     * @return Whether network calls should happen in the current connection state or not
+     */
+    @SuppressWarnings("SimplifiableIfStatement")
+    public static boolean canAccessInternet(Context context, boolean allowMobileNetwork) {
+        ConnectivityManager connectivityManager;
+        connectivityManager = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
+
+        NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+        if (info == null) {
+            // No network connections are active
+            return false;
+        } else if (!info.isAvailable() || info.isRoaming()) {
+            // The network isn't active, or is a roaming network
+            return false;
+        } else if (info.getType() == ConnectivityManager.TYPE_MOBILE) {
+            // If it's a mobile network, return the user preference
+            return allowMobileNetwork;
+        } else {
+            // The network is a wifi network
+            return true;
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.M)
