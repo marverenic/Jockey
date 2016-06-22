@@ -19,19 +19,22 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MediaStoreUtil;
+import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
 import com.marverenic.music.fragments.QueueFragment;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.PlayerController;
-import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.view.GestureView;
 
 import java.io.File;
 import java.util.ArrayList;
+
+import javax.inject.Inject;
 
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 
@@ -39,6 +42,8 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
 
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
     private static final String TAG_APPEND_PLAYLIST = "AppendPlaylistDialog";
+
+    @Inject PreferencesStore mPrefStore;
 
     private ImageView artwork;
     private GestureView artworkWrapper;
@@ -50,6 +55,8 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         super.onCreate(savedInstanceState);
         onNewIntent(getIntent());
         setContentView(R.layout.activity_now_playing);
+
+        JockeyApplication.getComponent(this).inject(this);
 
         boolean landscape = getResources().getConfiguration().orientation == ORIENTATION_LANDSCAPE;
 
@@ -82,8 +89,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         artworkWrapper = (GestureView) findViewById(R.id.artworkSwipeFrame);
         if (artworkWrapper != null) {
             artworkWrapper.setGestureListener(this);
-            artworkWrapper.setGesturesEnabled(
-                    Prefs.getPrefs(this).getBoolean(Prefs.ENABLE_NOW_PLAYING_GESTURES, true));
+            artworkWrapper.setGesturesEnabled(mPrefStore.enableNowPlayingGestures());
         }
 
         onUpdate();
