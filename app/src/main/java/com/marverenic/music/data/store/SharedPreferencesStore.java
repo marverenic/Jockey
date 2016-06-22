@@ -77,6 +77,11 @@ public class SharedPreferencesStore implements PreferencesStore {
     }
 
     @Override
+    public boolean enableNowPlayingGestures() {
+        return getBoolean(R.string.pref_key_enable_gestures, true);
+    }
+
+    @Override
     @SuppressWarnings("WrongConstant")
     public int getDefaultPage() {
         return getInt(R.string.pref_key_default_page, StartPage.SONGS);
@@ -135,6 +140,11 @@ public class SharedPreferencesStore implements PreferencesStore {
     @Override
     public void setOpenNowPlayingOnNewQueue(boolean openNowPlayingOnNewQueue) {
         putBoolean(R.string.pref_key_switch_to_playing, openNowPlayingOnNewQueue);
+    }
+
+    @Override
+    public void setEnableNowPlayingGestures(boolean enabled) {
+        putBoolean(R.string.pref_key_enable_gestures, enabled);
     }
 
     @Override

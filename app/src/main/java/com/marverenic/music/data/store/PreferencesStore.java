@@ -10,6 +10,7 @@ public interface PreferencesStore {
     boolean useMobileNetwork();
 
     boolean openNowPlayingOnNewQueue();
+    boolean enableNowPlayingGestures();
     @StartPage int getDefaultPage();
     @PresetTheme int getPrimaryColor();
     @BaseTheme int getBaseColor();
@@ -23,6 +24,7 @@ public interface PreferencesStore {
     void setUseMobileNetwork(boolean useMobileNetwork);
 
     void setOpenNowPlayingOnNewQueue(boolean openNowPlayingOnNewQueue);
+    void setEnableNowPlayingGestures(boolean enabled);
     void setDefaultPage(@StartPage int defaultPage);
     void setPrimaryColor(@PresetTheme int colorChoice);
     void setBaseColor(@BaseTheme int theme);
