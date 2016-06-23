@@ -39,6 +39,9 @@ import java.util.Scanner;
 
 import javax.inject.Inject;
 
+import static android.content.Intent.ACTION_HEADSET_PLUG;
+import static android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY;
+
 /**
  * High level implementation for a MediaPlayer. MusicPlayer is backed by a {@link QueuedMediaPlayer}
  * and provides high-level behavior definitions (for actions like {@link #skip()},
@@ -207,8 +210,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         // Attach a HeadsetListener to respond to headphone events
         mHeadphoneListener = new HeadsetListener(this);
         IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_MEDIA_BUTTON);
-        filter.addAction(Intent.ACTION_HEADSET_PLUG);
+        filter.addAction(ACTION_HEADSET_PLUG);
+        filter.addAction(ACTION_AUDIO_BECOMING_NOISY);
         context.registerReceiver(mHeadphoneListener, filter);
 
         loadPrefs();
@@ -1057,9 +1060,16 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)
-                    && intent.getIntExtra("state", -1) == 0 && mInstance.isPlaying()) {
+            if (!mInstance.isPlaying()) {
+                return;
+            }
 
+            boolean unplugged = ACTION_HEADSET_PLUG.equals(intent.getAction())
+                    && intent.getIntExtra("state", -1) == 0;
+
+            boolean becomingNoisy = ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction());
+
+            if (unplugged || becomingNoisy) {
                 mInstance.pause();
                 mInstance.updateUi();
             }
