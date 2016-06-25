@@ -26,6 +26,7 @@
             android:paddingRight="@dimen/now_playing_time_padding"
             android:paddingBottom="@dimen/now_playing_time_padding_bottom"
             android:translationY="@dimen/seekbarMargin"
+            android:visibility="@{viewModel.positionVisibility}"
             android:layout_above="@+id/songSeekBar"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"/>
@@ -40,6 +41,7 @@
             android:paddingLeft="@dimen/now_playing_time_padding"
             android:paddingBottom="@dimen/now_playing_time_padding_bottom"
             android:translationY="@dimen/seekbarMargin"
+            android:visibility="@{viewModel.positionVisibility}"
             android:layout_above="@+id/songSeekBar"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"

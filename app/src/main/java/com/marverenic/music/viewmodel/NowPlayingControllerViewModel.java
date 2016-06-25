@@ -82,6 +82,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
         notifyPropertyChanged(BR.artistName);
         notifyPropertyChanged(BR.albumName);
         notifyPropertyChanged(BR.songDuration);
+        notifyPropertyChanged(BR.positionVisibility);
     }
 
     public void setPlaying(boolean playing) {
@@ -184,6 +185,15 @@ public class NowPlayingControllerViewModel extends BaseObservable {
 
     public ObservableInt getCurrentPosition() {
         return mCurrentPositionObservable;
+    }
+
+    @Bindable
+    public int getPositionVisibility() {
+        if (mSong == null) {
+            return View.INVISIBLE;
+        } else {
+            return View.VISIBLE;
+        }
     }
 
     @ColorInt
