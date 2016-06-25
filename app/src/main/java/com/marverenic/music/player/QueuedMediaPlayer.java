@@ -132,6 +132,11 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
      * @param index The replacement queue index
      */
     public void setQueue(@NonNull List<Song> queue, int index) {
+        if (queue.isEmpty()) {
+            reset();
+            return;
+        }
+
         boolean songChanged = getNowPlaying() == null || !getNowPlaying().equals(queue.get(index));
         mQueue = queue;
         setQueueIndex(index);
@@ -519,6 +524,22 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
     public void setWakeMode(int mode) {
         mCurrentPlayer.setWakeMode(mContext, mode);
         mNextPlayer.setWakeMode(mContext, mode);
+    }
+
+    /**
+     * Resets both MediaPlayers, and clears the queue. This makes the current instance act like a
+     * new one, retaining any attached callbacks and other properties unrelated to the queue.
+     * @see MediaPlayer#reset()
+     */
+    public void reset() {
+        mCurrentPlayer.reset();
+        mNextPlayer.reset();
+
+        mQueue = Collections.emptyList();
+        mQueueIndex = 0;
+
+        mRequestedSeekPosition = 0;
+        mPlayWhenPrepared = false;
     }
 
     /**
