@@ -284,7 +284,7 @@ public final class PlayerController {
                 break;
             case MusicPlayer.REPEAT_ONE:
             default:
-            repeatOption = MusicPlayer.REPEAT_NONE;
+                repeatOption = MusicPlayer.REPEAT_NONE;
         }
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext);
