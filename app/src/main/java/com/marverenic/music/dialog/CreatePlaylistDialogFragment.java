@@ -152,7 +152,7 @@ public class CreatePlaylistDialogFragment extends DialogFragment implements Text
 
         if (error) {
             button.setTextColor(ResourcesCompat.getColor(getResources(),
-                            R.color.secondary_text_disabled, getActivity().getTheme()));
+                    R.color.secondary_text_disabled, getActivity().getTheme()));
         } else {
             button.setTextColor(Themes.getAccent());
         }
