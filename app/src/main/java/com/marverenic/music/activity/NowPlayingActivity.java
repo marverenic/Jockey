@@ -189,53 +189,70 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_shuffle:
-                PlayerController.toggleShuffle();
-                if (PlayerController.isShuffle()) {
-                    item.getIcon().setAlpha(255);
-                    item.setTitle(getResources().getString(R.string.action_disable_shuffle));
-                    showSnackbar(R.string.confirm_enable_shuffle);
-                } else {
-                    item.getIcon().setAlpha(128);
-                    item.setTitle(getResources().getString(R.string.action_enable_shuffle));
-                    showSnackbar(R.string.confirm_disable_shuffle);
-                }
-                queueFragment.updateShuffle();
+                toggleShuffle(item);
                 return true;
             case R.id.action_repeat:
-                PlayerController.toggleRepeat();
-                if (PlayerController.isRepeat()) {
-                    item.getIcon().setAlpha(255);
-                    item.setTitle(getResources().getString(R.string.action_enable_repeat_one));
-                    showSnackbar(R.string.confirm_enable_repeat);
-                } else {
-                    if (PlayerController.isRepeatOne()) {
-                        item.setIcon(R.drawable.ic_repeat_one_24dp);
-                        item.setTitle(getResources().getString(R.string.action_disable_repeat));
-                        showSnackbar(R.string.confirm_enable_repeat_one);
-                    } else {
-                        item.setIcon(R.drawable.ic_repeat_24dp);
-                        item.getIcon().setAlpha(128);
-                        item.setTitle(getResources().getString(R.string.action_enable_repeat));
-                        showSnackbar(R.string.confirm_disable_repeat);
-                    }
-                }
+                toggleRepeat(item);
                 return true;
             case R.id.save:
-                CreatePlaylistDialogFragment.newInstance().setSongs(PlayerController.getQueue())
-                        .show(getSupportFragmentManager(), TAG_MAKE_PLAYLIST);
+                saveQueueAsPlaylist();
                 return true;
             case R.id.add_to_playlist:
-                AppendPlaylistDialogFragment.newInstance()
-                        .setTitle(getString(R.string.header_add_queue_to_playlist))
-                        .setSongs(PlayerController.getQueue())
-                        .show(getSupportFragmentManager(), TAG_APPEND_PLAYLIST);
+                addQueueToPlaylist();
                 return true;
             case R.id.clear_queue:
-                PlayerController.clearQueue();
+                clearQueue();
                 return true;
-            default:
-                return super.onOptionsItemSelected(item);
         }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void toggleShuffle(MenuItem shuffleMenuItem) {
+        PlayerController.toggleShuffle();
+        if (PlayerController.isShuffle()) {
+            shuffleMenuItem.getIcon().setAlpha(255);
+            shuffleMenuItem.setTitle(getResources().getString(R.string.action_disable_shuffle));
+            showSnackbar(R.string.confirm_enable_shuffle);
+        } else {
+            shuffleMenuItem.getIcon().setAlpha(128);
+            shuffleMenuItem.setTitle(getResources().getString(R.string.action_enable_shuffle));
+            showSnackbar(R.string.confirm_disable_shuffle);
+        }
+        queueFragment.updateShuffle();
+    }
+
+    private void toggleRepeat(MenuItem repeatMenuItem) {
+        PlayerController.toggleRepeat();
+        if (PlayerController.isRepeat()) {
+            repeatMenuItem.getIcon().setAlpha(255);
+            repeatMenuItem.setTitle(getResources().getString(R.string.action_enable_repeat_one));
+            showSnackbar(R.string.confirm_enable_repeat);
+        } else if (PlayerController.isRepeatOne()) {
+            repeatMenuItem.setIcon(R.drawable.ic_repeat_one_24dp);
+            repeatMenuItem.setTitle(getResources().getString(R.string.action_disable_repeat));
+            showSnackbar(R.string.confirm_enable_repeat_one);
+        } else {
+            repeatMenuItem.setIcon(R.drawable.ic_repeat_24dp);
+            repeatMenuItem.getIcon().setAlpha(128);
+            repeatMenuItem.setTitle(getResources().getString(R.string.action_enable_repeat));
+            showSnackbar(R.string.confirm_disable_repeat);
+        }
+    }
+
+    private void saveQueueAsPlaylist() {
+        CreatePlaylistDialogFragment.newInstance().setSongs(PlayerController.getQueue())
+                .show(getSupportFragmentManager(), TAG_MAKE_PLAYLIST);
+    }
+
+    private void addQueueToPlaylist() {
+        AppendPlaylistDialogFragment.newInstance()
+                .setTitle(getString(R.string.header_add_queue_to_playlist))
+                .setSongs(PlayerController.getQueue())
+                .show(getSupportFragmentManager(), TAG_APPEND_PLAYLIST);
+    }
+
+    private void clearQueue() {
+        PlayerController.clearQueue();
     }
 
     @Override
