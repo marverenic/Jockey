@@ -92,6 +92,7 @@ public class ArtistViewModel extends BaseObservable {
                                 AppendPlaylistDialogFragment.newInstance()
                                         .setSongs(songs)
                                         .setCollectionName(mArtist.getArtistName())
+                                        .showSnackbarIn(R.id.list)
                                         .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
                             }, throwable -> {
                                 Log.e(TAG, "Failed to get songs", throwable);

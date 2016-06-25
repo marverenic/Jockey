@@ -283,6 +283,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
                 case 2: //Add to playlist
                     AppendPlaylistDialogFragment.newInstance()
                             .setSong(song)
+                            .showSnackbarIn(R.id.imageArtwork)
                             .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
                     return true;
             }

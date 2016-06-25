@@ -185,6 +185,7 @@ public class AlbumViewModel extends BaseObservable {
                                 AppendPlaylistDialogFragment.newInstance()
                                         .setSongs(songs)
                                         .setCollectionName(mAlbum.getAlbumName())
+                                        .showSnackbarIn(R.id.list)
                                         .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
                             }, throwable -> {
                                 Log.e(TAG, "Failed to get songs", throwable);

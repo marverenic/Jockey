@@ -91,6 +91,7 @@ public class GenreViewModel extends BaseObservable {
                                 AppendPlaylistDialogFragment.newInstance()
                                         .setSongs(songs)
                                         .setCollectionName(mGenre.getGenreName())
+                                        .showSnackbarIn(R.id.list)
                                         .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
                             }, throwable -> {
                                 Log.e(TAG, "Failed to get songs", throwable);
