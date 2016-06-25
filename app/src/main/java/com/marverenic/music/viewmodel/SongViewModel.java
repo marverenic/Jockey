@@ -101,12 +101,12 @@ public class SongViewModel extends BaseObservable {
             for (int i = 0; i < options.length;  i++) {
                 menu.getMenu().add(Menu.NONE, i, i, options[i]);
             }
-            menu.setOnMenuItemClickListener(onMenuItemClick(v));
+            menu.setOnMenuItemClickListener(onMenuItemClick());
             menu.show();
         };
     }
 
-    private PopupMenu.OnMenuItemClickListener onMenuItemClick(View view) {
+    private PopupMenu.OnMenuItemClickListener onMenuItemClick() {
         return menuItem -> {
             switch (menuItem.getItemId()) {
                 case 0: //Queue this song next
