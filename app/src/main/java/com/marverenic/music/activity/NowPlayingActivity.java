@@ -243,7 +243,9 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     }
 
     private void saveQueueAsPlaylist() {
-        CreatePlaylistDialogFragment.newInstance().setSongs(PlayerController.getQueue())
+        CreatePlaylistDialogFragment.newInstance()
+                .setSongs(PlayerController.getQueue())
+                .showSnackbarIn(R.id.imageArtwork)
                 .show(getSupportFragmentManager(), TAG_MAKE_PLAYLIST);
     }
 

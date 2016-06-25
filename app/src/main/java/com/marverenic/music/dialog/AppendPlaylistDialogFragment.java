@@ -160,6 +160,7 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
         if (which == 0) {
             CreatePlaylistDialogFragment.newInstance()
                     .setSongs((mSingle) ? Collections.singletonList(mSong) : mSongs)
+                    .showSnackbarIn(mSnackbarView)
                     .show(getFragmentManager(), TAG_MAKE_PLAYLIST);
         } else {
             addToPlaylist(mChoices[which]);
