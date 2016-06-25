@@ -2,10 +2,14 @@ package com.marverenic.music.dialog;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
+import android.view.View;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
@@ -21,10 +25,13 @@ import javax.inject.Inject;
 
 public class AppendPlaylistDialogFragment extends DialogFragment {
 
+    private static final String TAG = "AppendPlaylistDialogFragment";
+
     private static final String TAG_MAKE_PLAYLIST = "CreateNewPlaylistDialog";
     private static final String SAVED_TITLE = "AppendPlaylistDialogFragment.Title";
     private static final String SAVED_SONG = "AppendPlaylistDialogFragment.Song";
     private static final String SAVED_SONGS = "AppendPlaylistDialogFragment.Songs";
+    private static final String SAVED_SNACKBAR_VIEW = "AppendPlaylistDialogFragment.Snackbar";
 
     @Inject PlaylistStore mPlaylistStore;
 
@@ -36,6 +43,7 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
     private Song mSong;
     private List<Song> mSongs;
     private boolean mSingle;
+    @IdRes private int mSnackbarView;
 
     public static AppendPlaylistDialogFragment newInstance() {
         return new AppendPlaylistDialogFragment();
@@ -63,6 +71,11 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
         return this;
     }
 
+    public AppendPlaylistDialogFragment showSnackbarIn(@IdRes int viewId) {
+        mSnackbarView = viewId;
+        return this;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +83,7 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
 
         if (savedInstanceState != null) {
             mTitle = savedInstanceState.getString(SAVED_TITLE);
+            mSnackbarView = savedInstanceState.getInt(SAVED_SNACKBAR_VIEW);
 
             if (savedInstanceState.containsKey(SAVED_SONG)) {
                 mSong = savedInstanceState.getParcelable(SAVED_SONG);
@@ -80,19 +94,21 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
             }
         }
 
-        mPlaylistStore.getPlaylists().subscribe(playlists -> {
-            mChoices = new Playlist[playlists.size() + 1];
-            mChoiceNames = new String[playlists.size() + 1];
+        mPlaylistStore.getPlaylists()
+                .take(1)
+                .subscribe(playlists -> {
+                    mChoices = new Playlist[playlists.size() + 1];
+                    mChoiceNames = new String[playlists.size() + 1];
 
-            mChoiceNames[0] = getString(R.string.action_make_new_playlist);
+                    mChoiceNames[0] = getString(R.string.action_make_new_playlist);
 
-            for (int i = 0; i < playlists.size(); i++) {
-                mChoices[i + 1] = playlists.get(i);
-                mChoiceNames[i + 1] = playlists.get(i).getPlaylistName();
-            }
+                    for (int i = 0; i < playlists.size(); i++) {
+                        mChoices[i + 1] = playlists.get(i);
+                        mChoiceNames[i + 1] = playlists.get(i).getPlaylistName();
+                    }
 
-            showDialog();
-        });
+                    showDialog();
+                });
     }
 
     @NonNull
@@ -110,6 +126,8 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
         super.onSaveInstanceState(outState);
 
         outState.putString(SAVED_TITLE, mTitle);
+        outState.putInt(SAVED_SNACKBAR_VIEW, mSnackbarView);
+
         if (mSingle) {
             outState.putParcelable(SAVED_SONG, mSong);
         } else {
@@ -142,11 +160,50 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
         if (which == 0) {
             CreatePlaylistDialogFragment.newInstance()
                     .setSongs((mSingle) ? Collections.singletonList(mSong) : mSongs)
+                    .showSnackbarIn(mSnackbarView)
                     .show(getFragmentManager(), TAG_MAKE_PLAYLIST);
-        } else if (mSingle) {
-            mPlaylistStore.addToPlaylist(mChoices[which], mSong);
         } else {
-            mPlaylistStore.addToPlaylist(mChoices[which], mSongs);
+            addToPlaylist(mChoices[which]);
+        }
+    }
+
+    private void addToPlaylist(Playlist playlist) {
+        mPlaylistStore.getSongs(playlist)
+                .take(1)
+                .subscribe(
+                        oldEntries -> {
+                            if (mSingle) {
+                                mPlaylistStore.addToPlaylist(playlist, mSong);
+                            } else {
+                                mPlaylistStore.addToPlaylist(playlist, mSongs);
+                            }
+                            showSnackbar(playlist, oldEntries);
+                        },
+                        throwable -> {
+                            Log.e(TAG, "Failed to get old entries");
+                        });
+    }
+
+    private void showSnackbar(Playlist editedPlaylist, List<Song> previousSongs) {
+        String message;
+        if (mSingle) {
+            message = getString(R.string.message_added_song, mSong, editedPlaylist);
+        } else {
+            message = getString(R.string.confirm_add_songs, mSongs.size(), editedPlaylist);
+        }
+
+        showSnackbar(message, editedPlaylist, previousSongs);
+    }
+
+    private void showSnackbar(String message, Playlist editedPlaylist, List<Song> previousSongs) {
+        View container = getActivity().findViewById(mSnackbarView);
+
+        if (container != null) {
+            Snackbar.make(container, message, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.action_undo, view -> {
+                        mPlaylistStore.editPlaylist(editedPlaylist, previousSongs);
+                    })
+                    .show();
         }
     }
 }

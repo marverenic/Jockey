@@ -148,6 +148,7 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
         if (v.getTag() != null) {
             if (v.getTag().equals("fab-" + getString(R.string.playlist))) {
                 CreatePlaylistDialogFragment.newInstance()
+                        .showSnackbarIn(R.id.list)
                         .show(getSupportFragmentManager(), TAG_MAKE_PLAYLIST);
             } else if (v.getTag().equals("fab-" + getString(R.string.playlist_auto))) {
                 Navigate.to(this, AutoPlaylistEditActivity.class,

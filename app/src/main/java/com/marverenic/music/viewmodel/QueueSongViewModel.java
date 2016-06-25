@@ -95,6 +95,7 @@ public class QueueSongViewModel extends SongViewModel {
                             .setTitle(mContext.getResources().getString(
                                     R.string.header_add_song_name_to_playlist, getReference()))
                             .setSongs(getSongs())
+                            .showSnackbarIn(R.id.imageArtwork)
                             .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
                     return true;
                 case 3: // Remove
