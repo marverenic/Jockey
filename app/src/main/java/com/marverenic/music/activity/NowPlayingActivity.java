@@ -230,6 +230,9 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                         .setSongs(PlayerController.getQueue())
                         .show(getSupportFragmentManager(), TAG_APPEND_PLAYLIST);
                 return true;
+            case R.id.clear_queue:
+                PlayerController.clearQueue();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
