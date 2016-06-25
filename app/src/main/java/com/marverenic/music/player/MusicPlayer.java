@@ -11,11 +11,14 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.audiofx.AudioEffect;
 import android.media.audiofx.Equalizer;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
+import android.view.KeyEvent;
 
 import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.JockeyApplication;
@@ -994,10 +997,52 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
     private static class MediaSessionCallback extends MediaSessionCompat.Callback {
 
+        /**
+         * A period of time added after a remote button press to delay handling the event. This
+         * delay allows the user to press the remote button multiple times to execute different
+         * actions
+         */
+        private static final int REMOTE_CLICK_SLEEP_TIME_MS = 300;
+
+        private int mClickCount;
+
         private MusicPlayer mMusicPlayer;
+        private Handler mHandler;
 
         MediaSessionCallback(MusicPlayer musicPlayer) {
+            mHandler = new Handler();
             mMusicPlayer = musicPlayer;
+        }
+
+        private final Runnable mButtonHandler = () -> {
+            if (mClickCount == 1) {
+                mMusicPlayer.togglePlay();
+                mMusicPlayer.updateUi();
+            } else if (mClickCount == 2) {
+                onSkipToNext();
+            } else {
+                onSkipToPrevious();
+            }
+            mClickCount = 0;
+        };
+
+        @Override
+        public boolean onMediaButtonEvent(Intent mediaButtonEvent) {
+            KeyEvent keyEvent = mediaButtonEvent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+            if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_HEADSETHOOK) {
+                if (keyEvent.getAction() == KeyEvent.ACTION_UP && !keyEvent.isLongPress()) {
+                    onRemoteClick();
+                }
+                return true;
+            } else {
+                return super.onMediaButtonEvent(mediaButtonEvent);
+            }
+        }
+
+        private void onRemoteClick() {
+            mClickCount++;
+            mHandler.removeCallbacks(mButtonHandler);
+            mHandler.postDelayed(mButtonHandler, REMOTE_CLICK_SLEEP_TIME_MS);
         }
 
         @Override
