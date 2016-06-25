@@ -80,7 +80,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
         mSong = song;
         notifyPropertyChanged(BR.songTitle);
         notifyPropertyChanged(BR.artistName);
-        notifyPropertyChanged(BR.artistName);
+        notifyPropertyChanged(BR.albumName);
         notifyPropertyChanged(BR.songDuration);
     }
 
