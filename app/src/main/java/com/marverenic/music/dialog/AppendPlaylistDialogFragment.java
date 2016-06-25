@@ -94,19 +94,21 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
             }
         }
 
-        mPlaylistStore.getPlaylists().subscribe(playlists -> {
-            mChoices = new Playlist[playlists.size() + 1];
-            mChoiceNames = new String[playlists.size() + 1];
+        mPlaylistStore.getPlaylists()
+                .take(1)
+                .subscribe(playlists -> {
+                    mChoices = new Playlist[playlists.size() + 1];
+                    mChoiceNames = new String[playlists.size() + 1];
 
-            mChoiceNames[0] = getString(R.string.action_make_new_playlist);
+                    mChoiceNames[0] = getString(R.string.action_make_new_playlist);
 
-            for (int i = 0; i < playlists.size(); i++) {
-                mChoices[i + 1] = playlists.get(i);
-                mChoiceNames[i + 1] = playlists.get(i).getPlaylistName();
-            }
+                    for (int i = 0; i < playlists.size(); i++) {
+                        mChoices[i + 1] = playlists.get(i);
+                        mChoiceNames[i + 1] = playlists.get(i).getPlaylistName();
+                    }
 
-            showDialog();
-        });
+                    showDialog();
+                });
     }
 
     @NonNull
