@@ -2,10 +2,12 @@ package com.marverenic.music.dialog;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.view.View;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
@@ -25,6 +27,7 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
     private static final String SAVED_TITLE = "AppendPlaylistDialogFragment.Title";
     private static final String SAVED_SONG = "AppendPlaylistDialogFragment.Song";
     private static final String SAVED_SONGS = "AppendPlaylistDialogFragment.Songs";
+    private static final String SAVED_SNACKBAR_VIEW = "AppendPlaylistDialogFragment.Snackbar";
 
     @Inject PlaylistStore mPlaylistStore;
 
@@ -36,6 +39,7 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
     private Song mSong;
     private List<Song> mSongs;
     private boolean mSingle;
+    @IdRes private int mSnackbarView;
 
     public static AppendPlaylistDialogFragment newInstance() {
         return new AppendPlaylistDialogFragment();
@@ -63,6 +67,11 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
         return this;
     }
 
+    public AppendPlaylistDialogFragment showSnackbarIn(@IdRes int viewId) {
+        mSnackbarView = viewId;
+        return this;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +79,7 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
 
         if (savedInstanceState != null) {
             mTitle = savedInstanceState.getString(SAVED_TITLE);
+            mSnackbarView = savedInstanceState.getInt(SAVED_SNACKBAR_VIEW);
 
             if (savedInstanceState.containsKey(SAVED_SONG)) {
                 mSong = savedInstanceState.getParcelable(SAVED_SONG);
@@ -110,6 +120,8 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
         super.onSaveInstanceState(outState);
 
         outState.putString(SAVED_TITLE, mTitle);
+        outState.putInt(SAVED_SNACKBAR_VIEW, mSnackbarView);
+
         if (mSingle) {
             outState.putParcelable(SAVED_SONG, mSong);
         } else {
