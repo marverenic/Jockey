@@ -22,6 +22,7 @@ import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -283,7 +284,7 @@ public final class PlayerController {
                 break;
             case MusicPlayer.REPEAT_ONE:
             default:
-            repeatOption = MusicPlayer.REPEAT_NONE;
+                repeatOption = MusicPlayer.REPEAT_NONE;
         }
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext);
@@ -343,6 +344,22 @@ public final class PlayerController {
         if (playerService != null) {
             try {
                 playerService.setQueue(newQueue, newPosition);
+            } catch (RemoteException e) {
+                Crashlytics.logException(e);
+                Log.w(TAG, e);
+            }
+        }
+    }
+
+    /**
+     * Removes all songs from the queue and stops playback
+     */
+    public static void clearQueue() {
+        if (playerService != null) {
+            try {
+                playerService.setQueue(new ArrayList<>(), 0);
+                artwork = null;
+                updateUi();
             } catch (RemoteException e) {
                 Crashlytics.logException(e);
                 Log.w(TAG, e);
@@ -528,7 +545,7 @@ public final class PlayerController {
      */
     public static List<Song> getQueue() {
         if (playerService == null) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
         try {
@@ -536,8 +553,7 @@ public final class PlayerController {
         } catch (RemoteException e) {
             Crashlytics.logException(e);
             Log.w(TAG, e);
-            return new ArrayList<>();
-
+            return Collections.emptyList();
         }
     }
 
