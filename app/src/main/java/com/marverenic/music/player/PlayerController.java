@@ -351,6 +351,22 @@ public final class PlayerController {
     }
 
     /**
+     * Removes all songs from the queue and stops playback
+     */
+    public static void clearQueue() {
+        if (playerService != null) {
+            try {
+                playerService.setQueue(new ArrayList<>(), 0);
+                artwork = null;
+                updateUi();
+            } catch (RemoteException e) {
+                Crashlytics.logException(e);
+                Log.w(TAG, e);
+            }
+        }
+    }
+
+    /**
      * Change the current index of the queue to a new position
      * @param queuePosition The new index of the queue
      * See {@link MusicPlayer#changeSong(int)}
