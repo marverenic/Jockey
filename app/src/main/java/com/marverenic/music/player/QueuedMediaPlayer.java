@@ -11,7 +11,7 @@ import com.marverenic.music.instances.Song;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -66,7 +66,7 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
         mNextPlayer.setOnErrorListener(this);
         mNextPlayer.setOnCompletionListener(this);
 
-        mQueue = new ArrayList<>();
+        mQueue = Collections.emptyList();
         mQueueIndex = 0;
     }
 
