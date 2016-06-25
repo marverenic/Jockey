@@ -2,6 +2,7 @@ package com.marverenic.music.dialog;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
@@ -32,6 +33,7 @@ import rx.subjects.BehaviorSubject;
 public class CreatePlaylistDialogFragment extends DialogFragment implements TextWatcher {
 
     private static final String SAVED_TITLE = "CreatePlaylistDialogFragment.Name";
+    private static final String SAVED_SNACKBAR_VIEW = "AppendPlaylistDialogFragment.Snackbar";
 
     @Inject PlaylistStore mPlaylistStore;
 
@@ -41,6 +43,7 @@ public class CreatePlaylistDialogFragment extends DialogFragment implements Text
 
     private BehaviorSubject<Playlist> mSubject = BehaviorSubject.create();
     private List<Song> mSongs;
+    @IdRes private int mSnackbarView;
 
     public static CreatePlaylistDialogFragment newInstance() {
         return new CreatePlaylistDialogFragment();
@@ -48,6 +51,11 @@ public class CreatePlaylistDialogFragment extends DialogFragment implements Text
 
     public CreatePlaylistDialogFragment setSongs(List<Song> songs) {
         mSongs = songs;
+        return this;
+    }
+
+    public CreatePlaylistDialogFragment showSnackbarIn(@IdRes int viewId) {
+        mSnackbarView = viewId;
         return this;
     }
 
@@ -67,6 +75,7 @@ public class CreatePlaylistDialogFragment extends DialogFragment implements Text
         if (savedInstanceState == null) {
             onCreateDialogLayout(null);
         } else {
+            mSnackbarView = savedInstanceState.getInt(SAVED_SNACKBAR_VIEW);
             onCreateDialogLayout(savedInstanceState.getString(SAVED_TITLE));
         }
 
@@ -93,6 +102,7 @@ public class CreatePlaylistDialogFragment extends DialogFragment implements Text
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(SAVED_TITLE, mEditText.getText().toString());
+        outState.putInt(SAVED_SNACKBAR_VIEW, mSnackbarView);
     }
 
     private void onCreateDialogLayout(@Nullable String restoredName) {
