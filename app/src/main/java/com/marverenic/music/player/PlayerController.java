@@ -22,6 +22,7 @@ import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -544,7 +545,7 @@ public final class PlayerController {
      */
     public static List<Song> getQueue() {
         if (playerService == null) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
         try {
@@ -552,8 +553,7 @@ public final class PlayerController {
         } catch (RemoteException e) {
             Crashlytics.logException(e);
             Log.w(TAG, e);
-            return new ArrayList<>();
-
+            return Collections.emptyList();
         }
     }
 
