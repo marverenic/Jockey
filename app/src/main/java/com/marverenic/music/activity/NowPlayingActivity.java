@@ -32,8 +32,11 @@ import com.marverenic.music.view.GestureView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+import static android.support.design.widget.Snackbar.LENGTH_LONG;
+import static android.support.design.widget.Snackbar.LENGTH_SHORT;
 
 public class NowPlayingActivity extends BaseActivity implements GestureView.OnGestureListener {
 
@@ -252,7 +255,24 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     }
 
     private void clearQueue() {
+        List<Song> previousQueue = PlayerController.getQueue();
+        int previousQueueIndex = PlayerController.getQueuePosition();
+
+        int previousSeekPosition = PlayerController.getCurrentPosition();
+        boolean wasPlaying = PlayerController.isPlaying();
+
         PlayerController.clearQueue();
+
+        Snackbar.make(findViewById(R.id.imageArtwork), R.string.confirm_clear_queue, LENGTH_LONG)
+                .setAction(R.string.action_undo, view -> {
+                    PlayerController.setQueue(previousQueue, previousQueueIndex);
+                    PlayerController.seek(previousSeekPosition);
+
+                    if (wasPlaying) {
+                        PlayerController.begin();
+                    }
+                })
+                .show();
     }
 
     @Override
@@ -277,7 +297,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
 
     @Override
     protected void showSnackbar(String message) {
-        Snackbar.make(findViewById(R.id.imageArtwork), message, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(findViewById(R.id.imageArtwork), message, LENGTH_SHORT).show();
     }
 
     @Override
