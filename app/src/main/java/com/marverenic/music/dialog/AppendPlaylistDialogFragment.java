@@ -5,8 +5,10 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 
 import com.marverenic.music.JockeyApplication;
@@ -22,6 +24,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 public class AppendPlaylistDialogFragment extends DialogFragment {
+
+    private static final String TAG = "AppendPlaylistDialogFragment";
 
     private static final String TAG_MAKE_PLAYLIST = "CreateNewPlaylistDialog";
     private static final String SAVED_TITLE = "AppendPlaylistDialogFragment.Title";
@@ -155,10 +159,48 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
             CreatePlaylistDialogFragment.newInstance()
                     .setSongs((mSingle) ? Collections.singletonList(mSong) : mSongs)
                     .show(getFragmentManager(), TAG_MAKE_PLAYLIST);
-        } else if (mSingle) {
-            mPlaylistStore.addToPlaylist(mChoices[which], mSong);
         } else {
-            mPlaylistStore.addToPlaylist(mChoices[which], mSongs);
+            addToPlaylist(mChoices[which]);
+        }
+    }
+
+    private void addToPlaylist(Playlist playlist) {
+        mPlaylistStore.getSongs(playlist)
+                .take(1)
+                .subscribe(
+                        oldEntries -> {
+                            if (mSingle) {
+                                mPlaylistStore.addToPlaylist(playlist, mSong);
+                            } else {
+                                mPlaylistStore.addToPlaylist(playlist, mSongs);
+                            }
+                            showSnackbar(playlist, oldEntries);
+                        },
+                        throwable -> {
+                            Log.e(TAG, "Failed to get old entries");
+                        });
+    }
+
+    private void showSnackbar(Playlist editedPlaylist, List<Song> previousSongs) {
+        String message;
+        if (mSingle) {
+            message = getString(R.string.message_added_song, mSong, editedPlaylist);
+        } else {
+            message = getString(R.string.confirm_add_songs, mSongs.size(), editedPlaylist);
+        }
+
+        showSnackbar(message, editedPlaylist, previousSongs);
+    }
+
+    private void showSnackbar(String message, Playlist editedPlaylist, List<Song> previousSongs) {
+        View container = getActivity().findViewById(mSnackbarView);
+
+        if (container != null) {
+            Snackbar.make(container, message, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.action_undo, view -> {
+                        mPlaylistStore.editPlaylist(editedPlaylist, previousSongs);
+                    })
+                    .show();
         }
     }
 }
