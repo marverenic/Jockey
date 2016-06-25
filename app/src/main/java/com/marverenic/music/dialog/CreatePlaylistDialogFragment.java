@@ -28,9 +28,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import rx.Observable;
-import rx.subjects.BehaviorSubject;
-
 public class CreatePlaylistDialogFragment extends DialogFragment implements TextWatcher {
 
     private static final String SAVED_TITLE = "CreatePlaylistDialogFragment.Name";
@@ -42,7 +39,6 @@ public class CreatePlaylistDialogFragment extends DialogFragment implements Text
     private TextInputLayout mInputLayout;
     private AppCompatEditText mEditText;
 
-    private BehaviorSubject<Playlist> mSubject = BehaviorSubject.create();
     private List<Song> mSongs;
     @IdRes private int mSnackbarView;
 
@@ -58,10 +54,6 @@ public class CreatePlaylistDialogFragment extends DialogFragment implements Text
     public CreatePlaylistDialogFragment showSnackbarIn(@IdRes int viewId) {
         mSnackbarView = viewId;
         return this;
-    }
-
-    public Observable<Playlist> getCreated() {
-        return mSubject;
     }
 
     @Override
@@ -124,10 +116,6 @@ public class CreatePlaylistDialogFragment extends DialogFragment implements Text
         String name = mEditText.getText().toString();
 
         Playlist created = mPlaylistStore.makePlaylist(name, mSongs);
-
-        mSubject.onNext(created);
-        mSubject.onCompleted();
-
         showSnackbar(created);
     }
 
