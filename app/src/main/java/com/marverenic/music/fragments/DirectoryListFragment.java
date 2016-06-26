@@ -2,7 +2,6 @@ package com.marverenic.music.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -11,7 +10,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -19,14 +17,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.marverenic.music.BuildConfig;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.dialog.DirectoryDialogFragment;
 import com.marverenic.music.instances.section.BasicEmptyState;
-import com.marverenic.music.utils.Themes;
-import com.marverenic.music.view.EnhancedAdapters.DragBackgroundDecoration;
 import com.marverenic.music.view.EnhancedAdapters.DragDividerDecoration;
 import com.marverenic.music.view.EnhancedAdapters.DragDropAdapter;
 import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
@@ -35,7 +30,6 @@ import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -71,12 +65,14 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
 
         JockeyApplication.getComponent(this).inject(this);
 
-        Set<String> dirs = preferences.getStringSet(mPrefKey, Collections.<String>emptySet());
-
-        mOppositeDirectories = preferences.getStringSet(
-                mOppositePrefKey, Collections.<String>emptySet());
-
-        mDirectories = new ArrayList<>(dirs);
+        if (mExclude) {
+            mDirectories = new ArrayList<>(mPreferencesStore.getExcludedDirectories());
+            mOppositeDirectories = mPreferencesStore.getIncludedDirectories();
+        } else {
+            mDirectories = new ArrayList<>(mPreferencesStore.getIncludedDirectories());
+            mOppositeDirectories = mPreferencesStore.getExcludedDirectories();
+        }
+        Collections.sort(mDirectories);
 
         Fragment directoryPicker = getFragmentManager().findFragmentByTag(TAG_DIR_DIALOG);
         if (directoryPicker instanceof DirectoryDialogFragment) {
@@ -137,10 +133,13 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
     @Override
     public void onPause() {
         super.onPause();
-        Prefs.getPrefs(getContext()).edit()
-                .putStringSet(mPrefKey, new HashSet<>(mDirectories))
-                .putStringSet(mOppositePrefKey, mOppositeDirectories)
-                .commit();
+        if (mExclude) {
+            mPreferencesStore.setExcludedDirectories(mDirectories);
+            mPreferencesStore.setIncludedDirectories(mOppositeDirectories);
+        } else {
+            mPreferencesStore.setIncludedDirectories(mDirectories);
+            mPreferencesStore.setExcludedDirectories(mOppositeDirectories);
+        }
     }
 
     @Override
