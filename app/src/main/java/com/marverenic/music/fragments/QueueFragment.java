@@ -18,7 +18,6 @@ import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.QueueSection;
 import com.marverenic.music.instances.section.SpacerSingleton;
 import com.marverenic.music.player.PlayerController;
-import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.EnhancedAdapters.DragBackgroundDecoration;
 import com.marverenic.music.view.EnhancedAdapters.DragDividerDecoration;
 import com.marverenic.music.view.EnhancedAdapters.DragDropAdapter;
@@ -115,7 +114,7 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
 
         Drawable shadow = ContextCompat.getDrawable(getContext(), R.drawable.list_drag_shadow);
 
-        ItemDecoration background = new DragBackgroundDecoration(Themes.getBackgroundElevated());
+        ItemDecoration background = new DragBackgroundDecoration();
         ItemDecoration divider = new DragDividerDecoration(getContext(), true, R.id.instance_blank);
         ItemDecoration dragShadow = new DragDropDecoration((NinePatchDrawable) shadow);
 
