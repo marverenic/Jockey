@@ -7,6 +7,8 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
+import java.util.Set;
+
 public class RemotePreferencesStore implements ReadOnlyPreferencesStore, Parcelable {
 
     private static final String TAG = "RemotePreferencesStore";
@@ -168,5 +170,17 @@ public class RemotePreferencesStore implements ReadOnlyPreferencesStore, Parcela
             }
         }
         return null;
+    }
+
+    @Override
+    public Set<String> getIncludedDirectories() {
+        throw new UnsupportedOperationException(
+                "RemotePreferencesStore does not save included directories");
+    }
+
+    @Override
+    public Set<String> getExcludedDirectories() {
+        throw new UnsupportedOperationException(
+                "RemotePreferencesStore does not save excluded directories");
     }
 }

@@ -6,6 +6,8 @@ import com.marverenic.music.data.annotations.BaseTheme;
 import com.marverenic.music.data.annotations.PresetTheme;
 import com.marverenic.music.data.annotations.StartPage;
 
+import java.util.Collection;
+
 public interface PreferencesStore extends ReadOnlyPreferencesStore {
 
     void setShowFirstStart(boolean showFirstStart);
@@ -27,5 +29,8 @@ public interface PreferencesStore extends ReadOnlyPreferencesStore {
     void setEqualizerPresetId(int equalizerPresetId);
     void setEqualizerEnabled(boolean equalizerEnabled);
     void setEqualizerSettings(Equalizer.Settings settings);
+
+    void setIncludedDirectories(Collection<String> directories);
+    void setExcludedDirectories(Collection<String> directories);
 
 }
