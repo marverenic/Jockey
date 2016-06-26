@@ -15,6 +15,8 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.IPlayerService;
+import com.marverenic.music.data.store.ReadOnlyPreferencesStore;
+import com.marverenic.music.data.store.RemotePreferencesStore;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Util;
 
@@ -252,6 +254,17 @@ public final class PlayerController {
             try {
                 playerService.pause();
                 updateUi();
+            } catch (RemoteException e) {
+                Crashlytics.logException(e);
+                Log.w(TAG, e);
+            }
+        }
+    }
+
+    public static void updatePlayerPreferences(ReadOnlyPreferencesStore preferencesStore) {
+        if (playerService != null) {
+            try {
+                playerService.setPreferences(new RemotePreferencesStore(preferencesStore));
             } catch (RemoteException e) {
                 Crashlytics.logException(e);
                 Log.w(TAG, e);
