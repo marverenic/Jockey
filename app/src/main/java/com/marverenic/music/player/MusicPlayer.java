@@ -29,7 +29,6 @@ import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.data.store.ReadOnlyPreferencesStore;
 import com.marverenic.music.data.store.SharedPreferencesStore;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Util;
 
 import java.io.File;
@@ -221,7 +220,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
         loadPrefs();
         initMediaSession();
-        initEqualizer();
     }
 
     /**
@@ -239,6 +237,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
         mShuffle = preferencesStore.isShuffled();
         mRepeat = preferencesStore.getRepeatMode();
+
+        initEqualizer(preferencesStore);
     }
 
     /**
@@ -287,24 +287,22 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     /**
      * Reload all equalizer settings from SharedPreferences
      */
-    private void initEqualizer() {
-        SharedPreferences prefs = Prefs.getPrefs(mContext);
-        String eqSettings = prefs.getString(Prefs.EQ_SETTINGS, null);
-        boolean enabled = Prefs.getPrefs(mContext).getBoolean(Prefs.EQ_ENABLED, false);
+    private void initEqualizer(ReadOnlyPreferencesStore preferencesStore) {
+        Equalizer.Settings eqSettings = preferencesStore.getEqualizerSettings();
 
         mEqualizer = new Equalizer(0, mMediaPlayer.getAudioSessionId());
         if (eqSettings != null) {
             try {
-                mEqualizer.setProperties(new Equalizer.Settings(eqSettings));
+                mEqualizer.setProperties(eqSettings);
             } catch (IllegalArgumentException | UnsupportedOperationException e) {
                 Crashlytics.logException(new RuntimeException(
                         "Failed to load equalizer settings: " + eqSettings, e));
             }
         }
-        mEqualizer.setEnabled(enabled);
+        mEqualizer.setEnabled(preferencesStore.getEqualizerEnabled());
 
         // If the built in equalizer is off, bind to the system equalizer if one is available
-        if (!enabled) {
+        if (!preferencesStore.getEqualizerEnabled()) {
             final Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
             intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
             intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, mContext.getPackageName());
