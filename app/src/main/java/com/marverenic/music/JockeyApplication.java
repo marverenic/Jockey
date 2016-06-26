@@ -9,6 +9,7 @@ import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.data.inject.ContextModule;
 import com.marverenic.music.data.inject.DaggerJockeyComponent;
 import com.marverenic.music.data.inject.JockeyComponent;
+import com.marverenic.music.utils.compat.JockeyPreferencesCompat;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -20,6 +21,8 @@ public class JockeyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         Fabric.with(this, new Crashlytics());
+
+        JockeyPreferencesCompat.upgradeSharedPreferences(this);
 
         mComponent = DaggerJockeyComponent.builder()
                 .contextModule(new ContextModule(this))
