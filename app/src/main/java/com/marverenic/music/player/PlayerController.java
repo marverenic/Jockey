@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -272,30 +271,6 @@ public final class PlayerController {
     }
 
     /**
-     * Toggle repeat from {@link MusicPlayer#REPEAT_NONE} to {@link MusicPlayer#REPEAT_ALL},
-     * from {@link MusicPlayer#REPEAT_ALL} to {@link MusicPlayer#REPEAT_ONE}
-     * from {@link MusicPlayer#REPEAT_ONE} to {@link MusicPlayer#REPEAT_NONE}
-     * and from multi-repeat to {@link MusicPlayer#REPEAT_NONE}
-     * in {@link android.content.SharedPreferences} and notify the service about the
-     * preference change
-     *
-     * @see MusicPlayer#setRepeat(int)
-     */
-    @Deprecated
-    public static void toggleRepeat() {
-    }
-
-    /**
-     * Toggle shuffle on or off in {@link android.content.SharedPreferences} and notify the service
-     * about the preference change
-     *
-     * @see MusicPlayer#setShuffle(boolean)
-     */
-    @Deprecated
-    public static void toggleShuffle() {
-    }
-
-    /**
      * Replace the contents of the queue with a new list of songs
      * @param newQueue An {@link List<Song>} to become the new queue
      * @param newPosition The index of the list to start playback from
@@ -458,33 +433,6 @@ public final class PlayerController {
             Log.w(TAG, e);
             return false;
         }
-    }
-
-    /**
-     * @return if shuffle is enabled in {@link android.content.SharedPreferences}
-     */
-    @Deprecated
-    public static boolean isShuffle() {
-        return PreferenceManager.getDefaultSharedPreferences(applicationContext)
-                .getBoolean(MusicPlayer.PREFERENCE_SHUFFLE, false);
-    }
-
-    /**
-     * @return whether repeat all is currently enabled in {@link android.content.SharedPreferences}
-     */
-    @Deprecated
-    public static boolean isRepeat() {
-        return PreferenceManager.getDefaultSharedPreferences(applicationContext)
-                .getInt(MusicPlayer.PREFERENCE_REPEAT, MusicPlayer.REPEAT_NONE) == MusicPlayer.REPEAT_ALL;
-    }
-
-    /**
-     * @return whether repeat one is currently enabled in {@link android.content.SharedPreferences}
-     */
-    @Deprecated
-    public static boolean isRepeatOne() {
-        return PreferenceManager.getDefaultSharedPreferences(applicationContext)
-                .getInt(MusicPlayer.PREFERENCE_REPEAT, MusicPlayer.REPEAT_NONE) == MusicPlayer.REPEAT_ONE;
     }
 
     /**
