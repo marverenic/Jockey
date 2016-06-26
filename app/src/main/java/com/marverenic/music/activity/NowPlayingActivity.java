@@ -323,7 +323,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     @Override
     public void onRightSwipe() {
         int queuePosition = PlayerController.getQueuePosition() - 1;
-        if (queuePosition < 0 && PlayerController.isRepeat()) {
+        if (queuePosition < 0 && mPrefStore.getRepeatMode() == MusicPlayer.REPEAT_ALL) {
             queuePosition += PlayerController.getQueueSize();
         }
 
