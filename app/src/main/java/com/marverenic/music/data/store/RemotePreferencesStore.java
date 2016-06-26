@@ -38,7 +38,13 @@ public class RemotePreferencesStore implements ReadOnlyPreferencesStore, Parcela
         mRepeatMode = preferencesStore.getRepeatMode();
         mEqualizerPresetId = preferencesStore.getEqualizerPresetId();
         mEqualizerEnabled = preferencesStore.getEqualizerEnabled();
-        mEqualizerSettings = preferencesStore.getEqualizerSettings().toString();
+
+        Equalizer.Settings eqSettings = preferencesStore.getEqualizerSettings();
+        if (eqSettings != null) {
+            mEqualizerSettings = eqSettings.toString();
+        } else {
+            mEqualizerSettings = null;
+        }
     }
 
     protected RemotePreferencesStore(Parcel in) {
