@@ -20,7 +20,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.marverenic.music.BuildConfig;
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.dialog.DirectoryDialogFragment;
 import com.marverenic.music.instances.section.BasicEmptyState;
 import com.marverenic.music.utils.Themes;
@@ -37,6 +39,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 public class DirectoryListFragment extends Fragment implements View.OnClickListener,
         DirectoryDialogFragment.OnDirectoryPickListener {
 
@@ -46,6 +50,9 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
     private static final String TAG = "DirectoryListFragment";
     private static final String TAG_DIR_DIALOG = "DirectoryListFragment_DirectoryDialog";
     private static final boolean D = BuildConfig.DEBUG;
+
+    @Inject
+    PreferencesStore mPreferencesStore;
 
     private String mPrefKey;
     private String mOppositePrefKey;
@@ -60,7 +67,8 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
         mPrefKey = getArguments().getString(PREFERENCE_EXTRA);
         mTitle = getArguments().getString(TITLE_EXTRA);
 
-        SharedPreferences preferences = Prefs.getPrefs(getContext());
+        JockeyApplication.getComponent(this).inject(this);
+
         Set<String> dirs = preferences.getStringSet(mPrefKey, Collections.<String>emptySet());
 
         if (mPrefKey.equals(Prefs.DIR_INCLUDED)) {
