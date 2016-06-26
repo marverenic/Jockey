@@ -1,5 +1,6 @@
 package com.marverenic.music.data.inject;
 
+import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.activity.LibraryActivity;
 import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.activity.SearchActivity;
@@ -28,6 +29,8 @@ import com.marverenic.music.viewmodel.PlaylistViewModel;
 import com.marverenic.music.viewmodel.SongViewModel;
 
 public interface JockeyGraph {
+
+    void injectBaseActivity(BaseActivity baseActivity);
 
     void inject(LibraryActivity activity);
     void inject(SearchActivity activity);

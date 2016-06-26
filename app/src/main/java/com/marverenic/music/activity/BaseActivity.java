@@ -16,13 +16,15 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.marverenic.music.BuildConfig;
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.PreferencesStore;
-import com.marverenic.music.data.store.SharedPreferencesStore;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Themes;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
+
+import javax.inject.Inject;
 
 public abstract class BaseActivity extends RxAppCompatActivity
         implements PlayerController.UpdateListener, PlayerController.ErrorListener {
@@ -34,29 +36,28 @@ public abstract class BaseActivity extends RxAppCompatActivity
     private int themeId;
     private boolean night;
 
+    @Inject PreferencesStore mPreferencesStore;
+
     /**
      * @inheritDoc
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         if (DEBUG) Log.i(getClass().toString(), "Called onCreate");
+        JockeyApplication.getComponent(this).injectBaseActivity(this);
 
         PlayerController.startService(getApplicationContext());
 
-        Themes.setTheme(this);
-        themeId = Themes.getTheme(this);
         night = getResources().getBoolean(R.bool.night);
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-        PreferencesStore preferencesStore = new SharedPreferencesStore(this);
-
-        if (preferencesStore.showFirstStart()) {
-            showFirstRunDialog(preferencesStore);
+        if (mPreferencesStore.showFirstStart()) {
+            showFirstRunDialog();
         }
     }
 
-    private void showFirstRunDialog(PreferencesStore preferencesStore) {
+    private void showFirstRunDialog() {
         View messageView = getLayoutInflater().inflate(R.layout.alert_pref, null);
         TextView message = (TextView) messageView.findViewById(R.id.alertMessage);
         CheckBox pref = (CheckBox) messageView.findViewById(R.id.alertPref);
@@ -72,8 +73,8 @@ public abstract class BaseActivity extends RxAppCompatActivity
                 .setView(messageView)
                 .setPositiveButton(R.string.action_agree,
                         (dialog, which) -> {
-                            preferencesStore.setAllowLogging(pref.isChecked());
-                            preferencesStore.setShowFirstStart(false);
+                            mPreferencesStore.setAllowLogging(pref.isChecked());
+                            mPreferencesStore.setShowFirstStart(false);
                         })
                 .setCancelable(false)
                 .show();
