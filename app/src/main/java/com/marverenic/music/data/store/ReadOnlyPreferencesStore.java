@@ -18,6 +18,9 @@ public interface ReadOnlyPreferencesStore {
     @PresetTheme int getPrimaryColor();
     @BaseTheme int getBaseColor();
 
+    boolean isShuffled();
+    int getRepeatMode();
+
     int getEqualizerPresetId();
     boolean getEqualizerEnabled();
     Equalizer.Settings getEqualizerSettings();

@@ -93,6 +93,8 @@
     <string name="pref_key_eq_enabled" translatable="false">Equalizer.enabled</string>
     <string name="pref_key_eq_settings" translatable="false">Equalizer.equalizerSettings</string>
     <string name="pref_key_create_launcher_icon" translatable="false">Action.newShortcut</string>
+    <string name="pref_key_shuffle" translatable="false">Player.shuffle</string>
+    <string name="pref_key_repeat" translatable="false">Player.repeat</string>
 
     <!-- Auto playlist Strings -->
     <string name="playlist_maximum_prefix">Allow no more than</string>

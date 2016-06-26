@@ -19,6 +19,8 @@ public class RemotePreferencesStore implements ReadOnlyPreferencesStore, Parcela
     private final int mDefaultPage;
     private final int mPrimaryColor;
     private final int mBaseColor;
+    private final boolean mShuffled;
+    private final int mRepeatMode;
     private final int mEqualizerPresetId;
     private final boolean mEqualizerEnabled;
     private final String mEqualizerSettings;
@@ -32,6 +34,8 @@ public class RemotePreferencesStore implements ReadOnlyPreferencesStore, Parcela
         mDefaultPage = preferencesStore.getDefaultPage();
         mPrimaryColor = preferencesStore.getPrimaryColor();
         mBaseColor = preferencesStore.getBaseColor();
+        mShuffled = preferencesStore.isShuffled();
+        mRepeatMode = preferencesStore.getRepeatMode();
         mEqualizerPresetId = preferencesStore.getEqualizerPresetId();
         mEqualizerEnabled = preferencesStore.getEqualizerEnabled();
         mEqualizerSettings = preferencesStore.getEqualizerSettings().toString();
@@ -46,6 +50,8 @@ public class RemotePreferencesStore implements ReadOnlyPreferencesStore, Parcela
         mDefaultPage = in.readInt();
         mPrimaryColor = in.readInt();
         mBaseColor = in.readInt();
+        mShuffled = in.readByte() != 0;
+        mRepeatMode = in.readInt();
         mEqualizerPresetId = in.readInt();
         mEqualizerEnabled = in.readByte() != 0;
         mEqualizerSettings = in.readString();
@@ -61,6 +67,8 @@ public class RemotePreferencesStore implements ReadOnlyPreferencesStore, Parcela
         dest.writeInt(mDefaultPage);
         dest.writeInt(mPrimaryColor);
         dest.writeInt(mBaseColor);
+        dest.writeByte((byte) (mShuffled ? 1 : 0));
+        dest.writeInt(mRepeatMode);
         dest.writeInt(mEqualizerPresetId);
         dest.writeByte((byte) (mEqualizerEnabled ? 1 : 0));
         dest.writeString(mEqualizerSettings);
@@ -121,6 +129,16 @@ public class RemotePreferencesStore implements ReadOnlyPreferencesStore, Parcela
     @Override
     public int getBaseColor() {
         return mBaseColor;
+    }
+
+    @Override
+    public boolean isShuffled() {
+        return mShuffled;
+    }
+
+    @Override
+    public int getRepeatMode() {
+        return mRepeatMode;
     }
 
     @Override

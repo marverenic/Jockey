@@ -103,6 +103,16 @@ public class SharedPreferencesStore implements PreferencesStore {
     }
 
     @Override
+    public boolean isShuffled() {
+        return getBoolean(R.string.pref_key_shuffle, false);
+    }
+
+    @Override
+    public int getRepeatMode() {
+        return getInt(R.string.pref_key_repeat, 0);
+    }
+
+    @Override
     public int getEqualizerPresetId() {
         return getInt(R.string.pref_key_eq_id, -1);
     }
@@ -163,6 +173,16 @@ public class SharedPreferencesStore implements PreferencesStore {
     @Override
     public void setBaseColor(@BaseTheme int themeChoice) {
         putInt(R.string.pref_key_color_base, themeChoice);
+    }
+
+    @Override
+    public void setShuffle(boolean shuffle) {
+        putBoolean(R.string.pref_key_shuffle, shuffle);
+    }
+
+    @Override
+    public void setRepeatMode(int repeatMode) {
+        putInt(R.string.pref_key_repeat, repeatMode);
     }
 
     @Override
