@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/relatedCard"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:foreground="?attr/selectableItemBackground">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/relatedCard"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:foreground="?attr/selectableItemBackground"
+	app:cardBackgroundColor="@color/background_elevated">
 	
 	<RelativeLayout
 		android:layout_width="fill_parent"

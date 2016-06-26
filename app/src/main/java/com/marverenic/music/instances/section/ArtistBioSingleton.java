@@ -3,7 +3,6 @@ package com.marverenic.music.instances.section;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +13,6 @@ import android.widget.TextView;
 import com.marverenic.music.R;
 import com.marverenic.music.lastfm.model.LfmArtist;
 import com.marverenic.music.lastfm.model.Tag;
-import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 
@@ -41,7 +39,6 @@ public class ArtistBioSingleton extends HeterogeneousAdapter.SingletonSection<Lf
     public static class ViewHolder extends EnhancedViewHolder<LfmArtist>
             implements View.OnClickListener {
 
-        private CardView cardView;
         private TextView bioText;
         private FrameLayout lfmButton;
         private String artistURL;
@@ -49,12 +46,10 @@ public class ArtistBioSingleton extends HeterogeneousAdapter.SingletonSection<Lf
         public ViewHolder(View itemView, boolean hasRelatedArtists) {
             super(itemView);
 
-            cardView = (CardView) itemView.findViewById(R.id.infoCard);
             bioText = (TextView) itemView.findViewById(R.id.infoText);
             lfmButton = (FrameLayout) itemView.findViewById(R.id.openLFMButton);
             lfmButton.setOnClickListener(this);
 
-            cardView.setCardBackgroundColor(Themes.getBackgroundElevated());
             if (hasRelatedArtists) {
                 ((GridLayoutManager.LayoutParams) itemView.getLayoutParams()).bottomMargin = 0;
             }
