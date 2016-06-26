@@ -1,0 +1,121 @@
+package com.marverenic.music.utils.compat;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.media.audiofx.Equalizer;
+import android.preference.PreferenceManager;
+import android.util.Log;
+
+import com.marverenic.music.data.annotations.BaseTheme;
+import com.marverenic.music.data.annotations.PresetTheme;
+import com.marverenic.music.data.annotations.StartPage;
+import com.marverenic.music.data.store.PreferencesStore;
+import com.marverenic.music.data.store.SharedPreferencesStore;
+
+import static com.marverenic.music.data.annotations.BaseTheme.LIGHT;
+import static com.marverenic.music.data.annotations.PresetTheme.BLUE;
+import static com.marverenic.music.data.annotations.StartPage.SONGS;
+
+public class JockeyPreferencesCompat {
+
+    private static final String TAG = "JockeyPreferencesCompat";
+
+    public static void upgradeSharedPreferences(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        if (shouldUpgradeFromJockey1_2(prefs)) {
+            Log.i(TAG, "upgradeSharedPreferences: Updating from version 1.2");
+            updateFromJockey1_2(context, prefs);
+            Log.i(TAG, "upgradeSharedPreferences: Finished updating from version 1.2");
+        }
+    }
+
+    private static boolean shouldUpgradeFromJockey1_2(SharedPreferences prefs) {
+        return prefs.contains("prefShowFirstStart");
+    }
+
+    private static void updateFromJockey1_2(Context context, SharedPreferences prefs) {
+        boolean showFirstStart = prefs.getBoolean("prefShowFirstStart", true);
+        boolean allowLogging = prefs.getBoolean("prefAllowLogging", false);
+        String firstPage = prefs.getString("prefDefaultPage", Integer.toString(SONGS));
+        String primaryColor = prefs.getString("prefColorPrimary", Integer.toString(BLUE));
+        String baseTheme = prefs.getString("prefBaseTheme", Integer.toString(LIGHT));
+        boolean useMobileData = prefs.getBoolean("prefUseMobileData", true);
+        boolean openNowPlaying = prefs.getBoolean("prefSwitchToNowPlaying", true);
+        boolean enableGestures = prefs.getBoolean("prefEnableNowPlayingGestures", true);
+        int eqPreset = prefs.getInt("equalizerPresetId", -1);
+        boolean eqEnabled = prefs.getBoolean("prefUseEqualizer", false);
+        String eqSettings = prefs.getString("prefEqualizerSettings", null);
+        int repeat = prefs.getInt("prefRepeat", 0);
+        boolean shuffle = prefs.getBoolean("prefShuffle", false);
+
+        prefs.edit().clear().apply();
+        PreferencesStore preferencesStore = new SharedPreferencesStore(context);
+
+        preferencesStore.setShowFirstStart(showFirstStart);
+        preferencesStore.setAllowLogging(allowLogging);
+        preferencesStore.setDefaultPage(convertStartPage1_2(firstPage));
+        preferencesStore.setPrimaryColor(convertPrimaryColor1_2(primaryColor));
+        preferencesStore.setBaseColor(convertBaseTheme1_2(baseTheme));
+        preferencesStore.setUseMobileNetwork(useMobileData);
+        preferencesStore.setOpenNowPlayingOnNewQueue(openNowPlaying);
+        preferencesStore.setEnableNowPlayingGestures(enableGestures);
+        preferencesStore.setEqualizerPresetId(eqPreset);
+        preferencesStore.setEqualizerEnabled(eqEnabled);
+
+        try {
+            if (eqSettings != null) {
+                preferencesStore.setEqualizerSettings(new Equalizer.Settings(eqSettings));
+            }
+        } catch (IllegalArgumentException ignored) {}
+
+        preferencesStore.setRepeatMode(repeat);
+        preferencesStore.setShuffle(shuffle);
+    }
+
+    @StartPage
+    private static int convertStartPage1_2(String startPage) {
+        try {
+            int convertedDefaultPage = Integer.parseInt(startPage);
+            if (convertedDefaultPage < 0 || convertedDefaultPage > 4) {
+                return SONGS;
+            } else {
+                //noinspection WrongConstant
+                return convertedDefaultPage;
+            }
+        } catch (NumberFormatException ignored) {
+            return SONGS;
+        }
+    }
+
+    @PresetTheme
+    private static int convertPrimaryColor1_2(String primaryColor) {
+        try {
+            int convertedColor = Integer.parseInt(primaryColor);
+            if (convertedColor < 0 || convertedColor > 6) {
+                return BLUE;
+            } else {
+                //noinspection WrongConstant
+                return convertedColor;
+            }
+        } catch (NumberFormatException ignored) {
+            return BLUE;
+        }
+    }
+
+    @BaseTheme
+    private static int convertBaseTheme1_2(String baseTheme) {
+        try {
+            int convertedBaseTheme = Integer.parseInt(baseTheme);
+            if (convertedBaseTheme < 0 || convertedBaseTheme > 2) {
+                return LIGHT;
+            } else {
+                //noinspection WrongConstant
+                return convertedBaseTheme;
+            }
+        } catch (NumberFormatException ignored) {
+            return LIGHT;
+        }
+    }
+
+}

@@ -15,7 +15,6 @@ import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.PlaylistSection;
 import com.marverenic.music.instances.section.SpacerSingleton;
-import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
@@ -53,7 +52,7 @@ public class PlaylistFragment extends BaseFragment {
 
         View view = inflater.inflate(R.layout.list, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.list);
-        mRecyclerView.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
+        mRecyclerView.addItemDecoration(new BackgroundDecoration());
         mRecyclerView.addItemDecoration(
                 new DividerDecoration(getActivity(), R.id.instance_blank, R.id.empty_layout));
 

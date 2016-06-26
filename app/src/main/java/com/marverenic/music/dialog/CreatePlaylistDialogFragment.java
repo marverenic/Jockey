@@ -2,8 +2,10 @@ package com.marverenic.music.dialog;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.res.ResourcesCompat;
@@ -18,29 +20,28 @@ import android.widget.Button;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.PlaylistStore;
+import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.utils.Themes;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-import rx.Observable;
-import rx.subjects.BehaviorSubject;
-
 public class CreatePlaylistDialogFragment extends DialogFragment implements TextWatcher {
 
     private static final String SAVED_TITLE = "CreatePlaylistDialogFragment.Name";
+    private static final String SAVED_SNACKBAR_VIEW = "AppendPlaylistDialogFragment.Snackbar";
 
     @Inject PlaylistStore mPlaylistStore;
+    @Inject ThemeStore mThemeStore;
 
     private AlertDialog mDialog;
     private TextInputLayout mInputLayout;
     private AppCompatEditText mEditText;
 
-    private BehaviorSubject<Playlist> mSubject = BehaviorSubject.create();
     private List<Song> mSongs;
+    @IdRes private int mSnackbarView;
 
     public static CreatePlaylistDialogFragment newInstance() {
         return new CreatePlaylistDialogFragment();
@@ -51,8 +52,9 @@ public class CreatePlaylistDialogFragment extends DialogFragment implements Text
         return this;
     }
 
-    public Observable<Playlist> getCreated() {
-        return mSubject;
+    public CreatePlaylistDialogFragment showSnackbarIn(@IdRes int viewId) {
+        mSnackbarView = viewId;
+        return this;
     }
 
     @Override
@@ -67,6 +69,7 @@ public class CreatePlaylistDialogFragment extends DialogFragment implements Text
         if (savedInstanceState == null) {
             onCreateDialogLayout(null);
         } else {
+            mSnackbarView = savedInstanceState.getInt(SAVED_SNACKBAR_VIEW);
             onCreateDialogLayout(savedInstanceState.getString(SAVED_TITLE));
         }
 
@@ -93,6 +96,7 @@ public class CreatePlaylistDialogFragment extends DialogFragment implements Text
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(SAVED_TITLE, mEditText.getText().toString());
+        outState.putInt(SAVED_SNACKBAR_VIEW, mSnackbarView);
     }
 
     private void onCreateDialogLayout(@Nullable String restoredName) {
@@ -112,8 +116,23 @@ public class CreatePlaylistDialogFragment extends DialogFragment implements Text
     private void createPlaylist() {
         String name = mEditText.getText().toString();
 
-        mSubject.onNext(mPlaylistStore.makePlaylist(name, mSongs));
-        mSubject.onCompleted();
+        Playlist created = mPlaylistStore.makePlaylist(name, mSongs);
+        showSnackbar(created);
+    }
+
+    private void showSnackbar(Playlist created) {
+        View container = getActivity().findViewById(mSnackbarView);
+
+        if (container != null) {
+            String name = created.getPlaylistName();
+            String message = getString(R.string.message_created_playlist, name);
+
+            Snackbar.make(container, message, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.action_undo, view -> {
+                        mPlaylistStore.removePlaylist(created);
+                    })
+                    .show();
+        }
     }
 
     private void updateDialogButtons(boolean error) {
@@ -122,9 +141,9 @@ public class CreatePlaylistDialogFragment extends DialogFragment implements Text
 
         if (error) {
             button.setTextColor(ResourcesCompat.getColor(getResources(),
-                            R.color.secondary_text_disabled, getActivity().getTheme()));
+                    R.color.secondary_text_disabled, getActivity().getTheme()));
         } else {
-            button.setTextColor(Themes.getAccent());
+            button.setTextColor(mThemeStore.getAccentColor());
         }
     }
 

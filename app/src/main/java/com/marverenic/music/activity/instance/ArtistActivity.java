@@ -17,6 +17,8 @@ import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PreferencesStore;
+import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Song;
@@ -30,8 +32,7 @@ import com.marverenic.music.instances.section.SongSection;
 import com.marverenic.music.lastfm.data.store.LastFmStore;
 import com.marverenic.music.lastfm.model.Image;
 import com.marverenic.music.lastfm.model.LfmArtist;
-import com.marverenic.music.utils.Prefs;
-import com.marverenic.music.utils.Themes;
+import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
@@ -54,6 +55,8 @@ public class ArtistActivity extends BaseActivity {
 
     @Inject MusicStore mMusicStore;
     @Inject LastFmStore mLfmStore;
+    @Inject PreferencesStore mPrefStore;
+    @Inject ThemeStore mThemeStore;
 
     private RecyclerView mRecyclerView;
     private HeterogeneousAdapter mAdapter;
@@ -114,7 +117,7 @@ public class ArtistActivity extends BaseActivity {
         mRecyclerView = (RecyclerView) findViewById(R.id.list);
         setupAdapter();
 
-        if (Prefs.allowNetwork(this)) {
+        if (Util.canAccessInternet(this, mPrefStore.useMobileNetwork())) {
             setupLoadingAdapter();
 
             mLfmStore.getArtistInfo(mReference.getArtistName())
@@ -246,15 +249,16 @@ public class ArtistActivity extends BaseActivity {
                         numColumns,
                         RelatedArtistSection.ID));
         mRecyclerView.addItemDecoration(
-                new BackgroundDecoration(Themes.getBackgroundElevated(), R.id.loadingView,
-                        R.id.infoCard, R.id.relatedCard));
+                new BackgroundDecoration(R.id.loadingView, R.id.infoCard, R.id.relatedCard));
         mRecyclerView.addItemDecoration(
                 new DividerDecoration(this, R.id.infoCard, R.id.albumInstance, R.id.subheaderFrame,
                         R.id.relatedCard, R.id.empty_layout));
     }
+
     private void setupLoadingAdapter() {
         if (mLoadingSection == null && mLfmReference == null) {
-            mLoadingSection = new LoadingSingleton();
+            int[] colors = {mThemeStore.getPrimaryColor(), mThemeStore.getAccentColor()};
+            mLoadingSection = new LoadingSingleton(colors);
             mAdapter.addSection(mLoadingSection, 0);
         }
     }

@@ -3,7 +3,6 @@ package com.marverenic.music.activity;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,6 +22,7 @@ import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
 import com.marverenic.music.fragments.AlbumFragment;
 import com.marverenic.music.fragments.ArtistFragment;
@@ -30,7 +30,6 @@ import com.marverenic.music.fragments.GenreFragment;
 import com.marverenic.music.fragments.PlaylistFragment;
 import com.marverenic.music.fragments.SongFragment;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Updater;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.FABMenu;
@@ -42,6 +41,7 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
 
     @Inject MusicStore mMusicStore;
+    @Inject PreferencesStore mPrefStore;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,8 +57,7 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
 
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
 
-        SharedPreferences prefs = Prefs.getPrefs(this);
-        int page = Integer.parseInt(prefs.getString(Prefs.DEFAULT_PAGE, "1"));
+        int page = mPrefStore.getDefaultPage();
         if (page != 0 || !hasRwPermission()) {
             fab.setVisibility(View.GONE);
         }
@@ -148,6 +147,7 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
         if (v.getTag() != null) {
             if (v.getTag().equals("fab-" + getString(R.string.playlist))) {
                 CreatePlaylistDialogFragment.newInstance()
+                        .showSnackbarIn(R.id.list)
                         .show(getSupportFragmentManager(), TAG_MAKE_PLAYLIST);
             } else if (v.getTag().equals("fab-" + getString(R.string.playlist_auto))) {
                 Navigate.to(this, AutoPlaylistEditActivity.class,

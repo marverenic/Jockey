@@ -15,11 +15,11 @@ import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.utils.Prefs;
 
 import java.util.List;
 
@@ -31,6 +31,7 @@ public class SongViewModel extends BaseObservable {
     private static final String TAG_PLAYLIST_DIALOG = "SongViewModel.PlaylistDialog";
 
     @Inject MusicStore mMusicStore;
+    @Inject PreferencesStore mPrefStore;
 
     private Context mContext;
     private FragmentManager mFragmentManager;
@@ -85,8 +86,7 @@ public class SongViewModel extends BaseObservable {
             PlayerController.setQueue(mSongList, mIndex);
             PlayerController.begin();
 
-            if (Prefs.getPrefs(mContext)
-                    .getBoolean(Prefs.SWITCH_TO_PLAYING, true)) {
+            if (mPrefStore.openNowPlayingOnNewQueue()) {
                 Navigate.to(mContext, NowPlayingActivity.class);
             }
         };
@@ -101,12 +101,12 @@ public class SongViewModel extends BaseObservable {
             for (int i = 0; i < options.length;  i++) {
                 menu.getMenu().add(Menu.NONE, i, i, options[i]);
             }
-            menu.setOnMenuItemClickListener(onMenuItemClick(v));
+            menu.setOnMenuItemClickListener(onMenuItemClick());
             menu.show();
         };
     }
 
-    private PopupMenu.OnMenuItemClickListener onMenuItemClick(View view) {
+    private PopupMenu.OnMenuItemClickListener onMenuItemClick() {
         return menuItem -> {
             switch (menuItem.getItemId()) {
                 case 0: //Queue this song next
@@ -138,6 +138,7 @@ public class SongViewModel extends BaseObservable {
                 case 4: //Add to playlist...
                     AppendPlaylistDialogFragment.newInstance()
                             .setSong(mReference)
+                            .showSnackbarIn(R.id.list)
                             .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
                     return true;
             }

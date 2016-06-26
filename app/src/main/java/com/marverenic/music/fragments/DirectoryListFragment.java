@@ -23,7 +23,6 @@ import com.marverenic.music.BuildConfig;
 import com.marverenic.music.R;
 import com.marverenic.music.dialog.DirectoryDialogFragment;
 import com.marverenic.music.instances.section.BasicEmptyState;
-import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.EnhancedAdapters.DragBackgroundDecoration;
 import com.marverenic.music.view.EnhancedAdapters.DragDividerDecoration;
@@ -122,8 +121,6 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
         list.setLayoutManager(new LinearLayoutManager(getContext()));
         mAdapter.attach(list);
 
-        list.setBackgroundColor(Themes.getBackground());
-        list.addItemDecoration(new DragBackgroundDecoration(Themes.getBackgroundElevated()));
         list.addItemDecoration(new DragDividerDecoration(getContext(), R.id.subheaderFrame));
 
         return view;

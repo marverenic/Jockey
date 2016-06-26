@@ -11,11 +11,13 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.audiofx.AudioEffect;
 import android.media.audiofx.Equalizer;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.view.KeyEvent;
 
 import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.JockeyApplication;
@@ -23,8 +25,10 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PlayCountStore;
+import com.marverenic.music.data.store.PreferencesStore;
+import com.marverenic.music.data.store.ReadOnlyPreferencesStore;
+import com.marverenic.music.data.store.SharedPreferencesStore;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Util;
 
 import java.io.File;
@@ -38,6 +42,9 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import javax.inject.Inject;
+
+import static android.content.Intent.ACTION_HEADSET_PLUG;
+import static android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY;
 
 /**
  * High level implementation for a MediaPlayer. MusicPlayer is backed by a {@link QueuedMediaPlayer}
@@ -85,23 +92,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public static final String ERROR_EXTRA_MSG = "marverenic.jockey.player.ERROR:MSG";
 
     /**
-     * A {@link SharedPreferences} key that maps to a boolean value for the user's shuffle setting
-     */
-    public static final String PREFERENCE_SHUFFLE = "prefShuffle";
-
-    /**
-     * A {@link SharedPreferences} key that maps to an integer representing this user's repeat
-     * setting
-     * @see #REPEAT_NONE
-     * @see #REPEAT_ONE
-     * @see #REPEAT_ALL
-     */
-    public static final String PREFERENCE_REPEAT = "prefRepeat";
-
-    /**
      * Repeat value that corresponds to repeat none. Playback will continue as normal until and will
      * end after the last song finishes
-     * @see #PREFERENCE_REPEAT
      * @see #setRepeat(int)
      */
     public static final int REPEAT_NONE = 0;
@@ -109,7 +101,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     /**
      * Repeat value that corresponds to repeat all. Playback will continue as normal, but the queue
      * will restart from the beginning once the last song finishes
-     * @see #PREFERENCE_REPEAT
      * @see #setRepeat(int)
      */
     public static final int REPEAT_ALL = -1;
@@ -118,7 +109,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * Repeat value that corresponds to repeat one. When the current song is finished, it will be
      * repeated. The MusicPlayer will never progress to the next track until the user manually
      * changes the song.
-     * @see #PREFERENCE_REPEAT
      * @see #setRepeat(int)
      */
     public static final int REPEAT_ONE = -2;
@@ -207,22 +197,43 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         // Attach a HeadsetListener to respond to headphone events
         mHeadphoneListener = new HeadsetListener(this);
         IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_MEDIA_BUTTON);
-        filter.addAction(Intent.ACTION_HEADSET_PLUG);
+        filter.addAction(ACTION_HEADSET_PLUG);
+        filter.addAction(ACTION_AUDIO_BECOMING_NOISY);
         context.registerReceiver(mHeadphoneListener, filter);
 
         loadPrefs();
         initMediaSession();
-        initEqualizer();
     }
 
     /**
      * Reloads shuffle and repeat preferences from {@link SharedPreferences}
      */
     private void loadPrefs() {
-        SharedPreferences prefs = Prefs.getPrefs(mContext);
-        mShuffle = prefs.getBoolean(PREFERENCE_SHUFFLE, false);
-        mRepeat = prefs.getInt(PREFERENCE_REPEAT, REPEAT_NONE);
+        // SharedPreferencesStore is backed by an instance of SharedPreferences. Because
+        // SharedPreferences isn't safe to use across processes, the only time we can get valid
+        // data is right after we open the SharedPreferences for the first time in this process.
+        //
+        // We're going to take advantage of that here so that we can load the latest preferences
+        // as soon as the MusicPlayer is started (which should be the same time that this process
+        // is started). To update these preferences, see updatePreferences(preferencesStore)
+        PreferencesStore preferencesStore = new SharedPreferencesStore(mContext);
+
+        mShuffle = preferencesStore.isShuffled();
+        mRepeat = preferencesStore.getRepeatMode();
+
+        initEqualizer(preferencesStore);
+    }
+
+    /**
+     * Updates shuffle and repeat preferences from a Preference Store
+     * @param preferencesStore The preference store to read values from
+     */
+    public void updatePreferences(ReadOnlyPreferencesStore preferencesStore) {
+        if (preferencesStore.isShuffled() != mShuffle) {
+            setShuffle(preferencesStore.isShuffled());
+        }
+
+        setRepeat(preferencesStore.getRepeatMode());
     }
 
     /**
@@ -259,24 +270,22 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     /**
      * Reload all equalizer settings from SharedPreferences
      */
-    private void initEqualizer() {
-        SharedPreferences prefs = Prefs.getPrefs(mContext);
-        String eqSettings = prefs.getString(Prefs.EQ_SETTINGS, null);
-        boolean enabled = Prefs.getPrefs(mContext).getBoolean(Prefs.EQ_ENABLED, false);
+    private void initEqualizer(ReadOnlyPreferencesStore preferencesStore) {
+        Equalizer.Settings eqSettings = preferencesStore.getEqualizerSettings();
 
         mEqualizer = new Equalizer(0, mMediaPlayer.getAudioSessionId());
         if (eqSettings != null) {
             try {
-                mEqualizer.setProperties(new Equalizer.Settings(eqSettings));
+                mEqualizer.setProperties(eqSettings);
             } catch (IllegalArgumentException | UnsupportedOperationException e) {
                 Crashlytics.logException(new RuntimeException(
                         "Failed to load equalizer settings: " + eqSettings, e));
             }
         }
-        mEqualizer.setEnabled(enabled);
+        mEqualizer.setEnabled(preferencesStore.getEqualizerEnabled());
 
         // If the built in equalizer is off, bind to the system equalizer if one is available
-        if (!enabled) {
+        if (!preferencesStore.getEqualizerEnabled()) {
             final Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
             intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
             intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, mContext.getPackageName());
@@ -991,10 +1000,52 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
     private static class MediaSessionCallback extends MediaSessionCompat.Callback {
 
+        /**
+         * A period of time added after a remote button press to delay handling the event. This
+         * delay allows the user to press the remote button multiple times to execute different
+         * actions
+         */
+        private static final int REMOTE_CLICK_SLEEP_TIME_MS = 300;
+
+        private int mClickCount;
+
         private MusicPlayer mMusicPlayer;
+        private Handler mHandler;
 
         MediaSessionCallback(MusicPlayer musicPlayer) {
+            mHandler = new Handler();
             mMusicPlayer = musicPlayer;
+        }
+
+        private final Runnable mButtonHandler = () -> {
+            if (mClickCount == 1) {
+                mMusicPlayer.togglePlay();
+                mMusicPlayer.updateUi();
+            } else if (mClickCount == 2) {
+                onSkipToNext();
+            } else {
+                onSkipToPrevious();
+            }
+            mClickCount = 0;
+        };
+
+        @Override
+        public boolean onMediaButtonEvent(Intent mediaButtonEvent) {
+            KeyEvent keyEvent = mediaButtonEvent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+            if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_HEADSETHOOK) {
+                if (keyEvent.getAction() == KeyEvent.ACTION_UP && !keyEvent.isLongPress()) {
+                    onRemoteClick();
+                }
+                return true;
+            } else {
+                return super.onMediaButtonEvent(mediaButtonEvent);
+            }
+        }
+
+        private void onRemoteClick() {
+            mClickCount++;
+            mHandler.removeCallbacks(mButtonHandler);
+            mHandler.postDelayed(mButtonHandler, REMOTE_CLICK_SLEEP_TIME_MS);
         }
 
         @Override
@@ -1057,9 +1108,16 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)
-                    && intent.getIntExtra("state", -1) == 0 && mInstance.isPlaying()) {
+            if (!mInstance.isPlaying()) {
+                return;
+            }
 
+            boolean unplugged = ACTION_HEADSET_PLUG.equals(intent.getAction())
+                    && intent.getIntExtra("state", -1) == 0;
+
+            boolean becomingNoisy = ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction());
+
+            if (unplugged || becomingNoisy) {
                 mInstance.pause();
                 mInstance.updateUi();
             }

@@ -17,6 +17,7 @@
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#757575</color>
     <color name="secondary_text_disabled">@color/secondary_text_disabled_material_light</color>
+    <color name="splash_background">@color/background_material_dark</color>
     <color name="background">#EEEEEE</color>
     <color name="screen_overlay">#CCFFFFFF</color>
     <color name="background_elevated">#F5F5F5</color>

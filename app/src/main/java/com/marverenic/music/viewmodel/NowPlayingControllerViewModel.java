@@ -28,11 +28,11 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.utils.Themes;
 
 import java.util.concurrent.TimeUnit;
 
@@ -51,6 +51,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
     private FragmentManager mFragmentManager;
 
     @Inject MusicStore mMusicStore;
+    @Inject ThemeStore mThemeStore;
 
     @Nullable
     private Song mSong;
@@ -80,8 +81,9 @@ public class NowPlayingControllerViewModel extends BaseObservable {
         mSong = song;
         notifyPropertyChanged(BR.songTitle);
         notifyPropertyChanged(BR.artistName);
-        notifyPropertyChanged(BR.artistName);
+        notifyPropertyChanged(BR.albumName);
         notifyPropertyChanged(BR.songDuration);
+        notifyPropertyChanged(BR.positionVisibility);
     }
 
     public void setPlaying(boolean playing) {
@@ -186,9 +188,18 @@ public class NowPlayingControllerViewModel extends BaseObservable {
         return mCurrentPositionObservable;
     }
 
+    @Bindable
+    public int getPositionVisibility() {
+        if (mSong == null) {
+            return View.INVISIBLE;
+        } else {
+            return View.VISIBLE;
+        }
+    }
+
     @ColorInt
     public int getSeekBarHeadTint() {
-        return Themes.getAccent();
+        return mThemeStore.getAccentColor();
     }
 
     @Bindable
@@ -273,6 +284,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
                 case 2: //Add to playlist
                     AppendPlaylistDialogFragment.newInstance()
                             .setSong(song)
+                            .showSnackbarIn(R.id.imageArtwork)
                             .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
                     return true;
             }

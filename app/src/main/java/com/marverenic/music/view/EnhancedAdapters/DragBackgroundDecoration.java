@@ -1,10 +1,12 @@
 package com.marverenic.music.view.EnhancedAdapters;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.NinePatchDrawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -25,10 +27,8 @@ public class DragBackgroundDecoration extends RecyclerView.ItemDecoration {
 
     /**
      * Create an ItemDecorator for use with a RecyclerView
-     * @param color the color of the background
      */
-    public DragBackgroundDecoration(int color) {
-        mBackground = new ColorDrawable(color);
+    public DragBackgroundDecoration() {
         mRectPool = new ArrayList<>();
     }
 
@@ -39,10 +39,13 @@ public class DragBackgroundDecoration extends RecyclerView.ItemDecoration {
         int left = parent.getPaddingLeft();
         int right = parent.getWidth() - parent.getPaddingRight();
 
-        if (mShadow == null) {
-            //noinspection deprecation
-            mShadow = (NinePatchDrawable) parent.getContext().getResources()
-                    .getDrawable(R.drawable.list_shadow);
+        if (mShadow == null || mBackground == null) {
+            Context ctx = parent.getContext();
+
+            int color = ContextCompat.getColor(ctx, R.color.background_elevated);
+            mBackground = new ColorDrawable(color);
+
+            mShadow = (NinePatchDrawable) ContextCompat.getDrawable(ctx, R.drawable.list_shadow);
         }
 
         Rect shadowPadding = new Rect();

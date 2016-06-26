@@ -23,4 +23,9 @@
         android:title="@string/action_add_to_playlist"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/clear_queue"
+        android:title="@string/action_clear_queue"
+        app:showAsAction="never" />
+
 </menu>

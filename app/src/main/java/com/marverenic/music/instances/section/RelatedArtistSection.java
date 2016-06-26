@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
-import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +23,6 @@ import com.marverenic.music.instances.Artist;
 import com.marverenic.music.lastfm.model.Image;
 import com.marverenic.music.lastfm.model.LfmArtist;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 
@@ -64,7 +62,6 @@ public class RelatedArtistSection extends HeterogeneousAdapter.ListSection<LfmAr
             super(itemView);
             context = itemView.getContext();
 
-            ((CardView) itemView).setCardBackgroundColor(Themes.getBackgroundElevated());
             itemView.setOnClickListener(this);
 
             artwork = (ImageView) itemView.findViewById(R.id.imageArtwork);

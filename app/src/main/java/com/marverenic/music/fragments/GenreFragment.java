@@ -14,7 +14,6 @@ import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.instances.Genre;
 import com.marverenic.music.instances.section.GenreSection;
 import com.marverenic.music.instances.section.LibraryEmptyState;
-import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
@@ -52,7 +51,7 @@ public class GenreFragment extends BaseFragment {
 
         View view = inflater.inflate(R.layout.list, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.list);
-        mRecyclerView.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
+        mRecyclerView.addItemDecoration(new BackgroundDecoration());
         mRecyclerView.addItemDecoration(new DividerDecoration(getContext(), R.id.empty_layout));
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());

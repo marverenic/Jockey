@@ -30,7 +30,6 @@ import com.marverenic.music.instances.section.PlaylistSection;
 import com.marverenic.music.instances.section.SongSection;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
@@ -171,7 +170,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 (int) getResources().getDimension(R.dimen.grid_margin),
                 numColumns, AlbumSection.ID));
         mRecyclerView.addItemDecoration(
-                new BackgroundDecoration(Themes.getBackgroundElevated(), R.id.subheaderFrame));
+                new BackgroundDecoration(R.id.subheaderFrame));
         mRecyclerView.addItemDecoration(
                 new DividerDecoration(this,
                         R.id.albumInstance, R.id.subheaderFrame, R.id.empty_layout));
