@@ -7,14 +7,14 @@
             android:dialogTitle="@string/default_page_pref"
             android:entries="@array/pages"
             android:entryValues="@array/page_values"
-            android:key="prefDefaultPage"
+            android:key="@string/pref_key_default_page"
             android:title="Default Page" />
         <IntListPreference
             android:defaultValue="5"
             android:dialogTitle="@string/theme_primary"
             android:entries="@array/colors"
             android:entryValues="@array/color_values"
-            android:key="prefColorPrimary"
+            android:key="@string/pref_key_color_primary"
             android:summary="@string/theme_primary_description"
             android:title="Primary Color" />
         <IntListPreference
@@ -22,24 +22,24 @@
             android:dialogTitle="@string/theme_base"
             android:entries="@array/themes"
             android:entryValues="@array/theme_values"
-            android:key="prefBaseTheme"
+            android:key="@string/pref_key_color_base"
             android:summary="@string/theme_base_description"
             android:title="Theme" />
         <Preference
             android:defaultValue="false"
-            android:key="prefAddShortcut"
+            android:key="@string/pref_key_create_launcher_icon"
             android:title="@string/add_shortcut" />
     </PreferenceCategoryCompat>
     <PreferenceCategoryCompat android:title="@string/settings_category_general">
         <SwitchPreferenceCompat
             android:defaultValue="true"
-            android:key="prefUseMobileData"
+            android:key="@string/pref_key_use_mobile_net"
             android:summaryOn="@string/use_mobile_description_on"
             android:summaryOff="@string/use_mobile_description_off"
             android:title="@string/use_mobile"/>
         <CheckBoxPreference
             android:defaultValue="true"
-            android:key="prefAllowLogging"
+            android:key="@string/pref_key_allow_logging"
             android:summaryOn="@string/logging_on"
             android:summaryOff="@string/logging_off"
             android:title="@string/logging_description"/>
@@ -50,13 +50,13 @@
             android:fragment="com.marverenic.music.fragments.EqualizerFragment"/>
         <CheckBoxPreference
             android:defaultValue="true"
-            android:key="prefSwitchToNowPlaying"
+            android:key="@string/pref_key_switch_to_playing"
             android:title="@string/switch_to_now_playing"
             android:summaryOn="@string/switch_to_now_playing_detail_on"
             android:summaryOff="@string/switch_to_now_playing_detail_off"/>
         <CheckBoxPreference
             android:defaultValue="true"
-            android:key="prefEnableNowPlayingGestures"
+            android:key="@string/pref_key_enable_gestures"
             android:title="@string/gesture_description"
             android:summary="@string/gesture_detail"/>
     </PreferenceCategoryCompat>
