@@ -20,7 +20,6 @@ import android.widget.Toast;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.PreferencesStore;
-import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Themes;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.BackgroundDecoration;
@@ -170,7 +169,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat
                         .show();
             }
             return true;
-        } else if (preference.getKey().equals(Prefs.ADD_SHORTCUT)) {
+        } else if (preference.getKey().equals(getString(R.string.pref_key_create_launcher_icon))) {
             new AlertDialog.Builder(getActivity())
                     .setTitle(R.string.add_shortcut)
                     .setMessage(R.string.add_shortcut_description)
