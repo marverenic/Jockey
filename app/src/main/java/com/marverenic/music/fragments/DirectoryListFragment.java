@@ -45,10 +45,7 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
         DirectoryDialogFragment.OnDirectoryPickListener {
 
     private static final String KEY_EXCLUDE_FLAG = "DirectoryListFragment.exclude";
-
-    private static final String TAG = "DirectoryListFragment";
     private static final String TAG_DIR_DIALOG = "DirectoryListFragment_DirectoryDialog";
-    private static final boolean D = BuildConfig.DEBUG;
 
     @Inject PreferencesStore mPreferencesStore;
 
@@ -76,15 +73,6 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
 
         Set<String> dirs = preferences.getStringSet(mPrefKey, Collections.<String>emptySet());
 
-        if (mPrefKey.equals(Prefs.DIR_INCLUDED)) {
-            mOppositePrefKey = Prefs.DIR_EXCLUDED;
-        } else if (mPrefKey.equals(Prefs.DIR_EXCLUDED)) {
-            mOppositePrefKey = Prefs.DIR_INCLUDED;
-        } else if (D) {
-            Log.i(TAG, "onCreate: Couldn\'t load opposite set to check "
-                    + "inclusion/exclusion conflicts");
-        }
-
         mOppositeDirectories = preferences.getStringSet(
                 mOppositePrefKey, Collections.<String>emptySet());
 
@@ -107,24 +95,20 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
         mAdapter.setEmptyState(new BasicEmptyState() {
             @Override
             public String getMessage() {
-                if (mPrefKey.equals(Prefs.DIR_INCLUDED)) {
+                if (mExclude) {
+                    return getString(R.string.empty_excluded_dirs);
+                } else {
                     return getString(R.string.empty_included_dirs);
                 }
-                if (mPrefKey.equals(Prefs.DIR_EXCLUDED)) {
-                    return getString(R.string.empty_excluded_dirs);
-                }
-                return super.getMessage();
             }
 
             @Override
             public String getDetail() {
-                if (mPrefKey.equals(Prefs.DIR_INCLUDED)) {
+                if (mExclude) {
+                    return getString(R.string.empty_excluded_dirs_detail);
+                } else {
                     return getString(R.string.empty_included_dirs_detail);
                 }
-                if (mPrefKey.equals(Prefs.DIR_EXCLUDED)) {
-                    return getString(R.string.empty_excluded_dirs_detail);
-                }
-                return super.getMessage();
             }
         });
 
@@ -183,33 +167,31 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
                 }
             };
 
-            if (mPrefKey.equals(Prefs.DIR_INCLUDED)) {
-                builder
-                        .setMessage(getString(
-                                R.string.confirm_dir_include_excluded, directory.getName()))
-                        .setPositiveButton(R.string.action_include, clickListener);
+            String message;
+            String positiveAction;
+
+            if (mExclude) {
+                message = getString(R.string.confirm_dir_exclude_included, directory.getName());
+                positiveAction = getString(R.string.action_exclude);
             } else {
-                builder
-                        .setMessage(getString(
-                                R.string.confirm_dir_exclude_included, directory.getName()))
-                        .setPositiveButton(R.string.action_exclude, clickListener);
+                message = getString(R.string.confirm_dir_include_excluded, directory.getName());
+                positiveAction = getString(R.string.action_include);
             }
 
             builder
+                    .setMessage(message)
+                    .setPositiveButton(positiveAction, clickListener)
                     .setNegativeButton(R.string.action_cancel, null)
                     .show();
         } else if (mDirectories.contains(directory.getAbsolutePath())) {
+            String message = getString(
+                    (mExclude)
+                            ? R.string.confirm_dir_already_excluded
+                            : R.string.confirm_dir_already_included,
+                    directory.getName());
+
             //noinspection ConstantConditions
-            Snackbar
-                    .make(
-                            getView(),
-                            getString(
-                                    mPrefKey.equals(Prefs.DIR_INCLUDED)
-                                            ? R.string.confirm_dir_already_included
-                                            : R.string.confirm_dir_already_excluded,
-                                    directory.getName()),
-                            Snackbar.LENGTH_SHORT)
-                    .show();
+            Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
         } else {
             mDirectories.add(directory.getAbsolutePath());
             if (mDirectories.size() == 1) {
