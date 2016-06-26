@@ -18,6 +18,9 @@ public interface PreferencesStore extends ReadOnlyPreferencesStore {
     void setPrimaryColor(@PresetTheme int colorChoice);
     void setBaseColor(@BaseTheme int theme);
 
+    void toggleShuffle();
+    void cycleRepeatMode();
+
     void setShuffle(boolean shuffle);
     void setRepeatMode(int repeatMode);
 

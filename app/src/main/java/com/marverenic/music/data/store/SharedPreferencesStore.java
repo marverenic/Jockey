@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.R;
+import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.utils.BaseTheme;
 import com.marverenic.music.utils.PresetTheme;
 import com.marverenic.music.utils.StartPage;
@@ -173,6 +174,29 @@ public class SharedPreferencesStore implements PreferencesStore {
     @Override
     public void setBaseColor(@BaseTheme int themeChoice) {
         putInt(R.string.pref_key_color_base, themeChoice);
+    }
+
+    @Override
+    public void toggleShuffle() {
+        setShuffle(!isShuffled());
+    }
+
+    @Override
+    public void cycleRepeatMode() {
+        int nextMode;
+        switch (getRepeatMode()) {
+            case MusicPlayer.REPEAT_NONE:
+                nextMode = MusicPlayer.REPEAT_ALL;
+                break;
+            case MusicPlayer.REPEAT_ALL:
+                nextMode = MusicPlayer.REPEAT_ONE;
+                break;
+            case MusicPlayer.REPEAT_ONE:
+            default:
+                nextMode = MusicPlayer.REPEAT_NONE;
+        }
+
+        setRepeatMode(nextMode);
     }
 
     @Override
