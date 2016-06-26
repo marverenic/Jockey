@@ -174,7 +174,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         getMenuInflater().inflate(R.menu.activity_now_playing, menu);
 
         updateShuffleIcon(menu.findItem(R.id.action_shuffle));
-        updateShuffleIcon(menu.findItem(R.id.action_repeat));
+        updateRepeatIcon(menu.findItem(R.id.action_repeat));
 
         return true;
     }
