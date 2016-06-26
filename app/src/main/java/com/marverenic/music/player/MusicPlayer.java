@@ -246,7 +246,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @param preferencesStore The preference store to read values from
      */
     public void updatePreferences(ReadOnlyPreferencesStore preferencesStore) {
-        setShuffle(preferencesStore.isShuffled());
+        if (preferencesStore.isShuffled() != mShuffle) {
+            setShuffle(preferencesStore.isShuffled());
+        }
+
         setRepeat(preferencesStore.getRepeatMode());
     }
 
