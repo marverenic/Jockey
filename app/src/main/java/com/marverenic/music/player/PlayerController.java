@@ -14,11 +14,8 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.CustomEvent;
 import com.marverenic.music.IPlayerService;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Util;
 
 import java.util.ArrayList;
@@ -328,19 +325,6 @@ public final class PlayerController {
      * See {@link MusicPlayer#setQueue(List, int)}
      */
     public static void setQueue(final List<Song> newQueue, final int newPosition) {
-        if (Prefs.allowAnalytics(applicationContext)) {
-            Answers.getInstance().logCustom(
-                    new CustomEvent("Changed queue")
-                            .putCustomAttribute(
-                                    "Queue size",
-                                    newQueue.size())
-                            .putCustomAttribute(
-                                    "Queue index",
-                                    newPosition)
-                            .putCustomAttribute(
-                                    "Song duration (sec)",
-                                    newQueue.get(newPosition).getSongDuration() / 1000));
-        }
         if (playerService != null) {
             try {
                 playerService.setQueue(newQueue, newPosition);
