@@ -92,23 +92,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public static final String ERROR_EXTRA_MSG = "marverenic.jockey.player.ERROR:MSG";
 
     /**
-     * A {@link SharedPreferences} key that maps to a boolean value for the user's shuffle setting
-     */
-    public static final String PREFERENCE_SHUFFLE = "prefShuffle";
-
-    /**
-     * A {@link SharedPreferences} key that maps to an integer representing this user's repeat
-     * setting
-     * @see #REPEAT_NONE
-     * @see #REPEAT_ONE
-     * @see #REPEAT_ALL
-     */
-    public static final String PREFERENCE_REPEAT = "prefRepeat";
-
-    /**
      * Repeat value that corresponds to repeat none. Playback will continue as normal until and will
      * end after the last song finishes
-     * @see #PREFERENCE_REPEAT
      * @see #setRepeat(int)
      */
     public static final int REPEAT_NONE = 0;
@@ -116,7 +101,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     /**
      * Repeat value that corresponds to repeat all. Playback will continue as normal, but the queue
      * will restart from the beginning once the last song finishes
-     * @see #PREFERENCE_REPEAT
      * @see #setRepeat(int)
      */
     public static final int REPEAT_ALL = -1;
@@ -125,7 +109,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * Repeat value that corresponds to repeat one. When the current song is finished, it will be
      * repeated. The MusicPlayer will never progress to the next track until the user manually
      * changes the song.
-     * @see #PREFERENCE_REPEAT
      * @see #setRepeat(int)
      */
     public static final int REPEAT_ONE = -2;
