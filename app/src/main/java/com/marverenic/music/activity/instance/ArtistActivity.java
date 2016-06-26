@@ -18,6 +18,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PreferencesStore;
+import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Song;
@@ -55,6 +56,7 @@ public class ArtistActivity extends BaseActivity {
     @Inject MusicStore mMusicStore;
     @Inject LastFmStore mLfmStore;
     @Inject PreferencesStore mPrefStore;
+    @Inject ThemeStore mThemeStore;
 
     private RecyclerView mRecyclerView;
     private HeterogeneousAdapter mAdapter;
@@ -252,9 +254,11 @@ public class ArtistActivity extends BaseActivity {
                 new DividerDecoration(this, R.id.infoCard, R.id.albumInstance, R.id.subheaderFrame,
                         R.id.relatedCard, R.id.empty_layout));
     }
+
     private void setupLoadingAdapter() {
         if (mLoadingSection == null && mLfmReference == null) {
-            mLoadingSection = new LoadingSingleton();
+            int[] colors = {mThemeStore.getPrimaryColor(), mThemeStore.getAccentColor()};
+            mLoadingSection = new LoadingSingleton(colors);
             mAdapter.addSection(mLoadingSection, 0);
         }
     }
