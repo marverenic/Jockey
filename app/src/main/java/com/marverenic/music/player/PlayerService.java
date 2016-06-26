@@ -340,6 +340,9 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         @Override
         public void setQueue(List<Song> newQueue, int newPosition) throws RemoteException {
             instance.musicPlayer.setQueue(newQueue, newPosition);
+            if (newQueue.isEmpty()) {
+                instance.stop();
+            }
         }
 
         @Override

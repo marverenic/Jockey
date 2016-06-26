@@ -8,6 +8,7 @@
     <string name="confirm_enable_repeat">Enabled repeat</string>
     <string name="confirm_enable_repeat_one">Enabled repeat one</string>
     <string name="confirm_refresh_library">Library refreshed</string>
+    <string name="confirm_clear_queue">Cleared queue</string>
 
     <!-- Error messages -->
     <string name="message_refresh_library_no_permission">Jockey doesn\'t have permission to read

@@ -80,8 +80,9 @@ public class NowPlayingControllerViewModel extends BaseObservable {
         mSong = song;
         notifyPropertyChanged(BR.songTitle);
         notifyPropertyChanged(BR.artistName);
-        notifyPropertyChanged(BR.artistName);
+        notifyPropertyChanged(BR.albumName);
         notifyPropertyChanged(BR.songDuration);
+        notifyPropertyChanged(BR.positionVisibility);
     }
 
     public void setPlaying(boolean playing) {
@@ -186,6 +187,15 @@ public class NowPlayingControllerViewModel extends BaseObservable {
         return mCurrentPositionObservable;
     }
 
+    @Bindable
+    public int getPositionVisibility() {
+        if (mSong == null) {
+            return View.INVISIBLE;
+        } else {
+            return View.VISIBLE;
+        }
+    }
+
     @ColorInt
     public int getSeekBarHeadTint() {
         return Themes.getAccent();
@@ -273,6 +283,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
                 case 2: //Add to playlist
                     AppendPlaylistDialogFragment.newInstance()
                             .setSong(song)
+                            .showSnackbarIn(R.id.imageArtwork)
                             .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
                     return true;
             }
