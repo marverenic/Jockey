@@ -330,7 +330,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public void setPreferences(RemotePreferencesStore preferences) throws RemoteException {
-
+            instance.musicPlayer.updatePreferences(preferences);
         }
 
         @Override
