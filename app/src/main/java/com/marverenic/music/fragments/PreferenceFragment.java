@@ -3,7 +3,6 @@ package com.marverenic.music.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.preference.ListPreference;
@@ -170,13 +169,10 @@ public class PreferenceFragment extends PreferenceFragmentCompat
             }
             return true;
         } else if (DirectoryListFragment.class.getName().equals(preference.getFragment())) {
-            Fragment fragment = new DirectoryListFragment();
-            Bundle args = new Bundle();
-            args.putString(DirectoryListFragment.PREFERENCE_EXTRA, preference.getKey());
-            args.putString(DirectoryListFragment.TITLE_EXTRA, preference.getTitle().toString());
-            fragment.setArguments(args);
+            String prefKey = preference.getKey();
+            boolean exclude = getString(R.string.pref_key_excluded_dirs).equals(prefKey);
 
-            Navigate.to(getActivity(), fragment, R.id.prefFrame);
+            Navigate.to(getActivity(), DirectoryListFragment.newInstance(exclude), R.id.prefFrame);
             return true;
         } else if (preference.getKey().equals(getString(R.string.pref_key_create_launcher_icon))) {
             new AlertDialog.Builder(getActivity())

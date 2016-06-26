@@ -44,8 +44,7 @@ import javax.inject.Inject;
 public class DirectoryListFragment extends Fragment implements View.OnClickListener,
         DirectoryDialogFragment.OnDirectoryPickListener {
 
-    public static final String PREFERENCE_EXTRA = "EXTRA_PREFERENCE_KEY";
-    public static final String TITLE_EXTRA = "FRAGMENT_HEADER";
+    private static final String KEY_EXCLUDE_FLAG = "DirectoryListFragment.exclude";
 
     private static final String TAG = "DirectoryListFragment";
     private static final String TAG_DIR_DIALOG = "DirectoryListFragment_DirectoryDialog";
@@ -54,18 +53,25 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
     @Inject
     PreferencesStore mPreferencesStore;
 
-    private String mPrefKey;
-    private String mOppositePrefKey;
-    private String mTitle;
+    private boolean mExclude;
     private List<String> mDirectories;
     private Set<String> mOppositeDirectories;
     private DragDropAdapter mAdapter;
 
+    public static DirectoryListFragment newInstance(boolean exclude) {
+        DirectoryListFragment fragment = new DirectoryListFragment();
+
+        Bundle args = new Bundle();
+        args.putBoolean(KEY_EXCLUDE_FLAG, exclude);
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPrefKey = getArguments().getString(PREFERENCE_EXTRA);
-        mTitle = getArguments().getString(TITLE_EXTRA);
+        mExclude = getArguments().getBoolean(KEY_EXCLUDE_FLAG);
 
         JockeyApplication.getComponent(this).inject(this);
 
@@ -138,8 +144,10 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
     public void onResume() {
         super.onResume();
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
-        if (toolbar != null && mTitle != null) {
-            toolbar.setTitle(mTitle);
+        if (toolbar != null) {
+            toolbar.setTitle((mExclude)
+                    ? R.string.pref_directory_exclude
+                    : R.string.pref_directory_include);
         }
     }
 
