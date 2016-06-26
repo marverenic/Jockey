@@ -2,6 +2,7 @@ package com.marverenic.music.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
@@ -61,7 +62,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat
     public RecyclerView onCreateRecyclerView(LayoutInflater inflater, ViewGroup parent,
                                              Bundle savedInstanceState) {
         RecyclerView view = super.onCreateRecyclerView(inflater, parent, savedInstanceState);
-        view.setBackgroundColor(Themes.getBackground());
+        view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.background));
 
         int padding = (int) getResources().getDimension(R.dimen.global_padding);
         view.setPadding(padding, 0, padding, 0);
