@@ -217,8 +217,10 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     }
 
     private void toggleShuffle(MenuItem shuffleMenuItem) {
-        PlayerController.toggleShuffle();
-        if (PlayerController.isShuffle()) {
+        mPrefStore.toggleShuffle();
+        PlayerController.updatePlayerPreferences(mPrefStore);
+
+        if (mPrefStore.isShuffled()) {
             shuffleMenuItem.getIcon().setAlpha(255);
             shuffleMenuItem.setTitle(getResources().getString(R.string.action_disable_shuffle));
             showSnackbar(R.string.confirm_enable_shuffle);
