@@ -231,12 +231,14 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     }
 
     private void toggleRepeat(MenuItem repeatMenuItem) {
-        PlayerController.toggleRepeat();
-        if (PlayerController.isRepeat()) {
+        mPrefStore.cycleRepeatMode();
+        PlayerController.updatePlayerPreferences(mPrefStore);
+
+        if (mPrefStore.getRepeatMode() == MusicPlayer.REPEAT_ALL) {
             repeatMenuItem.getIcon().setAlpha(255);
             repeatMenuItem.setTitle(getResources().getString(R.string.action_enable_repeat_one));
             showSnackbar(R.string.confirm_enable_repeat);
-        } else if (PlayerController.isRepeatOne()) {
+        } else if (mPrefStore.getRepeatMode() == MusicPlayer.REPEAT_ONE) {
             repeatMenuItem.setIcon(R.drawable.ic_repeat_one_24dp);
             repeatMenuItem.setTitle(getResources().getString(R.string.action_disable_repeat));
             showSnackbar(R.string.confirm_enable_repeat_one);
