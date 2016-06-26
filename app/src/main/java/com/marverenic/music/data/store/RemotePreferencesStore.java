@@ -1,11 +1,13 @@
 package com.marverenic.music.data.store;
 
 import android.media.audiofx.Equalizer;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
-public class RemotePreferencesStore implements ReadOnlyPreferencesStore {
+public class RemotePreferencesStore implements ReadOnlyPreferencesStore, Parcelable {
 
     private static final String TAG = "RemotePreferencesStore";
 
@@ -34,6 +36,52 @@ public class RemotePreferencesStore implements ReadOnlyPreferencesStore {
         mEqualizerEnabled = preferencesStore.getEqualizerEnabled();
         mEqualizerSettings = preferencesStore.getEqualizerSettings().toString();
     }
+
+    protected RemotePreferencesStore(Parcel in) {
+        mShowFirstStart = in.readByte() != 0;
+        mAllowLogging = in.readByte() != 0;
+        mUseMobileNetwork = in.readByte() != 0;
+        mOpenNowPlayingOnNewQueue = in.readByte() != 0;
+        mEnableNowPlayingGestures = in.readByte() != 0;
+        mDefaultPage = in.readInt();
+        mPrimaryColor = in.readInt();
+        mBaseColor = in.readInt();
+        mEqualizerPresetId = in.readInt();
+        mEqualizerEnabled = in.readByte() != 0;
+        mEqualizerSettings = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeByte((byte) (mShowFirstStart ? 1 : 0));
+        dest.writeByte((byte) (mAllowLogging ? 1 : 0));
+        dest.writeByte((byte) (mUseMobileNetwork ? 1 : 0));
+        dest.writeByte((byte) (mOpenNowPlayingOnNewQueue ? 1 : 0));
+        dest.writeByte((byte) (mEnableNowPlayingGestures ? 1 : 0));
+        dest.writeInt(mDefaultPage);
+        dest.writeInt(mPrimaryColor);
+        dest.writeInt(mBaseColor);
+        dest.writeInt(mEqualizerPresetId);
+        dest.writeByte((byte) (mEqualizerEnabled ? 1 : 0));
+        dest.writeString(mEqualizerSettings);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<RemotePreferencesStore> CREATOR = new Creator<RemotePreferencesStore>() {
+        @Override
+        public RemotePreferencesStore createFromParcel(Parcel in) {
+            return new RemotePreferencesStore(in);
+        }
+
+        @Override
+        public RemotePreferencesStore[] newArray(int size) {
+            return new RemotePreferencesStore[size];
+        }
+    };
 
     @Override
     public boolean showFirstStart() {
