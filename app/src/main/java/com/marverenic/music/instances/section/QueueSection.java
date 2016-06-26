@@ -80,7 +80,7 @@ public class QueueSection extends EditableSongSection {
 
         @Override
         public void update(Song s, int sectionPosition) {
-            mBinding.getViewModel().setIndex(sectionPosition);
+            mBinding.getViewModel().setSong(getData(), sectionPosition);
         }
     }
 }
