@@ -50,8 +50,7 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
     private static final String TAG_DIR_DIALOG = "DirectoryListFragment_DirectoryDialog";
     private static final boolean D = BuildConfig.DEBUG;
 
-    @Inject
-    PreferencesStore mPreferencesStore;
+    @Inject PreferencesStore mPreferencesStore;
 
     private boolean mExclude;
     private List<String> mDirectories;
