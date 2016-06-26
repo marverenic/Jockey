@@ -1,4 +1,4 @@
-package com.marverenic.music.utils;
+package com.marverenic.music.data.annotations;
 
 import android.support.annotation.IntDef;
 

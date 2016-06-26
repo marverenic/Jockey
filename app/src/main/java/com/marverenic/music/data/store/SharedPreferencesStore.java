@@ -10,9 +10,9 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.R;
 import com.marverenic.music.player.MusicPlayer;
-import com.marverenic.music.utils.BaseTheme;
-import com.marverenic.music.utils.PresetTheme;
-import com.marverenic.music.utils.StartPage;
+import com.marverenic.music.data.annotations.BaseTheme;
+import com.marverenic.music.data.annotations.PresetTheme;
+import com.marverenic.music.data.annotations.StartPage;
 
 public class SharedPreferencesStore implements PreferencesStore {
 
