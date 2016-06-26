@@ -2,6 +2,7 @@
 package com.marverenic.music;
 
 import com.marverenic.music.instances.Song;
+import com.marverenic.music.data.store.RemotePreferencesStore;
 
 interface IPlayerService {
 
@@ -14,6 +15,7 @@ interface IPlayerService {
     void pause();
     void setShuffle(boolean shuffle);
     void setRepeat(int repeat);
+    void setPreferences(in RemotePreferencesStore preferences);
     void setQueue(in List<Song> newQueue, int newPosition);
     void changeSong(int position);
     void editQueue(in List<Song> newQueue, int newPosition);
