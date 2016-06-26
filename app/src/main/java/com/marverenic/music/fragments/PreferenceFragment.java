@@ -66,8 +66,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat
         int padding = (int) getResources().getDimension(R.dimen.global_padding);
         view.setPadding(padding, 0, padding, 0);
 
-        view.addItemDecoration(new BackgroundDecoration(
-                Themes.getBackgroundElevated(), android.R.id.title));
+        view.addItemDecoration(new BackgroundDecoration(android.R.id.title));
         view.addItemDecoration(new DividerDecoration(getContext(), android.R.id.title));
 
         return view;

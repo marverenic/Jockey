@@ -1,11 +1,13 @@
 package com.marverenic.music.view;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.NinePatchDrawable;
 import android.support.annotation.IdRes;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -23,12 +25,10 @@ public class BackgroundDecoration extends RecyclerView.ItemDecoration {
 
     /**
      * Create an ItemDecorator for use with a RecyclerView
-     * @param color the color of the background
      * @param excludedLayoutIDs A list of layoutIDs to exclude adding a background color to
      *                          empty to add a background to the entire RecyclerView
      */
-    public BackgroundDecoration(int color, @IdRes int... excludedLayoutIDs) {
-        mBackground = new ColorDrawable(color);
+    public BackgroundDecoration(@IdRes int... excludedLayoutIDs) {
         excludedIDs = excludedLayoutIDs;
     }
 
@@ -37,10 +37,13 @@ public class BackgroundDecoration extends RecyclerView.ItemDecoration {
         int left = parent.getPaddingLeft();
         int right = parent.getWidth() - parent.getPaddingRight();
 
-        if (mShadow == null) {
-            //noinspection deprecation
-            mShadow = (NinePatchDrawable) parent.getContext().getResources()
-                    .getDrawable(R.drawable.list_shadow);
+        if (mShadow == null || mBackground == null) {
+            Context ctx = parent.getContext();
+
+            int color = ContextCompat.getColor(ctx, R.color.background_elevated);
+            mBackground = new ColorDrawable(color);
+
+            mShadow = (NinePatchDrawable) ContextCompat.getDrawable(ctx, R.drawable.list_shadow);
         }
 
         Rect shadowPadding = new Rect();

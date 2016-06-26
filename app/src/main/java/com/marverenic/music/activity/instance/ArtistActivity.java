@@ -31,7 +31,6 @@ import com.marverenic.music.instances.section.SongSection;
 import com.marverenic.music.lastfm.data.store.LastFmStore;
 import com.marverenic.music.lastfm.model.Image;
 import com.marverenic.music.lastfm.model.LfmArtist;
-import com.marverenic.music.utils.Themes;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
@@ -248,8 +247,7 @@ public class ArtistActivity extends BaseActivity {
                         numColumns,
                         RelatedArtistSection.ID));
         mRecyclerView.addItemDecoration(
-                new BackgroundDecoration(Themes.getBackgroundElevated(), R.id.loadingView,
-                        R.id.infoCard, R.id.relatedCard));
+                new BackgroundDecoration(R.id.loadingView, R.id.infoCard, R.id.relatedCard));
         mRecyclerView.addItemDecoration(
                 new DividerDecoration(this, R.id.infoCard, R.id.albumInstance, R.id.subheaderFrame,
                         R.id.relatedCard, R.id.empty_layout));

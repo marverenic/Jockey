@@ -18,7 +18,6 @@ import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.section.RuleHeaderSingleton;
 import com.marverenic.music.instances.section.RuleSection;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
@@ -82,7 +81,7 @@ public class AutoPlaylistEditActivity extends BaseActivity
         RecyclerView list = (RecyclerView) findViewById(R.id.list);
         list.setAdapter(adapter);
         list.setLayoutManager(new LinearLayoutManager(this));
-        list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
+        list.addItemDecoration(new BackgroundDecoration());
         list.addItemDecoration(new DividerDecoration(this));
     }
 
