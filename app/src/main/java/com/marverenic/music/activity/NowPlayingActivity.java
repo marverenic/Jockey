@@ -280,7 +280,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
 
         Snackbar.make(findViewById(R.id.imageArtwork), R.string.confirm_clear_queue, LENGTH_LONG)
                 .setAction(R.string.action_undo, view -> {
-                    PlayerController.setQueue(previousQueue, previousQueueIndex);
+                    PlayerController.editQueue(previousQueue, previousQueueIndex);
                     PlayerController.seek(previousSeekPosition);
 
                     if (wasPlaying) {
