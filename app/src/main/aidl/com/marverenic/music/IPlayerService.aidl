@@ -13,8 +13,6 @@ interface IPlayerService {
     void togglePlay();
     void play();
     void pause();
-    void setShuffle(boolean shuffle);
-    void setRepeat(int repeat);
     void setPreferences(in RemotePreferencesStore preferences);
     void setQueue(in List<Song> newQueue, int newPosition);
     void changeSong(int position);

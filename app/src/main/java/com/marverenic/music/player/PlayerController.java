@@ -5,7 +5,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.os.IBinder;
@@ -282,32 +281,8 @@ public final class PlayerController {
      *
      * @see MusicPlayer#setRepeat(int)
      */
+    @Deprecated
     public static void toggleRepeat() {
-        int repeatOption;
-        switch (PreferenceManager.getDefaultSharedPreferences(applicationContext)
-                .getInt(MusicPlayer.PREFERENCE_REPEAT, MusicPlayer.REPEAT_NONE)) {
-            case MusicPlayer.REPEAT_NONE:
-                repeatOption = MusicPlayer.REPEAT_ALL;
-                break;
-            case MusicPlayer.REPEAT_ALL:
-                repeatOption = MusicPlayer.REPEAT_ONE;
-                break;
-            case MusicPlayer.REPEAT_ONE:
-            default:
-                repeatOption = MusicPlayer.REPEAT_NONE;
-        }
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext);
-        prefs.edit().putInt(MusicPlayer.PREFERENCE_REPEAT, repeatOption).apply();
-
-        if (playerService != null) {
-            try {
-                playerService.setRepeat(repeatOption);
-            } catch (RemoteException e) {
-                Crashlytics.logException(e);
-                Log.w(TAG, e);
-            }
-        }
     }
 
     /**
@@ -316,19 +291,8 @@ public final class PlayerController {
      *
      * @see MusicPlayer#setShuffle(boolean)
      */
+    @Deprecated
     public static void toggleShuffle() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext);
-        boolean shuffleOption = !prefs.getBoolean(MusicPlayer.PREFERENCE_SHUFFLE, false);
-        prefs.edit().putBoolean(MusicPlayer.PREFERENCE_SHUFFLE, shuffleOption).apply();
-
-        if (playerService != null) {
-            try {
-                playerService.setShuffle(shuffleOption);
-            } catch (RemoteException e) {
-                Crashlytics.logException(e);
-                Log.w(TAG, e);
-            }
-        }
     }
 
     /**
@@ -499,6 +463,7 @@ public final class PlayerController {
     /**
      * @return if shuffle is enabled in {@link android.content.SharedPreferences}
      */
+    @Deprecated
     public static boolean isShuffle() {
         return PreferenceManager.getDefaultSharedPreferences(applicationContext)
                 .getBoolean(MusicPlayer.PREFERENCE_SHUFFLE, false);
@@ -507,6 +472,7 @@ public final class PlayerController {
     /**
      * @return whether repeat all is currently enabled in {@link android.content.SharedPreferences}
      */
+    @Deprecated
     public static boolean isRepeat() {
         return PreferenceManager.getDefaultSharedPreferences(applicationContext)
                 .getInt(MusicPlayer.PREFERENCE_REPEAT, MusicPlayer.REPEAT_NONE) == MusicPlayer.REPEAT_ALL;
@@ -515,6 +481,7 @@ public final class PlayerController {
     /**
      * @return whether repeat one is currently enabled in {@link android.content.SharedPreferences}
      */
+    @Deprecated
     public static boolean isRepeatOne() {
         return PreferenceManager.getDefaultSharedPreferences(applicationContext)
                 .getInt(MusicPlayer.PREFERENCE_REPEAT, MusicPlayer.REPEAT_NONE) == MusicPlayer.REPEAT_ONE;
