@@ -110,7 +110,7 @@ public class SharedPreferencesStore implements PreferencesStore {
 
     @Override
     public int getRepeatMode() {
-        return getInt(R.string.pref_key_repeat, 0);
+        return getInt(R.string.pref_key_repeat, MusicPlayer.REPEAT_NONE);
     }
 
     @Override
