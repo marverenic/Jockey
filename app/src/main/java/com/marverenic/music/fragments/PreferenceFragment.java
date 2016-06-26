@@ -21,7 +21,7 @@ import android.widget.Toast;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.PreferencesStore;
-import com.marverenic.music.utils.Themes;
+import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
@@ -32,6 +32,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat
         implements View.OnLongClickListener {
 
     @Inject PreferencesStore mPrefStore;
+    @Inject ThemeStore mThemeStore;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -175,7 +176,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat
                     .setMessage(R.string.add_shortcut_description)
                     .setPositiveButton(R.string.action_add,
                             (dialog, which) -> {
-                                Themes.updateLauncherIcon(getActivity());
+                                mThemeStore.createThemedLauncherIcon();
                             })
                     .setNegativeButton(R.string.action_cancel, null)
                     .show();
