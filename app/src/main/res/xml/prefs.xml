@@ -2,14 +2,14 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategoryCompat android:title="@string/appearance_header">
-        <ListPreference
+        <IntListPreference
             android:defaultValue="1"
             android:dialogTitle="@string/default_page_pref"
             android:entries="@array/pages"
             android:entryValues="@array/page_values"
             android:key="prefDefaultPage"
             android:title="Default Page" />
-        <ListPreference
+        <IntListPreference
             android:defaultValue="5"
             android:dialogTitle="@string/theme_primary"
             android:entries="@array/colors"
@@ -17,7 +17,7 @@
             android:key="prefColorPrimary"
             android:summary="@string/theme_primary_description"
             android:title="Primary Color" />
-        <ListPreference
+        <IntListPreference
             android:defaultValue="1"
             android:dialogTitle="@string/theme_base"
             android:entries="@array/themes"
