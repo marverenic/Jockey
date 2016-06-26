@@ -15,7 +15,6 @@ import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.section.AlbumSection;
 import com.marverenic.music.instances.section.LibraryEmptyState;
-import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
 import com.marverenic.music.view.GridSpacingDecoration;
@@ -67,7 +66,7 @@ public class AlbumFragment extends BaseFragment {
         });
         mRecyclerView.setLayoutManager(layoutManager);
 
-        mRecyclerView.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
+        mRecyclerView.addItemDecoration(new BackgroundDecoration());
         mRecyclerView.addItemDecoration(new GridSpacingDecoration(
                 (int) getResources().getDimension(R.dimen.grid_margin), numColumns));
 

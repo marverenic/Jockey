@@ -17,7 +17,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 import android.view.KeyEvent;
 
 import com.crashlytics.android.Crashlytics;
@@ -26,8 +25,10 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PlayCountStore;
+import com.marverenic.music.data.store.PreferencesStore;
+import com.marverenic.music.data.store.ReadOnlyPreferencesStore;
+import com.marverenic.music.data.store.SharedPreferencesStore;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Util;
 
 import java.io.File;
@@ -91,23 +92,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public static final String ERROR_EXTRA_MSG = "marverenic.jockey.player.ERROR:MSG";
 
     /**
-     * A {@link SharedPreferences} key that maps to a boolean value for the user's shuffle setting
-     */
-    public static final String PREFERENCE_SHUFFLE = "prefShuffle";
-
-    /**
-     * A {@link SharedPreferences} key that maps to an integer representing this user's repeat
-     * setting
-     * @see #REPEAT_NONE
-     * @see #REPEAT_ONE
-     * @see #REPEAT_ALL
-     */
-    public static final String PREFERENCE_REPEAT = "prefRepeat";
-
-    /**
      * Repeat value that corresponds to repeat none. Playback will continue as normal until and will
      * end after the last song finishes
-     * @see #PREFERENCE_REPEAT
      * @see #setRepeat(int)
      */
     public static final int REPEAT_NONE = 0;
@@ -115,7 +101,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     /**
      * Repeat value that corresponds to repeat all. Playback will continue as normal, but the queue
      * will restart from the beginning once the last song finishes
-     * @see #PREFERENCE_REPEAT
      * @see #setRepeat(int)
      */
     public static final int REPEAT_ALL = -1;
@@ -124,7 +109,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * Repeat value that corresponds to repeat one. When the current song is finished, it will be
      * repeated. The MusicPlayer will never progress to the next track until the user manually
      * changes the song.
-     * @see #PREFERENCE_REPEAT
      * @see #setRepeat(int)
      */
     public static final int REPEAT_ONE = -2;
@@ -219,16 +203,37 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
         loadPrefs();
         initMediaSession();
-        initEqualizer();
     }
 
     /**
      * Reloads shuffle and repeat preferences from {@link SharedPreferences}
      */
     private void loadPrefs() {
-        SharedPreferences prefs = Prefs.getPrefs(mContext);
-        mShuffle = prefs.getBoolean(PREFERENCE_SHUFFLE, false);
-        mRepeat = prefs.getInt(PREFERENCE_REPEAT, REPEAT_NONE);
+        // SharedPreferencesStore is backed by an instance of SharedPreferences. Because
+        // SharedPreferences isn't safe to use across processes, the only time we can get valid
+        // data is right after we open the SharedPreferences for the first time in this process.
+        //
+        // We're going to take advantage of that here so that we can load the latest preferences
+        // as soon as the MusicPlayer is started (which should be the same time that this process
+        // is started). To update these preferences, see updatePreferences(preferencesStore)
+        PreferencesStore preferencesStore = new SharedPreferencesStore(mContext);
+
+        mShuffle = preferencesStore.isShuffled();
+        mRepeat = preferencesStore.getRepeatMode();
+
+        initEqualizer(preferencesStore);
+    }
+
+    /**
+     * Updates shuffle and repeat preferences from a Preference Store
+     * @param preferencesStore The preference store to read values from
+     */
+    public void updatePreferences(ReadOnlyPreferencesStore preferencesStore) {
+        if (preferencesStore.isShuffled() != mShuffle) {
+            setShuffle(preferencesStore.isShuffled());
+        }
+
+        setRepeat(preferencesStore.getRepeatMode());
     }
 
     /**
@@ -265,24 +270,22 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     /**
      * Reload all equalizer settings from SharedPreferences
      */
-    private void initEqualizer() {
-        SharedPreferences prefs = Prefs.getPrefs(mContext);
-        String eqSettings = prefs.getString(Prefs.EQ_SETTINGS, null);
-        boolean enabled = Prefs.getPrefs(mContext).getBoolean(Prefs.EQ_ENABLED, false);
+    private void initEqualizer(ReadOnlyPreferencesStore preferencesStore) {
+        Equalizer.Settings eqSettings = preferencesStore.getEqualizerSettings();
 
         mEqualizer = new Equalizer(0, mMediaPlayer.getAudioSessionId());
         if (eqSettings != null) {
             try {
-                mEqualizer.setProperties(new Equalizer.Settings(eqSettings));
+                mEqualizer.setProperties(eqSettings);
             } catch (IllegalArgumentException | UnsupportedOperationException e) {
                 Crashlytics.logException(new RuntimeException(
                         "Failed to load equalizer settings: " + eqSettings, e));
             }
         }
-        mEqualizer.setEnabled(enabled);
+        mEqualizer.setEnabled(preferencesStore.getEqualizerEnabled());
 
         // If the built in equalizer is off, bind to the system equalizer if one is available
-        if (!enabled) {
+        if (!preferencesStore.getEqualizerEnabled()) {
             final Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
             intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
             intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, mContext.getPackageName());

@@ -5,20 +5,17 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.CustomEvent;
 import com.marverenic.music.IPlayerService;
+import com.marverenic.music.data.store.ReadOnlyPreferencesStore;
+import com.marverenic.music.data.store.RemotePreferencesStore;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.utils.Prefs;
 import com.marverenic.music.utils.Util;
 
 import java.util.ArrayList;
@@ -262,58 +259,10 @@ public final class PlayerController {
         }
     }
 
-    /**
-     * Toggle repeat from {@link MusicPlayer#REPEAT_NONE} to {@link MusicPlayer#REPEAT_ALL},
-     * from {@link MusicPlayer#REPEAT_ALL} to {@link MusicPlayer#REPEAT_ONE}
-     * from {@link MusicPlayer#REPEAT_ONE} to {@link MusicPlayer#REPEAT_NONE}
-     * and from multi-repeat to {@link MusicPlayer#REPEAT_NONE}
-     * in {@link android.content.SharedPreferences} and notify the service about the
-     * preference change
-     *
-     * @see MusicPlayer#setRepeat(int)
-     */
-    public static void toggleRepeat() {
-        int repeatOption;
-        switch (PreferenceManager.getDefaultSharedPreferences(applicationContext)
-                .getInt(MusicPlayer.PREFERENCE_REPEAT, MusicPlayer.REPEAT_NONE)) {
-            case MusicPlayer.REPEAT_NONE:
-                repeatOption = MusicPlayer.REPEAT_ALL;
-                break;
-            case MusicPlayer.REPEAT_ALL:
-                repeatOption = MusicPlayer.REPEAT_ONE;
-                break;
-            case MusicPlayer.REPEAT_ONE:
-            default:
-                repeatOption = MusicPlayer.REPEAT_NONE;
-        }
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext);
-        prefs.edit().putInt(MusicPlayer.PREFERENCE_REPEAT, repeatOption).apply();
-
+    public static void updatePlayerPreferences(ReadOnlyPreferencesStore preferencesStore) {
         if (playerService != null) {
             try {
-                playerService.setRepeat(repeatOption);
-            } catch (RemoteException e) {
-                Crashlytics.logException(e);
-                Log.w(TAG, e);
-            }
-        }
-    }
-
-    /**
-     * Toggle shuffle on or off in {@link android.content.SharedPreferences} and notify the service
-     * about the preference change
-     *
-     * @see MusicPlayer#setShuffle(boolean)
-     */
-    public static void toggleShuffle() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext);
-        boolean shuffleOption = !prefs.getBoolean(MusicPlayer.PREFERENCE_SHUFFLE, false);
-        prefs.edit().putBoolean(MusicPlayer.PREFERENCE_SHUFFLE, shuffleOption).apply();
-
-        if (playerService != null) {
-            try {
-                playerService.setShuffle(shuffleOption);
+                playerService.setPreferences(new RemotePreferencesStore(preferencesStore));
             } catch (RemoteException e) {
                 Crashlytics.logException(e);
                 Log.w(TAG, e);
@@ -328,19 +277,6 @@ public final class PlayerController {
      * See {@link MusicPlayer#setQueue(List, int)}
      */
     public static void setQueue(final List<Song> newQueue, final int newPosition) {
-        if (Prefs.allowAnalytics(applicationContext)) {
-            Answers.getInstance().logCustom(
-                    new CustomEvent("Changed queue")
-                            .putCustomAttribute(
-                                    "Queue size",
-                                    newQueue.size())
-                            .putCustomAttribute(
-                                    "Queue index",
-                                    newPosition)
-                            .putCustomAttribute(
-                                    "Song duration (sec)",
-                                    newQueue.get(newPosition).getSongDuration() / 1000));
-        }
         if (playerService != null) {
             try {
                 playerService.setQueue(newQueue, newPosition);
@@ -497,30 +433,6 @@ public final class PlayerController {
             Log.w(TAG, e);
             return false;
         }
-    }
-
-    /**
-     * @return if shuffle is enabled in {@link android.content.SharedPreferences}
-     */
-    public static boolean isShuffle() {
-        return PreferenceManager.getDefaultSharedPreferences(applicationContext)
-                .getBoolean(MusicPlayer.PREFERENCE_SHUFFLE, false);
-    }
-
-    /**
-     * @return whether repeat all is currently enabled in {@link android.content.SharedPreferences}
-     */
-    public static boolean isRepeat() {
-        return PreferenceManager.getDefaultSharedPreferences(applicationContext)
-                .getInt(MusicPlayer.PREFERENCE_REPEAT, MusicPlayer.REPEAT_NONE) == MusicPlayer.REPEAT_ALL;
-    }
-
-    /**
-     * @return whether repeat one is currently enabled in {@link android.content.SharedPreferences}
-     */
-    public static boolean isRepeatOne() {
-        return PreferenceManager.getDefaultSharedPreferences(applicationContext)
-                .getInt(MusicPlayer.PREFERENCE_REPEAT, MusicPlayer.REPEAT_NONE) == MusicPlayer.REPEAT_ONE;
     }
 
     /**

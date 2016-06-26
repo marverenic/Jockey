@@ -80,6 +80,22 @@
     <string name="uses_stackoverflow">Additional thanks to many helpful Stack Overflow users who are
         better at programming than I am.</string>
 
+    <!-- Preference keys -->
+    <string name="pref_key_show_first_start" translatable="false">showFirstStart</string>
+    <string name="pref_key_allow_logging" translatable="false">allowAnalytics</string>
+    <string name="pref_key_use_mobile_net" translatable="false">useMobileData</string>
+    <string name="pref_key_switch_to_playing" translatable="false">navigateToNewQueue</string>
+    <string name="pref_key_enable_gestures" translatable="false">enableGestures</string>
+    <string name="pref_key_default_page" translatable="false">landingPage</string>
+    <string name="pref_key_color_primary" translatable="false">Theme.presetColorPrimary</string>
+    <string name="pref_key_color_base" translatable="false">Theme.baseTheme</string>
+    <string name="pref_key_eq_id" translatable="false">Equalizer.presetId</string>
+    <string name="pref_key_eq_enabled" translatable="false">Equalizer.enabled</string>
+    <string name="pref_key_eq_settings" translatable="false">Equalizer.equalizerSettings</string>
+    <string name="pref_key_create_launcher_icon" translatable="false">Action.newShortcut</string>
+    <string name="pref_key_shuffle" translatable="false">Player.shuffle</string>
+    <string name="pref_key_repeat" translatable="false">Player.repeat</string>
+
     <!-- Auto playlist Strings -->
     <string name="playlist_maximum_prefix">Allow no more than</string>
     <string name="playlist_maximum_suffix">songs</string>

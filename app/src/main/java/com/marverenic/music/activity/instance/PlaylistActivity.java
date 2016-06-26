@@ -23,7 +23,6 @@ import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.PlaylistSongSection;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.EnhancedAdapters.DragBackgroundDecoration;
 import com.marverenic.music.view.EnhancedAdapters.DragDividerDecoration;
 import com.marverenic.music.view.EnhancedAdapters.DragDropAdapter;
@@ -135,8 +134,7 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
     }
 
     private void setupRecyclerView() {
-        mRecyclerView.addItemDecoration(
-                new DragBackgroundDecoration(Themes.getBackgroundElevated()));
+        mRecyclerView.addItemDecoration(new DragBackgroundDecoration());
         mRecyclerView.addItemDecoration(new DragDividerDecoration(this, R.id.empty_layout));
         mRecyclerView.addItemDecoration(new DragDropDecoration(
                 (NinePatchDrawable) ContextCompat.getDrawable(this, R.drawable.list_drag_shadow)));

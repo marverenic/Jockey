@@ -1,11 +1,8 @@
 package com.marverenic.music.activity;
 
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
-import android.support.annotation.StyleRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
@@ -18,12 +15,16 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.marverenic.music.BuildConfig;
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.data.annotations.PresetTheme;
+import com.marverenic.music.data.store.PreferencesStore;
+import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.utils.Prefs;
-import com.marverenic.music.utils.Themes;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
+
+import javax.inject.Inject;
 
 public abstract class BaseActivity extends RxAppCompatActivity
         implements PlayerController.UpdateListener, PlayerController.ErrorListener {
@@ -31,9 +32,12 @@ public abstract class BaseActivity extends RxAppCompatActivity
     private static final boolean DEBUG = BuildConfig.DEBUG;
 
     // Used when resuming the Activity to respond to a potential theme change
-    @StyleRes
-    private int themeId;
-    private boolean night;
+    @PresetTheme
+    private int mTheme;
+    private boolean mIsDark;
+
+    @Inject PreferencesStore mPreferencesStore;
+    @Inject ThemeStore mThemeStore;
 
     /**
      * @inheritDoc
@@ -41,49 +45,43 @@ public abstract class BaseActivity extends RxAppCompatActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         if (DEBUG) Log.i(getClass().toString(), "Called onCreate");
+        JockeyApplication.getComponent(this).injectBaseActivity(this);
+
+        mThemeStore.setTheme(this);
+        mIsDark = getResources().getBoolean(R.bool.night);
+        mTheme = mPreferencesStore.getPrimaryColor();
 
         PlayerController.startService(getApplicationContext());
 
-        Themes.setTheme(this);
-        themeId = Themes.getTheme(this);
-        night = getResources().getBoolean(R.bool.night);
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-        // Show a first start confirmation about privacy
-        // This can't be done in the Application class because it's not allowed to show
-        // AlertDialogs. Additionally, this check has to occur in every Activity since Jockey can
-        // be started from sources other than its main Activity.
-
-        final SharedPreferences prefs = Prefs.getPrefs(this);
-
-        if (prefs.getBoolean(Prefs.SHOW_FIRST_START, true)) {
-            final View messageView = getLayoutInflater().inflate(R.layout.alert_pref, null);
-            final TextView message = (TextView) messageView.findViewById(R.id.alertMessage);
-            final CheckBox pref = (CheckBox) messageView.findViewById(R.id.alertPref);
-
-            message.setText(Html.fromHtml(getString(R.string.first_launch_detail)));
-            message.setMovementMethod(LinkMovementMethod.getInstance());
-
-            pref.setChecked(true);
-            pref.setText(R.string.enable_additional_logging_detailed);
-
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.first_launch_title)
-                    .setView(messageView)
-                    .setPositiveButton(R.string.action_agree,
-                            new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            prefs.edit()
-                                    .putBoolean(Prefs.SHOW_FIRST_START, false)
-                                    .putBoolean(Prefs.ALLOW_LOGGING, pref.isChecked())
-                                    .apply();
-                        }
-                    })
-                    .setCancelable(false)
-                    .show();
+        if (mPreferencesStore.showFirstStart()) {
+            showFirstRunDialog();
         }
+    }
+
+    private void showFirstRunDialog() {
+        View messageView = getLayoutInflater().inflate(R.layout.alert_pref, null);
+        TextView message = (TextView) messageView.findViewById(R.id.alertMessage);
+        CheckBox pref = (CheckBox) messageView.findViewById(R.id.alertPref);
+
+        message.setText(Html.fromHtml(getString(R.string.first_launch_detail)));
+        message.setMovementMethod(LinkMovementMethod.getInstance());
+
+        pref.setChecked(true);
+        pref.setText(R.string.enable_additional_logging_detailed);
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.first_launch_title)
+                .setView(messageView)
+                .setPositiveButton(R.string.action_agree,
+                        (dialog, which) -> {
+                            mPreferencesStore.setAllowLogging(pref.isChecked());
+                            mPreferencesStore.setShowFirstStart(false);
+                        })
+                .setCancelable(false)
+                .show();
     }
 
     /**
@@ -103,8 +101,6 @@ public abstract class BaseActivity extends RxAppCompatActivity
                 getSupportActionBar().setDisplayShowHomeEnabled(true);
             }
         }
-
-        themeActivity();
     }
 
     /**
@@ -117,11 +113,13 @@ public abstract class BaseActivity extends RxAppCompatActivity
 
         // If the theme was changed since this Activity was created, or the automatic day/night
         // theme has changed state, recreate this activity
-        Themes.setNight(this);
-        if (themeId != Themes.getTheme(this) || night != getResources().getBoolean(R.bool.night)) {
+        mThemeStore.setTheme(this);
+        boolean themeChanged = mTheme != mPreferencesStore.getPrimaryColor();
+        boolean nightChanged = mIsDark != getResources().getBoolean(R.bool.night);
+
+        if (themeChanged || nightChanged) {
             recreate();
         } else {
-            Themes.setApplicationIcon(this);
             PlayerController.registerUpdateListener(this);
             PlayerController.registerErrorListener(this);
             onUpdate();
@@ -168,22 +166,6 @@ public abstract class BaseActivity extends RxAppCompatActivity
         if (DEBUG) Log.i(getClass().toString(), "Called calledOnBackPressed");
         super.onBackPressed();
         Navigate.back(this);
-    }
-
-    /**
-     * Method to theme elements in the view hierarchy for this activity. By default, this method
-     * sets the app's primary color, app icon, and background color. If the miniplayer is in the
-     * hierarchy, it is also themed.
-     */
-    public void themeActivity() {
-        Themes.updateColors(this);
-        Themes.setApplicationIcon(this);
-
-        if (findViewById(R.id.miniplayer) != null) {
-            View miniplayer = (View) findViewById(R.id.miniplayer).getParent();
-
-            miniplayer.setBackgroundColor(Themes.getBackgroundMiniplayer());
-        }
     }
 
     /**

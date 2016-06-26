@@ -2,6 +2,7 @@ package com.marverenic.music.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
@@ -17,18 +18,27 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.utils.Prefs;
-import com.marverenic.music.utils.Themes;
+import com.marverenic.music.data.store.PreferencesStore;
+import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 
-public class PreferenceFragment extends PreferenceFragmentCompat implements View.OnLongClickListener {
+import javax.inject.Inject;
+
+public class PreferenceFragment extends PreferenceFragmentCompat
+        implements View.OnLongClickListener {
+
+    @Inject PreferencesStore mPrefStore;
+    @Inject ThemeStore mThemeStore;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        JockeyApplication.getComponent(this).inject(this);
+
         addPreferencesFromResource(R.xml.prefs);
     }
 
@@ -53,13 +63,12 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements View
     public RecyclerView onCreateRecyclerView(LayoutInflater inflater, ViewGroup parent,
                                              Bundle savedInstanceState) {
         RecyclerView view = super.onCreateRecyclerView(inflater, parent, savedInstanceState);
-        view.setBackgroundColor(Themes.getBackground());
+        view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.background));
 
         int padding = (int) getResources().getDimension(R.dimen.global_padding);
         view.setPadding(padding, 0, padding, 0);
 
-        view.addItemDecoration(new BackgroundDecoration(
-                Themes.getBackgroundElevated(), android.R.id.title));
+        view.addItemDecoration(new BackgroundDecoration(android.R.id.title));
         view.addItemDecoration(new DividerDecoration(getContext(), android.R.id.title));
 
         return view;
@@ -74,19 +83,22 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements View
 
                 // Override Equalizer preference attachment to add a long click listener
                 // and to change the detail text at runtime
-                if ("com.marverenic.music.fragments.EqualizerFragment"
-                        .equals(getItem(position).getFragment())) {
+                String fragment = getItem(position).getFragment();
+                if ("com.marverenic.music.fragments.EqualizerFragment".equals(fragment)) {
 
                     ViewGroup itemView = (ViewGroup) holder.itemView;
                     TextView title = (TextView) itemView.findViewById(android.R.id.title);
                     TextView detail = (TextView) itemView.findViewById(android.R.id.summary);
 
-                    if (Util.getSystemEqIntent(getContext()) != null && Util.hasEqualizer()) {
+                    boolean hasSystemEq = Util.getSystemEqIntent(getContext()) != null;
+
+                    if (hasSystemEq && Util.hasEqualizer()) {
                         // If we have Jockey's Equalizer and another Equalizer
                         itemView.setOnLongClickListener(PreferenceFragment.this);
                         detail.setText(R.string.equalizer_more_options_detail);
                         detail.setVisibility(View.VISIBLE);
-                    } else if (Util.getSystemEqIntent(getContext()) == null && !Util.hasEqualizer()) {
+
+                    } else if (hasSystemEq && !Util.hasEqualizer()) {
                         // If we don't have any equalizers
                         detail.setText(R.string.equalizerUnsupported);
                         detail.setVisibility(View.VISIBLE);
@@ -136,8 +148,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements View
                 .equals(preference.getFragment())) {
             Intent eqIntent = Util.getSystemEqIntent(getActivity());
 
-            if (eqIntent != null
-                    && !Prefs.getPrefs(getActivity()).getBoolean(Prefs.EQ_ENABLED, false)) {
+            if (eqIntent != null && !mPrefStore.getEqualizerEnabled()) {
                 // If the system has an equalizer implementation already in place, use it
                 // to avoid weird problems and conflicts that can cause unexpected behavior
 
@@ -159,13 +170,13 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements View
                         .show();
             }
             return true;
-        } else if (preference.getKey().equals(Prefs.ADD_SHORTCUT)) {
+        } else if (preference.getKey().equals(getString(R.string.pref_key_create_launcher_icon))) {
             new AlertDialog.Builder(getActivity())
                     .setTitle(R.string.add_shortcut)
                     .setMessage(R.string.add_shortcut_description)
                     .setPositiveButton(R.string.action_add,
                             (dialog, which) -> {
-                                Themes.updateLauncherIcon(getActivity());
+                                mThemeStore.createThemedLauncherIcon();
                             })
                     .setNegativeButton(R.string.action_cancel, null)
                     .show();

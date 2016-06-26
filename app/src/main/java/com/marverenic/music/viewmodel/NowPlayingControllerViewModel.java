@@ -28,11 +28,11 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.utils.Themes;
 
 import java.util.concurrent.TimeUnit;
 
@@ -51,6 +51,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
     private FragmentManager mFragmentManager;
 
     @Inject MusicStore mMusicStore;
+    @Inject ThemeStore mThemeStore;
 
     @Nullable
     private Song mSong;
@@ -198,7 +199,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
 
     @ColorInt
     public int getSeekBarHeadTint() {
-        return Themes.getAccent();
+        return mThemeStore.getAccentColor();
     }
 
     @Bindable

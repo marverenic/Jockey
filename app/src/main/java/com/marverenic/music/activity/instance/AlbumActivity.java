@@ -17,7 +17,6 @@ import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.SongSection;
-import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
@@ -100,7 +99,7 @@ public class AlbumActivity extends BaseActivity {
 
         RecyclerView list = (RecyclerView) findViewById(R.id.list);
         list.setAdapter(mAdapter);
-        list.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
+        list.addItemDecoration(new BackgroundDecoration());
         list.addItemDecoration(new DividerDecoration(this, R.id.empty_layout));
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);

@@ -21,6 +21,7 @@
 -keep interface android.support.design.widget.** { *; }
 -dontwarn android.support.design.**
 -keep class android.support.v7.preference.PreferenceCategoryCompat { *; }
+-keep class android.support.v7.preference.IntListPreference { *; }
 
 # Remove logcat logging
 -assumenosideeffects class android.util.Log {

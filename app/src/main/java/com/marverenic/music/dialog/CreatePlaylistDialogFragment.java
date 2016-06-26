@@ -20,9 +20,9 @@ import android.widget.Button;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.PlaylistStore;
+import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.utils.Themes;
 
 import java.util.List;
 
@@ -34,6 +34,7 @@ public class CreatePlaylistDialogFragment extends DialogFragment implements Text
     private static final String SAVED_SNACKBAR_VIEW = "AppendPlaylistDialogFragment.Snackbar";
 
     @Inject PlaylistStore mPlaylistStore;
+    @Inject ThemeStore mThemeStore;
 
     private AlertDialog mDialog;
     private TextInputLayout mInputLayout;
@@ -142,7 +143,7 @@ public class CreatePlaylistDialogFragment extends DialogFragment implements Text
             button.setTextColor(ResourcesCompat.getColor(getResources(),
                     R.color.secondary_text_disabled, getActivity().getTheme()));
         } else {
-            button.setTextColor(Themes.getAccent());
+            button.setTextColor(mThemeStore.getAccentColor());
         }
     }
 

@@ -3,7 +3,6 @@ package com.marverenic.music.fragments;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.audiofx.AudioEffect;
 import android.media.audiofx.Equalizer;
 import android.os.Bundle;
@@ -25,13 +24,18 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.utils.Prefs;
+import com.marverenic.music.data.store.PreferencesStore;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Util;
 
-public class EqualizerFragment extends Fragment implements CompoundButton.OnCheckedChangeListener ,
-        FragmentManager.OnBackStackChangedListener{
+import javax.inject.Inject;
+
+public class EqualizerFragment extends Fragment implements CompoundButton.OnCheckedChangeListener,
+        FragmentManager.OnBackStackChangedListener {
+
+    @Inject PreferencesStore mPrefStore;
 
     private Equalizer equalizer;
     private EqualizerFrame[] sliders;
@@ -43,6 +47,8 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().getSupportFragmentManager().addOnBackStackChangedListener(this);
+
+        JockeyApplication.getComponent(this).inject(this);
     }
 
     @Override
@@ -77,8 +83,6 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
         int audioSession = PlayerController.getAudioSessionId();
         // Make sure that the audio session is valid before displaying the equalizer
         if (audioSession != 0) {
-            SharedPreferences prefs = Prefs.getPrefs(getActivity());
-
             equalizer = new Equalizer(0, PlayerController.getAudioSessionId());
             int bandCount = equalizer.getNumberOfBands();
 
@@ -86,7 +90,7 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
 
             PresetAdapter presetAdapter = new PresetAdapter(getActivity(), equalizer, sliders);
             presetSpinner.setAdapter(presetAdapter);
-            presetSpinner.setSelection(prefs.getInt(Prefs.EQ_PRESET_ID, -1) + 1);
+            presetSpinner.setSelection(mPrefStore.getEqualizerPresetId() + 1);
             presetSpinner.setOnItemSelectedListener(presetAdapter);
 
             for (short i = 0; i < bandCount; i++) {
@@ -95,7 +99,7 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
                         i, presetSpinner);
             }
 
-            setEqualizerEnabled(prefs.getBoolean(Prefs.EQ_ENABLED, false));
+            setEqualizerEnabled(mPrefStore.getEqualizerEnabled());
         }
 
         // If this device already has an application that can handle equalizers system-wide, inform
@@ -159,20 +163,13 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
                 anim.setInterpolator(getContext(), android.R.anim.decelerate_interpolator);
                 equalizerToggle.startAnimation(anim);
 
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        toolbar.removeView(equalizerToggle);
-                    }
-                }, duration);
+                new Handler().postDelayed(() -> toolbar.removeView(equalizerToggle), duration);
             }
 
             if (equalizer != null) {
-                Prefs.getPrefs(getActivity()).edit()
-                        .putString(Prefs.EQ_SETTINGS, equalizer.getProperties().toString())
-                        .putBoolean(Prefs.EQ_ENABLED, equalizerToggle.isChecked())
-                        .putInt(Prefs.EQ_PRESET_ID, (int) presetSpinner.getSelectedItemId())
-                        .apply();
+                mPrefStore.setEqualizerSettings(equalizer.getProperties());
+                mPrefStore.setEqualizerEnabled(equalizerToggle.isEnabled());
+                mPrefStore.setEqualizerPresetId((int) presetSpinner.getSelectedItemId());
 
                 equalizer.release();
             }

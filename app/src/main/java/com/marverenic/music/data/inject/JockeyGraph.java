@@ -1,6 +1,8 @@
 package com.marverenic.music.data.inject;
 
+import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.activity.LibraryActivity;
+import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.activity.SearchActivity;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
@@ -12,8 +14,11 @@ import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
 import com.marverenic.music.fragments.AlbumFragment;
 import com.marverenic.music.fragments.ArtistFragment;
+import com.marverenic.music.fragments.EqualizerFragment;
 import com.marverenic.music.fragments.GenreFragment;
+import com.marverenic.music.fragments.MiniplayerFragment;
 import com.marverenic.music.fragments.PlaylistFragment;
+import com.marverenic.music.fragments.PreferenceFragment;
 import com.marverenic.music.fragments.SongFragment;
 import com.marverenic.music.instances.section.RuleHeaderSingleton;
 import com.marverenic.music.player.MusicPlayer;
@@ -26,8 +31,11 @@ import com.marverenic.music.viewmodel.SongViewModel;
 
 public interface JockeyGraph {
 
+    void injectBaseActivity(BaseActivity baseActivity);
+
     void inject(LibraryActivity activity);
     void inject(SearchActivity activity);
+    void inject(NowPlayingActivity activity);
     void inject(AlbumActivity activity);
     void inject(ArtistActivity activity);
     void inject(GenreActivity activity);
@@ -40,6 +48,9 @@ public interface JockeyGraph {
     void inject(ArtistFragment fragment);
     void inject(PlaylistFragment fragment);
     void inject(GenreFragment fragment);
+    void inject(EqualizerFragment fragment);
+    void inject(PreferenceFragment fragment);
+    void inject(MiniplayerFragment fragment);
 
     void inject(CreatePlaylistDialogFragment dialogFragment);
     void inject(AppendPlaylistDialogFragment dialogFragment);

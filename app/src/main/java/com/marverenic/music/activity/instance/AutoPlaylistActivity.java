@@ -18,7 +18,6 @@ import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.SongSection;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.utils.Themes;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
@@ -87,7 +86,7 @@ public class AutoPlaylistActivity extends BaseActivity
     }
 
     private void setupRecyclerView() {
-        mRecyclerView.addItemDecoration(new BackgroundDecoration(Themes.getBackgroundElevated()));
+        mRecyclerView.addItemDecoration(new BackgroundDecoration());
         mRecyclerView.addItemDecoration(new DividerDecoration(this, R.id.empty_layout));
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);

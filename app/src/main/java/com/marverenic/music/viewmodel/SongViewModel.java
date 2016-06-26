@@ -15,11 +15,11 @@ import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.utils.Prefs;
 
 import java.util.List;
 
@@ -31,6 +31,7 @@ public class SongViewModel extends BaseObservable {
     private static final String TAG_PLAYLIST_DIALOG = "SongViewModel.PlaylistDialog";
 
     @Inject MusicStore mMusicStore;
+    @Inject PreferencesStore mPrefStore;
 
     private Context mContext;
     private FragmentManager mFragmentManager;
@@ -85,8 +86,7 @@ public class SongViewModel extends BaseObservable {
             PlayerController.setQueue(mSongList, mIndex);
             PlayerController.begin();
 
-            if (Prefs.getPrefs(mContext)
-                    .getBoolean(Prefs.SWITCH_TO_PLAYING, true)) {
+            if (mPrefStore.openNowPlayingOnNewQueue()) {
                 Navigate.to(mContext, NowPlayingActivity.class);
             }
         };
