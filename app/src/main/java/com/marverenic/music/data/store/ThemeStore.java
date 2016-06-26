@@ -8,8 +8,6 @@ public interface ThemeStore {
 
     @ColorInt int getPrimaryColor();
     @ColorInt int getAccentColor();
-    @ColorInt int getBackgroundColor();
-    @ColorInt int getElevatedBackgroundColor();
 
     void setTheme(AppCompatActivity activity);
 

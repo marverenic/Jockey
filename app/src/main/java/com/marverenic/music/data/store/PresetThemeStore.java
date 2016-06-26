@@ -96,16 +96,6 @@ public class PresetThemeStore implements ThemeStore {
     }
 
     @Override
-    public int getBackgroundColor() {
-        return ContextCompat.getColor(mContext, R.color.background);
-    }
-
-    @Override
-    public int getElevatedBackgroundColor() {
-        return ContextCompat.getColor(mContext, R.color.background_elevated);
-    }
-
-    @Override
     public void setTheme(AppCompatActivity activity) {
         applyNightMode(activity);
         activity.setTheme(getThemeId());
