@@ -152,16 +152,14 @@ public final class MediaStoreUtil {
         return songs;
     }
 
-    public static List<Album> getAllAlbums(Context context) {
+    public static List<Album> getAlbums(Context context, @Nullable String selection,
+                                        @Nullable String[] selectionArgs) {
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                ALBUM_PROJECTION,
-                null,
-                null,
-                MediaStore.Audio.Albums.ALBUM + " ASC");
+                ALBUM_PROJECTION, selection, selectionArgs, null);
 
         if (cur == null) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
         List<Album> albums = Album.buildAlbumList(cur, context.getResources());
@@ -303,21 +301,10 @@ public final class MediaStoreUtil {
     }
 
     public static List<Album> getArtistAlbums(Context context, long artistId) {
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                ALBUM_PROJECTION,
-                MediaStore.Audio.AudioColumns.ARTIST_ID + " = " + artistId,
-                null, null);
+        String selection = MediaStore.Audio.AudioColumns.ARTIST_ID + " = ?";
+        String[] selectionArgs = {Long.toString(artistId)};
 
-        if (cur == null) {
-            return Collections.emptyList();
-        }
-
-        List<Album> albums = Album.buildAlbumList(cur, context.getResources());
-        Collections.sort(albums);
-        cur.close();
-
-        return albums;
+        return getAlbums(context, selection, selectionArgs);
     }
 
     public static List<Song> getPlaylistSongs(Context context, Playlist playlist) {
