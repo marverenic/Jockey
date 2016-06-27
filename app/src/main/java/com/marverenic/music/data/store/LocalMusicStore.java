@@ -41,7 +41,7 @@ public class LocalMusicStore implements MusicStore {
                             mAlbums.onNext(getAllAlbums());
                         }
                         if (mGenres != null) {
-                            mGenres.onNext(MediaStoreUtil.getAllGenres(mContext));
+                            mGenres.onNext(getAllGenres());
                         }
                     }
                     return granted;
@@ -115,13 +115,17 @@ public class LocalMusicStore implements MusicStore {
 
             MediaStoreUtil.getPermission(mContext).subscribe(granted -> {
                 if (granted) {
-                    mGenres.onNext(MediaStoreUtil.getAllGenres(mContext));
+                    mGenres.onNext(getAllGenres());
                 } else {
                     mGenres.onNext(Collections.emptyList());
                 }
             });
         }
         return mGenres;
+    }
+
+    private List<Genre> getAllGenres() {
+        return MediaStoreUtil.getGenres(mContext, null, null);
     }
 
     @Override

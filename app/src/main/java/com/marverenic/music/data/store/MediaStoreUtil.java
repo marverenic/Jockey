@@ -187,21 +187,18 @@ public final class MediaStoreUtil {
         return artists;
     }
 
-    public static List<Genre> getAllGenres(Context context) {
-        List<Genre> genres = new ArrayList<>();
+    public static List<Genre> getGenres(Context context, @Nullable String selection,
+                                        @Nullable String[] selectionArgs) {
 
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI,
-                GENRE_PROJECTION,
-                null,
-                null,
-                MediaStore.Audio.Genres.NAME + " ASC");
+                GENRE_PROJECTION, selection, selectionArgs, null);
 
         if (cur == null) {
-            return genres;
+            return Collections.emptyList();
         }
 
-        genres = Genre.buildGenreList(context, cur);
+        List<Genre> genres = Genre.buildGenreList(context, cur);
         Collections.sort(genres);
         cur.close();
 
