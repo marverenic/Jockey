@@ -169,16 +169,15 @@ public final class MediaStoreUtil {
         return albums;
     }
 
-    public static List<Artist> getAllArtists(Context context) {
+    public static List<Artist> getArtists(Context context, @Nullable String selection,
+                                          @Nullable String[] selectionArgs) {
+
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
-                ARTIST_PROJECTION,
-                null,
-                null,
-                MediaStore.Audio.Artists.ARTIST + " ASC");
+                ARTIST_PROJECTION, selection, selectionArgs, null);
 
         if (cur == null) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
         List<Artist> artists = Artist.buildArtistList(cur, context.getResources());
