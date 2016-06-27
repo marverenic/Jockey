@@ -16,14 +16,16 @@ import rx.subjects.BehaviorSubject;
 public class LocalMusicStore implements MusicStore {
 
     private Context mContext;
+    private PreferencesStore mPreferencesStore;
 
     private BehaviorSubject<List<Song>> mSongs;
     private BehaviorSubject<List<Album>> mAlbums;
     private BehaviorSubject<List<Artist>> mArtists;
     private BehaviorSubject<List<Genre>> mGenres;
 
-    public LocalMusicStore(Context context) {
+    public LocalMusicStore(Context context, PreferencesStore preferencesStore) {
         mContext = context;
+        mPreferencesStore = preferencesStore;
     }
 
     @Override
