@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,8 +37,12 @@ import com.marverenic.music.view.FABMenu;
 
 import javax.inject.Inject;
 
+import static android.support.design.widget.Snackbar.LENGTH_LONG;
+import static android.support.design.widget.Snackbar.LENGTH_SHORT;
+
 public class LibraryActivity extends BaseActivity implements View.OnClickListener {
 
+    private static final String TAG = "LibraryActivity";
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
 
     @Inject MusicStore mMusicStore;
@@ -100,36 +105,7 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
                 Navigate.to(this, SettingsActivity.class);
                 return true;
             case R.id.action_refresh_library:
-                if (hasRwPermission()) {
-                    mMusicStore.refresh();
-
-                    Snackbar
-                            .make(
-                                    findViewById(R.id.list),
-                                    R.string.confirm_refresh_library,
-                                    Snackbar.LENGTH_SHORT)
-                            .show();
-                } else {
-                    Snackbar
-                            .make(
-                                    findViewById(R.id.list),
-                                    R.string.message_refresh_library_no_permission,
-                                    Snackbar.LENGTH_LONG)
-                            .setAction(
-                                    R.string.action_open_settings,
-                                    v -> {
-                                        Intent intent = new Intent()
-                                                .setAction(
-                                                        Settings.
-                                                                ACTION_APPLICATION_DETAILS_SETTINGS)
-                                                .setData(Uri.fromParts(
-                                                        "package",
-                                                        BuildConfig.APPLICATION_ID,
-                                                        null));
-                                        startActivity(intent);
-                                    })
-                            .show();
-                }
+                refreshLibrary();
                 return true;
             case R.id.search:
                 Navigate.to(this, SearchActivity.class);
@@ -140,6 +116,36 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void refreshLibrary() {
+        mMusicStore.refresh().subscribe(
+                hasPermission -> {
+                    if (hasPermission) {
+                        View view = findViewById(R.id.list);
+                        Snackbar.make(view, R.string.confirm_refresh_library, LENGTH_SHORT).show();
+                    } else {
+                        showPermissionSnackbar();
+                    }
+                },
+                throwable -> {
+                    Log.e(TAG, "Failed to refresh library", throwable);
+                });
+    }
+
+    private void showPermissionSnackbar() {
+        View view = findViewById(R.id.list);
+        Snackbar.make(view, R.string.message_refresh_library_no_permission, LENGTH_LONG)
+                .setAction(R.string.action_open_settings,
+                        v -> {
+                            Intent intent = new Intent();
+                            Uri uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
+
+                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            intent.setData(uri);
+                            startActivity(intent);
+                        })
+                .show();
     }
 
     @Override
