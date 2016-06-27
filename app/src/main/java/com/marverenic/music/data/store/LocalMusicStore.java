@@ -1,6 +1,7 @@
 package com.marverenic.music.data.store;
 
 import android.content.Context;
+import android.provider.MediaStore;
 
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
@@ -67,7 +68,60 @@ public class LocalMusicStore implements MusicStore {
     }
 
     private List<Song> getAllSongs() {
-        return MediaStoreUtil.getSongs(mContext, null, null);
+        String selection;
+
+        String includeSelection = getDirectoryInclusionSelection();
+        String excludeSelection = getDirectoryExclusionSelection();
+
+        if (includeSelection != null && excludeSelection != null) {
+            selection = "(" + includeSelection + ") AND (" + excludeSelection + ")";
+        } else if (includeSelection != null) {
+            selection = includeSelection;
+        } else if (excludeSelection != null) {
+            selection = excludeSelection;
+        } else {
+            selection = null;
+        }
+
+        return MediaStoreUtil.getSongs(mContext, selection, null);
+    }
+
+    private String getDirectoryInclusionSelection() {
+        if (mPreferencesStore.getIncludedDirectories().isEmpty()) {
+            return null;
+        }
+
+        StringBuilder builder = new StringBuilder();
+
+        for (String directory : mPreferencesStore.getIncludedDirectories()) {
+            builder.append(MediaStore.Audio.Media.DATA)
+                    .append(" LIKE \'%").append(directory).append("%\'");
+
+            builder.append(" OR ");
+        }
+
+        if (builder.length() > 0) {
+            builder.setLength(builder.length() - 5);
+        }
+        return builder.toString();
+    }
+
+    private String getDirectoryExclusionSelection() {
+        if (mPreferencesStore.getExcludedDirectories().isEmpty()) {
+            return null;
+        }
+
+        StringBuilder builder = new StringBuilder();
+
+        for (String directory : mPreferencesStore.getExcludedDirectories()) {
+            builder.append(MediaStore.Audio.Media.DATA)
+                    .append(" NOT LIKE \'%").append(directory).append("%\'");
+
+            builder.append(" AND ");
+        }
+
+        builder.setLength(builder.length() - 5);
+        return builder.toString();
     }
 
     @Override
