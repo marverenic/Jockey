@@ -129,16 +129,20 @@ public final class MediaStoreUtil {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
-    public static List<Song> getAllSongs(Context context) {
+    public static List<Song> getSongs(Context context, @Nullable String selection,
+                                      @Nullable String[] selectionArgs) {
+
+        String musicSelection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
+        if (selection != null) {
+            musicSelection += " AND " + selection;
+        }
+
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                SONG_PROJECTION,
-                MediaStore.Audio.Media.IS_MUSIC + "!= 0",
-                null,
-                MediaStore.Audio.Media.TITLE + " ASC");
+                SONG_PROJECTION, musicSelection, selectionArgs, null);
 
         if (cur == null) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
         List<Song> songs = Song.buildSongList(cur, context.getResources());
@@ -275,23 +279,12 @@ public final class MediaStoreUtil {
     }
 
     public static List<Song> getAlbumSongs(Context context, long albumId) {
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                SONG_PROJECTION,
-                MediaStore.Audio.Media.IS_MUSIC + " != 0 "
-                        + " AND " + MediaStore.Audio.AlbumColumns.ALBUM_ID + " = " + albumId,
-                null,
-                MediaStore.Audio.Media.TITLE + " ASC");
+        String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0  AND "
+                + MediaStore.Audio.Media.ALBUM_ID + " = ";
 
-        if (cur == null) {
-            return Collections.emptyList();
-        }
+        String[] selectionArgs = {Long.toString(albumId)};
 
-        List<Song> songs = Song.buildSongList(cur, context.getResources());
-        Collections.sort(songs);
-        cur.close();
-
-        return songs;
+        return getSongs(context, selection, selectionArgs);
     }
 
     public static List<Song> getArtistSongs(Context context, Artist artist) {
@@ -299,22 +292,10 @@ public final class MediaStoreUtil {
     }
 
     public static List<Song> getArtistSongs(Context context, long artistId) {
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                SONG_PROJECTION,
-                MediaStore.Audio.Media.IS_MUSIC  + " != 0 "
-                        + " AND " + MediaStore.Audio.AudioColumns.ARTIST_ID + " = " + artistId,
-                null, null);
+        String selection = MediaStore.Audio.Media.ARTIST_ID + " = ?";
+        String[] selectionArgs = {Long.toString(artistId)};
 
-        if (cur == null) {
-            return Collections.emptyList();
-        }
-
-        List<Song> songs = Song.buildSongList(cur, context.getResources());
-        Collections.sort(songs);
-        cur.close();
-
-        return songs;
+        return getSongs(context, selection, selectionArgs);
     }
 
     public static List<Album> getArtistAlbums(Context context, Artist artist) {
@@ -389,7 +370,7 @@ public final class MediaStoreUtil {
                 new String[]{artistName.toUpperCase()}, null);
 
         if (cur == null) {
-             return null;
+            return null;
         }
 
         Artist found = (cur.moveToFirst()) ? new Artist(context, cur) : null;
