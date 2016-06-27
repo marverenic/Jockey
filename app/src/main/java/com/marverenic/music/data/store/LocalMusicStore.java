@@ -100,9 +100,7 @@ public class LocalMusicStore implements MusicStore {
             builder.append(" OR ");
         }
 
-        if (builder.length() > 0) {
-            builder.setLength(builder.length() - 4);
-        }
+        builder.setLength(builder.length() - 4);
         return builder.toString();
     }
 
