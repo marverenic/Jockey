@@ -15,6 +15,7 @@ import com.marverenic.music.R;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DirectoryDialogFragment extends DialogFragment {
@@ -116,6 +117,9 @@ public class DirectoryDialogFragment extends DialogFragment {
                 mSubDirectories.add(f);
             }
         }
+
+        Collections.sort(mSubDirectories,
+                (f1, f2) -> f1.getAbsolutePath().compareToIgnoreCase(f2.getAbsolutePath()));
 
         mSubDirectoryNames = new String[mSubDirectories.size()];
         for (int i = 0; i < mSubDirectoryNames.length; i++) {
