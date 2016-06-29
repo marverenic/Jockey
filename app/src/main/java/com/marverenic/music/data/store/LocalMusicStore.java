@@ -69,6 +69,10 @@ public class LocalMusicStore implements MusicStore {
     }
 
     private List<Song> getAllSongs() {
+        return MediaStoreUtil.getSongs(mContext, getDirectoryInclusionExclusionSelection(), null);
+    }
+
+    private String getDirectoryInclusionExclusionSelection() {
         String selection;
 
         String includeSelection = getDirectoryInclusionSelection();
@@ -84,7 +88,7 @@ public class LocalMusicStore implements MusicStore {
             selection = null;
         }
 
-        return MediaStoreUtil.getSongs(mContext, selection, null);
+        return selection;
     }
 
     private String getDirectoryInclusionSelection() {
