@@ -8,6 +8,7 @@ import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Genre;
 import com.marverenic.music.instances.Song;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -139,7 +140,7 @@ public class LocalMusicStore implements MusicStore {
     }
 
     private List<Album> getAllAlbums() {
-        return MediaStoreUtil.getAlbums(mContext, null, null);
+        return filterAlbums(MediaStoreUtil.getAlbums(mContext, null, null));
     }
 
     @Override
@@ -180,6 +181,36 @@ public class LocalMusicStore implements MusicStore {
 
     private List<Genre> getAllGenres() {
         return MediaStoreUtil.getGenres(mContext, null, null);
+    }
+
+    private boolean shouldFilterMedia() {
+        boolean notIncludingFolders = mPreferencesStore.getIncludedDirectories().isEmpty();
+        boolean notExcludingFolders = mPreferencesStore.getExcludedDirectories().isEmpty();
+
+        return notExcludingFolders && notIncludingFolders;
+    }
+
+    private List<Album> filterAlbums(List<Album> albumsToFilter) {
+        if (shouldFilterMedia()) {
+            return albumsToFilter;
+        }
+
+        if (mSongs == null || !mSongs.hasValue()) {
+            getSongs();
+        }
+
+        List<Album> filteredAlbums = new ArrayList<>();
+
+        for (Album album : albumsToFilter) {
+            for (Song song : mSongs.getValue()) {
+                if (album.getAlbumId() == song.getAlbumId()) {
+                    filteredAlbums.add(album);
+                    break;
+                }
+            }
+        }
+
+        return filteredAlbums;
     }
 
     @Override
