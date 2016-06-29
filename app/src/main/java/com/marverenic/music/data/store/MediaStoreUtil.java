@@ -417,22 +417,10 @@ public final class MediaStoreUtil {
             return Collections.emptyList();
         }
 
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                SONG_PROJECTION,
-                "UPPER(" + MediaStore.Audio.Media.TITLE + ") LIKE ?",
-                new String[]{"%" + query.toUpperCase() + "%"}, null);
+        String whereClause = "UPPER(" + MediaStore.Audio.Media.TITLE + ") LIKE ?";
+        String[] args = {"%" + query.toUpperCase() + "%"};
 
-        if (cur == null) {
-            return Collections.emptyList();
-        }
-
-        List<Song> found = Song.buildSongList(cur, context.getResources());
-        Collections.sort(found);
-
-        cur.close();
-
-        return found;
+        return getSongs(context, whereClause, args);
     }
 
     public static List<Artist> searchForArtists(Context context, String query) {
@@ -440,22 +428,10 @@ public final class MediaStoreUtil {
             return Collections.emptyList();
         }
 
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
-                ARTIST_PROJECTION,
-                "UPPER(" + MediaStore.Audio.Artists.ARTIST + ") LIKE ?",
-                new String[]{"%" + query.toUpperCase() + "%"}, null);
+        String whereClause = "UPPER(" + MediaStore.Audio.Artists.ARTIST + ") LIKE ?";
+        String[] args = {"%" + query.toUpperCase() + "%"};
 
-        if (cur == null) {
-            return Collections.emptyList();
-        }
-
-        List<Artist> found = Artist.buildArtistList(cur, context.getResources());
-        Collections.sort(found);
-
-        cur.close();
-
-        return found;
+        return getArtists(context, whereClause, args);
     }
 
     public static List<Album> searchForAlbums(Context context, String query) {
@@ -463,22 +439,10 @@ public final class MediaStoreUtil {
             return Collections.emptyList();
         }
 
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                ALBUM_PROJECTION,
-                "UPPER(" + MediaStore.Audio.Albums.ALBUM + ") LIKE ?",
-                new String[]{"%" + query.toUpperCase() + "%"}, null);
+        String whereClause = "UPPER(" + MediaStore.Audio.Albums.ALBUM + ") LIKE ?";
+        String[] args = {"%" + query.toUpperCase() + "%"};
 
-        if (cur == null) {
-            return Collections.emptyList();
-        }
-
-        List<Album> found = Album.buildAlbumList(cur, context.getResources());
-        Collections.sort(found);
-
-        cur.close();
-
-        return found;
+        return getAlbums(context, whereClause, args);
     }
 
     public static List<Genre> searchForGenres(Context context, String query) {
@@ -486,22 +450,10 @@ public final class MediaStoreUtil {
             return Collections.emptyList();
         }
 
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI,
-                GENRE_PROJECTION,
-                "UPPER(" + MediaStore.Audio.Genres.NAME + ") LIKE ?",
-                new String[]{"%" + query.toUpperCase() + "%"}, null);
+        String whereClause = "UPPER(" + MediaStore.Audio.Genres.NAME + ") LIKE ?";
+        String[] args = {"%" + query.toUpperCase() + "%"};
 
-        if (cur == null) {
-            return Collections.emptyList();
-        }
-
-        List<Genre> found = Genre.buildGenreList(context, cur);
-        Collections.sort(found);
-
-        cur.close();
-
-        return found;
+        return getGenres(context, whereClause, args);
     }
 
     public static List<Playlist> searchForPlaylists(Context context, String query) {
@@ -509,22 +461,10 @@ public final class MediaStoreUtil {
             return Collections.emptyList();
         }
 
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
-                PLAYLIST_PROJECTION,
-                "UPPER(" + MediaStore.Audio.Playlists.NAME + ") LIKE ?",
-                new String[]{"%" + query.toUpperCase() + "%"}, null);
+        String whereClause = "UPPER(" + MediaStore.Audio.Playlists.NAME + ") LIKE ?";
+        String[] args = {"%" + query.toUpperCase() + "%"};
 
-        if (cur == null) {
-            return Collections.emptyList();
-        }
-
-        List<Playlist> found = Playlist.buildPlaylistList(cur);
-        Collections.sort(found);
-
-        cur.close();
-
-        return found;
+        return getPlaylists(context, whereClause, args);
     }
 
     public static Playlist createPlaylist(Context context, String playlistName,
