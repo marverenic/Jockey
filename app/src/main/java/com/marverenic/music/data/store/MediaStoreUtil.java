@@ -206,7 +206,7 @@ public final class MediaStoreUtil {
     }
 
     public static List<Playlist> getAllPlaylists(Context context) {
-        List<Playlist> playlists = getMediaStorePlaylists(context);
+        List<Playlist> playlists = getPlaylists(context, null, null);
 
         for (Playlist p : getAutoPlaylists(context)) {
             if (playlists.remove(p)) {
@@ -224,16 +224,15 @@ public final class MediaStoreUtil {
         return playlists;
     }
 
-    public static List<Playlist> getMediaStorePlaylists(Context context) {
+    public static List<Playlist> getPlaylists(Context context, @Nullable String selection,
+                                              @Nullable String[] selectionArgs) {
+
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
-                PLAYLIST_PROJECTION,
-                null,
-                null,
-                MediaStore.Audio.Playlists.NAME + " ASC");
+                PLAYLIST_PROJECTION, selection, selectionArgs, null);
 
         if (cur == null) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
         List<Playlist> playlists = Playlist.buildPlaylistList(cur);
