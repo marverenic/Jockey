@@ -160,7 +160,7 @@ public class LocalMusicStore implements MusicStore {
     }
 
     private List<Artist> getAllArtists() {
-        return MediaStoreUtil.getArtists(mContext, null, null);
+        return filterArtists(MediaStoreUtil.getArtists(mContext, null, null));
     }
 
     @Override
@@ -211,6 +211,29 @@ public class LocalMusicStore implements MusicStore {
         }
 
         return filteredAlbums;
+    }
+
+    private List<Artist> filterArtists(List<Artist> artistsToFilter) {
+        if (shouldFilterMedia()) {
+            return artistsToFilter;
+        }
+
+        if (mSongs == null || !mSongs.hasValue()) {
+            getSongs();
+        }
+
+        List<Artist> filteredArtists = new ArrayList<>();
+
+        for (Artist artist : artistsToFilter) {
+            for (Song song : mSongs.getValue()) {
+                if (artist.getArtistId() == song.getArtistId()) {
+                    filteredArtists.add(artist);
+                    break;
+                }
+            }
+        }
+
+        return filteredArtists;
     }
 
     @Override
