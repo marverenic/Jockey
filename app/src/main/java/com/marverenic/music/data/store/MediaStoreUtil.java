@@ -129,17 +129,15 @@ public final class MediaStoreUtil {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
-    public static List<Song> getSongs(Context context, @Nullable String selection,
+    public static List<Song> getSongs(Context context, Uri uri, @Nullable String selection,
                                       @Nullable String[] selectionArgs) {
-
         String musicSelection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
         if (selection != null) {
             musicSelection += " AND " + selection;
         }
 
         Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                SONG_PROJECTION, musicSelection, selectionArgs, null);
+                uri, SONG_PROJECTION, musicSelection, selectionArgs, null);
 
         if (cur == null) {
             return Collections.emptyList();
@@ -150,6 +148,12 @@ public final class MediaStoreUtil {
         cur.close();
 
         return songs;
+    }
+
+    public static List<Song> getSongs(Context context, @Nullable String selection,
+                                      @Nullable String[] selectionArgs) {
+        return getSongs(context, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                selection, selectionArgs);
     }
 
     public static List<Album> getAlbums(Context context, @Nullable String selection,
@@ -323,25 +327,23 @@ public final class MediaStoreUtil {
     }
 
     public static List<Song> getGenreSongs(Context context, Genre genre) {
-        return getGenreSongs(context, genre.getGenreId());
+        return getGenreSongs(context, genre, null, null);
+    }
+
+    public static List<Song> getGenreSongs(Context context, Genre genre, @Nullable String selection,
+                                           @Nullable String[] selectionArgs) {
+        return getGenreSongs(context, genre.getGenreId(), selection, selectionArgs);
     }
 
     public static List<Song> getGenreSongs(Context context, long genreId) {
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Genres.Members.getContentUri("external", genreId),
-                SONG_PROJECTION,
-                MediaStore.Audio.Media.IS_MUSIC + " != 0",
-                null, null);
+        return getGenreSongs(context, genreId, null, null);
+    }
 
-        if (cur == null) {
-            return Collections.emptyList();
-        }
-
-        List<Song> songs = Song.buildSongList(cur, context.getResources());
-        Collections.sort(songs);
-        cur.close();
-
-        return songs;
+    public static List<Song> getGenreSongs(Context context, long genreId,
+                                           @Nullable String selection,
+                                           @Nullable String[] selectionArgs) {
+        return getSongs(context, MediaStore.Audio.Genres.Members.getContentUri("external", genreId),
+                selection, selectionArgs);
     }
 
     public static Artist findArtistByName(Context context, String artistName) {

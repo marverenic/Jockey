@@ -184,7 +184,7 @@ public class LocalMusicStore implements MusicStore {
     }
 
     private List<Genre> getAllGenres() {
-        return MediaStoreUtil.getGenres(mContext, null, null);
+        return filterGenres(MediaStoreUtil.getGenres(mContext, null, null));
     }
 
     private boolean shouldFilterMedia() {
@@ -238,6 +238,25 @@ public class LocalMusicStore implements MusicStore {
         }
 
         return filteredArtists;
+    }
+
+    private List<Genre> filterGenres(List<Genre> genresToFilter) {
+        if (shouldFilterMedia()) {
+            return genresToFilter;
+        }
+
+        List<Genre> filteredGenres = new ArrayList<>();
+
+        for (Genre genre : genresToFilter) {
+            boolean hasSongs = !MediaStoreUtil.getGenreSongs(mContext, genre,
+                    getDirectoryInclusionExclusionSelection(), null).isEmpty();
+
+            if (hasSongs) {
+                filteredGenres.add(genre);
+            }
+        }
+
+        return filteredGenres;
     }
 
     @Override
