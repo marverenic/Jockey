@@ -274,7 +274,15 @@ public class LocalMusicStore implements MusicStore {
 
     @Override
     public Observable<List<Song>> getSongs(Album album) {
-        return Observable.just(MediaStoreUtil.getAlbumSongs(mContext, album));
+        String selection = MediaStore.Audio.Media.ALBUM_ID + " = ? ";
+        String[] selectionArgs = {Long.toString(album.getAlbumId())};
+
+        String directorySelection = getDirectoryInclusionExclusionSelection();
+        if (directorySelection != null) {
+            selection += " AND " + directorySelection;
+        }
+
+        return Observable.just(MediaStoreUtil.getSongs(mContext, selection, selectionArgs));
     }
 
     @Override
