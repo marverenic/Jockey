@@ -293,7 +293,7 @@ public class LocalMusicStore implements MusicStore {
 
     @Override
     public Observable<List<Album>> getAlbums(Artist artist) {
-        return Observable.just(MediaStoreUtil.getArtistAlbums(mContext, artist));
+        return Observable.just(filterAlbums(MediaStoreUtil.getArtistAlbums(mContext, artist)));
     }
 
     @Override
