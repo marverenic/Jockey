@@ -8,6 +8,7 @@ import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.Genre;
 import com.marverenic.music.instances.Song;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -100,7 +101,9 @@ public class LocalMusicStore implements MusicStore {
 
         for (String directory : mPreferencesStore.getIncludedDirectories()) {
             builder.append(MediaStore.Audio.Media.DATA)
-                    .append(" LIKE \'%").append(directory).append("%\'");
+                    .append(" LIKE \'")
+                    .append(directory).append(File.separatorChar)
+                    .append("%\'");
 
             builder.append(" OR ");
         }
@@ -118,7 +121,9 @@ public class LocalMusicStore implements MusicStore {
 
         for (String directory : mPreferencesStore.getExcludedDirectories()) {
             builder.append(MediaStore.Audio.Media.DATA)
-                    .append(" NOT LIKE \'%").append(directory).append("%\'");
+                    .append(" NOT LIKE \'")
+                    .append(directory).append(File.separatorChar)
+                    .append("%\'");
 
             builder.append(" AND ");
         }
