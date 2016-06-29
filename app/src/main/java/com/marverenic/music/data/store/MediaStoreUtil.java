@@ -271,30 +271,6 @@ public final class MediaStoreUtil {
         return autoPlaylists;
     }
 
-    public static List<Song> getAlbumSongs(Context context, Album album) {
-        return getAlbumSongs(context, album.getAlbumId());
-    }
-
-    public static List<Song> getAlbumSongs(Context context, long albumId) {
-        String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0  AND "
-                + MediaStore.Audio.Media.ALBUM_ID + " = ";
-
-        String[] selectionArgs = {Long.toString(albumId)};
-
-        return getSongs(context, selection, selectionArgs);
-    }
-
-    public static List<Song> getArtistSongs(Context context, Artist artist) {
-        return getArtistSongs(context, artist.getArtistId());
-    }
-
-    public static List<Song> getArtistSongs(Context context, long artistId) {
-        String selection = MediaStore.Audio.Media.ARTIST_ID + " = ?";
-        String[] selectionArgs = {Long.toString(artistId)};
-
-        return getSongs(context, selection, selectionArgs);
-    }
-
     public static List<Album> getArtistAlbums(Context context, Artist artist) {
         return getArtistAlbums(context, artist.getArtistId());
     }
@@ -326,17 +302,9 @@ public final class MediaStoreUtil {
         return songs;
     }
 
-    public static List<Song> getGenreSongs(Context context, Genre genre) {
-        return getGenreSongs(context, genre, null, null);
-    }
-
     public static List<Song> getGenreSongs(Context context, Genre genre, @Nullable String selection,
                                            @Nullable String[] selectionArgs) {
         return getGenreSongs(context, genre.getGenreId(), selection, selectionArgs);
-    }
-
-    public static List<Song> getGenreSongs(Context context, long genreId) {
-        return getGenreSongs(context, genreId, null, null);
     }
 
     public static List<Song> getGenreSongs(Context context, long genreId,
