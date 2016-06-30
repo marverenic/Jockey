@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.marverenic.heterogeneousadapter.DragDropAdapter;
 import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
@@ -27,7 +26,7 @@ import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.dialog.DirectoryDialogFragment;
 import com.marverenic.music.instances.section.BasicEmptyState;
-import com.marverenic.music.view.DragDividerDecoration;
+import com.marverenic.music.view.DividerDecoration;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,7 +50,7 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
     private boolean mExclude;
     private List<String> mDirectories;
     private Set<String> mOppositeDirectories;
-    private DragDropAdapter mAdapter;
+    private HeterogeneousAdapter mAdapter;
 
     public static DirectoryListFragment newInstance(boolean exclude) {
         DirectoryListFragment fragment = new DirectoryListFragment();
@@ -92,7 +91,7 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
                 (ViewGroup) inflater.inflate(R.layout.fragment_directory_list, container, false);
         view.findViewById(R.id.fab).setOnClickListener(this);
 
-        mAdapter = new DragDropAdapter();
+        mAdapter = new HeterogeneousAdapter();
         mAdapter.setEmptyState(new BasicEmptyState() {
             @Override
             public String getMessage() {
@@ -115,11 +114,11 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
 
         mAdapter.addSection(new DirectorySection(mDirectories));
 
-        RecyclerView list = (RecyclerView) view.findViewById(R.id.list);
-        list.setLayoutManager(new LinearLayoutManager(getContext()));
-        mAdapter.attach(list);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(mAdapter);
 
-        list.addItemDecoration(new DragDividerDecoration(getContext(), R.id.subheaderFrame));
+        recyclerView.addItemDecoration(new DividerDecoration(getContext(), R.id.subheaderFrame));
 
         return view;
     }
@@ -222,7 +221,7 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
         }
     }
 
-    private class DirectorySection extends DragDropAdapter.ListSection<String> {
+    private class DirectorySection extends HeterogeneousAdapter.ListSection<String> {
 
         public DirectorySection(List<String> data) {
             super(data);
