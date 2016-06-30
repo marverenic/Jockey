@@ -19,6 +19,8 @@ import java.util.List;
  */
 public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolder> {
 
+    private static final int NO_ID = (int) RecyclerView.NO_ID;
+
     /**
      * Used in {@link #getItemViewType(int)} to denote that the empty state should be shown
      */
@@ -153,7 +155,15 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
         lookupCoordinates(position, mCoordinate);
         int section = mCoordinate.getSection();
         int item = mCoordinate.getItemIndex();
-        return mSections.get(section).getId(item);
+
+        int givenId = mSections.get(section).getId(item);
+        int sectionId = mSections.get(section).getTypeId();
+
+        if (givenId == NO_ID) {
+            return RecyclerView.NO_ID;
+        } else {
+            return (long) sectionId << 32 | givenId;
+        }
     }
 
     @Override
@@ -259,8 +269,8 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
          * @return The ID of this item or {@link RecyclerView#NO_ID}
          * @see RecyclerView.Adapter#getItemId(int)
          */
-        public long getId(int position) {
-            return RecyclerView.NO_ID;
+        public int getId(int position) {
+            return NO_ID;
         }
 
         /**
