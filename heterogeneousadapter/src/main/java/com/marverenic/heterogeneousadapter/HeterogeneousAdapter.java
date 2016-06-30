@@ -20,10 +20,6 @@ import java.util.List;
 public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolder> {
 
     /**
-     * Used in {@link #lookupPos(int)} to denote an unknown result
-     */
-    private static final long UNKNOWN_INDICES = -1;
-    /**
      * Used in {@link #getItemViewType(int)} to denote that the empty state should be shown
      */
     private static final int EMPTY_TYPE = -2;
@@ -33,11 +29,18 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
     private EmptyState mEmptyState;
 
     /**
+     * A reused Coordinate to avoid GC overhead when calling
+     * {@link #lookupCoordinates(int, Coordinate))
+     */
+    private Coordinate mCoordinate;
+
+    /**
      * Sets up a new HeterogeneousAdapter with no children
      */
     public HeterogeneousAdapter() {
         mSections = new ArrayList<>();
         mSectionIdMap = new SparseArray<>();
+        mCoordinate = new Coordinate();
     }
 
     /**
@@ -110,51 +113,25 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
     }
 
     /**
-     * Converts a position in the entire data set to a coordinate in the Section list
+     * Converts a position in the entire data set to a Coordinate in the section list. This method
+     * returns two values into the provided {@code Coordinate} so that it can be reused to save GC
+     * overhead.
      *
-     * This method returns two values in a single long to save a bit of memory and GC overhead.
-     * To accomplish this, two integer values are stored next to each other. The left 32 bits
-     * are the section index (the index in {@link #mSections} that's of interest), and the right
-     * 32 bits contains the position within this section for the data point (the index in
-     * {@link ListSection#mData} that's of interest).
-     *
-     * To split values returned by this method into their components, use
-     * {@link #sectionIndex(long)} and {@link #itemIndex(long)}.
-     *
-     * @param position The position to lookup an index for
-     * @return A formatted long with the section index in the left 32 bits and the position within
-     *         the section in the right 32 bits, or {@link #UNKNOWN_INDICES} if it's the specified
-     *         position isn't valid
+     * @param position The position in the entire data set to lookup a coordinate of
+     * @param coordinate @ {@code Coordinate} object to put the result into
      */
-    private long lookupPos(int position) {
+    private void lookupCoordinates(int position, Coordinate coordinate) {
         int runningTotal = 0;
         for (int i = 0; i < mSections.size(); i++) {
             int sectionTotal = mSections.get(i).getSize(this);
             if (position < runningTotal + sectionTotal) {
-                return (long) i << 32 | (position - runningTotal);
+                coordinate.setSection(i);
+                coordinate.setItemIndex(position - runningTotal);
+                return;
             }
-            runningTotal += mSections.get(i).getSize(this);
+            runningTotal += sectionTotal;
         }
-        return UNKNOWN_INDICES;
-    }
-
-    /**
-     * Returns the section that an item is in from a position long built by {@link #lookupPos(int)}
-     * @param index The position value to get the item index from
-     * @return The left 32 bits of the position value
-     */
-    private static int sectionIndex(long index) {
-        return (int) (index >> 32);
-    }
-
-    /**
-     * Returns the index of an item within its section from a position long built by
-     * {@link #lookupPos(int)}
-     * @param index The position value to get the item index from
-     * @return The right 32 bits of the position value
-     */
-    private static int itemIndex(long index) {
-        return (int) index;
+        coordinate.clear();
     }
 
     /**
@@ -178,15 +155,17 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
         if (getDataSize() == 0) {
             return EMPTY_TYPE;
         }
-        int section = sectionIndex(lookupPos(position));
+
+        lookupCoordinates(position, mCoordinate);
+        int section = mCoordinate.getSection();
         return mSections.get(section).getTypeId();
     }
 
     @Override
     public long getItemId(int position) {
-        long coordinate = lookupPos(position);
-        int section = sectionIndex(coordinate);
-        int item = itemIndex(coordinate);
+        lookupCoordinates(position, mCoordinate);
+        int section = mCoordinate.getSection();
+        int item = mCoordinate.getItemIndex();
         return mSections.get(section).getId(item);
     }
 
@@ -210,9 +189,9 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
         if (holder instanceof EmptyState.EmptyViewHolder) {
             ((EmptyState.EmptyViewHolder) holder).onUpdate(null, position);
         } else {
-            long coordinate = lookupPos(position);
-            int section = sectionIndex(coordinate);
-            int item = itemIndex(coordinate);
+            lookupCoordinates(position, mCoordinate);
+            int section = mCoordinate.getSection();
+            int item = mCoordinate.getItemIndex();
             holder.onUpdate(mSections.get(section).get(item), item);
         }
     }
@@ -271,7 +250,7 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
          * @see {@link RecyclerView.Adapter#createViewHolder(ViewGroup, int)}
          */
         public abstract EnhancedViewHolder<Type> createViewHolder(HeterogeneousAdapter adapter,
-                                                          ViewGroup parent);
+                                                                  ViewGroup parent);
 
         /**
          * Get the ID of an item in the data set
