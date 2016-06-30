@@ -52,7 +52,7 @@ public abstract class EditableSongSection extends DragDropAdapter.DragSection<So
                                                      ViewGroup parent);
 
     @Override
-    public int getSize(HeterogeneousAdapter adapter) {
+    public int getItemCount(HeterogeneousAdapter adapter) {
         return mData.size();
     }
 

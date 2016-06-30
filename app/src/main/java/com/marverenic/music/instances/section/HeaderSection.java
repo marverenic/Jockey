@@ -27,7 +27,7 @@ public class HeaderSection extends HeterogeneousAdapter.SingletonSection<String>
             return true;
         } else {
             HeterogeneousAdapter.Section dependency = adapter.getSectionById(mLinkedTypeId);
-            return dependency == null || dependency.getSize(adapter) > 0;
+            return dependency == null || dependency.getItemCount(adapter) > 0;
         }
     }
 

@@ -123,7 +123,7 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
     private void lookupCoordinates(int position, Coordinate coordinate) {
         int runningTotal = 0;
         for (int i = 0; i < mSections.size(); i++) {
-            int sectionTotal = mSections.get(i).getSize(this);
+            int sectionTotal = mSections.get(i).getItemCount(this);
             if (position < runningTotal + sectionTotal) {
                 coordinate.setSection(i);
                 coordinate.setItemIndex(position - runningTotal);
@@ -145,7 +145,7 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
             if (section.getTypeId() == typeId) {
                 break;
             }
-            count += section.getSize(this);
+            count += section.getItemCount(this);
         }
         return count;
     }
@@ -203,7 +203,7 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
     private int getDataSize() {
         int sum = 0;
         for (Section s : mSections) {
-            sum += s.getSize(this);
+            sum += s.getItemCount(this);
         }
         return sum;
     }
@@ -276,7 +276,7 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
          * @param adapter The adapter this Section is attached to
          * @return The number of items in this section
          */
-        public abstract int getSize(HeterogeneousAdapter adapter);
+        public abstract int getItemCount(HeterogeneousAdapter adapter);
 
         /**
          * Returns an item in the data set used to populate a ViewHolder
@@ -321,7 +321,7 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
         }
 
         @Override
-        public final int getSize(HeterogeneousAdapter adapter) {
+        public final int getItemCount(HeterogeneousAdapter adapter) {
             return showSection(adapter) ? 1 : 0;
         }
 
@@ -371,7 +371,7 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
         }
 
         @Override
-        public final int getSize(HeterogeneousAdapter adapter) {
+        public final int getItemCount(HeterogeneousAdapter adapter) {
             return showSection(adapter) ? mData.size() : 0;
         }
 
