@@ -164,11 +164,11 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
      */
     protected int getLeadingViewCount(int typeId) {
         int count = 0;
-        for (Section s : mSections) {
-            if (s.getTypeId() == typeId) {
+        for (Section section : mSections) {
+            if (section.getTypeId() == typeId) {
                 break;
             }
-            count += s.getSize(this);
+            count += section.getSize(this);
         }
         return count;
     }
