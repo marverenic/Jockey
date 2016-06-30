@@ -88,6 +88,7 @@ public class PlaylistFragment extends BaseFragment {
             mAdapter.notifyDataSetChanged();
         } else {
             mAdapter = new HeterogeneousAdapter();
+            mAdapter.setHasStableIds(true);
             mRecyclerView.setAdapter(mAdapter);
 
             mPlaylistSection = new PlaylistSection(mPlaylists);

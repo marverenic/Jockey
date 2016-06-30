@@ -73,6 +73,7 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
     private void setupAdapter() {
         if (mQueueSection == null) {
             mAdapter = new DragDropAdapter();
+            mAdapter.setHasStableIds(true);
             mAdapter.attach(mRecyclerView);
 
             mQueueSection = new QueueSection(this, PlayerController.getQueue());
