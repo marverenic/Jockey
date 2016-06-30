@@ -58,7 +58,7 @@ public class SpacerSingleton extends HeterogeneousAdapter.SingletonSection<Void>
         }
 
         @Override
-        public void update(Void item, int sectionPosition) {
+        public void onUpdate(Void item, int sectionPosition) {
             ViewGroup.MarginLayoutParams params =
                     (ViewGroup.MarginLayoutParams) itemView.getLayoutParams();
 

@@ -48,7 +48,7 @@ public class HeaderSection extends HeterogeneousAdapter.SingletonSection<String>
         }
 
         @Override
-        public void update(String sectionName, int sectionPosition) {
+        public void onUpdate(String sectionName, int sectionPosition) {
             subheaderText.setText(sectionName);
         }
     }

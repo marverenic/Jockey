@@ -44,7 +44,7 @@ public class PlaylistSection extends HeterogeneousAdapter.ListSection<Playlist> 
         }
 
         @Override
-        public void update(Playlist item, int sectionPosition) {
+        public void onUpdate(Playlist item, int sectionPosition) {
             mBinding.getViewModel().setPlaylist(item);
         }
     }

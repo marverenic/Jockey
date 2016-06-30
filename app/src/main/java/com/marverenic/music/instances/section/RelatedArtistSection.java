@@ -69,7 +69,7 @@ public class RelatedArtistSection extends HeterogeneousAdapter.ListSection<LfmAr
         }
 
         @Override
-        public void update(LfmArtist item, int sectionPosition) {
+        public void onUpdate(LfmArtist item, int sectionPosition) {
             mMusicStore.findArtistByName(item.getName())
                     .take(1)
                     .subscribe(

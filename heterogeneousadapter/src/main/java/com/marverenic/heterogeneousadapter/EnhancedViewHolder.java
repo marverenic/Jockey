@@ -23,6 +23,6 @@ public abstract class EnhancedViewHolder<Type> extends RecyclerView.ViewHolder {
      * @param item The item to show in this ViewHolder
      * @param position The index of this item in the adapter's data set
      */
-    public abstract void update(Type item, int position);
+    public abstract void onUpdate(Type item, int position);
 
 }

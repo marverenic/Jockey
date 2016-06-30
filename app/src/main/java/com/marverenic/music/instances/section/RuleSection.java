@@ -98,7 +98,7 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylist.R
             dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM);
         }
 
-        public void update(AutoPlaylist.Rule rule, int position) {
+        public void onUpdate(AutoPlaylist.Rule rule, int position) {
             reference = rule;
             update();
         }

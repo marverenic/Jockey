@@ -14,8 +14,8 @@ public abstract class BasicEmptyState extends EmptyState
         implements View.OnClickListener {
 
     @Override
-    public final View createView(RecyclerView.Adapter<EnhancedViewHolder> adapter,
-                                 final ViewGroup parent) {
+    public final View onCreateView(RecyclerView.Adapter<EnhancedViewHolder> adapter,
+                                   final ViewGroup parent) {
 
         final View layout = LayoutInflater
                 .from(parent.getContext())
@@ -31,7 +31,7 @@ public abstract class BasicEmptyState extends EmptyState
     }
 
     @Override
-    public final void update(View emptyStateView) {
+    public final void onUpdate(View emptyStateView) {
         TextView message = ((TextView) emptyStateView.findViewById(R.id.empty_message));
         TextView detail = ((TextView) emptyStateView.findViewById(R.id.empty_message_detail));
         TextView button1Label = ((TextView) emptyStateView.findViewById(R.id.empty_button_label));

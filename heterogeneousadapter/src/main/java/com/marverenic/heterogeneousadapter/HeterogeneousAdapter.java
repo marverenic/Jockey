@@ -208,12 +208,12 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
     @SuppressWarnings("unchecked")
     public void onBindViewHolder(EnhancedViewHolder holder, int position) {
         if (holder instanceof EmptyState.EmptyViewHolder) {
-            ((EmptyState.EmptyViewHolder) holder).update(null, position);
+            ((EmptyState.EmptyViewHolder) holder).onUpdate(null, position);
         } else {
             long coordinate = lookupPos(position);
             int section = sectionIndex(coordinate);
             int item = itemIndex(coordinate);
-            holder.update(mSections.get(section).get(item), item);
+            holder.onUpdate(mSections.get(section).get(item), item);
         }
     }
 

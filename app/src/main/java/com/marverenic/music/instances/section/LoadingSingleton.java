@@ -44,7 +44,7 @@ public class LoadingSingleton extends HeterogeneousAdapter.SingletonSection<Void
         }
 
         @Override
-        public void update(Void item, int sectionPosition) {
+        public void onUpdate(Void item, int sectionPosition) {
             spinner.stop();
             spinner.start();
         }

@@ -57,7 +57,7 @@ public class ArtistBioSingleton extends HeterogeneousAdapter.SingletonSection<Lf
 
         @Override
         @SuppressLint("SetTextI18n")
-        public void update(LfmArtist item, int sectionPosition) {
+        public void onUpdate(LfmArtist item, int sectionPosition) {
             Tag[] tags = item.getTags();
             String[] tagNames = new String[tags.length];
 

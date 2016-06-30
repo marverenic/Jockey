@@ -185,7 +185,7 @@ public class RuleHeaderSingleton extends HeterogeneousAdapter.SingletonSection<A
         }
 
         @Override
-        public void update(AutoPlaylist item, int sectionPosition) {
+        public void onUpdate(AutoPlaylist item, int sectionPosition) {
             reference = item;
         }
 
