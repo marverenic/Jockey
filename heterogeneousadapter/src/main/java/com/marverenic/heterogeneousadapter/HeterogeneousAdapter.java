@@ -178,7 +178,8 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
         if (getDataSize() == 0) {
             return EMPTY_TYPE;
         }
-        return mSections.get(sectionIndex(lookupPos(position))).getTypeId();
+        int section = sectionIndex(lookupPos(position));
+        return mSections.get(section).getTypeId();
     }
 
     @Override
