@@ -9,15 +9,13 @@ import android.view.ViewGroup;
 
 import com.marverenic.music.databinding.InstanceArtistBinding;
 import com.marverenic.music.instances.Artist;
-import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
-import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
+import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.viewmodel.ArtistViewModel;
 
 import java.util.List;
 
 public class ArtistSection extends HeterogeneousAdapter.ListSection<Artist> {
-
-    public static final int ID = 3401;
 
     private FragmentManager mFragmentManager;
 
@@ -30,8 +28,13 @@ public class ArtistSection extends HeterogeneousAdapter.ListSection<Artist> {
     }
 
     public ArtistSection(FragmentManager fragmentManager, @NonNull List<Artist> data) {
-        super(ID, data);
+        super(data);
         mFragmentManager = fragmentManager;
+    }
+
+    @Override
+    public int getId(int position) {
+        return get(position).getArtistId();
     }
 
     @Override
@@ -54,7 +57,7 @@ public class ArtistSection extends HeterogeneousAdapter.ListSection<Artist> {
         }
 
         @Override
-        public void update(Artist item, int sectionPosition) {
+        public void onUpdate(Artist item, int sectionPosition) {
             mBinding.getViewModel().setArtist(item);
         }
     }

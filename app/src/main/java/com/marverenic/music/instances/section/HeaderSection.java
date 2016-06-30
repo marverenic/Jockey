@@ -6,34 +6,24 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.marverenic.music.R;
-import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
-import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
+import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 
 public class HeaderSection extends HeterogeneousAdapter.SingletonSection<String> {
 
-    public static final int ID = 60;
-    public static final int ALWAYS_SHOWN = -1;
-
-    private int mLinkedTypeId;
-
-    public HeaderSection(String header, int linkedTypeId) {
-        super(ID, header);
-        mLinkedTypeId = linkedTypeId;
+    public HeaderSection(String header) {
+        super(header);
     }
 
     @Override
     public boolean showSection(HeterogeneousAdapter adapter) {
-        if (mLinkedTypeId == ALWAYS_SHOWN) {
-            return true;
-        } else {
-            HeterogeneousAdapter.Section dependency = adapter.getSectionById(mLinkedTypeId);
-            return dependency == null || dependency.getSize(adapter) > 0;
-        }
+        int thisIndex = adapter.getSectionIndex(this);
+        return adapter.getSection(thisIndex + 1).getItemCount(adapter) > 0;
     }
 
     @Override
     public EnhancedViewHolder<String> createViewHolder(HeterogeneousAdapter adapter,
-                                                                    ViewGroup parent) {
+                                                       ViewGroup parent) {
         return new ViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.subheader, parent, false));
     }
@@ -48,7 +38,7 @@ public class HeaderSection extends HeterogeneousAdapter.SingletonSection<String>
         }
 
         @Override
-        public void update(String sectionName, int sectionPosition) {
+        public void onUpdate(String sectionName, int sectionPosition) {
             subheaderText.setText(sectionName);
         }
     }

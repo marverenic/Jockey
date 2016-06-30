@@ -6,24 +6,27 @@ import android.view.ViewGroup;
 
 import com.marverenic.music.databinding.InstancePlaylistBinding;
 import com.marverenic.music.instances.Playlist;
-import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
-import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
+import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.viewmodel.PlaylistViewModel;
 
 import java.util.List;
 
 public class PlaylistSection extends HeterogeneousAdapter.ListSection<Playlist> {
 
-    public static final int ID = 3574;
-
     public PlaylistSection(@NonNull List<Playlist> data) {
-        super(ID, data);
+        super(data);
     }
 
     @Override
     public EnhancedViewHolder<Playlist> createViewHolder(HeterogeneousAdapter adapter,
-                                                                      ViewGroup parent) {
+                                                         ViewGroup parent) {
         return ViewHolder.createViewHolder(parent);
+    }
+
+    @Override
+    public int getId(int position) {
+        return (int) get(position).getPlaylistId();
     }
 
     public static class ViewHolder extends EnhancedViewHolder<Playlist> {
@@ -44,7 +47,7 @@ public class PlaylistSection extends HeterogeneousAdapter.ListSection<Playlist> 
         }
 
         @Override
-        public void update(Playlist item, int sectionPosition) {
+        public void onUpdate(Playlist item, int sectionPosition) {
             mBinding.getViewModel().setPlaylist(item);
         }
     }

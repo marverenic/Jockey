@@ -9,15 +9,13 @@ import android.view.ViewGroup;
 import com.marverenic.music.databinding.InstanceSongQueueBinding;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.PlayerController;
-import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
-import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
+import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.viewmodel.QueueSongViewModel;
 
 import java.util.List;
 
 public class QueueSection extends EditableSongSection {
-
-    public static final int ID = 721;
 
     private FragmentManager mFragmentManager;
 
@@ -30,7 +28,7 @@ public class QueueSection extends EditableSongSection {
     }
 
     public QueueSection(FragmentManager fragmentManager, List<Song> data) {
-        super(ID, data);
+        super(data);
         mFragmentManager = fragmentManager;
     }
 
@@ -79,7 +77,7 @@ public class QueueSection extends EditableSongSection {
         }
 
         @Override
-        public void update(Song s, int sectionPosition) {
+        public void onUpdate(Song s, int sectionPosition) {
             mBinding.getViewModel().setSong(getData(), sectionPosition);
         }
     }

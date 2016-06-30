@@ -13,17 +13,15 @@ import android.widget.TextView;
 import com.marverenic.music.R;
 import com.marverenic.music.lastfm.model.LfmArtist;
 import com.marverenic.music.lastfm.model.Tag;
-import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
-import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
+import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 
 public class ArtistBioSingleton extends HeterogeneousAdapter.SingletonSection<LfmArtist> {
-
-    public static final int ID = 28;
 
     private boolean mHasRelatedArtists;
 
     public ArtistBioSingleton(LfmArtist data, boolean hasRelatedArtists) {
-        super(ID, data);
+        super(data);
         mHasRelatedArtists = hasRelatedArtists;
     }
 
@@ -57,7 +55,7 @@ public class ArtistBioSingleton extends HeterogeneousAdapter.SingletonSection<Lf
 
         @Override
         @SuppressLint("SetTextI18n")
-        public void update(LfmArtist item, int sectionPosition) {
+        public void onUpdate(LfmArtist item, int sectionPosition) {
             Tag[] tags = item.getTags();
             String[] tagNames = new String[tags.length];
 

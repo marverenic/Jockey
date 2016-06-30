@@ -19,17 +19,15 @@ import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.AutoPlaylist;
-import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
-import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
+import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 
 import javax.inject.Inject;
 
 public class RuleHeaderSingleton extends HeterogeneousAdapter.SingletonSection<AutoPlaylist> {
 
-    public static final int ID = 961;
-
     public RuleHeaderSingleton(AutoPlaylist data) {
-        super(ID, data);
+        super(data);
     }
 
     @Override
@@ -185,7 +183,7 @@ public class RuleHeaderSingleton extends HeterogeneousAdapter.SingletonSection<A
         }
 
         @Override
-        public void update(AutoPlaylist item, int sectionPosition) {
+        public void onUpdate(AutoPlaylist item, int sectionPosition) {
             reference = item;
         }
 

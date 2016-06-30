@@ -17,7 +17,7 @@ import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.SongSection;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
-import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 
 import java.util.List;
 
@@ -88,6 +88,7 @@ public class SongFragment extends BaseFragment {
             mAdapter.notifyDataSetChanged();
         } else {
             mAdapter = new HeterogeneousAdapter();
+            mAdapter.setHasStableIds(true);
             mRecyclerView.setAdapter(mAdapter);
 
             mSongSection = new SongSection(this, mSongs);

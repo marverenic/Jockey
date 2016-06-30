@@ -16,7 +16,7 @@ import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.section.AlbumSection;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.view.BackgroundDecoration;
-import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.view.GridSpacingDecoration;
 import com.marverenic.music.view.ViewUtils;
 
@@ -98,6 +98,7 @@ public class AlbumFragment extends BaseFragment {
             mAdapter.notifyDataSetChanged();
         } else {
             mAdapter = new HeterogeneousAdapter();
+            mAdapter.setHasStableIds(true);
             mRecyclerView.setAdapter(mAdapter);
 
             mAlbumSection = new AlbumSection(this, mAlbums);

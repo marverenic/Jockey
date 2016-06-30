@@ -18,16 +18,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.marverenic.heterogeneousadapter.DragDropAdapter;
+import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.dialog.DirectoryDialogFragment;
 import com.marverenic.music.instances.section.BasicEmptyState;
-import com.marverenic.music.view.EnhancedAdapters.DragDividerDecoration;
-import com.marverenic.music.view.EnhancedAdapters.DragDropAdapter;
-import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
-import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
+import com.marverenic.music.view.DragDividerDecoration;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -224,10 +224,8 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
 
     private class DirectorySection extends DragDropAdapter.ListSection<String> {
 
-        private static final int SECTION_ID = 727;
-
         public DirectorySection(List<String> data) {
-            super(SECTION_ID, data);
+            super(data);
         }
 
         @Override
@@ -261,7 +259,7 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
 
         @SuppressLint("SetTextI18n")
         @Override
-        public void update(String item, int position) {
+        public void onUpdate(String item, int position) {
             reference = item;
             index = position;
 

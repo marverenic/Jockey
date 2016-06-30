@@ -23,8 +23,8 @@ import com.marverenic.music.instances.Artist;
 import com.marverenic.music.lastfm.model.Image;
 import com.marverenic.music.lastfm.model.LfmArtist;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
-import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
+import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 
 import java.util.List;
 
@@ -32,12 +32,10 @@ public class RelatedArtistSection extends HeterogeneousAdapter.ListSection<LfmAr
 
     private static final String TAG = "RelatedArtistSection";
 
-    public static final int ID = 634;
-
     private MusicStore mMusicStore;
 
     public RelatedArtistSection(MusicStore musicStore, @NonNull List<LfmArtist> data) {
-        super(ID, data);
+        super(data);
         mMusicStore = musicStore;
     }
 
@@ -47,6 +45,11 @@ public class RelatedArtistSection extends HeterogeneousAdapter.ListSection<LfmAr
         return new ViewHolder(
                 LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.instance_artist_suggested, parent, false));
+    }
+
+    @Override
+    public int getId(int position) {
+        return get(position).getMbid().hashCode();
     }
 
     private class ViewHolder extends EnhancedViewHolder<LfmArtist>
@@ -69,7 +72,7 @@ public class RelatedArtistSection extends HeterogeneousAdapter.ListSection<LfmAr
         }
 
         @Override
-        public void update(LfmArtist item, int sectionPosition) {
+        public void onUpdate(LfmArtist item, int sectionPosition) {
             mMusicStore.findArtistByName(item.getName())
                     .take(1)
                     .subscribe(

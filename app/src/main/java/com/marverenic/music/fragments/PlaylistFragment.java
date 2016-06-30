@@ -17,7 +17,7 @@ import com.marverenic.music.instances.section.PlaylistSection;
 import com.marverenic.music.instances.section.SpacerSingleton;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
-import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 
 import java.util.List;
 
@@ -88,12 +88,13 @@ public class PlaylistFragment extends BaseFragment {
             mAdapter.notifyDataSetChanged();
         } else {
             mAdapter = new HeterogeneousAdapter();
+            mAdapter.setHasStableIds(true);
             mRecyclerView.setAdapter(mAdapter);
 
             mPlaylistSection = new PlaylistSection(mPlaylists);
             mAdapter.addSection(mPlaylistSection);
             mAdapter.addSection(new SpacerSingleton(
-                    PlaylistSection.ID, (int) getResources().getDimension(R.dimen.list_height)));
+                    (int) getResources().getDimension(R.dimen.list_height)));
             mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), null) {
                 @Override
                 public String getEmptyMessage() {
