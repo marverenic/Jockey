@@ -33,6 +33,11 @@ public class AlbumSection extends HeterogeneousAdapter.ListSection<Album> {
     }
 
     @Override
+    public int getId(int position) {
+        return (int) get(position).getAlbumId();
+    }
+
+    @Override
     public EnhancedViewHolder<Album> createViewHolder(HeterogeneousAdapter adapter,
                                                       ViewGroup parent) {
         InstanceAlbumBinding binding = InstanceAlbumBinding.inflate(

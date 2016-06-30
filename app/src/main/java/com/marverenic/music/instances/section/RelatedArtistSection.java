@@ -47,6 +47,11 @@ public class RelatedArtistSection extends HeterogeneousAdapter.ListSection<LfmAr
                         .inflate(R.layout.instance_artist_suggested, parent, false));
     }
 
+    @Override
+    public int getId(int position) {
+        return get(position).getMbid().hashCode();
+    }
+
     private class ViewHolder extends EnhancedViewHolder<LfmArtist>
             implements View.OnClickListener {
 

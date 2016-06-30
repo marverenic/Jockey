@@ -27,6 +27,11 @@ public abstract class EditableSongSection extends DragDropAdapter.DragSection<So
     }
 
     @Override
+    public int getId(int position) {
+        return (int) get(position).getSongId();
+    }
+
+    @Override
     public int getDragHandleId() {
         return R.id.handle;
     }
@@ -48,7 +53,7 @@ public abstract class EditableSongSection extends DragDropAdapter.DragSection<So
 
     @Override
     public abstract EnhancedViewHolder<Song> createViewHolder(HeterogeneousAdapter adapter,
-                                                     ViewGroup parent);
+                                                              ViewGroup parent);
 
     @Override
     public int getItemCount(HeterogeneousAdapter adapter) {
