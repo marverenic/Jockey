@@ -21,6 +21,8 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
 
     private static final int NO_ID = (int) RecyclerView.NO_ID;
 
+    private static final long EMPTY_STATE_ID = -2;
+
     /**
      * Used in {@link #getItemViewType(int)} to denote that the empty state should be shown
      */
@@ -152,6 +154,10 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
 
     @Override
     public long getItemId(int position) {
+        if (getDataSize() == 0 && mEmptyState != null) {
+            return EMPTY_STATE_ID;
+        }
+
         lookupCoordinates(position, mCoordinate);
         int section = mCoordinate.getSection();
         int item = mCoordinate.getItemIndex();
