@@ -86,6 +86,7 @@ public class ArtistFragment extends BaseFragment {
             mAdapter.notifyDataSetChanged();
         } else {
             mAdapter = new HeterogeneousAdapter();
+            mAdapter.setHasStableIds(true);
             mRecyclerView.setAdapter(mAdapter);
 
             mArtistSection = new ArtistSection(this, mArtists);

@@ -98,6 +98,7 @@ public class AlbumFragment extends BaseFragment {
             mAdapter.notifyDataSetChanged();
         } else {
             mAdapter = new HeterogeneousAdapter();
+            mAdapter.setHasStableIds(true);
             mRecyclerView.setAdapter(mAdapter);
 
             mAlbumSection = new AlbumSection(this, mAlbums);

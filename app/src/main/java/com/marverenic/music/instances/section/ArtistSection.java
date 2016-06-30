@@ -33,6 +33,11 @@ public class ArtistSection extends HeterogeneousAdapter.ListSection<Artist> {
     }
 
     @Override
+    public int getId(int position) {
+        return get(position).getArtistId();
+    }
+
+    @Override
     public EnhancedViewHolder<Artist> createViewHolder(HeterogeneousAdapter adapter,
                                                        ViewGroup parent) {
         InstanceArtistBinding binding = InstanceArtistBinding.inflate(

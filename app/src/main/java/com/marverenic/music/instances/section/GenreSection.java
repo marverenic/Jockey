@@ -33,6 +33,11 @@ public class GenreSection extends HeterogeneousAdapter.ListSection<Genre> {
     }
 
     @Override
+    public int getId(int position) {
+        return (int) get(position).getGenreId();
+    }
+
+    @Override
     public EnhancedViewHolder<Genre> createViewHolder(HeterogeneousAdapter adapter,
                                                       ViewGroup parent) {
         InstanceGenreBinding binding = InstanceGenreBinding.inflate(

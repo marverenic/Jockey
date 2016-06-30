@@ -20,8 +20,13 @@ public class PlaylistSection extends HeterogeneousAdapter.ListSection<Playlist> 
 
     @Override
     public EnhancedViewHolder<Playlist> createViewHolder(HeterogeneousAdapter adapter,
-                                                                      ViewGroup parent) {
+                                                         ViewGroup parent) {
         return ViewHolder.createViewHolder(parent);
+    }
+
+    @Override
+    public int getId(int position) {
+        return (int) get(position).getPlaylistId();
     }
 
     public static class ViewHolder extends EnhancedViewHolder<Playlist> {

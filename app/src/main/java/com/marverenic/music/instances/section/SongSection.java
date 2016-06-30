@@ -34,8 +34,13 @@ public class SongSection extends HeterogeneousAdapter.ListSection<Song> {
     }
 
     @Override
+    public int getId(int position) {
+        return (int) get(position).getSongId();
+    }
+
+    @Override
     public EnhancedViewHolder<Song> createViewHolder(HeterogeneousAdapter adapter,
-                                                                  ViewGroup parent) {
+                                                     ViewGroup parent) {
         InstanceSongBinding binding = InstanceSongBinding.inflate(
                 LayoutInflater.from(parent.getContext()), parent, false);
 
