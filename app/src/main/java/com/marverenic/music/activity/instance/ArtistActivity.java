@@ -293,7 +293,7 @@ public class ArtistActivity extends BaseActivity {
             mSongSection = new SongSection(this, mSongs);
 
             mAdapter
-                    .addSection(new HeaderSection(getString(R.string.header_songs), SongSection.ID))
+                    .addSection(new HeaderSection(getString(R.string.header_songs)))
                     .addSection(mSongSection);
         } else {
             mSongSection.setData(mSongs);
@@ -308,8 +308,7 @@ public class ArtistActivity extends BaseActivity {
         if (mAlbumSection == null) {
             mAlbumSection = new AlbumSection(this, mAlbums);
             mAdapter
-                    .addSection(
-                            new HeaderSection(getString(R.string.header_albums), AlbumSection.ID))
+                    .addSection(new HeaderSection(getString(R.string.header_albums)))
                     .addSection(mAlbumSection);
         } else {
             mAlbumSection.setData(mAlbums);

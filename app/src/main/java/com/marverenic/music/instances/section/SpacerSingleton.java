@@ -12,14 +12,10 @@ import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 public class SpacerSingleton extends HeterogeneousAdapter.SingletonSection<Void> {
 
     public static final int ID = 7774;
-    public static final int ALWAYS_SHOWN = -1;
-
-    private int mLinkedTypeId;
     private int mHeight;
 
-    public SpacerSingleton(int linkedTypeId, int height) {
+    public SpacerSingleton(int height) {
         super(ID, null);
-        mLinkedTypeId = linkedTypeId;
         mHeight = height;
     }
 
@@ -29,12 +25,8 @@ public class SpacerSingleton extends HeterogeneousAdapter.SingletonSection<Void>
 
     @Override
     public boolean showSection(HeterogeneousAdapter adapter) {
-        if (mLinkedTypeId == ALWAYS_SHOWN) {
-            return true;
-        } else {
-            HeterogeneousAdapter.Section dependency = adapter.getSectionById(mLinkedTypeId);
-            return dependency == null || dependency.getItemCount(adapter) > 0;
-        }
+        int thisIndex = adapter.getSectionIndex(this);
+        return adapter.getSection(thisIndex - 1).getItemCount(adapter) > 0;
     }
 
     @Override

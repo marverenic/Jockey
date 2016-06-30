@@ -220,6 +220,31 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
     }
 
     /**
+     * Gets the index of a section in this adapter. Equality is checked using the implementation of
+     * {@link Object#equals(Object)}, which defaults to checking references
+     * @param section The section to lookup an index for
+     * @return The index of this section relative to other sections in the adapter, or {@code -1}
+     *         if it wasn't found in this adapter.
+     */
+    public int getSectionIndex(Section<?> section) {
+        for (int i = 0; i < mSections.size(); i++) {
+            if (mSections.get(i).equals(section)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Gets the section at a given index
+     * @param index The index to get the attached section of
+     * @return The section at the specified index
+     */
+    public Section getSection(int index) {
+        return mSections.get(index);
+    }
+
+    /**
      * Holds a group of sequential items if the same type to be displayed in a
      * {@link HeterogeneousAdapter}. Sections act as {@link RecyclerView.Adapter}s with the
      * condition that they may only have one type of ItemView

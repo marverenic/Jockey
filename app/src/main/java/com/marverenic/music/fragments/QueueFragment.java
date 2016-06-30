@@ -76,7 +76,7 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
             mAdapter.attach(mRecyclerView);
 
             mQueueSection = new QueueSection(this, PlayerController.getQueue());
-            mBottomSpacer = new SpacerSingleton(QueueSection.ID, 0);
+            mBottomSpacer = new SpacerSingleton(0);
 
             mAdapter.setDragSection(mQueueSection);
             mAdapter.addSection(mBottomSpacer);

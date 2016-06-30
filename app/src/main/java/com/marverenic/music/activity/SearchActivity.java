@@ -128,16 +128,15 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         mGenreSection = new GenreSection(this, Collections.emptyList());
 
         mAdapter = new HeterogeneousAdapter()
-                .addSection(
-                        new HeaderSection(getString(R.string.header_playlists), PlaylistSection.ID))
+                .addSection(new HeaderSection(getString(R.string.header_playlists)))
                 .addSection(mPlaylistSection)
-                .addSection(new HeaderSection(getString(R.string.header_songs), SongSection.ID))
+                .addSection(new HeaderSection(getString(R.string.header_songs)))
                 .addSection(mSongSection)
-                .addSection(new HeaderSection(getString(R.string.header_albums), AlbumSection.ID))
+                .addSection(new HeaderSection(getString(R.string.header_albums)))
                 .addSection(mAlbumSection)
-                .addSection(new HeaderSection(getString(R.string.header_artists), ArtistSection.ID))
+                .addSection(new HeaderSection(getString(R.string.header_artists)))
                 .addSection(mArtistSection)
-                .addSection(new HeaderSection(getString(R.string.header_genres), GenreSection.ID))
+                .addSection(new HeaderSection(getString(R.string.header_genres)))
                 .addSection(mGenreSection);
 
         mAdapter.setEmptyState(new BasicEmptyState() {
