@@ -26,10 +26,8 @@ import javax.inject.Inject;
 
 public class RuleHeaderSingleton extends HeterogeneousAdapter.SingletonSection<AutoPlaylist> {
 
-    public static final int ID = 961;
-
     public RuleHeaderSingleton(AutoPlaylist data) {
-        super(ID, data);
+        super(data);
     }
 
     @Override

@@ -14,10 +14,8 @@ import java.util.List;
 
 public class PlaylistSection extends HeterogeneousAdapter.ListSection<Playlist> {
 
-    public static final int ID = 3574;
-
     public PlaylistSection(@NonNull List<Playlist> data) {
-        super(ID, data);
+        super(data);
     }
 
     @Override

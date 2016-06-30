@@ -14,8 +14,7 @@ public abstract class EditableSongSection extends DragDropAdapter.DragSection<So
 
     protected List<Song> mData;
 
-    public EditableSongSection(int typeId, List<Song> data) {
-        super(typeId);
+    public EditableSongSection(List<Song> data) {
         mData = data;
     }
 

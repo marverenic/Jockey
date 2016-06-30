@@ -19,8 +19,6 @@ import java.util.List;
 
 public class PlaylistSongSection extends EditableSongSection {
 
-    public static final int ID = 720;
-
     private Context mContext;
     private FragmentManager mFragmentManager;
     private PlaylistStore mPlaylistStore;
@@ -39,7 +37,7 @@ public class PlaylistSongSection extends EditableSongSection {
     public PlaylistSongSection(Context context, FragmentManager fragmentManager,
                                PlaylistStore playlistStore, List<Song> data,
                                Playlist reference) {
-        super(ID, data);
+        super(data);
         mContext = context;
         mFragmentManager = fragmentManager;
         mPlaylistStore = playlistStore;

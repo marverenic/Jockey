@@ -221,8 +221,8 @@ public class ArtistActivity extends BaseActivity {
             public int getSpanSize(int position) {
                 // Albums & related artists fill one column,
                 // all other view types fill the available width
-                if (mAdapter.getItemViewType(position) == AlbumSection.ID
-                        || mAdapter.getItemViewType(position) == RelatedArtistSection.ID) {
+                if (mAdapter.getItemViewType(position) == mAlbumSection.getTypeId()
+                        || mAdapter.getItemViewType(position) == mRelatedArtistSection.getTypeId()) {
                     return 1;
                 } else {
                     return numColumns;
@@ -242,12 +242,12 @@ public class ArtistActivity extends BaseActivity {
                 new GridSpacingDecoration(
                         (int) getResources().getDimension(R.dimen.grid_margin),
                         numColumns,
-                        AlbumSection.ID));
+                        mAlbumSection.getTypeId()));
         mRecyclerView.addItemDecoration(
                 new GridSpacingDecoration(
                         (int) getResources().getDimension(R.dimen.card_margin),
                         numColumns,
-                        RelatedArtistSection.ID));
+                        mRelatedArtistSection.getTypeId()));
         mRecyclerView.addItemDecoration(
                 new BackgroundDecoration(R.id.loadingView, R.id.infoCard, R.id.relatedCard));
         mRecyclerView.addItemDecoration(
@@ -269,7 +269,7 @@ public class ArtistActivity extends BaseActivity {
         }
 
         if (mLoadingSection != null) {
-            mAdapter.removeSectionById(LoadingSingleton.ID);
+            mAdapter.removeSection(0);
             mLoadingSection = null;
         }
 

@@ -17,8 +17,6 @@ import java.util.List;
 
 public class GenreSection extends HeterogeneousAdapter.ListSection<Genre> {
 
-    public static final int ID = 9267;
-
     private FragmentManager mFragmentManager;
 
     public GenreSection(AppCompatActivity activity, @NonNull List<Genre> data) {
@@ -30,7 +28,7 @@ public class GenreSection extends HeterogeneousAdapter.ListSection<Genre> {
     }
 
     public GenreSection(FragmentManager fragmentManager, @NonNull List<Genre> data) {
-        super(ID, data);
+        super(data);
         mFragmentManager = fragmentManager;
     }
 

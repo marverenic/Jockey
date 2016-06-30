@@ -17,8 +17,6 @@ import java.util.List;
 
 public class QueueSection extends EditableSongSection {
 
-    public static final int ID = 721;
-
     private FragmentManager mFragmentManager;
 
     public QueueSection(AppCompatActivity activity, List<Song> data) {
@@ -30,7 +28,7 @@ public class QueueSection extends EditableSongSection {
     }
 
     public QueueSection(FragmentManager fragmentManager, List<Song> data) {
-        super(ID, data);
+        super(data);
         mFragmentManager = fragmentManager;
     }
 

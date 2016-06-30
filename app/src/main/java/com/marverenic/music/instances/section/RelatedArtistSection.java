@@ -32,12 +32,10 @@ public class RelatedArtistSection extends HeterogeneousAdapter.ListSection<LfmAr
 
     private static final String TAG = "RelatedArtistSection";
 
-    public static final int ID = 634;
-
     private MusicStore mMusicStore;
 
     public RelatedArtistSection(MusicStore musicStore, @NonNull List<LfmArtist> data) {
-        super(ID, data);
+        super(data);
         mMusicStore = musicStore;
     }
 

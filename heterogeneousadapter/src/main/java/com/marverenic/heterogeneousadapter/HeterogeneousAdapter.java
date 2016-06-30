@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Implementation of {@link android.support.v7.widget.RecyclerView.Adapter} designed for data sets
+ * Implementation of {@link RecyclerView.Adapter} designed for data sets
  * that have different kinds of data that are grouped together into sections and displayed after
  * each other.
  *
@@ -29,6 +29,13 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
     private EmptyState mEmptyState;
 
     /**
+     * The number of times {@link #addSection(Section)} and {@link #addSection(Section, int)} have
+     * been called. This value is used to generate item IDs used with
+     * {@link RecyclerView.Adapter#getItemViewType(int)}
+     */
+    private int mSectionBindingCount;
+
+    /**
      * A reused Coordinate to avoid GC overhead when calling
      * {@link #lookupCoordinates(int, Coordinate))
      */
@@ -41,6 +48,7 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
         mSections = new ArrayList<>();
         mSectionIdMap = new SparseArray<>();
         mCoordinate = new Coordinate();
+        mSectionBindingCount = 0;
     }
 
     /**
@@ -50,15 +58,8 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
         return mSections.size();
     }
 
-    /**
-     * Find the first section of a certain type in this Adapter
-     * @param id The ID of the Section as set in the Section's constructor
-     *           ({@link Section#Section(int)})
-     * @return the Section in this Adapter with the same ID, or null if no Section with that ID
-     *         was found
-     */
-    public Section getSectionById(int id) {
-        return mSectionIdMap.get(id);
+    private int getNextSectionId() {
+        return ++mSectionBindingCount;
     }
 
     /**
@@ -77,6 +78,7 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
      * @return this Adapter, for chain building
      */
     public HeterogeneousAdapter addSection(@NonNull Section section, int index) {
+        section.setTypeId(getNextSectionId());
         mSections.add(index, section);
         mSectionIdMap.put(section.getTypeId(), section);
         notifyDataSetChanged();
@@ -91,21 +93,6 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
         Section removed = mSections.remove(index);
         mSectionIdMap.remove(removed.getTypeId());
         notifyDataSetChanged();
-    }
-
-    /**
-     * Removes a section by its ID
-     * @param id The ID of the Section as set in the Section's constructor
-     *           ({@link Section#Section(int)})
-     * @return true if the Sections in this adapter were changed, false otherwise
-     */
-    public boolean removeSectionById(int id) {
-        Section requested = mSectionIdMap.get(id);
-        if (requested != null && mSections.remove(requested)) {
-            notifyDataSetChanged();
-            return true;
-        }
-        return false;
     }
 
     public void setEmptyState(@Nullable EmptyState emptyState) {
@@ -257,17 +244,6 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
         private int mTypeId;
 
         /**
-         * @param typeId The item type ID as used by
-         *               {@link RecyclerView.Adapter#getItemViewType(int)}. This ID is constant
-         *               for all items in this section. This value should be unique and constant
-         *               to the each class that extends Section. This value MUST be unique among
-         *               all Sections that are put in the same HeterogeneousAdapter.
-         */
-        public Section (int typeId) {
-            mTypeId = typeId;
-        }
-
-        /**
          * Creates a ViewHolder for the {@link HeterogeneousAdapter} this Section is attached to
          * @param adapter the Adapter requesting a new ViewHolder
          * @param parent the ViewGroup that this ViewHolder will be placed into
@@ -281,7 +257,7 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
          * Get the ID of an item in the data set
          * @param position The index in the data set that an ID has been requested for
          * @return The ID of this item or {@link RecyclerView#NO_ID}
-         * @see android.support.v7.widget.RecyclerView.Adapter#getItemId(int)
+         * @see RecyclerView.Adapter#getItemId(int)
          */
         public long getId(int position) {
             return RecyclerView.NO_ID;
@@ -311,6 +287,15 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
         public abstract Type get(int position);
 
         /**
+         * Used internally by {@link HeterogeneousAdapter} to set a unique ID for this section.
+         * @param id The ID to use for this Section when {@link RecyclerView} calls
+         *           {@link RecyclerView.Adapter#getItemViewType(int)}
+         */
+        private void setTypeId(int id) {
+            mTypeId = id;
+        }
+
+        /**
          * @return The item type ID as used by
          *         {@link RecyclerView.Adapter#getItemViewType(int)}. This ID is constant
          *         for all items in this section. This value should be unique and constant
@@ -333,15 +318,9 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
         private Type mData;
 
         /**
-         * @param typeId The item type ID as used by
-         *               {@link RecyclerView.Adapter#getItemViewType(int)}. This ID is constant
-         *               for all items in this section. This value should be unique and constant
-         *               to the each class that extends Section. This value MUST be unique among
-         *               all Sections that are put in the same HeterogeneousAdapter.
          * @param data The item to show in this Section
          */
-        public SingletonSection(int typeId, Type data) {
-            super(typeId);
+        public SingletonSection(Type data) {
             mData = data;
         }
 
@@ -367,15 +346,9 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
         private List<Type> mData;
 
         /**
-         * @param typeId The item type ID as used by
-         *               {@link RecyclerView.Adapter#getItemViewType(int)}. This ID is constant
-         *               for all items in this section. This value should be unique and constant
-         *               to the each class that extends Section. This value MUST be unique among
-         *               all Sections that are put in the same HeterogeneousAdapter.
          * @param data The data to populate this Section with
          */
-        public ListSection(int typeId, @NonNull List<Type> data) {
-            super(typeId);
+        public ListSection(@NonNull List<Type> data) {
             mData = data;
         }
 

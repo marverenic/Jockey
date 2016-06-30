@@ -156,7 +156,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                if (mAdapter.getItemViewType(position) == AlbumSection.ID) {
+                if (mAdapter.getItemViewType(position) == mAlbumSection.getTypeId()) {
                     return 1;
                 }
                 return numColumns;
@@ -167,7 +167,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         // Add item decorations
         mRecyclerView.addItemDecoration(new GridSpacingDecoration(
                 (int) getResources().getDimension(R.dimen.grid_margin),
-                numColumns, AlbumSection.ID));
+                numColumns, mAlbumSection.getTypeId()));
         mRecyclerView.addItemDecoration(
                 new BackgroundDecoration(R.id.subheaderFrame));
         mRecyclerView.addItemDecoration(

@@ -11,11 +11,10 @@ import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 
 public class SpacerSingleton extends HeterogeneousAdapter.SingletonSection<Void> {
 
-    public static final int ID = 7774;
     private int mHeight;
 
     public SpacerSingleton(int height) {
-        super(ID, null);
+        super(null);
         mHeight = height;
     }
 

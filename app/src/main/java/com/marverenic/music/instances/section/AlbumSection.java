@@ -17,8 +17,6 @@ import java.util.List;
 
 public class AlbumSection extends HeterogeneousAdapter.ListSection<Album> {
 
-    public static final int ID = 7804;
-
     private FragmentManager mFragmentManager;
 
     public AlbumSection(AppCompatActivity activity, @NonNull List<Album> data) {
@@ -30,7 +28,7 @@ public class AlbumSection extends HeterogeneousAdapter.ListSection<Album> {
     }
 
     public AlbumSection(FragmentManager fragmentManager, @NonNull List<Album> data) {
-        super(ID, data);
+        super(data);
         mFragmentManager = fragmentManager;
     }
 

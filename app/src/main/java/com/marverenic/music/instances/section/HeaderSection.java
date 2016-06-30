@@ -11,9 +11,8 @@ import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 
 public class HeaderSection extends HeterogeneousAdapter.SingletonSection<String> {
 
-    public static final int ID = 60;
     public HeaderSection(String header) {
-        super(ID, header);
+        super(header);
     }
 
     @Override

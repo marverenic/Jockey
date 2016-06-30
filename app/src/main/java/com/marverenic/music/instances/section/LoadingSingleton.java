@@ -13,11 +13,10 @@ import com.marverenic.music.view.MaterialProgressDrawable;
 
 public class LoadingSingleton extends HeterogeneousAdapter.SingletonSection<Void> {
 
-    public static final int ID = 79;
     private int[] mColors;
 
     public LoadingSingleton(@ColorInt int... colors) {
-        super(ID, null);
+        super(null);
         mColors = colors;
     }
 

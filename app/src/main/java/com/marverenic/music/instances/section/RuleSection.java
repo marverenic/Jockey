@@ -35,12 +35,10 @@ import java.util.List;
 
 public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylist.Rule> {
 
-    public static final int ID = 121;
-
     private static OnRemovalListener mRemovalListener;
 
     public RuleSection(@NonNull List<AutoPlaylist.Rule> data, OnRemovalListener listener) {
-        super(ID, data);
+        super(data);
         mRemovalListener = listener;
     }
 

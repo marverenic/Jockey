@@ -18,12 +18,10 @@ import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 
 public class ArtistBioSingleton extends HeterogeneousAdapter.SingletonSection<LfmArtist> {
 
-    public static final int ID = 28;
-
     private boolean mHasRelatedArtists;
 
     public ArtistBioSingleton(LfmArtist data, boolean hasRelatedArtists) {
-        super(ID, data);
+        super(data);
         mHasRelatedArtists = hasRelatedArtists;
     }
 

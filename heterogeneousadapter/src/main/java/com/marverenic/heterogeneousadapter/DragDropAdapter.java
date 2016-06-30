@@ -59,11 +59,6 @@ public class DragDropAdapter extends HeterogeneousAdapter {
         return this;
     }
 
-    public void removeDragSection() {
-        super.removeSectionById(mDragSection.getTypeId());
-        mDragSection = null;
-    }
-
     private void drag(int from, int to) {
         int leadingViews = getLeadingViewCount(mDragSection.getTypeId());
         mDragSection.onDrag(from - leadingViews, to - leadingViews);
@@ -79,17 +74,6 @@ public class DragDropAdapter extends HeterogeneousAdapter {
     }
 
     public static abstract class DragSection<Type> extends Section<Type> {
-
-        /**
-         * @param typeId The item type ID as used by
-         *               {@link RecyclerView.Adapter#getItemViewType(int)}. This ID is constant
-         *               for all items in this section. This value should be unique and constant
-         *               to the each class that extends Section. This value MUST be unique among
-         *               all Sections that are put in the same HeterogeneousAdapter.
-         */
-        public DragSection(int typeId) {
-            super(typeId);
-        }
 
         /**
          * @return The view ID of that may be touched to begin a drag gesture. If the entire view
