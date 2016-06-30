@@ -23,10 +23,10 @@ import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.PlaylistSongSection;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.music.view.EnhancedAdapters.DragBackgroundDecoration;
-import com.marverenic.music.view.EnhancedAdapters.DragDividerDecoration;
-import com.marverenic.music.view.EnhancedAdapters.DragDropAdapter;
-import com.marverenic.music.view.EnhancedAdapters.DragDropDecoration;
+import com.marverenic.music.view.DragBackgroundDecoration;
+import com.marverenic.music.view.DragDividerDecoration;
+import com.marverenic.heterogeneousadapter.DragDropAdapter;
+import com.marverenic.heterogeneousadapter.DragDropDecoration;
 
 import java.util.ArrayList;
 import java.util.Collections;

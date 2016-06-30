@@ -1,10 +1,10 @@
-package com.marverenic.music.view.EnhancedAdapters;
+package com.marverenic.music.view;
 
 import android.content.Context;
 import android.support.annotation.IdRes;
 import android.view.View;
 
-import com.marverenic.music.view.DividerDecoration;
+import com.marverenic.heterogeneousadapter.DragDropAdapter;
 
 /**
  * An extension of {@link DividerDecoration} designed for use with a
@@ -38,6 +38,6 @@ public class DragDividerDecoration extends DividerDecoration {
 
     @Override
     protected boolean includeView(View view) {
-        return !(view.getTag() instanceof DragDropAdapter.DragMarker) && super.includeView(view);
+        return view.getTag() == null && super.includeView(view);
     }
 }

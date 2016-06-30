@@ -11,15 +11,13 @@ import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.databinding.InstanceSongDragBinding;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
-import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
+import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.viewmodel.PlaylistSongViewModel;
 
 import java.util.List;
 
 public class PlaylistSongSection extends EditableSongSection {
-
-    public static final int ID = 720;
 
     private Context mContext;
     private FragmentManager mFragmentManager;
@@ -39,7 +37,7 @@ public class PlaylistSongSection extends EditableSongSection {
     public PlaylistSongSection(Context context, FragmentManager fragmentManager,
                                PlaylistStore playlistStore, List<Song> data,
                                Playlist reference) {
-        super(ID, data);
+        super(data);
         mContext = context;
         mFragmentManager = fragmentManager;
         mPlaylistStore = playlistStore;
@@ -81,7 +79,7 @@ public class PlaylistSongSection extends EditableSongSection {
         }
 
         @Override
-        public void update(Song s, int sectionPosition) {
+        public void onUpdate(Song s, int sectionPosition) {
             mBinding.getViewModel().setIndex(sectionPosition);
         }
     }

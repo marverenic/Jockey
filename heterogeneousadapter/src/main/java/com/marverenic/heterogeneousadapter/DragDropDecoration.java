@@ -1,4 +1,4 @@
-package com.marverenic.music.view.EnhancedAdapters;
+package com.marverenic.heterogeneousadapter;
 
 import android.graphics.Canvas;
 import android.graphics.Rect;

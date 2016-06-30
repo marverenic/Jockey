@@ -25,8 +25,8 @@ import com.marverenic.music.R;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
-import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
+import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -35,12 +35,10 @@ import java.util.List;
 
 public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylist.Rule> {
 
-    public static final int ID = 121;
-
     private static OnRemovalListener mRemovalListener;
 
     public RuleSection(@NonNull List<AutoPlaylist.Rule> data, OnRemovalListener listener) {
-        super(ID, data);
+        super(data);
         mRemovalListener = listener;
     }
 
@@ -98,7 +96,7 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylist.R
             dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM);
         }
 
-        public void update(AutoPlaylist.Rule rule, int position) {
+        public void onUpdate(AutoPlaylist.Rule rule, int position) {
             reference = rule;
             update();
         }

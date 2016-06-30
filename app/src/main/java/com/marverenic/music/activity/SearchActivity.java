@@ -32,7 +32,7 @@ import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
-import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.view.GridSpacingDecoration;
 import com.marverenic.music.view.ViewUtils;
 
@@ -128,16 +128,15 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         mGenreSection = new GenreSection(this, Collections.emptyList());
 
         mAdapter = new HeterogeneousAdapter()
-                .addSection(
-                        new HeaderSection(getString(R.string.header_playlists), PlaylistSection.ID))
+                .addSection(new HeaderSection(getString(R.string.header_playlists)))
                 .addSection(mPlaylistSection)
-                .addSection(new HeaderSection(getString(R.string.header_songs), SongSection.ID))
+                .addSection(new HeaderSection(getString(R.string.header_songs)))
                 .addSection(mSongSection)
-                .addSection(new HeaderSection(getString(R.string.header_albums), AlbumSection.ID))
+                .addSection(new HeaderSection(getString(R.string.header_albums)))
                 .addSection(mAlbumSection)
-                .addSection(new HeaderSection(getString(R.string.header_artists), ArtistSection.ID))
+                .addSection(new HeaderSection(getString(R.string.header_artists)))
                 .addSection(mArtistSection)
-                .addSection(new HeaderSection(getString(R.string.header_genres), GenreSection.ID))
+                .addSection(new HeaderSection(getString(R.string.header_genres)))
                 .addSection(mGenreSection);
 
         mAdapter.setEmptyState(new BasicEmptyState() {
@@ -157,7 +156,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                if (mAdapter.getItemViewType(position) == AlbumSection.ID) {
+                if (mAdapter.getItemViewType(position) == mAlbumSection.getTypeId()) {
                     return 1;
                 }
                 return numColumns;
@@ -168,7 +167,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         // Add item decorations
         mRecyclerView.addItemDecoration(new GridSpacingDecoration(
                 (int) getResources().getDimension(R.dimen.grid_margin),
-                numColumns, AlbumSection.ID));
+                numColumns, mAlbumSection.getTypeId()));
         mRecyclerView.addItemDecoration(
                 new BackgroundDecoration(R.id.subheaderFrame));
         mRecyclerView.addItemDecoration(
