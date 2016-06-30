@@ -18,10 +18,10 @@ import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.QueueSection;
 import com.marverenic.music.instances.section.SpacerSingleton;
 import com.marverenic.music.player.PlayerController;
-import com.marverenic.music.view.EnhancedAdapters.DragBackgroundDecoration;
-import com.marverenic.music.view.EnhancedAdapters.DragDividerDecoration;
-import com.marverenic.music.view.EnhancedAdapters.DragDropAdapter;
-import com.marverenic.music.view.EnhancedAdapters.DragDropDecoration;
+import com.marverenic.music.view.DragBackgroundDecoration;
+import com.marverenic.music.view.DragDividerDecoration;
+import com.marverenic.heterogeneousadapter.DragDropAdapter;
+import com.marverenic.heterogeneousadapter.DragDropDecoration;
 import com.marverenic.music.view.InsetDecoration;
 
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;

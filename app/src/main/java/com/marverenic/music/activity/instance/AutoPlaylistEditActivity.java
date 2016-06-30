@@ -20,7 +20,7 @@ import com.marverenic.music.instances.section.RuleSection;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
-import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;

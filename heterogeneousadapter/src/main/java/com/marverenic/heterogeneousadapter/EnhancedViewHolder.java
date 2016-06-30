@@ -1,4 +1,4 @@
-package com.marverenic.music.view.EnhancedAdapters;
+package com.marverenic.heterogeneousadapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;

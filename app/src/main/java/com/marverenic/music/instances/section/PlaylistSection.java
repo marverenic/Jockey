@@ -6,8 +6,8 @@ import android.view.ViewGroup;
 
 import com.marverenic.music.databinding.InstancePlaylistBinding;
 import com.marverenic.music.instances.Playlist;
-import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
-import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
+import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.viewmodel.PlaylistViewModel;
 
 import java.util.List;

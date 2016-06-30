@@ -13,8 +13,8 @@ import android.widget.TextView;
 import com.marverenic.music.R;
 import com.marverenic.music.lastfm.model.LfmArtist;
 import com.marverenic.music.lastfm.model.Tag;
-import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
-import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
+import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 
 public class ArtistBioSingleton extends HeterogeneousAdapter.SingletonSection<LfmArtist> {
 

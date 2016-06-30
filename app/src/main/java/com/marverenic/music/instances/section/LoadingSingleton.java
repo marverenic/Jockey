@@ -7,8 +7,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.marverenic.music.R;
-import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
-import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
+import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.view.MaterialProgressDrawable;
 
 public class LoadingSingleton extends HeterogeneousAdapter.SingletonSection<Void> {

@@ -1,4 +1,4 @@
-package com.marverenic.music.view.EnhancedAdapters;
+package com.marverenic.heterogeneousadapter;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -244,8 +244,8 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
      * {@link HeterogeneousAdapter}. Sections act as {@link RecyclerView.Adapter}s with the
      * condition that they may only have one type of ItemView
      * @param <Type> The type of data that this Section holds
-     * @see com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter.ListSection
-     * @see com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter.SingletonSection
+     * @see HeterogeneousAdapter.ListSection
+     * @see HeterogeneousAdapter.SingletonSection
      */
     public static abstract class Section<Type> {
 

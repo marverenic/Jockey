@@ -16,7 +16,7 @@ import com.marverenic.music.instances.section.ArtistSection;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
-import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 
 import java.util.List;
 

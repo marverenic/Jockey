@@ -4,9 +4,9 @@ import android.view.ViewGroup;
 
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.view.EnhancedAdapters.DragDropAdapter;
-import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
-import com.marverenic.music.view.EnhancedAdapters.HeterogeneousAdapter;
+import com.marverenic.heterogeneousadapter.DragDropAdapter;
+import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 
 import java.util.List;
 

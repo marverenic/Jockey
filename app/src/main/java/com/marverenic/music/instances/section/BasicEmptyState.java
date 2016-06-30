@@ -7,8 +7,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.marverenic.music.R;
-import com.marverenic.music.view.EnhancedAdapters.EmptyState;
-import com.marverenic.music.view.EnhancedAdapters.EnhancedViewHolder;
+import com.marverenic.heterogeneousadapter.EmptyState;
+import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 
 public abstract class BasicEmptyState extends EmptyState
         implements View.OnClickListener {
