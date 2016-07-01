@@ -14,6 +14,11 @@ import com.marverenic.music.data.annotations.BaseTheme;
 import com.marverenic.music.data.annotations.PresetTheme;
 import com.marverenic.music.data.annotations.StartPage;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 public class SharedPreferencesStore implements PreferencesStore {
 
     private static final String TAG = "SharedPreferencesStore";
@@ -42,6 +47,10 @@ public class SharedPreferencesStore implements PreferencesStore {
         return mPrefs.getString(mContext.getString(keyRes), defaultValue);
     }
 
+    private Set<String> getStringSet(@StringRes int keyRes) {
+        return mPrefs.getStringSet(mContext.getString(keyRes), Collections.emptySet());
+    }
+
     private void putBoolean(@StringRes int keyRes, boolean value) {
         mPrefs.edit()
                 .putBoolean(mContext.getString(keyRes), value)
@@ -57,6 +66,12 @@ public class SharedPreferencesStore implements PreferencesStore {
     private void putString(@StringRes int keyRes, String value) {
         mPrefs.edit()
                 .putString(mContext.getString(keyRes), value)
+                .apply();
+    }
+
+    private void putStringSet(@StringRes int keyRes, Set<String> value) {
+        mPrefs.edit()
+                .putStringSet(mContext.getString(keyRes), value)
                 .apply();
     }
 
@@ -134,6 +149,16 @@ public class SharedPreferencesStore implements PreferencesStore {
             }
         }
         return null;
+    }
+
+    @Override
+    public Set<String> getIncludedDirectories() {
+        return getStringSet(R.string.pref_key_included_dirs);
+    }
+
+    @Override
+    public Set<String> getExcludedDirectories() {
+        return getStringSet(R.string.pref_key_excluded_dirs);
     }
 
     @Override
@@ -222,5 +247,15 @@ public class SharedPreferencesStore implements PreferencesStore {
     @Override
     public void setEqualizerSettings(Equalizer.Settings settings) {
         putString(R.string.pref_key_eq_settings, settings.toString());
+    }
+
+    @Override
+    public void setIncludedDirectories(Collection<String> directories) {
+        putStringSet(R.string.pref_key_included_dirs, new HashSet<>(directories));
+    }
+
+    @Override
+    public void setExcludedDirectories(Collection<String> directories) {
+        putStringSet(R.string.pref_key_excluded_dirs, new HashSet<>(directories));
     }
 }

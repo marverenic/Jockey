@@ -30,6 +30,16 @@
             android:key="@string/pref_key_create_launcher_icon"
             android:title="@string/add_shortcut" />
     </PreferenceCategoryCompat>
+    <PreferenceCategoryCompat android:title="@string/pref_category_library">
+        <Preference
+            android:title="@string/pref_directory_include"
+            android:key="@string/pref_key_included_dirs"
+            android:fragment="com.marverenic.music.fragments.DirectoryListFragment"/>
+        <Preference
+            android:title="@string/pref_directory_exclude"
+            android:key="@string/pref_key_excluded_dirs"
+            android:fragment="com.marverenic.music.fragments.DirectoryListFragment"/>
+    </PreferenceCategoryCompat>
     <PreferenceCategoryCompat android:title="@string/settings_category_general">
         <SwitchPreferenceCompat
             android:defaultValue="true"
@@ -46,7 +56,7 @@
     </PreferenceCategoryCompat>
     <PreferenceCategoryCompat android:title="@string/playback_header">
         <Preference
-            android:title="Equalizer"
+            android:title="@string/pref_equalizer"
             android:fragment="com.marverenic.music.fragments.EqualizerFragment"/>
         <CheckBoxPreference
             android:defaultValue="true"

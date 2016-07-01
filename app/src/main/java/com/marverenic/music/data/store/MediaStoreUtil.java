@@ -129,16 +129,18 @@ public final class MediaStoreUtil {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
-    public static List<Song> getAllSongs(Context context) {
+    public static List<Song> getSongs(Context context, Uri uri, @Nullable String selection,
+                                      @Nullable String[] selectionArgs) {
+        String musicSelection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
+        if (selection != null) {
+            musicSelection += " AND " + selection;
+        }
+
         Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                SONG_PROJECTION,
-                MediaStore.Audio.Media.IS_MUSIC + "!= 0",
-                null,
-                MediaStore.Audio.Media.TITLE + " ASC");
+                uri, SONG_PROJECTION, musicSelection, selectionArgs, null);
 
         if (cur == null) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
         List<Song> songs = Song.buildSongList(cur, context.getResources());
@@ -148,16 +150,20 @@ public final class MediaStoreUtil {
         return songs;
     }
 
-    public static List<Album> getAllAlbums(Context context) {
+    public static List<Song> getSongs(Context context, @Nullable String selection,
+                                      @Nullable String[] selectionArgs) {
+        return getSongs(context, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                selection, selectionArgs);
+    }
+
+    public static List<Album> getAlbums(Context context, @Nullable String selection,
+                                        @Nullable String[] selectionArgs) {
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                ALBUM_PROJECTION,
-                null,
-                null,
-                MediaStore.Audio.Albums.ALBUM + " ASC");
+                ALBUM_PROJECTION, selection, selectionArgs, null);
 
         if (cur == null) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
         List<Album> albums = Album.buildAlbumList(cur, context.getResources());
@@ -167,16 +173,15 @@ public final class MediaStoreUtil {
         return albums;
     }
 
-    public static List<Artist> getAllArtists(Context context) {
+    public static List<Artist> getArtists(Context context, @Nullable String selection,
+                                          @Nullable String[] selectionArgs) {
+
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
-                ARTIST_PROJECTION,
-                null,
-                null,
-                MediaStore.Audio.Artists.ARTIST + " ASC");
+                ARTIST_PROJECTION, selection, selectionArgs, null);
 
         if (cur == null) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
         List<Artist> artists = Artist.buildArtistList(cur, context.getResources());
@@ -186,21 +191,18 @@ public final class MediaStoreUtil {
         return artists;
     }
 
-    public static List<Genre> getAllGenres(Context context) {
-        List<Genre> genres = new ArrayList<>();
+    public static List<Genre> getGenres(Context context, @Nullable String selection,
+                                        @Nullable String[] selectionArgs) {
 
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI,
-                GENRE_PROJECTION,
-                null,
-                null,
-                MediaStore.Audio.Genres.NAME + " ASC");
+                GENRE_PROJECTION, selection, selectionArgs, null);
 
         if (cur == null) {
-            return genres;
+            return Collections.emptyList();
         }
 
-        genres = Genre.buildGenreList(context, cur);
+        List<Genre> genres = Genre.buildGenreList(context, cur);
         Collections.sort(genres);
         cur.close();
 
@@ -208,7 +210,7 @@ public final class MediaStoreUtil {
     }
 
     public static List<Playlist> getAllPlaylists(Context context) {
-        List<Playlist> playlists = getMediaStorePlaylists(context);
+        List<Playlist> playlists = getPlaylists(context, null, null);
 
         for (Playlist p : getAutoPlaylists(context)) {
             if (playlists.remove(p)) {
@@ -226,16 +228,15 @@ public final class MediaStoreUtil {
         return playlists;
     }
 
-    public static List<Playlist> getMediaStorePlaylists(Context context) {
+    public static List<Playlist> getPlaylists(Context context, @Nullable String selection,
+                                              @Nullable String[] selectionArgs) {
+
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
-                PLAYLIST_PROJECTION,
-                null,
-                null,
-                MediaStore.Audio.Playlists.NAME + " ASC");
+                PLAYLIST_PROJECTION, selection, selectionArgs, null);
 
         if (cur == null) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
         List<Playlist> playlists = Playlist.buildPlaylistList(cur);
@@ -270,73 +271,15 @@ public final class MediaStoreUtil {
         return autoPlaylists;
     }
 
-    public static List<Song> getAlbumSongs(Context context, Album album) {
-        return getAlbumSongs(context, album.getAlbumId());
-    }
-
-    public static List<Song> getAlbumSongs(Context context, long albumId) {
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                SONG_PROJECTION,
-                MediaStore.Audio.Media.IS_MUSIC + " != 0 "
-                        + " AND " + MediaStore.Audio.AlbumColumns.ALBUM_ID + " = " + albumId,
-                null,
-                MediaStore.Audio.Media.TITLE + " ASC");
-
-        if (cur == null) {
-            return Collections.emptyList();
-        }
-
-        List<Song> songs = Song.buildSongList(cur, context.getResources());
-        Collections.sort(songs);
-        cur.close();
-
-        return songs;
-    }
-
-    public static List<Song> getArtistSongs(Context context, Artist artist) {
-        return getArtistSongs(context, artist.getArtistId());
-    }
-
-    public static List<Song> getArtistSongs(Context context, long artistId) {
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                SONG_PROJECTION,
-                MediaStore.Audio.Media.IS_MUSIC  + " != 0 "
-                        + " AND " + MediaStore.Audio.AudioColumns.ARTIST_ID + " = " + artistId,
-                null, null);
-
-        if (cur == null) {
-            return Collections.emptyList();
-        }
-
-        List<Song> songs = Song.buildSongList(cur, context.getResources());
-        Collections.sort(songs);
-        cur.close();
-
-        return songs;
-    }
-
     public static List<Album> getArtistAlbums(Context context, Artist artist) {
         return getArtistAlbums(context, artist.getArtistId());
     }
 
     public static List<Album> getArtistAlbums(Context context, long artistId) {
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                ALBUM_PROJECTION,
-                MediaStore.Audio.AudioColumns.ARTIST_ID + " = " + artistId,
-                null, null);
+        String selection = MediaStore.Audio.AudioColumns.ARTIST_ID + " = ?";
+        String[] selectionArgs = {Long.toString(artistId)};
 
-        if (cur == null) {
-            return Collections.emptyList();
-        }
-
-        List<Album> albums = Album.buildAlbumList(cur, context.getResources());
-        Collections.sort(albums);
-        cur.close();
-
-        return albums;
+        return getAlbums(context, selection, selectionArgs);
     }
 
     public static List<Song> getPlaylistSongs(Context context, Playlist playlist) {
@@ -359,26 +302,16 @@ public final class MediaStoreUtil {
         return songs;
     }
 
-    public static List<Song> getGenreSongs(Context context, Genre genre) {
-        return getGenreSongs(context, genre.getGenreId());
+    public static List<Song> getGenreSongs(Context context, Genre genre, @Nullable String selection,
+                                           @Nullable String[] selectionArgs) {
+        return getGenreSongs(context, genre.getGenreId(), selection, selectionArgs);
     }
 
-    public static List<Song> getGenreSongs(Context context, long genreId) {
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Genres.Members.getContentUri("external", genreId),
-                SONG_PROJECTION,
-                MediaStore.Audio.Media.IS_MUSIC + " != 0",
-                null, null);
-
-        if (cur == null) {
-            return Collections.emptyList();
-        }
-
-        List<Song> songs = Song.buildSongList(cur, context.getResources());
-        Collections.sort(songs);
-        cur.close();
-
-        return songs;
+    public static List<Song> getGenreSongs(Context context, long genreId,
+                                           @Nullable String selection,
+                                           @Nullable String[] selectionArgs) {
+        return getSongs(context, MediaStore.Audio.Genres.Members.getContentUri("external", genreId),
+                selection, selectionArgs);
     }
 
     public static Artist findArtistByName(Context context, String artistName) {
@@ -389,7 +322,7 @@ public final class MediaStoreUtil {
                 new String[]{artistName.toUpperCase()}, null);
 
         if (cur == null) {
-             return null;
+            return null;
         }
 
         Artist found = (cur.moveToFirst()) ? new Artist(context, cur) : null;
@@ -454,22 +387,10 @@ public final class MediaStoreUtil {
             return Collections.emptyList();
         }
 
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                SONG_PROJECTION,
-                "UPPER(" + MediaStore.Audio.Media.TITLE + ") LIKE ?",
-                new String[]{"%" + query.toUpperCase() + "%"}, null);
+        String whereClause = "UPPER(" + MediaStore.Audio.Media.TITLE + ") LIKE ?";
+        String[] args = {"%" + query.toUpperCase() + "%"};
 
-        if (cur == null) {
-            return Collections.emptyList();
-        }
-
-        List<Song> found = Song.buildSongList(cur, context.getResources());
-        Collections.sort(found);
-
-        cur.close();
-
-        return found;
+        return getSongs(context, whereClause, args);
     }
 
     public static List<Artist> searchForArtists(Context context, String query) {
@@ -477,22 +398,10 @@ public final class MediaStoreUtil {
             return Collections.emptyList();
         }
 
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
-                ARTIST_PROJECTION,
-                "UPPER(" + MediaStore.Audio.Artists.ARTIST + ") LIKE ?",
-                new String[]{"%" + query.toUpperCase() + "%"}, null);
+        String whereClause = "UPPER(" + MediaStore.Audio.Artists.ARTIST + ") LIKE ?";
+        String[] args = {"%" + query.toUpperCase() + "%"};
 
-        if (cur == null) {
-            return Collections.emptyList();
-        }
-
-        List<Artist> found = Artist.buildArtistList(cur, context.getResources());
-        Collections.sort(found);
-
-        cur.close();
-
-        return found;
+        return getArtists(context, whereClause, args);
     }
 
     public static List<Album> searchForAlbums(Context context, String query) {
@@ -500,22 +409,10 @@ public final class MediaStoreUtil {
             return Collections.emptyList();
         }
 
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                ALBUM_PROJECTION,
-                "UPPER(" + MediaStore.Audio.Albums.ALBUM + ") LIKE ?",
-                new String[]{"%" + query.toUpperCase() + "%"}, null);
+        String whereClause = "UPPER(" + MediaStore.Audio.Albums.ALBUM + ") LIKE ?";
+        String[] args = {"%" + query.toUpperCase() + "%"};
 
-        if (cur == null) {
-            return Collections.emptyList();
-        }
-
-        List<Album> found = Album.buildAlbumList(cur, context.getResources());
-        Collections.sort(found);
-
-        cur.close();
-
-        return found;
+        return getAlbums(context, whereClause, args);
     }
 
     public static List<Genre> searchForGenres(Context context, String query) {
@@ -523,22 +420,10 @@ public final class MediaStoreUtil {
             return Collections.emptyList();
         }
 
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI,
-                GENRE_PROJECTION,
-                "UPPER(" + MediaStore.Audio.Genres.NAME + ") LIKE ?",
-                new String[]{"%" + query.toUpperCase() + "%"}, null);
+        String whereClause = "UPPER(" + MediaStore.Audio.Genres.NAME + ") LIKE ?";
+        String[] args = {"%" + query.toUpperCase() + "%"};
 
-        if (cur == null) {
-            return Collections.emptyList();
-        }
-
-        List<Genre> found = Genre.buildGenreList(context, cur);
-        Collections.sort(found);
-
-        cur.close();
-
-        return found;
+        return getGenres(context, whereClause, args);
     }
 
     public static List<Playlist> searchForPlaylists(Context context, String query) {
@@ -546,22 +431,10 @@ public final class MediaStoreUtil {
             return Collections.emptyList();
         }
 
-        Cursor cur = context.getContentResolver().query(
-                MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
-                PLAYLIST_PROJECTION,
-                "UPPER(" + MediaStore.Audio.Playlists.NAME + ") LIKE ?",
-                new String[]{"%" + query.toUpperCase() + "%"}, null);
+        String whereClause = "UPPER(" + MediaStore.Audio.Playlists.NAME + ") LIKE ?";
+        String[] args = {"%" + query.toUpperCase() + "%"};
 
-        if (cur == null) {
-            return Collections.emptyList();
-        }
-
-        List<Playlist> found = Playlist.buildPlaylistList(cur);
-        Collections.sort(found);
-
-        cur.close();
-
-        return found;
+        return getPlaylists(context, whereClause, args);
     }
 
     public static Playlist createPlaylist(Context context, String playlistName,

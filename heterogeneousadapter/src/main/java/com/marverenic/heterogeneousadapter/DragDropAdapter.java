@@ -7,6 +7,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 public class DragDropAdapter extends HeterogeneousAdapter {
 
     private DragSection mDragSection;
@@ -106,6 +108,30 @@ public class DragDropAdapter extends HeterogeneousAdapter {
          * @param to The index that an item was moved to. May be equal to <code>from</code>.
          */
         protected abstract void onDrop(int from, int to);
+    }
+
+    public static abstract class ListDragSection<Type> extends DragSection<Type> {
+
+        private List<Type> mData;
+
+        public ListDragSection(List<Type> data) {
+            mData = data;
+        }
+
+        @Override
+        protected void onDrag(int from, int to) {
+            mData.add(to, mData.remove(from));
+        }
+
+        @Override
+        public int getItemCount(HeterogeneousAdapter adapter) {
+            return mData.size();
+        }
+
+        @Override
+        public Type get(int position) {
+            return mData.get(position);
+        }
     }
 
     /**

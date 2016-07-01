@@ -4,6 +4,7 @@
     <!-- Preference Strings -->
     <string name="settings_category_general">General</string>
     <string name="appearance_header">Appearance</string>
+    <string name="pref_category_library">Library</string>
     <string name="playback_header">Playback</string>
     <string name="default_page_pref">Default Page</string>
     <string name="theme_primary">Primary Color</string>
@@ -22,6 +23,9 @@
     <string name="logging_on">Anonymous usage data and crash information will be sent to Marverenic</string>
     <string name="logging_off">Only anonymous crash information will be sent to Marverenic</string>
     <string name="logging_description">Help improve Jockey</string>
+    <string name="pref_directory_include">Include folders</string>
+    <string name="pref_directory_exclude">Exclude folders</string>
+    <string name="pref_equalizer">Equalizer</string>
     <string name="gesture_description">Enable now playing gestures</string>
     <string name="gesture_detail">Swipe across the album art to skip songs,
         or tap to play/pause music</string>
