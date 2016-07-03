@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -18,50 +17,43 @@ public class AutoPlaylist extends Playlist implements Parcelable {
     public static final int UNLIMITED_ENTRIES = -1;
 
     /**
-     * An empty auto playlist instance
-     */
-    public static final AutoPlaylist EMPTY =
-            new AutoPlaylist(-1, "", UNLIMITED_ENTRIES, Rule.Field.NAME, Rule.Field.NAME,
-                    true, true, true, Rule.EMPTY);
-
-    /**
      * How many items can be stored in this playlist. Default is unlimited
      */
     @SerializedName("maximumEntries")
-    protected int maximumEntries;
+    private int maximumEntries;
 
     /**
-     * The field to look at when truncating the playlist. Must be a member of {@link Rule.Field}.
-     * {@link Rule.Field#ID} will yield a random trim
+     * The field to look at when truncating the playlist. Must be a member of {@link PlaylistRule.Field}.
+     * {@link PlaylistRule.Field#ID} will yield a random trim
      */
     @SerializedName("truncateMethod")
-    protected int truncateMethod;
+    private int truncateMethod;
 
     /**
      * Whether to trim the playlist ascending (A-Z, oldest to newest, or 0-infinity).
      * If false, sort descending (Z-A, newest to oldest, or infinity-0).
      */
     @SerializedName("truncateAscending")
-    protected boolean truncateAscending;
+    private boolean truncateAscending;
 
     /**
      * Whether or not a song has to match all rules in order to appear in the playlist.
      */
     @SerializedName("matchAllRules")
-    protected boolean matchAllRules;
+    private boolean matchAllRules;
 
     /**
      * The rules to match when building the playlist
      */
     @SerializedName("rules")
-    protected Rule[] rules;
+    private PlaylistRule[] rules;
 
     /**
-     * The field to look at when sorting the playlist. Must be a member of {@link Rule.Field} and
-     * cannot be {@link Rule.Field#ID}
+     * The field to look at when sorting the playlist. Must be a member of {@link PlaylistRule.Field} and
+     * cannot be {@link PlaylistRule.Field#ID}
      */
     @SerializedName("sortMethod")
-    protected int sortMethod;
+    private int sortMethod;
 
     /**
      * Whether to sort the playlist ascending (A-Z, oldest to newest, or 0-infinity).
@@ -69,8 +61,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      * Default is true.
      */
     @SerializedName("sortAscending")
-    protected boolean sortAscending;
-
+    private boolean sortAscending;
 
     /**
      * AutoPlaylist Creator
@@ -88,7 +79,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      *                      playlist
      * @param rules The rules that songs must follow in order to appear in this playlist
      */
-    public AutoPlaylist(long playlistId, String playlistName, int maximumEntries, int sortMethod,
+    private AutoPlaylist(long playlistId, String playlistName, int maximumEntries, int sortMethod,
                          int truncateMethod, boolean truncateAscending, boolean sortAscending,
                          boolean matchAllRules, PlaylistRule... rules) {
         super(playlistId, playlistName);
@@ -148,38 +139,6 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         return sortAscending;
     }
 
-    public void setPlaylistName(String name) {
-        this.playlistName = name;
-    }
-
-    public void setMaximumEntries(int maximumEntries) {
-        this.maximumEntries = maximumEntries;
-    }
-
-    public void setTruncateMethod(int truncateMethod) {
-        this.truncateMethod = truncateMethod;
-    }
-
-    public void setTruncateAscending(boolean truncateAscending) {
-        this.truncateAscending = truncateAscending;
-    }
-
-    public void setMatchAllRules(boolean matchAllRules) {
-        this.matchAllRules = matchAllRules;
-    }
-
-    public void setRules(Rule[] rules) {
-        this.rules = rules;
-    }
-
-    public void setSortMethod(int sortMethod) {
-        this.sortMethod = sortMethod;
-    }
-
-    public void setSortAscending(boolean sortAscending) {
-        this.sortAscending = sortAscending;
-    }
-
     /**
      * Generate the list of songs that match all rules for this playlist.
      * @param context A {@link Context} used for various operations like reading play counts and
@@ -189,22 +148,6 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      */
     public List<Song> generatePlaylist(Context context) {
         return null;
-    }
-
-    /**
-     * Used to determine if the rules of this AutoPlaylist are equal to that of another playlist.
-     * This is different from .equals() because .equals() looks at ID's only which is required
-     * behavior in other areas of the app.
-     * @param other The AutoPlaylist to compare to
-     * @return true if these AutoPlaylists have the same rules
-     */
-    public boolean isEqual(AutoPlaylist other) {
-        return other == this || other != null
-                && other.matchAllRules == this.matchAllRules
-                && other.sortAscending == this.sortAscending
-                && other.truncateAscending == this.truncateAscending
-                && other.maximumEntries == this.maximumEntries
-                && other.playlistName.equals(this.playlistName);
     }
 
     public static final Parcelable.Creator<Parcelable> CREATOR =
