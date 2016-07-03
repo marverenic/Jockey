@@ -152,6 +152,24 @@ public abstract class AutoPlaylistRule implements Parcelable {
         parcel.writeString(mValue);
     }
 
+    public static final Creator<AutoPlaylistRule> CREATOR = new Creator<AutoPlaylistRule>() {
+        @Override
+        public AutoPlaylistRule createFromParcel(Parcel in) {
+            //noinspection WrongConstant
+            return new Factory()
+                    .setType(in.readInt())
+                    .setField(in.readInt())
+                    .setMatch(in.readInt())
+                    .setValue(in.readString())
+                    .build();
+        }
+
+        @Override
+        public AutoPlaylistRule[] newArray(int size) {
+            return new AutoPlaylistRule[size];
+        }
+    };
+
     public static class Factory {
 
         @Type private int mType;
