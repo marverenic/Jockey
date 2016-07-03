@@ -1,5 +1,6 @@
 package com.marverenic.music.instances.playlistrules;
 
+import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
@@ -85,6 +86,47 @@ public abstract class AutoPlaylistRule implements Parcelable {
     @Match
     public int getMatch() {
         return mMatch;
+    }
+
+    @SuppressLint("SwitchIntDef")
+    protected boolean checkId(long actual) {
+        switch (getMatch()) {
+            case EQUALS:
+                return actual == Long.parseLong(getValue());
+            case NOT_EQUALS:
+                return actual != Long.parseLong(getValue());
+        }
+        throw new IllegalArgumentException("Cannot compare ids with match type " + getMatch());
+    }
+
+    @SuppressLint("SwitchIntDef")
+    protected boolean checkString(String actual) {
+        switch (getMatch()) {
+            case EQUALS:
+                return actual.equalsIgnoreCase(getValue());
+            case NOT_EQUALS:
+                return !actual.equalsIgnoreCase(getValue());
+            case CONTAINS:
+                return actual.contains(getValue());
+            case NOT_CONTAINS:
+                return !actual.contains(getValue());
+        }
+        throw new IllegalArgumentException("Cannot compare Strings with match type " + getMatch());
+    }
+
+    @SuppressLint("SwitchIntDef")
+    protected boolean checkInt(long actual) {
+        switch (getMatch()) {
+            case EQUALS:
+                return actual == Long.parseLong(getValue());
+            case NOT_EQUALS:
+                return actual != Long.parseLong(getValue());
+            case LESS_THAN:
+                return actual < Long.parseLong(getValue());
+            case GREATER_THAN:
+                return actual > Long.parseLong(getValue());
+        }
+        throw new IllegalArgumentException("Cannot compare integers with match type" + getMatch());
     }
 
     public String getValue() {
