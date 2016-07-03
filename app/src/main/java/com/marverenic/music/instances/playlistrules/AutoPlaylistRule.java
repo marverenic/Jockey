@@ -6,6 +6,8 @@ import android.os.Parcelable;
 import android.support.annotation.IntDef;
 
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlayCountStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.Song;
 
 import java.util.List;
@@ -133,7 +135,9 @@ public abstract class AutoPlaylistRule implements Parcelable {
         return mValue;
     }
 
-    public abstract Observable<List<Song>> applyFilter(MusicStore musicStore);
+    public abstract Observable<List<Song>> applyFilter(PlaylistStore playlist,
+                                                       MusicStore musicStore,
+                                                       PlayCountStore playCountStore);
 
     @Override
     public int describeContents() {
