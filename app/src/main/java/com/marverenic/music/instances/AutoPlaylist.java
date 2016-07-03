@@ -24,40 +24,40 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      * How many items can be stored in this playlist. Default is unlimited
      */
     @SerializedName("maximumEntries")
-    private final int maximumEntries;
+    private final int mMaximumEntries;
 
     /**
      * The field to look at when truncating the playlist. Must be a member of {@link Field}.
      * {@link Field#ID} will yield a random trim
      */
     @SerializedName("truncateMethod")
-    private final int truncateMethod;
+    private final int mTruncateMethod;
 
     /**
      * Whether to trim the playlist ascending (A-Z, oldest to newest, or 0-infinity).
      * If false, sort descending (Z-A, newest to oldest, or infinity-0).
      */
     @SerializedName("truncateAscending")
-    private final boolean truncateAscending;
+    private final boolean mTruncateAscending;
 
     /**
      * Whether or not a song has to match all rules in order to appear in the playlist.
      */
     @SerializedName("matchAllRules")
-    private final boolean matchAllRules;
+    private final boolean mMatchAllRules;
 
     /**
      * The rules to match when building the playlist
      */
     @SerializedName("rules")
-    private final List<AutoPlaylistRule> rules;
+    private final List<AutoPlaylistRule> mRules;
 
     /**
      * The field to look at when sorting the playlist. Must be a member of {@link Field} and
      * cannot be {@link Field#ID}
      */
     @SerializedName("sortMethod")
-    private final int sortMethod;
+    private final int mSortMethod;
 
     /**
      * Whether to sort the playlist ascending (A-Z, oldest to newest, or 0-infinity).
@@ -65,7 +65,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      * Default is true.
      */
     @SerializedName("sortAscending")
-    private final boolean sortAscending;
+    private final boolean mSortAscending;
 
     /**
      * AutoPlaylist Creator
@@ -87,15 +87,13 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                          int truncateMethod, boolean truncateAscending, boolean sortAscending,
                          boolean matchAllRules, AutoPlaylistRule... rules) {
         super(playlistId, playlistName);
-        this.playlistId = playlistId;
-        this.playlistName = playlistName;
-        this.maximumEntries = maximumEntries;
-        this.matchAllRules = matchAllRules;
-        this.rules = Collections.unmodifiableList(Arrays.asList(rules));
-        this.truncateMethod = truncateMethod;
-        this.truncateAscending = truncateAscending;
-        this.sortMethod = sortMethod;
-        this.sortAscending = sortAscending;
+        mMaximumEntries = maximumEntries;
+        mMatchAllRules = matchAllRules;
+        mRules = Collections.unmodifiableList(Arrays.asList(rules));
+        mTruncateMethod = truncateMethod;
+        mTruncateAscending = truncateAscending;
+        mSortMethod = sortMethod;
+        mSortAscending = sortAscending;
     }
 
     /**
@@ -122,13 +120,13 @@ public class AutoPlaylist extends Playlist implements Parcelable {
 
     private AutoPlaylist(Parcel in) {
         super(in);
-        maximumEntries = in.readInt();
-        matchAllRules = in.readByte() == 1;
-        rules = Collections.unmodifiableList(in.createTypedArrayList(AutoPlaylistRule.CREATOR));
-        sortMethod = in.readInt();
-        truncateMethod = in.readInt();
-        truncateAscending = in.readByte() == 1;
-        sortAscending = in.readByte() == 1;
+        mMaximumEntries = in.readInt();
+        mMatchAllRules = in.readByte() == 1;
+        mRules = Collections.unmodifiableList(in.createTypedArrayList(AutoPlaylistRule.CREATOR));
+        mSortMethod = in.readInt();
+        mTruncateMethod = in.readInt();
+        mTruncateAscending= in.readByte() == 1;
+        mSortAscending = in.readByte() == 1;
     }
 
     @Override
@@ -139,13 +137,13 @@ public class AutoPlaylist extends Playlist implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeInt(maximumEntries);
-        dest.writeByte((byte) ((matchAllRules) ? 1 : 0));
-        dest.writeTypedList(rules);
-        dest.writeInt(sortMethod);
-        dest.writeInt(truncateMethod);
-        dest.writeByte((byte) ((truncateAscending) ? 1 : 0));
-        dest.writeByte((byte) ((sortAscending) ? 1 : 0));
+        dest.writeInt(mMaximumEntries);
+        dest.writeByte((byte) ((mMatchAllRules) ? 1 : 0));
+        dest.writeTypedList(mRules);
+        dest.writeInt(mSortMethod);
+        dest.writeInt(mTruncateMethod);
+        dest.writeByte((byte) ((mTruncateAscending) ? 1 : 0));
+        dest.writeByte((byte) ((mSortAscending) ? 1 : 0));
     }
 
 }
