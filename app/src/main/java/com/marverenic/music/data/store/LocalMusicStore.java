@@ -204,7 +204,7 @@ public class LocalMusicStore implements MusicStore {
         return filterGenres(MediaStoreUtil.getGenres(mContext, null, null));
     }
 
-    private boolean shouldFilterMedia() {
+    private boolean noDirectoryFilters() {
         boolean notIncludingFolders = mPreferencesStore.getIncludedDirectories().isEmpty();
         boolean notExcludingFolders = mPreferencesStore.getExcludedDirectories().isEmpty();
 
@@ -212,7 +212,7 @@ public class LocalMusicStore implements MusicStore {
     }
 
     private List<Album> filterAlbums(List<Album> albumsToFilter) {
-        if (shouldFilterMedia()) {
+        if (noDirectoryFilters()) {
             return albumsToFilter;
         }
 
@@ -231,7 +231,7 @@ public class LocalMusicStore implements MusicStore {
     }
 
     private List<Artist> filterArtists(List<Artist> artistsToFilter) {
-        if (shouldFilterMedia()) {
+        if (noDirectoryFilters()) {
             return artistsToFilter;
         }
 
@@ -250,7 +250,7 @@ public class LocalMusicStore implements MusicStore {
     }
 
     private List<Genre> filterGenres(List<Genre> genresToFilter) {
-        if (shouldFilterMedia()) {
+        if (noDirectoryFilters()) {
             return genresToFilter;
         }
 
