@@ -1,9 +1,10 @@
-package com.marverenic.music.instances;
+package com.marverenic.music.instances.playlistrules;
 
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
 
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.instances.Song;
 
 import java.util.List;
 

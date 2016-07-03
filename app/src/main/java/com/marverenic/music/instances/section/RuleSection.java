@@ -23,7 +23,7 @@ import android.widget.TextView;
 
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Album;
-import com.marverenic.music.instances.PlaylistRule;
+import com.marverenic.music.instances.playlistrules.PlaylistRule;
 import com.marverenic.music.instances.Song;
 import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;

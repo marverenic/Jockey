@@ -21,7 +21,7 @@ import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
-import com.marverenic.music.instances.PlaylistRule;
+import com.marverenic.music.instances.playlistrules.PlaylistRule;
 
 import javax.inject.Inject;
 
