@@ -269,10 +269,11 @@ public class LocalMusicStore implements MusicStore {
         }
 
         List<Genre> filteredGenres = new ArrayList<>();
+        String directorySelection = getDirectoryInclusionExclusionSelection();
 
         for (Genre genre : genresToFilter) {
             boolean hasSongs = !MediaStoreUtil.getGenreSongs(mContext, genre,
-                    getDirectoryInclusionExclusionSelection(), null).isEmpty();
+                    directorySelection, null).isEmpty();
 
             if (hasSongs) {
                 filteredGenres.add(genre);
