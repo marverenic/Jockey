@@ -1,5 +1,6 @@
 package com.marverenic.music.instances.playlistrules;
 
+import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
 
@@ -61,6 +62,14 @@ public abstract class AutoPlaylistRule implements Parcelable {
         mValue = value;
     }
 
+    @SuppressWarnings("WrongConstant")
+    protected AutoPlaylistRule(Parcel in) {
+        mType = in.readInt();
+        mField = in.readInt();
+        mMatch = in.readInt();
+        mValue = in.readString();
+    }
+
     @Type
     public int getType() {
         return mType;
@@ -81,6 +90,19 @@ public abstract class AutoPlaylistRule implements Parcelable {
     }
 
     public abstract List<Song> applyFilter(MusicStore musicStore);
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(mType);
+        parcel.writeInt(mField);
+        parcel.writeInt(mMatch);
+        parcel.writeString(mValue);
+    }
 
     public static class Factory {
 
