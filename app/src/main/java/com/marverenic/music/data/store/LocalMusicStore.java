@@ -216,10 +216,6 @@ public class LocalMusicStore implements MusicStore {
             return albumsToFilter;
         }
 
-        if (mSongs == null || !mSongs.hasValue()) {
-            getSongs();
-        }
-
         List<Album> filteredAlbums = new ArrayList<>();
 
         for (Album album : albumsToFilter) {
@@ -237,10 +233,6 @@ public class LocalMusicStore implements MusicStore {
     private List<Artist> filterArtists(List<Artist> artistsToFilter) {
         if (shouldFilterMedia()) {
             return artistsToFilter;
-        }
-
-        if (mSongs == null || !mSongs.hasValue()) {
-            getSongs();
         }
 
         List<Artist> filteredArtists = new ArrayList<>();
