@@ -146,4 +146,31 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         dest.writeByte((byte) ((mSortAscending) ? 1 : 0));
     }
 
+    public int getMaximumEntries() {
+        return mMaximumEntries;
+    }
+
+    public int getTruncateMethod() {
+        return mTruncateMethod;
+    }
+
+    public boolean isTruncateAscending() {
+        return mTruncateAscending;
+    }
+
+    public boolean isMatchAllRules() {
+        return mMatchAllRules;
+    }
+
+    public List<AutoPlaylistRule> getRules() {
+        return mRules;
+    }
+
+    public int getSortMethod() {
+        return mSortMethod;
+    }
+
+    public boolean isSortAscending() {
+        return mSortAscending;
+    }
 }
