@@ -6,6 +6,7 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
+import com.marverenic.music.instances.playlistrules.AutoPlaylistRule.Field;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +25,8 @@ public class AutoPlaylist extends Playlist implements Parcelable {
     private int maximumEntries;
 
     /**
-     * The field to look at when truncating the playlist. Must be a member of {@link AutoPlaylistRule.Field}.
-     * {@link AutoPlaylistRule.Field#ID} will yield a random trim
+     * The field to look at when truncating the playlist. Must be a member of {@link Field}.
+     * {@link Field#ID} will yield a random trim
      */
     @SerializedName("truncateMethod")
     private int truncateMethod;
@@ -50,8 +51,8 @@ public class AutoPlaylist extends Playlist implements Parcelable {
     private AutoPlaylistRule[] rules;
 
     /**
-     * The field to look at when sorting the playlist. Must be a member of {@link AutoPlaylistRule.Field} and
-     * cannot be {@link AutoPlaylistRule.Field#ID}
+     * The field to look at when sorting the playlist. Must be a member of {@link Field} and
+     * cannot be {@link Field#ID}
      */
     @SerializedName("sortMethod")
     private int sortMethod;
@@ -74,7 +75,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      *                       be applied after the list has been sorted. Any extra entries will be
      *                       truncated.
      * @param sortMethod The order the songs will be sorted (Must be one of
-     *                   {@link AutoPlaylistRule.Field} and can't be ID
+     *                   {@link Field} and can't be ID
      * @param sortAscending Whether to sort this playlist ascending (A-Z or 0-infinity) or not
      * @param matchAllRules Whether or not all rules have to be matched for a song to appear in this
      *                      playlist
