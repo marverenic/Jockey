@@ -9,6 +9,8 @@ import com.marverenic.music.instances.Song;
 
 import java.util.List;
 
+import rx.Observable;
+
 public abstract class AutoPlaylistRule implements Parcelable {
 
     public static final int PLAYLIST = 0;
@@ -89,7 +91,7 @@ public abstract class AutoPlaylistRule implements Parcelable {
         return mValue;
     }
 
-    public abstract List<Song> applyFilter(MusicStore musicStore);
+    public abstract Observable<List<Song>> applyFilter(MusicStore musicStore);
 
     @Override
     public int describeContents() {
