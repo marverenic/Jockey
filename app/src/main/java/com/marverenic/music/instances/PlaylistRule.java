@@ -2,34 +2,41 @@ package com.marverenic.music.instances;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.IntDef;
 
 public class PlaylistRule implements Parcelable {
 
-    public static final class Type {
-        public static final int PLAYLIST = 0;
-        public static final int SONG = 1;
-        public static final int ARTIST = 2;
-        public static final int ALBUM = 3;
-        public static final int GENRE = 4;
+    public static final int PLAYLIST = 0;
+    public static final int SONG = 1;
+    public static final int ARTIST = 2;
+    public static final int ALBUM = 3;
+    public static final int GENRE = 4;
+
+    public static final int ID = 5;
+    public static final int NAME = 6;
+    public static final int PLAY_COUNT = 7;
+    public static final int SKIP_COUNT = 8;
+    public static final int YEAR = 9;
+    public static final int DATE_ADDED = 10;
+    public static final int DATE_PLAYED = 11;
+
+    public static final int EQUALS = 12;
+    public static final int NOT_EQUALS = 13;
+    public static final int CONTAINS = 14;
+    public static final int NOT_CONTAINS = 15;
+    public static final int LESS_THAN = 16;
+    public static final int GREATER_THAN = 17;
+
+    @IntDef(value = {PLAYLIST, SONG, ARTIST, ALBUM, GENRE})
+    public @interface Type {
     }
 
-    public static final class Field {
-        public static final int ID = 5;
-        public static final int NAME = 6;
-        public static final int PLAY_COUNT = 7;
-        public static final int SKIP_COUNT = 8;
-        public static final int YEAR = 9;
-        public static final int DATE_ADDED = 10;
-        public static final int DATE_PLAYED = 11;
+    @IntDef(value = {ID, NAME, PLAY_COUNT, SKIP_COUNT, YEAR, DATE_ADDED, DATE_PLAYED})
+    public @interface Field {
     }
 
-    public static final class Match {
-        public static final int EQUALS = 12;
-        public static final int NOT_EQUALS = 13;
-        public static final int CONTAINS = 14;
-        public static final int NOT_CONTAINS = 15;
-        public static final int LESS_THAN = 16;
-        public static final int GREATER_THAN = 17;
+    @IntDef(value = {EQUALS, NOT_EQUALS, CONTAINS, NOT_CONTAINS, LESS_THAN, GREATER_THAN})
+    public @interface Match {
     }
 
     private int type;
