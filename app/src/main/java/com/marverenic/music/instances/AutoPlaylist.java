@@ -96,27 +96,6 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         this.sortAscending = sortAscending;
     }
 
-    /**
-     * Duplicate a playlist. The instantiated playlist will be completely independent of its parent
-     * @param playlist The AutoPlaylist to become a copy of
-     */
-    public AutoPlaylist(AutoPlaylist playlist) {
-        this(
-                playlist.playlistId,
-                playlist.playlistName,
-                playlist.maximumEntries,
-                playlist.sortMethod,
-                playlist.truncateMethod,
-                playlist.truncateAscending,
-                playlist.sortAscending,
-                playlist.matchAllRules);
-
-        this.rules = new AutoPlaylistRule[playlist.rules.length];
-        for (int i = 0; i < this.rules.length; i++) {
-            this.rules[i] = new AutoPlaylistRule(playlist.rules[i]);
-        }
-    }
-
     public int getMaximumEntries() {
         return maximumEntries;
     }
