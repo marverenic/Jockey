@@ -170,20 +170,24 @@ public abstract class AutoPlaylistRule implements Parcelable {
             mMatch = from.getMatch();
         }
 
-        public void setType(@Type int type) {
+        public Factory setType(@Type int type) {
             mType = type;
+            return this;
         }
 
-        public void setField(@Field int field) {
+        public Factory setField(@Field int field) {
             mField = field;
+            return this;
         }
 
-        public void setMatch(@Match int match) {
+        public Factory setMatch(@Match int match) {
             mMatch = match;
+            return this;
         }
 
-        public void setValue(String value) {
+        public Factory setValue(String value) {
             mValue = value;
+            return this;
         }
 
         public AutoPlaylistRule build() {
