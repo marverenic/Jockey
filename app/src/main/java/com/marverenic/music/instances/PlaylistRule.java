@@ -72,6 +72,8 @@ public abstract class PlaylistRule implements Parcelable {
         return mMatch;
     }
 
+    public abstract String getValue();
+
     public abstract List<Song> applyFilter(MusicStore musicStore);
 
 }
