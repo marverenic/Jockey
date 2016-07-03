@@ -14,6 +14,8 @@ import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
 
 public class LocalMusicStore implements MusicStore {
@@ -58,15 +60,17 @@ public class LocalMusicStore implements MusicStore {
         if (mSongs == null) {
             mSongs = BehaviorSubject.create();
 
-            MediaStoreUtil.getPermission(mContext).subscribe(granted -> {
-                if (granted) {
-                    mSongs.onNext(getAllSongs());
-                } else {
-                    mSongs.onNext(Collections.emptyList());
-                }
-            });
+            MediaStoreUtil.getPermission(mContext)
+                    .observeOn(Schedulers.io())
+                    .subscribe(granted -> {
+                        if (granted) {
+                            mSongs.onNext(getAllSongs());
+                        } else {
+                            mSongs.onNext(Collections.emptyList());
+                        }
+                    });
         }
-        return mSongs;
+        return mSongs.asObservable().observeOn(AndroidSchedulers.mainThread());
     }
 
     private List<Song> getAllSongs() {
@@ -137,15 +141,17 @@ public class LocalMusicStore implements MusicStore {
         if (mAlbums == null) {
             mAlbums = BehaviorSubject.create();
 
-            MediaStoreUtil.getPermission(mContext).subscribe(granted -> {
-                if (granted) {
-                    mAlbums.onNext(getAllAlbums());
-                } else {
-                    mAlbums.onNext(Collections.emptyList());
-                }
-            });
+            MediaStoreUtil.getPermission(mContext)
+                    .observeOn(Schedulers.io())
+                    .subscribe(granted -> {
+                        if (granted) {
+                            mAlbums.onNext(getAllAlbums());
+                        } else {
+                            mAlbums.onNext(Collections.emptyList());
+                        }
+                    });
         }
-        return mAlbums;
+        return mAlbums.asObservable().observeOn(AndroidSchedulers.mainThread());
     }
 
     private List<Album> getAllAlbums() {
@@ -157,15 +163,17 @@ public class LocalMusicStore implements MusicStore {
         if (mArtists == null) {
             mArtists = BehaviorSubject.create();
 
-            MediaStoreUtil.getPermission(mContext).subscribe(granted -> {
-                if (granted) {
-                    mArtists.onNext(getAllArtists());
-                } else {
-                    mArtists.onNext(Collections.emptyList());
-                }
-            });
+            MediaStoreUtil.getPermission(mContext)
+                    .observeOn(Schedulers.io())
+                    .subscribe(granted -> {
+                        if (granted) {
+                            mArtists.onNext(getAllArtists());
+                        } else {
+                            mArtists.onNext(Collections.emptyList());
+                        }
+                    });
         }
-        return mArtists;
+        return mArtists.asObservable().observeOn(AndroidSchedulers.mainThread());
     }
 
     private List<Artist> getAllArtists() {
@@ -177,15 +185,17 @@ public class LocalMusicStore implements MusicStore {
         if (mGenres == null) {
             mGenres = BehaviorSubject.create();
 
-            MediaStoreUtil.getPermission(mContext).subscribe(granted -> {
-                if (granted) {
-                    mGenres.onNext(getAllGenres());
-                } else {
-                    mGenres.onNext(Collections.emptyList());
-                }
-            });
+            MediaStoreUtil.getPermission(mContext)
+                    .observeOn(Schedulers.io())
+                    .subscribe(granted -> {
+                        if (granted) {
+                            mGenres.onNext(getAllGenres());
+                        } else {
+                            mGenres.onNext(Collections.emptyList());
+                        }
+                    });
         }
-        return mGenres;
+        return mGenres.asObservable().subscribeOn(AndroidSchedulers.mainThread());
     }
 
     private List<Genre> getAllGenres() {
