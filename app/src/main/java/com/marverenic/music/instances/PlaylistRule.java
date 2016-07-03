@@ -1,10 +1,13 @@
 package com.marverenic.music.instances;
 
-import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
 
-public class PlaylistRule implements Parcelable {
+import com.marverenic.music.data.store.MusicStore;
+
+import java.util.List;
+
+public abstract class PlaylistRule implements Parcelable {
 
     public static final int PLAYLIST = 0;
     public static final int SONG = 1;
@@ -39,71 +42,36 @@ public class PlaylistRule implements Parcelable {
     public @interface Match {
     }
 
-    private int type;
-    private int match;
-    private int field;
-    private String value;
+    @Type
+    private final int mType;
 
-    private PlaylistRule(int type, int field, int match, String value) {
-        this.type = type;
-        this.field = field;
-        this.match = match;
-        this.value = value;
+    @Field
+    private final int mField;
+
+    @Match
+    private final int mMatch;
+
+    protected PlaylistRule(@Type int type, @Field int field, @Match int match) {
+        mType = type;
+        mField = field;
+        mMatch = match;
     }
 
-    public PlaylistRule(PlaylistRule rule) {
-        this(rule.type, rule.field, rule.match, rule.value);
+    @Type
+    public int getType() {
+        return mType;
     }
 
-    private PlaylistRule(Parcel in) {
-        type = in.readInt();
-        match = in.readInt();
-        field = in.readInt();
-        value = in.readString();
+    @Field
+    public int getField() {
+        return mField;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof PlaylistRule)) {
-            return false;
-        }
-        if (this == o) {
-            return true;
-        }
-        PlaylistRule other = (PlaylistRule) o;
-        return this.type == other.type && this.field == other.field && this.match == other.match
-                && this.value.equals(other.value);
+    @Match
+    public int getMatch() {
+        return mMatch;
     }
 
-    @Override
-    public int hashCode() {
-        int result = type;
-        result = 31 * result + match;
-        result = 31 * result + field;
-        result = 31 * result + value.hashCode();
-        return result;
-    }
+    public abstract List<Song> applyFilter(MusicStore musicStore);
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(type);
-        dest.writeInt(match);
-        dest.writeInt(field);
-        dest.writeString(value);
-    }
-
-    public static final Creator<PlaylistRule> CREATOR = new Creator<PlaylistRule>() {
-        public PlaylistRule createFromParcel(Parcel in) {
-            return new PlaylistRule(in);
-        }
-
-        public PlaylistRule[] newArray(int size) {
-            return new PlaylistRule[size];
-        }
-    };
 }
