@@ -96,30 +96,6 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         this.sortAscending = sortAscending;
     }
 
-    public int getMaximumEntries() {
-        return maximumEntries;
-    }
-
-    public int getTruncateMethod() {
-        return truncateMethod;
-    }
-
-    public boolean isTruncateAscending() {
-        return truncateAscending;
-    }
-
-    public boolean isMatchAllRules() {
-        return matchAllRules;
-    }
-
-    public int getSortMethod() {
-        return sortMethod;
-    }
-
-    public boolean isSortAscending() {
-        return sortAscending;
-    }
-
     /**
      * Generate the list of songs that match all rules for this playlist.
      * @param context A {@link Context} used for various operations like reading play counts and
@@ -168,10 +144,6 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         dest.writeInt(truncateMethod);
         dest.writeByte((byte) ((truncateAscending) ? 1 : 0));
         dest.writeByte((byte) ((sortAscending) ? 1 : 0));
-    }
-
-    public AutoPlaylistRule[] getRules() {
-        return rules.clone();
     }
 
 }
