@@ -111,14 +111,14 @@ public class AutoPlaylist extends Playlist implements Parcelable {
 
     public static final Parcelable.Creator<Parcelable> CREATOR =
             new Parcelable.Creator<Parcelable>() {
-        public AutoPlaylist createFromParcel(Parcel in) {
-            return new AutoPlaylist(in);
-        }
+                public AutoPlaylist createFromParcel(Parcel in) {
+                    return new AutoPlaylist(in);
+                }
 
-        public AutoPlaylist[] newArray(int size) {
-            return new AutoPlaylist[size];
-        }
-    };
+                public AutoPlaylist[] newArray(int size) {
+                    return new AutoPlaylist[size];
+                }
+            };
 
     private AutoPlaylist(Parcel in) {
         super(in);
