@@ -76,4 +76,45 @@ public abstract class PlaylistRule implements Parcelable {
 
     public abstract List<Song> applyFilter(MusicStore musicStore);
 
+    public static class Factory {
+
+        @Type private int mType;
+        @Field private int mField;
+        @Match private int mMatch;
+
+        private String mValue;
+
+        public Factory() {
+
+        }
+
+        public Factory(PlaylistRule from) {
+            mType = from.getType();
+            mField = from.getField();
+            mMatch = from.getMatch();
+        }
+
+        public void setType(@Type int type) {
+            mType = type;
+        }
+
+        public void setField(@Field int field) {
+            mField = field;
+        }
+
+        public void setMatch(@Match int match) {
+            mMatch = match;
+        }
+
+        public void setValue(String value) {
+            mValue = value;
+        }
+
+        public PlaylistRule build() {
+            // TODO implement this once PlaylistRule has been extended
+            return null;
+        }
+
+    }
+
 }
