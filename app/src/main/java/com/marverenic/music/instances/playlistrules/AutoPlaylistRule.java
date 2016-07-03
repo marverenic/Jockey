@@ -135,7 +135,7 @@ public abstract class AutoPlaylistRule implements Parcelable {
         return mValue;
     }
 
-    public abstract Observable<List<Song>> applyFilter(PlaylistStore playlist,
+    public abstract Observable<List<Song>> applyFilter(PlaylistStore playlistStore,
                                                        MusicStore musicStore,
                                                        PlayCountStore playCountStore);
 

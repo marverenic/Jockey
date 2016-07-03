@@ -26,7 +26,7 @@ public class AlbumRule extends AutoPlaylistRule implements Parcelable {
     }
 
     @Override
-    public Observable<List<Song>> applyFilter(PlaylistStore playlist, MusicStore musicStore,
+    public Observable<List<Song>> applyFilter(PlaylistStore playlistStore, MusicStore musicStore,
                                               PlayCountStore playCountStore) {
         return musicStore.getAlbums()
                 .map(library -> {
