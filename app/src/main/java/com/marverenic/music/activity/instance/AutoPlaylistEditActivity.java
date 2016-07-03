@@ -15,6 +15,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.AutoPlaylist;
+import com.marverenic.music.instances.PlaylistRule;
 import com.marverenic.music.instances.section.RuleHeaderSingleton;
 import com.marverenic.music.instances.section.RuleSection;
 import com.marverenic.music.utils.Navigate;
@@ -38,7 +39,7 @@ public class AutoPlaylistEditActivity extends BaseActivity
 
     private AutoPlaylist reference;
     private AutoPlaylist editedReference;
-    private ArrayList<AutoPlaylist.Rule> editedRules;
+    private ArrayList<PlaylistRule> editedRules;
     private HeterogeneousAdapter adapter;
 
     @Override
@@ -98,7 +99,7 @@ public class AutoPlaylistEditActivity extends BaseActivity
     }
 
     public void saveChanges() {
-        AutoPlaylist.Rule[] modifiedRules = new AutoPlaylist.Rule[editedRules.size()];
+        PlaylistRule[] modifiedRules = new PlaylistRule[editedRules.size()];
         editedReference.setRules(editedRules.toArray(modifiedRules));
         if (reference.getPlaylistId() == AutoPlaylist.EMPTY.getPlaylistId()) {
             mPlaylistStore.makePlaylist(editedReference);
@@ -139,7 +140,7 @@ public class AutoPlaylistEditActivity extends BaseActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add:
-                editedRules.add(new AutoPlaylist.Rule(AutoPlaylist.Rule.EMPTY));
+                editedRules.add(new PlaylistRule(PlaylistRule.EMPTY));
                 adapter.notifyItemInserted(editedRules.size());
                 return true;
             case R.id.discard:
@@ -199,7 +200,7 @@ public class AutoPlaylistEditActivity extends BaseActivity
     }
 
     @Override
-    public void onRuleRemoved(final AutoPlaylist.Rule rule, final int index) {
+    public void onRuleRemoved(final PlaylistRule rule, final int index) {
         editedRules.remove(index - 1);
         adapter.notifyItemRemoved(index);
 

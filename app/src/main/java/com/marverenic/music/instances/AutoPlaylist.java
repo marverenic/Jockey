@@ -82,7 +82,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      *                       be applied after the list has been sorted. Any extra entries will be
      *                       truncated.
      * @param sortMethod The order the songs will be sorted (Must be one of
-     *                   {@link AutoPlaylist.Rule.Field} and can't be ID
+     *                   {@link PlaylistRule.Field} and can't be ID
      * @param sortAscending Whether to sort this playlist ascending (A-Z or 0-infinity) or not
      * @param matchAllRules Whether or not all rules have to be matched for a song to appear in this
      *                      playlist
@@ -90,7 +90,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      */
     public AutoPlaylist(long playlistId, String playlistName, int maximumEntries, int sortMethod,
                          int truncateMethod, boolean truncateAscending, boolean sortAscending,
-                         boolean matchAllRules, Rule... rules) {
+                         boolean matchAllRules, PlaylistRule... rules) {
         super(playlistId, playlistName);
         this.playlistId = playlistId;
         this.playlistName = playlistName;
@@ -118,9 +118,9 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                 playlist.sortAscending,
                 playlist.matchAllRules);
 
-        this.rules = new Rule[playlist.rules.length];
+        this.rules = new PlaylistRule[playlist.rules.length];
         for (int i = 0; i < this.rules.length; i++) {
-            this.rules[i] = new Rule(playlist.rules[i]);
+            this.rules[i] = new PlaylistRule(playlist.rules[i]);
         }
     }
 
@@ -222,7 +222,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         super(in);
         maximumEntries = in.readInt();
         matchAllRules = in.readByte() == 1;
-        rules = in.createTypedArray(Rule.CREATOR);
+        rules = in.createTypedArray(PlaylistRule.CREATOR);
         sortMethod = in.readInt();
         truncateMethod = in.readInt();
         truncateAscending = in.readByte() == 1;
@@ -246,158 +246,8 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         dest.writeByte((byte) ((sortAscending) ? 1 : 0));
     }
 
-    public Rule[] getRules() {
+    public PlaylistRule[] getRules() {
         return rules.clone();
     }
 
-    public static class Rule implements Parcelable {
-
-        public static final class Type {
-            public static final int PLAYLIST = 0;
-            public static final int SONG = 1;
-            public static final int ARTIST = 2;
-            public static final int ALBUM = 3;
-            public static final int GENRE = 4;
-        }
-        public static final class Field {
-            public static final int ID = 5;
-            public static final int NAME = 6;
-            public static final int PLAY_COUNT = 7;
-            public static final int SKIP_COUNT = 8;
-            public static final int YEAR = 9;
-            public static final int DATE_ADDED = 10;
-            public static final int DATE_PLAYED = 11;
-        }
-        public static final class Match {
-            public static final int EQUALS = 12;
-            public static final int NOT_EQUALS = 13;
-            public static final int CONTAINS = 14;
-            public static final int NOT_CONTAINS = 15;
-            public static final int LESS_THAN = 16;
-            public static final int GREATER_THAN = 17;
-        }
-
-        public static final Rule EMPTY = new Rule(Type.SONG, Field.NAME, Match.CONTAINS, "");
-
-        public int type;
-        public int match;
-        public int field;
-        public String value;
-
-        public Rule(int type, int field, int match, String value) {
-            validate(type, field, match, value);
-            this.type = type;
-            this.field = field;
-            this.match = match;
-            this.value = value;
-        }
-
-        public Rule(Rule rule) {
-            this(rule.type, rule.field, rule.match, rule.value);
-        }
-
-        private Rule(Parcel in) {
-            type = in.readInt();
-            match = in.readInt();
-            field = in.readInt();
-            value = in.readString();
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (!(o instanceof  Rule)) {
-                return false;
-            }
-            if (this == o) {
-                return true;
-            }
-            Rule other = (Rule) o;
-            return this.type == other.type && this.field == other.field && this.match == other.match
-                    && this.value.equals(other.value);
-        }
-
-        @Override
-        public int hashCode() {
-            int result = type;
-            result = 31 * result + match;
-            result = 31 * result + field;
-            result = 31 * result + value.hashCode();
-            return result;
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(type);
-            dest.writeInt(match);
-            dest.writeInt(field);
-            dest.writeString(value);
-        }
-
-        public static final Parcelable.Creator<Rule> CREATOR = new Parcelable.Creator<Rule>() {
-            public Rule createFromParcel(Parcel in) {
-                return new Rule(in);
-            }
-
-            public Rule[] newArray(int size) {
-                return new Rule[size];
-            }
-        };
-
-        private static void validate(int type, int field, int match, String value) {
-            // Only Songs have play counts and skip counts
-            if ((type != Type.SONG) && (field == Field.PLAY_COUNT || field == Field.SKIP_COUNT)) {
-                throw new IllegalArgumentException(type + " type does not have field " + field);
-            }
-            // Only Songs have years
-            if (type != Type.SONG && field == Field.YEAR) {
-                throw new IllegalArgumentException(type + " type does not have field " + field);
-            }
-            // Only Songs have dates added
-            if (type != Type.SONG && field == Field.DATE_ADDED) {
-                throw new IllegalArgumentException(type + " type does not have field " + field);
-            }
-
-            if (field == Field.ID) {
-                // IDs can only be compared by equals or !equals
-                if (match == Match.CONTAINS || match == Match.NOT_CONTAINS
-                        || match == Match.LESS_THAN || match == Match.GREATER_THAN) {
-                    throw new IllegalArgumentException("ID cannot be compared by method " + match);
-                }
-                // Make sure the value is actually a number
-                try {
-                    //noinspection ResultOfMethodCallIgnored
-                    Long.parseLong(value);
-                } catch (NumberFormatException e) {
-                    Crashlytics.logException(e);
-                    throw new IllegalArgumentException("ID cannot be compared to value " + value);
-                }
-            } else if (field == Field.NAME) {
-                // Names can't be compared by < or >... that doesn't even make sense...
-                if (match == Match.GREATER_THAN || match == Match.LESS_THAN) {
-                    throw new IllegalArgumentException("Name cannot be compared by method "
-                            + match);
-                }
-            } else if (field == Field.SKIP_COUNT || field == Field.PLAY_COUNT
-                    || field == Field.YEAR || field == Field.DATE_ADDED) {
-                // Numeric values can't be compared by contains or !contains
-                if (match == Match.CONTAINS || match == Match.NOT_CONTAINS) {
-                    throw new IllegalArgumentException(field + " cannot be compared by method "
-                            + match);
-                }
-                // Make sure the value is actually a number
-                try {
-                    //noinspection ResultOfMethodCallIgnored
-                    Long.parseLong(value);
-                } catch (NumberFormatException e) {
-                    Crashlytics.logException(e);
-                    throw new IllegalArgumentException("ID cannot be compared to value " + value);
-                }
-            }
-        }
-    }
 }

@@ -14,6 +14,7 @@ import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.AutoPlaylist;
+import com.marverenic.music.instances.PlaylistRule;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.SongSection;
@@ -104,12 +105,12 @@ public class AutoPlaylistActivity extends BaseActivity
             case R.id.action_sort_random:
                 Collections.shuffle(mSongs);
                 result = getResources().getString(R.string.message_sorted_playlist_random);
-                sortFlag = AutoPlaylist.Rule.Field.ID;
+                sortFlag = PlaylistRule.Field.ID;
                 break;
             case R.id.action_sort_name:
                 Collections.sort(mSongs);
                 result = getResources().getString(R.string.message_sorted_playlist_name);
-                sortFlag = AutoPlaylist.Rule.Field.NAME;
+                sortFlag = PlaylistRule.Field.NAME;
                 break;
             case R.id.action_sort_artist:
                 Collections.sort(mSongs, Song.ARTIST_COMPARATOR);
@@ -122,22 +123,22 @@ public class AutoPlaylistActivity extends BaseActivity
             case R.id.action_sort_play:
                 Collections.sort(mSongs, Song.playCountComparator(mPlayCountStore));
                 result = getResources().getString(R.string.message_sorted_playlist_play);
-                sortFlag = AutoPlaylist.Rule.Field.PLAY_COUNT;
+                sortFlag = PlaylistRule.Field.PLAY_COUNT;
                 break;
             case R.id.action_sort_skip:
                 Collections.sort(mSongs, Song.skipCountComparator(mPlayCountStore));
                 result = getResources().getString(R.string.message_sorted_playlist_skip);
-                sortFlag = AutoPlaylist.Rule.Field.SKIP_COUNT;
+                sortFlag = PlaylistRule.Field.SKIP_COUNT;
                 break;
             case R.id.action_sort_date_added:
                 Collections.sort(mSongs, Song.DATE_ADDED_COMPARATOR);
                 result = getResources().getString(R.string.message_sorted_playlist_date_added);
-                sortFlag = AutoPlaylist.Rule.Field.DATE_ADDED;
+                sortFlag = PlaylistRule.Field.DATE_ADDED;
                 break;
             case R.id.action_sort_date_played:
                 Collections.sort(mSongs, Song.playCountComparator(mPlayCountStore));
                 result = getResources().getString(R.string.message_sorted_playlist_date_played);
-                sortFlag = AutoPlaylist.Rule.Field.DATE_PLAYED;
+                sortFlag = PlaylistRule.Field.DATE_PLAYED;
                 break;
             default:
                 return false;

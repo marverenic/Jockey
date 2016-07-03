@@ -21,6 +21,7 @@ import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
+import com.marverenic.music.instances.PlaylistRule;
 
 import javax.inject.Inject;
 
@@ -43,16 +44,16 @@ public class RuleHeaderSingleton extends HeterogeneousAdapter.SingletonSection<A
             AdapterView.OnItemSelectedListener {
 
         private static final int[] TRUNCATE_CHOICES = new int[] {
-                AutoPlaylist.Rule.Field.ID,
-                AutoPlaylist.Rule.Field.NAME,
-                AutoPlaylist.Rule.Field.PLAY_COUNT,
-                AutoPlaylist.Rule.Field.PLAY_COUNT,
-                AutoPlaylist.Rule.Field.SKIP_COUNT,
-                AutoPlaylist.Rule.Field.SKIP_COUNT,
-                AutoPlaylist.Rule.Field.DATE_ADDED,
-                AutoPlaylist.Rule.Field.DATE_ADDED,
-                AutoPlaylist.Rule.Field.DATE_PLAYED,
-                AutoPlaylist.Rule.Field.DATE_PLAYED
+                PlaylistRule.Field.ID,
+                PlaylistRule.Field.NAME,
+                PlaylistRule.Field.PLAY_COUNT,
+                PlaylistRule.Field.PLAY_COUNT,
+                PlaylistRule.Field.SKIP_COUNT,
+                PlaylistRule.Field.SKIP_COUNT,
+                PlaylistRule.Field.DATE_ADDED,
+                PlaylistRule.Field.DATE_ADDED,
+                PlaylistRule.Field.DATE_PLAYED,
+                PlaylistRule.Field.DATE_PLAYED
         };
 
         private static final boolean[] TRUNCATE_ORDER_ASCENDING = new boolean[] {
