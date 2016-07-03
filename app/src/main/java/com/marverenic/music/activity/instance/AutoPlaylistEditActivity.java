@@ -15,7 +15,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.AutoPlaylist;
-import com.marverenic.music.instances.playlistrules.PlaylistRule;
+import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
 import com.marverenic.music.instances.section.RuleHeaderSingleton;
 import com.marverenic.music.instances.section.RuleSection;
 import com.marverenic.music.utils.Navigate;
@@ -39,7 +39,7 @@ public class AutoPlaylistEditActivity extends BaseActivity
 
     private AutoPlaylist reference;
     private AutoPlaylist editedReference;
-    private ArrayList<PlaylistRule> editedRules;
+    private ArrayList<AutoPlaylistRule> editedRules;
     private HeterogeneousAdapter adapter;
 
     @Override
@@ -99,7 +99,7 @@ public class AutoPlaylistEditActivity extends BaseActivity
     }
 
     public void saveChanges() {
-        PlaylistRule[] modifiedRules = new PlaylistRule[editedRules.size()];
+        AutoPlaylistRule[] modifiedRules = new AutoPlaylistRule[editedRules.size()];
         editedReference.setRules(editedRules.toArray(modifiedRules));
         if (reference.getPlaylistId() == AutoPlaylist.EMPTY.getPlaylistId()) {
             mPlaylistStore.makePlaylist(editedReference);
@@ -140,7 +140,7 @@ public class AutoPlaylistEditActivity extends BaseActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add:
-                editedRules.add(new PlaylistRule(PlaylistRule.EMPTY));
+                editedRules.add(new AutoPlaylistRule(AutoPlaylistRule.EMPTY));
                 adapter.notifyItemInserted(editedRules.size());
                 return true;
             case R.id.discard:
@@ -200,7 +200,7 @@ public class AutoPlaylistEditActivity extends BaseActivity
     }
 
     @Override
-    public void onRuleRemoved(final PlaylistRule rule, final int index) {
+    public void onRuleRemoved(final AutoPlaylistRule rule, final int index) {
         editedRules.remove(index - 1);
         adapter.notifyItemRemoved(index);
 

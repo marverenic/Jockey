@@ -23,7 +23,7 @@ import android.widget.TextView;
 
 import com.marverenic.music.R;
 import com.marverenic.music.instances.Album;
-import com.marverenic.music.instances.playlistrules.PlaylistRule;
+import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
 import com.marverenic.music.instances.Song;
 import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
@@ -33,21 +33,21 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
-public class RuleSection extends HeterogeneousAdapter.ListSection<PlaylistRule> {
+public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRule> {
 
     private static OnRemovalListener mRemovalListener;
 
-    public RuleSection(@NonNull List<PlaylistRule> data, OnRemovalListener listener) {
+    public RuleSection(@NonNull List<AutoPlaylistRule> data, OnRemovalListener listener) {
         super(data);
         mRemovalListener = listener;
     }
 
     public interface OnRemovalListener {
-        void onRuleRemoved(PlaylistRule rule, int index);
+        void onRuleRemoved(AutoPlaylistRule rule, int index);
     }
 
     @Override
-    public EnhancedViewHolder<PlaylistRule> createViewHolder(
+    public EnhancedViewHolder<AutoPlaylistRule> createViewHolder(
             HeterogeneousAdapter adapter, ViewGroup parent) {
         return new ViewHolder(
                 LayoutInflater.from(parent.getContext())
@@ -55,10 +55,10 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<PlaylistRule> 
                 mRemovalListener);
     }
 
-    public static class ViewHolder extends EnhancedViewHolder<PlaylistRule>
+    public static class ViewHolder extends EnhancedViewHolder<AutoPlaylistRule>
             implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
-        private PlaylistRule reference;
+        private AutoPlaylistRule reference;
         private OnRemovalListener removalListener;
 
         private AppCompatSpinner typeDropDown;
@@ -96,7 +96,7 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<PlaylistRule> 
             dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM);
         }
 
-        public void onUpdate(PlaylistRule rule, int position) {
+        public void onUpdate(AutoPlaylistRule rule, int position) {
             reference = rule;
             update();
         }
@@ -107,8 +107,8 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<PlaylistRule> 
             FieldAdapter fieldAdapter = (FieldAdapter) fieldDropDown.getAdapter();
             fieldDropDown.setSelection(fieldAdapter.lookupIndex(reference.field, reference.match));
 
-            if (reference.field == PlaylistRule.Field.DATE_PLAYED
-                    || reference.field == PlaylistRule.Field.DATE_ADDED) {
+            if (reference.field == AutoPlaylistRule.Field.DATE_PLAYED
+                    || reference.field == AutoPlaylistRule.Field.DATE_ADDED) {
 
                 Calendar c = Calendar.getInstance();
                 try {
@@ -120,7 +120,7 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<PlaylistRule> 
 
                 valueText.setText(dateFormat.format(c.getTime()));
 
-            } else if (reference.field == PlaylistRule.Field.ID) {
+            } else if (reference.field == AutoPlaylistRule.Field.ID) {
                 InstanceAdapter valueAdapter = ((InstanceAdapter) valueSpinner.getAdapter());
                 valueAdapter.setType(reference.type);
                 valueSpinner.setSelection(
@@ -129,7 +129,7 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<PlaylistRule> 
                 valueText.setText(reference.value);
             }
 
-            if (reference.field == PlaylistRule.Field.ID) {
+            if (reference.field == AutoPlaylistRule.Field.ID) {
                 valueTextWrapper.setVisibility(View.GONE);
                 valueSpinner.setVisibility(View.VISIBLE);
             } else {
@@ -144,8 +144,8 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<PlaylistRule> 
                 removalListener.onRuleRemoved(reference, getAdapterPosition());
             } else if (v.getId() == R.id.valueTextWrapper) {
                 // Show a date picker if relevant, otherwise use a regular AlertDialog to get user input
-                if (reference.field == PlaylistRule.Field.DATE_ADDED
-                        || reference.field == PlaylistRule.Field.DATE_PLAYED) {
+                if (reference.field == AutoPlaylistRule.Field.DATE_ADDED
+                        || reference.field == AutoPlaylistRule.Field.DATE_PLAYED) {
                     // Calculate the date stored in the reference
                     Calendar calendar = Calendar.getInstance();
                     try {
@@ -289,16 +289,16 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<PlaylistRule> 
                 reference.match = fieldAdapter.getRuleMatch(position);
 
                 // If the field was switched from or to an ID match, reset the value
-                if (originalField == PlaylistRule.Field.ID
-                        && reference.field != PlaylistRule.Field.ID) {
+                if (originalField == AutoPlaylistRule.Field.ID
+                        && reference.field != AutoPlaylistRule.Field.ID) {
                     reference.value = "";
-                } else if (originalField != PlaylistRule.Field.ID
-                        && reference.field == PlaylistRule.Field.ID) {
+                } else if (originalField != AutoPlaylistRule.Field.ID
+                        && reference.field == AutoPlaylistRule.Field.ID) {
                     reference.value = "0";
                 }
             }
             if (view.getParent().equals(valueSpinner)) {
-                if (reference.field == PlaylistRule.Field.ID) {
+                if (reference.field == AutoPlaylistRule.Field.ID) {
                     reference.value = Long.toString(id);
                 }
             }
@@ -322,45 +322,45 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<PlaylistRule> 
         // options. Duplicates are intentional. Any changes to R.array.auto_plist_fields must
         // be updated here.
         private static final int[] FIELDS = new int[]{
-                PlaylistRule.Field.ID,
-                PlaylistRule.Field.ID,
-                PlaylistRule.Field.NAME,
-                PlaylistRule.Field.NAME,
-                PlaylistRule.Field.NAME,
-                PlaylistRule.Field.NAME,
-                PlaylistRule.Field.PLAY_COUNT,
-                PlaylistRule.Field.PLAY_COUNT,
-                PlaylistRule.Field.PLAY_COUNT,
-                PlaylistRule.Field.SKIP_COUNT,
-                PlaylistRule.Field.SKIP_COUNT,
-                PlaylistRule.Field.SKIP_COUNT,
-                PlaylistRule.Field.DATE_ADDED,
-                PlaylistRule.Field.DATE_ADDED,
-                PlaylistRule.Field.DATE_ADDED,
-                PlaylistRule.Field.DATE_PLAYED,
-                PlaylistRule.Field.DATE_PLAYED,
-                PlaylistRule.Field.DATE_PLAYED
+                AutoPlaylistRule.Field.ID,
+                AutoPlaylistRule.Field.ID,
+                AutoPlaylistRule.Field.NAME,
+                AutoPlaylistRule.Field.NAME,
+                AutoPlaylistRule.Field.NAME,
+                AutoPlaylistRule.Field.NAME,
+                AutoPlaylistRule.Field.PLAY_COUNT,
+                AutoPlaylistRule.Field.PLAY_COUNT,
+                AutoPlaylistRule.Field.PLAY_COUNT,
+                AutoPlaylistRule.Field.SKIP_COUNT,
+                AutoPlaylistRule.Field.SKIP_COUNT,
+                AutoPlaylistRule.Field.SKIP_COUNT,
+                AutoPlaylistRule.Field.DATE_ADDED,
+                AutoPlaylistRule.Field.DATE_ADDED,
+                AutoPlaylistRule.Field.DATE_ADDED,
+                AutoPlaylistRule.Field.DATE_PLAYED,
+                AutoPlaylistRule.Field.DATE_PLAYED,
+                AutoPlaylistRule.Field.DATE_PLAYED
         };
 
         private static final int[] MATCHES = new int[]{
-                PlaylistRule.Match.EQUALS,
-                PlaylistRule.Match.NOT_EQUALS,
-                PlaylistRule.Match.EQUALS,
-                PlaylistRule.Match.NOT_EQUALS,
-                PlaylistRule.Match.CONTAINS,
-                PlaylistRule.Match.NOT_CONTAINS,
-                PlaylistRule.Match.LESS_THAN,
-                PlaylistRule.Match.EQUALS,
-                PlaylistRule.Match.GREATER_THAN,
-                PlaylistRule.Match.LESS_THAN,
-                PlaylistRule.Match.EQUALS,
-                PlaylistRule.Match.GREATER_THAN,
-                PlaylistRule.Match.LESS_THAN,
-                PlaylistRule.Match.EQUALS,
-                PlaylistRule.Match.GREATER_THAN,
-                PlaylistRule.Match.LESS_THAN,
-                PlaylistRule.Match.EQUALS,
-                PlaylistRule.Match.GREATER_THAN
+                AutoPlaylistRule.Match.EQUALS,
+                AutoPlaylistRule.Match.NOT_EQUALS,
+                AutoPlaylistRule.Match.EQUALS,
+                AutoPlaylistRule.Match.NOT_EQUALS,
+                AutoPlaylistRule.Match.CONTAINS,
+                AutoPlaylistRule.Match.NOT_CONTAINS,
+                AutoPlaylistRule.Match.LESS_THAN,
+                AutoPlaylistRule.Match.EQUALS,
+                AutoPlaylistRule.Match.GREATER_THAN,
+                AutoPlaylistRule.Match.LESS_THAN,
+                AutoPlaylistRule.Match.EQUALS,
+                AutoPlaylistRule.Match.GREATER_THAN,
+                AutoPlaylistRule.Match.LESS_THAN,
+                AutoPlaylistRule.Match.EQUALS,
+                AutoPlaylistRule.Match.GREATER_THAN,
+                AutoPlaylistRule.Match.LESS_THAN,
+                AutoPlaylistRule.Match.EQUALS,
+                AutoPlaylistRule.Match.GREATER_THAN
         };
 
         private static final int[] INPUT_TYPE = new int[] {
@@ -400,7 +400,7 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<PlaylistRule> 
 
         @Override
         public int getCount() {
-            if (type == PlaylistRule.Type.SONG) {
+            if (type == AutoPlaylistRule.Type.SONG) {
                 return songChoices.length;
             }
             return 6; // Only the first 6 elements in the array are applicable to all data types
@@ -481,7 +481,7 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<PlaylistRule> 
         private int type;
 
         InstanceAdapter() {
-            type = PlaylistRule.Type.SONG;
+            type = AutoPlaylistRule.Type.SONG;
         }
 
         @Override

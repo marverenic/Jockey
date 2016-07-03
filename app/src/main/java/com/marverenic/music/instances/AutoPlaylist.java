@@ -5,7 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
-import com.marverenic.music.instances.playlistrules.PlaylistRule;
+import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +24,8 @@ public class AutoPlaylist extends Playlist implements Parcelable {
     private int maximumEntries;
 
     /**
-     * The field to look at when truncating the playlist. Must be a member of {@link PlaylistRule.Field}.
-     * {@link PlaylistRule.Field#ID} will yield a random trim
+     * The field to look at when truncating the playlist. Must be a member of {@link AutoPlaylistRule.Field}.
+     * {@link AutoPlaylistRule.Field#ID} will yield a random trim
      */
     @SerializedName("truncateMethod")
     private int truncateMethod;
@@ -47,11 +47,11 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      * The rules to match when building the playlist
      */
     @SerializedName("rules")
-    private PlaylistRule[] rules;
+    private AutoPlaylistRule[] rules;
 
     /**
-     * The field to look at when sorting the playlist. Must be a member of {@link PlaylistRule.Field} and
-     * cannot be {@link PlaylistRule.Field#ID}
+     * The field to look at when sorting the playlist. Must be a member of {@link AutoPlaylistRule.Field} and
+     * cannot be {@link AutoPlaylistRule.Field#ID}
      */
     @SerializedName("sortMethod")
     private int sortMethod;
@@ -74,7 +74,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      *                       be applied after the list has been sorted. Any extra entries will be
      *                       truncated.
      * @param sortMethod The order the songs will be sorted (Must be one of
-     *                   {@link PlaylistRule.Field} and can't be ID
+     *                   {@link AutoPlaylistRule.Field} and can't be ID
      * @param sortAscending Whether to sort this playlist ascending (A-Z or 0-infinity) or not
      * @param matchAllRules Whether or not all rules have to be matched for a song to appear in this
      *                      playlist
@@ -82,7 +82,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      */
     private AutoPlaylist(long playlistId, String playlistName, int maximumEntries, int sortMethod,
                          int truncateMethod, boolean truncateAscending, boolean sortAscending,
-                         boolean matchAllRules, PlaylistRule... rules) {
+                         boolean matchAllRules, AutoPlaylistRule... rules) {
         super(playlistId, playlistName);
         this.playlistId = playlistId;
         this.playlistName = playlistName;
@@ -110,9 +110,9 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                 playlist.sortAscending,
                 playlist.matchAllRules);
 
-        this.rules = new PlaylistRule[playlist.rules.length];
+        this.rules = new AutoPlaylistRule[playlist.rules.length];
         for (int i = 0; i < this.rules.length; i++) {
-            this.rules[i] = new PlaylistRule(playlist.rules[i]);
+            this.rules[i] = new AutoPlaylistRule(playlist.rules[i]);
         }
     }
 
@@ -166,7 +166,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         super(in);
         maximumEntries = in.readInt();
         matchAllRules = in.readByte() == 1;
-        rules = in.createTypedArray(PlaylistRule.CREATOR);
+        rules = in.createTypedArray(AutoPlaylistRule.CREATOR);
         sortMethod = in.readInt();
         truncateMethod = in.readInt();
         truncateAscending = in.readByte() == 1;
@@ -190,7 +190,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         dest.writeByte((byte) ((sortAscending) ? 1 : 0));
     }
 
-    public PlaylistRule[] getRules() {
+    public AutoPlaylistRule[] getRules() {
         return rules.clone();
     }
 

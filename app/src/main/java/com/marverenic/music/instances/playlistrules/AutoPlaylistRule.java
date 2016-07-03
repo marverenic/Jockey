@@ -8,7 +8,7 @@ import com.marverenic.music.instances.Song;
 
 import java.util.List;
 
-public abstract class PlaylistRule implements Parcelable {
+public abstract class AutoPlaylistRule implements Parcelable {
 
     public static final int PLAYLIST = 0;
     public static final int SONG = 1;
@@ -52,7 +52,7 @@ public abstract class PlaylistRule implements Parcelable {
     @Match
     private final int mMatch;
 
-    protected PlaylistRule(@Type int type, @Field int field, @Match int match) {
+    protected AutoPlaylistRule(@Type int type, @Field int field, @Match int match) {
         mType = type;
         mField = field;
         mMatch = match;
@@ -89,7 +89,7 @@ public abstract class PlaylistRule implements Parcelable {
 
         }
 
-        public Factory(PlaylistRule from) {
+        public Factory(AutoPlaylistRule from) {
             mType = from.getType();
             mField = from.getField();
             mMatch = from.getMatch();
@@ -111,8 +111,8 @@ public abstract class PlaylistRule implements Parcelable {
             mValue = value;
         }
 
-        public PlaylistRule build() {
-            // TODO implement this once PlaylistRule has been extended
+        public AutoPlaylistRule build() {
+            // TODO implement this once AutoPlaylistRule has been extended
             return null;
         }
 
