@@ -211,7 +211,7 @@ public class LocalMusicStore implements MusicStore {
                         }
                     });
         }
-        return mGenres.asObservable().subscribeOn(AndroidSchedulers.mainThread());
+        return mGenres.asObservable().observeOn(AndroidSchedulers.mainThread());
     }
 
     private List<Genre> getAllGenres() {
