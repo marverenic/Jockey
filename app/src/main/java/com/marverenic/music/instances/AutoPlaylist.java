@@ -9,6 +9,8 @@ import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
 import com.marverenic.music.instances.playlistrules.AutoPlaylistRule.Field;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class AutoPlaylist extends Playlist implements Parcelable {
@@ -22,40 +24,40 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      * How many items can be stored in this playlist. Default is unlimited
      */
     @SerializedName("maximumEntries")
-    private int maximumEntries;
+    private final int maximumEntries;
 
     /**
      * The field to look at when truncating the playlist. Must be a member of {@link Field}.
      * {@link Field#ID} will yield a random trim
      */
     @SerializedName("truncateMethod")
-    private int truncateMethod;
+    private final int truncateMethod;
 
     /**
      * Whether to trim the playlist ascending (A-Z, oldest to newest, or 0-infinity).
      * If false, sort descending (Z-A, newest to oldest, or infinity-0).
      */
     @SerializedName("truncateAscending")
-    private boolean truncateAscending;
+    private final boolean truncateAscending;
 
     /**
      * Whether or not a song has to match all rules in order to appear in the playlist.
      */
     @SerializedName("matchAllRules")
-    private boolean matchAllRules;
+    private final boolean matchAllRules;
 
     /**
      * The rules to match when building the playlist
      */
     @SerializedName("rules")
-    private AutoPlaylistRule[] rules;
+    private final List<AutoPlaylistRule> rules;
 
     /**
      * The field to look at when sorting the playlist. Must be a member of {@link Field} and
      * cannot be {@link Field#ID}
      */
     @SerializedName("sortMethod")
-    private int sortMethod;
+    private final int sortMethod;
 
     /**
      * Whether to sort the playlist ascending (A-Z, oldest to newest, or 0-infinity).
@@ -63,7 +65,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      * Default is true.
      */
     @SerializedName("sortAscending")
-    private boolean sortAscending;
+    private final boolean sortAscending;
 
     /**
      * AutoPlaylist Creator
@@ -89,7 +91,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         this.playlistName = playlistName;
         this.maximumEntries = maximumEntries;
         this.matchAllRules = matchAllRules;
-        this.rules = rules;
+        this.rules = Collections.unmodifiableList(Arrays.asList(rules));
         this.truncateMethod = truncateMethod;
         this.truncateAscending = truncateAscending;
         this.sortMethod = sortMethod;
@@ -122,7 +124,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         super(in);
         maximumEntries = in.readInt();
         matchAllRules = in.readByte() == 1;
-        rules = in.createTypedArray(AutoPlaylistRule.CREATOR);
+        rules = Collections.unmodifiableList(in.createTypedArrayList(AutoPlaylistRule.CREATOR));
         sortMethod = in.readInt();
         truncateMethod = in.readInt();
         truncateAscending = in.readByte() == 1;
@@ -139,7 +141,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         super.writeToParcel(dest, flags);
         dest.writeInt(maximumEntries);
         dest.writeByte((byte) ((matchAllRules) ? 1 : 0));
-        dest.writeTypedArray(rules, 0);
+        dest.writeTypedList(rules);
         dest.writeInt(sortMethod);
         dest.writeInt(truncateMethod);
         dest.writeByte((byte) ((truncateAscending) ? 1 : 0));
