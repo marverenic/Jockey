@@ -52,10 +52,13 @@ public abstract class AutoPlaylistRule implements Parcelable {
     @Match
     private final int mMatch;
 
-    protected AutoPlaylistRule(@Type int type, @Field int field, @Match int match) {
+    private final String mValue;
+
+    protected AutoPlaylistRule(@Type int type, @Field int field, @Match int match, String value) {
         mType = type;
         mField = field;
         mMatch = match;
+        mValue = value;
     }
 
     @Type
@@ -73,7 +76,9 @@ public abstract class AutoPlaylistRule implements Parcelable {
         return mMatch;
     }
 
-    public abstract String getValue();
+    public String getValue() {
+        return mValue;
+    }
 
     public abstract List<Song> applyFilter(MusicStore musicStore);
 
