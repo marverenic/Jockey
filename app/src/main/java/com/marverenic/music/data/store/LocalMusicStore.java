@@ -35,8 +35,9 @@ public class LocalMusicStore implements MusicStore {
 
     @Override
     public Observable<Boolean> refresh() {
-        return MediaStoreUtil.promptPermission(mContext).map(
-                granted -> {
+        return MediaStoreUtil.promptPermission(mContext)
+                .subscribeOn(Schedulers.io())
+                .map(granted -> {
                     if (granted) {
                         if (mSongs != null) {
                             mSongs.onNext(getAllSongs());
@@ -52,7 +53,8 @@ public class LocalMusicStore implements MusicStore {
                         }
                     }
                     return granted;
-                });
+                })
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     @Override
