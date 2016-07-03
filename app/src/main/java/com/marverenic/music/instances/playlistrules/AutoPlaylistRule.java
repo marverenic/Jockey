@@ -191,8 +191,19 @@ public abstract class AutoPlaylistRule implements Parcelable {
         }
 
         public AutoPlaylistRule build() {
-            // TODO implement this once AutoPlaylistRule has been extended
-            return null;
+            switch (mType) {
+                case PLAYLIST:
+                    return new PlaylistRule(mField, mMatch, mValue);
+                case SONG:
+                    return new SongRule(mField, mMatch, mValue);
+                case ALBUM:
+                    return new AlbumRule(mField, mMatch, mValue);
+                case ARTIST:
+                    return new ArtistRule(mField, mMatch, mValue);
+                case GENRE:
+                    return new GenreRule(mField, mMatch, mValue);
+            }
+            throw new IllegalArgumentException("Cannot construct rule over type " + mType);
         }
 
     }
