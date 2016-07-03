@@ -173,4 +173,113 @@ public class AutoPlaylist extends Playlist implements Parcelable {
     public boolean isSortAscending() {
         return mSortAscending;
     }
+
+    public static class Builder {
+
+        private long mId;
+        private String mName;
+
+        private int mMaximumEntries;
+        private int mTruncateMethod;
+        private boolean mTruncateAscending;
+        private boolean mMatchAllRules;
+        private AutoPlaylistRule[] mRules;
+        private int mSortMethod;
+        private boolean mSortAscending;
+
+        public Builder() {
+
+        }
+
+        public Builder(AutoPlaylist from) {
+            mId = from.getPlaylistId();
+            mName = from.getPlaylistName();
+            mMaximumEntries = from.getMaximumEntries();
+            mTruncateMethod = from.getTruncateMethod();
+            mTruncateAscending = from.isTruncateAscending();
+            mMatchAllRules = from.isMatchAllRules();
+            mRules = from.getRules().toArray(new AutoPlaylistRule[from.getRules().size()]);
+            mSortMethod = from.getSortMethod();
+            mSortAscending = from.isSortAscending();
+        }
+
+        public long getId() {
+            return mId;
+        }
+
+        public void setId(long id) {
+            mId = id;
+        }
+
+        public String getName() {
+            return mName;
+        }
+
+        public void setName(String name) {
+            mName = name;
+        }
+
+        public int getMaximumEntries() {
+            return mMaximumEntries;
+        }
+
+        public void setMaximumEntries(int maximumEntries) {
+            mMaximumEntries = maximumEntries;
+        }
+
+        public int getTruncateMethod() {
+            return mTruncateMethod;
+        }
+
+        public void setTruncateMethod(int truncateMethod) {
+            mTruncateMethod = truncateMethod;
+        }
+
+        public boolean isTruncateAscending() {
+            return mTruncateAscending;
+        }
+
+        public void setTruncateAscending(boolean truncateAscending) {
+            mTruncateAscending = truncateAscending;
+        }
+
+        public boolean isMatchAllRules() {
+            return mMatchAllRules;
+        }
+
+        public void setMatchAllRules(boolean matchAllRules) {
+            mMatchAllRules = matchAllRules;
+        }
+
+        public AutoPlaylistRule[] getRules() {
+            return mRules;
+        }
+
+        public void setRules(AutoPlaylistRule[] rules) {
+            mRules = rules;
+        }
+
+        public int getSortMethod() {
+            return mSortMethod;
+        }
+
+        public void setSortMethod(int sortMethod) {
+            mSortMethod = sortMethod;
+        }
+
+        public boolean isSortAscending() {
+            return mSortAscending;
+        }
+
+        public void setSortAscending(boolean sortAscending) {
+            mSortAscending = sortAscending;
+        }
+
+        public AutoPlaylist build() {
+            return new AutoPlaylist(mId, mName, mMaximumEntries, mSortMethod, mTruncateMethod,
+                    mTruncateAscending, mSortAscending, mMatchAllRules, mRules);
+        }
+
+    }
+
 }
