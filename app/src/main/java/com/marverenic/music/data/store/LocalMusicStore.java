@@ -144,6 +144,13 @@ public class LocalMusicStore implements MusicStore {
             mAlbums = BehaviorSubject.create();
 
             MediaStoreUtil.getPermission(mContext)
+                    .flatMap(granted -> {
+                        if (noDirectoryFilters()) {
+                            return Observable.just(granted);
+                        } else {
+                            return getSongs().map((List<Song> songs) -> granted);
+                        }
+                    })
                     .observeOn(Schedulers.io())
                     .subscribe(granted -> {
                         if (granted) {
@@ -166,6 +173,13 @@ public class LocalMusicStore implements MusicStore {
             mArtists = BehaviorSubject.create();
 
             MediaStoreUtil.getPermission(mContext)
+                    .flatMap(granted -> {
+                        if (noDirectoryFilters()) {
+                            return Observable.just(granted);
+                        } else {
+                            return getSongs().map((List<Song> songs) -> granted);
+                        }
+                    })
                     .observeOn(Schedulers.io())
                     .subscribe(granted -> {
                         if (granted) {
