@@ -174,7 +174,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         return mSortAscending;
     }
 
-    public static class Builder {
+    public static class Builder implements Parcelable {
 
         private long mId;
         private String mName;
@@ -202,6 +202,30 @@ public class AutoPlaylist extends Playlist implements Parcelable {
             mSortMethod = from.getSortMethod();
             mSortAscending = from.isSortAscending();
         }
+
+        protected Builder(Parcel in) {
+            mId = in.readLong();
+            mName = in.readString();
+            mMaximumEntries = in.readInt();
+            mTruncateMethod = in.readInt();
+            mTruncateAscending = in.readByte() != 0;
+            mMatchAllRules = in.readByte() != 0;
+            mRules = in.createTypedArray(AutoPlaylistRule.CREATOR);
+            mSortMethod = in.readInt();
+            mSortAscending = in.readByte() != 0;
+        }
+
+        public static final Creator<Builder> CREATOR = new Creator<Builder>() {
+            @Override
+            public Builder createFromParcel(Parcel in) {
+                return new Builder(in);
+            }
+
+            @Override
+            public Builder[] newArray(int size) {
+                return new Builder[size];
+            }
+        };
 
         public long getId() {
             return mId;
@@ -289,6 +313,23 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                     mTruncateAscending, mSortAscending, mMatchAllRules, mRules);
         }
 
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel parcel, int i) {
+            parcel.writeLong(mId);
+            parcel.writeString(mName);
+            parcel.writeInt(mMaximumEntries);
+            parcel.writeInt(mTruncateMethod);
+            parcel.writeByte((byte) (mTruncateAscending ? 1 : 0));
+            parcel.writeByte((byte) (mMatchAllRules ? 1 : 0));
+            parcel.writeTypedArray(mRules, i);
+            parcel.writeInt(mSortMethod);
+            parcel.writeByte((byte) (mSortAscending ? 1 : 0));
+        }
     }
 
 }
