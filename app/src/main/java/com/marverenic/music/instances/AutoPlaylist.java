@@ -261,7 +261,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
             return mRules;
         }
 
-        public Builder setRules(AutoPlaylistRule[] rules) {
+        public Builder setRules(AutoPlaylistRule... rules) {
             mRules = rules;
             return this;
         }
