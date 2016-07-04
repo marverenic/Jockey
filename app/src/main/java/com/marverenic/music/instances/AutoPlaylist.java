@@ -207,72 +207,81 @@ public class AutoPlaylist extends Playlist implements Parcelable {
             return mId;
         }
 
-        public void setId(long id) {
+        public Builder setId(long id) {
             mId = id;
+            return this;
         }
 
         public String getName() {
             return mName;
         }
 
-        public void setName(String name) {
+        public Builder setName(String name) {
             mName = name;
+            return this;
         }
 
         public int getMaximumEntries() {
             return mMaximumEntries;
         }
 
-        public void setMaximumEntries(int maximumEntries) {
+        public Builder setMaximumEntries(int maximumEntries) {
             mMaximumEntries = maximumEntries;
+            return this;
         }
 
         public int getTruncateMethod() {
             return mTruncateMethod;
         }
 
-        public void setTruncateMethod(int truncateMethod) {
+        public Builder setTruncateMethod(int truncateMethod) {
             mTruncateMethod = truncateMethod;
+            return this;
         }
 
         public boolean isTruncateAscending() {
             return mTruncateAscending;
         }
 
-        public void setTruncateAscending(boolean truncateAscending) {
+        public Builder setTruncateAscending(boolean truncateAscending) {
             mTruncateAscending = truncateAscending;
+            return this;
         }
 
         public boolean isMatchAllRules() {
             return mMatchAllRules;
         }
 
-        public void setMatchAllRules(boolean matchAllRules) {
+        public Builder setMatchAllRules(boolean matchAllRules) {
             mMatchAllRules = matchAllRules;
+            return this;
         }
 
         public AutoPlaylistRule[] getRules() {
             return mRules;
         }
 
-        public void setRules(AutoPlaylistRule[] rules) {
+        public Builder setRules(AutoPlaylistRule[] rules) {
             mRules = rules;
+            return this;
         }
 
         public int getSortMethod() {
             return mSortMethod;
         }
 
-        public void setSortMethod(int sortMethod) {
+        public Builder setSortMethod(int sortMethod) {
             mSortMethod = sortMethod;
+            return this;
         }
 
         public boolean isSortAscending() {
             return mSortAscending;
         }
 
-        public void setSortAscending(boolean sortAscending) {
+        public Builder setSortAscending(boolean sortAscending) {
             mSortAscending = sortAscending;
+            return this;
         }
 
         public AutoPlaylist build() {
