@@ -150,12 +150,7 @@ public class AutoPlaylistEditActivity extends BaseActivity
                 if (rulesChanged()) {
                     new AlertDialog.Builder(this)
                             .setMessage("Discard changes?")
-                            .setPositiveButton("Discard", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
-                                }
-                            })
+                            .setPositiveButton("Discard", (dialog, which) -> {finish();})
                             .setNegativeButton(R.string.action_cancel, null)
                             .show();
                 } else {
@@ -180,20 +175,14 @@ public class AutoPlaylistEditActivity extends BaseActivity
         if (!mBuilder.isEqual(reference) || rulesChanged()) {
             new AlertDialog.Builder(this)
                     .setMessage("Save changes?")
-                    .setPositiveButton("Save", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            if (validateName()) {
-                                saveChanges();
-                                Navigate.back(AutoPlaylistEditActivity.this);
-                            }
-                        }
-                    })
-                    .setNegativeButton("Discard", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                    .setPositiveButton("Save", (dialog, which) -> {
+                        if (validateName()) {
+                            saveChanges();
                             Navigate.back(AutoPlaylistEditActivity.this);
                         }
+                    })
+                    .setNegativeButton("Discard", (dialog, which) -> {
+                        Navigate.back(AutoPlaylistEditActivity.this);
                     })
                     .setNeutralButton("Cancel", null)
                     .show();
@@ -208,12 +197,9 @@ public class AutoPlaylistEditActivity extends BaseActivity
         adapter.notifyItemRemoved(index);
 
         Snackbar.make(findViewById(R.id.list), "Removed rule", Snackbar.LENGTH_LONG)
-                .setAction(R.string.action_undo, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        editedRules.add(index - 1, rule);
-                        adapter.notifyItemInserted(index);
-                    }
+                .setAction(R.string.action_undo, v -> {
+                    editedRules.add(index - 1, rule);
+                    adapter.notifyItemInserted(index);
                 })
                 .show();
     }
