@@ -160,15 +160,11 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
 
                     DatePickerDialog dateDialog = new DatePickerDialog(
                             itemView.getContext(),
-                            new DatePickerDialog.OnDateSetListener() {
-                                @Override
-                                public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                                      int dayOfMonth) {
-                                    Calendar c = Calendar.getInstance();
-                                    c.set(year, monthOfYear, dayOfMonth);
-                                    reference.value = Long.toString(c.getTimeInMillis() / 1000L);
-                                    update();
-                                }
+                            (view, year, monthOfYear, dayOfMonth) -> {
+                                Calendar c = Calendar.getInstance();
+                                c.set(year, monthOfYear, dayOfMonth);
+                                reference.value = Long.toString(c.getTimeInMillis() / 1000L);
+                                update();
                             },
                             calendar.get(Calendar.YEAR),
                             calendar.get(Calendar.MONTH),
@@ -214,27 +210,23 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
                                             + fieldDropDown.getSelectedItem().toString().toLowerCase())
                             .setView(inputLayout)
                             .setNegativeButton(R.string.action_cancel, null)
-                            .setPositiveButton(R.string.action_done,
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            if (editText.getInputType() == InputType.TYPE_CLASS_NUMBER) {
-                                                try {
-                                                    // Verify the input if this rule needs a numeric value
-                                                    reference.value = Integer.toString(Integer.parseInt(
-                                                            editText.getText().toString().trim()));
+                            .setPositiveButton(R.string.action_done, (dialog, which) -> {
+                                if (editText.getInputType() == InputType.TYPE_CLASS_NUMBER) {
+                                    try {
+                                        // Verify the input if this rule needs a numeric value
+                                        reference.value = Integer.toString(Integer.parseInt(
+                                                editText.getText().toString().trim()));
 
-                                                } catch (NumberFormatException e) {
-                                                    // If the user inputted something that's not a number,
-                                                    // reset it to 0
-                                                    reference.value = "0";
-                                                }
-                                            } else {
-                                                reference.value = editText.getText().toString().trim();
-                                            }
-                                            update();
-                                        }
-                                    })
+                                    } catch (NumberFormatException e) {
+                                        // If the user inputted something that's not a number,
+                                        // reset it to 0
+                                        reference.value = "0";
+                                    }
+                                } else {
+                                    reference.value = editText.getText().toString().trim();
+                                }
+                                update();
+                            })
                             .create();
 
                     valueDialog.getWindow()
@@ -244,21 +236,16 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
 
                     int padding = (int) itemView.getResources().getDimension(R.dimen.alert_padding);
                     ((View) inputLayout.getParent()).setPadding(
-                            padding - inputLayout.getPaddingLeft(),
-                            0,
-                            padding - inputLayout.getPaddingRight(),
-                            0);
+                            padding - inputLayout.getPaddingLeft(), 0,
+                            padding - inputLayout.getPaddingRight(), 0);
 
                     editText.setText(reference.value);
                     editText.setSelection(reference.value.length());
-                    editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                        @Override
-                        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                            if (actionId == KeyEvent.KEYCODE_ENDCALL) {
-                                valueDialog.getButton(DialogInterface.BUTTON_POSITIVE).callOnClick();
-                            }
-                            return false;
+                    editText.setOnEditorActionListener((v1, actionId, event) -> {
+                        if (actionId == KeyEvent.KEYCODE_ENDCALL) {
+                            valueDialog.getButton(DialogInterface.BUTTON_POSITIVE).callOnClick();
                         }
+                        return false;
                     });
                 }
             }
