@@ -103,34 +103,34 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
         }
 
         public void update() {
-            typeDropDown.setSelection(reference.type);
+            typeDropDown.setSelection(reference.getType());
 
             FieldAdapter fieldAdapter = (FieldAdapter) fieldDropDown.getAdapter();
-            fieldDropDown.setSelection(fieldAdapter.lookupIndex(reference.field, reference.match));
+            fieldDropDown.setSelection(fieldAdapter.lookupIndex(reference.getField(), reference.getMatch()));
 
-            if (reference.field == AutoPlaylistRule.DATE_PLAYED
-                    || reference.field == AutoPlaylistRule.DATE_ADDED) {
+            if (reference.getField() == AutoPlaylistRule.DATE_PLAYED
+                    || reference.getField() == AutoPlaylistRule.DATE_ADDED) {
 
                 Calendar c = Calendar.getInstance();
                 try {
-                    c.setTimeInMillis(Long.parseLong(reference.value) * 1000);
+                    c.setTimeInMillis(Long.parseLong(reference.getValue()) * 1000);
                 } catch (NumberFormatException e) {
                     c.setTimeInMillis(System.currentTimeMillis());
-                    reference.value = Long.toString(c.getTimeInMillis() / 1000);
+                    reference.setValue(Long.toString(c.getTimeInMillis() / 1000));
                 }
 
                 valueText.setText(dateFormat.format(c.getTime()));
 
-            } else if (reference.field == AutoPlaylistRule.ID) {
+            } else if (reference.getField() == AutoPlaylistRule.ID) {
                 InstanceAdapter valueAdapter = ((InstanceAdapter) valueSpinner.getAdapter());
-                valueAdapter.setType(reference.type);
+                valueAdapter.setType(reference.getType());
                 valueSpinner.setSelection(
-                        valueAdapter.lookupIndexForId(Long.parseLong(reference.value)));
+                        valueAdapter.lookupIndexForId(Long.parseLong(reference.getValue())));
             } else {
-                valueText.setText(reference.value);
+                valueText.setText(reference.getValue());
             }
 
-            if (reference.field == AutoPlaylistRule.ID) {
+            if (reference.getField() == AutoPlaylistRule.ID) {
                 valueTextWrapper.setVisibility(View.GONE);
                 valueSpinner.setVisibility(View.VISIBLE);
             } else {
@@ -145,12 +145,12 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
                 removalListener.onRuleRemoved(reference, getAdapterPosition());
             } else if (v.getId() == R.id.valueTextWrapper) {
                 // Show a date picker if relevant, otherwise use a regular AlertDialog to get user input
-                if (reference.field == AutoPlaylistRule.DATE_ADDED
-                        || reference.field == AutoPlaylistRule.DATE_PLAYED) {
+                if (reference.getField() == AutoPlaylistRule.DATE_ADDED
+                        || reference.getField() == AutoPlaylistRule.DATE_PLAYED) {
                     // Calculate the date stored in the reference
                     Calendar calendar = Calendar.getInstance();
                     try {
-                        long timestamp = Long.parseLong(reference.value);
+                        long timestamp = Long.parseLong(reference.getValue());
                         calendar.setTimeInMillis(timestamp * 1000L);
                     } catch (NumberFormatException ignored) {
                         // If the reference's value isn't valid, just use the current time as the
@@ -163,7 +163,7 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
                             (view, year, monthOfYear, dayOfMonth) -> {
                                 Calendar c = Calendar.getInstance();
                                 c.set(year, monthOfYear, dayOfMonth);
-                                reference.value = Long.toString(c.getTimeInMillis() / 1000L);
+                                reference.setValue(Long.toString(c.getTimeInMillis() / 1000L));
                                 update();
                             },
                             calendar.get(Calendar.YEAR),
@@ -214,16 +214,16 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
                                 if (editText.getInputType() == InputType.TYPE_CLASS_NUMBER) {
                                     try {
                                         // Verify the input if this rule needs a numeric value
-                                        reference.value = Integer.toString(Integer.parseInt(
-                                                editText.getText().toString().trim()));
+                                        reference.setValue(Integer.toString(Integer.parseInt(
+                                                editText.getText().toString().trim())));
 
                                     } catch (NumberFormatException e) {
                                         // If the user inputted something that's not a number,
                                         // reset it to 0
-                                        reference.value = "0";
+                                        reference.setValue("0");
                                     }
                                 } else {
-                                    reference.value = editText.getText().toString().trim();
+                                    reference.setValue(editText.getText().toString().trim());
                                 }
                                 update();
                             })
@@ -239,8 +239,8 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
                             padding - inputLayout.getPaddingLeft(), 0,
                             padding - inputLayout.getPaddingRight(), 0);
 
-                    editText.setText(reference.value);
-                    editText.setSelection(reference.value.length());
+                    editText.setText(reference.getValue());
+                    editText.setSelection(reference.getValue().length());
                     editText.setOnEditorActionListener((v1, actionId, event) -> {
                         if (actionId == KeyEvent.KEYCODE_ENDCALL) {
                             valueDialog.getButton(DialogInterface.BUTTON_POSITIVE).callOnClick();
@@ -262,32 +262,32 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
             if (view.getParent().equals(typeDropDown)) {
                 ((FieldAdapter) fieldDropDown.getAdapter()).setType(position);
 
-                if (reference.type != position) {
+                if (reference.getType() != position) {
                     ((InstanceAdapter) valueSpinner.getAdapter()).setType(position);
                     valueSpinner.setSelection(0);
                 }
 
-                reference.type = position;
+                reference.setType(position);
             }
             // When a field and match are chosen, update the rule that this viewholder refers to
             if (view.getParent().equals(fieldDropDown)) {
                 FieldAdapter fieldAdapter = (FieldAdapter) fieldDropDown.getAdapter();
-                final int originalField = reference.field;
-                reference.field = fieldAdapter.getRuleField(position);
-                reference.match = fieldAdapter.getRuleMatch(position);
+                final int originalField = reference.getField();
+                reference.setField(fieldAdapter.getRuleField(position));
+                reference.setMatch(fieldAdapter.getRuleMatch(position));
 
                 // If the field was switched from or to an ID match, reset the value
                 if (originalField == AutoPlaylistRule.ID
-                        && reference.field != AutoPlaylistRule.ID) {
-                    reference.value = "";
+                        && reference.getField() != AutoPlaylistRule.ID) {
+                    reference.setValue("");
                 } else if (originalField != AutoPlaylistRule.ID
-                        && reference.field == AutoPlaylistRule.ID) {
-                    reference.value = "0";
+                        && reference.getField() == AutoPlaylistRule.ID) {
+                    reference.setValue("0");
                 }
             }
             if (view.getParent().equals(valueSpinner)) {
-                if (reference.field == AutoPlaylistRule.ID) {
-                    reference.value = Long.toString(id);
+                if (reference.getField() == AutoPlaylistRule.ID) {
+                    reference.setValue(Long.toString(id));
                 }
             }
 
@@ -423,10 +423,12 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
             return index;
         }
 
+        @AutoPlaylistRule.Field
         public int getRuleField(int position) {
             return FIELDS[position];
         }
 
+        @AutoPlaylistRule.Match
         public int getRuleMatch(int position) {
             return MATCHES[position];
         }
