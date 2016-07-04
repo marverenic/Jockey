@@ -80,7 +80,14 @@ public class AutoPlaylistEditActivity extends BaseActivity
     }
 
     private static AutoPlaylist emptyPlaylist() {
-        return new AutoPlaylist.Builder().setRules(emptyRule()).build();
+        return new AutoPlaylist.Builder()
+                .setName("")
+                .setMatchAllRules(true)
+                .setMaximumEntries(-1)
+                .setSortMethod(AutoPlaylistRule.ID)
+                .setTruncateMethod(AutoPlaylistRule.ID)
+                .setRules(emptyRule())
+                .build();
     }
 
     private static AutoPlaylistRule emptyRule() {
