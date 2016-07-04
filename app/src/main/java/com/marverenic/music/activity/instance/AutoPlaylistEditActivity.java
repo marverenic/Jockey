@@ -112,12 +112,12 @@ public class AutoPlaylistEditActivity extends BaseActivity
     }
 
     private boolean rulesChanged() {
-        if (editedRules.size() != reference.getRules().length) {
+        if (mBuilder.getRules().size() != reference.getRules().size()) {
             return true;
         }
 
-        for (int i = 0; i < editedRules.size(); i++) {
-            if (!reference.getRules()[i].equals(editedRules.get(i))) {
+        for (int i = 0; i < mBuilder.getRules().size(); i++) {
+            if (!reference.getRules().get(i).equals(mBuilder.getRules().get(i))) {
                 return true;
             }
         }
@@ -143,8 +143,8 @@ public class AutoPlaylistEditActivity extends BaseActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add:
-                editedRules.add(new AutoPlaylistRule(AutoPlaylistRule.EMPTY));
-                adapter.notifyItemInserted(editedRules.size());
+                mBuilder.getRules().add(emptyRule());
+                adapter.notifyItemInserted(mBuilder.getRules().size());
                 return true;
             case R.id.discard:
                 if (rulesChanged()) {
@@ -193,7 +193,7 @@ public class AutoPlaylistEditActivity extends BaseActivity
 
     @Override
     public void onRuleRemoved(final AutoPlaylistRule rule, final int index) {
-        editedRules.remove(index - 1);
+        mBuilder.getRules().remove(index - 1);
         adapter.notifyItemRemoved(index);
 
         Snackbar.make(findViewById(R.id.list), "Removed rule", Snackbar.LENGTH_LONG)
