@@ -33,11 +33,11 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
-public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRule> {
+public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRule.Factory> {
 
     private static OnRemovalListener mRemovalListener;
 
-    public RuleSection(@NonNull List<AutoPlaylistRule> data, OnRemovalListener listener) {
+    public RuleSection(@NonNull List<AutoPlaylistRule.Factory> data, OnRemovalListener listener) {
         super(data);
         mRemovalListener = listener;
     }
@@ -47,7 +47,7 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
     }
 
     @Override
-    public EnhancedViewHolder<AutoPlaylistRule> createViewHolder(
+    public EnhancedViewHolder<AutoPlaylistRule.Factory> createViewHolder(
             HeterogeneousAdapter adapter, ViewGroup parent) {
         return new ViewHolder(
                 LayoutInflater.from(parent.getContext())
@@ -55,10 +55,10 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
                 mRemovalListener);
     }
 
-    public static class ViewHolder extends EnhancedViewHolder<AutoPlaylistRule>
+    public static class ViewHolder extends EnhancedViewHolder<AutoPlaylistRule.Factory>
             implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
-        private AutoPlaylistRule reference;
+        private AutoPlaylistRule.Factory reference;
         private OnRemovalListener removalListener;
 
         private AppCompatSpinner typeDropDown;
@@ -96,7 +96,8 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
             dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM);
         }
 
-        public void onUpdate(AutoPlaylistRule rule, int position) {
+        @Override
+        public void onUpdate(AutoPlaylistRule.Factory rule, int position) {
             reference = rule;
             update();
         }
