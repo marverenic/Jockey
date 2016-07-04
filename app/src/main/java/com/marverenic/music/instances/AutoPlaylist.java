@@ -312,6 +312,18 @@ public class AutoPlaylist extends Playlist implements Parcelable {
             return this;
         }
 
+        public boolean isEqual(AutoPlaylist reference) {
+            return getId() == reference.getPlaylistId()
+                    && getName().equals(reference.getPlaylistName())
+                    && getMaximumEntries() == reference.getMaximumEntries()
+                    && getTruncateMethod() == reference.getTruncateMethod()
+                    && isTruncateAscending() == reference.isTruncateAscending()
+                    && isMatchAllRules() == reference.isMatchAllRules()
+                    && getRules().equals(reference.getRules())
+                    && getSortMethod() == reference.getSortMethod()
+                    && isSortAscending() == reference.isSortAscending();
+        }
+
         public AutoPlaylist build() {
             return new AutoPlaylist(mId, mName, mMaximumEntries, mSortMethod, mTruncateMethod,
                     mTruncateAscending, mSortAscending, mMatchAllRules, mRules);
