@@ -9,6 +9,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatSpinner;
 import android.text.InputType;
+import android.text.format.DateUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,15 +21,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.marverenic.music.R;
-import com.marverenic.music.instances.Album;
-import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
-import com.marverenic.music.instances.Song;
 import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
+import com.marverenic.music.R;
+import com.marverenic.music.instances.Album;
+import com.marverenic.music.instances.Song;
+import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
@@ -57,6 +56,8 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
     public static class ViewHolder extends EnhancedViewHolder<AutoPlaylistRule>
             implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
+        private Context mContext;
+
         private AutoPlaylistRule reference;
         private AutoPlaylistRule.Factory factory;
         private OnRemovalListener removalListener;
@@ -67,11 +68,10 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
         private TextView valueText;
         private AppCompatSpinner valueSpinner;
 
-        private final DateFormat dateFormat;
-
         public ViewHolder(View itemView, OnRemovalListener removalListener) {
             super(itemView);
             this.removalListener = removalListener;
+            mContext = itemView.getContext();
 
             ImageView removeButton = (ImageView) itemView.findViewById(R.id.instanceRemove);
             removeButton.setOnClickListener(this);
@@ -91,9 +91,6 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
             valueSpinner.setOnItemSelectedListener(this);
 
             valueTextWrapper.setOnClickListener(this);
-
-            // Set up a SimpleDate format
-            dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM);
         }
 
         @Override
@@ -121,7 +118,7 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
                     factory.setValue(Long.toString(c.getTimeInMillis() / 1000));
                 }
 
-                valueText.setText(dateFormat.format(c.getTime()));
+                valueText.setText(DateUtils.getRelativeTimeSpanString(mContext, c.getTimeInMillis()));
 
             } else if (factory.getField() == AutoPlaylistRule.ID) {
                 InstanceAdapter valueAdapter = ((InstanceAdapter) valueSpinner.getAdapter());
