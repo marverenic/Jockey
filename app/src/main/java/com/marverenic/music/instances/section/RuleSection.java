@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -33,11 +32,11 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
-public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRule.Factory> {
+public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRule> {
 
     private static OnRemovalListener mRemovalListener;
 
-    public RuleSection(@NonNull List<AutoPlaylistRule.Factory> data, OnRemovalListener listener) {
+    public RuleSection(@NonNull List<AutoPlaylistRule> data, OnRemovalListener listener) {
         super(data);
         mRemovalListener = listener;
     }
@@ -47,7 +46,7 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
     }
 
     @Override
-    public EnhancedViewHolder<AutoPlaylistRule.Factory> createViewHolder(
+    public EnhancedViewHolder<AutoPlaylistRule> createViewHolder(
             HeterogeneousAdapter adapter, ViewGroup parent) {
         return new ViewHolder(
                 LayoutInflater.from(parent.getContext())
@@ -55,10 +54,11 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
                 mRemovalListener);
     }
 
-    public static class ViewHolder extends EnhancedViewHolder<AutoPlaylistRule.Factory>
+    public static class ViewHolder extends EnhancedViewHolder<AutoPlaylistRule>
             implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
-        private AutoPlaylistRule.Factory reference;
+        private AutoPlaylistRule reference;
+        private AutoPlaylistRule.Factory factory;
         private OnRemovalListener removalListener;
 
         private AppCompatSpinner typeDropDown;
@@ -97,40 +97,42 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
         }
 
         @Override
-        public void onUpdate(AutoPlaylistRule.Factory rule, int position) {
+        public void onUpdate(AutoPlaylistRule rule, int position) {
+            // TODO save data as it is changed
             reference = rule;
+            factory = new AutoPlaylistRule.Factory(rule);
             update();
         }
 
         public void update() {
-            typeDropDown.setSelection(reference.getType());
+            typeDropDown.setSelection(factory.getType());
 
             FieldAdapter fieldAdapter = (FieldAdapter) fieldDropDown.getAdapter();
-            fieldDropDown.setSelection(fieldAdapter.lookupIndex(reference.getField(), reference.getMatch()));
+            fieldDropDown.setSelection(fieldAdapter.lookupIndex(factory.getField(), factory.getMatch()));
 
-            if (reference.getField() == AutoPlaylistRule.DATE_PLAYED
-                    || reference.getField() == AutoPlaylistRule.DATE_ADDED) {
+            if (factory.getField() == AutoPlaylistRule.DATE_PLAYED
+                    || factory.getField() == AutoPlaylistRule.DATE_ADDED) {
 
                 Calendar c = Calendar.getInstance();
                 try {
-                    c.setTimeInMillis(Long.parseLong(reference.getValue()) * 1000);
+                    c.setTimeInMillis(Long.parseLong(factory.getValue()) * 1000);
                 } catch (NumberFormatException e) {
                     c.setTimeInMillis(System.currentTimeMillis());
-                    reference.setValue(Long.toString(c.getTimeInMillis() / 1000));
+                    factory.setValue(Long.toString(c.getTimeInMillis() / 1000));
                 }
 
                 valueText.setText(dateFormat.format(c.getTime()));
 
-            } else if (reference.getField() == AutoPlaylistRule.ID) {
+            } else if (factory.getField() == AutoPlaylistRule.ID) {
                 InstanceAdapter valueAdapter = ((InstanceAdapter) valueSpinner.getAdapter());
-                valueAdapter.setType(reference.getType());
+                valueAdapter.setType(factory.getType());
                 valueSpinner.setSelection(
-                        valueAdapter.lookupIndexForId(Long.parseLong(reference.getValue())));
+                        valueAdapter.lookupIndexForId(Long.parseLong(factory.getValue())));
             } else {
-                valueText.setText(reference.getValue());
+                valueText.setText(factory.getValue());
             }
 
-            if (reference.getField() == AutoPlaylistRule.ID) {
+            if (factory.getField() == AutoPlaylistRule.ID) {
                 valueTextWrapper.setVisibility(View.GONE);
                 valueSpinner.setVisibility(View.VISIBLE);
             } else {
@@ -145,12 +147,12 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
                 removalListener.onRuleRemoved(reference, getAdapterPosition());
             } else if (v.getId() == R.id.valueTextWrapper) {
                 // Show a date picker if relevant, otherwise use a regular AlertDialog to get user input
-                if (reference.getField() == AutoPlaylistRule.DATE_ADDED
-                        || reference.getField() == AutoPlaylistRule.DATE_PLAYED) {
+                if (factory.getField() == AutoPlaylistRule.DATE_ADDED
+                        || factory.getField() == AutoPlaylistRule.DATE_PLAYED) {
                     // Calculate the date stored in the reference
                     Calendar calendar = Calendar.getInstance();
                     try {
-                        long timestamp = Long.parseLong(reference.getValue());
+                        long timestamp = Long.parseLong(factory.getValue());
                         calendar.setTimeInMillis(timestamp * 1000L);
                     } catch (NumberFormatException ignored) {
                         // If the reference's value isn't valid, just use the current time as the
@@ -163,7 +165,7 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
                             (view, year, monthOfYear, dayOfMonth) -> {
                                 Calendar c = Calendar.getInstance();
                                 c.set(year, monthOfYear, dayOfMonth);
-                                reference.setValue(Long.toString(c.getTimeInMillis() / 1000L));
+                                factory.setValue(Long.toString(c.getTimeInMillis() / 1000L));
                                 update();
                             },
                             calendar.get(Calendar.YEAR),
@@ -214,16 +216,16 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
                                 if (editText.getInputType() == InputType.TYPE_CLASS_NUMBER) {
                                     try {
                                         // Verify the input if this rule needs a numeric value
-                                        reference.setValue(Integer.toString(Integer.parseInt(
+                                        factory.setValue(Integer.toString(Integer.parseInt(
                                                 editText.getText().toString().trim())));
 
                                     } catch (NumberFormatException e) {
                                         // If the user inputted something that's not a number,
                                         // reset it to 0
-                                        reference.setValue("0");
+                                        factory.setValue("0");
                                     }
                                 } else {
-                                    reference.setValue(editText.getText().toString().trim());
+                                    factory.setValue(editText.getText().toString().trim());
                                 }
                                 update();
                             })
@@ -239,8 +241,8 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
                             padding - inputLayout.getPaddingLeft(), 0,
                             padding - inputLayout.getPaddingRight(), 0);
 
-                    editText.setText(reference.getValue());
-                    editText.setSelection(reference.getValue().length());
+                    editText.setText(factory.getValue());
+                    editText.setSelection(factory.getValue().length());
                     editText.setOnEditorActionListener((v1, actionId, event) -> {
                         if (actionId == KeyEvent.KEYCODE_ENDCALL) {
                             valueDialog.getButton(DialogInterface.BUTTON_POSITIVE).callOnClick();
@@ -262,32 +264,32 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
             if (view.getParent().equals(typeDropDown)) {
                 ((FieldAdapter) fieldDropDown.getAdapter()).setType(position);
 
-                if (reference.getType() != position) {
+                if (factory.getType() != position) {
                     ((InstanceAdapter) valueSpinner.getAdapter()).setType(position);
                     valueSpinner.setSelection(0);
                 }
 
-                reference.setType(position);
+                factory.setType(position);
             }
             // When a field and match are chosen, update the rule that this viewholder refers to
             if (view.getParent().equals(fieldDropDown)) {
                 FieldAdapter fieldAdapter = (FieldAdapter) fieldDropDown.getAdapter();
-                final int originalField = reference.getField();
-                reference.setField(fieldAdapter.getRuleField(position));
-                reference.setMatch(fieldAdapter.getRuleMatch(position));
+                final int originalField = factory.getField();
+                factory.setField(fieldAdapter.getRuleField(position));
+                factory.setMatch(fieldAdapter.getRuleMatch(position));
 
                 // If the field was switched from or to an ID match, reset the value
                 if (originalField == AutoPlaylistRule.ID
-                        && reference.getField() != AutoPlaylistRule.ID) {
-                    reference.setValue("");
+                        && factory.getField() != AutoPlaylistRule.ID) {
+                    factory.setValue("");
                 } else if (originalField != AutoPlaylistRule.ID
-                        && reference.getField() == AutoPlaylistRule.ID) {
-                    reference.setValue("0");
+                        && factory.getField() == AutoPlaylistRule.ID) {
+                    factory.setValue("0");
                 }
             }
             if (view.getParent().equals(valueSpinner)) {
-                if (reference.getField() == AutoPlaylistRule.ID) {
-                    reference.setValue(Long.toString(id));
+                if (factory.getField() == AutoPlaylistRule.ID) {
+                    factory.setValue(Long.toString(id));
                 }
             }
 

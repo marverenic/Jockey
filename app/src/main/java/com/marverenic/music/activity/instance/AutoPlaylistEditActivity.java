@@ -198,7 +198,7 @@ public class AutoPlaylistEditActivity extends BaseActivity
 
         Snackbar.make(findViewById(R.id.list), "Removed rule", Snackbar.LENGTH_LONG)
                 .setAction(R.string.action_undo, v -> {
-                    editedRules.add(index - 1, rule);
+                    mBuilder.getRules().add(index - 1, rule);
                     adapter.notifyItemInserted(index);
                 })
                 .show();
