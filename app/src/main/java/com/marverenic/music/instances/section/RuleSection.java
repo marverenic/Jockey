@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatEditText;
-import android.support.v7.widget.AppCompatSpinner;
 import android.text.InputType;
 import android.text.format.DateUtils;
 import android.view.KeyEvent;
@@ -17,13 +16,13 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.R;
+import com.marverenic.music.databinding.InstanceRuleBinding;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
@@ -45,52 +44,41 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
     }
 
     @Override
-    public EnhancedViewHolder<AutoPlaylistRule> createViewHolder(
-            HeterogeneousAdapter adapter, ViewGroup parent) {
-        return new ViewHolder(
-                LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.instance_rule, parent, false),
-                mRemovalListener);
+    public EnhancedViewHolder<AutoPlaylistRule> createViewHolder(HeterogeneousAdapter adapter,
+                                                                 ViewGroup parent) {
+        InstanceRuleBinding binding = InstanceRuleBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false);
+
+        return new ViewHolder(binding, mRemovalListener);
     }
 
     public static class ViewHolder extends EnhancedViewHolder<AutoPlaylistRule>
             implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
         private Context mContext;
+        private InstanceRuleBinding mBinding;
 
         private AutoPlaylistRule reference;
         private AutoPlaylistRule.Factory factory;
         private OnRemovalListener removalListener;
 
-        private AppCompatSpinner typeDropDown;
-        private AppCompatSpinner fieldDropDown;
-        private FrameLayout valueTextWrapper;
-        private TextView valueText;
-        private AppCompatSpinner valueSpinner;
-
-        public ViewHolder(View itemView, OnRemovalListener removalListener) {
-            super(itemView);
+        public ViewHolder(InstanceRuleBinding binding, OnRemovalListener removalListener) {
+            super(binding.getRoot());
+            mBinding = binding;
+            mContext = mBinding.getRoot().getContext();
             this.removalListener = removalListener;
-            mContext = itemView.getContext();
 
             ImageView removeButton = (ImageView) itemView.findViewById(R.id.instanceRemove);
             removeButton.setOnClickListener(this);
 
-            typeDropDown = (AppCompatSpinner) itemView.findViewById(R.id.typeSelector);
-            fieldDropDown = (AppCompatSpinner) itemView.findViewById(R.id.fieldSelector);
+            mBinding.fieldSelector.setAdapter(new FieldAdapter(itemView.getContext()));
+            mBinding.valueSpinner.setAdapter(new InstanceAdapter());
 
-            valueText = (TextView) itemView.findViewById(R.id.valueText);
-            valueTextWrapper = (FrameLayout) itemView.findViewById(R.id.valueTextWrapper);
-            valueSpinner = (AppCompatSpinner) itemView.findViewById(R.id.valueSpinner);
+            mBinding.typeSelector.setOnItemSelectedListener(this);
+            mBinding.fieldSelector.setOnItemSelectedListener(this);
+            mBinding.valueSpinner.setOnItemSelectedListener(this);
 
-            fieldDropDown.setAdapter(new FieldAdapter(itemView.getContext()));
-            valueSpinner.setAdapter(new InstanceAdapter());
-
-            typeDropDown.setOnItemSelectedListener(this);
-            fieldDropDown.setOnItemSelectedListener(this);
-            valueSpinner.setOnItemSelectedListener(this);
-
-            valueTextWrapper.setOnClickListener(this);
+            mBinding.valueTextWrapper.setOnClickListener(this);
         }
 
         @Override
@@ -102,10 +90,10 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
         }
 
         public void update() {
-            typeDropDown.setSelection(factory.getType());
+            mBinding.typeSelector.setSelection(factory.getType());
 
-            FieldAdapter fieldAdapter = (FieldAdapter) fieldDropDown.getAdapter();
-            fieldDropDown.setSelection(fieldAdapter.lookupIndex(factory.getField(), factory.getMatch()));
+            FieldAdapter fieldAdapter = (FieldAdapter) mBinding.fieldSelector.getAdapter();
+            mBinding.fieldSelector.setSelection(fieldAdapter.lookupIndex(factory.getField(), factory.getMatch()));
 
             if (factory.getField() == AutoPlaylistRule.DATE_PLAYED
                     || factory.getField() == AutoPlaylistRule.DATE_ADDED) {
@@ -118,23 +106,23 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
                     factory.setValue(Long.toString(c.getTimeInMillis() / 1000));
                 }
 
-                valueText.setText(DateUtils.getRelativeTimeSpanString(mContext, c.getTimeInMillis()));
+                mBinding.valueText.setText(DateUtils.getRelativeTimeSpanString(mContext, c.getTimeInMillis()));
 
             } else if (factory.getField() == AutoPlaylistRule.ID) {
-                InstanceAdapter valueAdapter = ((InstanceAdapter) valueSpinner.getAdapter());
+                InstanceAdapter valueAdapter = ((InstanceAdapter) mBinding.valueSpinner.getAdapter());
                 valueAdapter.setType(factory.getType());
-                valueSpinner.setSelection(
+                mBinding.valueSpinner.setSelection(
                         valueAdapter.lookupIndexForId(Long.parseLong(factory.getValue())));
             } else {
-                valueText.setText(factory.getValue());
+                mBinding.valueText.setText(factory.getValue());
             }
 
             if (factory.getField() == AutoPlaylistRule.ID) {
-                valueTextWrapper.setVisibility(View.GONE);
-                valueSpinner.setVisibility(View.VISIBLE);
+                mBinding.valueTextWrapper.setVisibility(View.GONE);
+                mBinding.valueSpinner.setVisibility(View.VISIBLE);
             } else {
-                valueTextWrapper.setVisibility(View.VISIBLE);
-                valueSpinner.setVisibility(View.GONE);
+                mBinding.valueTextWrapper.setVisibility(View.VISIBLE);
+                mBinding.valueSpinner.setVisibility(View.GONE);
             }
         }
 
@@ -197,16 +185,16 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
                     final TextInputLayout inputLayout = new TextInputLayout(itemView.getContext());
                     final AppCompatEditText editText = new AppCompatEditText(itemView.getContext());
 
-                    int type = ((FieldAdapter) fieldDropDown.getAdapter())
-                            .getInputType(fieldDropDown.getSelectedItemPosition());
+                    int type = ((FieldAdapter) mBinding.fieldSelector.getAdapter())
+                            .getInputType(mBinding.fieldSelector.getSelectedItemPosition());
 
                     editText.setInputType(type);
                     inputLayout.addView(editText);
 
                     final AlertDialog valueDialog = new AlertDialog.Builder(itemView.getContext())
                             .setMessage(
-                                    typeDropDown.getSelectedItem() + " "
-                                            + fieldDropDown.getSelectedItem().toString().toLowerCase())
+                                    mBinding.typeSelector.getSelectedItem() + " "
+                                            + mBinding.fieldSelector.getSelectedItem().toString().toLowerCase())
                             .setView(inputLayout)
                             .setNegativeButton(R.string.action_cancel, null)
                             .setPositiveButton(R.string.action_done, (dialog, which) -> {
@@ -258,19 +246,19 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
 
             // When the type is selected, update the available options in the fieldDropDown and update
             // the rule this viewHolder refers to
-            if (view.getParent().equals(typeDropDown)) {
-                ((FieldAdapter) fieldDropDown.getAdapter()).setType(position);
+            if (view.getParent().equals(mBinding.typeSelector)) {
+                ((FieldAdapter) mBinding.fieldSelector.getAdapter()).setType(position);
 
                 if (factory.getType() != position) {
-                    ((InstanceAdapter) valueSpinner.getAdapter()).setType(position);
-                    valueSpinner.setSelection(0);
+                    ((InstanceAdapter) mBinding.valueSpinner.getAdapter()).setType(position);
+                    mBinding.valueSpinner.setSelection(0);
                 }
 
                 factory.setType(position);
             }
             // When a field and match are chosen, update the rule that this viewholder refers to
-            if (view.getParent().equals(fieldDropDown)) {
-                FieldAdapter fieldAdapter = (FieldAdapter) fieldDropDown.getAdapter();
+            if (view.getParent().equals(mBinding.fieldSelector)) {
+                FieldAdapter fieldAdapter = (FieldAdapter) mBinding.fieldSelector.getAdapter();
                 final int originalField = factory.getField();
                 factory.setField(fieldAdapter.getRuleField(position));
                 factory.setMatch(fieldAdapter.getRuleMatch(position));
@@ -284,7 +272,7 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
                     factory.setValue("0");
                 }
             }
-            if (view.getParent().equals(valueSpinner)) {
+            if (view.getParent().equals(mBinding.valueSpinner)) {
                 if (factory.getField() == AutoPlaylistRule.ID) {
                     factory.setValue(Long.toString(id));
                 }
