@@ -188,9 +188,19 @@ public abstract class AutoPlaylistRule implements Parcelable {
             mMatch = from.getMatch();
         }
 
+        @Type
+        public int getType() {
+            return mType;
+        }
+
         public Factory setType(@Type int type) {
             mType = type;
             return this;
+        }
+
+        @Field
+        public int getField() {
+            return mField;
         }
 
         public Factory setField(@Field int field) {
@@ -198,9 +208,18 @@ public abstract class AutoPlaylistRule implements Parcelable {
             return this;
         }
 
+        @Match
+        public int getMatch() {
+            return mMatch;
+        }
+
         public Factory setMatch(@Match int match) {
             mMatch = match;
             return this;
+        }
+
+        public String getValue() {
+            return mValue;
         }
 
         public Factory setValue(String value) {
