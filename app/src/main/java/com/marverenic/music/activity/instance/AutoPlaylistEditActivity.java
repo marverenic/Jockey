@@ -79,9 +79,10 @@ public class AutoPlaylistEditActivity extends BaseActivity
         return new AutoPlaylist.Builder()
                 .setName("")
                 .setMatchAllRules(true)
-                .setMaximumEntries(-1)
+                .setMaximumEntries(-25)
                 .setSortMethod(AutoPlaylistRule.ID)
                 .setTruncateMethod(AutoPlaylistRule.ID)
+                .setTruncateAscending(true)
                 .setRules(emptyRule())
                 .build();
     }

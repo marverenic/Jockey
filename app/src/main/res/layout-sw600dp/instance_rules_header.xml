@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable name="viewModel" type="com.marverenic.music.viewmodel.RuleHeaderViewModel"/>
+    </data>
+
     <RelativeLayout
         android:id="@+id/ruleHeaderInstance"
         android:layout_width="match_parent"
@@ -10,134 +17,134 @@
             android:id="@+id/playlist_name_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/list_padding">
+            android:layout_marginLeft="@dimen/list_padding"
+            android:layout_marginRight="@dimen/list_padding"
+            android:layout_marginTop="@dimen/list_padding"
+            app:error="@{viewModel.playlistNameError}"
+            app:errorEnabled="true">
 
             <android.support.v7.widget.AppCompatEditText
                 android:id="@+id/playlist_name_input_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textCapWords"
-                android:hint="@string/hint_playlist_name"/>
+                android:text="@{viewModel.playlistName}"
+                android:hint="@string/hint_playlist_name"
+                app:textChangedListener="@{viewModel.onPlaylistNameChanged()}"
+                tools:text="Playlist name"/>
 
         </android.support.design.widget.TextInputLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/playlist_match_all_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
             android:layout_below="@id/playlist_name_input"
-            android:background="?android:selectableItemBackground">
+            android:background="?android:selectableItemBackground"
+            android:onClick="@{viewModel.onMatchAllContainerClick()}">
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="@string/match_all_rules"
-                style="@style/listTitleText"
-                android:layout_toStartOf="@+id/playlist_match_all"
-                android:layout_toLeftOf="@+id/playlist_match_all"
-                android:layout_centerVertical="true" />
+                style="@style/listTitleText"/>
 
-            <android.support.v7.widget.SwitchCompat
+            <Switch
                 android:id="@+id/playlist_match_all"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
                 android:padding="@dimen/list_padding"
-                android:gravity="center_vertical" />
+                android:checked="@{viewModel.matchAllRules}"
+                app:onCheckedChangeListener="@{viewModel.onMatchAllToggle()}"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/playlist_maximum"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
             android:paddingLeft="@dimen/list_padding"
             android:paddingRight="@dimen/list_padding"
             android:paddingBottom="4dp"
             android:layout_marginBottom="@dimen/list_padding"
             android:layout_below="@id/playlist_match_all_container"
-            android:background="?android:selectableItemBackground">
+            android:background="?android:selectableItemBackground"
+            android:onClick="@{viewModel.onSongCapContainerClick()}">
 
             <TextView
                 android:id="@+id/playlist_maximum_prefix"
-                style="@style/listTitleText"
-                android:padding="0dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:text="@string/playlist_maximum_prefix" />
-
+                android:enabled="@{viewModel.songCountCapped}"
+                android:text="@string/playlist_maximum_prefix"
+                style="@style/listTitleText"
+                android:padding="0dp" />
 
             <android.support.v7.widget.AppCompatEditText
                 android:id="@+id/playlist_maximum_input_text"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/playlist_maximum_prefix"
-                android:layout_toEndOf="@+id/playlist_maximum_prefix"
-                android:layout_toLeftOf="@+id/playlist_maximum_suffix"
-                android:layout_toStartOf="@+id/playlist_maximum_suffix"
-                android:layout_centerVertical="true"
-                android:inputType="number"/>
+                android:layout_weight="1"
+                android:text="@{viewModel.songCap}"
+                android:enabled="@{viewModel.songCountCapped}"
+                android:gravity="center_horizontal"
+                android:inputType="number"
+                app:textChangedListener="@{viewModel.onSongCapChanged()}"/>
 
             <TextView
                 android:id="@+id/playlist_maximum_suffix"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:enabled="@{viewModel.songCountCapped}"
                 android:text="@string/playlist_maximum_suffix"
                 style="@style/listTitleText"
                 android:padding="0dp"
                 android:layout_marginRight="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_centerVertical="true"
-                android:layout_toLeftOf="@+id/playlist_chosen_by_prefix"
-                android:layout_toStartOf="@+id/playlist_chosen_by_prefix" />
+                android:layout_marginEnd="8dp"/>
 
             <TextView
                 android:id="@+id/playlist_chosen_by_prefix"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/playlist_chosen_by_prefix"
+                android:enabled="@{viewModel.songCountCapped}"
                 style="@style/listTitleText"
                 android:paddingLeft="0dp"
                 android:paddingRight="0dp"
                 android:paddingTop="4dp"
-                android:paddingBottom="4dp"
-                android:layout_centerVertical="true"
-                android:layout_toLeftOf="@+id/playlist_chosen_by"
-                android:layout_toStartOf="@+id/playlist_chosen_by" />
+                android:paddingBottom="4dp"/>
 
-            <android.support.v7.widget.AppCompatSpinner
+            <Spinner
                 android:id="@+id/playlist_chosen_by"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:entries="@array/auto_plist_choose_by"
+                android:enabled="@{viewModel.songCountCapped}"
                 android:paddingTop="4dp"
                 android:paddingBottom="4dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginEnd="8dp"
-                android:layout_centerVertical="true"
-                android:layout_alignTop="@+id/playlist_chosen_by_prefix"
-                android:layout_toLeftOf="@+id/playlist_song_cap_check"
-                android:layout_toStartOf="@+id/playlist_song_cap_check"/>
+                app:selection="@{viewModel.chosenBySelection}"
+                app:onItemSelectedListener="@{viewModel.onTruncateMethodSelected()}"/>
 
-            <android.support.v7.widget.AppCompatCheckBox
+            <CheckBox
                 android:id="@+id/playlist_song_cap_check"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
+                android:checked="@{viewModel.songCountCapped}"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:layout_centerInParent="true"
                 android:layout_marginTop="@dimen/list_padding"
-                android:layout_marginBottom="@dimen/list_padding"/>
+                android:layout_marginBottom="@dimen/list_padding"
+                app:onCheckedChangeListener="@{viewModel.onTruncateToggle}"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
     </RelativeLayout>
 </layout>
