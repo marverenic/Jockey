@@ -107,8 +107,8 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
             FieldAdapter fieldAdapter = (FieldAdapter) fieldDropDown.getAdapter();
             fieldDropDown.setSelection(fieldAdapter.lookupIndex(reference.field, reference.match));
 
-            if (reference.field == AutoPlaylistRule.Field.DATE_PLAYED
-                    || reference.field == AutoPlaylistRule.Field.DATE_ADDED) {
+            if (reference.field == AutoPlaylistRule.DATE_PLAYED
+                    || reference.field == AutoPlaylistRule.DATE_ADDED) {
 
                 Calendar c = Calendar.getInstance();
                 try {
@@ -120,7 +120,7 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
 
                 valueText.setText(dateFormat.format(c.getTime()));
 
-            } else if (reference.field == AutoPlaylistRule.Field.ID) {
+            } else if (reference.field == AutoPlaylistRule.ID) {
                 InstanceAdapter valueAdapter = ((InstanceAdapter) valueSpinner.getAdapter());
                 valueAdapter.setType(reference.type);
                 valueSpinner.setSelection(
@@ -129,7 +129,7 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
                 valueText.setText(reference.value);
             }
 
-            if (reference.field == AutoPlaylistRule.Field.ID) {
+            if (reference.field == AutoPlaylistRule.ID) {
                 valueTextWrapper.setVisibility(View.GONE);
                 valueSpinner.setVisibility(View.VISIBLE);
             } else {
@@ -144,8 +144,8 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
                 removalListener.onRuleRemoved(reference, getAdapterPosition());
             } else if (v.getId() == R.id.valueTextWrapper) {
                 // Show a date picker if relevant, otherwise use a regular AlertDialog to get user input
-                if (reference.field == AutoPlaylistRule.Field.DATE_ADDED
-                        || reference.field == AutoPlaylistRule.Field.DATE_PLAYED) {
+                if (reference.field == AutoPlaylistRule.DATE_ADDED
+                        || reference.field == AutoPlaylistRule.DATE_PLAYED) {
                     // Calculate the date stored in the reference
                     Calendar calendar = Calendar.getInstance();
                     try {
@@ -289,16 +289,16 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
                 reference.match = fieldAdapter.getRuleMatch(position);
 
                 // If the field was switched from or to an ID match, reset the value
-                if (originalField == AutoPlaylistRule.Field.ID
-                        && reference.field != AutoPlaylistRule.Field.ID) {
+                if (originalField == AutoPlaylistRule.ID
+                        && reference.field != AutoPlaylistRule.ID) {
                     reference.value = "";
-                } else if (originalField != AutoPlaylistRule.Field.ID
-                        && reference.field == AutoPlaylistRule.Field.ID) {
+                } else if (originalField != AutoPlaylistRule.ID
+                        && reference.field == AutoPlaylistRule.ID) {
                     reference.value = "0";
                 }
             }
             if (view.getParent().equals(valueSpinner)) {
-                if (reference.field == AutoPlaylistRule.Field.ID) {
+                if (reference.field == AutoPlaylistRule.ID) {
                     reference.value = Long.toString(id);
                 }
             }
@@ -322,45 +322,45 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
         // options. Duplicates are intentional. Any changes to R.array.auto_plist_fields must
         // be updated here.
         private static final int[] FIELDS = new int[]{
-                AutoPlaylistRule.Field.ID,
-                AutoPlaylistRule.Field.ID,
-                AutoPlaylistRule.Field.NAME,
-                AutoPlaylistRule.Field.NAME,
-                AutoPlaylistRule.Field.NAME,
-                AutoPlaylistRule.Field.NAME,
-                AutoPlaylistRule.Field.PLAY_COUNT,
-                AutoPlaylistRule.Field.PLAY_COUNT,
-                AutoPlaylistRule.Field.PLAY_COUNT,
-                AutoPlaylistRule.Field.SKIP_COUNT,
-                AutoPlaylistRule.Field.SKIP_COUNT,
-                AutoPlaylistRule.Field.SKIP_COUNT,
-                AutoPlaylistRule.Field.DATE_ADDED,
-                AutoPlaylistRule.Field.DATE_ADDED,
-                AutoPlaylistRule.Field.DATE_ADDED,
-                AutoPlaylistRule.Field.DATE_PLAYED,
-                AutoPlaylistRule.Field.DATE_PLAYED,
-                AutoPlaylistRule.Field.DATE_PLAYED
+                AutoPlaylistRule.ID,
+                AutoPlaylistRule.ID,
+                AutoPlaylistRule.NAME,
+                AutoPlaylistRule.NAME,
+                AutoPlaylistRule.NAME,
+                AutoPlaylistRule.NAME,
+                AutoPlaylistRule.PLAY_COUNT,
+                AutoPlaylistRule.PLAY_COUNT,
+                AutoPlaylistRule.PLAY_COUNT,
+                AutoPlaylistRule.SKIP_COUNT,
+                AutoPlaylistRule.SKIP_COUNT,
+                AutoPlaylistRule.SKIP_COUNT,
+                AutoPlaylistRule.DATE_ADDED,
+                AutoPlaylistRule.DATE_ADDED,
+                AutoPlaylistRule.DATE_ADDED,
+                AutoPlaylistRule.DATE_PLAYED,
+                AutoPlaylistRule.DATE_PLAYED,
+                AutoPlaylistRule.DATE_PLAYED
         };
 
         private static final int[] MATCHES = new int[]{
-                AutoPlaylistRule.Match.EQUALS,
-                AutoPlaylistRule.Match.NOT_EQUALS,
-                AutoPlaylistRule.Match.EQUALS,
-                AutoPlaylistRule.Match.NOT_EQUALS,
-                AutoPlaylistRule.Match.CONTAINS,
-                AutoPlaylistRule.Match.NOT_CONTAINS,
-                AutoPlaylistRule.Match.LESS_THAN,
-                AutoPlaylistRule.Match.EQUALS,
-                AutoPlaylistRule.Match.GREATER_THAN,
-                AutoPlaylistRule.Match.LESS_THAN,
-                AutoPlaylistRule.Match.EQUALS,
-                AutoPlaylistRule.Match.GREATER_THAN,
-                AutoPlaylistRule.Match.LESS_THAN,
-                AutoPlaylistRule.Match.EQUALS,
-                AutoPlaylistRule.Match.GREATER_THAN,
-                AutoPlaylistRule.Match.LESS_THAN,
-                AutoPlaylistRule.Match.EQUALS,
-                AutoPlaylistRule.Match.GREATER_THAN
+                AutoPlaylistRule.EQUALS,
+                AutoPlaylistRule.NOT_EQUALS,
+                AutoPlaylistRule.EQUALS,
+                AutoPlaylistRule.NOT_EQUALS,
+                AutoPlaylistRule.CONTAINS,
+                AutoPlaylistRule.NOT_CONTAINS,
+                AutoPlaylistRule.LESS_THAN,
+                AutoPlaylistRule.EQUALS,
+                AutoPlaylistRule.GREATER_THAN,
+                AutoPlaylistRule.LESS_THAN,
+                AutoPlaylistRule.EQUALS,
+                AutoPlaylistRule.GREATER_THAN,
+                AutoPlaylistRule.LESS_THAN,
+                AutoPlaylistRule.EQUALS,
+                AutoPlaylistRule.GREATER_THAN,
+                AutoPlaylistRule.LESS_THAN,
+                AutoPlaylistRule.EQUALS,
+                AutoPlaylistRule.GREATER_THAN
         };
 
         private static final int[] INPUT_TYPE = new int[] {
@@ -400,7 +400,7 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
 
         @Override
         public int getCount() {
-            if (type == AutoPlaylistRule.Type.SONG) {
+            if (type == AutoPlaylistRule.SONG) {
                 return songChoices.length;
             }
             return 6; // Only the first 6 elements in the array are applicable to all data types
@@ -481,7 +481,7 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
         private int type;
 
         InstanceAdapter() {
-            type = AutoPlaylistRule.Type.SONG;
+            type = AutoPlaylistRule.SONG;
         }
 
         @Override

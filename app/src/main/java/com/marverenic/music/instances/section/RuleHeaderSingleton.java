@@ -44,16 +44,16 @@ public class RuleHeaderSingleton extends HeterogeneousAdapter.SingletonSection<A
             AdapterView.OnItemSelectedListener {
 
         private static final int[] TRUNCATE_CHOICES = new int[] {
-                AutoPlaylistRule.Field.ID,
-                AutoPlaylistRule.Field.NAME,
-                AutoPlaylistRule.Field.PLAY_COUNT,
-                AutoPlaylistRule.Field.PLAY_COUNT,
-                AutoPlaylistRule.Field.SKIP_COUNT,
-                AutoPlaylistRule.Field.SKIP_COUNT,
-                AutoPlaylistRule.Field.DATE_ADDED,
-                AutoPlaylistRule.Field.DATE_ADDED,
-                AutoPlaylistRule.Field.DATE_PLAYED,
-                AutoPlaylistRule.Field.DATE_PLAYED
+                AutoPlaylistRule.ID,
+                AutoPlaylistRule.NAME,
+                AutoPlaylistRule.PLAY_COUNT,
+                AutoPlaylistRule.PLAY_COUNT,
+                AutoPlaylistRule.SKIP_COUNT,
+                AutoPlaylistRule.SKIP_COUNT,
+                AutoPlaylistRule.DATE_ADDED,
+                AutoPlaylistRule.DATE_ADDED,
+                AutoPlaylistRule.DATE_PLAYED,
+                AutoPlaylistRule.DATE_PLAYED
         };
 
         private static final boolean[] TRUNCATE_ORDER_ASCENDING = new boolean[] {

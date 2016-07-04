@@ -7,6 +7,7 @@ import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
@@ -14,14 +15,13 @@ import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.AutoPlaylist;
-import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
 import com.marverenic.music.instances.Song;
+import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.SongSection;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -105,12 +105,12 @@ public class AutoPlaylistActivity extends BaseActivity
             case R.id.action_sort_random:
                 Collections.shuffle(mSongs);
                 result = getResources().getString(R.string.message_sorted_playlist_random);
-                sortFlag = AutoPlaylistRule.Field.ID;
+                sortFlag = AutoPlaylistRule.ID;
                 break;
             case R.id.action_sort_name:
                 Collections.sort(mSongs);
                 result = getResources().getString(R.string.message_sorted_playlist_name);
-                sortFlag = AutoPlaylistRule.Field.NAME;
+                sortFlag = AutoPlaylistRule.NAME;
                 break;
             case R.id.action_sort_artist:
                 Collections.sort(mSongs, Song.ARTIST_COMPARATOR);
@@ -123,22 +123,22 @@ public class AutoPlaylistActivity extends BaseActivity
             case R.id.action_sort_play:
                 Collections.sort(mSongs, Song.playCountComparator(mPlayCountStore));
                 result = getResources().getString(R.string.message_sorted_playlist_play);
-                sortFlag = AutoPlaylistRule.Field.PLAY_COUNT;
+                sortFlag = AutoPlaylistRule.PLAY_COUNT;
                 break;
             case R.id.action_sort_skip:
                 Collections.sort(mSongs, Song.skipCountComparator(mPlayCountStore));
                 result = getResources().getString(R.string.message_sorted_playlist_skip);
-                sortFlag = AutoPlaylistRule.Field.SKIP_COUNT;
+                sortFlag = AutoPlaylistRule.SKIP_COUNT;
                 break;
             case R.id.action_sort_date_added:
                 Collections.sort(mSongs, Song.DATE_ADDED_COMPARATOR);
                 result = getResources().getString(R.string.message_sorted_playlist_date_added);
-                sortFlag = AutoPlaylistRule.Field.DATE_ADDED;
+                sortFlag = AutoPlaylistRule.DATE_ADDED;
                 break;
             case R.id.action_sort_date_played:
                 Collections.sort(mSongs, Song.playCountComparator(mPlayCountStore));
                 result = getResources().getString(R.string.message_sorted_playlist_date_played);
-                sortFlag = AutoPlaylistRule.Field.DATE_PLAYED;
+                sortFlag = AutoPlaylistRule.DATE_PLAYED;
                 break;
             default:
                 return false;
