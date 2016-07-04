@@ -144,9 +144,8 @@ public class AutoPlaylistActivity extends BaseActivity
                 return false;
         }
 
-        mReference.setSortMethod(sortFlag);
-        // TODO create AutoPlaylist store
-        //mPlaylistStore.editAutoPlaylist((AutoPlaylist) mReference);
+        mReference = new AutoPlaylist.Builder(mReference).setSortMethod(sortFlag).build();
+        mPlaylistStore.editPlaylist(mReference);
 
         Snackbar
                 .make(
