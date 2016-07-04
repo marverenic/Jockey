@@ -25,21 +25,22 @@ import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
 
 import javax.inject.Inject;
 
-public class RuleHeaderSingleton extends HeterogeneousAdapter.SingletonSection<AutoPlaylist> {
+public class RuleHeaderSingleton
+        extends HeterogeneousAdapter.SingletonSection<AutoPlaylist.Builder> {
 
-    public RuleHeaderSingleton(AutoPlaylist data) {
-        super(data);
+    public RuleHeaderSingleton(AutoPlaylist.Builder editor) {
+        super(editor);
     }
 
     @Override
-    public EnhancedViewHolder<AutoPlaylist> createViewHolder(
+    public EnhancedViewHolder<AutoPlaylist.Builder> createViewHolder(
             HeterogeneousAdapter adapter, ViewGroup parent) {
         return new ViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.instance_rules_header, parent, false),
                 get(0));
     }
 
-    public static class ViewHolder extends EnhancedViewHolder<AutoPlaylist>
+    public static class ViewHolder extends EnhancedViewHolder<AutoPlaylist.Builder>
             implements View.OnClickListener, CompoundButton.OnCheckedChangeListener,
             AdapterView.OnItemSelectedListener {
 
@@ -71,7 +72,7 @@ public class RuleHeaderSingleton extends HeterogeneousAdapter.SingletonSection<A
 
         @Inject PlaylistStore mPlaylistStore;
 
-        private AutoPlaylist reference;
+        private AutoPlaylist.Builder reference;
         private final String originalName;
 
         private TextInputLayout nameEditLayout;
@@ -85,12 +86,12 @@ public class RuleHeaderSingleton extends HeterogeneousAdapter.SingletonSection<A
         private AppCompatSpinner truncateMethodSpinner;
         private TextView truncateMethodPrefix;
 
-        public ViewHolder(View itemView, AutoPlaylist reference) {
+        public ViewHolder(View itemView, AutoPlaylist.Builder reference) {
             super(itemView);
             JockeyApplication.getComponent(itemView.getContext()).inject(this);
 
             this.reference = reference;
-            this.originalName = reference.getPlaylistName();
+            this.originalName = reference.getName();
 
             // Initialize View references
             nameEditLayout = (TextInputLayout) itemView.findViewById(R.id.playlist_name_input);
@@ -116,7 +117,7 @@ public class RuleHeaderSingleton extends HeterogeneousAdapter.SingletonSection<A
                     (AppCompatEditText) itemView.findViewById(R.id.playlist_name_input_text);
 
             // Update View contents to match those provided in the current reference
-            nameEditText.setText(reference.getPlaylistName());
+            nameEditText.setText(reference.getName());
             matchAllRulesSwitch.setChecked(reference.isMatchAllRules());
             if (reference.getMaximumEntries() > 0) {
                 maximumEditText.setText(Integer.toString(reference.getMaximumEntries()));
@@ -153,7 +154,7 @@ public class RuleHeaderSingleton extends HeterogeneousAdapter.SingletonSection<A
                         nameEditLayout.setError(null);
                         nameEditLayout.setErrorEnabled(false);
                     }
-                    reference.setPlaylistName(s.toString().trim());
+                    reference.setName(s.toString().trim());
                 }
 
                 @Override
@@ -184,7 +185,7 @@ public class RuleHeaderSingleton extends HeterogeneousAdapter.SingletonSection<A
         }
 
         @Override
-        public void onUpdate(AutoPlaylist item, int sectionPosition) {
+        public void onUpdate(AutoPlaylist.Builder item, int sectionPosition) {
             reference = item;
         }
 
