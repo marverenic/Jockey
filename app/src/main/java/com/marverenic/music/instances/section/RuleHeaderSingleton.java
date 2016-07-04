@@ -1,10 +1,5 @@
 package com.marverenic.music.instances.section;
 
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.widget.AppCompatCheckBox;
-import android.support.v7.widget.AppCompatEditText;
-import android.support.v7.widget.AppCompatSpinner;
-import android.support.v7.widget.SwitchCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -12,32 +7,31 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CompoundButton;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import com.marverenic.music.JockeyApplication;
-import com.marverenic.music.R;
-import com.marverenic.music.data.store.PlaylistStore;
-import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter.SingletonSection;
+import com.marverenic.music.JockeyApplication;
+import com.marverenic.music.data.store.PlaylistStore;
+import com.marverenic.music.databinding.InstanceRulesHeaderBinding;
+import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
 
 import javax.inject.Inject;
 
-public class RuleHeaderSingleton
-        extends HeterogeneousAdapter.SingletonSection<AutoPlaylist.Builder> {
+public class RuleHeaderSingleton extends SingletonSection<AutoPlaylist.Builder> {
 
     public RuleHeaderSingleton(AutoPlaylist.Builder editor) {
         super(editor);
     }
 
     @Override
-    public EnhancedViewHolder<AutoPlaylist.Builder> createViewHolder(
-            HeterogeneousAdapter adapter, ViewGroup parent) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.instance_rules_header, parent, false),
-                get(0));
+    public EnhancedViewHolder<AutoPlaylist.Builder> createViewHolder(HeterogeneousAdapter adapter,
+                                                                     ViewGroup parent) {
+        InstanceRulesHeaderBinding binding = InstanceRulesHeaderBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false);
+
+        return new ViewHolder(binding, get(0));
     }
 
     public static class ViewHolder extends EnhancedViewHolder<AutoPlaylist.Builder>
@@ -75,70 +69,44 @@ public class RuleHeaderSingleton
         private AutoPlaylist.Builder reference;
         private final String originalName;
 
-        private TextInputLayout nameEditLayout;
+        private InstanceRulesHeaderBinding mBinding;
 
-        private SwitchCompat matchAllRulesSwitch;
+        public ViewHolder(InstanceRulesHeaderBinding binding, AutoPlaylist.Builder reference) {
+            super(binding.getRoot());
+            JockeyApplication.getComponent(binding.getRoot().getContext()).inject(this);
 
-        private RelativeLayout songCapContainer;
-        private AppCompatCheckBox songCapCheckBox;
-        private AppCompatEditText maximumEditText;
-
-        private AppCompatSpinner truncateMethodSpinner;
-        private TextView truncateMethodPrefix;
-
-        public ViewHolder(View itemView, AutoPlaylist.Builder reference) {
-            super(itemView);
-            JockeyApplication.getComponent(itemView.getContext()).inject(this);
+            mBinding = binding;
 
             this.reference = reference;
             this.originalName = reference.getName();
-
-            // Initialize View references
-            nameEditLayout = (TextInputLayout) itemView.findViewById(R.id.playlist_name_input);
-
-            matchAllRulesSwitch = (SwitchCompat) itemView.findViewById(R.id.playlist_match_all);
-
-            songCapCheckBox =
-                    (AppCompatCheckBox) itemView.findViewById(R.id.playlist_song_cap_check);
-            songCapContainer =
-                    (RelativeLayout) itemView.findViewById(R.id.playlist_maximum);
-            maximumEditText =
-                    (AppCompatEditText) itemView.findViewById(R.id.playlist_maximum_input_text);
-            truncateMethodSpinner =
-                    (AppCompatSpinner) itemView.findViewById(R.id.playlist_chosen_by);
-            truncateMethodPrefix =
-                    (TextView) itemView.findViewById(R.id.playlist_chosen_by_prefix);
 
             init();
         }
 
         private void init() {
-            AppCompatEditText nameEditText =
-                    (AppCompatEditText) itemView.findViewById(R.id.playlist_name_input_text);
-
             // Update View contents to match those provided in the current reference
-            nameEditText.setText(reference.getName());
-            matchAllRulesSwitch.setChecked(reference.isMatchAllRules());
+            mBinding.playlistNameInputText.setText(reference.getName());
+            mBinding.playlistMatchAll.setChecked(reference.isMatchAllRules());
             if (reference.getMaximumEntries() > 0) {
-                maximumEditText.setText(Integer.toString(reference.getMaximumEntries()));
+                mBinding.playlistMaximumInputText.setText(Integer.toString(reference.getMaximumEntries()));
             }
 
-            truncateMethodSpinner.setSelection(lookupTruncateMethod(
+            mBinding.playlistChosenBy.setSelection(lookupTruncateMethod(
                     reference.getTruncateMethod(), reference.isTruncateAscending()));
-            songCapCheckBox.setChecked(reference.getMaximumEntries() > 0);
-            onCheckedChanged(songCapCheckBox, reference.getMaximumEntries() > 0);
+            mBinding.playlistSongCapCheck.setChecked(reference.getMaximumEntries() > 0);
+            onCheckedChanged(mBinding.playlistSongCapCheck, reference.getMaximumEntries() > 0);
 
             // These view groups allow the entire description text to be clickable to toggle
             // the setting
-            ((ViewGroup) matchAllRulesSwitch.getParent()).setOnClickListener(this);
-            songCapContainer.setOnClickListener(this);
-            songCapCheckBox.setOnCheckedChangeListener(this);
-            matchAllRulesSwitch.setOnCheckedChangeListener(this);
+            ((ViewGroup) mBinding.playlistMatchAll.getParent()).setOnClickListener(this);
+            ((ViewGroup) mBinding.playlistSongCapCheck.getParent()).setOnClickListener(this);
+            mBinding.playlistSongCapCheck.setOnCheckedChangeListener(this);
+            mBinding.playlistMatchAll.setOnCheckedChangeListener(this);
 
             // Add listeners to modify the reference when values are changed
-            truncateMethodSpinner.setOnItemSelectedListener(this);
+            mBinding.playlistChosenBy.setOnItemSelectedListener(this);
 
-            nameEditText.addTextChangedListener(new TextWatcher() {
+            mBinding.playlistNameInputText.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 }
@@ -149,10 +117,10 @@ public class RuleHeaderSingleton
                     if (originalName.isEmpty()
                             || !originalName.equalsIgnoreCase(s.toString().trim())) {
                         String error = mPlaylistStore.verifyPlaylistName(s.toString());
-                        nameEditLayout.setError(error);
+                        mBinding.playlistNameInputText.setError(error);
                     } else {
-                        nameEditLayout.setError(null);
-                        nameEditLayout.setErrorEnabled(false);
+                        mBinding.playlistNameInput.setError(null);
+                        mBinding.playlistNameInput.setErrorEnabled(false);
                     }
                     reference.setName(s.toString().trim());
                 }
@@ -162,7 +130,7 @@ public class RuleHeaderSingleton
                 }
             });
 
-            maximumEditText.addTextChangedListener(new TextWatcher() {
+            mBinding.playlistMaximumInputText.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -202,34 +170,34 @@ public class RuleHeaderSingleton
 
         @Override
         public void onClick(View v) {
-            if (v == songCapContainer) {
-                songCapCheckBox.toggle();
+            if (v == mBinding.playlistSongCapCheck.getParent()) {
+                mBinding.playlistSongCapCheck.toggle();
             }
-            if (v == matchAllRulesSwitch.getParent()) {
-                matchAllRulesSwitch.toggle();
+            if (v == mBinding.playlistMatchAllContainer) {
+                mBinding.playlistMatchAll.toggle();
             }
         }
 
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if (buttonView == songCapCheckBox) {
-                maximumEditText.setEnabled(isChecked);
-                truncateMethodSpinner.setEnabled(isChecked);
-                truncateMethodPrefix.setEnabled(isChecked);
+            if (buttonView == mBinding.playlistSongCapCheck) {
+                mBinding.playlistMaximumInputText.setEnabled(isChecked);
+                mBinding.playlistChosenBy.setEnabled(isChecked);
+                mBinding.playlistChosenByPrefix.setEnabled(isChecked);
                 if (!isChecked) {
                     reference.setMaximumEntries(AutoPlaylist.UNLIMITED_ENTRIES);
                 } else {
-                    if (maximumEditText.getText().length() > 0) {
+                    if (mBinding.playlistMaximumInputText.getText().length() > 0) {
                         try {
                             reference.setMaximumEntries(
-                                    Integer.parseInt(maximumEditText.getText().toString().trim()));
+                                    Integer.parseInt(mBinding.playlistMaximumInputText.getText().toString().trim()));
                         } catch (NumberFormatException e) {
                             reference.setMaximumEntries(0);
                         }
                     }
                 }
             }
-            if (buttonView == matchAllRulesSwitch) {
+            if (buttonView == mBinding.playlistMatchAll) {
                 reference.setMatchAllRules(isChecked);
             }
         }

@@ -1,68 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/ruleInstance"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_centerVertical="true"
-    android:gravity="center"
-    android:padding="@dimen/list_padding">
-
-    <android.support.v7.widget.AppCompatSpinner
-        android:id="@+id/typeSelector"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:entries="@array/auto_plist_types"/>
-
-    <android.support.v7.widget.AppCompatSpinner
-        android:id="@+id/fieldSelector"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/typeSelector"
-        android:layout_toEndOf="@+id/typeSelector" />
-
-    <android.support.v7.widget.AppCompatSpinner
-        android:id="@+id/valueSpinner"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:layout_marginTop="8dp"
-        android:layout_toStartOf="@+id/instanceRemove"
-        android:layout_toLeftOf="@+id/instanceRemove"
-        android:layout_below="@id/fieldSelector"/>
-
-    <FrameLayout
-        android:id="@+id/valueTextWrapper"
+<layout>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/ruleInstance"
         android:layout_width="match_parent"
-        android:layout_height="46dp"
-        android:layout_marginTop="8dp"
-        android:paddingLeft="6dp"
-        android:paddingRight="6dp"
-        android:layout_toStartOf="@+id/instanceRemove"
-        android:layout_toLeftOf="@+id/instanceRemove"
-        android:layout_below="@id/fieldSelector">
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="@dimen/list_padding">
 
-        <TextView
-            android:id="@+id/valueText"
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/typeSelector"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/auto_plist_types"/>
+
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/fieldSelector"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            style="@style/Widget.AppCompat.EditText"
-            android:focusable="false"
-            android:clickable="false"
-            android:layout_gravity="center_vertical"/>
+            android:layout_toRightOf="@+id/typeSelector"
+            android:layout_toEndOf="@+id/typeSelector" />
 
-    </FrameLayout>
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/valueSpinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_marginTop="8dp"
+            android:layout_toStartOf="@+id/instanceRemove"
+            android:layout_toLeftOf="@+id/instanceRemove"
+            android:layout_below="@id/fieldSelector"/>
 
-    <ImageView
-        android:id="@+id/instanceRemove"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:padding="8dp"
-        android:src="@drawable/ic_clear_24dp"
-        android:tint="?textColorPrimary"
-        android:background="?android:attr/selectableItemBackground"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@id/fieldSelector"/>
+        <FrameLayout
+            android:id="@+id/valueTextWrapper"
+            android:layout_width="match_parent"
+            android:layout_height="46dp"
+            android:layout_marginTop="8dp"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:layout_toStartOf="@+id/instanceRemove"
+            android:layout_toLeftOf="@+id/instanceRemove"
+            android:layout_below="@id/fieldSelector">
 
-</RelativeLayout>
+            <TextView
+                android:id="@+id/valueText"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                style="@style/Widget.AppCompat.EditText"
+                android:focusable="false"
+                android:clickable="false"
+                android:layout_gravity="center_vertical"/>
+
+        </FrameLayout>
+
+        <ImageView
+            android:id="@+id/instanceRemove"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_clear_24dp"
+            android:tint="?textColorPrimary"
+            android:background="?android:attr/selectableItemBackground"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/fieldSelector"/>
+
+    </RelativeLayout>
+</layout>

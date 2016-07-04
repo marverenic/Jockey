@@ -1,142 +1,143 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/ruleHeaderInstance"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_centerVertical="true"
-    android:gravity="center">
-
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/playlist_name_input"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/list_padding">
-
-        <android.support.v7.widget.AppCompatEditText
-            android:id="@+id/playlist_name_input_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textCapWords"
-            android:hint="@string/hint_playlist_name"/>
-
-    </android.support.design.widget.TextInputLayout>
-
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
     <RelativeLayout
-        android:id="@+id/playlist_match_all_container"
+        android:id="@+id/ruleHeaderInstance"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/playlist_name_input"
-        android:background="?android:selectableItemBackground">
+        android:gravity="center">
 
-        <TextView
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/playlist_name_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/match_all_rules"
-            style="@style/listTitleText"
-            android:layout_toStartOf="@+id/playlist_match_all"
-            android:layout_toLeftOf="@+id/playlist_match_all"
-            android:layout_centerVertical="true" />
+            android:layout_margin="@dimen/list_padding">
 
-        <android.support.v7.widget.SwitchCompat
-            android:id="@+id/playlist_match_all"
-            android:layout_width="wrap_content"
+            <android.support.v7.widget.AppCompatEditText
+                android:id="@+id/playlist_name_input_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapWords"
+                android:hint="@string/hint_playlist_name"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <RelativeLayout
+            android:id="@+id/playlist_match_all_container"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:padding="@dimen/list_padding"
-            android:gravity="center_vertical" />
+            android:layout_below="@id/playlist_name_input"
+            android:background="?android:selectableItemBackground">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/match_all_rules"
+                style="@style/listTitleText"
+                android:layout_toStartOf="@+id/playlist_match_all"
+                android:layout_toLeftOf="@+id/playlist_match_all"
+                android:layout_centerVertical="true" />
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/playlist_match_all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:padding="@dimen/list_padding"
+                android:gravity="center_vertical" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/playlist_maximum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/list_padding"
+            android:paddingRight="@dimen/list_padding"
+            android:paddingBottom="4dp"
+            android:layout_marginBottom="@dimen/list_padding"
+            android:layout_below="@id/playlist_match_all_container"
+            android:background="?android:selectableItemBackground">
+
+            <TextView
+                android:id="@+id/playlist_maximum_prefix"
+                style="@style/listTitleText"
+                android:padding="0dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:text="@string/playlist_maximum_prefix" />
+
+
+            <android.support.v7.widget.AppCompatEditText
+                android:id="@+id/playlist_maximum_input_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/playlist_maximum_prefix"
+                android:layout_toEndOf="@+id/playlist_maximum_prefix"
+                android:layout_toLeftOf="@+id/playlist_maximum_suffix"
+                android:layout_toStartOf="@+id/playlist_maximum_suffix"
+                android:layout_centerVertical="true"
+                android:inputType="number"/>
+
+            <TextView
+                android:id="@+id/playlist_maximum_suffix"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/playlist_maximum_suffix"
+                style="@style/listTitleText"
+                android:padding="0dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/playlist_chosen_by_prefix"
+                android:layout_toStartOf="@+id/playlist_chosen_by_prefix" />
+
+            <TextView
+                android:id="@+id/playlist_chosen_by_prefix"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/playlist_chosen_by_prefix"
+                style="@style/listTitleText"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/playlist_chosen_by"
+                android:layout_toStartOf="@+id/playlist_chosen_by" />
+
+            <android.support.v7.widget.AppCompatSpinner
+                android:id="@+id/playlist_chosen_by"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:entries="@array/auto_plist_choose_by"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_centerVertical="true"
+                android:layout_alignTop="@+id/playlist_chosen_by_prefix"
+                android:layout_toLeftOf="@+id/playlist_song_cap_check"
+                android:layout_toStartOf="@+id/playlist_song_cap_check"/>
+
+            <android.support.v7.widget.AppCompatCheckBox
+                android:id="@+id/playlist_song_cap_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="@dimen/list_padding"
+                android:layout_marginBottom="@dimen/list_padding"/>
+
+        </RelativeLayout>
 
     </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/playlist_maximum"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/list_padding"
-        android:paddingRight="@dimen/list_padding"
-        android:paddingBottom="4dp"
-        android:layout_marginBottom="@dimen/list_padding"
-        android:layout_below="@id/playlist_match_all_container"
-        android:background="?android:selectableItemBackground">
-
-        <TextView
-            android:id="@+id/playlist_maximum_prefix"
-            style="@style/listTitleText"
-            android:padding="0dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:text="@string/playlist_maximum_prefix" />
-
-
-        <android.support.v7.widget.AppCompatEditText
-            android:id="@+id/playlist_maximum_input_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/playlist_maximum_prefix"
-            android:layout_toEndOf="@+id/playlist_maximum_prefix"
-            android:layout_toLeftOf="@+id/playlist_maximum_suffix"
-            android:layout_toStartOf="@+id/playlist_maximum_suffix"
-            android:layout_centerVertical="true"
-            android:inputType="number"/>
-
-        <TextView
-            android:id="@+id/playlist_maximum_suffix"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/playlist_maximum_suffix"
-            style="@style/listTitleText"
-            android:padding="0dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/playlist_chosen_by_prefix"
-            android:layout_toStartOf="@+id/playlist_chosen_by_prefix" />
-
-        <TextView
-            android:id="@+id/playlist_chosen_by_prefix"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/playlist_chosen_by_prefix"
-            style="@style/listTitleText"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/playlist_chosen_by"
-            android:layout_toStartOf="@+id/playlist_chosen_by" />
-
-        <android.support.v7.widget.AppCompatSpinner
-            android:id="@+id/playlist_chosen_by"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:entries="@array/auto_plist_choose_by"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_centerVertical="true"
-            android:layout_alignTop="@+id/playlist_chosen_by_prefix"
-            android:layout_toLeftOf="@+id/playlist_song_cap_check"
-            android:layout_toStartOf="@+id/playlist_song_cap_check"/>
-
-        <android.support.v7.widget.AppCompatCheckBox
-            android:id="@+id/playlist_song_cap_check"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_centerInParent="true"
-            android:layout_marginTop="@dimen/list_padding"
-            android:layout_marginBottom="@dimen/list_padding"/>
-
-    </RelativeLayout>
-
-</RelativeLayout>
+</layout>
