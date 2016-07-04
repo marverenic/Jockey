@@ -85,11 +85,11 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      */
     private AutoPlaylist(long playlistId, String playlistName, int maximumEntries, int sortMethod,
                          int truncateMethod, boolean truncateAscending, boolean sortAscending,
-                         boolean matchAllRules, AutoPlaylistRule... rules) {
+                         boolean matchAllRules, List<AutoPlaylistRule> rules) {
         super(playlistId, playlistName);
         mMaximumEntries = maximumEntries;
         mMatchAllRules = matchAllRules;
-        mRules = Collections.unmodifiableList(Arrays.asList(rules));
+        mRules = Collections.unmodifiableList(rules);
         mTruncateMethod = truncateMethod;
         mTruncateAscending = truncateAscending;
         mSortMethod = sortMethod;
@@ -183,7 +183,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         private int mTruncateMethod;
         private boolean mTruncateAscending;
         private boolean mMatchAllRules;
-        private AutoPlaylistRule[] mRules;
+        private List<AutoPlaylistRule> mRules;
         private int mSortMethod;
         private boolean mSortAscending;
 
@@ -198,7 +198,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
             mTruncateMethod = from.getTruncateMethod();
             mTruncateAscending = from.isTruncateAscending();
             mMatchAllRules = from.isMatchAllRules();
-            mRules = from.getRules().toArray(new AutoPlaylistRule[from.getRules().size()]);
+            mRules = new ArrayList<>(from.getRules());
             mSortMethod = from.getSortMethod();
             mSortAscending = from.isSortAscending();
         }
@@ -210,7 +210,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
             mTruncateMethod = in.readInt();
             mTruncateAscending = in.readByte() != 0;
             mMatchAllRules = in.readByte() != 0;
-            mRules = in.createTypedArray(AutoPlaylistRule.CREATOR);
+            mRules = in.createTypedArrayList(AutoPlaylistRule.CREATOR);
             mSortMethod = in.readInt();
             mSortAscending = in.readByte() != 0;
         }
@@ -281,11 +281,15 @@ public class AutoPlaylist extends Playlist implements Parcelable {
             return this;
         }
 
-        public AutoPlaylistRule[] getRules() {
+        public List<AutoPlaylistRule> getRules() {
             return mRules;
         }
 
         public Builder setRules(AutoPlaylistRule... rules) {
+            return setRules(new ArrayList<>(Arrays.asList(rules)));
+        }
+
+        public Builder setRules(List<AutoPlaylistRule> rules) {
             mRules = rules;
             return this;
         }
@@ -326,7 +330,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
             parcel.writeInt(mTruncateMethod);
             parcel.writeByte((byte) (mTruncateAscending ? 1 : 0));
             parcel.writeByte((byte) (mMatchAllRules ? 1 : 0));
-            parcel.writeTypedArray(mRules, i);
+            parcel.writeTypedList(mRules);
             parcel.writeInt(mSortMethod);
             parcel.writeByte((byte) (mSortAscending ? 1 : 0));
         }
