@@ -23,7 +23,6 @@ import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 
-import java.util.ArrayList;
 import java.util.Collections;
 
 import javax.inject.Inject;
@@ -34,12 +33,10 @@ public class AutoPlaylistEditActivity extends BaseActivity
     @Inject PlaylistStore mPlaylistStore;
 
     public static final String PLAYLIST_EXTRA = "auto-playlist";
-    private static final String EDITED_HEADER = "modified-header";
-    private static final String EDITED_RULES = "modified-rules";
+    private static final String SAVED_BUILDER = "playlist-builder";
 
     private AutoPlaylist reference;
-    private AutoPlaylist editedReference;
-    private ArrayList<AutoPlaylistRule> editedRules;
+    private AutoPlaylist.Builder mBuilder;
     private HeterogeneousAdapter adapter;
 
     @Override
@@ -51,18 +48,15 @@ public class AutoPlaylistEditActivity extends BaseActivity
 
         reference = getIntent().getParcelableExtra(PLAYLIST_EXTRA);
         if (reference == null) {
-            reference = AutoPlaylist.EMPTY;
+            reference = emptyPlaylist();
         }
 
         if (savedInstanceState != null) {
-            editedReference = savedInstanceState.getParcelable(EDITED_HEADER);
-            editedRules = savedInstanceState.getParcelableArrayList(EDITED_RULES);
+            mBuilder = savedInstanceState.getParcelable(SAVED_BUILDER);
         }
 
-        if (editedReference == null || editedRules == null) {
-            editedReference = new AutoPlaylist(reference);
-            editedRules = new ArrayList<>(reference.getRules().length);
-            Collections.addAll(editedRules, editedReference.getRules());
+        if (mBuilder == null) {
+            mBuilder = new AutoPlaylist.Builder(reference);
         }
 
         if (getSupportActionBar() != null) {
@@ -74,10 +68,9 @@ public class AutoPlaylistEditActivity extends BaseActivity
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_done_24dp);
         }
 
-
         adapter = new HeterogeneousAdapter()
-                .addSection(new RuleHeaderSingleton(editedReference))
-                .addSection(new RuleSection(editedRules, this));
+                .addSection(new RuleHeaderSingleton(mBuilder))
+                .addSection(new RuleSection(mBuilder.getRules(), this));
 
         RecyclerView list = (RecyclerView) findViewById(R.id.list);
         list.setAdapter(adapter);
@@ -86,25 +79,35 @@ public class AutoPlaylistEditActivity extends BaseActivity
         list.addItemDecoration(new DividerDecoration(this));
     }
 
+    private static AutoPlaylist emptyPlaylist() {
+        return new AutoPlaylist.Builder().setRules(emptyRule()).build();
+    }
+
+    private static AutoPlaylistRule emptyRule() {
+        return new AutoPlaylistRule.Factory()
+                .setType(AutoPlaylistRule.SONG)
+                .setField(AutoPlaylistRule.NAME)
+                .setMatch(AutoPlaylistRule.CONTAINS)
+                .build();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_auto_playlist_editor, menu);
         return true;
     }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(EDITED_HEADER, editedReference);
-        outState.putParcelableArrayList(EDITED_RULES, editedRules);
+        outState.putParcelable(SAVED_BUILDER, mBuilder);
     }
 
     public void saveChanges() {
-        AutoPlaylistRule[] modifiedRules = new AutoPlaylistRule[editedRules.size()];
-        editedReference.setRules(editedRules.toArray(modifiedRules));
-        if (reference.getPlaylistId() == AutoPlaylist.EMPTY.getPlaylistId()) {
-            mPlaylistStore.makePlaylist(editedReference);
+        if (reference.getPlaylistId() == -1) {
+            mPlaylistStore.makePlaylist(mBuilder.build());
         } else {
-            mPlaylistStore.editPlaylist(editedReference);
+            mPlaylistStore.editPlaylist(mBuilder.build());
         }
     }
 
@@ -124,7 +127,7 @@ public class AutoPlaylistEditActivity extends BaseActivity
 
     private boolean validateName() {
         String originalName = reference.getPlaylistName().trim();
-        String editedName = editedReference.getPlaylistName().trim();
+        String editedName = mBuilder.getName().trim();
 
         boolean equal = originalName.equalsIgnoreCase(editedName);
         boolean valid = equal || mPlaylistStore.verifyPlaylistName(editedName) == null;
@@ -161,7 +164,7 @@ public class AutoPlaylistEditActivity extends BaseActivity
                 return true;
             case android.R.id.home:
                 if (validateName()) {
-                    if (!editedReference.isEqual(reference) || rulesChanged()) {
+                    if (!mBuilder.isEqual(reference) || rulesChanged()) {
                         saveChanges();
                     }
                 } else {
@@ -174,7 +177,7 @@ public class AutoPlaylistEditActivity extends BaseActivity
 
     @Override
     public void onBackPressed() {
-        if (!editedReference.isEqual(reference) || rulesChanged()) {
+        if (!mBuilder.isEqual(reference) || rulesChanged()) {
             new AlertDialog.Builder(this)
                     .setMessage("Save changes?")
                     .setPositiveButton("Save", new DialogInterface.OnClickListener() {
