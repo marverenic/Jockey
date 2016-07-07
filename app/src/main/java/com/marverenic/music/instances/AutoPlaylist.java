@@ -1,17 +1,23 @@
 package com.marverenic.music.instances;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
+import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlayCountStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
 import com.marverenic.music.instances.playlistrules.AutoPlaylistRule.Field;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import rx.Observable;
 
 public class AutoPlaylist extends Playlist implements Parcelable {
 
@@ -96,15 +102,40 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         mSortAscending = sortAscending;
     }
 
-    /**
-     * Generate the list of songs that match all rules for this playlist.
-     * @param context A {@link Context} used for various operations like reading play counts and
-     *                checking playlist rules
-     * @return An {@link ArrayList} of Songs that contains all songs in the library which match
-     *         the rules of this playlist
-     */
-    public List<Song> generatePlaylist(Context context) {
-        return null;
+    public Observable<List<Song>> generatePlaylist(MusicStore musicStore,
+                                                   PlaylistStore playlistStore,
+                                                   PlayCountStore playCountStore) {
+
+        Observable<List<Song>> filtered = null;
+
+        for (AutoPlaylistRule rule : getRules()) {
+            if (filtered == null) {
+                filtered = rule.applyFilter(playlistStore, musicStore, playCountStore);
+            } else {
+                combineRules(filtered, rule.applyFilter(playlistStore, musicStore, playCountStore));
+            }
+        }
+
+        return filtered;
+    }
+
+    private Observable<List<Song>> combineRules(Observable<List<Song>> result1,
+                                                Observable<List<Song>> result2) {
+
+        if (isMatchAllRules()) { // AND
+            return Observable.combineLatest(result1, result2, (songs, songs2) -> {
+                List<Song> merged = new ArrayList<>(songs);
+                merged.retainAll(songs2);
+                return merged;
+            });
+        } else { // OR
+            return Observable.combineLatest(result1, result2, (songs, songs2) -> {
+                Set<Song> mergedSet = new HashSet<>(songs);
+                mergedSet.addAll(songs2);
+
+                return new ArrayList<>(mergedSet);
+            });
+        }
     }
 
     public static final Parcelable.Creator<Parcelable> CREATOR =

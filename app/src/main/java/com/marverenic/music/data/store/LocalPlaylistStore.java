@@ -2,6 +2,7 @@ package com.marverenic.music.data.store;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
@@ -23,13 +24,21 @@ import rx.Observable;
 
 public class LocalPlaylistStore implements PlaylistStore {
 
+    private static final String TAG = "LocalPlaylistStore";
     private static final String AUTO_PLAYLIST_EXTENSION = ".jpl";
+
+    // Used to generate Auto Playlist contents
+    private MusicStore mMusicStore;
+    private PlayCountStore mPlayCountStore;
 
     private Context mContext;
     private BehaviorRelay<List<Playlist>> mPlaylists;
 
-    public LocalPlaylistStore(Context context) {
+    public LocalPlaylistStore(Context context, MusicStore musicStore,
+                              PlayCountStore playCountStore) {
         mContext = context;
+        mMusicStore = musicStore;
+        mPlayCountStore = playCountStore;
     }
 
     @Override
@@ -78,16 +87,14 @@ public class LocalPlaylistStore implements PlaylistStore {
 
     @Override
     public AutoPlaylist makePlaylist(AutoPlaylist playlist) {
-        saveAutoPlaylistConfiguration(playlist);
-
-        List<Song> contents = playlist.generatePlaylist(mContext);
-
         Playlist localReference = MediaStoreUtil.createPlaylist(mContext,
-                playlist.getPlaylistName(), contents);
+                playlist.getPlaylistName(), Collections.emptyList());
 
         AutoPlaylist created = new AutoPlaylist.Builder(playlist)
                 .setId(localReference.getPlaylistId())
                 .build();
+
+        saveAutoPlaylistConfiguration(created);
 
         if (mPlaylists != null && mPlaylists.getValue() != null) {
             List<Playlist> updatedPlaylists = new ArrayList<>(mPlaylists.getValue());
@@ -147,6 +154,15 @@ public class LocalPlaylistStore implements PlaylistStore {
     }
 
     private void saveAutoPlaylistConfiguration(AutoPlaylist playlist) {
+        // Write an initial set of values to the MediaStore so other apps can see this playlist
+        playlist.generatePlaylist(mMusicStore, this, mPlayCountStore)
+                .take(1)
+                .subscribe(contents -> {
+                    editPlaylist(playlist, contents);
+                }, throwable -> {
+                    Log.e(TAG, "makePlaylist: Failed to initialize contents", throwable);
+                });
+
         try {
             writeAutoPlaylistConfiguration(playlist);
         } catch (IOException e) {

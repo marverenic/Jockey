@@ -26,8 +26,9 @@ public class MediaStoreModule {
 
     @Provides
     @Singleton
-    public PlaylistStore providePlaylistStore(Context context) {
-        return new LocalPlaylistStore(context);
+    public PlaylistStore providePlaylistStore(Context context, MusicStore musicStore,
+                                              PlayCountStore playCountStore) {
+        return new LocalPlaylistStore(context, musicStore, playCountStore);
     }
 
     @Provides
