@@ -90,6 +90,7 @@ public class AutoPlaylistEditActivity extends BaseActivity {
                 .setType(AutoPlaylistRule.SONG)
                 .setField(AutoPlaylistRule.NAME)
                 .setMatch(AutoPlaylistRule.CONTAINS)
+                .setValue("")
                 .build();
     }
 

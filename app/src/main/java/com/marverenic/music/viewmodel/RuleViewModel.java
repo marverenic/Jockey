@@ -1,10 +1,17 @@
 package com.marverenic.music.viewmodel;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
+import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatEditText;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,10 +20,10 @@ import android.widget.BaseAdapter;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.databinding.library.baseAdapters.BR;
 import com.marverenic.music.JockeyApplication;
+import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.Album;
@@ -32,6 +39,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import rx.Subscription;
+
+import static android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE;
 
 public class RuleViewModel extends BaseObservable {
 
@@ -309,10 +318,81 @@ public class RuleViewModel extends BaseObservable {
     }
 
     public View.OnClickListener onValueTextClick() {
-        return v -> {
-            // TODO
-            Toast.makeText(v.getContext(), "TODO: Implement this", Toast.LENGTH_SHORT).show();
-        };
+        return v -> showValueDialog(v.getContext());
+    }
+
+    private void showValueDialog(Context context) {
+        /*
+             Ideally, the View that this ViewHolder wraps would have the EditText directly
+             in it without doing the trickery below where it disguises a TextView as an EditText
+             and opens an AlertDialog, but there are severe penalties with nesting EditTexts in
+             a RecyclerView with a LinearLayoutManager. With no code in the ReyclerView
+             Adapter's .onBindViewHolder() method, GC will kick in frequently when scrolling
+             to free ~2MB from the heap while pausing for around 60ms (which may also be
+             complimented by extra layout calls with the EditText). This has been previously
+             reported to Google's AOSP bug tracker which provides more insight into this problem
+             https://code.google.com/p/android/issues/detail?id=82586 (closed Feb '15)
+             There are some workarounds to this issue, but the most practical suggestions that
+             keep the previously mentioned layout are to use a ListView or to extend EditText
+             or LinearLayout Manager (which either cause problems in themselves, don't work,
+             or both).
+             The solution used here simply avoids the problem all together by not nesting an
+             EditText in a RecyclerView. When an EditText is needed, the user is prompted with
+             an AlertDialog. It's not the best UX, but it's the most practical one for now.
+             10/8/15
+         */
+
+        TextInputLayout inputLayout = new TextInputLayout(context);
+        AppCompatEditText editText = new AppCompatEditText(context);
+
+        editText.setInputType(mEnumeratedRule.getInputType());
+        inputLayout.addView(editText);
+
+        Resources res = context.getResources();
+
+        String type = res.getStringArray(R.array.auto_plist_types)[getSelectedType()];
+        String match = res.getString(mEnumeratedRule.getNameRes()).toLowerCase();
+
+        AlertDialog valueDialog = new AlertDialog.Builder(context)
+                .setMessage(type + " " + match)
+                .setView(inputLayout)
+                .setNegativeButton(R.string.action_cancel, null)
+                .setPositiveButton(R.string.action_done,
+                        (dialog, which) -> {
+                            String value = editText.getText().toString().trim();
+                            if (editText.getInputType() == InputType.TYPE_CLASS_NUMBER) {
+                                // Verify the input if this rule needs a numeric value
+                                if (TextUtils.isDigitsOnly(value)) {
+                                    mFactory.setValue(value);
+                                } else {
+                                    // If the user inputted something that's not a number, reset it
+                                    mFactory.setValue("0");
+                                }
+                            } else {
+                                mFactory.setValue(value);
+                            }
+                            apply();
+                            notifyPropertyChanged(BR.valueText);
+                        })
+                .create();
+
+        valueDialog.getWindow().setSoftInputMode(SOFT_INPUT_STATE_VISIBLE);
+
+        valueDialog.show();
+
+        int padding = (int) context.getResources().getDimension(R.dimen.alert_padding);
+        ((View) inputLayout.getParent()).setPadding(
+                padding - inputLayout.getPaddingLeft(), 0,
+                padding - inputLayout.getPaddingRight(), 0);
+
+        editText.setText(mFactory.getValue());
+        editText.setSelection(mFactory.getValue().length());
+        editText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == KeyEvent.KEYCODE_ENDCALL) {
+                valueDialog.getButton(DialogInterface.BUTTON_POSITIVE).callOnClick();
+            }
+            return false;
+        });
     }
 
     public View.OnClickListener onRemoveClick() {
