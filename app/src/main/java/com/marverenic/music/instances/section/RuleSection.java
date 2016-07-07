@@ -1,7 +1,6 @@
 package com.marverenic.music.instances.section;
 
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -32,12 +31,12 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
 
         private InstanceRuleBinding mBinding;
 
-        public ViewHolder(InstanceRuleBinding binding, RecyclerView.Adapter adapter) {
+        public ViewHolder(InstanceRuleBinding binding, HeterogeneousAdapter adapter) {
             super(binding.getRoot());
             mBinding = binding;
 
             RuleViewModel viewModel = new RuleViewModel(itemView.getContext());
-            viewModel.setOnRemovalListener(adapter::notifyItemRemoved);
+            viewModel.setOnRemovalListener(() -> adapter.notifyItemRemoved(getAdapterPosition()));
 
             mBinding.setViewModel(viewModel);
         }
