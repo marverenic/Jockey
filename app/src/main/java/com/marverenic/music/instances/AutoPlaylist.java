@@ -176,6 +176,8 @@ public class AutoPlaylist extends Playlist implements Parcelable {
 
     public static class Builder implements Parcelable {
 
+        public static final long NO_ID = -1;
+
         private long mId;
         private String mName;
 
@@ -188,7 +190,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         private boolean mSortAscending;
 
         public Builder() {
-
+            mId = NO_ID;
         }
 
         public Builder(AutoPlaylist from) {

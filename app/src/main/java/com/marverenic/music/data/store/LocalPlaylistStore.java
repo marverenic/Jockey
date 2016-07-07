@@ -3,12 +3,18 @@ package com.marverenic.music.data.store;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
+import com.crashlytics.android.Crashlytics;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.jakewharton.rxrelay.BehaviorRelay;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,6 +22,8 @@ import java.util.List;
 import rx.Observable;
 
 public class LocalPlaylistStore implements PlaylistStore {
+
+    private static final String AUTO_PLAYLIST_EXTENSION = ".jpl";
 
     private Context mContext;
     private BehaviorRelay<List<Playlist>> mPlaylists;
@@ -69,9 +77,27 @@ public class LocalPlaylistStore implements PlaylistStore {
     }
 
     @Override
-    public AutoPlaylist makePlaylist(AutoPlaylist model) {
-        // TODO implement AutoPlaylists
-        return null;
+    public AutoPlaylist makePlaylist(AutoPlaylist playlist) {
+        saveAutoPlaylistConfiguration(playlist);
+
+        List<Song> contents = playlist.generatePlaylist(mContext);
+
+        Playlist localReference = MediaStoreUtil.createPlaylist(mContext,
+                playlist.getPlaylistName(), contents);
+
+        AutoPlaylist created = new AutoPlaylist.Builder(playlist)
+                .setId(localReference.getPlaylistId())
+                .build();
+
+        if (mPlaylists != null && mPlaylists.getValue() != null) {
+            List<Playlist> updatedPlaylists = new ArrayList<>(mPlaylists.getValue());
+            updatedPlaylists.add(created);
+            Collections.sort(updatedPlaylists);
+
+            mPlaylists.call(updatedPlaylists);
+        }
+
+        return created;
     }
 
     @Override
@@ -107,8 +133,42 @@ public class LocalPlaylistStore implements PlaylistStore {
     }
 
     @Override
-    public void editPlaylist(AutoPlaylist replacementModel) {
-        // TODO implement AutoPlaylists
+    public void editPlaylist(AutoPlaylist replacement) {
+        saveAutoPlaylistConfiguration(replacement);
+
+        if (mPlaylists != null && mPlaylists.getValue() != null) {
+            List<Playlist> updatedPlaylists = new ArrayList<>(mPlaylists.getValue());
+
+            int index = updatedPlaylists.indexOf(replacement);
+            updatedPlaylists.set(index, replacement);
+
+            mPlaylists.call(updatedPlaylists);
+        }
+    }
+
+    private void saveAutoPlaylistConfiguration(AutoPlaylist playlist) {
+        try {
+            writeAutoPlaylistConfiguration(playlist);
+        } catch (IOException e) {
+            Crashlytics.logException(e);
+        }
+    }
+
+    private void writeAutoPlaylistConfiguration(AutoPlaylist playlist) throws IOException {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        FileWriter writer = null;
+
+        try {
+            String filename = playlist.getPlaylistName() + AUTO_PLAYLIST_EXTENSION;
+            String fullPath = mContext.getExternalFilesDir(null) + File.separator + filename;
+
+            writer = new FileWriter(fullPath);
+            writer.write(gson.toJson(playlist, AutoPlaylist.class));
+        } finally {
+            if (writer != null) {
+                writer.close();
+            }
+        }
     }
 
     @Override

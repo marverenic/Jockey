@@ -76,6 +76,7 @@ public class AutoPlaylistEditActivity extends BaseActivity {
     private static AutoPlaylist emptyPlaylist() {
         return new AutoPlaylist.Builder()
                 .setName("")
+                .setId(AutoPlaylist.Builder.NO_ID)
                 .setMatchAllRules(true)
                 .setMaximumEntries(-25)
                 .setSortMethod(AutoPlaylistRule.ID)
@@ -107,7 +108,7 @@ public class AutoPlaylistEditActivity extends BaseActivity {
     }
 
     public void saveChanges() {
-        if (reference.getPlaylistId() == -1) {
+        if (reference.getPlaylistId() == AutoPlaylist.Builder.NO_ID) {
             mPlaylistStore.makePlaylist(mBuilder.build());
         } else {
             mPlaylistStore.editPlaylist(mBuilder.build());
