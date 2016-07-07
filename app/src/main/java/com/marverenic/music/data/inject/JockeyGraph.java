@@ -28,6 +28,7 @@ import com.marverenic.music.viewmodel.GenreViewModel;
 import com.marverenic.music.viewmodel.NowPlayingControllerViewModel;
 import com.marverenic.music.viewmodel.PlaylistViewModel;
 import com.marverenic.music.viewmodel.RuleHeaderViewModel;
+import com.marverenic.music.viewmodel.RuleViewModel;
 import com.marverenic.music.viewmodel.SongViewModel;
 
 public interface JockeyGraph {
@@ -64,6 +65,7 @@ public interface JockeyGraph {
     void inject(GenreViewModel viewModel);
     void inject(PlaylistViewModel viewModel);
     void inject(RuleHeaderViewModel viewModel);
+    void inject(RuleViewModel viewModel);
 
     void inject(MusicPlayer musicPlayer);
 

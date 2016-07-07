@@ -1,39 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable name="viewModel" type="com.marverenic.music.viewmodel.RuleViewModel"/>
+    </data>
+
+    <RelativeLayout
         android:id="@+id/ruleInstance"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:padding="@dimen/list_padding">
+        android:padding="@dimen/list_padding"
+        android:background="@android:color/transparent">
 
-        <android.support.v7.widget.AppCompatSpinner
+        <!--        !!!     Do not remove this layout's background property     !!!
+
+            We need to explicitly set this layout's background so that spinners show the arrow on
+            Marshmallow and higher (even though we want it to be transparent)
+         -->
+
+        <Spinner
             android:id="@+id/typeSelector"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:entries="@array/auto_plist_types"/>
+            android:entries="@array/auto_plist_types"
+            app:onItemSelectedListener="@{viewModel.typeSelectedListener}"
+            app:selection="@{viewModel.selectedType}"/>
 
-        <android.support.v7.widget.AppCompatSpinner
+        <Spinner
             android:id="@+id/fieldSelector"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/typeSelector"
-            android:layout_toEndOf="@+id/typeSelector" />
+            android:layout_toEndOf="@+id/typeSelector"
+            app:adapter="@{viewModel.filterAdapter}"
+            app:selection="@{viewModel.selectedFilter}"
+            app:onItemSelectedListener="@{viewModel.filterSelectedListener}"/>
 
-        <android.support.v7.widget.AppCompatSpinner
+        <Spinner
             android:id="@+id/valueSpinner"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
+            android:visibility="@{viewModel.valueSpinnerVisibility}"
             android:layout_marginTop="8dp"
             android:layout_toStartOf="@+id/instanceRemove"
             android:layout_toLeftOf="@+id/instanceRemove"
-            android:layout_below="@id/fieldSelector"/>
+            android:layout_below="@id/fieldSelector"
+            app:adapter="@{viewModel.valueAdapter}"
+            app:selection="@{viewModel.selectedValue}"
+            app:onItemSelectedListener="@{viewModel.valueSelectedListener}"/>
 
         <FrameLayout
             android:id="@+id/valueTextWrapper"
             android:layout_width="match_parent"
             android:layout_height="46dp"
+            android:visibility="@{viewModel.valueTextVisibility}"
             android:layout_marginTop="8dp"
             android:paddingLeft="6dp"
             android:paddingRight="6dp"
@@ -47,8 +69,9 @@
                 android:layout_height="wrap_content"
                 style="@style/Widget.AppCompat.EditText"
                 android:focusable="false"
-                android:clickable="false"
-                android:layout_gravity="center_vertical"/>
+                android:layout_gravity="center_vertical"
+                android:text="@{viewModel.valueText}"
+                android:onClick="@{viewModel.onValueTextClick()}"/>
 
         </FrameLayout>
 
@@ -63,7 +86,8 @@
             android:background="?android:attr/selectableItemBackground"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_below="@id/fieldSelector"/>
+            android:layout_below="@id/fieldSelector"
+            android:onClick="@{viewModel.onRemoveClick()}"/>
 
     </RelativeLayout>
 </layout>

@@ -1,7 +1,6 @@
 package com.marverenic.music.activity.instance;
 
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,8 +22,7 @@ import com.marverenic.music.view.DividerDecoration;
 
 import javax.inject.Inject;
 
-public class AutoPlaylistEditActivity extends BaseActivity
-        implements RuleSection.OnRemovalListener {
+public class AutoPlaylistEditActivity extends BaseActivity {
 
     @Inject PlaylistStore mPlaylistStore;
 
@@ -66,7 +64,7 @@ public class AutoPlaylistEditActivity extends BaseActivity
 
         adapter = new HeterogeneousAdapter()
                 .addSection(new RuleHeaderSingleton(mBuilder))
-                .addSection(new RuleSection(mBuilder.getRules(), this));
+                .addSection(new RuleSection(mBuilder.getRules()));
 
         RecyclerView list = (RecyclerView) findViewById(R.id.list);
         list.setAdapter(adapter);
@@ -193,18 +191,5 @@ public class AutoPlaylistEditActivity extends BaseActivity
         } else {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public void onRuleRemoved(final AutoPlaylistRule rule, final int index) {
-        mBuilder.getRules().remove(index - 1);
-        adapter.notifyItemRemoved(index);
-
-        Snackbar.make(findViewById(R.id.list), "Removed rule", Snackbar.LENGTH_LONG)
-                .setAction(R.string.action_undo, v -> {
-                    mBuilder.getRules().add(index - 1, rule);
-                    adapter.notifyItemInserted(index);
-                })
-                .show();
     }
 }

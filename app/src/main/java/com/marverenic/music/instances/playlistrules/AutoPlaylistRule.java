@@ -186,6 +186,7 @@ public abstract class AutoPlaylistRule implements Parcelable {
             mType = from.getType();
             mField = from.getField();
             mMatch = from.getMatch();
+            mValue = from.getValue();
         }
 
         @Type
