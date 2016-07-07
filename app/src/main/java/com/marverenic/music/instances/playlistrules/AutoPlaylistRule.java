@@ -148,6 +148,29 @@ public abstract class AutoPlaylistRule implements Parcelable {
                                                        MusicStore musicStore,
                                                        PlayCountStore playCountStore);
 
+    @SuppressWarnings("SimplifiableIfStatement")
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (other == null || getClass() != other.getClass()) return false;
+
+        AutoPlaylistRule that = (AutoPlaylistRule) other;
+
+        if (mType != that.mType) return false;
+        if (mField != that.mField) return false;
+        if (mMatch != that.mMatch) return false;
+        return mValue != null ? mValue.equals(that.mValue) : that.mValue == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = mType;
+        result = 31 * result + mField;
+        result = 31 * result + mMatch;
+        result = 31 * result + (mValue != null ? mValue.hashCode() : 0);
+        return result;
+    }
+
     @Override
     public int describeContents() {
         return 0;
