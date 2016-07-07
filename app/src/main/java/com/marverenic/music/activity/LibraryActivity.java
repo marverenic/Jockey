@@ -156,8 +156,7 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
                         .showSnackbarIn(R.id.list)
                         .show(getSupportFragmentManager(), TAG_MAKE_PLAYLIST);
             } else if (v.getTag().equals("fab-" + getString(R.string.playlist_auto))) {
-                Navigate.to(this, AutoPlaylistEditActivity.class,
-                        AutoPlaylistEditActivity.PLAYLIST_EXTRA, null);
+                startActivity(AutoPlaylistEditActivity.newIntent(this));
             }
         }
     }

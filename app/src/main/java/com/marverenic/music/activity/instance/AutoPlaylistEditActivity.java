@@ -1,5 +1,7 @@
 package com.marverenic.music.activity.instance;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,12 +28,23 @@ public class AutoPlaylistEditActivity extends BaseActivity {
 
     @Inject PlaylistStore mPlaylistStore;
 
-    public static final String PLAYLIST_EXTRA = "auto-playlist";
-    private static final String SAVED_BUILDER = "playlist-builder";
+    private static final String PLAYLIST_EXTRA = "AutoPlaylistEditActivity.PLAYLIST";
+    private static final String SAVED_BUILDER = "AutoPlaylistEditActivity.PLAYLIST_BUILDER";
 
     private AutoPlaylist reference;
     private AutoPlaylist.Builder mBuilder;
     private HeterogeneousAdapter adapter;
+
+    public static Intent newIntent(Context context) {
+        return newIntent(context, null);
+    }
+
+    public static Intent newIntent(Context context, AutoPlaylist target) {
+        Intent intent = new Intent(context, AutoPlaylistEditActivity.class);
+        intent.putExtra(PLAYLIST_EXTRA, target);
+
+        return intent;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

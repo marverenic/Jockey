@@ -1,6 +1,7 @@
 package com.marverenic.music.viewmodel;
 
 import android.content.Context;
+import android.content.Intent;
 import android.databinding.BaseObservable;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
@@ -127,9 +128,9 @@ public class PlaylistViewModel extends BaseObservable {
 
                     return true;
                 case 2: //Edit this playlist
-                    Navigate.to(mContext, AutoPlaylistEditActivity.class,
-                            PLAYLIST_EXTRA, mPlaylist);
-
+                    AutoPlaylist autoPlaylist = (AutoPlaylist) mPlaylist;
+                    Intent intent = AutoPlaylistEditActivity.newIntent(mContext, autoPlaylist);
+                    mContext.startActivity(intent);
                     return true;
                 case 3: // Delete this playlist
                     mPlaylistStore.removePlaylist(mPlaylist);

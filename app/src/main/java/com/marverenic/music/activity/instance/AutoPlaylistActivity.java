@@ -1,5 +1,6 @@
 package com.marverenic.music.activity.instance;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,7 +20,6 @@ import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.SongSection;
-import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 
@@ -73,8 +73,10 @@ public class AutoPlaylistActivity extends BaseActivity
                 @Override
                 public void onAction1() {
                     if (MediaStoreUtil.hasPermission(AutoPlaylistActivity.this)) {
-                        Navigate.to(AutoPlaylistActivity.this, AutoPlaylistEditActivity.class,
-                                AutoPlaylistEditActivity.PLAYLIST_EXTRA, mReference);
+                        Intent intent = AutoPlaylistEditActivity.newIntent
+                                (AutoPlaylistActivity.this, mReference);
+
+                        startActivity(intent);
                     } else {
                         super.onAction1();
                     }
