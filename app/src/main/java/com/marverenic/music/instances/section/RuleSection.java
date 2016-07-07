@@ -27,6 +27,11 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
         return new ViewHolder(binding, adapter);
     }
 
+    @Override
+    public int getId(int position) {
+        return get(position).hashCode();
+    }
+
     public class ViewHolder extends EnhancedViewHolder<AutoPlaylistRule> {
 
         private InstanceRuleBinding mBinding;
@@ -36,7 +41,7 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
             mBinding = binding;
 
             RuleViewModel viewModel = new RuleViewModel(itemView.getContext());
-            viewModel.setOnRemovalListener(() -> adapter.notifyItemRemoved(getAdapterPosition()));
+            viewModel.setOnRemovalListener(adapter::notifyDataSetChanged);
 
             mBinding.setViewModel(viewModel);
         }

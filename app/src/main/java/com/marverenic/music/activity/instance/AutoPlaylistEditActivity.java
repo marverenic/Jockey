@@ -79,6 +79,8 @@ public class AutoPlaylistEditActivity extends BaseActivity {
                 .addSection(new RuleHeaderSingleton(mBuilder))
                 .addSection(new RuleSection(mBuilder.getRules()));
 
+        adapter.setHasStableIds(true);
+
         RecyclerView list = (RecyclerView) findViewById(R.id.list);
         list.setAdapter(adapter);
         list.setLayoutManager(new LinearLayoutManager(this));
