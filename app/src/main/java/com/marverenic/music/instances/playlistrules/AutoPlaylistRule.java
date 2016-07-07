@@ -5,11 +5,16 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
 
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.Song;
 
+import java.io.IOException;
 import java.util.List;
 
 import rx.Observable;
@@ -50,14 +55,18 @@ public abstract class AutoPlaylistRule implements Parcelable {
     }
 
     @Type
+    @SerializedName("type")
     private final int mType;
 
     @Field
+    @SerializedName("field")
     private final int mField;
 
     @Match
+    @SerializedName("match")
     private final int mMatch;
 
+    @SerializedName("value")
     private final String mValue;
 
     protected AutoPlaylistRule(@Type int type, @Field int field, @Match int match, String value) {
@@ -169,6 +178,45 @@ public abstract class AutoPlaylistRule implements Parcelable {
             return new AutoPlaylistRule[size];
         }
     };
+
+    public static final class RuleTypeAdapter extends TypeAdapter<AutoPlaylistRule> {
+
+        @Override
+        public void write(JsonWriter out, AutoPlaylistRule rule) throws IOException {
+            out.beginObject();
+            out.name("type").value(rule.getType());
+            out.name("match").value(rule.getMatch());
+            out.name("field").value(rule.getField());
+            out.name("value").value(rule.getValue());
+            out.endObject();
+        }
+
+        @SuppressWarnings("WrongConstant")
+        @Override
+        public AutoPlaylistRule read(JsonReader in) throws IOException {
+            Factory factory = new Factory();
+
+            in.beginObject();
+            while (in.hasNext()) {
+                switch (in.nextName()) {
+                    case "type":
+                        factory.setType(in.nextInt());
+                        break;
+                    case "match":
+                        factory.setMatch(in.nextInt());
+                        break;
+                    case "field":
+                        factory.setField(in.nextInt());
+                        break;
+                    case "value":
+                        factory.setValue(in.nextString());
+                }
+            }
+            in.endObject();
+
+            return factory.build();
+        }
+    }
 
     public static class Factory {
 

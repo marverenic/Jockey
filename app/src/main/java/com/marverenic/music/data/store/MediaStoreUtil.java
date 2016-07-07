@@ -14,12 +14,14 @@ import android.support.annotation.Nullable;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Genre;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
+import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
 import com.marverenic.music.utils.Util;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
@@ -248,7 +250,9 @@ public final class MediaStoreUtil {
 
     public static List<AutoPlaylist> getAutoPlaylists(Context context) {
         List<AutoPlaylist> autoPlaylists = new ArrayList<>();
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(AutoPlaylistRule.class, new AutoPlaylistRule.RuleTypeAdapter())
+                .create();
 
         try {
             File externalFiles = new File(context.getExternalFilesDir(null) + "/");
