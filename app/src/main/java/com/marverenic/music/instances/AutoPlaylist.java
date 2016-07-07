@@ -106,6 +106,10 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                                                    PlaylistStore playlistStore,
                                                    PlayCountStore playCountStore) {
 
+        if (getRules().isEmpty()) {
+            return Observable.just(Collections.emptyList());
+        }
+
         Observable<List<Song>> filtered = null;
 
         for (AutoPlaylistRule rule : getRules()) {
