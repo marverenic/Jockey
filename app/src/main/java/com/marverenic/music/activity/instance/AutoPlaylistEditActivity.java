@@ -146,7 +146,9 @@ public class AutoPlaylistEditActivity extends BaseActivity {
         String originalName = reference.getPlaylistName().trim();
         String editedName = mBuilder.getName().trim();
 
-        boolean equal = originalName.equalsIgnoreCase(editedName);
+        boolean equal = !reference.getPlaylistName().trim().isEmpty()
+                && originalName.equalsIgnoreCase(editedName);
+
         boolean valid = equal || mPlaylistStore.verifyPlaylistName(editedName) == null;
 
         if (!valid) {
