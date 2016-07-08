@@ -1,5 +1,6 @@
 package com.marverenic.music.instances;
 
+import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -13,6 +14,7 @@ import com.marverenic.music.instances.playlistrules.AutoPlaylistRule.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -123,7 +125,8 @@ public class AutoPlaylist extends Playlist implements Parcelable {
             }
         }
 
-        return filtered;
+        Observable<List<Song>> truncated = truncateFilteredSongs(filtered, playCountStore);
+        return sortFilteredSongs(truncated, playCountStore);
     }
 
     private Observable<List<Song>> combineRules(Observable<List<Song>> result1,
@@ -143,6 +146,73 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                 return new ArrayList<>(mergedSet);
             });
         }
+    }
+
+    private Observable<List<Song>> truncateFilteredSongs(Observable<List<Song>> filterResult,
+                                                         PlayCountStore playCountStore) {
+        if (getMaximumEntries() < 0) {
+            return filterResult;
+        }
+
+        return filterResult
+                .map(filteredSongs -> {
+                    sortSongListByField(filteredSongs, getTruncateMethod(), isSortAscending(),
+                            playCountStore);
+
+                    return filteredSongs;
+                }).map(sortedSongs -> {
+                    if (sortedSongs.size() > getMaximumEntries()) {
+                        return sortedSongs.subList(0, getMaximumEntries());
+                    } else {
+                        return sortedSongs;
+                    }
+                });
+    }
+
+    private Observable<List<Song>> sortFilteredSongs(Observable<List<Song>> truncateResult,
+                                                     PlayCountStore playCountStore) {
+        return truncateResult
+                .map(truncatedSongs -> {
+                    sortSongListByField(truncatedSongs, getSortMethod(), isSortAscending(),
+                            playCountStore);
+                    return truncatedSongs;
+                });
+    }
+
+    private static void sortSongListByField(List<Song> songs, @Field int field, boolean ascending,
+                                            PlayCountStore playCountStore) {
+
+        if (field == AutoPlaylistRule.NAME) {
+            Collections.sort(songs);
+            if (!ascending) {
+                Collections.reverse(songs);
+            }
+        } else if (field == AutoPlaylistRule.ID) {
+            Collections.shuffle(songs);
+        } else {
+            Collections.sort(songs, getSortComparator(field, playCountStore));
+            if (ascending) {
+                Collections.reverse(songs);
+            }
+        }
+    }
+
+    @SuppressLint("SwitchIntDef")
+    private static Comparator<Song> getSortComparator(@Field int field,
+                                                      PlayCountStore playCountStore) {
+        switch (field) {
+            case AutoPlaylistRule.YEAR:
+                return Song.YEAR_COMPARATOR;
+            case AutoPlaylistRule.DATE_ADDED:
+                return Song.DATE_ADDED_COMPARATOR;
+            case AutoPlaylistRule.DATE_PLAYED:
+                return Song.playDateComparator(playCountStore);
+            case AutoPlaylistRule.PLAY_COUNT:
+                return Song.playCountComparator(playCountStore);
+            case AutoPlaylistRule.SKIP_COUNT:
+                return Song.skipCountComparator(playCountStore);
+        }
+        return null;
     }
 
     public static final Parcelable.Creator<Parcelable> CREATOR =
@@ -188,6 +258,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         return mMaximumEntries;
     }
 
+    @Field
     public int getTruncateMethod() {
         return mTruncateMethod;
     }
@@ -204,6 +275,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         return mRules;
     }
 
+    @Field
     public int getSortMethod() {
         return mSortMethod;
     }
@@ -294,6 +366,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
             return this;
         }
 
+        @Field
         public int getTruncateMethod() {
             return mTruncateMethod;
         }
@@ -334,6 +407,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
             return this;
         }
 
+        @Field
         public int getSortMethod() {
             return mSortMethod;
         }
