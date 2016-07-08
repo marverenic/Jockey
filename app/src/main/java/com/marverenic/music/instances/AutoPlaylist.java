@@ -113,10 +113,13 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         Observable<List<Song>> filtered = null;
 
         for (AutoPlaylistRule rule : getRules()) {
+            Observable<List<Song>> ruleEntries;
+            ruleEntries = rule.applyFilter(playlistStore, musicStore, playCountStore);
+
             if (filtered == null) {
-                filtered = rule.applyFilter(playlistStore, musicStore, playCountStore);
+                filtered = ruleEntries;
             } else {
-                combineRules(filtered, rule.applyFilter(playlistStore, musicStore, playCountStore));
+                filtered = combineRules(filtered, ruleEntries);
             }
         }
 
