@@ -29,6 +29,7 @@ public class GenreRule extends AutoPlaylistRule implements Parcelable {
     public Observable<List<Song>> applyFilter(PlaylistStore playlistStore, MusicStore musicStore,
                                               PlayCountStore playCountStore) {
         return musicStore.getGenres()
+                .take(1)
                 .map(library -> {
                     List<Genre> filtered = new ArrayList<>();
                     for (Genre genre : library) {
@@ -40,7 +41,12 @@ public class GenreRule extends AutoPlaylistRule implements Parcelable {
                     return filtered;
                 })
                 .flatMap(Observable::from)
-                .concatMap(musicStore::getSongs);
+                .concatMap(musicStore::getSongs)
+                .reduce((songs, songs2) -> {
+                    List<Song> merged = new ArrayList<>(songs);
+                    merged.addAll(songs2);
+                    return merged;
+                });
     }
 
     @SuppressLint("SwitchIntDef")
