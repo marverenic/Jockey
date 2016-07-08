@@ -118,9 +118,9 @@ public abstract class AutoPlaylistRule implements Parcelable {
             case NOT_EQUALS:
                 return !actual.equalsIgnoreCase(getValue());
             case CONTAINS:
-                return actual.contains(getValue());
+                return actual.toLowerCase().contains(getValue().toLowerCase());
             case NOT_CONTAINS:
-                return !actual.contains(getValue());
+                return !actual.toLowerCase().contains(getValue().toLowerCase());
         }
         throw new IllegalArgumentException("Cannot compare Strings with match type " + getMatch());
     }
