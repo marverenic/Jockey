@@ -396,11 +396,7 @@ public class RuleViewModel extends BaseObservable {
     }
 
     public View.OnClickListener onRemoveClick() {
-        return v -> {
-            // TODO show confirmation snackbar
-            mRules.remove(mIndex);
-            mRemovalListener.onRuleRemoved();
-        };
+        return v -> mRemovalListener.onRuleRemoved(mIndex);
     }
 
     @Bindable
@@ -446,7 +442,7 @@ public class RuleViewModel extends BaseObservable {
     }
 
     public interface OnRemovalListener {
-        void onRuleRemoved();
+        void onRuleRemoved(int removedIndex);
     }
 
     private class FilterAdapter extends BaseAdapter {

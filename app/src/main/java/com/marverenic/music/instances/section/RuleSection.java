@@ -1,11 +1,13 @@
 package com.marverenic.music.instances.section;
 
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
+import com.marverenic.music.R;
 import com.marverenic.music.databinding.InstanceRuleBinding;
 import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
 import com.marverenic.music.viewmodel.RuleViewModel;
@@ -41,7 +43,17 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
             mBinding = binding;
 
             RuleViewModel viewModel = new RuleViewModel(itemView.getContext());
-            viewModel.setOnRemovalListener(adapter::notifyDataSetChanged);
+            viewModel.setOnRemovalListener(index -> {
+                AutoPlaylistRule removed = getData().remove(index);
+                adapter.notifyDataSetChanged();
+
+                Snackbar.make(itemView, R.string.confirm_removed_rule, Snackbar.LENGTH_SHORT)
+                        .setAction(R.string.action_undo, v -> {
+                            getData().add(index, removed);
+                            adapter.notifyDataSetChanged();
+                        })
+                        .show();
+            });
 
             mBinding.setViewModel(viewModel);
         }
