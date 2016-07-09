@@ -76,7 +76,7 @@ public class AutoPlaylistEditActivity extends BaseActivity {
         }
 
         adapter = new HeterogeneousAdapter()
-                .addSection(new RuleHeaderSingleton(mBuilder))
+                .addSection(new RuleHeaderSingleton(reference, mBuilder))
                 .addSection(new RuleSection(mBuilder.getRules()));
 
         adapter.setHasStableIds(true);

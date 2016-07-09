@@ -52,10 +52,19 @@ public class RuleHeaderViewModel extends BaseObservable {
 
     @Inject PlaylistStore mPlaylistStore;
 
+    private AutoPlaylist mOriginalReference;
     private AutoPlaylist.Builder mBuilder;
+
+    private boolean mIgnoreFirstNameError;
 
     public RuleHeaderViewModel(Context context) {
         JockeyApplication.getComponent(context).inject(this);
+    }
+
+    public void setOriginalReference(AutoPlaylist playlist) {
+        mOriginalReference = playlist;
+        mIgnoreFirstNameError = true;
+        notifyPropertyChanged(BR.playlistNameError);
     }
 
     public void setBuilder(AutoPlaylist.Builder builder) {
@@ -93,7 +102,22 @@ public class RuleHeaderViewModel extends BaseObservable {
 
     @Bindable
     public String getPlaylistNameError() {
-        return mPlaylistStore.verifyPlaylistName(getPlaylistName());
+        if (mIgnoreFirstNameError) {
+            // Don't show initial errors
+            mIgnoreFirstNameError = false;
+            return null;
+        }
+
+        String initialName = mOriginalReference.getPlaylistName().trim();
+        String currentName = mBuilder.getName().trim();
+
+        if (!initialName.isEmpty() && initialName.equalsIgnoreCase(currentName)) {
+            // Don't show errors if the playlist name wasn't changed (unless the initial name was
+            // blank)
+            return null;
+        } else {
+            return mPlaylistStore.verifyPlaylistName(getPlaylistName());
+        }
     }
 
     @Bindable

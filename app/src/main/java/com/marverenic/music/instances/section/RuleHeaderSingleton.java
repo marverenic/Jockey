@@ -12,8 +12,11 @@ import com.marverenic.music.viewmodel.RuleHeaderViewModel;
 
 public class RuleHeaderSingleton extends SingletonSection<AutoPlaylist.Builder> {
 
-    public RuleHeaderSingleton(AutoPlaylist.Builder editor) {
+    private AutoPlaylist mOriginalPlaylist;
+
+    public RuleHeaderSingleton(AutoPlaylist playlist, AutoPlaylist.Builder editor) {
         super(editor);
+        mOriginalPlaylist = playlist;
     }
 
     @Override
@@ -25,7 +28,7 @@ public class RuleHeaderSingleton extends SingletonSection<AutoPlaylist.Builder> 
         return new ViewHolder(binding);
     }
 
-    private static class ViewHolder extends EnhancedViewHolder<AutoPlaylist.Builder> {
+    private class ViewHolder extends EnhancedViewHolder<AutoPlaylist.Builder> {
 
         private InstanceRulesHeaderBinding mBinding;
         private RuleHeaderViewModel mViewModel;
@@ -35,6 +38,8 @@ public class RuleHeaderSingleton extends SingletonSection<AutoPlaylist.Builder> 
             mBinding = binding;
 
             mViewModel = new RuleHeaderViewModel(itemView.getContext());
+            mViewModel.setOriginalReference(mOriginalPlaylist);
+
             mBinding.setViewModel(mViewModel);
         }
 
