@@ -3,7 +3,6 @@ package com.marverenic.music.data.store;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
-import com.jakewharton.rxrelay.BehaviorRelay;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Playlist;
@@ -14,11 +13,12 @@ import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
+import rx.subjects.BehaviorSubject;
 
 public class LocalPlaylistStore implements PlaylistStore {
 
     private Context mContext;
-    private BehaviorRelay<List<Playlist>> mPlaylists;
+    private BehaviorSubject<List<Playlist>> mPlaylists;
 
     public LocalPlaylistStore(Context context) {
         mContext = context;
@@ -27,17 +27,21 @@ public class LocalPlaylistStore implements PlaylistStore {
     @Override
     public Observable<List<Playlist>> getPlaylists() {
         if (mPlaylists == null) {
-            mPlaylists = BehaviorRelay.create();
+            mPlaylists = BehaviorSubject.create();
 
-            MediaStoreUtil.getPermission(mContext).map(granted -> {
+            MediaStoreUtil.getPermission(mContext).subscribe(granted -> {
                 if (granted) {
-                    return MediaStoreUtil.getAllPlaylists(mContext);
+                    mPlaylists.onNext(getAllPlaylists());
                 } else {
-                    return Collections.<Playlist>emptyList();
+                    mPlaylists.onNext(Collections.emptyList());
                 }
-            }).subscribe(mPlaylists);
+            });
         }
         return mPlaylists;
+    }
+
+    private List<Playlist> getAllPlaylists() {
+        return MediaStoreUtil.getAllPlaylists(mContext);
     }
 
     @Override
@@ -83,7 +87,7 @@ public class LocalPlaylistStore implements PlaylistStore {
             updated.add(created);
             Collections.sort(updated);
 
-            mPlaylists.call(updated);
+            mPlaylists.onNext(updated);
         }
 
         return created;
@@ -97,7 +101,7 @@ public class LocalPlaylistStore implements PlaylistStore {
             List<Playlist> updated = new ArrayList<>(mPlaylists.getValue());
             updated.remove(playlist);
 
-            mPlaylists.call(updated);
+            mPlaylists.onNext(updated);
         }
     }
 
