@@ -31,9 +31,9 @@ public class AutoPlaylistEditActivity extends BaseActivity {
 
     @Inject PlaylistStore mPlaylistStore;
 
-    private AutoPlaylist reference;
+    private AutoPlaylist mOriginalPlaylist;
     private AutoPlaylist.Builder mBuilder;
-    private HeterogeneousAdapter adapter;
+    private HeterogeneousAdapter mAdapter;
 
     public static Intent newIntent(Context context) {
         return newIntent(context, null);
@@ -53,9 +53,9 @@ public class AutoPlaylistEditActivity extends BaseActivity {
 
         JockeyApplication.getComponent(this).inject(this);
 
-        reference = getIntent().getParcelableExtra(PLAYLIST_EXTRA);
-        if (reference == null) {
-            reference = emptyPlaylist();
+        mOriginalPlaylist = getIntent().getParcelableExtra(PLAYLIST_EXTRA);
+        if (mOriginalPlaylist == null) {
+            mOriginalPlaylist = emptyPlaylist();
         }
 
         if (savedInstanceState != null) {
@@ -63,26 +63,26 @@ public class AutoPlaylistEditActivity extends BaseActivity {
         }
 
         if (mBuilder == null) {
-            mBuilder = new AutoPlaylist.Builder(reference);
+            mBuilder = new AutoPlaylist.Builder(mOriginalPlaylist);
         }
 
         if (getSupportActionBar() != null) {
-            if (reference == null) {
+            if (mOriginalPlaylist == null) {
                 getSupportActionBar().setTitle(R.string.playlist_auto_new);
             } else {
-                getSupportActionBar().setTitle(reference.getPlaylistName());
+                getSupportActionBar().setTitle(mOriginalPlaylist.getPlaylistName());
             }
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_done_24dp);
         }
 
-        adapter = new HeterogeneousAdapter()
-                .addSection(new RuleHeaderSingleton(reference, mBuilder))
+        mAdapter = new HeterogeneousAdapter()
+                .addSection(new RuleHeaderSingleton(mOriginalPlaylist, mBuilder))
                 .addSection(new RuleSection(mBuilder.getRules()));
 
-        adapter.setHasStableIds(true);
+        mAdapter.setHasStableIds(true);
 
         RecyclerView list = (RecyclerView) findViewById(R.id.list);
-        list.setAdapter(adapter);
+        list.setAdapter(mAdapter);
         list.setLayoutManager(new LinearLayoutManager(this));
         list.addItemDecoration(new BackgroundDecoration());
         list.addItemDecoration(new DividerDecoration(this));
@@ -123,7 +123,7 @@ public class AutoPlaylistEditActivity extends BaseActivity {
     }
 
     public void saveChanges() {
-        if (reference.getPlaylistId() == AutoPlaylist.Builder.NO_ID) {
+        if (mOriginalPlaylist.getPlaylistId() == AutoPlaylist.Builder.NO_ID) {
             mPlaylistStore.makePlaylist(mBuilder.build());
         } else {
             mPlaylistStore.editPlaylist(mBuilder.build());
@@ -131,12 +131,12 @@ public class AutoPlaylistEditActivity extends BaseActivity {
     }
 
     private boolean rulesChanged() {
-        if (mBuilder.getRules().size() != reference.getRules().size()) {
+        if (mBuilder.getRules().size() != mOriginalPlaylist.getRules().size()) {
             return true;
         }
 
         for (int i = 0; i < mBuilder.getRules().size(); i++) {
-            if (!reference.getRules().get(i).equals(mBuilder.getRules().get(i))) {
+            if (!mOriginalPlaylist.getRules().get(i).equals(mBuilder.getRules().get(i))) {
                 return true;
             }
         }
@@ -145,10 +145,10 @@ public class AutoPlaylistEditActivity extends BaseActivity {
     }
 
     private boolean validateName() {
-        String originalName = reference.getPlaylistName().trim();
+        String originalName = mOriginalPlaylist.getPlaylistName().trim();
         String editedName = mBuilder.getName().trim();
 
-        boolean equal = !reference.getPlaylistName().trim().isEmpty()
+        boolean equal = !mOriginalPlaylist.getPlaylistName().trim().isEmpty()
                 && originalName.equalsIgnoreCase(editedName);
 
         boolean valid = equal || mPlaylistStore.verifyPlaylistName(editedName) == null;
@@ -165,7 +165,7 @@ public class AutoPlaylistEditActivity extends BaseActivity {
         switch (item.getItemId()) {
             case R.id.add:
                 mBuilder.getRules().add(emptyRule());
-                adapter.notifyItemInserted(mBuilder.getRules().size());
+                mAdapter.notifyItemInserted(mBuilder.getRules().size());
                 return true;
             case R.id.discard:
                 if (rulesChanged()) {
@@ -180,7 +180,7 @@ public class AutoPlaylistEditActivity extends BaseActivity {
                 return true;
             case android.R.id.home:
                 if (validateName()) {
-                    if (!mBuilder.isEqual(reference) || rulesChanged()) {
+                    if (!mBuilder.isEqual(mOriginalPlaylist) || rulesChanged()) {
                         saveChanges();
                     }
                 } else {
@@ -193,7 +193,7 @@ public class AutoPlaylistEditActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        if (!mBuilder.isEqual(reference) || rulesChanged()) {
+        if (!mBuilder.isEqual(mOriginalPlaylist) || rulesChanged()) {
             new AlertDialog.Builder(this)
                     .setMessage("Save changes?")
                     .setPositiveButton("Save", (dialog, which) -> {
