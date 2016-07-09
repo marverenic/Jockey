@@ -25,6 +25,17 @@ public class LocalPlaylistStore implements PlaylistStore {
     }
 
     @Override
+    public Observable<Boolean> refresh() {
+        return MediaStoreUtil.promptPermission(mContext).map(
+                granted -> {
+                    if (mPlaylists != null) {
+                        mPlaylists.onNext(getAllPlaylists());
+                    }
+                    return granted;
+                });
+    }
+
+    @Override
     public Observable<List<Playlist>> getPlaylists() {
         if (mPlaylists == null) {
             mPlaylists = BehaviorSubject.create();
