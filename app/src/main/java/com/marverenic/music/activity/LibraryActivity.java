@@ -23,6 +23,7 @@ import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
 import com.marverenic.music.fragments.AlbumFragment;
@@ -37,6 +38,8 @@ import com.marverenic.music.view.FABMenu;
 
 import javax.inject.Inject;
 
+import rx.Observable;
+
 import static android.support.design.widget.Snackbar.LENGTH_LONG;
 import static android.support.design.widget.Snackbar.LENGTH_SHORT;
 
@@ -46,6 +49,7 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
 
     @Inject MusicStore mMusicStore;
+    @Inject PlaylistStore mPlaylistStore;
     @Inject PreferencesStore mPrefStore;
 
     @Override
@@ -119,16 +123,23 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
     }
 
     private void refreshLibrary() {
-        mMusicStore.refresh().subscribe(
-                hasPermission -> {
+        Observable<Boolean> musicStoreResult = mMusicStore.refresh();
+        Observable<Boolean> playlistStoreResult = mPlaylistStore.refresh();
+
+        Observable<Boolean> combinedResult = Observable.combineLatest(
+                musicStoreResult, playlistStoreResult, (result1, result2) -> result1 && result2);
+
+        combinedResult.take(1)
+                .single()
+                .compose(bindToLifecycle())
+                .subscribe(hasPermission -> {
                     if (hasPermission) {
                         View view = findViewById(R.id.list);
                         Snackbar.make(view, R.string.confirm_refresh_library, LENGTH_SHORT).show();
                     } else {
                         showPermissionSnackbar();
                     }
-                },
-                throwable -> {
+                }, throwable -> {
                     Log.e(TAG, "Failed to refresh library", throwable);
                 });
     }

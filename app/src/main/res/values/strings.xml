@@ -60,9 +60,6 @@
     <string name="uses_rx_lifecycle_header">RxLifecycle</string>
     <string name="uses_rx_lifecycle_detail">Version 0.6.1; distributed by Trello under an Apache
         License, Version 2.0</string>
-    <string name="uses_rx_relay_header">RxRelay</string>
-    <string name="uses_rx_relay_detail">Version 1.1.0; distributed by Netflix, Inc. and Jake Wharton
-        under an Apache License, Version 2.0</string>
     <string name="uses_rx_permissions_header">RxPermissions</string>
     <string name="uses_rx_permissions_detail">Version 0.7.0; distributed by Thomas Bruyelle
         (tbruyelle) under an Apache License, Version 2.0</string>
