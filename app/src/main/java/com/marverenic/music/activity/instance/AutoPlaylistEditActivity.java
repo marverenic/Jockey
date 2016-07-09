@@ -26,10 +26,10 @@ import javax.inject.Inject;
 
 public class AutoPlaylistEditActivity extends BaseActivity {
 
-    @Inject PlaylistStore mPlaylistStore;
-
     private static final String PLAYLIST_EXTRA = "AutoPlaylistEditActivity.PLAYLIST";
     private static final String SAVED_BUILDER = "AutoPlaylistEditActivity.PLAYLIST_BUILDER";
+
+    @Inject PlaylistStore mPlaylistStore;
 
     private AutoPlaylist reference;
     private AutoPlaylist.Builder mBuilder;
