@@ -12,6 +12,8 @@ import rx.Observable;
 
 public interface PlaylistStore {
 
+    Observable<Boolean> refresh();
+
     Observable<List<Playlist>> getPlaylists();
 
     Observable<List<Song>> getSongs(Playlist playlist);
