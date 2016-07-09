@@ -2,6 +2,7 @@ package com.marverenic.music.data.store;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.support.v4.util.ArrayMap;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
@@ -33,12 +35,14 @@ public class LocalPlaylistStore implements PlaylistStore {
 
     private Context mContext;
     private BehaviorSubject<List<Playlist>> mPlaylists;
+    private Map<AutoPlaylist, List<Song>> mAutoPlaylistSessionContents;
 
     public LocalPlaylistStore(Context context, MusicStore musicStore,
                               PlayCountStore playCountStore) {
         mContext = context;
         mMusicStore = musicStore;
         mPlayCountStore = playCountStore;
+        mAutoPlaylistSessionContents = new ArrayMap<>();
     }
 
     @Override
@@ -47,6 +51,7 @@ public class LocalPlaylistStore implements PlaylistStore {
                 granted -> {
                     if (mPlaylists != null) {
                         mPlaylists.onNext(getAllPlaylists());
+                        mAutoPlaylistSessionContents.clear();
                     }
                     return granted;
                 });
@@ -74,7 +79,30 @@ public class LocalPlaylistStore implements PlaylistStore {
 
     @Override
     public Observable<List<Song>> getSongs(Playlist playlist) {
+        if (playlist instanceof AutoPlaylist) {
+            return getAutoPlaylistSongs((AutoPlaylist) playlist);
+        } else {
+            return getPlaylistSongs(playlist);
+        }
+    }
+
+    private Observable<List<Song>> getPlaylistSongs(Playlist playlist) {
         return Observable.just(MediaStoreUtil.getPlaylistSongs(mContext, playlist));
+    }
+
+    private Observable<List<Song>> getAutoPlaylistSongs(AutoPlaylist playlist) {
+        if (mAutoPlaylistSessionContents.containsKey(playlist)) {
+            return Observable.just(mAutoPlaylistSessionContents.get(playlist));
+        } else {
+            return playlist.generatePlaylist(mMusicStore, this, mPlayCountStore)
+                    .map(contents -> {
+                        mAutoPlaylistSessionContents.put(playlist, contents);
+                        return contents;
+                    }).map(contents -> {
+                        editPlaylist(playlist, contents);
+                        return contents;
+                    });
+        }
     }
 
     @Override
@@ -157,6 +185,7 @@ public class LocalPlaylistStore implements PlaylistStore {
     @Override
     public void editPlaylist(AutoPlaylist replacement) {
         saveAutoPlaylistConfiguration(replacement);
+        mAutoPlaylistSessionContents.remove(replacement);
 
         if (mPlaylists != null && mPlaylists.getValue() != null) {
             List<Playlist> updatedPlaylists = new ArrayList<>(mPlaylists.getValue());
