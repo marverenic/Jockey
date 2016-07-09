@@ -138,7 +138,7 @@ public class RuleHeaderViewModel extends BaseObservable {
 
     @Bindable
     public boolean isSongCountCapped() {
-        return mBuilder.getMaximumEntries() > 0;
+        return mBuilder.getMaximumEntries() >= 0;
     }
 
     public View.OnClickListener onSongCapContainerClick() {
@@ -160,6 +160,10 @@ public class RuleHeaderViewModel extends BaseObservable {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (!isSongCountCapped()) {
+                    return;
+                }
+
                 String value = charSequence.toString();
                 if (value.isEmpty()) {
                     mBuilder.setMaximumEntries(0);
