@@ -165,29 +165,10 @@
                 android:textSize="@dimen/list_text_detail_size" />
 
             <TextView
-                android:id="@+id/aboutRxRelay"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/aboutRxAndroidDetail"
-                android:layout_marginTop="16dp"
-                android:text="@string/uses_rx_relay_header"
-                android:textColor="@android:color/white"
-                android:textSize="@dimen/list_text_header_size" />
-
-            <TextView
-                android:id="@+id/aboutRxRelayDetail"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/aboutRxRelay"
-                android:text="@string/uses_rx_relay_detail"
-                android:textColor="@color/about_detail_text"
-                android:textSize="@dimen/list_text_detail_size" />
-
-            <TextView
                 android:id="@+id/aboutRxPermissions"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutRxRelayDetail"
+                android:layout_below="@id/aboutRxAndroidDetail"
                 android:layout_marginTop="16dp"
                 android:text="@string/uses_rx_permissions_header"
                 android:textColor="@android:color/white"
