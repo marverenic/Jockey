@@ -96,20 +96,26 @@ public class LocalPlaylistStore implements PlaylistStore {
     }
 
     private Observable<List<Song>> getAutoPlaylistSongs(AutoPlaylist playlist) {
+        BehaviorSubject<List<Song>> subject;
+
         if (mAutoPlaylistSessionContents.containsKey(playlist)) {
-            return mAutoPlaylistSessionContents.get(playlist).asObservable();
+            subject = mAutoPlaylistSessionContents.get(playlist);
         } else {
-            BehaviorSubject<List<Song>> subject = BehaviorSubject.create();
+            subject = BehaviorSubject.create();
             mAutoPlaylistSessionContents.put(playlist, subject);
 
             playlist.generatePlaylist(mMusicStore, this, mPlayCountStore)
-                    .map(contents -> {
-                        editPlaylist(playlist, contents);
-                        return contents;
-                    }).subscribe(subject::onNext, subject::onError);
+                    .subscribe(subject::onNext, subject::onError);
 
-            return subject;
+            subject.observeOn(Schedulers.io())
+                    .subscribe(contents -> {
+                        editPlaylist(playlist, contents);
+                    }, throwable -> {
+                        Log.e(TAG, "Failed to save playlist contents", throwable);
+                    });
         }
+
+        return subject.asObservable().observeOn(AndroidSchedulers.mainThread());
     }
 
     @Override
