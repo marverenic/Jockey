@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
 
 public class LocalPlaylistStore implements PlaylistStore {
@@ -47,8 +49,9 @@ public class LocalPlaylistStore implements PlaylistStore {
 
     @Override
     public Observable<Boolean> refresh() {
-        return MediaStoreUtil.promptPermission(mContext).map(
-                granted -> {
+        return MediaStoreUtil.promptPermission(mContext)
+                .subscribeOn(Schedulers.io())
+                .map(granted -> {
                     if (mPlaylists != null) {
                         mPlaylists.onNext(getAllPlaylists());
                         mAutoPlaylistSessionContents.clear();
@@ -62,15 +65,17 @@ public class LocalPlaylistStore implements PlaylistStore {
         if (mPlaylists == null) {
             mPlaylists = BehaviorSubject.create();
 
-            MediaStoreUtil.getPermission(mContext).subscribe(granted -> {
-                if (granted) {
-                    mPlaylists.onNext(getAllPlaylists());
-                } else {
-                    mPlaylists.onNext(Collections.emptyList());
-                }
-            });
+            MediaStoreUtil.getPermission(mContext)
+                    .observeOn(Schedulers.io())
+                    .subscribe(granted -> {
+                        if (granted) {
+                            mPlaylists.onNext(getAllPlaylists());
+                        } else {
+                            mPlaylists.onNext(Collections.emptyList());
+                        }
+                    });
         }
-        return mPlaylists;
+        return mPlaylists.asObservable().observeOn(AndroidSchedulers.mainThread());
     }
 
     private List<Playlist> getAllPlaylists() {
