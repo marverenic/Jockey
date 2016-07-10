@@ -66,6 +66,10 @@ public class RuleViewModel extends BaseObservable {
     }
 
     public void setRule(List<AutoPlaylistRule> rules, int index) {
+        if (rules.equals(mRules) && index == mIndex) {
+            return;
+        }
+
         mRules = rules;
         mIndex = index;
         mFactory = new AutoPlaylistRule.Factory(rules.get(index));
@@ -102,6 +106,10 @@ public class RuleViewModel extends BaseObservable {
         return new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                if (mFactory.getType() == pos) {
+                    return;
+                }
+
                 mFactory.setType(pos);
 
                 apply();
@@ -138,6 +146,11 @@ public class RuleViewModel extends BaseObservable {
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
                 mEnumeratedRule = mFilterAdapter.mFilters.get(pos);
 
+                if (mFactory.getField() == mEnumeratedRule.getField()
+                        && mFactory.getMatch() == mEnumeratedRule.getMatch()) {
+                    return;
+                }
+
                 mFactory.setField(mEnumeratedRule.getField());
                 mFactory.setMatch(mEnumeratedRule.getMatch());
                 apply();
@@ -159,9 +172,10 @@ public class RuleViewModel extends BaseObservable {
         }
 
         if (getValueSpinnerVisibility() != View.VISIBLE) {
-            mValueAdapter = null;
+            return;
         }
 
+        mValueAdapter = null;
         switch (mFactory.getType()) {
             case AutoPlaylistRule.SONG:
                 setupSongAdapter();
