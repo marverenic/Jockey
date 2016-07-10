@@ -151,19 +151,25 @@ public class RuleViewModel extends BaseObservable {
         return new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                mEnumeratedRule = mFilterAdapter.mFilters.get(pos);
+                RuleEnumeration nextRule = mFilterAdapter.mFilters.get(pos);
 
-                if (mFactory.getField() == mEnumeratedRule.getField()
-                        && mFactory.getMatch() == mEnumeratedRule.getMatch()) {
+                if (nextRule.getField() == mEnumeratedRule.getField()
+                        && nextRule.getMatch() == mEnumeratedRule.getMatch()) {
                     return;
                 }
 
+                if (nextRule.getInputType() != mEnumeratedRule.getInputType()) {
+                    mFactory.setValue("");
+                }
+
+                mEnumeratedRule = nextRule;
                 mFactory.setField(mEnumeratedRule.getField());
                 mFactory.setMatch(mEnumeratedRule.getMatch());
                 apply();
 
                 setupValueAdapter();
 
+                notifyPropertyChanged(BR.valueText);
                 notifyPropertyChanged(BR.valueTextVisibility);
                 notifyPropertyChanged(BR.valueSpinnerVisibility);
             }
