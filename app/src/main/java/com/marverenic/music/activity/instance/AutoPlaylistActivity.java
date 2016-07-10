@@ -8,6 +8,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
@@ -25,8 +27,6 @@ import com.marverenic.music.instances.section.SongSection;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -133,70 +133,76 @@ public class AutoPlaylistActivity extends BaseActivity
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_playlist, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (mReference == null) {
+            return super.onOptionsItemSelected(item);
+        }
+
+        if (item.getItemId() == R.id.action_sort) {
+            PopupMenu sortMenu = new PopupMenu(this, findViewById(R.id.action_sort), Gravity.END);
+            sortMenu.inflate(R.menu.sort_options_auto_playlist);
+            sortMenu.setOnMenuItemClickListener(this);
+            sortMenu.show();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public boolean onMenuItemClick(MenuItem item) {
-        final List<Song> unsortedData = new ArrayList<>(mSongs);
-        int sortFlag = -1;
+        int sortFlag;
         String result;
 
         switch (item.getItemId()) {
             case R.id.action_sort_random:
-                Collections.shuffle(mSongs);
-                result = getResources().getString(R.string.message_sorted_playlist_random);
+                result = getString(R.string.message_sorted_playlist_random);
                 sortFlag = AutoPlaylistRule.ID;
                 break;
             case R.id.action_sort_name:
-                Collections.sort(mSongs);
-                result = getResources().getString(R.string.message_sorted_playlist_name);
+                result = getString(R.string.message_sorted_playlist_name);
                 sortFlag = AutoPlaylistRule.NAME;
                 break;
-            case R.id.action_sort_artist:
-                Collections.sort(mSongs, Song.ARTIST_COMPARATOR);
-                result = getResources().getString(R.string.message_sorted_playlist_artist);
-                break;
-            case R.id.action_sort_album:
-                Collections.sort(mSongs, Song.ALBUM_COMPARATOR);
-                result = getResources().getString(R.string.message_sorted_playlist_album);
-                break;
             case R.id.action_sort_play:
-                Collections.sort(mSongs, Song.playCountComparator(mPlayCountStore));
-                result = getResources().getString(R.string.message_sorted_playlist_play);
+                result = getString(R.string.message_sorted_playlist_play);
                 sortFlag = AutoPlaylistRule.PLAY_COUNT;
                 break;
             case R.id.action_sort_skip:
-                Collections.sort(mSongs, Song.skipCountComparator(mPlayCountStore));
-                result = getResources().getString(R.string.message_sorted_playlist_skip);
+                result = getString(R.string.message_sorted_playlist_skip);
                 sortFlag = AutoPlaylistRule.SKIP_COUNT;
                 break;
             case R.id.action_sort_date_added:
-                Collections.sort(mSongs, Song.DATE_ADDED_COMPARATOR);
-                result = getResources().getString(R.string.message_sorted_playlist_date_added);
+                result = getString(R.string.message_sorted_playlist_date_added);
                 sortFlag = AutoPlaylistRule.DATE_ADDED;
                 break;
             case R.id.action_sort_date_played:
-                Collections.sort(mSongs, Song.playCountComparator(mPlayCountStore));
-                result = getResources().getString(R.string.message_sorted_playlist_date_played);
+                result = getString(R.string.message_sorted_playlist_date_played);
                 sortFlag = AutoPlaylistRule.DATE_PLAYED;
                 break;
             default:
                 return false;
         }
 
+        int oldSortFlag = mReference.getSortMethod();
         mReference = new AutoPlaylist.Builder(mReference).setSortMethod(sortFlag).build();
         mPlaylistStore.editPlaylist(mReference);
 
-        Snackbar
-                .make(
-                        mRecyclerView,
-                        String.format(result, mReference),
-                        Snackbar.LENGTH_LONG)
-                .setAction(
-                        getResources().getString(R.string.action_undo),
-                        v -> {
-                            mSongs.clear();
-                            mSongs.addAll(unsortedData);
-                            mPlaylistStore.editPlaylist(mReference, unsortedData);
-                            mAdapter.notifyDataSetChanged();
-                        })
+        String message = String.format(result, mReference);
+
+        Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG)
+                .setAction(getResources().getString(R.string.action_undo), v -> {
+                    mReference = new AutoPlaylist.Builder(mReference)
+                            .setSortMethod(oldSortFlag)
+                            .build();
+
+                    mPlaylistStore.editPlaylist(mReference);
+                })
                 .show();
 
         return true;
