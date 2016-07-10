@@ -1,5 +1,6 @@
 package com.marverenic.music.viewmodel;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
@@ -10,6 +11,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -34,6 +36,8 @@ import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
 import com.marverenic.music.instances.playlistrules.RuleEnumeration;
 
+import java.util.Calendar;
+import java.util.Formatter;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -45,6 +49,8 @@ import static android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE;
 public class RuleViewModel extends BaseObservable {
 
     private static final String TAG = "RuleViewModel";
+
+    private Context mContext;
 
     @Inject MusicStore mMusicStore;
     @Inject PlaylistStore mPlaylistStore;
@@ -61,6 +67,7 @@ public class RuleViewModel extends BaseObservable {
     private int mIndex;
 
     public RuleViewModel(Context context) {
+        mContext = context;
         JockeyApplication.getComponent(context).inject(this);
         mEnumeratedRule = RuleEnumeration.IS;
     }
@@ -332,10 +339,16 @@ public class RuleViewModel extends BaseObservable {
     }
 
     public View.OnClickListener onValueTextClick() {
-        return v -> showValueDialog(v.getContext());
+        return v -> {
+            if ((mEnumeratedRule.getInputType() & InputType.TYPE_CLASS_DATETIME) != 0) {
+                showDateValueDialog();
+            } else {
+                showValueDialog();
+            }
+        };
     }
 
-    private void showValueDialog(Context context) {
+    private void showValueDialog() {
         /*
              Ideally, the View that this ViewHolder wraps would have the EditText directly
              in it without doing the trickery below where it disguises a TextView as an EditText
@@ -356,18 +369,18 @@ public class RuleViewModel extends BaseObservable {
              10/8/15
          */
 
-        TextInputLayout inputLayout = new TextInputLayout(context);
-        AppCompatEditText editText = new AppCompatEditText(context);
+        TextInputLayout inputLayout = new TextInputLayout(mContext);
+        AppCompatEditText editText = new AppCompatEditText(mContext);
 
         editText.setInputType(mEnumeratedRule.getInputType());
         inputLayout.addView(editText);
 
-        Resources res = context.getResources();
+        Resources res = mContext.getResources();
 
         String type = res.getStringArray(R.array.auto_plist_types)[getSelectedType()];
         String match = res.getString(mEnumeratedRule.getNameRes()).toLowerCase();
 
-        AlertDialog valueDialog = new AlertDialog.Builder(context)
+        AlertDialog valueDialog = new AlertDialog.Builder(mContext)
                 .setMessage(type + " " + match)
                 .setView(inputLayout)
                 .setNegativeButton(R.string.action_cancel, null)
@@ -394,7 +407,7 @@ public class RuleViewModel extends BaseObservable {
 
         valueDialog.show();
 
-        int padding = (int) context.getResources().getDimension(R.dimen.alert_padding);
+        int padding = (int) mContext.getResources().getDimension(R.dimen.alert_padding);
         ((View) inputLayout.getParent()).setPadding(
                 padding - inputLayout.getPaddingLeft(), 0,
                 padding - inputLayout.getPaddingRight(), 0);
@@ -409,13 +422,57 @@ public class RuleViewModel extends BaseObservable {
         });
     }
 
+    private void showDateValueDialog() {
+        // Calculate the date stored in the reference
+        Calendar currentDate = Calendar.getInstance();
+        try {
+            long timestamp = Long.parseLong(mFactory.getValue());
+            currentDate.setTimeInMillis(timestamp * 1000L);
+        } catch (NumberFormatException ignored) {
+            // If the reference's value isn't valid, just use the current time as the
+            // selected date
+            currentDate.setTimeInMillis(System.currentTimeMillis());
+        }
+
+        DatePickerDialog dateDialog = new DatePickerDialog(mContext,
+                (view, year, monthOfYear, dayOfMonth) -> {
+                    Calendar nextDate = Calendar.getInstance();
+                    nextDate.set(year, monthOfYear, dayOfMonth);
+                    mFactory.setValue(Long.toString(nextDate.getTimeInMillis() / 1000L));
+
+                    apply();
+                    notifyPropertyChanged(BR.valueText);
+                },
+                currentDate.get(Calendar.YEAR),
+                currentDate.get(Calendar.MONTH),
+                currentDate.get(Calendar.DAY_OF_MONTH));
+
+        dateDialog.show();
+    }
+
     public View.OnClickListener onRemoveClick() {
         return v -> mRemovalListener.onRuleRemoved(mIndex);
     }
 
     @Bindable
     public String getValueText() {
-        return mFactory.getValue();
+        if ((mEnumeratedRule.getInputType() & InputType.TYPE_CLASS_DATETIME) != 0) {
+            long dateAsUnixTimestamp;
+            try {
+                dateAsUnixTimestamp = Long.parseLong(mFactory.getValue()) * 1000;
+            } catch (NumberFormatException e) {
+                Log.e(TAG, "Failed to parse date " + mFactory.getValue(), e);
+                dateAsUnixTimestamp = System.currentTimeMillis();
+            }
+
+            int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR;
+            Formatter date = DateUtils.formatDateRange(mContext, new Formatter(),
+                    dateAsUnixTimestamp, dateAsUnixTimestamp, flags, "UTC");
+
+            return date.toString();
+        } else {
+            return mFactory.getValue();
+        }
     }
 
     @Bindable
