@@ -24,53 +24,62 @@ import static com.marverenic.music.instances.playlistrules.AutoPlaylistRule.SKIP
 
 public enum RuleEnumeration {
 
-    IS(R.string.rule_is,
-            ID, EQUALS, InputType.TYPE_NULL),
-    ISNT(R.string.rule_isnt,
-            ID, NOT_EQUALS, InputType.TYPE_NULL),
-    NAME_IS(R.string.rule_name_is,
-            NAME, EQUALS, InputType.TYPE_TEXT_FLAG_CAP_WORDS),
-    NAME_ISNT(R.string.rule_name_isnt,
-            NAME, NOT_EQUALS, InputType.TYPE_TEXT_FLAG_CAP_WORDS),
-    NAME_CONTAINS(R.string.rule_name_contains,
-            NAME, CONTAINS, InputType.TYPE_TEXT_FLAG_CAP_WORDS),
-    NAME_DOESNT_CONTAIN(R.string.rule_name_doesnt_contain,
-            NAME, CONTAINS, InputType.TYPE_TEXT_FLAG_CAP_WORDS),
-    PLAY_COUNT_LESS_THAN(R.string.rule_play_count_lt,
-            PLAY_COUNT, LESS_THAN, InputType.TYPE_CLASS_NUMBER),
-    PLAY_COUNT_EQUALS(R.string.rule_play_count_eq,
-            PLAY_COUNT, EQUALS, InputType.TYPE_CLASS_NUMBER),
-    PLAY_COUNT_GREATER_THAN(R.string.rule_play_count_gt,
-            PLAY_COUNT, GREATER_THAN, InputType.TYPE_CLASS_NUMBER),
-    SKIP_COUNT_LESS_THAN(R.string.rule_skip_count_lt,
-            SKIP_COUNT, LESS_THAN, InputType.TYPE_CLASS_NUMBER),
-    SKIP_COUNT_EQUALS(R.string.rule_skip_count_eq,
-            SKIP_COUNT, EQUALS, InputType.TYPE_CLASS_NUMBER),
-    SKIP_COUNT_GREATER_THAN(R.string.rule_skip_count_gt,
-            SKIP_COUNT, GREATER_THAN, InputType.TYPE_CLASS_NUMBER),
-    ADDED_BEFORE(R.string.rule_added_before,
-            DATE_ADDED, LESS_THAN, InputType.TYPE_CLASS_DATETIME),
-    ADDED_ON(R.string.rule_added_on,
-            DATE_ADDED, EQUALS, InputType.TYPE_CLASS_DATETIME),
-    ADDED_AFTER(R.string.rule_added_after,
-            DATE_ADDED, GREATER_THAN, InputType.TYPE_CLASS_DATETIME),
-    PLAYED_BEFORE(R.string.rule_played_before,
-            DATE_PLAYED, LESS_THAN, InputType.TYPE_CLASS_DATETIME),
-    PLAYED_ON(R.string.rule_played_on,
-            DATE_PLAYED, EQUALS, InputType.TYPE_CLASS_DATETIME),
-    PLAYER_AFTER(R.string.rule_played_after,
-            DATE_PLAYED, GREATER_THAN, InputType.TYPE_CLASS_DATETIME);
+    IS(R.string.rule_is, ID, EQUALS),
+    ISNT(R.string.rule_isnt, ID, NOT_EQUALS),
+    NAME_IS(R.string.rule_name_is, NAME, EQUALS),
+    NAME_ISNT(R.string.rule_name_isnt, NAME, NOT_EQUALS),
+    NAME_CONTAINS(R.string.rule_name_contains, NAME, CONTAINS),
+    NAME_DOESNT_CONTAIN(R.string.rule_name_doesnt_contain, NAME, CONTAINS),
+    PLAY_COUNT_LESS_THAN(R.string.rule_play_count_lt, PLAY_COUNT, LESS_THAN),
+    PLAY_COUNT_EQUALS(R.string.rule_play_count_eq, PLAY_COUNT, EQUALS),
+    PLAY_COUNT_GREATER_THAN(R.string.rule_play_count_gt, PLAY_COUNT, GREATER_THAN),
+    SKIP_COUNT_LESS_THAN(R.string.rule_skip_count_lt, SKIP_COUNT, LESS_THAN),
+    SKIP_COUNT_EQUALS(R.string.rule_skip_count_eq, SKIP_COUNT, EQUALS),
+    SKIP_COUNT_GREATER_THAN(R.string.rule_skip_count_gt, SKIP_COUNT, GREATER_THAN),
+    ADDED_BEFORE(R.string.rule_added_before, DATE_ADDED, LESS_THAN),
+    ADDED_ON(R.string.rule_added_on, DATE_ADDED, EQUALS),
+    ADDED_AFTER(R.string.rule_added_after, DATE_ADDED, GREATER_THAN),
+    PLAYED_BEFORE(R.string.rule_played_before, DATE_PLAYED, LESS_THAN),
+    PLAYED_ON(R.string.rule_played_on, DATE_PLAYED, EQUALS),
+    PLAYER_AFTER(R.string.rule_played_after, DATE_PLAYED, GREATER_THAN);
+
+    private static final int NO_INPUT_TYPE = InputType.TYPE_NULL;
+    private static final int TEXT_INPUT_TYPE = InputType.TYPE_CLASS_TEXT
+            | InputType.TYPE_TEXT_FLAG_CAP_WORDS | InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE
+            | InputType.TYPE_TEXT_FLAG_AUTO_CORRECT;
+    private static final int NUMBER_INPUT_TYPE = InputType.TYPE_CLASS_NUMBER;
+    private static final int DATE_INPUT_TYPE = InputType.TYPE_CLASS_DATETIME;
 
     @StringRes private int mNameRes;
     @Field private int mField;
     @Match private int mMatch;
     private int mInputType;
 
-    RuleEnumeration(@StringRes int nameRes, @Field int field, @Match int match, int inputType) {
+    static {
+        IS.mInputType = NO_INPUT_TYPE;
+        ISNT.mInputType = NO_INPUT_TYPE;
+        NAME_IS.mInputType = TEXT_INPUT_TYPE;
+        NAME_ISNT.mInputType = TEXT_INPUT_TYPE;
+        NAME_CONTAINS.mInputType = TEXT_INPUT_TYPE;
+        NAME_DOESNT_CONTAIN.mInputType = TEXT_INPUT_TYPE;
+        PLAY_COUNT_LESS_THAN.mInputType = NUMBER_INPUT_TYPE;
+        PLAY_COUNT_EQUALS.mInputType = NUMBER_INPUT_TYPE;
+        PLAY_COUNT_GREATER_THAN.mInputType = NUMBER_INPUT_TYPE;
+        SKIP_COUNT_LESS_THAN.mInputType = NUMBER_INPUT_TYPE;
+        SKIP_COUNT_EQUALS.mInputType = NUMBER_INPUT_TYPE;
+        SKIP_COUNT_GREATER_THAN.mInputType = NUMBER_INPUT_TYPE;
+        ADDED_BEFORE.mInputType = DATE_INPUT_TYPE;
+        ADDED_ON.mInputType = DATE_INPUT_TYPE;
+        ADDED_AFTER.mInputType = DATE_INPUT_TYPE;
+        PLAYED_BEFORE.mInputType = DATE_INPUT_TYPE;
+        PLAYED_ON.mInputType = DATE_INPUT_TYPE;
+        PLAYER_AFTER.mInputType = DATE_INPUT_TYPE;
+    }
+
+    RuleEnumeration(@StringRes int nameRes, @Field int field, @Match int match) {
         mNameRes = nameRes;
         mField = field;
         mMatch = match;
-        mInputType = inputType;
     }
 
     @StringRes
