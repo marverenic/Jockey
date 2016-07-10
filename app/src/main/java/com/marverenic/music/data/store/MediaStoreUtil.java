@@ -259,11 +259,10 @@ public final class MediaStoreUtil {
 
             if (externalFiles.exists() || externalFiles.mkdirs()) {
                 String[] files = externalFiles.list();
-                for (String s : files) {
-                    if (s.endsWith(AUTO_PLAYLIST_EXTENSION)) {
-                        autoPlaylists.add(gson.fromJson(
-                                new FileReader(externalFiles + "/" + s),
-                                AutoPlaylist.class));
+                for (String file : files) {
+                    if (file.endsWith(AUTO_PLAYLIST_EXTENSION)) {
+                        String filePath = externalFiles + File.separator + file;
+                        autoPlaylists.add(readAutoPlaylist(gson, filePath));
                     }
                 }
             }
@@ -273,6 +272,16 @@ public final class MediaStoreUtil {
 
         Collections.sort(autoPlaylists);
         return autoPlaylists;
+    }
+
+    private static AutoPlaylist readAutoPlaylist(Gson gson, String path) throws IOException {
+        FileReader reader = new FileReader(path);
+
+        try {
+            return gson.fromJson(reader, AutoPlaylist.class);
+        } finally {
+            reader.close();
+        }
     }
 
     public static List<Album> getArtistAlbums(Context context, Artist artist) {
