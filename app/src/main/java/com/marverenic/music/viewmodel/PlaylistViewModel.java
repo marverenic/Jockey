@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.activity.instance.AutoPlaylistActivity;
 import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
 import com.marverenic.music.activity.instance.PlaylistActivity;
 import com.marverenic.music.data.store.PlaylistStore;
@@ -57,7 +58,14 @@ public class PlaylistViewModel extends BaseObservable {
     }
 
     public View.OnClickListener onClickPlaylist() {
-        return v -> Navigate.to(mContext, PlaylistActivity.class, PLAYLIST_EXTRA, mPlaylist);
+        return v -> {
+            if (mPlaylist instanceof AutoPlaylist) {
+                Intent intent = AutoPlaylistActivity.newIntent(mContext, (AutoPlaylist) mPlaylist);
+                mContext.startActivity(intent);
+            } else {
+                Navigate.to(mContext, PlaylistActivity.class, PLAYLIST_EXTRA, mPlaylist);
+            }
+        };
     }
 
     public View.OnClickListener onClickMenu() {

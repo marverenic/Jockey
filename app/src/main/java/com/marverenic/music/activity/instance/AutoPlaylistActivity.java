@@ -1,5 +1,6 @@
 package com.marverenic.music.activity.instance;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -42,6 +43,13 @@ public class AutoPlaylistActivity extends BaseActivity
     private RecyclerView mRecyclerView;
     private HeterogeneousAdapter mAdapter;
     private SongSection mSongSection;
+
+    public static Intent newIntent(Context context, AutoPlaylist playlist) {
+        Intent intent = new Intent(context, AutoPlaylistActivity.class);
+        intent.putExtra(PLAYLIST_EXTRA, playlist);
+
+        return intent;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
