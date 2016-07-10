@@ -213,6 +213,7 @@ public class LocalPlaylistStore implements PlaylistStore {
         // Write an initial set of values to the MediaStore so other apps can see this playlist
         playlist.generatePlaylist(mMusicStore, this, mPlayCountStore)
                 .take(1)
+                .observeOn(Schedulers.io())
                 .subscribe(contents -> {
                     editPlaylist(playlist, contents);
 
@@ -225,15 +226,15 @@ public class LocalPlaylistStore implements PlaylistStore {
                         mAutoPlaylistSessionContents.put(playlist, contentsSubject);
                     }
                     contentsSubject.onNext(contents);
+
+                    try {
+                        writeAutoPlaylistConfiguration(playlist);
+                    } catch (IOException e) {
+                        Crashlytics.logException(e);
+                    }
                 }, throwable -> {
                     Log.e(TAG, "makePlaylist: Failed to initialize contents", throwable);
                 });
-
-        try {
-            writeAutoPlaylistConfiguration(playlist);
-        } catch (IOException e) {
-            Crashlytics.logException(e);
-        }
     }
 
     private void writeAutoPlaylistConfiguration(AutoPlaylist playlist) throws IOException {
