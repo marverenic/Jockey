@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 public class ArtistRule extends AutoPlaylistRule implements Parcelable {
 
@@ -29,6 +30,7 @@ public class ArtistRule extends AutoPlaylistRule implements Parcelable {
     public Observable<List<Song>> applyFilter(PlaylistStore playlistStore, MusicStore musicStore,
                                               PlayCountStore playCountStore) {
         return musicStore.getArtists()
+                .observeOn(Schedulers.computation())
                 .take(1)
                 .map(library -> {
                     List<Artist> filtered = new ArrayList<>();
