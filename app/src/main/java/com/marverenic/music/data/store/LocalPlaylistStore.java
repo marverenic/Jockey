@@ -37,7 +37,7 @@ public class LocalPlaylistStore implements PlaylistStore {
 
     private Context mContext;
     private BehaviorSubject<List<Playlist>> mPlaylists;
-    private Map<AutoPlaylist, List<Song>> mAutoPlaylistSessionContents;
+    private Map<AutoPlaylist, BehaviorSubject<List<Song>>> mAutoPlaylistSessionContents;
 
     public LocalPlaylistStore(Context context, MusicStore musicStore,
                               PlayCountStore playCountStore) {
@@ -97,16 +97,18 @@ public class LocalPlaylistStore implements PlaylistStore {
 
     private Observable<List<Song>> getAutoPlaylistSongs(AutoPlaylist playlist) {
         if (mAutoPlaylistSessionContents.containsKey(playlist)) {
-            return Observable.just(mAutoPlaylistSessionContents.get(playlist));
+            return mAutoPlaylistSessionContents.get(playlist).asObservable();
         } else {
-            return playlist.generatePlaylist(mMusicStore, this, mPlayCountStore)
+            BehaviorSubject<List<Song>> subject = BehaviorSubject.create();
+            mAutoPlaylistSessionContents.put(playlist, subject);
+
+            playlist.generatePlaylist(mMusicStore, this, mPlayCountStore)
                     .map(contents -> {
-                        mAutoPlaylistSessionContents.put(playlist, contents);
-                        return contents;
-                    }).map(contents -> {
                         editPlaylist(playlist, contents);
                         return contents;
-                    });
+                    }).subscribe(subject::onNext, subject::onError);
+
+            return subject;
         }
     }
 
@@ -190,7 +192,6 @@ public class LocalPlaylistStore implements PlaylistStore {
     @Override
     public void editPlaylist(AutoPlaylist replacement) {
         saveAutoPlaylistConfiguration(replacement);
-        mAutoPlaylistSessionContents.remove(replacement);
 
         if (mPlaylists != null && mPlaylists.getValue() != null) {
             List<Playlist> updatedPlaylists = new ArrayList<>(mPlaylists.getValue());
@@ -208,6 +209,16 @@ public class LocalPlaylistStore implements PlaylistStore {
                 .take(1)
                 .subscribe(contents -> {
                     editPlaylist(playlist, contents);
+
+                    // Cache this result in memory
+                    BehaviorSubject<List<Song>> contentsSubject;
+                    if (mAutoPlaylistSessionContents.containsKey(playlist)) {
+                        contentsSubject = mAutoPlaylistSessionContents.get(playlist);
+                    } else {
+                        contentsSubject = BehaviorSubject.create();
+                        mAutoPlaylistSessionContents.put(playlist, contentsSubject);
+                    }
+                    contentsSubject.onNext(contents);
                 }, throwable -> {
                     Log.e(TAG, "makePlaylist: Failed to initialize contents", throwable);
                 });
