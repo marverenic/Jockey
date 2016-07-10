@@ -14,6 +14,8 @@ import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
 
 public class LocalMusicStore implements MusicStore {
@@ -33,8 +35,9 @@ public class LocalMusicStore implements MusicStore {
 
     @Override
     public Observable<Boolean> refresh() {
-        return MediaStoreUtil.promptPermission(mContext).map(
-                granted -> {
+        return MediaStoreUtil.promptPermission(mContext)
+                .subscribeOn(Schedulers.io())
+                .map(granted -> {
                     if (granted) {
                         if (mSongs != null) {
                             mSongs.onNext(getAllSongs());
@@ -50,7 +53,8 @@ public class LocalMusicStore implements MusicStore {
                         }
                     }
                     return granted;
-                });
+                })
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     @Override
@@ -58,15 +62,17 @@ public class LocalMusicStore implements MusicStore {
         if (mSongs == null) {
             mSongs = BehaviorSubject.create();
 
-            MediaStoreUtil.getPermission(mContext).subscribe(granted -> {
-                if (granted) {
-                    mSongs.onNext(getAllSongs());
-                } else {
-                    mSongs.onNext(Collections.emptyList());
-                }
-            });
+            MediaStoreUtil.getPermission(mContext)
+                    .observeOn(Schedulers.io())
+                    .subscribe(granted -> {
+                        if (granted) {
+                            mSongs.onNext(getAllSongs());
+                        } else {
+                            mSongs.onNext(Collections.emptyList());
+                        }
+                    });
         }
-        return mSongs;
+        return mSongs.asObservable().observeOn(AndroidSchedulers.mainThread());
     }
 
     private List<Song> getAllSongs() {
@@ -137,15 +143,24 @@ public class LocalMusicStore implements MusicStore {
         if (mAlbums == null) {
             mAlbums = BehaviorSubject.create();
 
-            MediaStoreUtil.getPermission(mContext).subscribe(granted -> {
-                if (granted) {
-                    mAlbums.onNext(getAllAlbums());
-                } else {
-                    mAlbums.onNext(Collections.emptyList());
-                }
-            });
+            MediaStoreUtil.getPermission(mContext)
+                    .flatMap(granted -> {
+                        if (noDirectoryFilters()) {
+                            return Observable.just(granted);
+                        } else {
+                            return getSongs().map((List<Song> songs) -> granted);
+                        }
+                    })
+                    .observeOn(Schedulers.io())
+                    .subscribe(granted -> {
+                        if (granted) {
+                            mAlbums.onNext(getAllAlbums());
+                        } else {
+                            mAlbums.onNext(Collections.emptyList());
+                        }
+                    });
         }
-        return mAlbums;
+        return mAlbums.asObservable().observeOn(AndroidSchedulers.mainThread());
     }
 
     private List<Album> getAllAlbums() {
@@ -157,15 +172,24 @@ public class LocalMusicStore implements MusicStore {
         if (mArtists == null) {
             mArtists = BehaviorSubject.create();
 
-            MediaStoreUtil.getPermission(mContext).subscribe(granted -> {
-                if (granted) {
-                    mArtists.onNext(getAllArtists());
-                } else {
-                    mArtists.onNext(Collections.emptyList());
-                }
-            });
+            MediaStoreUtil.getPermission(mContext)
+                    .flatMap(granted -> {
+                        if (noDirectoryFilters()) {
+                            return Observable.just(granted);
+                        } else {
+                            return getSongs().map((List<Song> songs) -> granted);
+                        }
+                    })
+                    .observeOn(Schedulers.io())
+                    .subscribe(granted -> {
+                        if (granted) {
+                            mArtists.onNext(getAllArtists());
+                        } else {
+                            mArtists.onNext(Collections.emptyList());
+                        }
+                    });
         }
-        return mArtists;
+        return mArtists.asObservable().observeOn(AndroidSchedulers.mainThread());
     }
 
     private List<Artist> getAllArtists() {
@@ -177,22 +201,24 @@ public class LocalMusicStore implements MusicStore {
         if (mGenres == null) {
             mGenres = BehaviorSubject.create();
 
-            MediaStoreUtil.getPermission(mContext).subscribe(granted -> {
-                if (granted) {
-                    mGenres.onNext(getAllGenres());
-                } else {
-                    mGenres.onNext(Collections.emptyList());
-                }
-            });
+            MediaStoreUtil.getPermission(mContext)
+                    .observeOn(Schedulers.io())
+                    .subscribe(granted -> {
+                        if (granted) {
+                            mGenres.onNext(getAllGenres());
+                        } else {
+                            mGenres.onNext(Collections.emptyList());
+                        }
+                    });
         }
-        return mGenres;
+        return mGenres.asObservable().observeOn(AndroidSchedulers.mainThread());
     }
 
     private List<Genre> getAllGenres() {
         return filterGenres(MediaStoreUtil.getGenres(mContext, null, null));
     }
 
-    private boolean shouldFilterMedia() {
+    private boolean noDirectoryFilters() {
         boolean notIncludingFolders = mPreferencesStore.getIncludedDirectories().isEmpty();
         boolean notExcludingFolders = mPreferencesStore.getExcludedDirectories().isEmpty();
 
@@ -200,12 +226,8 @@ public class LocalMusicStore implements MusicStore {
     }
 
     private List<Album> filterAlbums(List<Album> albumsToFilter) {
-        if (shouldFilterMedia()) {
+        if (noDirectoryFilters()) {
             return albumsToFilter;
-        }
-
-        if (mSongs == null || !mSongs.hasValue()) {
-            getSongs();
         }
 
         List<Album> filteredAlbums = new ArrayList<>();
@@ -223,12 +245,8 @@ public class LocalMusicStore implements MusicStore {
     }
 
     private List<Artist> filterArtists(List<Artist> artistsToFilter) {
-        if (shouldFilterMedia()) {
+        if (noDirectoryFilters()) {
             return artistsToFilter;
-        }
-
-        if (mSongs == null || !mSongs.hasValue()) {
-            getSongs();
         }
 
         List<Artist> filteredArtists = new ArrayList<>();
@@ -246,15 +264,16 @@ public class LocalMusicStore implements MusicStore {
     }
 
     private List<Genre> filterGenres(List<Genre> genresToFilter) {
-        if (shouldFilterMedia()) {
+        if (noDirectoryFilters()) {
             return genresToFilter;
         }
 
         List<Genre> filteredGenres = new ArrayList<>();
+        String directorySelection = getDirectoryInclusionExclusionSelection();
 
         for (Genre genre : genresToFilter) {
             boolean hasSongs = !MediaStoreUtil.getGenreSongs(mContext, genre,
-                    getDirectoryInclusionExclusionSelection(), null).isEmpty();
+                    directorySelection, null).isEmpty();
 
             if (hasSongs) {
                 filteredGenres.add(genre);
