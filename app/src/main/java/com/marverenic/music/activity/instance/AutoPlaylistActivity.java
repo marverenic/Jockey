@@ -7,6 +7,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
@@ -33,6 +34,8 @@ import javax.inject.Inject;
 public class AutoPlaylistActivity extends BaseActivity
         implements PopupMenu.OnMenuItemClickListener {
 
+    private static final String TAG = "AutoPlaylistActivity";
+
     public static final String PLAYLIST_EXTRA = "AutoPlaylistActivity.Playlist";
 
     @Inject PlaylistStore mPlaylistStore;
@@ -56,11 +59,29 @@ public class AutoPlaylistActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instance);
         JockeyApplication.getComponent(this).inject(this);
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.list);
+        setupRecyclerView();
+
+        mReference = getIntent().getParcelableExtra(PLAYLIST_EXTRA);
+        mPlaylistStore.getSongs(mReference)
+                .subscribe(
+                        songs -> {
+                            mSongs = songs;
+                            setupAdapter();
+                        }, throwable -> {
+                            Log.e(TAG, "onCreate: Failed to get song contents", throwable);
+                        });
     }
 
     private void setupAdapter() {
+        if (mSongs == null) {
+            return;
+        }
+
         if (mAdapter == null) {
             mAdapter = new HeterogeneousAdapter();
+            mAdapter.setHasStableIds(true);
 
             mAdapter.setEmptyState(new LibraryEmptyState(this, null) {
                 @Override
@@ -90,10 +111,16 @@ public class AutoPlaylistActivity extends BaseActivity
                     }
                 }
             });
+            mRecyclerView.setAdapter(mAdapter);
         }
 
-        mAdapter = new HeterogeneousAdapter().addSection(new SongSection(this, mSongs));
-        mRecyclerView.setAdapter(mAdapter);
+        if (mSongSection == null) {
+            mSongSection = new SongSection(this, mSongs);
+            mAdapter.addSection(mSongSection);
+        } else {
+            mSongSection.setData(mSongs);
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     private void setupRecyclerView() {
