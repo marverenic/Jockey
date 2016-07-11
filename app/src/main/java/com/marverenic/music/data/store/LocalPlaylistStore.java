@@ -53,7 +53,7 @@ public class LocalPlaylistStore implements PlaylistStore {
         return MediaStoreUtil.promptPermission(mContext)
                 .subscribeOn(Schedulers.io())
                 .map(granted -> {
-                    if (mPlaylists != null) {
+                    if (granted && mPlaylists != null) {
                         mPlaylists.onNext(getAllPlaylists());
                         mAutoPlaylistSessionContents.clear();
                     }
