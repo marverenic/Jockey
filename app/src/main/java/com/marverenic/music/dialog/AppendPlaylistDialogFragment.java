@@ -14,6 +14,7 @@ import android.view.View;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.PlaylistStore;
+import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 
@@ -97,15 +98,23 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
         mPlaylistStore.getPlaylists()
                 .take(1)
                 .subscribe(playlists -> {
-                    mChoices = new Playlist[playlists.size() + 1];
-                    mChoiceNames = new String[playlists.size() + 1];
+                    List<Playlist> choices = new ArrayList<>(playlists.size());
+                    List<String> choiceNames = new ArrayList<>(playlists.size());
 
-                    mChoiceNames[0] = getString(R.string.action_make_new_playlist);
+                    choiceNames.add(getString(R.string.action_make_new_playlist));
 
-                    for (int i = 0; i < playlists.size(); i++) {
-                        mChoices[i + 1] = playlists.get(i);
-                        mChoiceNames[i + 1] = playlists.get(i).getPlaylistName();
+                    for (Playlist playlist : playlists) {
+                        if (!(playlist instanceof AutoPlaylist)) {
+                            choices.add(playlist);
+                            choiceNames.add(playlist.getPlaylistName());
+                        }
                     }
+
+                    mChoices = new Playlist[choices.size()];
+                    mChoiceNames = new String[choiceNames.size()];
+
+                    choices.toArray(mChoices);
+                    choiceNames.toArray(mChoiceNames);
 
                     showDialog();
                 });
