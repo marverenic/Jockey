@@ -161,37 +161,47 @@ public class AutoPlaylistActivity extends BaseActivity
     public boolean onMenuItemClick(MenuItem item) {
         int sortFlag;
         String result;
+        boolean ascending;
 
         switch (item.getItemId()) {
             case R.id.action_sort_random:
                 result = getString(R.string.message_sorted_playlist_random);
                 sortFlag = AutoPlaylistRule.ID;
+                ascending = false;
                 break;
             case R.id.action_sort_name:
                 result = getString(R.string.message_sorted_playlist_name);
                 sortFlag = AutoPlaylistRule.NAME;
+                ascending = true;
                 break;
             case R.id.action_sort_play:
                 result = getString(R.string.message_sorted_playlist_play);
                 sortFlag = AutoPlaylistRule.PLAY_COUNT;
+                ascending = false;
                 break;
             case R.id.action_sort_skip:
                 result = getString(R.string.message_sorted_playlist_skip);
                 sortFlag = AutoPlaylistRule.SKIP_COUNT;
+                ascending = false;
                 break;
             case R.id.action_sort_date_added:
                 result = getString(R.string.message_sorted_playlist_date_added);
                 sortFlag = AutoPlaylistRule.DATE_ADDED;
+                ascending = false;
                 break;
             case R.id.action_sort_date_played:
                 result = getString(R.string.message_sorted_playlist_date_played);
                 sortFlag = AutoPlaylistRule.DATE_PLAYED;
+                ascending = false;
                 break;
             default:
                 return false;
         }
 
         int oldSortFlag = mReference.getSortMethod();
+        if (oldSortFlag == mReference.getSortMethod()) {
+            ascending = !mReference.isSortAscending();
+        }
 
         boolean alreadyLoaded = mSongSection != null;
 
@@ -213,7 +223,10 @@ public class AutoPlaylistActivity extends BaseActivity
                     Log.e(TAG, "Failed to set sort method", throwable);
                 });
 
-        mReference = new AutoPlaylist.Builder(mReference).setSortMethod(sortFlag).build();
+        mReference = new AutoPlaylist.Builder(mReference)
+                .setSortMethod(sortFlag)
+                .setSortAscending(ascending)
+                .build();
         mPlaylistStore.editPlaylist(mReference);
 
         return true;
