@@ -130,10 +130,8 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
                 musicStoreResult, playlistStoreResult, (result1, result2) -> result1 && result2);
 
         combinedResult.take(1)
-                .single()
-                .compose(bindToLifecycle())
-                .subscribe(hasPermission -> {
-                    if (hasPermission) {
+                .subscribe(successful -> {
+                    if (successful) {
                         View view = findViewById(R.id.list);
                         Snackbar.make(view, R.string.confirm_refresh_library, LENGTH_SHORT).show();
                     } else {

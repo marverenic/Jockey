@@ -51,14 +51,15 @@ public class LocalPlaylistStore implements PlaylistStore {
     @Override
     public Observable<Boolean> refresh() {
         return MediaStoreUtil.promptPermission(mContext)
-                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
                 .map(granted -> {
                     if (granted && mPlaylists != null) {
                         mPlaylists.onNext(getAllPlaylists());
                         mAutoPlaylistSessionContents.clear();
                     }
                     return granted;
-                });
+                })
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     @Override

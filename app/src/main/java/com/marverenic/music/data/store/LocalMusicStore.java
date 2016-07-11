@@ -36,7 +36,7 @@ public class LocalMusicStore implements MusicStore {
     @Override
     public Observable<Boolean> refresh() {
         return MediaStoreUtil.promptPermission(mContext)
-                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
                 .map(granted -> {
                     if (granted) {
                         if (mSongs != null) {
