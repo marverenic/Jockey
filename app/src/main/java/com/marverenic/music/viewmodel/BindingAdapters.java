@@ -5,9 +5,11 @@ import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.animation.Animation;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 public class BindingAdapters {
@@ -42,6 +44,11 @@ public class BindingAdapters {
 
         view.setAnimation(animation);
         animation.start();
+    }
+
+    @BindingAdapter("bind:textChangedListener")
+    public static void bindTextChangedListener(EditText editText, TextWatcher watcher) {
+        editText.addTextChangedListener(watcher);
     }
 
 }

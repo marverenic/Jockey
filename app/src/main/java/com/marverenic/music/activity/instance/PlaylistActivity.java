@@ -11,22 +11,19 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.marverenic.heterogeneousadapter.DragDropAdapter;
+import com.marverenic.heterogeneousadapter.DragDropDecoration;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
-import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.data.store.PlaylistStore;
-import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.PlaylistSongSection;
-import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.view.DragBackgroundDecoration;
 import com.marverenic.music.view.DragDividerDecoration;
-import com.marverenic.heterogeneousadapter.DragDropAdapter;
-import com.marverenic.heterogeneousadapter.DragDropDecoration;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,40 +79,17 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
             mAdapter.setEmptyState(new LibraryEmptyState(this, null) {
                 @Override
                 public String getEmptyMessage() {
-                    if (mReference instanceof AutoPlaylist) {
-                        return getString(R.string.empty_auto_playlist);
-                    } else {
-                        return getString(R.string.empty_playlist);
-                    }
+                    return getString(R.string.empty_playlist);
                 }
 
                 @Override
                 public String getEmptyMessageDetail() {
-                    if (mReference instanceof AutoPlaylist) {
-                        return getString(R.string.empty_auto_playlist_detail);
-                    } else {
-                        return getString(R.string.empty_playlist_detail);
-                    }
+                    return getString(R.string.empty_playlist_detail);
                 }
 
                 @Override
                 public String getEmptyAction1Label() {
-                    if (mReference instanceof AutoPlaylist) {
-                        return getString(R.string.action_edit_playlist_rules);
-                    } else {
-                        return "";
-                    }
-                }
-
-                @Override
-                public void onAction1() {
-                    if (mReference instanceof AutoPlaylist
-                            && MediaStoreUtil.hasPermission(PlaylistActivity.this)) {
-                        Navigate.to(PlaylistActivity.this, AutoPlaylistEditActivity.class,
-                                AutoPlaylistEditActivity.PLAYLIST_EXTRA, mReference);
-                    } else {
-                        super.onAction1();
-                    }
+                    return "";
                 }
             });
         }

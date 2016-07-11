@@ -14,12 +14,14 @@ import android.support.annotation.Nullable;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Genre;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
+import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
 import com.marverenic.music.utils.Util;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
@@ -248,18 +250,19 @@ public final class MediaStoreUtil {
 
     public static List<AutoPlaylist> getAutoPlaylists(Context context) {
         List<AutoPlaylist> autoPlaylists = new ArrayList<>();
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(AutoPlaylistRule.class, new AutoPlaylistRule.RuleTypeAdapter())
+                .create();
 
         try {
             File externalFiles = new File(context.getExternalFilesDir(null) + "/");
 
             if (externalFiles.exists() || externalFiles.mkdirs()) {
                 String[] files = externalFiles.list();
-                for (String s : files) {
-                    if (s.endsWith(AUTO_PLAYLIST_EXTENSION)) {
-                        autoPlaylists.add(gson.fromJson(
-                                new FileReader(externalFiles + "/" + s),
-                                AutoPlaylist.class));
+                for (String file : files) {
+                    if (file.endsWith(AUTO_PLAYLIST_EXTENSION)) {
+                        String filePath = externalFiles + File.separator + file;
+                        autoPlaylists.add(readAutoPlaylist(gson, filePath));
                     }
                 }
             }
@@ -269,6 +272,16 @@ public final class MediaStoreUtil {
 
         Collections.sort(autoPlaylists);
         return autoPlaylists;
+    }
+
+    private static AutoPlaylist readAutoPlaylist(Gson gson, String path) throws IOException {
+        FileReader reader = new FileReader(path);
+
+        try {
+            return gson.fromJson(reader, AutoPlaylist.class);
+        } finally {
+            reader.close();
+        }
     }
 
     public static List<Album> getArtistAlbums(Context context, Artist artist) {

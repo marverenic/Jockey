@@ -2,6 +2,7 @@ package com.marverenic.music;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -19,6 +20,20 @@ public class JockeyApplication extends Application {
 
     @Override
     public void onCreate() {
+        if (BuildConfig.DEBUG) {
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                    .detectDiskReads()
+                    .detectDiskWrites()
+                    .detectAll()
+                    .penaltyLog()
+                    .build());
+            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                    .detectLeakedSqlLiteObjects()
+                    .detectLeakedClosableObjects()
+                    .penaltyLog()
+                    .build());
+        }
+
         super.onCreate();
         Fabric.with(this, new Crashlytics());
 

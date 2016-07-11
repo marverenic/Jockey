@@ -1,6 +1,7 @@
 package com.marverenic.music.viewmodel;
 
 import android.content.Context;
+import android.content.Intent;
 import android.databinding.BaseObservable;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
@@ -10,6 +11,7 @@ import android.view.View;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.activity.instance.AutoPlaylistActivity;
 import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
 import com.marverenic.music.activity.instance.PlaylistActivity;
 import com.marverenic.music.data.store.PlaylistStore;
@@ -56,7 +58,14 @@ public class PlaylistViewModel extends BaseObservable {
     }
 
     public View.OnClickListener onClickPlaylist() {
-        return v -> Navigate.to(mContext, PlaylistActivity.class, PLAYLIST_EXTRA, mPlaylist);
+        return v -> {
+            if (mPlaylist instanceof AutoPlaylist) {
+                Intent intent = AutoPlaylistActivity.newIntent(mContext, (AutoPlaylist) mPlaylist);
+                mContext.startActivity(intent);
+            } else {
+                Navigate.to(mContext, PlaylistActivity.class, PLAYLIST_EXTRA, mPlaylist);
+            }
+        };
     }
 
     public View.OnClickListener onClickMenu() {
@@ -127,9 +136,9 @@ public class PlaylistViewModel extends BaseObservable {
 
                     return true;
                 case 2: //Edit this playlist
-                    Navigate.to(mContext, AutoPlaylistEditActivity.class,
-                            PLAYLIST_EXTRA, mPlaylist);
-
+                    AutoPlaylist autoPlaylist = (AutoPlaylist) mPlaylist;
+                    Intent intent = AutoPlaylistEditActivity.newIntent(mContext, autoPlaylist);
+                    mContext.startActivity(intent);
                     return true;
                 case 3: // Delete this playlist
                     mPlaylistStore.removePlaylist(mPlaylist);

@@ -1,14 +1,25 @@
 package com.marverenic.music.instances;
 
-import android.content.Context;
+import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.gson.annotations.SerializedName;
+import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlayCountStore;
+import com.marverenic.music.data.store.PlaylistStore;
+import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
+import com.marverenic.music.instances.playlistrules.AutoPlaylistRule.Field;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import rx.Observable;
 
 public class AutoPlaylist extends Playlist implements Parcelable {
 
@@ -18,50 +29,43 @@ public class AutoPlaylist extends Playlist implements Parcelable {
     public static final int UNLIMITED_ENTRIES = -1;
 
     /**
-     * An empty auto playlist instance
-     */
-    public static final AutoPlaylist EMPTY =
-            new AutoPlaylist(-1, "", UNLIMITED_ENTRIES, Rule.Field.NAME, Rule.Field.NAME,
-                    true, true, true, Rule.EMPTY);
-
-    /**
      * How many items can be stored in this playlist. Default is unlimited
      */
     @SerializedName("maximumEntries")
-    protected int maximumEntries;
+    private final int mMaximumEntries;
 
     /**
-     * The field to look at when truncating the playlist. Must be a member of {@link Rule.Field}.
-     * {@link Rule.Field#ID} will yield a random trim
+     * The field to look at when truncating the playlist. Must be a member of {@link Field}.
+     * {@link Field#ID} will yield a random trim
      */
     @SerializedName("truncateMethod")
-    protected int truncateMethod;
+    private final int mTruncateMethod;
 
     /**
      * Whether to trim the playlist ascending (A-Z, oldest to newest, or 0-infinity).
      * If false, sort descending (Z-A, newest to oldest, or infinity-0).
      */
     @SerializedName("truncateAscending")
-    protected boolean truncateAscending;
+    private final boolean mTruncateAscending;
 
     /**
      * Whether or not a song has to match all rules in order to appear in the playlist.
      */
     @SerializedName("matchAllRules")
-    protected boolean matchAllRules;
+    private final boolean mMatchAllRules;
 
     /**
      * The rules to match when building the playlist
      */
     @SerializedName("rules")
-    protected Rule[] rules;
+    private final List<AutoPlaylistRule> mRules;
 
     /**
-     * The field to look at when sorting the playlist. Must be a member of {@link Rule.Field} and
-     * cannot be {@link Rule.Field#ID}
+     * The field to look at when sorting the playlist. Must be a member of {@link Field} and
+     * cannot be {@link Field#ID}
      */
     @SerializedName("sortMethod")
-    protected int sortMethod;
+    private final int mSortMethod;
 
     /**
      * Whether to sort the playlist ascending (A-Z, oldest to newest, or 0-infinity).
@@ -69,8 +73,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      * Default is true.
      */
     @SerializedName("sortAscending")
-    protected boolean sortAscending;
-
+    private final boolean mSortAscending;
 
     /**
      * AutoPlaylist Creator
@@ -82,151 +85,156 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      *                       be applied after the list has been sorted. Any extra entries will be
      *                       truncated.
      * @param sortMethod The order the songs will be sorted (Must be one of
-     *                   {@link AutoPlaylist.Rule.Field} and can't be ID
+     *                   {@link Field} and can't be ID
      * @param sortAscending Whether to sort this playlist ascending (A-Z or 0-infinity) or not
      * @param matchAllRules Whether or not all rules have to be matched for a song to appear in this
      *                      playlist
      * @param rules The rules that songs must follow in order to appear in this playlist
      */
-    public AutoPlaylist(long playlistId, String playlistName, int maximumEntries, int sortMethod,
+    private AutoPlaylist(long playlistId, String playlistName, int maximumEntries, int sortMethod,
                          int truncateMethod, boolean truncateAscending, boolean sortAscending,
-                         boolean matchAllRules, Rule... rules) {
+                         boolean matchAllRules, List<AutoPlaylistRule> rules) {
         super(playlistId, playlistName);
-        this.playlistId = playlistId;
-        this.playlistName = playlistName;
-        this.maximumEntries = maximumEntries;
-        this.matchAllRules = matchAllRules;
-        this.rules = rules;
-        this.truncateMethod = truncateMethod;
-        this.truncateAscending = truncateAscending;
-        this.sortMethod = sortMethod;
-        this.sortAscending = sortAscending;
+        mMaximumEntries = maximumEntries;
+        mMatchAllRules = matchAllRules;
+        mRules = Collections.unmodifiableList(rules);
+        mTruncateMethod = truncateMethod;
+        mTruncateAscending = truncateAscending;
+        mSortMethod = sortMethod;
+        mSortAscending = sortAscending;
     }
 
-    /**
-     * Duplicate a playlist. The instantiated playlist will be completely independent of its parent
-     * @param playlist The AutoPlaylist to become a copy of
-     */
-    public AutoPlaylist(AutoPlaylist playlist) {
-        this(
-                playlist.playlistId,
-                playlist.playlistName,
-                playlist.maximumEntries,
-                playlist.sortMethod,
-                playlist.truncateMethod,
-                playlist.truncateAscending,
-                playlist.sortAscending,
-                playlist.matchAllRules);
+    public Observable<List<Song>> generatePlaylist(MusicStore musicStore,
+                                                   PlaylistStore playlistStore,
+                                                   PlayCountStore playCountStore) {
 
-        this.rules = new Rule[playlist.rules.length];
-        for (int i = 0; i < this.rules.length; i++) {
-            this.rules[i] = new Rule(playlist.rules[i]);
+        if (getRules().isEmpty()) {
+            return Observable.just(Collections.emptyList());
+        }
+
+        Observable<List<Song>> filtered = null;
+
+        for (AutoPlaylistRule rule : getRules()) {
+            Observable<List<Song>> ruleEntries;
+            ruleEntries = rule.applyFilter(playlistStore, musicStore, playCountStore);
+
+            if (filtered == null) {
+                filtered = ruleEntries;
+            } else {
+                filtered = combineRules(filtered, ruleEntries);
+            }
+        }
+
+        Observable<List<Song>> truncated = truncateFilteredSongs(filtered, playCountStore);
+        return sortFilteredSongs(truncated, playCountStore);
+    }
+
+    private Observable<List<Song>> combineRules(Observable<List<Song>> result1,
+                                                Observable<List<Song>> result2) {
+
+        if (isMatchAllRules()) { // AND
+            return Observable.combineLatest(result1, result2, (songs, songs2) -> {
+                List<Song> merged = new ArrayList<>(songs);
+                merged.retainAll(songs2);
+                return merged;
+            });
+        } else { // OR
+            return Observable.combineLatest(result1, result2, (songs, songs2) -> {
+                Set<Song> mergedSet = new HashSet<>(songs);
+                mergedSet.addAll(songs2);
+
+                return new ArrayList<>(mergedSet);
+            });
         }
     }
 
-    public int getMaximumEntries() {
-        return maximumEntries;
+    private Observable<List<Song>> truncateFilteredSongs(Observable<List<Song>> filterResult,
+                                                         PlayCountStore playCountStore) {
+        if (getMaximumEntries() < 0) {
+            return filterResult;
+        }
+
+        return filterResult
+                .map(filteredSongs -> {
+                    sortSongListByField(filteredSongs, getTruncateMethod(), isSortAscending(),
+                            playCountStore);
+
+                    return filteredSongs;
+                }).map(sortedSongs -> {
+                    if (sortedSongs.size() > getMaximumEntries()) {
+                        return sortedSongs.subList(0, getMaximumEntries());
+                    } else {
+                        return sortedSongs;
+                    }
+                });
     }
 
-    public int getTruncateMethod() {
-        return truncateMethod;
+    private Observable<List<Song>> sortFilteredSongs(Observable<List<Song>> truncateResult,
+                                                     PlayCountStore playCountStore) {
+        return truncateResult
+                .map(truncatedSongs -> {
+                    sortSongListByField(truncatedSongs, getSortMethod(), isSortAscending(),
+                            playCountStore);
+                    return truncatedSongs;
+                });
     }
 
-    public boolean isTruncateAscending() {
-        return truncateAscending;
+    private static void sortSongListByField(List<Song> songs, @Field int field, boolean ascending,
+                                            PlayCountStore playCountStore) {
+
+        if (field == AutoPlaylistRule.NAME) {
+            Collections.sort(songs);
+            if (!ascending) {
+                Collections.reverse(songs);
+            }
+        } else if (field == AutoPlaylistRule.ID) {
+            Collections.shuffle(songs);
+        } else {
+            Collections.sort(songs, getSortComparator(field, playCountStore));
+            if (ascending) {
+                Collections.reverse(songs);
+            }
+        }
     }
 
-    public boolean isMatchAllRules() {
-        return matchAllRules;
-    }
-
-    public int getSortMethod() {
-        return sortMethod;
-    }
-
-    public boolean isSortAscending() {
-        return sortAscending;
-    }
-
-    public void setPlaylistName(String name) {
-        this.playlistName = name;
-    }
-
-    public void setMaximumEntries(int maximumEntries) {
-        this.maximumEntries = maximumEntries;
-    }
-
-    public void setTruncateMethod(int truncateMethod) {
-        this.truncateMethod = truncateMethod;
-    }
-
-    public void setTruncateAscending(boolean truncateAscending) {
-        this.truncateAscending = truncateAscending;
-    }
-
-    public void setMatchAllRules(boolean matchAllRules) {
-        this.matchAllRules = matchAllRules;
-    }
-
-    public void setRules(Rule[] rules) {
-        this.rules = rules;
-    }
-
-    public void setSortMethod(int sortMethod) {
-        this.sortMethod = sortMethod;
-    }
-
-    public void setSortAscending(boolean sortAscending) {
-        this.sortAscending = sortAscending;
-    }
-
-    /**
-     * Generate the list of songs that match all rules for this playlist.
-     * @param context A {@link Context} used for various operations like reading play counts and
-     *                checking playlist rules
-     * @return An {@link ArrayList} of Songs that contains all songs in the library which match
-     *         the rules of this playlist
-     */
-    public List<Song> generatePlaylist(Context context) {
+    @SuppressLint("SwitchIntDef")
+    private static Comparator<Song> getSortComparator(@Field int field,
+                                                      PlayCountStore playCountStore) {
+        switch (field) {
+            case AutoPlaylistRule.YEAR:
+                return Song.YEAR_COMPARATOR;
+            case AutoPlaylistRule.DATE_ADDED:
+                return Song.DATE_ADDED_COMPARATOR;
+            case AutoPlaylistRule.DATE_PLAYED:
+                return Song.playDateComparator(playCountStore);
+            case AutoPlaylistRule.PLAY_COUNT:
+                return Song.playCountComparator(playCountStore);
+            case AutoPlaylistRule.SKIP_COUNT:
+                return Song.skipCountComparator(playCountStore);
+        }
         return null;
-    }
-
-    /**
-     * Used to determine if the rules of this AutoPlaylist are equal to that of another playlist.
-     * This is different from .equals() because .equals() looks at ID's only which is required
-     * behavior in other areas of the app.
-     * @param other The AutoPlaylist to compare to
-     * @return true if these AutoPlaylists have the same rules
-     */
-    public boolean isEqual(AutoPlaylist other) {
-        return other == this || other != null
-                && other.matchAllRules == this.matchAllRules
-                && other.sortAscending == this.sortAscending
-                && other.truncateAscending == this.truncateAscending
-                && other.maximumEntries == this.maximumEntries
-                && other.playlistName.equals(this.playlistName);
     }
 
     public static final Parcelable.Creator<Parcelable> CREATOR =
             new Parcelable.Creator<Parcelable>() {
-        public AutoPlaylist createFromParcel(Parcel in) {
-            return new AutoPlaylist(in);
-        }
+                public AutoPlaylist createFromParcel(Parcel in) {
+                    return new AutoPlaylist(in);
+                }
 
-        public AutoPlaylist[] newArray(int size) {
-            return new AutoPlaylist[size];
-        }
-    };
+                public AutoPlaylist[] newArray(int size) {
+                    return new AutoPlaylist[size];
+                }
+            };
 
     private AutoPlaylist(Parcel in) {
         super(in);
-        maximumEntries = in.readInt();
-        matchAllRules = in.readByte() == 1;
-        rules = in.createTypedArray(Rule.CREATOR);
-        sortMethod = in.readInt();
-        truncateMethod = in.readInt();
-        truncateAscending = in.readByte() == 1;
-        sortAscending = in.readByte() == 1;
+        mMaximumEntries = in.readInt();
+        mMatchAllRules = in.readByte() == 1;
+        mRules = Collections.unmodifiableList(in.createTypedArrayList(AutoPlaylistRule.CREATOR));
+        mSortMethod = in.readInt();
+        mTruncateMethod = in.readInt();
+        mTruncateAscending= in.readByte() == 1;
+        mSortAscending = in.readByte() == 1;
     }
 
     @Override
@@ -237,92 +245,202 @@ public class AutoPlaylist extends Playlist implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeInt(maximumEntries);
-        dest.writeByte((byte) ((matchAllRules) ? 1 : 0));
-        dest.writeTypedArray(rules, 0);
-        dest.writeInt(sortMethod);
-        dest.writeInt(truncateMethod);
-        dest.writeByte((byte) ((truncateAscending) ? 1 : 0));
-        dest.writeByte((byte) ((sortAscending) ? 1 : 0));
+        dest.writeInt(mMaximumEntries);
+        dest.writeByte((byte) ((mMatchAllRules) ? 1 : 0));
+        dest.writeTypedList(mRules);
+        dest.writeInt(mSortMethod);
+        dest.writeInt(mTruncateMethod);
+        dest.writeByte((byte) ((mTruncateAscending) ? 1 : 0));
+        dest.writeByte((byte) ((mSortAscending) ? 1 : 0));
     }
 
-    public Rule[] getRules() {
-        return rules.clone();
+    public int getMaximumEntries() {
+        return mMaximumEntries;
     }
 
-    public static class Rule implements Parcelable {
+    @Field
+    public int getTruncateMethod() {
+        return mTruncateMethod;
+    }
 
-        public static final class Type {
-            public static final int PLAYLIST = 0;
-            public static final int SONG = 1;
-            public static final int ARTIST = 2;
-            public static final int ALBUM = 3;
-            public static final int GENRE = 4;
-        }
-        public static final class Field {
-            public static final int ID = 5;
-            public static final int NAME = 6;
-            public static final int PLAY_COUNT = 7;
-            public static final int SKIP_COUNT = 8;
-            public static final int YEAR = 9;
-            public static final int DATE_ADDED = 10;
-            public static final int DATE_PLAYED = 11;
-        }
-        public static final class Match {
-            public static final int EQUALS = 12;
-            public static final int NOT_EQUALS = 13;
-            public static final int CONTAINS = 14;
-            public static final int NOT_CONTAINS = 15;
-            public static final int LESS_THAN = 16;
-            public static final int GREATER_THAN = 17;
-        }
+    public boolean isTruncateAscending() {
+        return mTruncateAscending;
+    }
 
-        public static final Rule EMPTY = new Rule(Type.SONG, Field.NAME, Match.CONTAINS, "");
+    public boolean isMatchAllRules() {
+        return mMatchAllRules;
+    }
 
-        public int type;
-        public int match;
-        public int field;
-        public String value;
+    public List<AutoPlaylistRule> getRules() {
+        return mRules;
+    }
 
-        public Rule(int type, int field, int match, String value) {
-            validate(type, field, match, value);
-            this.type = type;
-            this.field = field;
-            this.match = match;
-            this.value = value;
-        }
+    @Field
+    public int getSortMethod() {
+        return mSortMethod;
+    }
 
-        public Rule(Rule rule) {
-            this(rule.type, rule.field, rule.match, rule.value);
-        }
+    public boolean isSortAscending() {
+        return mSortAscending;
+    }
 
-        private Rule(Parcel in) {
-            type = in.readInt();
-            match = in.readInt();
-            field = in.readInt();
-            value = in.readString();
+    public static class Builder implements Parcelable {
+
+        public static final long NO_ID = -1;
+
+        private long mId;
+        private String mName;
+
+        private int mMaximumEntries;
+        private int mTruncateMethod;
+        private boolean mTruncateAscending;
+        private boolean mMatchAllRules;
+        private List<AutoPlaylistRule> mRules;
+        private int mSortMethod;
+        private boolean mSortAscending;
+
+        public Builder() {
+            mId = NO_ID;
         }
 
-        @Override
-        public boolean equals(Object o) {
-            if (!(o instanceof  Rule)) {
-                return false;
+        public Builder(AutoPlaylist from) {
+            mId = from.getPlaylistId();
+            mName = from.getPlaylistName();
+            mMaximumEntries = from.getMaximumEntries();
+            mTruncateMethod = from.getTruncateMethod();
+            mTruncateAscending = from.isTruncateAscending();
+            mMatchAllRules = from.isMatchAllRules();
+            mRules = new ArrayList<>(from.getRules());
+            mSortMethod = from.getSortMethod();
+            mSortAscending = from.isSortAscending();
+        }
+
+        protected Builder(Parcel in) {
+            mId = in.readLong();
+            mName = in.readString();
+            mMaximumEntries = in.readInt();
+            mTruncateMethod = in.readInt();
+            mTruncateAscending = in.readByte() != 0;
+            mMatchAllRules = in.readByte() != 0;
+            mRules = in.createTypedArrayList(AutoPlaylistRule.CREATOR);
+            mSortMethod = in.readInt();
+            mSortAscending = in.readByte() != 0;
+        }
+
+        public static final Creator<Builder> CREATOR = new Creator<Builder>() {
+            @Override
+            public Builder createFromParcel(Parcel in) {
+                return new Builder(in);
             }
-            if (this == o) {
-                return true;
+
+            @Override
+            public Builder[] newArray(int size) {
+                return new Builder[size];
             }
-            Rule other = (Rule) o;
-            return this.type == other.type && this.field == other.field && this.match == other.match
-                    && this.value.equals(other.value);
+        };
+
+        public long getId() {
+            return mId;
         }
 
-        @Override
-        public int hashCode() {
-            int result = type;
-            result = 31 * result + match;
-            result = 31 * result + field;
-            result = 31 * result + value.hashCode();
-            return result;
+        public Builder setId(long id) {
+            mId = id;
+            return this;
+        }
+
+        public String getName() {
+            return mName;
+        }
+
+        public Builder setName(String name) {
+            mName = name;
+            return this;
+        }
+
+        public int getMaximumEntries() {
+            return mMaximumEntries;
+        }
+
+        public Builder setMaximumEntries(int maximumEntries) {
+            mMaximumEntries = maximumEntries;
+            return this;
+        }
+
+        @Field
+        public int getTruncateMethod() {
+            return mTruncateMethod;
+        }
+
+        public Builder setTruncateMethod(int truncateMethod) {
+            mTruncateMethod = truncateMethod;
+            return this;
+        }
+
+        public boolean isTruncateAscending() {
+            return mTruncateAscending;
+        }
+
+        public Builder setTruncateAscending(boolean truncateAscending) {
+            mTruncateAscending = truncateAscending;
+            return this;
+        }
+
+        public boolean isMatchAllRules() {
+            return mMatchAllRules;
+        }
+
+        public Builder setMatchAllRules(boolean matchAllRules) {
+            mMatchAllRules = matchAllRules;
+            return this;
+        }
+
+        public List<AutoPlaylistRule> getRules() {
+            return mRules;
+        }
+
+        public Builder setRules(AutoPlaylistRule... rules) {
+            return setRules(new ArrayList<>(Arrays.asList(rules)));
+        }
+
+        public Builder setRules(List<AutoPlaylistRule> rules) {
+            mRules = rules;
+            return this;
+        }
+
+        @Field
+        public int getSortMethod() {
+            return mSortMethod;
+        }
+
+        public Builder setSortMethod(int sortMethod) {
+            mSortMethod = sortMethod;
+            return this;
+        }
+
+        public boolean isSortAscending() {
+            return mSortAscending;
+        }
+
+        public Builder setSortAscending(boolean sortAscending) {
+            mSortAscending = sortAscending;
+            return this;
+        }
+
+        public boolean isEqual(AutoPlaylist reference) {
+            return getId() == reference.getPlaylistId()
+                    && getName().equals(reference.getPlaylistName())
+                    && getMaximumEntries() == reference.getMaximumEntries()
+                    && getTruncateMethod() == reference.getTruncateMethod()
+                    && isTruncateAscending() == reference.isTruncateAscending()
+                    && isMatchAllRules() == reference.isMatchAllRules()
+                    && getRules().equals(reference.getRules())
+                    && getSortMethod() == reference.getSortMethod()
+                    && isSortAscending() == reference.isSortAscending();
+        }
+
+        public AutoPlaylist build() {
+            return new AutoPlaylist(mId, mName, mMaximumEntries, mSortMethod, mTruncateMethod,
+                    mTruncateAscending, mSortAscending, mMatchAllRules, mRules);
         }
 
         @Override
@@ -331,73 +449,17 @@ public class AutoPlaylist extends Playlist implements Parcelable {
         }
 
         @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(type);
-            dest.writeInt(match);
-            dest.writeInt(field);
-            dest.writeString(value);
-        }
-
-        public static final Parcelable.Creator<Rule> CREATOR = new Parcelable.Creator<Rule>() {
-            public Rule createFromParcel(Parcel in) {
-                return new Rule(in);
-            }
-
-            public Rule[] newArray(int size) {
-                return new Rule[size];
-            }
-        };
-
-        private static void validate(int type, int field, int match, String value) {
-            // Only Songs have play counts and skip counts
-            if ((type != Type.SONG) && (field == Field.PLAY_COUNT || field == Field.SKIP_COUNT)) {
-                throw new IllegalArgumentException(type + " type does not have field " + field);
-            }
-            // Only Songs have years
-            if (type != Type.SONG && field == Field.YEAR) {
-                throw new IllegalArgumentException(type + " type does not have field " + field);
-            }
-            // Only Songs have dates added
-            if (type != Type.SONG && field == Field.DATE_ADDED) {
-                throw new IllegalArgumentException(type + " type does not have field " + field);
-            }
-
-            if (field == Field.ID) {
-                // IDs can only be compared by equals or !equals
-                if (match == Match.CONTAINS || match == Match.NOT_CONTAINS
-                        || match == Match.LESS_THAN || match == Match.GREATER_THAN) {
-                    throw new IllegalArgumentException("ID cannot be compared by method " + match);
-                }
-                // Make sure the value is actually a number
-                try {
-                    //noinspection ResultOfMethodCallIgnored
-                    Long.parseLong(value);
-                } catch (NumberFormatException e) {
-                    Crashlytics.logException(e);
-                    throw new IllegalArgumentException("ID cannot be compared to value " + value);
-                }
-            } else if (field == Field.NAME) {
-                // Names can't be compared by < or >... that doesn't even make sense...
-                if (match == Match.GREATER_THAN || match == Match.LESS_THAN) {
-                    throw new IllegalArgumentException("Name cannot be compared by method "
-                            + match);
-                }
-            } else if (field == Field.SKIP_COUNT || field == Field.PLAY_COUNT
-                    || field == Field.YEAR || field == Field.DATE_ADDED) {
-                // Numeric values can't be compared by contains or !contains
-                if (match == Match.CONTAINS || match == Match.NOT_CONTAINS) {
-                    throw new IllegalArgumentException(field + " cannot be compared by method "
-                            + match);
-                }
-                // Make sure the value is actually a number
-                try {
-                    //noinspection ResultOfMethodCallIgnored
-                    Long.parseLong(value);
-                } catch (NumberFormatException e) {
-                    Crashlytics.logException(e);
-                    throw new IllegalArgumentException("ID cannot be compared to value " + value);
-                }
-            }
+        public void writeToParcel(Parcel parcel, int i) {
+            parcel.writeLong(mId);
+            parcel.writeString(mName);
+            parcel.writeInt(mMaximumEntries);
+            parcel.writeInt(mTruncateMethod);
+            parcel.writeByte((byte) (mTruncateAscending ? 1 : 0));
+            parcel.writeByte((byte) (mMatchAllRules ? 1 : 0));
+            parcel.writeTypedList(mRules);
+            parcel.writeInt(mSortMethod);
+            parcel.writeByte((byte) (mSortAscending ? 1 : 0));
         }
     }
+
 }

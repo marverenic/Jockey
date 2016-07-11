@@ -229,7 +229,7 @@ public class Song implements Parcelable, Comparable<Song> {
     }
 
     public static final Comparator<Song> DATE_ADDED_COMPARATOR = (s1, s2) ->
-            compareLong(s1.getDateAdded(), s2.getDateAdded());
+            compareLong(s2.getDateAdded(), s1.getDateAdded());
 
     public static Comparator<Song> playDateComparator(PlayCountStore countStore) {
         return (s1, s2) -> compareLong(countStore.getPlayDate(s2), countStore.getPlayDate(s1));

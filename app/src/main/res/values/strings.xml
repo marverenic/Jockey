@@ -119,25 +119,24 @@
         <item>Album</item>
         <item>Genre</item>
     </string-array>
-    <string-array name="auto_plist_fields">
-        <item>Is</item>
-        <item>Isn\'t</item>
-        <item>Name is</item>
-        <item>Name isn\'t</item>
-        <item>Name contains</item>
-        <item>Name doesn\'t contain</item>
-        <item>Has play count less than</item>
-        <item>Has play count equal to</item>
-        <item>Has play count greater than</item>
-        <item>Has skip count less than</item>
-        <item>Has skip count equal to</item>
-        <item>Has skip count greater than</item>
-        <item>Was added after</item>
-        <item>Was added before</item>
-        <item>Was added on</item>
-        <item>Was last played before</item>
-        <item>Was last played on</item>
-        <item>Has been played since</item>
-    </string-array>
+
+    <string name="rule_is">Is</string>
+    <string name="rule_isnt">Isn\'t</string>
+    <string name="rule_name_is">Name is</string>
+    <string name="rule_name_isnt">Name isn\'t</string>
+    <string name="rule_name_contains">Name contains</string>
+    <string name="rule_name_doesnt_contain">Name doesn\'t contain</string>
+    <string name="rule_play_count_lt">Has play count less than</string>
+    <string name="rule_play_count_eq">Has play count equal to</string>
+    <string name="rule_play_count_gt">Has play count greater than</string>
+    <string name="rule_skip_count_lt">Has skip count less than</string>
+    <string name="rule_skip_count_eq">Has skip count equal to</string>
+    <string name="rule_skip_count_gt">Has skip count greater than</string>
+    <string name="rule_added_before">Was added before</string>
+    <string name="rule_added_on">Was added on</string>
+    <string name="rule_added_after">Was added after</string>
+    <string name="rule_played_before">Was last played before</string>
+    <string name="rule_played_on">Was last played on</string>
+    <string name="rule_played_after">Has been played since</string>
 
 </resources>
