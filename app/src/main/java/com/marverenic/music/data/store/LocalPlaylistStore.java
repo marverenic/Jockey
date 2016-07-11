@@ -12,6 +12,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.instances.Song;
+import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -238,7 +239,10 @@ public class LocalPlaylistStore implements PlaylistStore {
     }
 
     private void writeAutoPlaylistConfiguration(AutoPlaylist playlist) throws IOException {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .registerTypeAdapter(AutoPlaylistRule.class, new AutoPlaylistRule.RuleTypeAdapter())
+                .create();
         FileWriter writer = null;
 
         try {
