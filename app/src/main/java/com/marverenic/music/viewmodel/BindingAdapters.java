@@ -14,29 +14,29 @@ import android.widget.ImageView;
 
 public class BindingAdapters {
 
-    @BindingAdapter("bind:bitmap")
+    @BindingAdapter("bitmap")
     public static void bindBitmap(ImageView imageView, Bitmap bitmap) {
         imageView.setImageBitmap(bitmap);
     }
 
-    @BindingAdapter("bind:tint")
+    @BindingAdapter("tint")
     public static void bindImageViewTint(ImageView imageView, @ColorInt int color) {
         imageView.setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
 
-    @BindingAdapter("bind:backgroundTint")
+    @BindingAdapter("backgroundTint")
     public static void bindViewBackgroundTint(View view, @ColorInt int color) {
         view.getBackground().setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
 
-    @BindingAdapter("bind:marginLeft")
+    @BindingAdapter("marginLeft")
     public static void bindLeftMargin(View view, int margin) {
         MarginLayoutParams params = (MarginLayoutParams) view.getLayoutParams();
         params.leftMargin = margin;
         view.getParent().requestLayout();
     }
 
-    @BindingAdapter("bind:animation")
+    @BindingAdapter("animation")
     public static void bindAnimation(View view, @Nullable Animation animation) {
         if (animation == null) {
             return;
@@ -46,7 +46,7 @@ public class BindingAdapters {
         animation.start();
     }
 
-    @BindingAdapter("bind:textChangedListener")
+    @BindingAdapter("textChangedListener")
     public static void bindTextChangedListener(EditText editText, TextWatcher watcher) {
         editText.addTextChangedListener(watcher);
     }

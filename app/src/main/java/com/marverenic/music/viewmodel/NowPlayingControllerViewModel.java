@@ -351,12 +351,12 @@ public class NowPlayingControllerViewModel extends BaseObservable {
         };
     }
 
-    @BindingAdapter("bind:onSeekListener")
+    @BindingAdapter("onSeekListener")
     public static void bindOnSeekListener(SeekBar seekBar, OnSeekBarChangeListener listener) {
         seekBar.setOnSeekBarChangeListener(listener);
     }
 
-    @BindingAdapter("bind:marginLeft_percent")
+    @BindingAdapter("marginLeft_percent")
     public static void bindPercentMarginLeft(View view, float percent) {
         View parent = (View) view.getParent();
 
