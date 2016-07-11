@@ -86,6 +86,8 @@ public class AlbumFragment extends BaseFragment {
     public void onDestroyView() {
         super.onDestroyView();
         mRecyclerView = null;
+        mAdapter = null;
+        mAlbumSection = null;
     }
 
     private void setupAdapter() {

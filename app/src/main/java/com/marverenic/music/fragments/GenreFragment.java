@@ -74,6 +74,8 @@ public class GenreFragment extends BaseFragment {
     public void onDestroyView() {
         super.onDestroyView();
         mRecyclerView = null;
+        mAdapter = null;
+        mGenreSection = null;
     }
 
     private void setupAdapter() {

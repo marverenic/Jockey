@@ -76,6 +76,8 @@ public class PlaylistFragment extends BaseFragment {
     public void onDestroyView() {
         super.onDestroyView();
         mRecyclerView = null;
+        mAdapter = null;
+        mPlaylistSection = null;
     }
 
     private void setupAdapter() {

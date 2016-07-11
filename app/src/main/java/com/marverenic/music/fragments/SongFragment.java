@@ -76,6 +76,8 @@ public class SongFragment extends BaseFragment {
     public void onDestroyView() {
         super.onDestroyView();
         mRecyclerView = null;
+        mAdapter = null;
+        mSongSection = null;
     }
 
     private void setupAdapter() {
