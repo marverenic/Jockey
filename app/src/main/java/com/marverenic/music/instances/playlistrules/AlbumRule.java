@@ -11,7 +11,9 @@ import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Song;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -42,12 +44,25 @@ public class AlbumRule extends AutoPlaylistRule implements Parcelable {
 
                     return filtered;
                 })
-                .flatMap(Observable::from)
-                .concatMap(musicStore::getSongs)
-                .reduce((songs, songs2) -> {
-                    List<Song> merged = new ArrayList<>(songs);
-                    merged.addAll(songs2);
-                    return merged;
+                .map(albums -> {
+                    Set<Long> albumIds = new HashSet<>();
+
+                    for (Album album : albums) {
+                        albumIds.add(album.getAlbumId());
+                    }
+
+                    return albumIds;
+                })
+                .zipWith(musicStore.getSongs(), (albumIds, songs) -> {
+                    List<Song> filtered = new ArrayList<>();
+
+                    for (Song song : songs) {
+                        if (albumIds.contains(song.getAlbumId())) {
+                            filtered.add(song);
+                        }
+                    }
+
+                    return filtered;
                 });
     }
 
