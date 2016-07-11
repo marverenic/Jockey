@@ -72,6 +72,8 @@ public class AutoPlaylistActivity extends BaseActivity
                         }, throwable -> {
                             Log.e(TAG, "onCreate: Failed to get song contents", throwable);
                         });
+
+        getSupportActionBar().setTitle(mReference.getPlaylistName());
     }
 
     private void setupAdapter() {
