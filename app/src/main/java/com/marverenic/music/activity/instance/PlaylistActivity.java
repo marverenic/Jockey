@@ -76,7 +76,7 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
             mAdapter = new DragDropAdapter();
             mAdapter.attach(mRecyclerView);
 
-            mAdapter.setEmptyState(new LibraryEmptyState(this, null) {
+            mAdapter.setEmptyState(new LibraryEmptyState(this) {
                 @Override
                 public String getEmptyMessage() {
                     return getString(R.string.empty_playlist);

@@ -58,7 +58,7 @@ public class GenreActivity extends BaseActivity {
 
         mAdapter = new HeterogeneousAdapter();
         setupAdapter();
-        mAdapter.setEmptyState(new LibraryEmptyState(this, mMusicStore) {
+        mAdapter.setEmptyState(new LibraryEmptyState(this) {
             @Override
             public String getEmptyMessage() {
                 if (reference == null) {

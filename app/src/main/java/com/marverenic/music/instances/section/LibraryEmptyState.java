@@ -5,20 +5,31 @@ import android.content.Intent;
 import android.net.Uri;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
+import android.view.View;
 
 import com.marverenic.music.BuildConfig;
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
+
+import javax.inject.Inject;
+
+import rx.Observable;
+
+import static android.support.design.widget.Snackbar.LENGTH_SHORT;
 
 public class LibraryEmptyState extends BasicEmptyState {
 
     private Activity mActivity;
-    private MusicStore mMusicStore;
 
-    public LibraryEmptyState(Activity activity, MusicStore musicStore) {
+    @Inject MusicStore mMusicStore;
+    @Inject PlaylistStore mPlaylistStore;
+
+    public LibraryEmptyState(Activity activity) {
         mActivity = activity;
-        mMusicStore = musicStore;
+        JockeyApplication.getComponent(activity).inject(this);
     }
 
     public String getEmptyMessage() {
@@ -75,16 +86,20 @@ public class LibraryEmptyState extends BasicEmptyState {
 
     @Override
     public void onAction1() {
-        mMusicStore.refresh().subscribe(successful -> {
-            if (successful) {
-                Snackbar
-                        .make(
-                                mActivity.findViewById(R.id.list),
-                                R.string.confirm_refresh_library,
-                                Snackbar.LENGTH_SHORT)
-                        .show();
-            }
-        });
+        Observable<Boolean> musicStoreResult = mMusicStore.refresh();
+        Observable<Boolean> playlistStoreResult = mPlaylistStore.refresh();
+
+        Observable<Boolean> combinedResult = Observable.combineLatest(
+                musicStoreResult, playlistStoreResult, (result1, result2) -> result1 && result2);
+
+        combinedResult.take(1)
+                .subscribe(successful -> {
+                    if (successful) {
+                        View container = mActivity.findViewById(R.id.list);
+                        Snackbar.make(container, R.string.confirm_refresh_library, LENGTH_SHORT)
+                                .show();
+                    }
+                });
     }
 
     @Override

@@ -76,6 +76,8 @@ public class SongFragment extends BaseFragment {
     public void onDestroyView() {
         super.onDestroyView();
         mRecyclerView = null;
+        mAdapter = null;
+        mSongSection = null;
     }
 
     private void setupAdapter() {
@@ -93,7 +95,7 @@ public class SongFragment extends BaseFragment {
 
             mSongSection = new SongSection(this, mSongs);
             mAdapter.addSection(mSongSection);
-            mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), mMusicStore));
+            mAdapter.setEmptyState(new LibraryEmptyState(getActivity()));
         }
     }
 }
