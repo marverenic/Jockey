@@ -192,20 +192,29 @@ public class AutoPlaylistActivity extends BaseActivity
         }
 
         int oldSortFlag = mReference.getSortMethod();
+
+        boolean alreadyLoaded = mSongSection != null;
+
+        mPlaylistStore.getSongs(mReference)
+                .skip(alreadyLoaded ? 1 : 0)
+                .take(1)
+                .subscribe(ignoredValue -> {
+                    String message = String.format(result, mReference);
+                    Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG)
+                            .setAction(getResources().getString(R.string.action_undo), v -> {
+                                mReference = new AutoPlaylist.Builder(mReference)
+                                        .setSortMethod(oldSortFlag)
+                                        .build();
+
+                                mPlaylistStore.editPlaylist(mReference);
+                            })
+                            .show();
+                }, throwable -> {
+                    Log.e(TAG, "Failed to set sort method", throwable);
+                });
+
         mReference = new AutoPlaylist.Builder(mReference).setSortMethod(sortFlag).build();
         mPlaylistStore.editPlaylist(mReference);
-
-        String message = String.format(result, mReference);
-
-        Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG)
-                .setAction(getResources().getString(R.string.action_undo), v -> {
-                    mReference = new AutoPlaylist.Builder(mReference)
-                            .setSortMethod(oldSortFlag)
-                            .build();
-
-                    mPlaylistStore.editPlaylist(mReference);
-                })
-                .show();
 
         return true;
     }
