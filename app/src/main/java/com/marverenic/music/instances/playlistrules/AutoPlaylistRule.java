@@ -69,11 +69,14 @@ public abstract class AutoPlaylistRule implements Parcelable {
     @SerializedName("value")
     private final String mValue;
 
+    private final long mNumericValue;
+
     protected AutoPlaylistRule(@Type int type, @Field int field, @Match int match, String value) {
         mType = type;
         mField = field;
         mMatch = match;
         mValue = value;
+        mNumericValue = parseNumericValue();
     }
 
     @SuppressWarnings("WrongConstant")
@@ -82,6 +85,15 @@ public abstract class AutoPlaylistRule implements Parcelable {
         mField = in.readInt();
         mMatch = in.readInt();
         mValue = in.readString();
+        mNumericValue = parseNumericValue();
+    }
+
+    private long parseNumericValue() {
+        try {
+            return Long.parseLong(getValue());
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 
     @Type
@@ -103,9 +115,9 @@ public abstract class AutoPlaylistRule implements Parcelable {
     protected boolean checkId(long actual) {
         switch (getMatch()) {
             case EQUALS:
-                return actual == Long.parseLong(getValue());
+                return actual == mNumericValue;
             case NOT_EQUALS:
-                return actual != Long.parseLong(getValue());
+                return actual != mNumericValue;
         }
         throw new IllegalArgumentException("Cannot compare ids with match type " + getMatch());
     }
@@ -129,13 +141,13 @@ public abstract class AutoPlaylistRule implements Parcelable {
     protected boolean checkInt(long actual) {
         switch (getMatch()) {
             case EQUALS:
-                return actual == Long.parseLong(getValue());
+                return actual == mNumericValue;
             case NOT_EQUALS:
-                return actual != Long.parseLong(getValue());
+                return actual != mNumericValue;
             case LESS_THAN:
-                return actual < Long.parseLong(getValue());
+                return actual < mNumericValue;
             case GREATER_THAN:
-                return actual > Long.parseLong(getValue());
+                return actual > mNumericValue;
         }
         throw new IllegalArgumentException("Cannot compare integers with match type" + getMatch());
     }
