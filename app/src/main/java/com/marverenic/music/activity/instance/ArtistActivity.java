@@ -176,7 +176,7 @@ public class ArtistActivity extends BaseActivity {
             setupRecyclerView();
 
             mAdapter = new HeterogeneousAdapter();
-            mAdapter.setEmptyState(new LibraryEmptyState(this, mMusicStore) {
+            mAdapter.setEmptyState(new LibraryEmptyState(this) {
                 @Override
                 public String getEmptyMessage() {
                     if (mReference == null) {

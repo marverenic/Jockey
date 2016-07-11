@@ -85,7 +85,7 @@ public class AutoPlaylistActivity extends BaseActivity
             mAdapter = new HeterogeneousAdapter();
             mAdapter.setHasStableIds(true);
 
-            mAdapter.setEmptyState(new LibraryEmptyState(this, null) {
+            mAdapter.setEmptyState(new LibraryEmptyState(this) {
                 @Override
                 public String getEmptyMessage() {
                     return getString(R.string.empty_auto_playlist);

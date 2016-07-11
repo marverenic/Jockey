@@ -91,7 +91,7 @@ public class GenreFragment extends BaseFragment {
 
             mGenreSection = new GenreSection(this, mGenres);
             mAdapter.addSection(mGenreSection);
-            mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), mMusicStore));
+            mAdapter.setEmptyState(new LibraryEmptyState(getActivity()));
         }
     }
 }

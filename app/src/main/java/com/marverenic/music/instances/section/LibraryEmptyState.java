@@ -7,18 +7,24 @@ import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 
 import com.marverenic.music.BuildConfig;
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
+
+import javax.inject.Inject;
 
 public class LibraryEmptyState extends BasicEmptyState {
 
     private Activity mActivity;
-    private MusicStore mMusicStore;
 
-    public LibraryEmptyState(Activity activity, MusicStore musicStore) {
+    @Inject MusicStore mMusicStore;
+    @Inject PlaylistStore mPlaylistStore;
+
+    public LibraryEmptyState(Activity activity) {
         mActivity = activity;
-        mMusicStore = musicStore;
+        JockeyApplication.getComponent(activity).inject(this);
     }
 
     public String getEmptyMessage() {

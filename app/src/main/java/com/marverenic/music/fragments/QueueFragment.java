@@ -82,7 +82,7 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
             mAdapter.setDragSection(mQueueSection);
             mAdapter.addSection(mBottomSpacer);
 
-            mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), null) {
+            mAdapter.setEmptyState(new LibraryEmptyState(getActivity()) {
                 @Override
                 public String getEmptyMessage() {
                     return getString(R.string.empty_queue);
