@@ -17,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 import android.view.KeyEvent;
 
 import com.crashlytics.android.Crashlytics;
@@ -183,6 +184,15 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public MusicPlayer(Context context) {
         mContext = context;
         JockeyApplication.getComponent(mContext).inject(this);
+
+        // Initialize play count store
+        mPlayCountStore.refresh()
+                .subscribe(complete -> {
+                    Log.i(TAG, "MusicPlayer: Initialized play count store values");
+                }, throwable -> {
+                    Log.e(TAG, "MusicPlayer: Failed to read play count store values", throwable);
+                    Crashlytics.logException(throwable);
+                });
 
         // Initialize the media player
         mMediaPlayer = new QueuedMediaPlayer(context);
