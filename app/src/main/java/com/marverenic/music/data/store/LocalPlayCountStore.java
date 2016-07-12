@@ -196,10 +196,10 @@ public class LocalPlayCountStore implements PlayCountStore {
 
             int playCount = Integer.parseInt(originalValues[0]);
             int skipCount = Integer.parseInt(originalValues[1]);
-            int playDate = 0;
+            long playDate = 0;
 
             if (originalValues.length > 2) {
-                playDate = Integer.parseInt(originalValues[2]);
+                playDate = Long.parseLong(originalValues[2]) / 1000;
             }
 
             mPlays = playCount;
