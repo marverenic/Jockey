@@ -154,7 +154,7 @@ public class LocalPlayCountStore implements PlayCountStore {
 
     @Override
     public void setPlayDateToNow(Song song) {
-        setPlayDate(song, System.currentTimeMillis());
+        setPlayDate(song, System.currentTimeMillis() / 1000);
     }
 
     private Count getOrInitializeCount(Song song) {
