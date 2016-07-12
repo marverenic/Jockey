@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.crashlytics.android.Crashlytics;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
@@ -35,7 +36,6 @@ import com.marverenic.music.lastfm.model.LfmArtist;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.view.GridSpacingDecoration;
 import com.marverenic.music.view.ViewUtils;
 
@@ -60,6 +60,8 @@ public class ArtistActivity extends BaseActivity {
 
     private RecyclerView mRecyclerView;
     private HeterogeneousAdapter mAdapter;
+    private int mColumnCount;
+
     private LoadingSingleton mLoadingSection;
     private ArtistBioSingleton mBioSection;
     private RelatedArtistSection mRelatedArtistSection;
@@ -71,6 +73,7 @@ public class ArtistActivity extends BaseActivity {
     private List<LfmArtist> mRelatedArtists;
     private List<Song> mSongs;
     private List<Album> mAlbums;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -212,10 +215,10 @@ public class ArtistActivity extends BaseActivity {
     }
 
     private void setupRecyclerView() {
-        int numColumns = ViewUtils.getNumberOfGridColumns(this);
+        mColumnCount = ViewUtils.getNumberOfGridColumns(this);
 
         // Setup the GridLayoutManager
-        GridLayoutManager layoutManager = new GridLayoutManager(this, numColumns);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, mColumnCount);
         GridLayoutManager.SpanSizeLookup spanSizeLookup = new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
@@ -229,7 +232,7 @@ public class ArtistActivity extends BaseActivity {
                 if (isArtist || isRelatedArtist) {
                     return 1;
                 } else {
-                    return numColumns;
+                    return mColumnCount;
                 }
             }
         };
@@ -238,20 +241,10 @@ public class ArtistActivity extends BaseActivity {
         layoutManager.setSpanSizeLookup(spanSizeLookup);
         mRecyclerView.setLayoutManager(layoutManager);
 
-        setupListDecorations(numColumns);
+        setupListDecorations();
     }
 
-    private void setupListDecorations(int numColumns) {
-        mRecyclerView.addItemDecoration(
-                new GridSpacingDecoration(
-                        (int) getResources().getDimension(R.dimen.grid_margin),
-                        numColumns,
-                        mAlbumSection.getTypeId()));
-        mRecyclerView.addItemDecoration(
-                new GridSpacingDecoration(
-                        (int) getResources().getDimension(R.dimen.card_margin),
-                        numColumns,
-                        mRelatedArtistSection.getTypeId()));
+    private void setupListDecorations() {
         mRecyclerView.addItemDecoration(
                 new BackgroundDecoration(R.id.loadingView, R.id.infoCard, R.id.relatedCard));
         mRecyclerView.addItemDecoration(
@@ -285,6 +278,10 @@ public class ArtistActivity extends BaseActivity {
         if (mRelatedArtistSection == null) {
             mRelatedArtistSection = new RelatedArtistSection(mMusicStore, mRelatedArtists);
             mAdapter.addSection(mRelatedArtistSection, 1);
+            mRecyclerView.addItemDecoration(
+                    new GridSpacingDecoration(
+                            (int) getResources().getDimension(R.dimen.card_margin),
+                            mColumnCount, mRelatedArtistSection.getTypeId()));
         }
     }
 
@@ -314,6 +311,11 @@ public class ArtistActivity extends BaseActivity {
             mAdapter
                     .addSection(new HeaderSection(getString(R.string.header_albums)))
                     .addSection(mAlbumSection);
+
+            mRecyclerView.addItemDecoration(
+                    new GridSpacingDecoration(
+                            (int) getResources().getDimension(R.dimen.grid_margin),
+                            mColumnCount, mAlbumSection.getTypeId()));
         } else {
             mAlbumSection.setData(mAlbums);
         }
