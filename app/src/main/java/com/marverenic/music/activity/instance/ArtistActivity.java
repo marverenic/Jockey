@@ -221,8 +221,12 @@ public class ArtistActivity extends BaseActivity {
             public int getSpanSize(int position) {
                 // Albums & related artists fill one column,
                 // all other view types fill the available width
-                if (mAdapter.getItemViewType(position) == mAlbumSection.getTypeId()
-                        || mAdapter.getItemViewType(position) == mRelatedArtistSection.getTypeId()) {
+                boolean isArtist = mAlbumSection != null
+                        && mAdapter.getItemViewType(position) == mAlbumSection.getTypeId();
+                boolean isRelatedArtist = mRelatedArtistSection != null
+                        && mAdapter.getItemViewType(position) == mRelatedArtistSection.getTypeId();
+
+                if (isArtist || isRelatedArtist) {
                     return 1;
                 } else {
                     return numColumns;
