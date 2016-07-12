@@ -8,8 +8,11 @@ import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.instances.Song;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.Properties;
 
 import rx.Observable;
@@ -37,8 +40,17 @@ public class LocalPlayCountStore implements PlayCountStore {
         return Observable.fromCallable(
                 () -> {
                     mCounts.clear();
+                    Properties playCountMap = getPlayCounts();
+                    Enumeration iterator = playCountMap.propertyNames();
 
-                    // TODO read counts from disk
+                    while (iterator.hasMoreElements()) {
+                        String key = (String) iterator.nextElement();
+                        String value = playCountMap.getProperty(key);
+
+                        Count count = new Count(value);
+
+                        mCounts.put(Long.parseLong(key), count);
+                    }
 
                     return (Void) null;
                 })
@@ -48,6 +60,25 @@ public class LocalPlayCountStore implements PlayCountStore {
 
     private File getPlayCountFile() {
         return new File(mContext.getExternalFilesDir(null), PLAY_COUNT_FILENAME);
+    }
+
+    private Properties getPlayCounts() throws IOException {
+        File file = getPlayCountFile();
+
+        Properties playCounts = new Properties();
+        if (file.exists()) {
+            InputStream inputStream = null;
+            try {
+                inputStream = new FileInputStream(file);
+                playCounts.load(inputStream);
+            } finally {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+            }
+        }
+
+        return playCounts;
     }
 
     @Override
@@ -156,6 +187,29 @@ public class LocalPlayCountStore implements PlayCountStore {
         int mPlays;
         int mSkips;
         long mDate;
+
+        Count() {
+        }
+
+        Count(String commaSeparatedValues) {
+            String[] originalValues = commaSeparatedValues.split(",");
+
+            int playCount = Integer.parseInt(originalValues[0]);
+            int skipCount = Integer.parseInt(originalValues[1]);
+            int playDate = 0;
+
+            if (originalValues.length > 2) {
+                playDate = Integer.parseInt(originalValues[2]);
+            }
+
+            mPlays = playCount;
+            mSkips = skipCount;
+            mDate = playDate;
+        }
+
+        public String getCommaSeparatedValues() {
+            return mPlays + "," + mSkips + "," + mDate;
+        }
 
     }
 }
