@@ -178,8 +178,8 @@ public class LocalPlayCountStore implements PlayCountStore {
     }
 
     @Override
-    public void setPlayDate(Song song, long time) {
-        getOrInitializeCount(song).mDate = time;
+    public void setPlayDate(Song song, long timeInUnixSeconds) {
+        getOrInitializeCount(song).mDate = timeInUnixSeconds;
     }
 
     private static class Count {

@@ -19,6 +19,6 @@ public interface PlayCountStore {
 
     void setPlayCount(Song song, int count);
     void setSkipCount(Song song, int count);
-    void setPlayDate(Song song, long time);
+    void setPlayDate(Song song, long timeInUnixSeconds);
 
 }
