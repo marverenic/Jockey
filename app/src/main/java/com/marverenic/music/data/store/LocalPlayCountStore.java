@@ -199,7 +199,7 @@ public class LocalPlayCountStore implements PlayCountStore {
             long playDate = 0;
 
             if (originalValues.length > 2) {
-                playDate = Long.parseLong(originalValues[2]) / 1000;
+                playDate = Long.parseLong(originalValues[2]);
             }
 
             mPlays = playCount;
