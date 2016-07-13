@@ -7,6 +7,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,7 +33,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
 public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuItemClickListener {
+
+    private static final String TAG = "PlaylistActivity";
 
     public static final String PLAYLIST_EXTRA = "playlist";
 
@@ -185,20 +191,34 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
                 return false;
         }
 
-        if (sortComparator == null) {
-            Collections.sort(mSongs);
-        } else {
-            Collections.sort(mSongs, sortComparator);
-        }
+        mPlayCountStore.refresh()
+                .observeOn(Schedulers.io())
+                .map(ignoredValue -> {
+                    if (sortComparator == null) {
+                        Collections.sort(mSongs);
+                    } else {
+                        Collections.sort(mSongs, sortComparator);
+                    }
 
-        mPlaylistStore.editPlaylist(mReference, mSongs);
-        mAdapter.notifyDataSetChanged();
+                    mPlaylistStore.editPlaylist(mReference, mSongs);
+                    return ignoredValue;
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        ignoredValue -> {
+                            mAdapter.notifyDataSetChanged();
+                            showUndoSortSnackbar(result, unsortedData);
+                        }, throwable -> {
+                            Log.e(TAG, "onMenuItemClick: Failed to sort playlist", throwable);
+                        });
 
-        Snackbar
-                .make(
-                        mRecyclerView,
-                        String.format(result, mReference),
-                        Snackbar.LENGTH_LONG)
+        return true;
+    }
+
+    private void showUndoSortSnackbar(String unformattedMessage, List<Song> unsortedData) {
+        String message = String.format(unformattedMessage, mReference);
+
+        Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG)
                 .setAction(
                         getResources().getString(R.string.action_undo),
                         v -> {
@@ -208,7 +228,5 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
                             mAdapter.notifyDataSetChanged();
                         })
                 .show();
-
-        return true;
     }
 }
