@@ -27,6 +27,7 @@ import com.marverenic.music.view.DragDividerDecoration;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -145,42 +146,49 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
     public boolean onMenuItemClick(MenuItem item) {
         final List<Song> unsortedData = new ArrayList<>(mSongs);
         String result;
+        Comparator<Song> sortComparator;
 
         switch (item.getItemId()) {
             case R.id.action_sort_random:
-                Collections.shuffle(mSongs);
+                sortComparator = null;
                 result = getResources().getString(R.string.message_sorted_playlist_random);
                 break;
             case R.id.action_sort_name:
-                Collections.sort(mSongs);
+                sortComparator = null;
                 result = getResources().getString(R.string.message_sorted_playlist_name);
                 break;
             case R.id.action_sort_artist:
-                Collections.sort(mSongs, Song.ARTIST_COMPARATOR);
+                sortComparator = Song.ARTIST_COMPARATOR;
                 result = getResources().getString(R.string.message_sorted_playlist_artist);
                 break;
             case R.id.action_sort_album:
-                Collections.sort(mSongs, Song.ALBUM_COMPARATOR);
+                sortComparator = Song.ALBUM_COMPARATOR;
                 result = getResources().getString(R.string.message_sorted_playlist_album);
                 break;
             case R.id.action_sort_play:
-                Collections.sort(mSongs, Song.playCountComparator(mPlayCountStore));
+                sortComparator = Song.playCountComparator(mPlayCountStore);
                 result = getResources().getString(R.string.message_sorted_playlist_play);
                 break;
             case R.id.action_sort_skip:
-                Collections.sort(mSongs, Song.skipCountComparator(mPlayCountStore));
+                sortComparator = Song.skipCountComparator(mPlayCountStore);
                 result = getResources().getString(R.string.message_sorted_playlist_skip);
                 break;
             case R.id.action_sort_date_added:
-                Collections.sort(mSongs, Song.DATE_ADDED_COMPARATOR);
+                sortComparator = Song.DATE_ADDED_COMPARATOR;
                 result = getResources().getString(R.string.message_sorted_playlist_date_added);
                 break;
             case R.id.action_sort_date_played:
-                Collections.sort(mSongs, Song.playCountComparator(mPlayCountStore));
+                sortComparator = Song.playCountComparator(mPlayCountStore);
                 result = getResources().getString(R.string.message_sorted_playlist_date_played);
                 break;
             default:
                 return false;
+        }
+
+        if (sortComparator == null) {
+            Collections.sort(mSongs);
+        } else {
+            Collections.sort(mSongs, sortComparator);
         }
 
         mPlaylistStore.editPlaylist(mReference, mSongs);
