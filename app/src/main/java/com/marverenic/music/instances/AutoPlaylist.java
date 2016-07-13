@@ -125,7 +125,12 @@ public class AutoPlaylist extends Playlist implements Parcelable {
             }
         }
 
-        Observable<List<Song>> truncated = truncateFilteredSongs(filtered, playCountStore);
+        // Perform the filter after play counts are refreshed
+        final Observable<List<Song>> finalFiltered = filtered;
+        Observable<List<Song>> matchingSongs = playCountStore.refresh()
+                .flatMap(ignored -> finalFiltered);
+
+        Observable<List<Song>> truncated = truncateFilteredSongs(matchingSongs, playCountStore);
         return sortFilteredSongs(truncated, playCountStore);
     }
 
