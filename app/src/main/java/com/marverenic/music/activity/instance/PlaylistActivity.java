@@ -7,6 +7,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,11 +28,17 @@ import com.marverenic.music.view.DragDividerDecoration;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
 public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuItemClickListener {
+
+    private static final String TAG = "PlaylistActivity";
 
     public static final String PLAYLIST_EXTRA = "playlist";
 
@@ -145,52 +152,73 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
     public boolean onMenuItemClick(MenuItem item) {
         final List<Song> unsortedData = new ArrayList<>(mSongs);
         String result;
+        Comparator<Song> sortComparator;
 
         switch (item.getItemId()) {
             case R.id.action_sort_random:
-                Collections.shuffle(mSongs);
+                sortComparator = null;
                 result = getResources().getString(R.string.message_sorted_playlist_random);
                 break;
             case R.id.action_sort_name:
-                Collections.sort(mSongs);
+                sortComparator = null;
                 result = getResources().getString(R.string.message_sorted_playlist_name);
                 break;
             case R.id.action_sort_artist:
-                Collections.sort(mSongs, Song.ARTIST_COMPARATOR);
+                sortComparator = Song.ARTIST_COMPARATOR;
                 result = getResources().getString(R.string.message_sorted_playlist_artist);
                 break;
             case R.id.action_sort_album:
-                Collections.sort(mSongs, Song.ALBUM_COMPARATOR);
+                sortComparator = Song.ALBUM_COMPARATOR;
                 result = getResources().getString(R.string.message_sorted_playlist_album);
                 break;
             case R.id.action_sort_play:
-                Collections.sort(mSongs, Song.playCountComparator(mPlayCountStore));
+                sortComparator = Song.playCountComparator(mPlayCountStore);
                 result = getResources().getString(R.string.message_sorted_playlist_play);
                 break;
             case R.id.action_sort_skip:
-                Collections.sort(mSongs, Song.skipCountComparator(mPlayCountStore));
+                sortComparator = Song.skipCountComparator(mPlayCountStore);
                 result = getResources().getString(R.string.message_sorted_playlist_skip);
                 break;
             case R.id.action_sort_date_added:
-                Collections.sort(mSongs, Song.DATE_ADDED_COMPARATOR);
+                sortComparator = Song.DATE_ADDED_COMPARATOR;
                 result = getResources().getString(R.string.message_sorted_playlist_date_added);
                 break;
             case R.id.action_sort_date_played:
-                Collections.sort(mSongs, Song.playCountComparator(mPlayCountStore));
+                sortComparator = Song.playCountComparator(mPlayCountStore);
                 result = getResources().getString(R.string.message_sorted_playlist_date_played);
                 break;
             default:
                 return false;
         }
 
-        mPlaylistStore.editPlaylist(mReference, mSongs);
-        mAdapter.notifyDataSetChanged();
+        mPlayCountStore.refresh()
+                .observeOn(Schedulers.io())
+                .map(ignoredValue -> {
+                    if (sortComparator == null) {
+                        Collections.sort(mSongs);
+                    } else {
+                        Collections.sort(mSongs, sortComparator);
+                    }
 
-        Snackbar
-                .make(
-                        mRecyclerView,
-                        String.format(result, mReference),
-                        Snackbar.LENGTH_LONG)
+                    mPlaylistStore.editPlaylist(mReference, mSongs);
+                    return ignoredValue;
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        ignoredValue -> {
+                            mAdapter.notifyDataSetChanged();
+                            showUndoSortSnackbar(result, unsortedData);
+                        }, throwable -> {
+                            Log.e(TAG, "onMenuItemClick: Failed to sort playlist", throwable);
+                        });
+
+        return true;
+    }
+
+    private void showUndoSortSnackbar(String unformattedMessage, List<Song> unsortedData) {
+        String message = String.format(unformattedMessage, mReference);
+
+        Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG)
                 .setAction(
                         getResources().getString(R.string.action_undo),
                         v -> {
@@ -200,7 +228,5 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
                             mAdapter.notifyDataSetChanged();
                         })
                 .show();
-
-        return true;
     }
 }
