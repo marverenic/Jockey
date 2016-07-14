@@ -172,7 +172,7 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
                     .showSnackbarIn(mSnackbarView)
                     .show(getFragmentManager(), TAG_MAKE_PLAYLIST);
         } else {
-            addToPlaylist(mChoices[which]);
+            addToPlaylist(mChoices[which - 1]);
         }
     }
 
