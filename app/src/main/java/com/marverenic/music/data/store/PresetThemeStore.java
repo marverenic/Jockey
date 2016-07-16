@@ -99,15 +99,15 @@ public class PresetThemeStore implements ThemeStore {
     public void setTheme(AppCompatActivity activity) {
         applyNightMode(activity);
         activity.setTheme(getThemeId());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            applyTaskDescription(activity);
+        }
     }
 
     private void applyNightMode(AppCompatActivity activity) {
         AppCompatDelegate.setDefaultNightMode(getNightMode());
         activity.getDelegate().applyDayNight();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            applyTaskDescription(activity);
-        }
     }
 
     @NightMode
