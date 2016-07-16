@@ -92,23 +92,13 @@ public class PlaylistViewModel extends BaseObservable {
         return menuItem -> {
             switch (menuItem.getItemId()) {
                 case 0: //Queue this playlist next
-                    mPlaylistStore.getSongs(mPlaylist).subscribe(
-                            PlayerController::queueNext,
-                            throwable -> {
-                                Timber.e(throwable, "Failed to get songs");
-                            });
-
+                    queuePlaylistNext();
                     return true;
                 case 1: //Queue this playlist last
-                    mPlaylistStore.getSongs(mPlaylist).subscribe(
-                            PlayerController::queueLast,
-                            throwable -> {
-                                Timber.e(throwable, "Failed to get songs");
-                            });
-
+                    queuePlaylistLast();
                     return true;
                 case 2: //Delete this playlist
-                    mPlaylistStore.removePlaylist(mPlaylist);
+                    deletePlaylist();
                     return true;
             }
             return false;
@@ -119,32 +109,46 @@ public class PlaylistViewModel extends BaseObservable {
         return menuItem -> {
             switch (menuItem.getItemId()) {
                 case 0: //Queue this playlist next
-                    mPlaylistStore.getSongs(mPlaylist).subscribe(
-                            PlayerController::queueNext,
-                            throwable -> {
-                                Timber.e(throwable, "Failed to get songs");
-                            });
-
+                    queuePlaylistNext();
                     return true;
                 case 1: //Queue this playlist last
-                    mPlaylistStore.getSongs(mPlaylist).subscribe(
-                            PlayerController::queueLast,
-                            throwable -> {
-                                Timber.e(throwable, "Failed to get songs");
-                            });
-
+                    queuePlaylistLast();
                     return true;
                 case 2: //Edit this playlist
-                    AutoPlaylist autoPlaylist = (AutoPlaylist) mPlaylist;
-                    Intent intent = AutoPlaylistEditActivity.newIntent(mContext, autoPlaylist);
-                    mContext.startActivity(intent);
+                    editThisAsAutoPlaylist();
                     return true;
                 case 3: // Delete this playlist
-                    mPlaylistStore.removePlaylist(mPlaylist);
+                    deletePlaylist();
                     return true;
             }
             return false;
         };
+    }
+
+    private void queuePlaylistNext() {
+        mPlaylistStore.getSongs(mPlaylist).subscribe(
+                PlayerController::queueNext,
+                throwable -> {
+                    Timber.e(throwable, "Failed to get songs");
+                });
+    }
+
+    private void queuePlaylistLast() {
+        mPlaylistStore.getSongs(mPlaylist).subscribe(
+                PlayerController::queueLast,
+                throwable -> {
+                    Timber.e(throwable, "Failed to get songs");
+                });
+    }
+
+    private void editThisAsAutoPlaylist() {
+        AutoPlaylist autoPlaylist = (AutoPlaylist) mPlaylist;
+        Intent intent = AutoPlaylistEditActivity.newIntent(mContext, autoPlaylist);
+        mContext.startActivity(intent);
+    }
+
+    private void deletePlaylist() {
+        mPlaylistStore.removePlaylist(mPlaylist);
     }
 
 }
