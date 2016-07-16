@@ -331,9 +331,15 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 + queueLength + queue + queueShuffled;
 
         File save = new File(mContext.getExternalFilesDir(null), QUEUE_FILE);
-        FileOutputStream stream = new FileOutputStream(save);
-        stream.write(output.getBytes());
-        stream.close();
+        FileOutputStream stream = null;
+        try {
+            stream = new FileOutputStream(save);
+            stream.write(output.getBytes());
+        } finally {
+            if (stream != null) {
+                stream.close();
+            }
+        }
     }
 
     /**
