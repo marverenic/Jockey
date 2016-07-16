@@ -121,6 +121,10 @@ public final class Util {
     }
 
     public static Bitmap fetchFullArt(Song song) {
+        if (song == null) {
+            return null;
+        }
+
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 
         try {
