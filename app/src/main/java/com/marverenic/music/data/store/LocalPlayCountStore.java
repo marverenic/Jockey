@@ -2,9 +2,7 @@ package com.marverenic.music.data.store;
 
 import android.content.Context;
 import android.support.v4.util.LongSparseArray;
-import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.instances.Song;
 
 import java.io.File;
@@ -18,10 +16,9 @@ import java.util.Properties;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class LocalPlayCountStore implements PlayCountStore {
-
-    private static final String TAG = "LocalPlayCountStore";
 
     private static final String PLAY_COUNT_FILENAME = ".playcount";
     private static final String PLAY_COUNT_HEADER = "This file contains play count information for "
@@ -93,9 +90,8 @@ public class LocalPlayCountStore implements PlayCountStore {
 
         try {
             writePlayCounts(properties);
-        } catch (IOException e) {
-            Log.e(TAG, "save: Failed to write play counts to disk", e);
-            Crashlytics.logException(e);
+        } catch (IOException ioException) {
+            Timber.e(ioException, "save: Failed to write play counts to disk");
         }
     }
 

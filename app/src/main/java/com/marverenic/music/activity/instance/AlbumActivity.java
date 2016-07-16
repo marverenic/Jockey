@@ -26,6 +26,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 public class AlbumActivity extends BaseActivity {
 
     public static final String ALBUM_EXTRA = "album";
@@ -51,6 +53,8 @@ public class AlbumActivity extends BaseActivity {
                             songs -> {
                                 mSongs = songs;
                                 setupAdapter();
+                            }, throwable -> {
+                                Timber.e(throwable, "Failed to get song contents");
                             });
 
             if (getSupportActionBar() != null) {

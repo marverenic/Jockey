@@ -13,7 +13,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,13 +38,13 @@ import com.marverenic.music.view.FABMenu;
 import javax.inject.Inject;
 
 import rx.Observable;
+import timber.log.Timber;
 
 import static android.support.design.widget.Snackbar.LENGTH_LONG;
 import static android.support.design.widget.Snackbar.LENGTH_SHORT;
 
 public class LibraryActivity extends BaseActivity implements View.OnClickListener {
 
-    private static final String TAG = "LibraryActivity";
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
 
     @Inject MusicStore mMusicStore;
@@ -138,7 +137,7 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
                         showPermissionSnackbar();
                     }
                 }, throwable -> {
-                    Log.e(TAG, "Failed to refresh library", throwable);
+                    Timber.e(throwable, "Failed to refresh library");
                 });
     }
 

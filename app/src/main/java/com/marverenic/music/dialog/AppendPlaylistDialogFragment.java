@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.View;
 
 import com.marverenic.music.JockeyApplication;
@@ -24,9 +23,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class AppendPlaylistDialogFragment extends DialogFragment {
+import timber.log.Timber;
 
-    private static final String TAG = "AppendPlaylistDialogFragment";
+public class AppendPlaylistDialogFragment extends DialogFragment {
 
     private static final String TAG_MAKE_PLAYLIST = "CreateNewPlaylistDialog";
     private static final String SAVED_TITLE = "AppendPlaylistDialogFragment.Title";
@@ -117,6 +116,8 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
                     choiceNames.toArray(mChoiceNames);
 
                     showDialog();
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to get playlists");
                 });
     }
 
@@ -189,7 +190,7 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
                             showSnackbar(playlist, oldEntries);
                         },
                         throwable -> {
-                            Log.e(TAG, "Failed to get old entries");
+                            Timber.e(throwable, "Failed to get old entries");
                         });
     }
 

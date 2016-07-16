@@ -4,7 +4,6 @@ import android.content.Context;
 import android.databinding.BaseObservable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
@@ -25,9 +24,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 public class SongViewModel extends BaseObservable {
 
-    private static final String TAG = "SongViewModel";
     private static final String TAG_PLAYLIST_DIALOG = "SongViewModel.PlaylistDialog";
 
     @Inject MusicStore mMusicStore;
@@ -121,7 +121,7 @@ public class SongViewModel extends BaseObservable {
                                 Navigate.to(mContext, ArtistActivity.class,
                                         ArtistActivity.ARTIST_EXTRA, artist);
                             }, throwable -> {
-                                Log.e(TAG, "Failed to find artist", throwable);
+                                Timber.e(throwable, "Failed to find artist");
                             });
 
                     return true;
@@ -131,7 +131,7 @@ public class SongViewModel extends BaseObservable {
                                 Navigate.to(mContext, AlbumActivity.class,
                                         AlbumActivity.ALBUM_EXTRA, album);
                             }, throwable -> {
-                                Log.e(TAG, "Failed to find album", throwable);
+                                Timber.e(throwable, "Failed to find album", throwable);
                             });
 
                     return true;

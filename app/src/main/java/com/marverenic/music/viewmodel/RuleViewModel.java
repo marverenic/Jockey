@@ -12,7 +12,6 @@ import android.support.v7.widget.AppCompatEditText;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,12 +42,11 @@ import java.util.List;
 import javax.inject.Inject;
 
 import rx.Subscription;
+import timber.log.Timber;
 
 import static android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE;
 
 public class RuleViewModel extends BaseObservable {
-
-    private static final String TAG = "RuleViewModel";
 
     private Context mContext;
 
@@ -228,7 +226,7 @@ public class RuleViewModel extends BaseObservable {
                     notifyPropertyChanged(BR.valueAdapter);
                     notifyPropertyChanged(BR.selectedValue);
                 }, throwable -> {
-                    Log.e(TAG, "setupSongAdapter: Failed to setup song adapter", throwable);
+                    Timber.e(throwable, "setupSongAdapter: Failed to setup song adapter");
                 });
     }
 
@@ -250,7 +248,7 @@ public class RuleViewModel extends BaseObservable {
                     notifyPropertyChanged(BR.valueAdapter);
                     notifyPropertyChanged(BR.selectedValue);
                 }, throwable -> {
-                    Log.e(TAG, "setupArtistAdapter: Failed to setup artist adapter", throwable);
+                    Timber.e(throwable, "setupArtistAdapter: Failed to setup artist adapter");
                 });
     }
 
@@ -272,7 +270,7 @@ public class RuleViewModel extends BaseObservable {
                     notifyPropertyChanged(BR.valueAdapter);
                     notifyPropertyChanged(BR.selectedValue);
                 }, throwable -> {
-                    Log.e(TAG, "setupAlbumAdapter: Failed to setup album adapter", throwable);
+                    Timber.e(throwable, "setupAlbumAdapter: Failed to setup album adapter");
                 });
     }
 
@@ -294,7 +292,7 @@ public class RuleViewModel extends BaseObservable {
                     notifyPropertyChanged(BR.valueAdapter);
                     notifyPropertyChanged(BR.selectedValue);
                 }, throwable -> {
-                    Log.e(TAG, "setupGenreAdapter: Failed to setup genre adapter", throwable);
+                    Timber.e(throwable, "setupGenreAdapter: Failed to setup genre adapter");
                 });
     }
 
@@ -316,7 +314,7 @@ public class RuleViewModel extends BaseObservable {
                     notifyPropertyChanged(BR.valueAdapter);
                     notifyPropertyChanged(BR.selectedValue);
                 }, throwable -> {
-                    Log.e(TAG, "setupPlaylistAdapter: Failed to setup playlist adapter", throwable);
+                    Timber.e(throwable, "setupPlaylistAdapter: Failed to setup playlist adapter");
                 });
     }
 
@@ -467,7 +465,6 @@ public class RuleViewModel extends BaseObservable {
             try {
                 dateAsUnixTimestamp = Long.parseLong(mFactory.getValue()) * 1000;
             } catch (NumberFormatException e) {
-                Log.e(TAG, "Failed to parse date " + mFactory.getValue(), e);
                 dateAsUnixTimestamp = System.currentTimeMillis();
             }
 

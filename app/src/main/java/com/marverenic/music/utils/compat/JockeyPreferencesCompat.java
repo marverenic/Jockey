@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.audiofx.Equalizer;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.marverenic.music.data.annotations.BaseTheme;
 import com.marverenic.music.data.annotations.PresetTheme;
@@ -12,21 +11,21 @@ import com.marverenic.music.data.annotations.StartPage;
 import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.data.store.SharedPreferencesStore;
 
+import timber.log.Timber;
+
 import static com.marverenic.music.data.annotations.BaseTheme.LIGHT;
 import static com.marverenic.music.data.annotations.PresetTheme.BLUE;
 import static com.marverenic.music.data.annotations.StartPage.SONGS;
 
 public class JockeyPreferencesCompat {
 
-    private static final String TAG = "JockeyPreferencesCompat";
-
     public static void upgradeSharedPreferences(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         if (shouldUpgradeFromJockey1_2(prefs)) {
-            Log.i(TAG, "upgradeSharedPreferences: Updating from version 1.2");
+            Timber.i("upgradeSharedPreferences: Updating from version 1.2");
             updateFromJockey1_2(context, prefs);
-            Log.i(TAG, "upgradeSharedPreferences: Finished updating from version 1.2");
+            Timber.i("upgradeSharedPreferences: Finished updating from version 1.2");
         }
     }
 

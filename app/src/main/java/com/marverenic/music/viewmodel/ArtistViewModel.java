@@ -4,7 +4,6 @@ import android.content.Context;
 import android.databinding.BaseObservable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
@@ -20,11 +19,12 @@ import com.marverenic.music.utils.Navigate;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 import static com.marverenic.music.activity.instance.ArtistActivity.ARTIST_EXTRA;
 
 public class ArtistViewModel extends BaseObservable {
 
-    private static final String TAG = "ArtistViewModel";
     private static final String TAG_PLAYLIST_DIALOG = "SongViewModel.PlaylistDialog";
 
     @Inject MusicStore mMusicStore;
@@ -74,7 +74,7 @@ public class ArtistViewModel extends BaseObservable {
                     mMusicStore.getSongs(mArtist).subscribe(
                             PlayerController::queueNext,
                             throwable -> {
-                                Log.e(TAG, "Failed to get songs", throwable);
+                                Timber.e(throwable, "Failed to get songs");
                             });
 
                     return true;
@@ -82,7 +82,7 @@ public class ArtistViewModel extends BaseObservable {
                     mMusicStore.getSongs(mArtist).subscribe(
                             PlayerController::queueLast,
                             throwable -> {
-                                Log.e(TAG, "Failed to get songs", throwable);
+                                Timber.e(throwable, "Failed to get songs");
                             });
 
                     return true;
@@ -95,7 +95,7 @@ public class ArtistViewModel extends BaseObservable {
                                         .showSnackbarIn(R.id.list)
                                         .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
                             }, throwable -> {
-                                Log.e(TAG, "Failed to get songs", throwable);
+                                Timber.e(throwable, "Failed to get songs");
                             });
 
                     return true;

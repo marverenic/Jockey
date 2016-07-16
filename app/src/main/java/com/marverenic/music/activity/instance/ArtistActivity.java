@@ -6,13 +6,11 @@ import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.crashlytics.android.Crashlytics;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
@@ -46,10 +44,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import rx.android.schedulers.AndroidSchedulers;
+import timber.log.Timber;
 
 public class ArtistActivity extends BaseActivity {
-
-    private static final String TAG = "ArtistActivity";
 
     public static final String ARTIST_EXTRA = "artist";
 
@@ -99,7 +96,10 @@ public class ArtistActivity extends BaseActivity {
                         songs -> {
                             mSongs = songs;
                             setupAdapter();
+                        }, throwable -> {
+                            Timber.e(throwable, "Failed to get song contents");
                         });
+
         mMusicStore.getAlbums(mReference)
                 .compose(bindToLifecycle())
                 .subscribe(
@@ -115,6 +115,8 @@ public class ArtistActivity extends BaseActivity {
                             }
 
                             setupAdapter();
+                        }, throwable -> {
+                            Timber.e(throwable, "Failed to get album contents");
                         });
 
         mRecyclerView = (RecyclerView) findViewById(R.id.list);
@@ -126,7 +128,8 @@ public class ArtistActivity extends BaseActivity {
             mLfmStore.getArtistInfo(mReference.getArtistName())
                     .compose(bindToLifecycle())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(this::setLastFmReference, Crashlytics::logException);
+                    .subscribe(this::setLastFmReference,
+                            throwable -> Timber.e(throwable, "Failed to get Last.fm artist info"));
         }
     }
 
@@ -153,7 +156,7 @@ public class ArtistActivity extends BaseActivity {
                                 }
                             },
                             throwable -> {
-                                Log.e(TAG, "Failed to find artist", throwable);
+                                Timber.e(throwable, "Failed to find artist");
                             });
         }
         setupAdapter();

@@ -12,7 +12,6 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.marverenic.music.instances.Album;
@@ -33,6 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
+import timber.log.Timber;
 
 public final class MediaStoreUtil {
 
@@ -267,7 +267,7 @@ public final class MediaStoreUtil {
                 }
             }
         } catch (IOException e) {
-            Crashlytics.logException(e);
+            Timber.e(e, "Failed to read AutoPlaylist");
         }
 
         Collections.sort(autoPlaylists);

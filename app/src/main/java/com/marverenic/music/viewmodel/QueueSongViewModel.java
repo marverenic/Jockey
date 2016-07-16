@@ -3,7 +3,6 @@ package com.marverenic.music.viewmodel;
 import android.content.Context;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
@@ -18,9 +17,10 @@ import com.marverenic.music.utils.Navigate;
 
 import java.util.List;
 
+import timber.log.Timber;
+
 public class QueueSongViewModel extends SongViewModel {
 
-    private static final String TAG = "QueueSongViewModel";
     private static final String TAG_PLAYLIST_DIALOG = "QueueSongViewModel.PlaylistDialog";
 
     private Context mContext;
@@ -76,7 +76,7 @@ public class QueueSongViewModel extends SongViewModel {
                                 Navigate.to(mContext, ArtistActivity.class,
                                         ArtistActivity.ARTIST_EXTRA, artist);
                             }, throwable -> {
-                                Log.e(TAG, "Failed to find artist", throwable);
+                                Timber.e(throwable, "Failed to find artist");
                             });
 
                     return true;
@@ -86,7 +86,7 @@ public class QueueSongViewModel extends SongViewModel {
                                 Navigate.to(mContext, AlbumActivity.class,
                                         AlbumActivity.ALBUM_EXTRA, album);
                             }, throwable -> {
-                                Log.e(TAG, "Failed to find album", throwable);
+                                Timber.e(throwable, "Failed to find album");
                             });
 
                     return true;

@@ -3,9 +3,7 @@ package com.marverenic.music.data.store;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
-import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.marverenic.music.R;
@@ -26,10 +24,10 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
+import timber.log.Timber;
 
 public class LocalPlaylistStore implements PlaylistStore {
 
-    private static final String TAG = "LocalPlaylistStore";
     private static final String AUTO_PLAYLIST_EXTENSION = ".jpl";
 
     // Used to generate Auto Playlist contents
@@ -75,6 +73,8 @@ public class LocalPlaylistStore implements PlaylistStore {
                         } else {
                             mPlaylists.onNext(Collections.emptyList());
                         }
+                    }, throwable -> {
+                        Timber.e(throwable, "Failed to query MediaStore for playlists");
                     });
         }
         return mPlaylists.asObservable().observeOn(AndroidSchedulers.mainThread());
@@ -113,7 +113,7 @@ public class LocalPlaylistStore implements PlaylistStore {
                     .subscribe(contents -> {
                         editPlaylist(playlist, contents);
                     }, throwable -> {
-                        Log.e(TAG, "Failed to save playlist contents", throwable);
+                        Timber.e(throwable, "Failed to save playlist contents");
                     });
         }
 
@@ -232,10 +232,10 @@ public class LocalPlaylistStore implements PlaylistStore {
                     try {
                         writeAutoPlaylistConfiguration(playlist);
                     } catch (IOException e) {
-                        Crashlytics.logException(e);
+                        Timber.e(e, "Failed to write autoPlaylist configuration");
                     }
                 }, throwable -> {
-                    Log.e(TAG, "makePlaylist: Failed to initialize contents", throwable);
+                    Timber.e(throwable, "makePlaylist: Failed to initialize contents");
                 });
     }
 

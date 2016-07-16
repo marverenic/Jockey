@@ -5,23 +5,21 @@ import android.content.SharedPreferences;
 import android.media.audiofx.Equalizer;
 import android.preference.PreferenceManager;
 import android.support.annotation.StringRes;
-import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.R;
-import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.data.annotations.BaseTheme;
 import com.marverenic.music.data.annotations.PresetTheme;
 import com.marverenic.music.data.annotations.StartPage;
+import com.marverenic.music.player.MusicPlayer;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SharedPreferencesStore implements PreferencesStore {
+import timber.log.Timber;
 
-    private static final String TAG = "SharedPreferencesStore";
+public class SharedPreferencesStore implements PreferencesStore {
 
     private Context mContext;
     private SharedPreferences mPrefs;
@@ -143,9 +141,8 @@ public class SharedPreferencesStore implements PreferencesStore {
         if (contains(R.string.pref_key_eq_settings)) {
             try {
                 return new Equalizer.Settings(getString(R.string.pref_key_eq_settings, null));
-            } catch (IllegalArgumentException e) {
-                Log.e(TAG, "getEqualizerSettings: failed to parse equalizer settings", e);
-                Crashlytics.logException(e);
+            } catch (IllegalArgumentException exception) {
+                Timber.e(exception, "getEqualizerSettings: failed to parse equalizer settings");
             }
         }
         return null;

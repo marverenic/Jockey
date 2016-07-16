@@ -3,15 +3,12 @@ package com.marverenic.music.data.store;
 import android.media.audiofx.Equalizer;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
-
-import com.crashlytics.android.Crashlytics;
 
 import java.util.Set;
 
-public class RemotePreferencesStore implements ReadOnlyPreferencesStore, Parcelable {
+import timber.log.Timber;
 
-    private static final String TAG = "RemotePreferencesStore";
+public class RemotePreferencesStore implements ReadOnlyPreferencesStore, Parcelable {
 
     private final boolean mShowFirstStart;
     private final boolean mAllowLogging;
@@ -164,9 +161,8 @@ public class RemotePreferencesStore implements ReadOnlyPreferencesStore, Parcela
         if (mEqualizerSettings != null) {
             try {
                 return new Equalizer.Settings(mEqualizerSettings);
-            } catch (IllegalArgumentException e) {
-                Log.e(TAG, "getEqualizerSettings: failed to parse equalizer settings", e);
-                Crashlytics.logException(e);
+            } catch (IllegalArgumentException exception) {
+                Timber.e(exception, "getEqualizerSettings: failed to parse equalizer settings");
             }
         }
         return null;

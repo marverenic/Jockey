@@ -5,7 +5,6 @@ import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
@@ -21,8 +20,6 @@ import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
 import javax.inject.Inject;
 
 public class RuleHeaderViewModel extends BaseObservable {
-
-    private static final String TAG = "RuleHeaderViewModel";
 
     private static final int[] TRUNCATE_CHOICES = new int[] {
             AutoPlaylistRule.ID,
@@ -170,8 +167,7 @@ public class RuleHeaderViewModel extends BaseObservable {
                 } else {
                     try {
                         mBuilder.setMaximumEntries(Integer.parseInt(charSequence.toString()));
-                    } catch (NumberFormatException e) {
-                        Log.e(TAG, "onTextChanged: Failed to parse song cap", e);
+                    } catch (NumberFormatException ignored) {
                     }
                 }
             }

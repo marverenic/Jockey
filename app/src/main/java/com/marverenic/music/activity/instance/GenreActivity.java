@@ -21,6 +21,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 public class GenreActivity extends BaseActivity {
 
     public static final String GENRE_EXTRA = "genre";
@@ -47,6 +49,8 @@ public class GenreActivity extends BaseActivity {
                             songs -> {
                                 mSongs = songs;
                                 setupAdapter();
+                            }, throwable -> {
+                                Timber.e(throwable, "Failed to get song contents");
                             });
 
             if (getSupportActionBar() != null) {

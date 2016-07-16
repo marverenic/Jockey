@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +15,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.data.store.MusicStore;
@@ -23,14 +24,12 @@ import com.marverenic.music.instances.Artist;
 import com.marverenic.music.lastfm.model.Image;
 import com.marverenic.music.lastfm.model.LfmArtist;
 import com.marverenic.music.utils.Navigate;
-import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 
 import java.util.List;
 
-public class RelatedArtistSection extends HeterogeneousAdapter.ListSection<LfmArtist> {
+import timber.log.Timber;
 
-    private static final String TAG = "RelatedArtistSection";
+public class RelatedArtistSection extends HeterogeneousAdapter.ListSection<LfmArtist> {
 
     private MusicStore mMusicStore;
 
@@ -79,7 +78,7 @@ public class RelatedArtistSection extends HeterogeneousAdapter.ListSection<LfmAr
                             artist -> {
                                 localReference = artist;
                             }, throwable -> {
-                                Log.e(TAG, "Failed to get local reference", throwable);
+                                Timber.e(throwable, "Failed to get local reference");
                             });
 
             Image image = item.getImageBySize(Image.Size.MEDIUM);

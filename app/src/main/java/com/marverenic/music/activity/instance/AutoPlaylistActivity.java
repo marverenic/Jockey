@@ -7,7 +7,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,10 +30,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 public class AutoPlaylistActivity extends BaseActivity
         implements PopupMenu.OnMenuItemClickListener {
-
-    private static final String TAG = "AutoPlaylistActivity";
 
     public static final String PLAYLIST_EXTRA = "AutoPlaylistActivity.Playlist";
 
@@ -70,7 +69,7 @@ public class AutoPlaylistActivity extends BaseActivity
                             mSongs = songs;
                             setupAdapter();
                         }, throwable -> {
-                            Log.e(TAG, "onCreate: Failed to get song contents", throwable);
+                            Timber.e(throwable, "onCreate: Failed to get song contents");
                         });
 
         getSupportActionBar().setTitle(mReference.getPlaylistName());
@@ -220,7 +219,7 @@ public class AutoPlaylistActivity extends BaseActivity
                             })
                             .show();
                 }, throwable -> {
-                    Log.e(TAG, "Failed to set sort method", throwable);
+                    Timber.e(throwable, "Failed to set sort method");
                 });
 
         mReference = new AutoPlaylist.Builder(mReference)

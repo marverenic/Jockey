@@ -23,6 +23,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 public class PlaylistFragment extends BaseFragment {
 
     @Inject PlaylistStore mPlaylistStore;
@@ -42,8 +44,9 @@ public class PlaylistFragment extends BaseFragment {
                         playlists -> {
                             mPlaylists = playlists;
                             setupAdapter();
-                        },
-                        Throwable::printStackTrace);
+                        }, throwable -> {
+                            Timber.e(throwable, "Failed to get all playlists from PlaylistStore");
+                        });
     }
 
     @Override

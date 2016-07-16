@@ -10,7 +10,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -36,10 +35,10 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 public class DirectoryListFragment extends Fragment implements View.OnClickListener,
         DirectoryDialogFragment.OnDirectoryPickListener {
-
-    private static final String TAG = "DirectoryListFragment";
 
     private static final String KEY_EXCLUDE_FLAG = "DirectoryListFragment.exclude";
     private static final String TAG_DIR_DIALOG = "DirectoryListFragment_DirectoryDialog";
@@ -158,7 +157,7 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
         if (isDifferent) {
             mMusicStore.refresh().subscribe(
                     updated -> {},
-                    throwable -> {Log.e(TAG, "Failed to refresh library", throwable);});
+                    throwable -> Timber.e(throwable, "Failed to refresh library"));
         }
     }
 

@@ -8,10 +8,10 @@ import android.provider.MediaStore;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
@@ -32,7 +32,6 @@ import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.view.GridSpacingDecoration;
 import com.marverenic.music.view.ViewUtils;
 
@@ -44,10 +43,9 @@ import javax.inject.Inject;
 
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
+import timber.log.Timber;
 
 public class SearchActivity extends BaseActivity implements SearchView.OnQueryTextListener {
-
-    private static final String TAG = "SearchActivity";
 
     @Inject MusicStore mMusicStore;
     @Inject PlaylistStore mPlaylistStore;
@@ -83,6 +81,8 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 .subscribe(playlists -> {
                     mPlaylistSection.setData(playlists);
                     mAdapter.notifyDataSetChanged();
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to search for playlists");
                 });
 
         mQueryObservable
@@ -91,6 +91,8 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 .subscribe(songs -> {
                     mSongSection.setData(songs);
                     mAdapter.notifyDataSetChanged();
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to search for songs");
                 });
 
         mQueryObservable
@@ -99,6 +101,8 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 .subscribe(albums -> {
                     mAlbumSection.setData(albums);
                     mAdapter.notifyDataSetChanged();
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to search for albums");
                 });
 
         mQueryObservable
@@ -107,6 +111,8 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 .subscribe(artists -> {
                     mArtistSection.setData(artists);
                     mAdapter.notifyDataSetChanged();
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to search for artists");
                 });
 
         mQueryObservable
@@ -115,6 +121,8 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 .subscribe(genres -> {
                     mGenreSection.setData(genres);
                     mAdapter.notifyDataSetChanged();
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to search for genres");
                 });
 
         handleIntent(getIntent());
@@ -312,7 +320,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                     PlayerController.setQueue(songs, 0);
                     PlayerController.begin();
                 }, throwable -> {
-                    Log.e(TAG, "Failed to play playlist from intent", throwable);
+                    Timber.e(throwable, "Failed to play playlist from intent");
                 });
     }
 
@@ -338,7 +346,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                     PlayerController.begin();
                 },
                 throwable -> {
-                    Log.e(TAG, "Failed to play artist from intent", throwable);
+                    Timber.e(throwable, "Failed to play artist from intent");
                 });
     }
 
@@ -362,7 +370,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                     PlayerController.setQueue(songs, 0);
                     PlayerController.begin();
                 }, throwable -> {
-                    Log.e(TAG, "Failed to play album from intent", throwable);
+                    Timber.e(throwable, "Failed to play album from intent");
                 });
     }
 
@@ -385,7 +393,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                     PlayerController.setQueue(songs, 0);
                     PlayerController.begin();
                 }, throwable -> {
-                    Log.e(TAG, "Failed to play genre from intent", throwable);
+                    Timber.e(throwable, "Failed to play genre from intent");
                 });
     }
 

@@ -7,7 +7,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,10 +34,9 @@ import javax.inject.Inject;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuItemClickListener {
-
-    private static final String TAG = "PlaylistActivity";
 
     public static final String PLAYLIST_EXTRA = "playlist";
 
@@ -65,6 +63,8 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
                         songs -> {
                             mSongs = songs;
                             setupAdapter();
+                        }, throwable -> {
+                            Timber.e(throwable, "Failed to get playlist contents");
                         });
 
         getSupportActionBar().setTitle(mReference.getPlaylistName());
@@ -209,7 +209,7 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
                             mAdapter.notifyDataSetChanged();
                             showUndoSortSnackbar(result, unsortedData);
                         }, throwable -> {
-                            Log.e(TAG, "onMenuItemClick: Failed to sort playlist", throwable);
+                            Timber.e(throwable, "onMenuItemClick: Failed to sort playlist");
                         });
 
         return true;

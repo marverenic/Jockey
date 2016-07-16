@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
 
 import com.marverenic.music.BR;
@@ -24,10 +23,9 @@ import java.util.concurrent.TimeUnit;
 import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class MiniplayerViewModel extends BaseObservable {
-
-    private static final String TAG = "MiniplayerViewModel";
 
     private Context mContext;
 
@@ -129,7 +127,7 @@ public class MiniplayerViewModel extends BaseObservable {
                 .subscribe(
                         mProgress::set,
                         throwable -> {
-                            Log.e(TAG, "setPlaying: failed to update position", throwable);
+                            Timber.e(throwable, "failed to update position");
                         });
     }
 

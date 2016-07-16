@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import timber.log.Timber;
+
 /**
  * QueuedMediaPlayer is a wrapper class that holds and manages two {@link ManagedMediaPlayer}
  * Objects.
@@ -250,6 +252,7 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
                 mNextPlayer.prepareAsync();
             } catch (IOException e) {
                 // If the song couldn't be loaded in advance, try again when it's about to be played
+                Timber.e(e, "Failed to prepare next MediaPlayer");
                 mNextPlayer.reset();
             }
         }

@@ -13,11 +13,8 @@ import android.support.annotation.StringRes;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v7.app.NotificationCompat;
-import android.util.Log;
 import android.view.KeyEvent;
 
-import com.crashlytics.android.Crashlytics;
-import com.marverenic.music.BuildConfig;
 import com.marverenic.music.IPlayerService;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.RemotePreferencesStore;
@@ -27,10 +24,9 @@ import com.marverenic.music.utils.MediaStyleHelper;
 import java.io.IOException;
 import java.util.List;
 
-public class PlayerService extends Service implements MusicPlayer.OnPlaybackChangeListener {
+import timber.log.Timber;
 
-    private static final String TAG = "PlayerService";
-    private static final boolean DEBUG = BuildConfig.DEBUG;
+public class PlayerService extends Service implements MusicPlayer.OnPlaybackChangeListener {
 
     public static final String ACTION_STOP = "PlayerService.stop";
 
@@ -67,7 +63,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
     @Override
     public IBinder onBind(Intent intent) {
-        if (DEBUG) Log.i(TAG, "onBind called");
+        Timber.i("onBind called");
 
         if (binder == null) {
             binder = new Stub();
@@ -82,12 +78,12 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     @Override
     public void onCreate() {
         super.onCreate();
-        if (DEBUG) Log.i(TAG, "onCreate() called");
+        Timber.i("onCreate() called");
 
         if (instance == null) {
             instance = this;
         } else {
-            if (DEBUG) Log.w(TAG, "Attempted to create a second PlayerService");
+            Timber.w("Attempted to create a second PlayerService");
             stopSelf();
             return;
         }
@@ -105,13 +101,13 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (DEBUG) Log.i(TAG, "onStartCommand() called");
+        Timber.i("onStartCommand called");
         super.onStartCommand(intent, flags, startId);
 
         if (intent != null) {
             if (intent.hasExtra(Intent.EXTRA_KEY_EVENT)) {
                 MediaButtonReceiver.handleIntent(musicPlayer.getMediaSession(), intent);
-                Log.i(TAG, intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT).toString());
+                Timber.i(intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT).toString());
             } else if (ACTION_STOP.equals(intent.getAction())) {
                 stop();
             }
@@ -121,14 +117,14 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
     @Override
     public void onDestroy() {
-        if (DEBUG) Log.i(TAG, "Called onDestroy()");
+        Timber.i("Called onDestroy");
         finish();
         super.onDestroy();
     }
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
-        if (DEBUG) Log.i(TAG, "onTaskRemoved() called");
+        Timber.i("onTaskRemoved called");
         mAppRunning = false;
 
         /*
@@ -152,8 +148,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         try {
             musicPlayer.saveState();
         } catch (IOException exception) {
-            Log.e(TAG, "Failed to save music player state", exception);
-            Crashlytics.logException(exception);
+            Timber.e(exception, "Failed to save music player state");
         }
 
         if (mStopped) {
@@ -172,10 +167,10 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
      * Posts the notification by starting the service in the foreground
      */
     public void notifyNowPlaying() {
-        if (DEBUG) Log.i(TAG, "notifyNowPlaying() called");
+        Timber.i("notifyNowPlaying called");
 
         if (musicPlayer.getNowPlaying() == null) {
-            if (DEBUG) Log.i(TAG, "Not showing notification -- nothing is playing");
+            Timber.i("Not showing notification -- nothing is playing");
             return;
         }
 
@@ -252,7 +247,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     }
 
     public void stop() {
-        if (DEBUG) Log.i(TAG, "stop() called");
+        Timber.i("stop called");
 
         mStopped = true;
 
@@ -268,13 +263,12 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     }
 
     public void finish() {
-        if (DEBUG) Log.i(TAG, "finish() called");
+        Timber.i("finish() called");
         if (!finished) {
             try {
                 musicPlayer.saveState();
             } catch (IOException exception) {
-                Log.e(TAG, "Failed to save player state", exception);
-                Crashlytics.logException(exception);
+                Timber.e(exception, "Failed to save player state");
             }
 
             musicPlayer.release();
