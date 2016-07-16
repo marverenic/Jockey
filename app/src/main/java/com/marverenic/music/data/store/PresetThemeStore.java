@@ -195,21 +195,21 @@ public class PresetThemeStore implements ThemeStore {
     private int getIconId() {
         switch (mPreferencesStore.getPrimaryColor()) {
             case GRAY:
-                return R.drawable.ic_launcher_grey;
+                return R.mipmap.ic_launcher_grey;
             case RED:
-                return R.drawable.ic_launcher_red;
+                return R.mipmap.ic_launcher_red;
             case ORANGE:
-                return R.drawable.ic_launcher_orange;
+                return R.mipmap.ic_launcher_orange;
             case YELLOW:
-                return R.drawable.ic_launcher_yellow;
+                return R.mipmap.ic_launcher_yellow;
             case GREEN:
-                return R.drawable.ic_launcher_green;
+                return R.mipmap.ic_launcher_green;
             case BLUE:
-                return R.drawable.ic_launcher;
+                return R.mipmap.ic_launcher;
             case PURPLE:
-                return R.drawable.ic_launcher_purple;
+                return R.mipmap.ic_launcher_purple;
             default:
-                return R.drawable.ic_launcher;
+                return R.mipmap.ic_launcher;
         }
     }
 
