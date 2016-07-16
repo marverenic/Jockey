@@ -49,7 +49,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
             super.setDataSource(context, uri);
             state = Status.INITIALIZED;
         } else {
-            Timber.i("Attempted to set data source, but media player was in state %i", state);
+            Timber.i("Attempted to set data source, but media player was in state %s", state);
         }
     }
 
@@ -61,7 +61,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
             super.setDataSource(path);
             state = Status.INITIALIZED;
         } else {
-            Timber.i("Attempted to set data source, but media player was in state %i", state);
+            Timber.i("Attempted to set data source, but media player was in state %s", state);
         }
     }
 
@@ -75,7 +75,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
             super.setDataSource(context, uri, headers);
             state = Status.INITIALIZED;
         } else {
-            Timber.i("Attempted to set data source, but media player was in state %i", state);
+            Timber.i("Attempted to set data source, but media player was in state %s", state);
         }
     }
 
@@ -89,7 +89,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
             super.setDataSource(fd);
             state = Status.INITIALIZED;
         } else {
-            Timber.i("Attempted to set data source, but media player was in state %i", state);
+            Timber.i("Attempted to set data source, but media player was in state %s", state);
         }
     }
 
@@ -103,7 +103,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
             super.setDataSource(fd, offset, length);
             state = Status.INITIALIZED;
         } else {
-            Timber.i("Attempted to set data source, but media player was in state %i", state);
+            Timber.i("Attempted to set data source, but media player was in state %s", state);
         }
     }
 
@@ -117,7 +117,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
             super.setDataSource(dataSource);
             state = Status.INITIALIZED;
         } else {
-            Timber.i("Attempted to set data source, but media player was in state %i", state);
+            Timber.i("Attempted to set data source, but media player was in state %s", state);
         }
     }
 
@@ -129,7 +129,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
             super.prepareAsync();
             state = Status.PREPARING;
         } else {
-            Timber.i("Attempted to prepare async, but media player was in state %i", state);
+            Timber.i("Attempted to prepare async, but media player was in state %s", state);
         }
     }
 
@@ -141,7 +141,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
             super.prepare();
             state = Status.PREPARING;
         } else {
-            Timber.i("Attempted to prepare, but media player was in state %i", state);
+            Timber.i("Attempted to prepare, but media player was in state %s", state);
         }
     }
 
@@ -167,7 +167,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
             super.start();
             state = Status.STARTED;
         } else {
-            Timber.i("Attempted to start, but media player was in state %i", state);
+            Timber.i("Attempted to start, but media player was in state %s", state);
         }
     }
 
@@ -202,7 +202,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
 
     @Override
     public void seekTo(int mSec) {
-        Timber.i("seekTo(%i) called", mSec);
+        Timber.i("seekTo(%d) called", mSec);
 
         if (state == Status.PREPARED || state == Status.STARTED || state == Status.PAUSED) {
             super.seekTo(mSec);
@@ -211,7 +211,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
             pause();
             super.seekTo(mSec);
         } else {
-            Timber.i("Attempted to set seek, but media player was in state %i", state);
+            Timber.i("Attempted to set seek, but media player was in state %s", state);
         }
     }
 
@@ -223,7 +223,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
             super.stop();
             state = Status.STOPPED;
         } else {
-            Timber.i("Attempted to stop, but media player was in state %i", state);
+            Timber.i("Attempted to stop, but media player was in state %s", state);
         }
     }
 
@@ -235,7 +235,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
             super.pause();
             state = Status.PAUSED;
         } else {
-            Timber.i("Attempted to pause, but media player was in state %i", state);
+            Timber.i("Attempted to pause, but media player was in state %s", state);
         }
     }
 
