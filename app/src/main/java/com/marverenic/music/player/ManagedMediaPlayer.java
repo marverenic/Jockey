@@ -43,7 +43,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
 
     @Override
     public void setDataSource(Context context, Uri uri) throws IOException {
-        Timber.i("setDataSource called");
+        Timber.i("setDataSource(Context, %s) called", uri);
 
         if (state == Status.IDLE) {
             super.setDataSource(context, uri);
