@@ -13,7 +13,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
@@ -41,6 +40,7 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class NowPlayingControllerViewModel extends BaseObservable {
 
@@ -118,7 +118,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
                             }
                         },
                         throwable -> {
-                            Log.e(TAG, "setPlaying: failed to update position", throwable);
+                            Timber.e("pollPositionSubscription: failed to update position");
                         });
 
     }
@@ -266,7 +266,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
                                         ArtistActivity.ARTIST_EXTRA, artist);
                             },
                             throwable -> {
-                                Log.e(TAG, "Failed to find artist", throwable);
+                                Timber.e(throwable, "Failed to find artist");
                             });
 
                     return true;
@@ -277,7 +277,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
                                         AlbumActivity.ALBUM_EXTRA, album);
                             },
                             throwable -> {
-                                Log.e(TAG, "Failed to find album", throwable);
+                                Timber.e(throwable, "Failed to find album");
                             });
 
                     return true;

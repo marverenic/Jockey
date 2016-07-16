@@ -9,7 +9,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +25,8 @@ import com.marverenic.music.R;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import timber.log.Timber;
 
 public class FABMenu extends FloatingActionButton implements View.OnClickListener {
 
@@ -124,7 +125,7 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
 
             button.setLayoutParams(params);
         } else {
-            Log.e(TAG, "Parent must be a CoordinatorLayout to properly set margin");
+            Timber.e("Parent must be a CoordinatorLayout to properly set margin");
         }
 
         // When children aren't visible on screen, remove them from the view hierarchy completely
@@ -162,7 +163,7 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
 
             label.setLayoutParams(params);
         } else {
-            Log.e(TAG, "Parent must be a CoordinatorLayout to properly set margin");
+            Timber.e("Parent must be a CoordinatorLayout to properly set margin");
         }
 
         ((ViewGroup) label.getParent()).removeView(label);

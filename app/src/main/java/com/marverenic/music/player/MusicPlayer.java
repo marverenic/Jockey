@@ -17,7 +17,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 import android.view.KeyEvent;
 
 import com.crashlytics.android.Crashlytics;
@@ -43,6 +42,8 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import javax.inject.Inject;
+
+import timber.log.Timber;
 
 import static android.content.Intent.ACTION_HEADSET_PLUG;
 import static android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY;
@@ -188,9 +189,9 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         // Initialize play count store
         mPlayCountStore.refresh()
                 .subscribe(complete -> {
-                    Log.i(TAG, "MusicPlayer: Initialized play count store values");
+                    Timber.i("init: Initialized play count store values");
                 }, throwable -> {
-                    Log.e(TAG, "MusicPlayer: Failed to read play count store values", throwable);
+                    Timber.e(throwable, "init: Failed to read play count store values");
                     Crashlytics.logException(throwable);
                 });
 

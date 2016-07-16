@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.View;
 
 import com.marverenic.music.JockeyApplication;
@@ -23,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import timber.log.Timber;
 
 public class AppendPlaylistDialogFragment extends DialogFragment {
 
@@ -189,7 +190,7 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
                             showSnackbar(playlist, oldEntries);
                         },
                         throwable -> {
-                            Log.e(TAG, "Failed to get old entries");
+                            Timber.e(throwable, "Failed to get old entries");
                         });
     }
 

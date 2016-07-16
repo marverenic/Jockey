@@ -9,9 +9,7 @@ import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.IPlayerService;
 import com.marverenic.music.data.store.ReadOnlyPreferencesStore;
 import com.marverenic.music.data.store.RemotePreferencesStore;
@@ -24,9 +22,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public final class PlayerController {
+import timber.log.Timber;
 
-    private static final String TAG = "PlayerController";
+public final class PlayerController {
 
     private static Context applicationContext;
     private static IPlayerService playerService;
@@ -153,9 +151,8 @@ public final class PlayerController {
             try {
                 playerService.stop();
                 updateUi();
-            } catch (RemoteException e) {
-                Crashlytics.logException(e);
-                Log.w(TAG, e);
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to stop playback");
             }
         }
     }
@@ -170,9 +167,8 @@ public final class PlayerController {
                 playerService.skip();
                 artwork = null;
                 updateUi();
-            } catch (RemoteException e) {
-                Crashlytics.logException(e);
-                Log.w(TAG, e);
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to skip current track");
             }
         }
     }
@@ -187,9 +183,8 @@ public final class PlayerController {
                 playerService.previous();
                 artwork = null;
                 updateUi();
-            } catch (RemoteException e) {
-                Crashlytics.logException(e);
-                Log.w(TAG, e);
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to skip backward");
             }
         }
     }
@@ -204,9 +199,8 @@ public final class PlayerController {
                 playerService.begin();
                 artwork = null;
                 updateUi();
-            } catch (RemoteException e) {
-                Crashlytics.logException(e);
-                Log.w(TAG, e);
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to begin playback");
             }
         }
     }
@@ -220,9 +214,8 @@ public final class PlayerController {
             try {
                 playerService.togglePlay();
                 updateUi();
-            } catch (RemoteException e) {
-                Crashlytics.logException(e);
-                Log.w(TAG, e);
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to toggle playback");
             }
         }
     }
@@ -236,9 +229,8 @@ public final class PlayerController {
             try {
                 playerService.play();
                 updateUi();
-            } catch (RemoteException e) {
-                Crashlytics.logException(e);
-                Log.w(TAG, e);
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to resume playback");
             }
         }
     }
@@ -252,9 +244,8 @@ public final class PlayerController {
             try {
                 playerService.pause();
                 updateUi();
-            } catch (RemoteException e) {
-                Crashlytics.logException(e);
-                Log.w(TAG, e);
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to pause playback");
             }
         }
     }
@@ -263,9 +254,8 @@ public final class PlayerController {
         if (playerService != null) {
             try {
                 playerService.setPreferences(new RemotePreferencesStore(preferencesStore));
-            } catch (RemoteException e) {
-                Crashlytics.logException(e);
-                Log.w(TAG, e);
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to update remote player preferences");
             }
         }
     }
@@ -280,9 +270,8 @@ public final class PlayerController {
         if (playerService != null) {
             try {
                 playerService.setQueue(newQueue, newPosition);
-            } catch (RemoteException e) {
-                Crashlytics.logException(e);
-                Log.w(TAG, e);
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to set queue");
             }
         }
     }
@@ -296,9 +285,8 @@ public final class PlayerController {
                 playerService.setQueue(new ArrayList<>(), 0);
                 artwork = null;
                 updateUi();
-            } catch (RemoteException e) {
-                Crashlytics.logException(e);
-                Log.w(TAG, e);
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to clear queue");
             }
         }
     }
@@ -314,9 +302,8 @@ public final class PlayerController {
                 playerService.changeSong(queuePosition);
                 artwork = null;
                 updateUi();
-            } catch (RemoteException e) {
-                Crashlytics.logException(e);
-                Log.w(TAG, e);
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to change song");
             }
         }
     }
@@ -331,10 +318,8 @@ public final class PlayerController {
         if (playerService != null) {
             try {
                 playerService.editQueue(queue, queuePosition);
-            } catch (RemoteException e) {
-                Crashlytics.logException(e);
-                Log.w(TAG, e);
-
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to edit queue");
             }
         }
     }
@@ -348,9 +333,8 @@ public final class PlayerController {
         if (playerService != null) {
             try {
                 playerService.queueNext(song);
-            } catch (RemoteException e) {
-                Crashlytics.logException(e);
-                Log.w(TAG, e);
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to queue next song");
             }
         }
     }
@@ -364,9 +348,8 @@ public final class PlayerController {
         if (playerService != null) {
             try {
                 playerService.queueNextList(songs);
-            } catch (RemoteException e) {
-                Crashlytics.logException(e);
-                Log.w(TAG, e);
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to queue next songs");
             }
         }
     }
@@ -380,9 +363,8 @@ public final class PlayerController {
         if (playerService != null) {
             try {
                 playerService.queueLast(song);
-            } catch (RemoteException e) {
-                Crashlytics.logException(e);
-                Log.w(TAG, e);
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to queue last song");
             }
         }
     }
@@ -396,9 +378,8 @@ public final class PlayerController {
         if (playerService != null) {
             try {
                 playerService.queueLastList(songs);
-            } catch (RemoteException e) {
-                Crashlytics.logException(e);
-                Log.w(TAG, e);
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to queue last songs");
             }
         }
     }
@@ -411,9 +392,8 @@ public final class PlayerController {
         if (playerService != null) {
             try {
                 playerService.seekTo(position);
-            } catch (RemoteException e) {
-                Crashlytics.logException(e);
-                Log.w(TAG, e);
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to seek");
             }
         }
     }
@@ -428,9 +408,8 @@ public final class PlayerController {
 
         try {
             return playerService.isPlaying();
-        } catch (RemoteException e) {
-            Crashlytics.logException(e);
-            Log.w(TAG, e);
+        } catch (RemoteException exception) {
+            Timber.e(exception, "Failed to check playing state");
             return false;
         }
     }
@@ -445,9 +424,8 @@ public final class PlayerController {
 
         try {
             return playerService.getNowPlaying();
-        } catch (RemoteException e) {
-            Crashlytics.logException(e);
-            Log.w(TAG, e);
+        } catch (RemoteException exception) {
+            Timber.e(exception, "Failed to get current song");
             return null;
         }
     }
@@ -462,9 +440,8 @@ public final class PlayerController {
 
         try {
             return playerService.getQueue();
-        } catch (RemoteException e) {
-            Crashlytics.logException(e);
-            Log.w(TAG, e);
+        } catch (RemoteException exception) {
+            Timber.e(exception, "Failed to get current queue");
             return Collections.emptyList();
         }
     }
@@ -479,9 +456,8 @@ public final class PlayerController {
 
         try {
             return playerService.getQueuePosition();
-        } catch (RemoteException e) {
-            Crashlytics.logException(e);
-            Log.w(TAG, e);
+        } catch (RemoteException exception) {
+            Timber.e(exception, "Failed to get current queue position");
             return 0;
         }
     }
@@ -496,9 +472,8 @@ public final class PlayerController {
 
         try {
             return playerService.getQueueSize();
-        } catch (RemoteException e) {
-            Crashlytics.logException(e);
-            Log.w(TAG, e);
+        } catch (RemoteException exception) {
+            Timber.e(exception, "Failed to get queue size");
             return 0;
         }
     }
@@ -513,9 +488,8 @@ public final class PlayerController {
 
         try {
             return playerService.getCurrentPosition();
-        } catch (RemoteException e) {
-            Crashlytics.logException(e);
-            Log.w(TAG, e);
+        } catch (RemoteException exception) {
+            Timber.e(exception, "Failed to get current position");
             return 0;
         }
     }
@@ -529,9 +503,8 @@ public final class PlayerController {
         }
         try {
             return playerService.getDuration();
-        } catch (RemoteException e) {
-            Crashlytics.logException(e);
-            Log.w(TAG, e);
+        } catch (RemoteException exception) {
+            Timber.e(exception, "Failed to get song duration");
             return Integer.MAX_VALUE;
         }
     }
@@ -553,9 +526,8 @@ public final class PlayerController {
     public static int getAudioSessionId() {
         try {
             return playerService.getAudioSessionId();
-        } catch (RemoteException e) {
-            Crashlytics.logException(e);
-            Log.w(TAG, e);
+        } catch (RemoteException exception) {
+            Timber.e(exception, "Failed to get audio session ID");
             return 0;
         }
     }

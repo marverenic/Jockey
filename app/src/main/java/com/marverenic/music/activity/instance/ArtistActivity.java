@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -46,6 +45,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import rx.android.schedulers.AndroidSchedulers;
+import timber.log.Timber;
 
 public class ArtistActivity extends BaseActivity {
 
@@ -153,7 +153,7 @@ public class ArtistActivity extends BaseActivity {
                                 }
                             },
                             throwable -> {
-                                Log.e(TAG, "Failed to find artist", throwable);
+                                Timber.e(throwable, "Failed to find artist");
                             });
         }
         setupAdapter();

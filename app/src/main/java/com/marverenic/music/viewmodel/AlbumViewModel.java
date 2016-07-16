@@ -14,7 +14,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.PopupMenu;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
@@ -41,6 +40,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
+
+import timber.log.Timber;
 
 public class AlbumViewModel extends BaseObservable {
 
@@ -157,7 +158,7 @@ public class AlbumViewModel extends BaseObservable {
                     mMusicStore.getSongs(mAlbum).subscribe(
                             PlayerController::queueNext,
                             throwable -> {
-                                Log.e(TAG, "Failed to get songs", throwable);
+                                Timber.e(throwable, "Failed to get songs");
                             });
 
                     return true;
@@ -165,7 +166,7 @@ public class AlbumViewModel extends BaseObservable {
                     mMusicStore.getSongs(mAlbum).subscribe(
                             PlayerController::queueLast,
                             throwable -> {
-                                Log.e(TAG, "Failed to get songs", throwable);
+                                Timber.e(throwable, "Failed to get songs");
                             });
 
                     return true;
@@ -175,7 +176,7 @@ public class AlbumViewModel extends BaseObservable {
                                 Navigate.to(mContext, ArtistActivity.class,
                                         ArtistActivity.ARTIST_EXTRA, artist);
                             }, throwable -> {
-                                Log.e(TAG, "Failed to find artist", throwable);
+                                Timber.e(throwable, "Failed to find artist");
                             });
 
                     return true;
@@ -188,7 +189,7 @@ public class AlbumViewModel extends BaseObservable {
                                         .showSnackbarIn(R.id.list)
                                         .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
                             }, throwable -> {
-                                Log.e(TAG, "Failed to get songs", throwable);
+                                Timber.e(throwable, "Failed to get songs");
                             });
 
                     return true;
@@ -214,7 +215,7 @@ public class AlbumViewModel extends BaseObservable {
         @Override
         public void onLoadFailed(Exception e, Drawable errorDrawable) {
             mTarget.set(errorDrawable);
-            Log.e(TAG, "failed to load thumbnail", e);
+            Timber.e(e, "failed to load thumbnail");
         }
 
         @Override

@@ -3,7 +3,6 @@ package com.marverenic.music.data.store;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
-import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
@@ -26,6 +25,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
+import timber.log.Timber;
 
 public class LocalPlaylistStore implements PlaylistStore {
 
@@ -113,7 +113,7 @@ public class LocalPlaylistStore implements PlaylistStore {
                     .subscribe(contents -> {
                         editPlaylist(playlist, contents);
                     }, throwable -> {
-                        Log.e(TAG, "Failed to save playlist contents", throwable);
+                        Timber.e(throwable, "Failed to save playlist contents");
                     });
         }
 
@@ -235,7 +235,7 @@ public class LocalPlaylistStore implements PlaylistStore {
                         Crashlytics.logException(e);
                     }
                 }, throwable -> {
-                    Log.e(TAG, "makePlaylist: Failed to initialize contents", throwable);
+                    Timber.e(throwable, "makePlaylist: Failed to initialize contents");
                 });
     }
 

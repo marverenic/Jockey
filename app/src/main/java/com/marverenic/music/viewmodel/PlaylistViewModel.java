@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.databinding.BaseObservable;
 import android.support.v7.widget.PopupMenu;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
@@ -21,6 +20,8 @@ import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Navigate;
 
 import javax.inject.Inject;
+
+import timber.log.Timber;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -96,7 +97,7 @@ public class PlaylistViewModel extends BaseObservable {
                     mPlaylistStore.getSongs(mPlaylist).subscribe(
                             PlayerController::queueNext,
                             throwable -> {
-                                Log.e(TAG, "Failed to get songs", throwable);
+                                Timber.e(throwable, "Failed to get songs");
                             });
 
                     return true;
@@ -104,7 +105,7 @@ public class PlaylistViewModel extends BaseObservable {
                     mPlaylistStore.getSongs(mPlaylist).subscribe(
                             PlayerController::queueLast,
                             throwable -> {
-                                Log.e(TAG, "Failed to get songs", throwable);
+                                Timber.e(throwable, "Failed to get songs");
                             });
 
                     return true;
@@ -123,7 +124,7 @@ public class PlaylistViewModel extends BaseObservable {
                     mPlaylistStore.getSongs(mPlaylist).subscribe(
                             PlayerController::queueNext,
                             throwable -> {
-                                Log.e(TAG, "Failed to get songs", throwable);
+                                Timber.e(throwable, "Failed to get songs");
                             });
 
                     return true;
@@ -131,7 +132,7 @@ public class PlaylistViewModel extends BaseObservable {
                     mPlaylistStore.getSongs(mPlaylist).subscribe(
                             PlayerController::queueLast,
                             throwable -> {
-                                Log.e(TAG, "Failed to get songs", throwable);
+                                Timber.e(throwable, "Failed to get songs");
                             });
 
                     return true;

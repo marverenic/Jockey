@@ -1,7 +1,6 @@
 package com.marverenic.music.lastfm.data.store;
 
 import android.support.v4.util.SimpleArrayMap;
-import android.util.Log;
 
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.lastfm.api.LastFmService;
@@ -36,7 +35,6 @@ public class NetworkLastFmStore implements LastFmStore {
                                     + response.code()
                                     + "\n" + response.message();
 
-                            if (DEBUG) Log.e(TAG, message);
                             throw Exceptions.propagate(new IOException(message));
                         }
 
