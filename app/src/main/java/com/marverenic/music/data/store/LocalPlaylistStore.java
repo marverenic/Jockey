@@ -232,7 +232,7 @@ public class LocalPlaylistStore implements PlaylistStore {
                     try {
                         writeAutoPlaylistConfiguration(playlist);
                     } catch (IOException e) {
-                        Crashlytics.logException(e);
+                        Timber.e(e, "Failed to write autoPlaylist configuration");
                     }
                 }, throwable -> {
                     Timber.e(throwable, "makePlaylist: Failed to initialize contents");

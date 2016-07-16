@@ -126,7 +126,8 @@ public class ArtistActivity extends BaseActivity {
             mLfmStore.getArtistInfo(mReference.getArtistName())
                     .compose(bindToLifecycle())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(this::setLastFmReference, Crashlytics::logException);
+                    .subscribe(this::setLastFmReference,
+                            throwable -> Timber.e(throwable, "Failed to get Last.fm artist info"));
         }
     }
 

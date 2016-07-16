@@ -19,7 +19,6 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.KeyEvent;
 
-import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.NowPlayingActivity;
@@ -192,7 +191,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                     Timber.i("init: Initialized play count store values");
                 }, throwable -> {
                     Timber.e(throwable, "init: Failed to read play count store values");
-                    Crashlytics.logException(throwable);
                 });
 
         // Initialize the media player
@@ -289,8 +287,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             try {
                 mEqualizer.setProperties(eqSettings);
             } catch (IllegalArgumentException | UnsupportedOperationException e) {
-                Crashlytics.logException(new RuntimeException(
-                        "Failed to load equalizer settings: " + eqSettings, e));
+                Timber.e(e, "Failed to load equalizer settings %s", eqSettings);
             }
         }
         mEqualizer.setEnabled(preferencesStore.getEqualizerEnabled());
@@ -982,8 +979,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
     @Override
     public void onSetDataSourceException(IOException e) {
-        Crashlytics.logException(
-                new IOException("Failed to play song " + getNowPlaying().getLocation(), e));
+        Timber.e(e, "Failed to play song %s", getNowPlaying().getLocation());
 
         postError(mContext.getString(
                 (e instanceof FileNotFoundException)
