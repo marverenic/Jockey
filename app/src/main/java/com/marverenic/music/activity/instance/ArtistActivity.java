@@ -11,7 +11,6 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.crashlytics.android.Crashlytics;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
@@ -99,7 +98,10 @@ public class ArtistActivity extends BaseActivity {
                         songs -> {
                             mSongs = songs;
                             setupAdapter();
+                        }, throwable -> {
+                            Timber.e(throwable, "Failed to get song contents");
                         });
+
         mMusicStore.getAlbums(mReference)
                 .compose(bindToLifecycle())
                 .subscribe(
@@ -115,6 +117,8 @@ public class ArtistActivity extends BaseActivity {
                             }
 
                             setupAdapter();
+                        }, throwable -> {
+                            Timber.e(throwable, "Failed to get album contents");
                         });
 
         mRecyclerView = (RecyclerView) findViewById(R.id.list);

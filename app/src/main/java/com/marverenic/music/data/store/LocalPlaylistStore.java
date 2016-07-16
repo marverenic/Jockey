@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.marverenic.music.R;
@@ -75,6 +74,8 @@ public class LocalPlaylistStore implements PlaylistStore {
                         } else {
                             mPlaylists.onNext(Collections.emptyList());
                         }
+                    }, throwable -> {
+                        Timber.e(throwable, "Failed to query MediaStore for playlists");
                     });
         }
         return mPlaylists.asObservable().observeOn(AndroidSchedulers.mainThread());

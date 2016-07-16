@@ -65,6 +65,8 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
                         songs -> {
                             mSongs = songs;
                             setupAdapter();
+                        }, throwable -> {
+                            Timber.e(throwable, "Failed to get playlist contents");
                         });
 
         getSupportActionBar().setTitle(mReference.getPlaylistName());

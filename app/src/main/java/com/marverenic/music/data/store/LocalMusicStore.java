@@ -17,6 +17,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
+import timber.log.Timber;
 
 public class LocalMusicStore implements MusicStore {
 
@@ -70,6 +71,8 @@ public class LocalMusicStore implements MusicStore {
                         } else {
                             mSongs.onNext(Collections.emptyList());
                         }
+                    }, throwable -> {
+                        Timber.e(throwable, "Failed to query MediaStore for songs");
                     });
         }
         return mSongs.asObservable().observeOn(AndroidSchedulers.mainThread());
@@ -158,6 +161,8 @@ public class LocalMusicStore implements MusicStore {
                         } else {
                             mAlbums.onNext(Collections.emptyList());
                         }
+                    }, throwable -> {
+                        Timber.e(throwable, "Failed to query MediaStore for albums");
                     });
         }
         return mAlbums.asObservable().observeOn(AndroidSchedulers.mainThread());
@@ -187,6 +192,8 @@ public class LocalMusicStore implements MusicStore {
                         } else {
                             mArtists.onNext(Collections.emptyList());
                         }
+                    }, throwable -> {
+                        Timber.e(throwable, "Failed to query MediaStore for artists");
                     });
         }
         return mArtists.asObservable().observeOn(AndroidSchedulers.mainThread());
@@ -209,6 +216,8 @@ public class LocalMusicStore implements MusicStore {
                         } else {
                             mGenres.onNext(Collections.emptyList());
                         }
+                    }, throwable -> {
+                        Timber.e(throwable, "Failed to query MediaStore for genres");
                     });
         }
         return mGenres.asObservable().observeOn(AndroidSchedulers.mainThread());

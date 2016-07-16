@@ -118,6 +118,8 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
                     choiceNames.toArray(mChoiceNames);
 
                     showDialog();
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to get playlists");
                 });
     }
 

@@ -8,7 +8,6 @@ import android.provider.MediaStore;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -84,6 +83,8 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 .subscribe(playlists -> {
                     mPlaylistSection.setData(playlists);
                     mAdapter.notifyDataSetChanged();
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to search for playlists");
                 });
 
         mQueryObservable
@@ -92,6 +93,8 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 .subscribe(songs -> {
                     mSongSection.setData(songs);
                     mAdapter.notifyDataSetChanged();
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to search for songs");
                 });
 
         mQueryObservable
@@ -100,6 +103,8 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 .subscribe(albums -> {
                     mAlbumSection.setData(albums);
                     mAdapter.notifyDataSetChanged();
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to search for albums");
                 });
 
         mQueryObservable
@@ -108,6 +113,8 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 .subscribe(artists -> {
                     mArtistSection.setData(artists);
                     mAdapter.notifyDataSetChanged();
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to search for artists");
                 });
 
         mQueryObservable
@@ -116,6 +123,8 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 .subscribe(genres -> {
                     mGenreSection.setData(genres);
                     mAdapter.notifyDataSetChanged();
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to search for genres");
                 });
 
         handleIntent(getIntent());

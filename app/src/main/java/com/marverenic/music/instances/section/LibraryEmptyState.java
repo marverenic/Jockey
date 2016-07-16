@@ -17,6 +17,7 @@ import com.marverenic.music.data.store.PlaylistStore;
 import javax.inject.Inject;
 
 import rx.Observable;
+import timber.log.Timber;
 
 import static android.support.design.widget.Snackbar.LENGTH_SHORT;
 
@@ -99,6 +100,8 @@ public class LibraryEmptyState extends BasicEmptyState {
                         Snackbar.make(container, R.string.confirm_refresh_library, LENGTH_SHORT)
                                 .show();
                     }
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to refresh library");
                 });
     }
 
