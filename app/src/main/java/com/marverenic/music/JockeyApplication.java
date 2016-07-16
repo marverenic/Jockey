@@ -10,9 +10,11 @@ import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.data.inject.ContextModule;
 import com.marverenic.music.data.inject.DaggerJockeyComponent;
 import com.marverenic.music.data.inject.JockeyComponent;
+import com.marverenic.music.utils.CrashlyticsTree;
 import com.marverenic.music.utils.compat.JockeyPreferencesCompat;
 
 import io.fabric.sdk.android.Fabric;
+import timber.log.Timber;
 
 public class JockeyApplication extends Application {
 
@@ -20,6 +22,18 @@ public class JockeyApplication extends Application {
 
     @Override
     public void onCreate() {
+        setupStrictMode();
+        super.onCreate();
+
+        setupCrashlytics();
+        setupTimber();
+
+        createComponent();
+
+        JockeyPreferencesCompat.upgradeSharedPreferences(this);
+    }
+
+    private void setupStrictMode() {
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                     .detectDiskReads()
@@ -33,12 +47,21 @@ public class JockeyApplication extends Application {
                     .penaltyLog()
                     .build());
         }
+    }
 
-        super.onCreate();
+    private void setupCrashlytics() {
         Fabric.with(this, new Crashlytics());
+    }
 
-        JockeyPreferencesCompat.upgradeSharedPreferences(this);
+    private void setupTimber() {
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        } else {
+            Timber.plant(new CrashlyticsTree());
+        }
+    }
 
+    private void createComponent() {
         mComponent = DaggerJockeyComponent.builder()
                 .contextModule(new ContextModule(this))
                 .build();
