@@ -8,13 +8,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.marverenic.music.BuildConfig;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.annotations.PresetTheme;
@@ -26,10 +24,10 @@ import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 public abstract class BaseActivity extends RxAppCompatActivity
         implements PlayerController.UpdateListener, PlayerController.ErrorListener {
-
-    private static final boolean DEBUG = BuildConfig.DEBUG;
 
     // Used when resuming the Activity to respond to a potential theme change
     @PresetTheme
@@ -44,7 +42,6 @@ public abstract class BaseActivity extends RxAppCompatActivity
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        if (DEBUG) Log.i(getClass().toString(), "Called onCreate");
         JockeyApplication.getComponent(this).injectBaseActivity(this);
 
         mThemeStore.setTheme(this);
@@ -109,7 +106,6 @@ public abstract class BaseActivity extends RxAppCompatActivity
     @Override
     public void onResume() {
         super.onResume();
-        if (DEBUG) Log.i(getClass().toString(), "Called onResume");
 
         // If the theme was changed since this Activity was created, or the automatic day/night
         // theme has changed state, recreate this activity
@@ -130,20 +126,18 @@ public abstract class BaseActivity extends RxAppCompatActivity
      * @inheritDoc
      */
     @Override
-    public void onPause() {
-        super.onPause();
-        if (DEBUG) Log.i(getClass().toString(), "Called onPause");
-        PlayerController.unregisterUpdateListener(this);
-        PlayerController.unregisterErrorListener(this);
+    public void onUpdate() {
+
     }
 
     /**
      * @inheritDoc
      */
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (DEBUG) Log.i(getClass().toString(), "Called onDestroy");
+    public void onPause() {
+        super.onPause();
+        PlayerController.unregisterUpdateListener(this);
+        PlayerController.unregisterErrorListener(this);
     }
 
     /**
@@ -163,22 +157,13 @@ public abstract class BaseActivity extends RxAppCompatActivity
      */
     @Override
     public void onBackPressed() {
-        if (DEBUG) Log.i(getClass().toString(), "Called calledOnBackPressed");
+        Timber.v("onBackPressed");
         super.onBackPressed();
         Navigate.back(this);
     }
 
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public void onUpdate() {
-        if (DEBUG) Log.i(getClass().toString(), "Called onUpdate");
-    }
-
     @Override
     public void onError(String message) {
-        if (DEBUG) Log.i(getClass().toString(), "Called onError : " + message);
         showSnackbar(message);
     }
 
