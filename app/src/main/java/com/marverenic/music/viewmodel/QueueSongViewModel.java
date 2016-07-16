@@ -21,7 +21,6 @@ import timber.log.Timber;
 
 public class QueueSongViewModel extends SongViewModel {
 
-    private static final String TAG = "QueueSongViewModel";
     private static final String TAG_PLAYLIST_DIALOG = "QueueSongViewModel.PlaylistDialog";
 
     private Context mContext;

@@ -45,7 +45,6 @@ import timber.log.Timber;
 
 public class AlbumViewModel extends BaseObservable {
 
-    private static final String TAG = "AlbumViewModel";
     private static final String TAG_PLAYLIST_DIALOG = "SongViewModel.PlaylistDialog";
 
     @Inject MusicStore mMusicStore;

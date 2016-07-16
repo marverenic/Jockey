@@ -48,8 +48,6 @@ import static android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE;
 
 public class RuleViewModel extends BaseObservable {
 
-    private static final String TAG = "RuleViewModel";
-
     private Context mContext;
 
     @Inject MusicStore mMusicStore;

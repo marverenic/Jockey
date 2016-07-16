@@ -25,7 +25,6 @@ import static com.marverenic.music.activity.instance.GenreActivity.GENRE_EXTRA;
 
 public class GenreViewModel extends BaseObservable {
 
-    private static final String TAG = "GenreViewModel";
     private static final String TAG_PLAYLIST_DIALOG = "GenreViewModel.PlaylistDialog";
 
     @Inject MusicStore mMusicStore;

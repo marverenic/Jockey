@@ -21,8 +21,6 @@ import javax.inject.Inject;
 
 public class RuleHeaderViewModel extends BaseObservable {
 
-    private static final String TAG = "RuleHeaderViewModel";
-
     private static final int[] TRUNCATE_CHOICES = new int[] {
             AutoPlaylistRule.ID,
             AutoPlaylistRule.NAME,

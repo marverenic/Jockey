@@ -15,7 +15,6 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v7.app.NotificationCompat;
 import android.view.KeyEvent;
 
-import com.marverenic.music.BuildConfig;
 import com.marverenic.music.IPlayerService;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.RemotePreferencesStore;
@@ -28,9 +27,6 @@ import java.util.List;
 import timber.log.Timber;
 
 public class PlayerService extends Service implements MusicPlayer.OnPlaybackChangeListener {
-
-    private static final String TAG = "PlayerService";
-    private static final boolean DEBUG = BuildConfig.DEBUG;
 
     public static final String ACTION_STOP = "PlayerService.stop";
 

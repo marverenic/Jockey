@@ -2,7 +2,6 @@ package com.marverenic.music.lastfm.data.store;
 
 import android.support.v4.util.SimpleArrayMap;
 
-import com.marverenic.music.BuildConfig;
 import com.marverenic.music.lastfm.api.LastFmService;
 import com.marverenic.music.lastfm.model.LfmArtist;
 
@@ -12,9 +11,6 @@ import rx.Observable;
 import rx.exceptions.Exceptions;
 
 public class NetworkLastFmStore implements LastFmStore {
-
-    private static final String TAG = "NetworkLastFmStore";
-    private static final boolean DEBUG = BuildConfig.DEBUG;
 
     private LastFmService mService;
     private SimpleArrayMap<String, Observable<LfmArtist>> mCachedArtistInfo;

@@ -48,8 +48,6 @@ import timber.log.Timber;
 
 public class ArtistActivity extends BaseActivity {
 
-    private static final String TAG = "ArtistActivity";
-
     public static final String ARTIST_EXTRA = "artist";
 
     @Inject MusicStore mMusicStore;

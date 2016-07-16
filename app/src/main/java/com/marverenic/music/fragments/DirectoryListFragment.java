@@ -40,8 +40,6 @@ import timber.log.Timber;
 public class DirectoryListFragment extends Fragment implements View.OnClickListener,
         DirectoryDialogFragment.OnDirectoryPickListener {
 
-    private static final String TAG = "DirectoryListFragment";
-
     private static final String KEY_EXCLUDE_FLAG = "DirectoryListFragment.exclude";
     private static final String TAG_DIR_DIALOG = "DirectoryListFragment_DirectoryDialog";
 

@@ -44,7 +44,6 @@ import timber.log.Timber;
 
 public class NowPlayingControllerViewModel extends BaseObservable {
 
-    private static final String TAG = "NowPlayingControllerViewModel";
     private static final String TAG_PLAYLIST_DIALOG = "AppendPlaylistDialog";
 
     private Context mContext;

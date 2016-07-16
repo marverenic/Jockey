@@ -20,8 +20,6 @@ import timber.log.Timber;
 
 public class PlaylistSongViewModel extends SongViewModel {
 
-    private static final String TAG = "PlaylistSongViewModel";
-
     private Context mContext;
     private OnRemoveListener mRemoveListener;
 

@@ -45,7 +45,6 @@ import static android.support.design.widget.Snackbar.LENGTH_SHORT;
 
 public class LibraryActivity extends BaseActivity implements View.OnClickListener {
 
-    private static final String TAG = "LibraryActivity";
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
 
     @Inject MusicStore mMusicStore;

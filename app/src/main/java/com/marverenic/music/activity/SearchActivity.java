@@ -47,8 +47,6 @@ import timber.log.Timber;
 
 public class SearchActivity extends BaseActivity implements SearchView.OnQueryTextListener {
 
-    private static final String TAG = "SearchActivity";
-
     @Inject MusicStore mMusicStore;
     @Inject PlaylistStore mPlaylistStore;
 

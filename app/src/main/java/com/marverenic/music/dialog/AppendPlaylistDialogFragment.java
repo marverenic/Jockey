@@ -27,8 +27,6 @@ import timber.log.Timber;
 
 public class AppendPlaylistDialogFragment extends DialogFragment {
 
-    private static final String TAG = "AppendPlaylistDialogFragment";
-
     private static final String TAG_MAKE_PLAYLIST = "CreateNewPlaylistDialog";
     private static final String SAVED_TITLE = "AppendPlaylistDialogFragment.Title";
     private static final String SAVED_SONG = "AppendPlaylistDialogFragment.Song";

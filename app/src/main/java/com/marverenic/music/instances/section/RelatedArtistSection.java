@@ -31,8 +31,6 @@ import timber.log.Timber;
 
 public class RelatedArtistSection extends HeterogeneousAdapter.ListSection<LfmArtist> {
 
-    private static final String TAG = "RelatedArtistSection";
-
     private MusicStore mMusicStore;
 
     public RelatedArtistSection(MusicStore musicStore, @NonNull List<LfmArtist> data) {

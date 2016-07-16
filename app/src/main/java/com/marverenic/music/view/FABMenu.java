@@ -30,8 +30,6 @@ import timber.log.Timber;
 
 public class FABMenu extends FloatingActionButton implements View.OnClickListener {
 
-    private static final String TAG = "FABMenu";
-
     private static final int SIZE_L_DP = 56;
     private static final int SIZE_S_DP = 40;
 

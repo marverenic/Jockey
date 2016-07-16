@@ -27,8 +27,6 @@ import timber.log.Timber;
 
 public class MiniplayerViewModel extends BaseObservable {
 
-    private static final String TAG = "MiniplayerViewModel";
-
     private Context mContext;
 
     @Nullable

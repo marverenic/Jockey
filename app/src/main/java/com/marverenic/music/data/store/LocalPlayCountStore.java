@@ -20,8 +20,6 @@ import timber.log.Timber;
 
 public class LocalPlayCountStore implements PlayCountStore {
 
-    private static final String TAG = "LocalPlayCountStore";
-
     private static final String PLAY_COUNT_FILENAME = ".playcount";
     private static final String PLAY_COUNT_HEADER = "This file contains play count information for "
             + "Jockey and should not be edited";

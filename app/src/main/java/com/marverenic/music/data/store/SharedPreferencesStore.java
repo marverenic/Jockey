@@ -21,8 +21,6 @@ import timber.log.Timber;
 
 public class SharedPreferencesStore implements PreferencesStore {
 
-    private static final String TAG = "SharedPreferencesStore";
-
     private Context mContext;
     private SharedPreferences mPrefs;
 

@@ -29,8 +29,6 @@ import static com.marverenic.music.activity.instance.PlaylistActivity.PLAYLIST_E
 
 public class PlaylistViewModel extends BaseObservable {
 
-    private static final String TAG = "PlaylistViewModel";
-
     @Inject PlaylistStore mPlaylistStore;
 
     private Context mContext;

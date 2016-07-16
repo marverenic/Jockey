@@ -28,7 +28,6 @@ import timber.log.Timber;
 
 public class LocalPlaylistStore implements PlaylistStore {
 
-    private static final String TAG = "LocalPlaylistStore";
     private static final String AUTO_PLAYLIST_EXTENSION = ".jpl";
 
     // Used to generate Auto Playlist contents

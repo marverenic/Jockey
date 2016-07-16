@@ -25,7 +25,6 @@ import static com.marverenic.music.activity.instance.ArtistActivity.ARTIST_EXTRA
 
 public class ArtistViewModel extends BaseObservable {
 
-    private static final String TAG = "ArtistViewModel";
     private static final String TAG_PLAYLIST_DIALOG = "SongViewModel.PlaylistDialog";
 
     @Inject MusicStore mMusicStore;

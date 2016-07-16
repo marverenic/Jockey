@@ -10,8 +10,6 @@ import timber.log.Timber;
 
 public class RemotePreferencesStore implements ReadOnlyPreferencesStore, Parcelable {
 
-    private static final String TAG = "RemotePreferencesStore";
-
     private final boolean mShowFirstStart;
     private final boolean mAllowLogging;
     private final boolean mUseMobileNetwork;
