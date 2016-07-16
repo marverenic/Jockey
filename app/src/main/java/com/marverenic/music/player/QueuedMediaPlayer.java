@@ -119,6 +119,7 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
      * @param queue The replacement queue
      */
     public void setQueue(@NonNull List<Song> queue) {
+        Timber.i("setQueue called (%d items)", queue.size());
         if (queue.size() >= mQueue.size()) {
             setQueue(queue, mQueueIndex);
         } else {
@@ -134,6 +135,7 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
      * @param index The replacement queue index
      */
     public void setQueue(@NonNull List<Song> queue, int index) {
+        Timber.i("setQueue called (%d items, start index: %d)", queue.size(), index);
         if (queue.isEmpty()) {
             reset();
             return;
@@ -157,6 +159,7 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
      *                        match the modification
      */
     public void setQueueIndex(int index) {
+        Timber.i("setQueueIndex(%d) called", index);
         if (index < 0 || index >= mQueue.size() && index != 0) {
             throw new IllegalArgumentException("index must be between 0 and queue.size");
         }
@@ -175,6 +178,7 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
      * won't affect playback until {@link #prepare(boolean)} is called
      */
     private void incrementQueueIndex() {
+        Timber.i("incrementQueueIndex called");
         mQueueIndex++;
         if (mQueueIndex >= mQueue.size()) {
             mQueueIndex -= mQueue.size();
@@ -186,6 +190,7 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
      * method won't affect playback until {@link #prepare(boolean)} is called
      */
     private void decrementQueueIndex() {
+        Timber.i("decrementQueueIndex called");
         mQueueIndex--;
         if (mQueueIndex < 0) {
             mQueueIndex += mQueue.size();
@@ -196,6 +201,7 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
      * Swaps the references of {@link #mCurrentPlayer} and {@link #mNextPlayer}
      */
     private void swapMediaPlayers() {
+        Timber.i("Swapping media players");
         ManagedMediaPlayer previous = mCurrentPlayer;
         mCurrentPlayer = mNextPlayer;
         mNextPlayer = previous;
@@ -209,6 +215,7 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
      *                      preserve the player's current status
      */
     public void prepare(boolean playWhenReady) {
+        Timber.i("prepare(%b) called", playWhenReady);
         prepareCurrentPlayer(playWhenReady);
         prepareNextPlayer();
     }
@@ -219,6 +226,8 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
      *                      has finished being prepared.
      */
     private void prepareCurrentPlayer(boolean playWhenReady) {
+        Timber.i("Preparing current player...");
+
         mCurrentPlayer.reset();
         Song curr = getNowPlaying();
 
@@ -230,9 +239,12 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
                 mCurrentPlayer.setDataSource(mContext, Uri.fromFile(source));
                 mCurrentPlayer.prepareAsync();
             } catch (IOException e) {
+                Timber.e(e, "Failed to prepare current player");
                 if (mCallback != null) {
+                    Timber.i("Delegating callback to handle exception");
                     mCallback.onSetDataSourceException(e);
                 } else {
+                    Timber.i("Handling error by resetting current player");
                     mCurrentPlayer.reset();
                 }
             }
@@ -243,6 +255,8 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
      * Asynchronously sets the data source of the next player reference
      */
     private void prepareNextPlayer() {
+        Timber.i("Preparing next player...");
+
         mNextPlayer.reset();
         Song next = getNext();
         if (next != null) {
@@ -268,16 +282,20 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
      * possible.
      */
     public void skip() {
+        Timber.i("Skipping current song");
+
         incrementQueueIndex();
 
         mCurrentPlayer.reset();
         swapMediaPlayers();
         if (mCurrentPlayer.isPrepared() || mCurrentPlayer.isComplete()) {
+            Timber.i("MediaPlayer is ready. Beginning playback now.");
             mCurrentPlayer.start();
             if (mCallback != null) {
                 mCallback.onSongStart();
             }
         } else {
+            Timber.i("MediaPlayer isn't ready yet.");
             prepareCurrentPlayer(true);
         }
         prepareNextPlayer();
@@ -291,12 +309,16 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
      * likely have been repurposed and will be reset before it can be used to play the previous song
      */
     public void skipPrevious() {
+        Timber.i("Skipping to previous song");
+
         decrementQueueIndex();
 
+        Timber.i("Resetting current media player to reuse it later");
         mCurrentPlayer.seekTo(0);
         mCurrentPlayer.pause();
 
         swapMediaPlayers();
+        Timber.i("Starting playback of previous song");
         prepareCurrentPlayer(true);
     }
 
@@ -309,6 +331,8 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
+        Timber.e("Error (%d, %d)", what, extra);
+
         if (mp.equals(mCurrentPlayer)) {
             mPlayWhenPrepared = false;
         }
@@ -324,10 +348,13 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
     @Override
     public void onPrepared(MediaPlayer mp) {
         if (mp.equals(mCurrentPlayer)) {
+            Timber.i("Current MediaPlayer is prepared");
+
             mCurrentPlayer.seekTo(mRequestedSeekPosition);
             mRequestedSeekPosition = 0;
 
             if (mPlayWhenPrepared) {
+                Timber.i("This MediaPlayer was waiting to be started. Beginning playback...");
                 mPlayWhenPrepared = false;
                 play();
             }
@@ -346,8 +373,10 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
         if (getState() == ManagedMediaPlayer.Status.PREPARED
                 || getState() == ManagedMediaPlayer.Status.STARTED
                 || getState() == ManagedMediaPlayer.Status.PAUSED) {
+            Timber.i("Seeking to %d", mSec);
             mCurrentPlayer.seekTo(mSec);
         } else {
+            Timber.i("Current MediaPlayer isn't ready yet. Deferring seek to %d", mSec);
             mRequestedSeekPosition = mSec;
         }
     }
@@ -357,6 +386,7 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
      * @see MediaPlayer#stop()
      */
     public void stop() {
+        Timber.w("Stop called. Future playback may be inconsistent.");
         // TODO make sure that the state is correctly restored when calling play() after this
         mCurrentPlayer.stop();
     }
@@ -367,6 +397,7 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
      * @see MediaPlayer#start()
      */
     public void play() {
+        Timber.i("play() called");
         mCurrentPlayer.start();
     }
 
@@ -375,6 +406,7 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
      * @see MediaPlayer#pause()
      */
     public void pause() {
+        Timber.i("pause() called");
         mCurrentPlayer.pause();
     }
 
@@ -535,6 +567,8 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
      * @see MediaPlayer#reset()
      */
     public void reset() {
+        Timber.i("resetting QueuedMediaPlayer...");
+
         mCurrentPlayer.reset();
         mNextPlayer.reset();
 
@@ -551,6 +585,8 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
      * @see MediaPlayer#release()
      */
     public void release() {
+        Timber.i("Releasing QueuedMediaPlayer...");
+
         mCurrentPlayer.release();
         mNextPlayer.release();
         mCurrentPlayer = null;

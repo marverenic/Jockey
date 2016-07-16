@@ -73,6 +73,7 @@ public class DragDropAdapter extends HeterogeneousAdapter {
                 ((DragMarker) viewHolder.itemView.getTag()).from - leadingViews,
                 viewHolder.getAdapterPosition() - leadingViews);
         viewHolder.itemView.setTag(null);
+        notifyDataSetChanged();
     }
 
     public static abstract class DragSection<Type> extends Section<Type> {

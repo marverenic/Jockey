@@ -218,6 +218,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * Reloads shuffle and repeat preferences from {@link SharedPreferences}
      */
     private void loadPrefs() {
+        Timber.i("Loading SharedPreferences...");
         // SharedPreferencesStore is backed by an instance of SharedPreferences. Because
         // SharedPreferences isn't safe to use across processes, the only time we can get valid
         // data is right after we open the SharedPreferences for the first time in this process.
@@ -238,6 +239,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @param preferencesStore The preference store to read values from
      */
     public void updatePreferences(ReadOnlyPreferencesStore preferencesStore) {
+        Timber.i("Updating preferences...");
         if (preferencesStore.isShuffled() != mShuffle) {
             setShuffle(preferencesStore.isShuffled());
         }
@@ -249,6 +251,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * Initiate a MediaSession to allow the Android system to interact with the player
      */
     private void initMediaSession() {
+        Timber.i("Initializing MediaSession");
         mMediaSession = new MediaSessionCompat(mContext, TAG, null, null);
 
         mMediaSession.setCallback(new MediaSessionCallback(this));
@@ -280,6 +283,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * Reload all equalizer settings from SharedPreferences
      */
     private void initEqualizer(ReadOnlyPreferencesStore preferencesStore) {
+        Timber.i("Initializing equalizer");
         Equalizer.Settings eqSettings = preferencesStore.getEqualizerSettings();
 
         mEqualizer = new Equalizer(0, mMediaPlayer.getAudioSessionId());
@@ -308,6 +312,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @see #loadState()
      */
     public void saveState() throws IOException {
+        Timber.i("Saving player state");
         // Anticipate the outcome of a command so that if we're killed right after it executes,
         // we can restore to the proper state
         int reloadSeekPosition = mMediaPlayer.getCurrentPosition();
@@ -331,9 +336,15 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 + queueLength + queue + queueShuffled;
 
         File save = new File(mContext.getExternalFilesDir(null), QUEUE_FILE);
-        FileOutputStream stream = new FileOutputStream(save);
-        stream.write(output.getBytes());
-        stream.close();
+        FileOutputStream stream = null;
+        try {
+            stream = new FileOutputStream(save);
+            stream.write(output.getBytes());
+        } finally {
+            if (stream != null) {
+                stream.close();
+            }
+        }
     }
 
     /**
@@ -341,9 +352,11 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @see #saveState()
      */
     public void loadState() {
+        Timber.i("Loading state...");
+        Scanner scanner = null;
         try {
             File save = new File(mContext.getExternalFilesDir(null), QUEUE_FILE);
-            Scanner scanner = new Scanner(save);
+            scanner = new Scanner(save);
 
             int currentPosition = scanner.nextInt();
             int queuePosition = scanner.nextInt();
@@ -371,11 +384,17 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             setBackingQueue(queuePosition);
             mArtwork = Util.fetchFullArt(getNowPlaying());
         } catch(FileNotFoundException ignored) {
+            Timber.i("State does not exist. Using empty state");
             // If there's no queue file, just restore to an empty state
         } catch (NoSuchElementException e) {
+            Timber.i("Failed to parse previous state. Resetting...");
             mQueue.clear();
             mQueueShuffled.clear();
             setBackingQueue(0);
+        } finally {
+            if (scanner != null) {
+                scanner.close();
+            }
         }
     }
 
@@ -395,6 +414,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * Updates the metadata in the attached {@link MediaSessionCompat}
      */
     private void updateMediaSession() {
+        Timber.i("Updating MediaSession");
+
         if (getNowPlaying() != null) {
             Song nowPlaying = getNowPlaying();
             MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder()
@@ -443,22 +464,28 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
     @Override
     public void onAudioFocusChange(int focusChange) {
+        Timber.i("AudioFocus changed (%d)", focusChange);
+
         switch (focusChange) {
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                 mResumeOnFocusGain = isPlaying() || mResumeOnFocusGain;
             case AudioManager.AUDIOFOCUS_LOSS:
+                Timber.i("Focus lost. Pausing music.");
                 mFocused = false;
                 pause();
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                Timber.i("Focus lost transiently. Ducking.");
                 mMediaPlayer.setVolume(DUCK_VOLUME, DUCK_VOLUME);
                 break;
             case AudioManager.AUDIOFOCUS_GAIN:
+                Timber.i("Regained AudioFocus");
                 mMediaPlayer.setVolume(1f, 1f);
                 if (mResumeOnFocusGain) play();
                 mResumeOnFocusGain = false;
                 break;
             default:
+                Timber.i("Ignoring AudioFocus state change");
                 break;
         }
         updateNowPlaying();
@@ -470,6 +497,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * has occurred, and updates the attached {@link MediaSessionCompat}
      */
     private void updateNowPlaying() {
+        Timber.i("updateNowPlaying() called");
         updateMediaSession();
         if (mCallback != null) {
             mCallback.onPlaybackChange();
@@ -481,6 +509,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * on its own (Like when a song finishes)
      */
     protected void updateUi() {
+        Timber.i("Sending broadcast to update UI process");
         mContext.sendBroadcast(new Intent(UPDATE_BROADCAST), null);
     }
 
@@ -490,6 +519,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @param message A user-friendly message associated with this error that may be shown in the UI
      */
     protected void postError(String message) {
+        Timber.i("Posting error to UI process: %s", message);
         mContext.sendBroadcast(
                 new Intent(ERROR_BROADCAST).putExtra(ERROR_EXTRA_MSG, message), null);
     }
@@ -500,6 +530,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     private boolean getFocus() {
         if (!mFocused) {
+            Timber.i("Requesting AudioFocus...");
             AudioManager audioManager =
                     (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
 
@@ -517,6 +548,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      *                     shuffled queue
      */
     private void shuffleQueue(int currentIndex) {
+        Timber.i("Shuffling queue...");
+
         if (mQueueShuffled == null) {
             mQueueShuffled = new ArrayList<>(mQueue);
         } else {
@@ -538,6 +571,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @see QueuedMediaPlayer#prepare(boolean)
      */
     public void prepare(boolean playWhenReady) {
+        Timber.i("Preparing current song...");
         mMediaPlayer.prepare(playWhenReady && getFocus());
     }
 
@@ -547,6 +581,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @see #pause()
      */
     public void togglePlay() {
+        Timber.i("Toggling playback");
         if (isPlaying()) {
             pause();
         } else {
@@ -558,6 +593,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * Pauses music playback
      */
     public void pause() {
+        Timber.i("Pausing playback");
         if (isPlaying()) {
             mMediaPlayer.pause();
             updateNowPlaying();
@@ -569,6 +605,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * Starts or resumes music playback
      */
     public void play() {
+        Timber.i("Resuming playback");
         if (!isPlaying() && getFocus()) {
             mMediaPlayer.play();
             updateNowPlaying();
@@ -583,6 +620,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @see #setRepeat(int) to set the current repeat mode
      */
     public void skip() {
+        Timber.i("Skipping song");
         if (!mMediaPlayer.isComplete()) {
             logPlay();
         }
@@ -604,15 +642,20 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * {@link MediaPlayer} as returned by {@link #getCurrentPosition()}
      */
     private void logPlay() {
+        Timber.i("Logging play count...");
         if (getNowPlaying() != null) {
             if (getCurrentPosition() > PLAY_COUNT_THRESHOLD
                     || getCurrentPosition() > getDuration() / 2) {
                 // Log a play if we're passed a certain threshold or more than 50% in a song
                 // (whichever is smaller)
+                Timber.i("Marking song as played");
                 logPlayCount(getNowPlaying(), false);
             } else if (getCurrentPosition() < SKIP_COUNT_THRESHOLD) {
                 // If we're not very far into this song, log a skip
+                Timber.i("Marking song as skipped");
                 logPlayCount(getNowPlaying(), true);
+            } else {
+                Timber.i("Not writing play count. Song was neither played nor skipped.");
             }
         }
     }
@@ -623,12 +666,14 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @param skip Whether the song was skipped (true if skipped, false if played)
      */
     private void logPlayCount(Song song, boolean skip) {
+        Timber.i("Logging play count to PlayCountStore...");
         if (skip) {
             mPlayCountStore.incrementSkipCount(song);
         } else {
             mPlayCountStore.incrementPlayCount(song);
             mPlayCountStore.setPlayDateToNow(song);
         }
+        Timber.i("Writing PlayCountStore to disk...");
         mPlayCountStore.save();
     }
 
@@ -641,11 +686,14 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @see #setRepeat(int) to set the current repeat mode
      */
     public void skipPrevious() {
+        Timber.i("skipPrevious() called");
         if (getQueuePosition() == 0 || getCurrentPosition() > SKIP_PREVIOUS_THRESHOLD
                 || getCurrentPosition() > getDuration() / 2) {
+            Timber.i("Restarting current song...");
             mMediaPlayer.seekTo(0);
             updateNowPlaying();
         } else {
+            Timber.i("Starting previous song...");
             mMediaPlayer.skipPrevious();
         }
     }
@@ -654,6 +702,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * Stops music playback
      */
     public void stop() {
+        Timber.i("stop() called");
         pause();
         seekTo(0);
     }
@@ -664,6 +713,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @see MediaPlayer#seekTo(int)
      */
     public void seekTo(int mSec) {
+        Timber.i("Seeking to %d", mSec);
         mMediaPlayer.seekTo(mSec);
     }
 
@@ -736,6 +786,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @throws IllegalArgumentException if {@code position} is not between 0 and the queue length
      */
     public void changeSong(int position) {
+        Timber.i("changeSong called (position = %d)", position);
         mMediaPlayer.setQueueIndex(position);
         prepare(true);
     }
@@ -747,6 +798,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @throws IllegalArgumentException if the current index cannot be applied to the updated queue
      */
     public void setQueue(@NonNull List<Song> queue) {
+        Timber.i("setQueue called (%d songs)", queue.size());
         setQueue(queue, mMediaPlayer.getQueueIndex());
     }
 
@@ -757,14 +809,17 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @throws IllegalArgumentException if {@code index} is not between 0 and the queue length
      */
     public void setQueue(@NonNull List<Song> queue, int index) {
+        Timber.i("setQueue called (%d songs)", queue.size());
         // If you're using this method on the UI thread, consider replacing the first line in this
         // method with "mQueue = new ArrayList<>(queue);"
         // to prevent components from accidentally changing the backing queue
         mQueue = queue;
         if (mShuffle) {
+            Timber.i("Shuffling new queue and starting from beginning");
             shuffleQueue(index);
             setBackingQueue(0);
         } else {
+            Timber.i("Setting new backing queue (starting at index %d)", index);
             setBackingQueue(index);
         }
     }
@@ -777,6 +832,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @param index The index of the song that is currently playing in the modified queue
      */
     public void editQueue(@NonNull List<Song> queue, int index) {
+        Timber.i("editQueue called (index = %d)", index);
         if (mShuffle) {
             mQueueShuffled = queue;
         } else {
@@ -790,6 +846,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @see #setBackingQueue(int)
      */
     private void setBackingQueue() {
+        Timber.i("setBackingQueue() called");
         setBackingQueue(mMediaPlayer.getQueueIndex());
     }
 
@@ -800,6 +857,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @param index The new queue index to send to the backing {@link QueuedMediaPlayer}.
      */
     private void setBackingQueue(int index) {
+        Timber.i("setBackingQueue() called (index = %d)", index);
         if (mShuffle) {
             mMediaPlayer.setQueue(mQueueShuffled, index);
         } else {
@@ -817,6 +875,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      *               will resume as it was before and the previous repeat option will be restored.
      */
     public void setRepeat(int repeat) {
+        Timber.i("Changing repeat setting to %d", repeat);
         mRepeat = repeat;
     }
 
@@ -828,9 +887,11 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     public void setShuffle(boolean shuffle) {
         if (shuffle) {
+            Timber.i("Enabling shuffle...");
             shuffleQueue(getQueuePosition());
             mMediaPlayer.setQueue(mQueueShuffled, 0);
         } else {
+            Timber.i("Disabling shuffle...");
             int position = mQueue.indexOf(mQueueShuffled.get(mMediaPlayer.getQueueIndex()));
             mMediaPlayer.setQueue(mQueue, position);
         }
@@ -843,6 +904,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @param song the song to enqueue
      */
     public void queueNext(Song song) {
+        Timber.i("queueNext(Song) called");
         int index = mQueue.isEmpty() ? 0 : mMediaPlayer.getQueueIndex() + 1;
         if (mShuffle) {
             mQueueShuffled.add(index, song);
@@ -858,6 +920,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @param songs The songs to enqueue
      */
     public void queueNext(List<Song> songs) {
+        Timber.i("queueNext(List<Song>) called");
         int index = mQueue.isEmpty() ? 0 : mMediaPlayer.getQueueIndex() + 1;
         if (mShuffle) {
             mQueueShuffled.addAll(index, songs);
@@ -873,6 +936,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @param song The song to enqueue
      */
     public void queueLast(Song song) {
+        Timber.i("queueLast(Song) called");
         if (mShuffle) {
             mQueueShuffled.add(song);
             mQueue.add(song);
@@ -887,6 +951,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @param songs The songs to enqueue
      */
     public void queueLast(List<Song> songs) {
+        Timber.i("queueLast(List<Song>)");
         if (mShuffle) {
             mQueueShuffled.addAll(songs);
             mQueue.addAll(songs);
@@ -901,6 +966,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * Once this is called, this MusicPlayer can no longer be used.
      */
     public void release() {
+        Timber.i("release() called");
         ((AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE)).abandonAudioFocus(this);
         mContext.unregisterReceiver(mHeadphoneListener);
 
@@ -943,17 +1009,22 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
     @Override
     public void onCompletion() {
+        Timber.i("onCompletion called");
         logPlay();
 
         if (mRepeat == REPEAT_NONE) {
             if (mMediaPlayer.getQueueIndex() < mMediaPlayer.getQueue().size()) {
+                Timber.i("This is not the last song in the queue. Starting next song");
                 skip();
             }
         } else if (mRepeat == REPEAT_ALL) {
+            Timber.i("Repeat all is enabled. Starting next song");
             skip();
         } else if (mRepeat == REPEAT_ONE) {
+            Timber.i("Repeat one is enabled. Restarting current song");
             mMediaPlayer.play();
         } else if (mRepeat > 0) {
+            Timber.i("Multirepeat (%d) is enabled. Reducing counter and restarting song", mRepeat);
             mRepeat--;
             mMediaPlayer.play();
         }
@@ -964,6 +1035,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
     @Override
     public void onSongStart() {
+        Timber.i("Started new song");
         mArtwork = Util.fetchFullArt(getNowPlaying());
         updateNowPlaying();
         updateUi();
@@ -971,6 +1043,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
     @Override
     public boolean onError(int what, int extra) {
+        Timber.i("onError(%d, %d). Sending error message to UI...", what, extra);
         postError(mContext.getString(
                 R.string.message_play_error_io_exception,
                 getNowPlaying().getSongName()));
