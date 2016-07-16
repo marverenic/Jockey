@@ -3,6 +3,7 @@ package com.marverenic.music.viewmodel;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.BaseObservable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.Menu;
@@ -23,6 +24,7 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
+import static android.support.design.widget.Snackbar.LENGTH_LONG;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.marverenic.music.activity.instance.PlaylistActivity.PLAYLIST_EXTRA;
@@ -92,23 +94,13 @@ public class PlaylistViewModel extends BaseObservable {
         return menuItem -> {
             switch (menuItem.getItemId()) {
                 case 0: //Queue this playlist next
-                    mPlaylistStore.getSongs(mPlaylist).subscribe(
-                            PlayerController::queueNext,
-                            throwable -> {
-                                Timber.e(throwable, "Failed to get songs");
-                            });
-
+                    queuePlaylistNext();
                     return true;
                 case 1: //Queue this playlist last
-                    mPlaylistStore.getSongs(mPlaylist).subscribe(
-                            PlayerController::queueLast,
-                            throwable -> {
-                                Timber.e(throwable, "Failed to get songs");
-                            });
-
+                    queuePlaylistLast();
                     return true;
                 case 2: //Delete this playlist
-                    mPlaylistStore.removePlaylist(mPlaylist);
+                    deletePlaylist(view);
                     return true;
             }
             return false;
@@ -119,32 +111,80 @@ public class PlaylistViewModel extends BaseObservable {
         return menuItem -> {
             switch (menuItem.getItemId()) {
                 case 0: //Queue this playlist next
-                    mPlaylistStore.getSongs(mPlaylist).subscribe(
-                            PlayerController::queueNext,
-                            throwable -> {
-                                Timber.e(throwable, "Failed to get songs");
-                            });
-
+                    queuePlaylistNext();
                     return true;
                 case 1: //Queue this playlist last
-                    mPlaylistStore.getSongs(mPlaylist).subscribe(
-                            PlayerController::queueLast,
-                            throwable -> {
-                                Timber.e(throwable, "Failed to get songs");
-                            });
-
+                    queuePlaylistLast();
                     return true;
                 case 2: //Edit this playlist
-                    AutoPlaylist autoPlaylist = (AutoPlaylist) mPlaylist;
-                    Intent intent = AutoPlaylistEditActivity.newIntent(mContext, autoPlaylist);
-                    mContext.startActivity(intent);
+                    editThisAsAutoPlaylist();
                     return true;
                 case 3: // Delete this playlist
-                    mPlaylistStore.removePlaylist(mPlaylist);
+                    deleteAutoPlaylist(view);
                     return true;
             }
             return false;
         };
+    }
+
+    private void queuePlaylistNext() {
+        mPlaylistStore.getSongs(mPlaylist).subscribe(
+                PlayerController::queueNext,
+                throwable -> {
+                    Timber.e(throwable, "Failed to get songs");
+                });
+    }
+
+    private void queuePlaylistLast() {
+        mPlaylistStore.getSongs(mPlaylist).subscribe(
+                PlayerController::queueLast,
+                throwable -> {
+                    Timber.e(throwable, "Failed to get songs");
+                });
+    }
+
+    private void editThisAsAutoPlaylist() {
+        AutoPlaylist autoPlaylist = (AutoPlaylist) mPlaylist;
+        Intent intent = AutoPlaylistEditActivity.newIntent(mContext, autoPlaylist);
+        mContext.startActivity(intent);
+    }
+
+    private void deletePlaylist(View snackbarContainer) {
+        Playlist removed = mPlaylist;
+        String playlistName = mPlaylist.getPlaylistName();
+        String message = mContext.getString(R.string.message_removed_playlist, playlistName);
+
+        mPlaylistStore.getSongs(removed)
+                .subscribe(originalContents -> {
+                    mPlaylistStore.removePlaylist(removed);
+
+                    Snackbar.make(snackbarContainer, message, LENGTH_LONG)
+                            .setAction(R.string.action_undo, view -> {
+                                mPlaylistStore.makePlaylist(playlistName, originalContents);
+                            })
+                            .show();
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to get playlist contents");
+
+                    // If we can't get the original contents of the playlist, remove it anyway but
+                    // don't give an undo option
+                    mPlaylistStore.removePlaylist(removed);
+                    Snackbar.make(snackbarContainer, message, LENGTH_LONG).show();
+                });
+    }
+
+    private void deleteAutoPlaylist(View snackbarContainer) {
+        mPlaylistStore.removePlaylist(mPlaylist);
+
+        String playlistName = mPlaylist.getPlaylistName();
+        String message = mContext.getString(R.string.message_removed_playlist, playlistName);
+        AutoPlaylist removed = (AutoPlaylist) mPlaylist;
+
+        Snackbar.make(snackbarContainer, message, LENGTH_LONG)
+                .setAction(R.string.action_undo, view -> {
+                    mPlaylistStore.makePlaylist(removed);
+                })
+                .show();
     }
 
 }
