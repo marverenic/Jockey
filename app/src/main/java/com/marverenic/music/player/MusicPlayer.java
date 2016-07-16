@@ -341,9 +341,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @see #saveState()
      */
     public void loadState() {
+        Scanner scanner = null;
         try {
             File save = new File(mContext.getExternalFilesDir(null), QUEUE_FILE);
-            Scanner scanner = new Scanner(save);
+            scanner = new Scanner(save);
 
             int currentPosition = scanner.nextInt();
             int queuePosition = scanner.nextInt();
@@ -376,6 +377,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             mQueue.clear();
             mQueueShuffled.clear();
             setBackingQueue(0);
+        } finally {
+            if (scanner != null) {
+                scanner.close();
+            }
         }
     }
 
