@@ -22,6 +22,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 public class GenreFragment extends BaseFragment {
 
     @Inject MusicStore mMusicStore;
@@ -41,8 +43,9 @@ public class GenreFragment extends BaseFragment {
                         genres -> {
                             mGenres = genres;
                             setupAdapter();
-                        },
-                        Throwable::printStackTrace);
+                        }, throwable -> {
+                            Timber.e(throwable, "Failed to get all genres from MusicStore");
+                        });
     }
 
     @Override

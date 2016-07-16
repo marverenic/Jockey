@@ -18,6 +18,8 @@ import com.marverenic.music.player.PlayerController;
 
 import java.util.UUID;
 
+import timber.log.Timber;
+
 import static android.content.Context.CONNECTIVITY_SERVICE;
 
 public final class Util {
@@ -128,7 +130,7 @@ public final class Util {
                 return BitmapFactory.decodeByteArray(stream, 0, stream.length);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e, "Failed to load full song artwork");
         }
         return null;
     }

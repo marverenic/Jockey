@@ -37,6 +37,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 import static android.support.design.widget.Snackbar.LENGTH_LONG;
 import static android.support.design.widget.Snackbar.LENGTH_SHORT;
@@ -130,7 +132,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                 position = MediaStoreUtil.getSongListFromFile(this,
                         new File(intent.getData().getPath()), intent.getType(), queue);
             } catch (Exception e) {
-                e.printStackTrace();
+                Timber.e(e, "Failed to generate queue from intent");
                 queue = new ArrayList<>();
             }
 
