@@ -129,7 +129,7 @@ public class MiniplayerViewModel extends BaseObservable {
                 .subscribe(
                         mProgress::set,
                         throwable -> {
-                            Timber.e("pollPositionSubscription: failed to update position");
+                            Timber.e(throwable, "failed to update position");
                         });
     }
 
