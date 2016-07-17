@@ -33,6 +33,11 @@ import javax.inject.Inject;
 public class PreferenceFragment extends PreferenceFragmentCompat
         implements View.OnLongClickListener {
 
+    private static final String DIRECTORY_FRAGMENT =
+            "com.marverenic.music.fragments.DirectoryListFragment";
+    private static final String EQUALIZER_FRAGMENT =
+            "com.marverenic.music.fragments.EqualizerFragment";
+
     @Inject
     PreferencesStore mPrefStore;
     @Inject
@@ -148,7 +153,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat
 
     @Override
     public boolean onPreferenceTreeClick(Preference preference) {
-        if (EqualizerFragment.class.getName().equals(preference.getFragment())) {
+        if (EQUALIZER_FRAGMENT.equals(preference.getFragment())) {
             Intent eqIntent = Util.getSystemEqIntent(getActivity());
 
             if (eqIntent != null && !mPrefStore.getEqualizerEnabled()) {
@@ -168,7 +173,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat
                         .show();
             }
             return true;
-        } else if (DirectoryListFragment.class.getName().equals(preference.getFragment())) {
+        } else if (DIRECTORY_FRAGMENT.equals(preference.getFragment())) {
             String prefKey = preference.getKey();
             boolean exclude = getString(R.string.pref_key_excluded_dirs).equals(prefKey);
 
