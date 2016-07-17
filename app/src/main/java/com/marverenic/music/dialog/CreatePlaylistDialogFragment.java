@@ -34,7 +34,7 @@ import javax.inject.Inject;
 public class CreatePlaylistDialogFragment extends DialogFragment implements TextWatcher {
 
     private static final String KEY_TITLE = "CreatePlaylistDialogFragment.Name";
-    private static final String KEY_SNACKBAR_VIEW = "AppendPlaylistDialogFragment.Snackbar";
+    private static final String KEY_SNACKBAR_VIEW = "CreatePlaylistDialogFragment.Snackbar";
     private static final String KEY_SONGS = "CreatePlaylistDialogFragment.Songs";
 
     @Inject PlaylistStore mPlaylistStore;
