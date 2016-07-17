@@ -81,6 +81,7 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
 
         if (mAdapter == null) {
             mAdapter = new DragDropAdapter();
+            mAdapter.setHasStableIds(true);
             mAdapter.attach(mRecyclerView);
 
             mAdapter.setEmptyState(new LibraryEmptyState(this) {
