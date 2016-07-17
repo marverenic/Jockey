@@ -160,9 +160,9 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
     public void onClick(View v) {
         if (v.getTag() != null) {
             if (v.getTag().equals("fab-" + getString(R.string.playlist))) {
-                CreatePlaylistDialogFragment.newInstance()
+                new CreatePlaylistDialogFragment.Builder(getSupportFragmentManager())
                         .showSnackbarIn(R.id.list)
-                        .show(getSupportFragmentManager(), TAG_MAKE_PLAYLIST);
+                        .show(TAG_MAKE_PLAYLIST);
             } else if (v.getTag().equals("fab-" + getString(R.string.playlist_auto))) {
                 startActivity(AutoPlaylistEditActivity.newIntent(this));
             }
