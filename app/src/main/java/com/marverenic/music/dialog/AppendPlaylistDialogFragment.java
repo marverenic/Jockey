@@ -31,6 +31,8 @@ import timber.log.Timber;
 public class AppendPlaylistDialogFragment extends DialogFragment {
 
     private static final String TAG_MAKE_PLAYLIST = "CreateNewPlaylistDialog";
+    private static final String TAG_DUPLICATE_CONFIRM = "PlaylistDuplicateConfirmationDialog";
+
     private static final String KEY_TITLE = "AppendPlaylistDialogFragment.Title";
     private static final String KEY_SONG = "AppendPlaylistDialogFragment.Song";
     private static final String KEY_SONGS = "AppendPlaylistDialogFragment.Songs";
@@ -129,16 +131,48 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
                 .take(1)
                 .subscribe(
                         oldEntries -> {
-                            if (mSingle) {
-                                mPlaylistStore.addToPlaylist(playlist, mSong);
-                            } else {
-                                mPlaylistStore.addToPlaylist(playlist, mSongs);
-                            }
-                            showSnackbar(playlist, oldEntries);
+                            updatePlaylist(playlist, oldEntries);
                         },
                         throwable -> {
                             Timber.e(throwable, "Failed to get old entries");
                         });
+    }
+
+    private void updatePlaylist(Playlist playlist, List<Song> oldEntries) {
+        if (areContentsDisjoint(oldEntries)) {
+            if (mSingle) {
+                mPlaylistStore.addToPlaylist(playlist, mSong);
+            } else {
+                mPlaylistStore.addToPlaylist(playlist, mSongs);
+            }
+            showSnackbar(playlist, oldEntries);
+        } else {
+            showPlaylistDuplicateDisambiguationDialog(playlist);
+        }
+    }
+
+    private boolean areContentsDisjoint(List<Song> playlistEntries) {
+        if (mSingle) {
+            return !playlistEntries.contains(mSong);
+        } else {
+            return Collections.disjoint(playlistEntries, mSongs);
+        }
+    }
+
+    private void showPlaylistDuplicateDisambiguationDialog(Playlist playlist) {
+        if (mSingle) {
+            new PlaylistCollisionDialogFragment.Builder(getFragmentManager())
+                    .setPlaylist(playlist)
+                    .setSongs(mSong)
+                    .showSnackbarIn(mSnackbarView)
+                    .show(TAG_DUPLICATE_CONFIRM);
+        } else {
+            new PlaylistCollisionDialogFragment.Builder(getFragmentManager())
+                    .setPlaylist(playlist)
+                    .setSongs(mSongs)
+                    .showSnackbarIn(mSnackbarView)
+                    .show(TAG_DUPLICATE_CONFIRM);
+        }
     }
 
     private void showSnackbar(Playlist editedPlaylist, List<Song> previousSongs) {

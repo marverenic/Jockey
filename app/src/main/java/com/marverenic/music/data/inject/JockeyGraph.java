@@ -12,6 +12,7 @@ import com.marverenic.music.activity.instance.GenreActivity;
 import com.marverenic.music.activity.instance.PlaylistActivity;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
+import com.marverenic.music.dialog.PlaylistCollisionDialogFragment;
 import com.marverenic.music.fragments.AlbumFragment;
 import com.marverenic.music.fragments.ArtistFragment;
 import com.marverenic.music.fragments.DirectoryListFragment;
@@ -58,6 +59,7 @@ public interface JockeyGraph {
 
     void inject(CreatePlaylistDialogFragment dialogFragment);
     void inject(AppendPlaylistDialogFragment dialogFragment);
+    void inject(PlaylistCollisionDialogFragment dialogFragment);
 
     void inject(NowPlayingControllerViewModel viewModel);
     void inject(SongViewModel viewModel);
