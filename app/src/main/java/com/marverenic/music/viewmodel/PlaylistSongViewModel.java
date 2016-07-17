@@ -1,6 +1,7 @@
 package com.marverenic.music.viewmodel;
 
 import android.content.Context;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
@@ -21,17 +22,17 @@ import timber.log.Timber;
 public class PlaylistSongViewModel extends SongViewModel {
 
     private Context mContext;
-    private OnRemoveListener mRemoveListener;
+    private OnPlaylistEntriesChangeListener mRemoveListener;
 
     public PlaylistSongViewModel(Context context, FragmentManager fragmentManager, List<Song> songs,
-                                 OnRemoveListener onRemoveListener) {
+                                 OnPlaylistEntriesChangeListener listener) {
         super(context, fragmentManager, songs);
         mContext = context;
-        mRemoveListener = onRemoveListener;
+        mRemoveListener = listener;
     }
 
-    public interface OnRemoveListener {
-        void onRemove();
+    public interface OnPlaylistEntriesChangeListener {
+        void onPlaylistEntriesChange();
     }
 
     @Override
@@ -44,12 +45,12 @@ public class PlaylistSongViewModel extends SongViewModel {
             for (int i = 0; i < options.length;  i++) {
                 menu.getMenu().add(Menu.NONE, i, i, options[i]);
             }
-            menu.setOnMenuItemClickListener(onMenuItemClick());
+            menu.setOnMenuItemClickListener(onMenuItemClick(v));
             menu.show();
         };
     }
 
-    private PopupMenu.OnMenuItemClickListener onMenuItemClick() {
+    private PopupMenu.OnMenuItemClickListener onMenuItemClick(View view) {
         return menuItem -> {
             switch (menuItem.getItemId()) {
                 case 0: //Queue this song next
@@ -79,11 +80,27 @@ public class PlaylistSongViewModel extends SongViewModel {
 
                     return true;
                 case 4: // Remove
-                    getSongs().remove(getIndex());
-                    mRemoveListener.onRemove();
+                    removeFromPlaylist(view);
                     return true;
             }
             return false;
         };
+    }
+
+    private void removeFromPlaylist(View snackbarContainer) {
+        Song removed = getReference();
+        int removedIndex = getIndex();
+
+        getSongs().remove(getIndex());
+        mRemoveListener.onPlaylistEntriesChange();
+
+        String songName = removed.getSongName();
+        String message = mContext.getString(R.string.message_removed_song, songName);
+
+        Snackbar.make(snackbarContainer, message, Snackbar.LENGTH_LONG)
+                .setAction(R.string.action_undo, view -> {
+                    getSongs().add(removedIndex, removed);
+                    mRemoveListener.onPlaylistEntriesChange();
+                }).show();
     }
 }
