@@ -168,7 +168,7 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
 
             if (equalizer != null) {
                 mPrefStore.setEqualizerSettings(equalizer.getProperties());
-                mPrefStore.setEqualizerEnabled(equalizerToggle.isEnabled());
+                mPrefStore.setEqualizerEnabled(equalizerToggle.isChecked());
                 mPrefStore.setEqualizerPresetId((int) presetSpinner.getSelectedItemId());
 
                 equalizer.release();
