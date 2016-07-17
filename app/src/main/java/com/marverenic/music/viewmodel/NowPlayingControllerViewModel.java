@@ -281,10 +281,10 @@ public class NowPlayingControllerViewModel extends BaseObservable {
 
                     return true;
                 case 2: //Add to playlist
-                    AppendPlaylistDialogFragment.newInstance()
-                            .setSong(song)
+                    new AppendPlaylistDialogFragment.Builder(mContext, mFragmentManager)
+                            .setSongs(song)
                             .showSnackbarIn(R.id.imageArtwork)
-                            .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
+                            .show(TAG_PLAYLIST_DIALOG);
                     return true;
             }
             return false;
