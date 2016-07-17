@@ -261,20 +261,29 @@
                 android:textSize="@dimen/list_text_detail_size" />
 
             <TextView
-                android:id="@+id/aboutStackOverflowHeader"
+                android:id="@+id/aboutTimberHeader"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/aboutVerticalSeekBarDetail"
                 android:layout_marginTop="16dp"
-                android:text="@string/uses_stackoverflow"
+                android:text="@string/uses_timber_header"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/list_text_header_size" />
+
+            <TextView
+                android:id="@+id/aboutTimberDetail"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutTimberHeader"
+                android:text="@string/uses_timber_detail"
+                android:textColor="@color/about_detail_text"
+                android:textSize="@dimen/list_text_detail_size" />
 
             <RelativeLayout
                 android:id="@+id/aboutMarverenicLogo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutStackOverflowHeader"
+                android:layout_below="@id/aboutTimberDetail"
                 android:layout_centerHorizontal="true"
                 android:layout_margin="32dp"
                 android:background="?attr/selectableItemBackgroundBorderless">
