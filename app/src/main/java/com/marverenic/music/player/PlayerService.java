@@ -289,125 +289,245 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public void stop() throws RemoteException {
-            instance.stop();
+            try {
+                instance.stop();
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.stop() failed");
+                throw exception;
+            }
         }
 
         @Override
         public void skip() throws RemoteException {
-            instance.musicPlayer.skip();
+            try {
+                instance.musicPlayer.skip();
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.skip() failed");
+                throw exception;
+            }
         }
 
         @Override
         public void previous() throws RemoteException {
-            instance.musicPlayer.skipPrevious();
+            try {
+                instance.musicPlayer.skipPrevious();
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.previous() failed");
+                throw exception;
+            }
         }
 
         @Override
         public void begin() throws RemoteException {
-            instance.musicPlayer.prepare(true);
+            try {
+                instance.musicPlayer.prepare(true);
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.begin() failed");
+                throw exception;
+            }
         }
 
         @Override
         public void togglePlay() throws RemoteException {
-            instance.musicPlayer.togglePlay();
+            try {
+                instance.musicPlayer.togglePlay();
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.togglePlay() failed");
+                throw exception;
+            }
         }
 
         @Override
         public void play() throws RemoteException {
-            instance.musicPlayer.play();
+            try {
+                instance.musicPlayer.play();
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.play() failed");
+                throw exception;
+            }
         }
 
         @Override
         public void pause() throws RemoteException {
-            instance.musicPlayer.play();
+            try {
+                instance.musicPlayer.play();
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.pause() failed");
+                throw exception;
+            }
         }
 
         @Override
         public void setPreferences(RemotePreferencesStore preferences) throws RemoteException {
-            instance.musicPlayer.updatePreferences(preferences);
+            try {
+                instance.musicPlayer.updatePreferences(preferences);
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.setPreferences(...) failed");
+                throw exception;
+            }
         }
 
         @Override
         public void setQueue(List<Song> newQueue, int newPosition) throws RemoteException {
-            instance.musicPlayer.setQueue(newQueue, newPosition);
-            if (newQueue.isEmpty()) {
-                instance.stop();
+            try {
+                instance.musicPlayer.setQueue(newQueue, newPosition);
+                if (newQueue.isEmpty()) {
+                    instance.stop();
+                }
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.setQueue(...) failed");
+                throw exception;
             }
         }
 
         @Override
         public void changeSong(int position) throws RemoteException {
-            instance.musicPlayer.changeSong(position);
+            try {
+                instance.musicPlayer.changeSong(position);
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.changeSong(...) failed");
+                throw exception;
+            }
         }
 
         @Override
         public void editQueue(List<Song> newQueue, int newPosition) throws RemoteException {
-            instance.musicPlayer.editQueue(newQueue, newPosition);
+            try {
+                instance.musicPlayer.editQueue(newQueue, newPosition);
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.editQueue(...) failed");
+                throw exception;
+            }
         }
 
         @Override
         public void queueNext(Song song) throws RemoteException {
-            instance.musicPlayer.queueNext(song);
+            try {
+                instance.musicPlayer.queueNext(song);
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.queueNext(...) failed");
+                throw exception;
+            }
         }
 
         @Override
         public void queueNextList(List<Song> songs) throws RemoteException {
-            instance.musicPlayer.queueNext(songs);
+            try {
+                instance.musicPlayer.queueNext(songs);
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.queueNextList(...) failed");
+                throw exception;
+            }
         }
 
         @Override
         public void queueLast(Song song) throws RemoteException {
-            instance.musicPlayer.queueLast(song);
+            try {
+                instance.musicPlayer.queueLast(song);
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.queueLast() failed");
+                throw exception;
+            }
         }
 
         @Override
         public void queueLastList(List<Song> songs) throws RemoteException {
-            instance.musicPlayer.queueLast(songs);
+            try {
+                instance.musicPlayer.queueLast(songs);
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.queueLastList(...) failed");
+                throw exception;
+            }
         }
 
         @Override
         public void seekTo(int position) throws RemoteException {
-            instance.musicPlayer.seekTo(position);
+            try {
+                instance.musicPlayer.seekTo(position);
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.seekTo() failed");
+                throw exception;
+            }
         }
 
         @Override
         public boolean isPlaying() throws RemoteException {
-            return instance.musicPlayer.isPlaying();
+            try {
+                return instance.musicPlayer.isPlaying();
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.isPlaying() failed");
+                throw exception;
+            }
         }
 
         @Override
         public Song getNowPlaying() throws RemoteException {
-            return instance.musicPlayer.getNowPlaying();
+            try {
+                return instance.musicPlayer.getNowPlaying();
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.getNowPlaying() failed");
+                throw exception;
+            }
         }
 
         @Override
         public List<Song> getQueue() throws RemoteException {
-            return instance.musicPlayer.getQueue();
+            try {
+                return instance.musicPlayer.getQueue();
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.editQueue() failed");
+                throw exception;
+            }
         }
 
         @Override
         public int getQueuePosition() throws RemoteException {
-            return instance.musicPlayer.getQueuePosition();
+            try {
+                return instance.musicPlayer.getQueuePosition();
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.getQueuePosition() failed");
+                throw exception;
+            }
         }
 
         @Override
         public int getQueueSize() throws RemoteException {
-            return instance.musicPlayer.getQueueSize();
+            try {
+                return instance.musicPlayer.getQueueSize();
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.getQueueSize() failed");
+                throw exception;
+            }
         }
 
         @Override
         public int getCurrentPosition() throws RemoteException {
-            return instance.musicPlayer.getCurrentPosition();
+            try {
+                return instance.musicPlayer.getCurrentPosition();
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.getCurrentPosition() failed");
+                throw exception;
+            }
         }
 
         @Override
         public int getDuration() throws RemoteException {
-            return instance.musicPlayer.getDuration();
+            try {
+                return instance.musicPlayer.getDuration();
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.getDuration() failed");
+                throw exception;
+            }
         }
 
         @Override
         public int getAudioSessionId() throws RemoteException {
-            return instance.musicPlayer.getAudioSessionId();
+            try {
+                return instance.musicPlayer.getAudioSessionId();
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.getAudioSessionId() failed");
+                throw exception;
+            }
         }
     }
 }
