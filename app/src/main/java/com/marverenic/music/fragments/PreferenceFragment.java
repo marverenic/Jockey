@@ -174,7 +174,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat
 
             Navigate.to(getActivity(), DirectoryListFragment.newInstance(exclude), R.id.prefFrame);
             return true;
-        } else if (preference.getKey().equals(getString(R.string.pref_key_create_launcher_icon))) {
+        } else if (getString(R.string.pref_key_create_launcher_icon).equals(preference.getKey())) {
             new AlertDialog.Builder(getActivity())
                     .setTitle(R.string.add_shortcut)
                     .setMessage(R.string.add_shortcut_description)
