@@ -264,11 +264,11 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     }
 
     private void addQueueToPlaylist() {
-        AppendPlaylistDialogFragment.newInstance()
+        new AppendPlaylistDialogFragment.Builder(this)
                 .setTitle(getString(R.string.header_add_queue_to_playlist))
                 .setSongs(PlayerController.getQueue())
                 .showSnackbarIn(R.id.imageArtwork)
-                .show(getSupportFragmentManager(), TAG_APPEND_PLAYLIST);
+                .show(TAG_APPEND_PLAYLIST);
     }
 
     private void clearQueue() {

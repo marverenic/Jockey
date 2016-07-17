@@ -1,13 +1,16 @@
 package com.marverenic.music.dialog;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.marverenic.music.JockeyApplication;
@@ -37,7 +40,6 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
 
     private Dialog mDialog;
     private String mTitle;
-    private String mCollectionName;
     private Playlist[] mChoices;
     private String[] mChoiceNames;
     private Song mSong;
@@ -45,53 +47,20 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
     private boolean mSingle;
     @IdRes private int mSnackbarView;
 
-    public static AppendPlaylistDialogFragment newInstance() {
-        return new AppendPlaylistDialogFragment();
-    }
-
-    public AppendPlaylistDialogFragment setCollectionName(String name) {
-        mCollectionName = name;
-        return this;
-    }
-
-    public AppendPlaylistDialogFragment setTitle(String title) {
-        mTitle = title;
-        return this;
-    }
-
-    public AppendPlaylistDialogFragment setSong(@NonNull Song song) {
-        mSong = song;
-        mSingle = true;
-        return this;
-    }
-
-    public AppendPlaylistDialogFragment setSongs(@NonNull List<Song> songs) {
-        mSongs = songs;
-        mSingle = false;
-        return this;
-    }
-
-    public AppendPlaylistDialogFragment showSnackbarIn(@IdRes int viewId) {
-        mSnackbarView = viewId;
-        return this;
-    }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         JockeyApplication.getComponent(this).inject(this);
 
-        if (savedInstanceState != null) {
-            mTitle = savedInstanceState.getString(SAVED_TITLE);
-            mSnackbarView = savedInstanceState.getInt(SAVED_SNACKBAR_VIEW);
+        mTitle = getArguments().getString(SAVED_TITLE);
+        mSnackbarView = getArguments().getInt(SAVED_SNACKBAR_VIEW);
 
-            if (savedInstanceState.containsKey(SAVED_SONG)) {
-                mSong = savedInstanceState.getParcelable(SAVED_SONG);
-                mSingle = true;
-            } else if (savedInstanceState.containsKey(SAVED_SONGS)) {
-                mSongs = savedInstanceState.getParcelableArrayList(SAVED_SONGS);
-                mSingle = false;
-            }
+        if (getArguments().containsKey(SAVED_SONG)) {
+            mSong = getArguments().getParcelable(SAVED_SONG);
+            mSingle = true;
+        } else if (getArguments().containsKey(SAVED_SONGS)) {
+            mSongs = getArguments().getParcelableArrayList(SAVED_SONGS);
+            mSingle = false;
         }
 
         mPlaylistStore.getPlaylists()
@@ -131,31 +100,9 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
         }
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putString(SAVED_TITLE, mTitle);
-        outState.putInt(SAVED_SNACKBAR_VIEW, mSnackbarView);
-
-        if (mSingle) {
-            outState.putParcelable(SAVED_SONG, mSong);
-        } else {
-            outState.putParcelableArrayList(SAVED_SONGS, new ArrayList<>(mSongs));
-        }
-    }
-
     private void showDialog() {
         if (getDialog() != null) {
             getDialog().hide();
-        }
-
-        if (mTitle == null) {
-            if (mSingle) {
-                setTitle(getString(R.string.header_add_song_name_to_playlist, mSong));
-            } else if (mCollectionName != null) {
-                setTitle(getString(R.string.header_add_song_name_to_playlist, mCollectionName));
-            }
         }
 
         mDialog = new AlertDialog.Builder(getContext())
@@ -215,5 +162,66 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
                     })
                     .show();
         }
+    }
+
+    public static class Builder {
+
+        private Bundle mArgs;
+        private FragmentManager mFragmentManager;
+        private Context mContext;
+
+        public Builder(AppCompatActivity activity) {
+            this(activity, activity.getSupportFragmentManager());
+        }
+
+        public Builder(Context context, FragmentManager fragmentManager) {
+            mContext = context;
+            mFragmentManager = fragmentManager;
+            mArgs = new Bundle();
+        }
+
+        public Builder setTitle(String title) {
+            mArgs.putString(SAVED_TITLE, title);
+            return this;
+        }
+
+        public Builder setSongs(Song song) {
+            mArgs.putParcelable(SAVED_SONG, song);
+            mArgs.remove(SAVED_SONGS);
+
+            if (!mArgs.containsKey(SAVED_TITLE)) {
+                String name = song.getSongName();
+                String title = mContext.getString(R.string.header_add_song_name_to_playlist, name);
+                setTitle(title);
+            }
+            return this;
+        }
+
+        public Builder setSongs(List<Song> songs) {
+            mArgs.putParcelableArrayList(SAVED_SONGS, new ArrayList<>(songs));
+            mArgs.remove(SAVED_SONG);
+            return this;
+        }
+
+        public Builder setSongs(List<Song> songs, String name) {
+            mArgs.putParcelableArrayList(SAVED_SONGS, new ArrayList<>(songs));
+            mArgs.remove(SAVED_SONG);
+            String title = mContext.getString(R.string.header_add_song_name_to_playlist, name);
+            setTitle(title);
+            return this;
+        }
+
+        public Builder showSnackbarIn(@IdRes int snackbarContainerId) {
+            mArgs.putInt(SAVED_SNACKBAR_VIEW, snackbarContainerId);
+            return this;
+        }
+
+        public void show(String tag) {
+            AppendPlaylistDialogFragment dialogFragment = new AppendPlaylistDialogFragment();
+            dialogFragment.setArguments(mArgs);
+
+            dialogFragment.show(mFragmentManager, tag);
+        }
+
     }
 }

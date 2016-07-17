@@ -89,11 +89,10 @@ public class ArtistViewModel extends BaseObservable {
                 case 2: //Add to playlist...
                     mMusicStore.getSongs(mArtist).subscribe(
                             songs -> {
-                                AppendPlaylistDialogFragment.newInstance()
-                                        .setSongs(songs)
-                                        .setCollectionName(mArtist.getArtistName())
+                                new AppendPlaylistDialogFragment.Builder(mContext, mFragmentManager)
+                                        .setSongs(songs, mArtist.getArtistName())
                                         .showSnackbarIn(R.id.list)
-                                        .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
+                                        .show(TAG_PLAYLIST_DIALOG);
                             }, throwable -> {
                                 Timber.e(throwable, "Failed to get songs");
                             });

@@ -136,10 +136,10 @@ public class SongViewModel extends BaseObservable {
 
                     return true;
                 case 4: //Add to playlist...
-                    AppendPlaylistDialogFragment.newInstance()
-                            .setSong(mReference)
+                    new AppendPlaylistDialogFragment.Builder(mContext, mFragmentManager)
+                            .setSongs(mReference)
                             .showSnackbarIn(R.id.list)
-                            .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
+                            .show(TAG_PLAYLIST_DIALOG);
                     return true;
             }
             return false;

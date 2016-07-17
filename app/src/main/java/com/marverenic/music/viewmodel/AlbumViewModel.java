@@ -182,11 +182,10 @@ public class AlbumViewModel extends BaseObservable {
                 case 3: //Add to playlist...
                     mMusicStore.getSongs(mAlbum).subscribe(
                             songs -> {
-                                AppendPlaylistDialogFragment.newInstance()
-                                        .setSongs(songs)
-                                        .setCollectionName(mAlbum.getAlbumName())
+                                new AppendPlaylistDialogFragment.Builder(mContext, mFragmentManager)
+                                        .setSongs(songs, mAlbum.getAlbumName())
                                         .showSnackbarIn(R.id.list)
-                                        .show(mFragmentManager, TAG_PLAYLIST_DIALOG);
+                                        .show(TAG_PLAYLIST_DIALOG);
                             }, throwable -> {
                                 Timber.e(throwable, "Failed to get songs");
                             });
