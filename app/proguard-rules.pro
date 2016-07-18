@@ -23,6 +23,10 @@
 -keep class android.support.v7.preference.PreferenceCategoryCompat { *; }
 -keep class android.support.v7.preference.IntListPreference { *; }
 
+# Used to animate values of an Observable with an ObjectAnimator
+# (since it calls setters by name using reflection)
+-keepnames class * extends android.databinding.BaseObservable { *; }
+
 # GSON rules
 # Don't obfuscate instance field names for GSON
 -keepnames class com.marverenic.music.instances.** { *; }
