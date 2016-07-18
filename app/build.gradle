@@ -58,16 +58,6 @@ android {
             ext.enableCrashlytics = false
         }
     }
-    productFlavors {
-        //noinspection GroovyMissingReturnStatement
-        googlePlay {
-
-        }
-        independent {
-            //noinspection GroovyAssignabilityCheck
-            versionName defaultConfig.versionName + "-sl"
-        }
-    }
 }
 
 dependencies {
