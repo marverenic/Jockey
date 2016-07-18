@@ -2,7 +2,11 @@ package com.marverenic.music.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -19,6 +23,7 @@ import android.widget.TextView;
 
 import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
+import com.marverenic.music.BuildConfig;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
@@ -26,6 +31,7 @@ import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.dialog.DirectoryDialogFragment;
 import com.marverenic.music.instances.section.BasicEmptyState;
 import com.marverenic.music.view.DividerDecoration;
+import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -35,7 +41,11 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import timber.log.Timber;
+
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class DirectoryListFragment extends Fragment implements View.OnClickListener,
         DirectoryDialogFragment.OnDirectoryPickListener {
@@ -161,11 +171,46 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
         }
     }
 
+    private Observable<Boolean> getPermissionObservable() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return Observable.just(true);
+        }
+
+        return RxPermissions.getInstance(getContext())
+                .request(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE);
+    }
+
     @Override
     public void onClick(View v) {
+        getPermissionObservable().subscribe(
+                granted -> {
+                    if (granted) {
+                        showDirectoryPicker();
+                    } else {
+                        showInsufficientPermissionSnackbar(v);
+                    }
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to request storage permission");
+                });
+    }
+
+    private void showDirectoryPicker() {
         new DirectoryDialogFragment()
                 .setDirectoryPickListener(this)
                 .show(getFragmentManager(), TAG_DIR_DIALOG);
+    }
+
+    private void showInsufficientPermissionSnackbar(View container) {
+        Snackbar.make(container, R.string.error_no_permission_dirs, Snackbar.LENGTH_LONG)
+                .setAction(R.string.action_open_settings, view -> {
+                    Intent intent = new Intent();
+                    Uri uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
+
+                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    intent.setData(uri);
+                    startActivity(intent);
+                })
+                .show();
     }
 
     @Override

@@ -12,6 +12,7 @@
     <string name="unknown">Unknown</string>
     <string name="empty_no_permission">Jockey needs permission to read your music library</string>
     <string name="empty_no_permission_detail">To show your music, grant Jockey access to storage</string>
+    <string name="error_no_permission_dirs">To exclude folders, grant Jockey access to storage</string>
     <string name="empty">Couldn\'t find any music here</string>
     <string name="empty_detail">You can sync songs from your computer or download them from the Internet</string>
     <string name="empty_playlists">You don\'t have any playlists</string>
