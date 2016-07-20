@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 
 import com.marverenic.music.IPlayerService;
+import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.ReadOnlyPreferencesStore;
 import com.marverenic.music.data.store.RemotePreferencesStore;
 import com.marverenic.music.instances.Song;
@@ -50,6 +51,11 @@ public final class PlayerController {
      */
     public static void startService(Context context) {
         if (applicationContext == null) {
+            if (!MediaStoreUtil.hasPermission(context)) {
+                Timber.i("Storage permission is not been granted. Aborting service initialization");
+                return;
+            }
+
             applicationContext = context;
 
             Intent serviceIntent = new Intent(context, PlayerService.class);

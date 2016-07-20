@@ -48,8 +48,6 @@ public abstract class BaseActivity extends RxAppCompatActivity
         mIsDark = getResources().getBoolean(R.bool.night);
         mTheme = mPreferencesStore.getPrimaryColor();
 
-        PlayerController.startService(getApplicationContext());
-
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
@@ -106,6 +104,13 @@ public abstract class BaseActivity extends RxAppCompatActivity
     @Override
     public void onResume() {
         super.onResume();
+
+        /*  Start the player service. If it's already running, this does nothing.
+            This call is placed here because the service is dependent on having permission to
+            storage. Permission results will always trigger onResume (even when requested with
+            RxPermissions), so we can use this to promptly start the service.
+         */
+        PlayerController.startService(getApplicationContext());
 
         // If the theme was changed since this Activity was created, or the automatic day/night
         // theme has changed state, recreate this activity

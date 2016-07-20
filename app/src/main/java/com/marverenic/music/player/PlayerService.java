@@ -17,6 +17,7 @@ import android.view.KeyEvent;
 
 import com.marverenic.music.IPlayerService;
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.RemotePreferencesStore;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.MediaStyleHelper;
@@ -79,6 +80,12 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     public void onCreate() {
         super.onCreate();
         Timber.i("onCreate() called");
+
+        if (!MediaStoreUtil.hasPermission(this)) {
+            Timber.w("Attempted to start service without Storage permission. Aborting.");
+            stopSelf();
+            return;
+        }
 
         if (instance == null) {
             instance = this;
@@ -265,14 +272,16 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     public void finish() {
         Timber.i("finish() called");
         if (!finished) {
-            try {
-                musicPlayer.saveState();
-            } catch (IOException exception) {
-                Timber.e(exception, "Failed to save player state");
-            }
+            if (musicPlayer != null) {
+                try {
+                    musicPlayer.saveState();
+                } catch (IOException exception) {
+                    Timber.e(exception, "Failed to save player state");
+                }
 
-            musicPlayer.release();
-            musicPlayer = null;
+                musicPlayer.release();
+                musicPlayer = null;
+            }
             stopForeground(true);
             instance = null;
             stopSelf();
