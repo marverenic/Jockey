@@ -19,7 +19,6 @@ import com.marverenic.music.data.annotations.PresetTheme;
 import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.player.PlayerController;
-import com.marverenic.music.utils.Navigate;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import javax.inject.Inject;
@@ -151,7 +150,7 @@ public abstract class BaseActivity extends RxAppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            Navigate.up(this);
+            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -164,7 +163,7 @@ public abstract class BaseActivity extends RxAppCompatActivity
     public void onBackPressed() {
         Timber.v("onBackPressed");
         super.onBackPressed();
-        Navigate.back(this);
+        finish();
     }
 
     @Override

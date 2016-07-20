@@ -1,5 +1,7 @@
 package com.marverenic.music.activity.instance;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -48,7 +50,7 @@ import timber.log.Timber;
 
 public class ArtistActivity extends BaseActivity {
 
-    public static final String ARTIST_EXTRA = "artist";
+    private static final String ARTIST_EXTRA = "ArtistActivity.ARTIST";
 
     @Inject MusicStore mMusicStore;
     @Inject LastFmStore mLfmStore;
@@ -70,6 +72,13 @@ public class ArtistActivity extends BaseActivity {
     private List<LfmArtist> mRelatedArtists;
     private List<Song> mSongs;
     private List<Album> mAlbums;
+
+    public static Intent newIntent(Context context, Artist artist) {
+        Intent intent = new Intent(context, ArtistActivity.class);
+        intent.putExtra(ARTIST_EXTRA, artist);
+
+        return intent;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

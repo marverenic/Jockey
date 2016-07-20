@@ -15,7 +15,6 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.PlayerController;
-import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.view.ViewUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -139,7 +138,7 @@ public class MiniplayerViewModel extends BaseObservable {
     }
 
     public View.OnClickListener onClickMiniplayer() {
-        return v -> Navigate.to(mContext, NowPlayingActivity.class);
+        return v -> mContext.startActivity(NowPlayingActivity.newIntent(mContext));
     }
 
     public View.OnClickListener onClickTogglePlay() {

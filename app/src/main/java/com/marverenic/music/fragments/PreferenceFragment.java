@@ -3,6 +3,7 @@ package com.marverenic.music.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.preference.ListPreference;
@@ -23,7 +24,6 @@ import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.data.store.ThemeStore;
-import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
@@ -167,7 +167,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat
             } else if (Util.hasEqualizer()) {
                 // If there isn't a global equalizer or the user has already enabled our
                 // equalizer, navigate to the built-in implementation
-                Navigate.to(getActivity(), new EqualizerFragment(), R.id.prefFrame);
+                showEqualizerFragment();
             } else {
                 Toast.makeText(getActivity(), R.string.equalizerUnsupported, Toast.LENGTH_LONG)
                         .show();
@@ -177,27 +177,48 @@ public class PreferenceFragment extends PreferenceFragmentCompat
             String prefKey = preference.getKey();
             boolean exclude = getString(R.string.pref_key_excluded_dirs).equals(prefKey);
 
-            Navigate.to(getActivity(), DirectoryListFragment.newInstance(exclude), R.id.prefFrame);
+            showDirectoryInclusionExclusionFragment(exclude);
             return true;
         } else if (getString(R.string.pref_key_create_launcher_icon).equals(preference.getKey())) {
-            new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.add_shortcut)
-                    .setMessage(R.string.add_shortcut_description)
-                    .setPositiveButton(R.string.action_add,
-                            (dialog, which) -> {
-                                mThemeStore.createThemedLauncherIcon();
-                            })
-                    .setNegativeButton(R.string.action_cancel, null)
-                    .show();
+            showNewShortcutDialog();
             return true;
         }
         return super.onPreferenceTreeClick(preference);
     }
 
+    private void showNewShortcutDialog() {
+        new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.add_shortcut)
+                .setMessage(R.string.add_shortcut_description)
+                .setPositiveButton(R.string.action_add,
+                        (dialog, which) -> {
+                            mThemeStore.createThemedLauncherIcon();
+                        })
+                .setNegativeButton(R.string.action_cancel, null)
+                .show();
+    }
+
+    private void replaceFragment(Fragment next) {
+        getFragmentManager().beginTransaction()
+                .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left,
+                        R.anim.slide_in_left, R.anim.slide_out_right)
+                .replace(R.id.prefFrame, next)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private void showEqualizerFragment() {
+        replaceFragment(new EqualizerFragment());
+    }
+
+    private void showDirectoryInclusionExclusionFragment(boolean exclude) {
+        replaceFragment(DirectoryListFragment.newInstance(exclude));
+    }
+
     @Override
     public boolean onLongClick(View v) {
         if (Util.hasEqualizer()) {
-            Navigate.to(getActivity(), new EqualizerFragment(), R.id.prefFrame);
+            showEqualizerFragment();
         } else {
             Toast
                     .makeText(

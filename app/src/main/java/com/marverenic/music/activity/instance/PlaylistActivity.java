@@ -1,5 +1,7 @@
 package com.marverenic.music.activity.instance;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.NinePatchDrawable;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -38,7 +40,7 @@ import timber.log.Timber;
 
 public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuItemClickListener {
 
-    public static final String PLAYLIST_EXTRA = "playlist";
+    private static final String PLAYLIST_EXTRA = "PlaylistActivity.PLAYLIST";
 
     @Inject PlaylistStore mPlaylistStore;
     @Inject PlayCountStore mPlayCountStore;
@@ -48,6 +50,13 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
     private RecyclerView mRecyclerView;
     private DragDropAdapter mAdapter;
     private PlaylistSongSection mSongSection;
+
+    public static Intent newIntent(Context context, Playlist playlist) {
+        Intent intent = new Intent(context, PlaylistActivity.class);
+        intent.putExtra(PLAYLIST_EXTRA, playlist);
+
+        return intent;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

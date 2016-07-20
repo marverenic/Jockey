@@ -18,7 +18,6 @@ import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
 import com.marverenic.music.instances.section.RuleHeaderSingleton;
 import com.marverenic.music.instances.section.RuleSection;
-import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 
@@ -199,11 +198,11 @@ public class AutoPlaylistEditActivity extends BaseActivity {
                     .setPositiveButton("Save", (dialog, which) -> {
                         if (validateName()) {
                             saveChanges();
-                            Navigate.back(AutoPlaylistEditActivity.this);
+                            super.onBackPressed();
                         }
                     })
                     .setNegativeButton("Discard", (dialog, which) -> {
-                        Navigate.back(AutoPlaylistEditActivity.this);
+                        super.onBackPressed();
                     })
                     .setNeutralButton("Cancel", null)
                     .show();

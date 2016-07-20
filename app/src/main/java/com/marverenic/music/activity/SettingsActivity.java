@@ -1,5 +1,7 @@
 package com.marverenic.music.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -8,6 +10,10 @@ import com.marverenic.music.R;
 import com.marverenic.music.fragments.PreferenceFragment;
 
 public class SettingsActivity extends BaseActivity {
+
+    public static Intent newIntent(Context context) {
+        return new Intent(context, SettingsActivity.class);
+    }
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {

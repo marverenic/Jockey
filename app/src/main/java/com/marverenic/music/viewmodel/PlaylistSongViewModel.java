@@ -13,7 +13,6 @@ import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.PlayerController;
-import com.marverenic.music.utils.Navigate;
 
 import java.util.List;
 
@@ -62,8 +61,7 @@ public class PlaylistSongViewModel extends SongViewModel {
                 case 2: //Go to artist
                     mMusicStore.findArtistById(getReference().getArtistId()).subscribe(
                             artist -> {
-                                Navigate.to(mContext, ArtistActivity.class,
-                                        ArtistActivity.ARTIST_EXTRA, artist);
+                                mContext.startActivity(ArtistActivity.newIntent(mContext, artist));
                             }, throwable -> {
                                 Timber.e(throwable, "Failed to find artist");
                             });
@@ -72,8 +70,7 @@ public class PlaylistSongViewModel extends SongViewModel {
                 case 3: // Go to album
                     mMusicStore.findAlbumById(getReference().getAlbumId()).subscribe(
                             album -> {
-                                Navigate.to(mContext, AlbumActivity.class,
-                                        AlbumActivity.ALBUM_EXTRA, album);
+                                mContext.startActivity(AlbumActivity.newIntent(mContext, album));
                             }, throwable -> {
                                 Timber.e(throwable, "Failed to find album");
                             });

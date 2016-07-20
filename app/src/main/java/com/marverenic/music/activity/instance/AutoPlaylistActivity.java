@@ -35,7 +35,7 @@ import timber.log.Timber;
 public class AutoPlaylistActivity extends BaseActivity
         implements PopupMenu.OnMenuItemClickListener {
 
-    public static final String PLAYLIST_EXTRA = "AutoPlaylistActivity.Playlist";
+    private static final String PLAYLIST_EXTRA = "AutoPlaylistActivity.PLAYLIST";
 
     @Inject PlaylistStore mPlaylistStore;
     @Inject PlayCountStore mPlayCountStore;

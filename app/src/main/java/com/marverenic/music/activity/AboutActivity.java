@@ -1,5 +1,6 @@
 package com.marverenic.music.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,6 +12,10 @@ import com.marverenic.music.BuildConfig;
 import com.marverenic.music.R;
 
 public class AboutActivity extends BaseActivity implements View.OnClickListener {
+
+    public static Intent newIntent(Context context) {
+        return new Intent(context, AboutActivity.class);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

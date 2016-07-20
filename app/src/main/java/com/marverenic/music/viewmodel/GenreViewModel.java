@@ -15,13 +15,10 @@ import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.instances.Genre;
 import com.marverenic.music.player.PlayerController;
-import com.marverenic.music.utils.Navigate;
 
 import javax.inject.Inject;
 
 import timber.log.Timber;
-
-import static com.marverenic.music.activity.instance.GenreActivity.GENRE_EXTRA;
 
 public class GenreViewModel extends BaseObservable {
 
@@ -50,7 +47,7 @@ public class GenreViewModel extends BaseObservable {
     }
 
     public View.OnClickListener onClickGenre() {
-        return v -> Navigate.to(mContext, GenreActivity.class, GENRE_EXTRA, mGenre);
+        return v -> mContext.startActivity(GenreActivity.newIntent(mContext, mGenre));
     }
 
     public View.OnClickListener onClickMenu() {

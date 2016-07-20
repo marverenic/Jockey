@@ -15,13 +15,10 @@ import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.player.PlayerController;
-import com.marverenic.music.utils.Navigate;
 
 import javax.inject.Inject;
 
 import timber.log.Timber;
-
-import static com.marverenic.music.activity.instance.ArtistActivity.ARTIST_EXTRA;
 
 public class ArtistViewModel extends BaseObservable {
 
@@ -50,7 +47,7 @@ public class ArtistViewModel extends BaseObservable {
     }
 
     public View.OnClickListener onClickArtist() {
-        return v -> Navigate.to(mContext, ArtistActivity.class, ARTIST_EXTRA, mArtist);
+        return v -> mContext.startActivity(ArtistActivity.newIntent(mContext, mArtist));
     }
 
     public View.OnClickListener onClickMenu() {
