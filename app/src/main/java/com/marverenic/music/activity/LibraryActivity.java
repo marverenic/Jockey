@@ -30,7 +30,6 @@ import com.marverenic.music.fragments.ArtistFragment;
 import com.marverenic.music.fragments.GenreFragment;
 import com.marverenic.music.fragments.PlaylistFragment;
 import com.marverenic.music.fragments.SongFragment;
-import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.FABMenu;
 
@@ -102,16 +101,16 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                Navigate.to(this, SettingsActivity.class);
+                startActivity(SettingsActivity.newIntent(this));
                 return true;
             case R.id.action_refresh_library:
                 refreshLibrary();
                 return true;
             case R.id.search:
-                Navigate.to(this, SearchActivity.class);
+                startActivity(SearchActivity.newIntent(this));
                 return true;
             case R.id.action_about:
-                Navigate.to(this, AboutActivity.class);
+                startActivity(AboutActivity.newIntent(this));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

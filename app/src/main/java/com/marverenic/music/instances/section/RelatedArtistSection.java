@@ -23,7 +23,6 @@ import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.instances.Artist;
 import com.marverenic.music.lastfm.model.Image;
 import com.marverenic.music.lastfm.model.LfmArtist;
-import com.marverenic.music.utils.Navigate;
 
 import java.util.List;
 
@@ -116,8 +115,7 @@ public class RelatedArtistSection extends HeterogeneousAdapter.ListSection<LfmAr
         @Override
         public void onClick(View v) {
             if (localReference != null) {
-                Navigate.to(context, ArtistActivity.class,
-                        ArtistActivity.ARTIST_EXTRA, localReference);
+                context.startActivity(ArtistActivity.newIntent(context, localReference));
             }
         }
     }

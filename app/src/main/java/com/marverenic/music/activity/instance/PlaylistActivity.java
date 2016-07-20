@@ -40,7 +40,7 @@ import timber.log.Timber;
 
 public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuItemClickListener {
 
-    public static final String PLAYLIST_EXTRA = "playlist";
+    private static final String PLAYLIST_EXTRA = "PlaylistActivity.PLAYLIST";
 
     @Inject PlaylistStore mPlaylistStore;
     @Inject PlayCountStore mPlayCountStore;

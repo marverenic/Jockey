@@ -18,7 +18,6 @@ import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Playlist;
 import com.marverenic.music.player.PlayerController;
-import com.marverenic.music.utils.Navigate;
 
 import javax.inject.Inject;
 
@@ -27,7 +26,6 @@ import timber.log.Timber;
 import static android.support.design.widget.Snackbar.LENGTH_LONG;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static com.marverenic.music.activity.instance.PlaylistActivity.PLAYLIST_EXTRA;
 
 public class PlaylistViewModel extends BaseObservable {
 
@@ -60,12 +58,13 @@ public class PlaylistViewModel extends BaseObservable {
 
     public View.OnClickListener onClickPlaylist() {
         return v -> {
+            Intent intent;
             if (mPlaylist instanceof AutoPlaylist) {
-                Intent intent = AutoPlaylistActivity.newIntent(mContext, (AutoPlaylist) mPlaylist);
-                mContext.startActivity(intent);
+                intent = AutoPlaylistActivity.newIntent(mContext, (AutoPlaylist) mPlaylist);
             } else {
-                Navigate.to(mContext, PlaylistActivity.class, PLAYLIST_EXTRA, mPlaylist);
+                intent = PlaylistActivity.newIntent(mContext, mPlaylist);
             }
+            mContext.startActivity(intent);
         };
     }
 

@@ -50,7 +50,7 @@ import timber.log.Timber;
 
 public class ArtistActivity extends BaseActivity {
 
-    public static final String ARTIST_EXTRA = "artist";
+    private static final String ARTIST_EXTRA = "ArtistActivity.ARTIST";
 
     @Inject MusicStore mMusicStore;
     @Inject LastFmStore mLfmStore;

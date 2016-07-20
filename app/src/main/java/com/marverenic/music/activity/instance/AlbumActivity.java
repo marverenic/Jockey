@@ -32,7 +32,7 @@ import timber.log.Timber;
 
 public class AlbumActivity extends BaseActivity {
 
-    public static final String ALBUM_EXTRA = "album";
+    private static final String ALBUM_EXTRA = "AlbumActivity.ALBUM";
 
     @Inject MusicStore mMusicStore;
 

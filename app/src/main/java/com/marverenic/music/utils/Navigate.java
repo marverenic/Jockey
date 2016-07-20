@@ -1,9 +1,5 @@
 package com.marverenic.music.utils;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Parcelable;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -17,21 +13,6 @@ public final class Navigate {
      */
     private Navigate() {
 
-    }
-
-    public static void to(Context parent, Class<?  extends Activity> target) {
-        to(parent, target, null, null);
-    }
-
-    public static void to(Context parent, Class<? extends Activity> target, String extraName,
-                          Parcelable extra) {
-        Intent intent = new Intent(parent, target);
-
-        if (extraName != null && extra != null) {
-            intent.putExtra(extraName, extra);
-        }
-
-        parent.startActivity(intent);
     }
 
     public static void to(FragmentActivity activity, Fragment fragment, @IdRes int viewId) {

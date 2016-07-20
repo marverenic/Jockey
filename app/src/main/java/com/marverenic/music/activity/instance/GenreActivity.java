@@ -27,7 +27,7 @@ import timber.log.Timber;
 
 public class GenreActivity extends BaseActivity {
 
-    public static final String GENRE_EXTRA = "genre";
+    private static final String GENRE_EXTRA = "GenreActivity.GENRE";
 
     @Inject MusicStore mMusicStore;
 

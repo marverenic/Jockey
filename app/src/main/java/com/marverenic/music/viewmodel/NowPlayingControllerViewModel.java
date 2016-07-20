@@ -31,7 +31,6 @@ import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.PlayerController;
-import com.marverenic.music.utils.Navigate;
 
 import java.util.concurrent.TimeUnit;
 
@@ -261,8 +260,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
                 case 0: //Go to artist
                     mMusicStore.findArtistById(song.getArtistId()).subscribe(
                             artist -> {
-                                Navigate.to(mContext, ArtistActivity.class,
-                                        ArtistActivity.ARTIST_EXTRA, artist);
+                                mContext.startActivity(ArtistActivity.newIntent(mContext, artist));
                             },
                             throwable -> {
                                 Timber.e(throwable, "Failed to find artist");
@@ -272,8 +270,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
                 case 1: //Go to album
                     mMusicStore.findAlbumById(song.getAlbumId()).subscribe(
                             album -> {
-                                Navigate.to(mContext, AlbumActivity.class,
-                                        AlbumActivity.ALBUM_EXTRA, album);
+                                mContext.startActivity(AlbumActivity.newIntent(mContext, album));
                             },
                             throwable -> {
                                 Timber.e(throwable, "Failed to find album");
