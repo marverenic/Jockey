@@ -39,11 +39,6 @@ android {
         targetSdkVersion 24
         versionCode 40300
         versionName "2.0 Beta 1"
-
-        /* Release channel used in com.marverenic.music.utils.Updater for independent releases */
-        // buildConfigField "String", "CHANNEL", "\"alpha\""
-        buildConfigField "String", "CHANNEL", "\"beta\""
-        // buildConfigField "String", "CHANNEL", "\"stable\""
     }
     //noinspection GroovyAssignabilityCheck
     buildTypes {
