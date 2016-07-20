@@ -180,18 +180,22 @@ public class PreferenceFragment extends PreferenceFragmentCompat
             showDirectoryInclusionExclusionFragment(exclude);
             return true;
         } else if (getString(R.string.pref_key_create_launcher_icon).equals(preference.getKey())) {
-            new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.add_shortcut)
-                    .setMessage(R.string.add_shortcut_description)
-                    .setPositiveButton(R.string.action_add,
-                            (dialog, which) -> {
-                                mThemeStore.createThemedLauncherIcon();
-                            })
-                    .setNegativeButton(R.string.action_cancel, null)
-                    .show();
+            showNewShortcutDialog();
             return true;
         }
         return super.onPreferenceTreeClick(preference);
+    }
+
+    private void showNewShortcutDialog() {
+        new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.add_shortcut)
+                .setMessage(R.string.add_shortcut_description)
+                .setPositiveButton(R.string.action_add,
+                        (dialog, which) -> {
+                            mThemeStore.createThemedLauncherIcon();
+                        })
+                .setNegativeButton(R.string.action_cancel, null)
+                .show();
     }
 
     private void replaceFragment(Fragment next) {
