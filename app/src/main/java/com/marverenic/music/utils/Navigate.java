@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 
 import com.marverenic.music.R;
-import com.marverenic.music.activity.LibraryActivity;
 
 public final class Navigate {
 
@@ -42,18 +41,5 @@ public final class Navigate {
                 .replace(viewId, fragment)
                 .addToBackStack(null)
                 .commit();
-    }
-
-    public static void up(Activity parent) {
-        parent.finish();
-    }
-
-    public static void back(Activity parent) {
-        parent.finish();
-    }
-
-    public static void home(Context parent) {
-        parent.startActivity(new Intent(parent, LibraryActivity.class)
-                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
     }
 }

@@ -29,7 +29,6 @@ import com.marverenic.music.instances.section.HeaderSection;
 import com.marverenic.music.instances.section.PlaylistSection;
 import com.marverenic.music.instances.section.SongSection;
 import com.marverenic.music.player.PlayerController;
-import com.marverenic.music.utils.Navigate;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 import com.marverenic.music.view.GridSpacingDecoration;
@@ -211,7 +210,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         switch (item.getItemId()) {
             case android.R.id.home:
                 lastQuery = null;
-                Navigate.home(this);
+                navigateHome();
                 return true;
             case R.id.search:
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) onSearchRequested();
@@ -219,6 +218,13 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void navigateHome() {
+        Intent mainActivity = new Intent(this, LibraryActivity.class);;
+        mainActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        startActivity(mainActivity);
     }
 
     @Override
