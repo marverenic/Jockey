@@ -32,7 +32,6 @@ android {
         enabled = true
     }
 
-    //noinspection GroovyMissingReturnStatement
     defaultConfig {
         applicationId "com.marverenic.music"
         minSdkVersion 15
@@ -40,7 +39,7 @@ android {
         versionCode 40300
         versionName "2.0 Beta 1"
     }
-    //noinspection GroovyAssignabilityCheck
+
     buildTypes {
         release {
             minifyEnabled true
