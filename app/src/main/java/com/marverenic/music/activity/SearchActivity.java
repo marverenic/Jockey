@@ -1,6 +1,7 @@
 package com.marverenic.music.activity;
 
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -45,6 +46,10 @@ import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
 
 public class SearchActivity extends BaseActivity implements SearchView.OnQueryTextListener {
+
+    public static Intent newIntent(Context context) {
+        return new Intent(context, SearchActivity.class);
+    }
 
     @Inject MusicStore mMusicStore;
     @Inject PlaylistStore mPlaylistStore;

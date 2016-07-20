@@ -1,5 +1,7 @@
 package com.marverenic.music.activity.instance;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
@@ -19,7 +22,6 @@ import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.SongSection;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,6 +39,13 @@ public class AlbumActivity extends BaseActivity {
     private HeterogeneousAdapter mAdapter;
     private SongSection mSongSection;
     private List<Song> mSongs;
+
+    public static Intent newIntent(Context context, Album album) {
+        Intent intent = new Intent(context, AlbumActivity.class);
+        intent.putExtra(ALBUM_EXTRA, album);
+
+        return intent;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

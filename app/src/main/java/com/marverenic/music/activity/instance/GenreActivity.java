@@ -1,9 +1,12 @@
 package com.marverenic.music.activity.instance;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
@@ -14,7 +17,6 @@ import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.SongSection;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +35,13 @@ public class GenreActivity extends BaseActivity {
     private List<Song> mSongs;
     private HeterogeneousAdapter mAdapter;
     private SongSection mSongSection;
+
+    public static Intent newIntent(Context context, Genre genre) {
+        Intent intent = new Intent(context, GenreActivity.class);
+        intent.putExtra(GENRE_EXTRA, genre);
+
+        return intent;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

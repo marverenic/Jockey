@@ -48,6 +48,10 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
     private static final String TAG_APPEND_PLAYLIST = "AppendPlaylistDialog";
 
+    public static Intent newIntent(Context context) {
+        return new Intent(context, NowPlayingActivity.class);
+    }
+
     @Inject PreferencesStore mPrefStore;
 
     private ImageView artwork;
