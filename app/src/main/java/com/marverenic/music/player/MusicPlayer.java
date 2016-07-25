@@ -155,6 +155,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
     private boolean mShuffle;
     private int mRepeat;
+    private int mMultiRepeat;
 
     /**
      * Whether this MusicPlayer has focus from {@link AudioManager} to play audio
@@ -230,6 +231,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
         mShuffle = preferencesStore.isShuffled();
         mRepeat = preferencesStore.getRepeatMode();
+        mMultiRepeat = preferencesStore.getMultiRepeatCount();
 
         initEqualizer(preferencesStore);
     }
@@ -245,6 +247,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         }
 
         setRepeat(preferencesStore.getRepeatMode());
+        setMultiRepeat(preferencesStore.getMultiRepeatCount());
     }
 
     /**
@@ -625,10 +628,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             logPlay();
         }
 
-        if (mRepeat > 0) {
-            // TODO Reset Multi-Repeat. See #setRepeat(int) for more details
-            mRepeat = REPEAT_NONE;
-        }
+        // TODO Reset Multi-Repeat in preferences
+        mMultiRepeat = 0;
 
         if (mMediaPlayer.getQueueIndex() < mQueue.size() - 1
                 || mRepeat == REPEAT_ALL) {
@@ -868,15 +869,26 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     /**
      * Sets the repeat option to control what happens when a track finishes.
      * @param repeat An integer representation of the repeat option. May be one of either
-     *               {@link #REPEAT_NONE}, {@link #REPEAT_ALL}, {@link #REPEAT_ONE}, or a positive
-     *               integer for multi-repeat. When multi-repeat is enabled, the current song will
-     *               be played back-to-back for the specified number of loops (which is equal to the
-     *               value passed into this method). Once this counter decrements to 0, playback
-     *               will resume as it was before and the previous repeat option will be restored.
+     *               {@link #REPEAT_NONE}, {@link #REPEAT_ALL}, {@link #REPEAT_ONE}.
      */
     public void setRepeat(int repeat) {
         Timber.i("Changing repeat setting to %d", repeat);
         mRepeat = repeat;
+    }
+
+    /**
+     * Sets the Multi-Repeat counter to repeat a song {@code count} times before proceeding to the
+     * next song
+     * @param count The number of times to repeat the song. When multi-repeat is enabled, the
+     *              current song will be played back-to-back for the specified number of loops.
+     *              Once this counter decrements to 0, playback will resume as it was before and the
+     *              previous repeat option will be restored unless it was previously Repeat All. If
+     *              Repeat All was enabled before Multi-Repeat, the repeat setting will be reset to
+     *              Repeat none.
+     */
+    public void setMultiRepeat(int count) {
+        Timber.i("Changing Multi-Repeat counter to %d", count);
+        mMultiRepeat = count;
     }
 
     /**
@@ -1012,7 +1024,14 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         Timber.i("onCompletion called");
         logPlay();
 
-        if (mRepeat == REPEAT_NONE) {
+        if (mMultiRepeat > 1) {
+            Timber.i("Multi-Repeat (%d) is enabled. Restarting current song and decrementing.",
+                    mMultiRepeat);
+
+            // TODO save this updated value
+            mMultiRepeat--;
+            mMediaPlayer.play();
+        } else if (mRepeat == REPEAT_NONE) {
             if (mMediaPlayer.getQueueIndex() < mMediaPlayer.getQueue().size()) {
                 Timber.i("This is not the last song in the queue. Starting next song");
                 skip();
@@ -1022,10 +1041,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             skip();
         } else if (mRepeat == REPEAT_ONE) {
             Timber.i("Repeat one is enabled. Restarting current song");
-            mMediaPlayer.play();
-        } else if (mRepeat > 0) {
-            Timber.i("Multirepeat (%d) is enabled. Reducing counter and restarting song", mRepeat);
-            mRepeat--;
             mMediaPlayer.play();
         }
 
