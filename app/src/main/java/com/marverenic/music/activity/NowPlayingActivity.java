@@ -263,13 +263,13 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         menu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.menu_item_repeat_all:
-                    setRepeatAll();
+                    changeRepeatMode(MusicPlayer.REPEAT_ALL, R.string.confirm_enable_repeat);
                     return true;
                 case R.id.menu_item_repeat_none:
-                    setRepeatNone();
+                    changeRepeatMode(MusicPlayer.REPEAT_NONE, R.string.confirm_disable_repeat);
                     return true;
                 case R.id.menu_item_repeat_one:
-                    setRepeatOne();
+                    changeRepeatMode(MusicPlayer.REPEAT_ONE, R.string.confirm_enable_repeat_one);
                     return true;
                 case R.id.menu_item_repeat_multi:
                     showMultiRepeatDialog();
@@ -290,22 +290,10 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         showSnackbar(getString(R.string.confirm_enable_multi_repeat, chosen));
     }
 
-    private void setRepeatAll() {
-        mPrefStore.setRepeatMode(MusicPlayer.REPEAT_ALL);
+    private void changeRepeatMode(int repeatMode, @StringRes int confirmationMessage) {
+        mPrefStore.setRepeatMode(repeatMode);
         updateRepeatIcon();
-        showSnackbar(R.string.confirm_enable_repeat);
-    }
-
-    private void setRepeatOne() {
-        mPrefStore.setRepeatMode(MusicPlayer.REPEAT_ONE);
-        updateRepeatIcon();
-        showSnackbar(R.string.confirm_enable_repeat_one);
-    }
-
-    private void setRepeatNone() {
-        mPrefStore.setRepeatMode(MusicPlayer.REPEAT_NONE);
-        updateRepeatIcon();
-        showSnackbar(R.string.confirm_disable_repeat);
+        showSnackbar(confirmationMessage);
     }
 
     private void showMultiRepeatDialog() {
