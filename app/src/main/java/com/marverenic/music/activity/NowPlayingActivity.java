@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
@@ -207,17 +208,36 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     }
 
     private void updateRepeatIcon() {
-        if (mPrefStore.getRepeatMode() == MusicPlayer.REPEAT_ALL) {
-            mRepeatMenuItem.getIcon().setAlpha(255);
-            mRepeatMenuItem.setTitle(getResources().getString(R.string.action_enable_repeat_one));
+        @DrawableRes int icon;
+        boolean active = true;
+
+        if (mPrefStore.getMultiRepeatCount() == 2) {
+            icon = R.drawable.ic_repeat_two_24dp;
+        } else if (mPrefStore.getMultiRepeatCount() == 3) {
+            icon = R.drawable.ic_repeat_three_24dp;
+        } else if (mPrefStore.getMultiRepeatCount() == 4) {
+            icon = R.drawable.ic_repeat_four_24dp;
+        } else if (mPrefStore.getMultiRepeatCount() == 5) {
+            icon = R.drawable.ic_repeat_five_24dp;
+        } else if (mPrefStore.getMultiRepeatCount() == 6) {
+            icon = R.drawable.ic_repeat_six_24dp;
+        } else if (mPrefStore.getMultiRepeatCount() == 7) {
+            icon = R.drawable.ic_repeat_seven_24dp;
+        } else if (mPrefStore.getMultiRepeatCount() == 8) {
+            icon = R.drawable.ic_repeat_eight_24dp;
+        } else if (mPrefStore.getMultiRepeatCount() == 9) {
+            icon = R.drawable.ic_repeat_nine_24dp;
+        } else if (mPrefStore.getRepeatMode() == MusicPlayer.REPEAT_ALL) {
+            icon = R.drawable.ic_repeat_24dp;
         } else if (mPrefStore.getRepeatMode() == MusicPlayer.REPEAT_ONE) {
-            mRepeatMenuItem.setIcon(R.drawable.ic_repeat_one_24dp);
-            mRepeatMenuItem.setTitle(getResources().getString(R.string.action_disable_repeat));
+            icon = R.drawable.ic_repeat_one_24dp;
         } else {
-            mRepeatMenuItem.setIcon(R.drawable.ic_repeat_24dp);
-            mRepeatMenuItem.getIcon().setAlpha(128);
-            mRepeatMenuItem.setTitle(getResources().getString(R.string.action_enable_repeat));
+            icon = R.drawable.ic_repeat_24dp;
+            active = false;
         }
+
+        mRepeatMenuItem.setIcon(icon);
+        mRepeatMenuItem.getIcon().setAlpha(active ? 255 : 128);
     }
 
     @Override
@@ -293,6 +313,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
 
     private void changeRepeatMode(int repeatMode, @StringRes int confirmationMessage) {
         mPrefStore.setRepeatMode(repeatMode);
+        mPrefStore.setMultiRepeatCount(0);
         PlayerController.updatePlayerPreferences(mPrefStore);
         updateRepeatIcon();
         showSnackbar(confirmationMessage);
