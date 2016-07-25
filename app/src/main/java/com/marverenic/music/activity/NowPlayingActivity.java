@@ -286,12 +286,14 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     public void onNumberPicked(int chosen) {
         // Callback for when a Multi-Repeat value is chosen
         mPrefStore.setMultiRepeatCount(chosen);
+        PlayerController.updatePlayerPreferences(mPrefStore);
         updateRepeatIcon();
         showSnackbar(getString(R.string.confirm_enable_multi_repeat, chosen));
     }
 
     private void changeRepeatMode(int repeatMode, @StringRes int confirmationMessage) {
         mPrefStore.setRepeatMode(repeatMode);
+        PlayerController.updatePlayerPreferences(mPrefStore);
         updateRepeatIcon();
         showSnackbar(confirmationMessage);
     }
