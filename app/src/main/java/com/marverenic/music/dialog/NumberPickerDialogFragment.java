@@ -1,5 +1,6 @@
 package com.marverenic.music.dialog;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -92,8 +93,19 @@ public class NumberPickerDialogFragment extends DialogFragment {
     }
 
     private void onValueSelected() {
-        // TODO send this back to the caller
         int value = mNumberPicker.getValue();
+        Activity parent = getActivity();
+
+        if (parent instanceof OnNumberPickedListener) {
+            ((OnNumberPickedListener) parent).onNumberPicked(value);
+        } else {
+            Timber.w("%s does not implement OnNumberPickedListener. Ignoring chosen value.",
+                    parent.getClass().getSimpleName());
+        }
+    }
+
+    public interface OnNumberPickedListener {
+        void onNumberPicked(int chosen);
     }
 
     public static class Builder {

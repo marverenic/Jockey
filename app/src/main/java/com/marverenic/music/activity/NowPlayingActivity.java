@@ -46,7 +46,8 @@ import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 import static android.support.design.widget.Snackbar.LENGTH_LONG;
 import static android.support.design.widget.Snackbar.LENGTH_SHORT;
 
-public class NowPlayingActivity extends BaseActivity implements GestureView.OnGestureListener {
+public class NowPlayingActivity extends BaseActivity implements GestureView.OnGestureListener,
+        NumberPickerDialogFragment.OnNumberPickedListener {
 
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
     private static final String TAG_APPEND_PLAYLIST = "AppendPlaylistDialog";
@@ -279,6 +280,14 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         });
 
         menu.show();
+    }
+
+    @Override
+    public void onNumberPicked(int chosen) {
+        // Callback for when a Multi-Repeat value is chosen
+        mPrefStore.setMultiRepeatCount(chosen);
+        updateRepeatIcon();
+        showSnackbar(getString(R.string.confirm_enable_multi_repeat, chosen));
     }
 
     private void setRepeatAll() {

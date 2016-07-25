@@ -6,6 +6,7 @@
     <string name="confirm_enable_shuffle">Enabled shuffle</string>
     <string name="confirm_disable_repeat">Disabled repeat</string>
     <string name="confirm_enable_repeat">Enabled repeat</string>
+    <string name="confirm_enable_multi_repeat">Enabled Multi-Repeat %d</string>
     <string name="confirm_enable_repeat_one">Enabled repeat one</string>
     <string name="confirm_refresh_library">Library refreshed</string>
     <string name="confirm_clear_queue">Cleared queue</string>
