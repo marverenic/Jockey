@@ -22,6 +22,7 @@ public interface ReadOnlyPreferencesStore {
 
     boolean isShuffled();
     int getRepeatMode();
+    int getMultiRepeatCount();
 
     int getEqualizerPresetId();
     boolean getEqualizerEnabled();

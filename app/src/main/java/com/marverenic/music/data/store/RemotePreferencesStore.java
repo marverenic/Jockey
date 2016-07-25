@@ -20,6 +20,7 @@ public class RemotePreferencesStore implements ReadOnlyPreferencesStore, Parcela
     private final int mBaseColor;
     private final boolean mShuffled;
     private final int mRepeatMode;
+    private final int mMultiRepeatCount;
     private final int mEqualizerPresetId;
     private final boolean mEqualizerEnabled;
     private final String mEqualizerSettings;
@@ -35,6 +36,7 @@ public class RemotePreferencesStore implements ReadOnlyPreferencesStore, Parcela
         mBaseColor = preferencesStore.getBaseColor();
         mShuffled = preferencesStore.isShuffled();
         mRepeatMode = preferencesStore.getRepeatMode();
+        mMultiRepeatCount = preferencesStore.getMultiRepeatCount();
         mEqualizerPresetId = preferencesStore.getEqualizerPresetId();
         mEqualizerEnabled = preferencesStore.getEqualizerEnabled();
 
@@ -57,6 +59,7 @@ public class RemotePreferencesStore implements ReadOnlyPreferencesStore, Parcela
         mBaseColor = in.readInt();
         mShuffled = in.readByte() != 0;
         mRepeatMode = in.readInt();
+        mMultiRepeatCount = in.readInt();
         mEqualizerPresetId = in.readInt();
         mEqualizerEnabled = in.readByte() != 0;
         mEqualizerSettings = in.readString();
@@ -74,6 +77,7 @@ public class RemotePreferencesStore implements ReadOnlyPreferencesStore, Parcela
         dest.writeInt(mBaseColor);
         dest.writeByte((byte) (mShuffled ? 1 : 0));
         dest.writeInt(mRepeatMode);
+        dest.writeInt(mMultiRepeatCount);
         dest.writeInt(mEqualizerPresetId);
         dest.writeByte((byte) (mEqualizerEnabled ? 1 : 0));
         dest.writeString(mEqualizerSettings);
@@ -144,6 +148,11 @@ public class RemotePreferencesStore implements ReadOnlyPreferencesStore, Parcela
     @Override
     public int getRepeatMode() {
         return mRepeatMode;
+    }
+
+    @Override
+    public int getMultiRepeatCount() {
+        return mMultiRepeatCount;
     }
 
     @Override

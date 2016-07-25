@@ -25,6 +25,7 @@ public interface PreferencesStore extends ReadOnlyPreferencesStore {
 
     void setShuffle(boolean shuffle);
     void setRepeatMode(int repeatMode);
+    void setMultiRepeatCount(int count);
 
     void setEqualizerPresetId(int equalizerPresetId);
     void setEqualizerEnabled(boolean equalizerEnabled);
