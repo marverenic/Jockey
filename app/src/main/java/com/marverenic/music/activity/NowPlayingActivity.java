@@ -27,6 +27,7 @@ import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
+import com.marverenic.music.dialog.NumberPickerDialogFragment;
 import com.marverenic.music.fragments.QueueFragment;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.MusicPlayer;
@@ -49,6 +50,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
 
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
     private static final String TAG_APPEND_PLAYLIST = "AppendPlaylistDialog";
+    private static final String TAG_MULTI_REPEAT_PICKER = "MultiRepeatPickerDialog";
 
     public static Intent newIntent(Context context) {
         return new Intent(context, NowPlayingActivity.class);
@@ -298,7 +300,14 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     }
 
     private void showMultiRepeatDialog() {
-        showSnackbar("TODO: Implement this dialog");
+        new NumberPickerDialogFragment.Builder(this)
+                .setMinValue(2)
+                .setMaxValue(10)
+                .setDefaultValue(3)
+                .setWrapSelectorWheel(false)
+                .setTitle(getString(R.string.enable_multi_repeat_title))
+                .setMessage(getString(R.string.multi_repeat_description))
+                .show(TAG_MULTI_REPEAT_PICKER);
     }
 
     private void saveQueueAsPlaylist() {

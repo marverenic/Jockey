@@ -140,4 +140,7 @@
     <string name="rule_played_on">Was last played on</string>
     <string name="rule_played_after">Has been played since</string>
 
+    <string name="enable_multi_repeat_title">Enable Multi-Repeat</string>
+    <string name="multi_repeat_description">Multi-Repeat will play the current song back-to-back a certain number of times. When the next song starts, Multi-Repeat will be disabled.</string>
+
 </resources>
