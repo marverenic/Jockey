@@ -18,7 +18,7 @@ import android.view.KeyEvent;
 import com.marverenic.music.IPlayerService;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MediaStoreUtil;
-import com.marverenic.music.data.store.RemotePreferencesStore;
+import com.marverenic.music.data.store.ImmutablePreferenceStore;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.MediaStyleHelper;
 
@@ -367,7 +367,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void setPreferences(RemotePreferencesStore preferences) throws RemoteException {
+        public void setPreferences(ImmutablePreferenceStore preferences) throws RemoteException {
             try {
                 instance.musicPlayer.updatePreferences(preferences);
             } catch (RuntimeException exception) {
