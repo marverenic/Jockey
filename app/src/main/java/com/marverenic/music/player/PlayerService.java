@@ -538,6 +538,26 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
                 throw exception;
             }
         }
+
+        @Override
+        public int getMultiRepeatCount() throws RemoteException {
+            try {
+                return instance.musicPlayer.getMultiRepeatCount();
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.getMultiRepeatCount() failed");
+                throw exception;
+            }
+        }
+
+        @Override
+        public void setMultiRepeatCount(int count) throws RemoteException {
+            try {
+                instance.musicPlayer.setMultiRepeat(count);
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.setMultiRepeatCount() failed");
+                throw exception;
+            }
+        }
     }
 }
 

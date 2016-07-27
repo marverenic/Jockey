@@ -211,22 +211,35 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         @DrawableRes int icon;
         boolean active = true;
 
-        if (mPrefStore.getMultiRepeatCount() == 2) {
-            icon = R.drawable.ic_repeat_two_24dp;
-        } else if (mPrefStore.getMultiRepeatCount() == 3) {
-            icon = R.drawable.ic_repeat_three_24dp;
-        } else if (mPrefStore.getMultiRepeatCount() == 4) {
-            icon = R.drawable.ic_repeat_four_24dp;
-        } else if (mPrefStore.getMultiRepeatCount() == 5) {
-            icon = R.drawable.ic_repeat_five_24dp;
-        } else if (mPrefStore.getMultiRepeatCount() == 6) {
-            icon = R.drawable.ic_repeat_six_24dp;
-        } else if (mPrefStore.getMultiRepeatCount() == 7) {
-            icon = R.drawable.ic_repeat_seven_24dp;
-        } else if (mPrefStore.getMultiRepeatCount() == 8) {
-            icon = R.drawable.ic_repeat_eight_24dp;
-        } else if (mPrefStore.getMultiRepeatCount() == 9) {
-            icon = R.drawable.ic_repeat_nine_24dp;
+        int multiRepeatCount = PlayerController.getMultiRepeatCount();
+        if (multiRepeatCount > 1) {
+            switch (multiRepeatCount) {
+                case 2:
+                    icon = R.drawable.ic_repeat_two_24dp;
+                    break;
+                case 3:
+                    icon = R.drawable.ic_repeat_three_24dp;
+                    break;
+                case 4:
+                    icon = R.drawable.ic_repeat_four_24dp;
+                    break;
+                case 5:
+                    icon = R.drawable.ic_repeat_five_24dp;
+                    break;
+                case 6:
+                    icon = R.drawable.ic_repeat_six_24dp;
+                    break;
+                case 7:
+                    icon = R.drawable.ic_repeat_seven_24dp;
+                    break;
+                case 8:
+                    icon = R.drawable.ic_repeat_eight_24dp;
+                    break;
+                case 9:
+                default:
+                    icon = R.drawable.ic_repeat_nine_24dp;
+                    break;
+            }
         } else if (mPrefStore.getRepeatMode() == MusicPlayer.REPEAT_ALL) {
             icon = R.drawable.ic_repeat_24dp;
         } else if (mPrefStore.getRepeatMode() == MusicPlayer.REPEAT_ONE) {
@@ -305,15 +318,14 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     @Override
     public void onNumberPicked(int chosen) {
         // Callback for when a Multi-Repeat value is chosen
-        mPrefStore.setMultiRepeatCount(chosen);
-        PlayerController.updatePlayerPreferences(mPrefStore);
+        PlayerController.setMultiRepeatCount(chosen);
         updateRepeatIcon();
         showSnackbar(getString(R.string.confirm_enable_multi_repeat, chosen));
     }
 
     private void changeRepeatMode(int repeatMode, @StringRes int confirmationMessage) {
         mPrefStore.setRepeatMode(repeatMode);
-        mPrefStore.setMultiRepeatCount(0);
+        PlayerController.setMultiRepeatCount(0);
         PlayerController.updatePlayerPreferences(mPrefStore);
         updateRepeatIcon();
         showSnackbar(confirmationMessage);

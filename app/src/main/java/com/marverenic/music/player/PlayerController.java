@@ -515,6 +515,31 @@ public final class PlayerController {
         }
     }
 
+    public static int getMultiRepeatCount() {
+        if (playerService == null) {
+            return 0;
+        }
+
+        try {
+            return playerService.getMultiRepeatCount();
+        } catch (RemoteException exception) {
+            Timber.e(exception, "Failed to get Multi-Repeat count");
+            return 0;
+        }
+    }
+
+    public static void setMultiRepeatCount(int count) {
+        if (playerService == null) {
+            return;
+        }
+
+        try {
+            playerService.setMultiRepeatCount(count);
+        } catch (RemoteException exception) {
+            Timber.e(exception, "Failed to set Multi-Repeat count");
+        }
+    }
+
     /**
      * @return The album artwork for the current song
      */

@@ -32,4 +32,7 @@ interface IPlayerService {
     int getDuration();
     int getAudioSessionId();
 
+    int getMultiRepeatCount();
+    void setMultiRepeatCount(int count);
+
 }

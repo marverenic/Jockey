@@ -26,6 +26,7 @@ import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.data.store.ReadOnlyPreferencesStore;
+import com.marverenic.music.data.store.RemotePreferenceStore;
 import com.marverenic.music.data.store.SharedPreferencesStore;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Util;
@@ -174,6 +175,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     private Bitmap mArtwork;
 
     @Inject PlayCountStore mPlayCountStore;
+    private RemotePreferenceStore mRemotePreferenceStore;
 
     /**
      * Creates a new MusicPlayer with an empty queue. The backing {@link android.media.MediaPlayer}
@@ -185,6 +187,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public MusicPlayer(Context context) {
         mContext = context;
         JockeyApplication.getComponent(mContext).inject(this);
+        mRemotePreferenceStore = new RemotePreferenceStore(mContext);
 
         // Initialize play count store
         mPlayCountStore.refresh()
@@ -231,7 +234,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
         mShuffle = preferencesStore.isShuffled();
         mRepeat = preferencesStore.getRepeatMode();
-        mMultiRepeat = preferencesStore.getMultiRepeatCount();
+        mMultiRepeat = mRemotePreferenceStore.getMultiRepeatCount();
 
         initEqualizer(preferencesStore);
     }
@@ -247,7 +250,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         }
 
         setRepeat(preferencesStore.getRepeatMode());
-        setMultiRepeat(preferencesStore.getMultiRepeatCount());
     }
 
     /**
@@ -628,8 +630,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             logPlay();
         }
 
-        // TODO Reset Multi-Repeat in preferences
-        mMultiRepeat = 0;
+        setMultiRepeat(0);
 
         if (mMediaPlayer.getQueueIndex() < mQueue.size() - 1
                 || mRepeat == REPEAT_ALL) {
@@ -889,6 +890,11 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public void setMultiRepeat(int count) {
         Timber.i("Changing Multi-Repeat counter to %d", count);
         mMultiRepeat = count;
+        mRemotePreferenceStore.setMultiRepeatCount(count);
+    }
+
+    public int getMultiRepeatCount() {
+        return mMultiRepeat;
     }
 
     /**
@@ -1028,8 +1034,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             Timber.i("Multi-Repeat (%d) is enabled. Restarting current song and decrementing.",
                     mMultiRepeat);
 
-            // TODO save this updated value
-            mMultiRepeat--;
+            setMultiRepeat(getMultiRepeatCount() - 1);
             mMediaPlayer.play();
         } else if (mRepeat == REPEAT_NONE) {
             if (mMediaPlayer.getQueueIndex() < mMediaPlayer.getQueue().size()) {

@@ -127,11 +127,6 @@ public class SharedPreferencesStore implements PreferencesStore {
     }
 
     @Override
-    public int getMultiRepeatCount() {
-        return getInt(R.string.pref_key_multi_repeat, 0);
-    }
-
-    @Override
     public int getEqualizerPresetId() {
         return getInt(R.string.pref_key_eq_id, -1);
     }
@@ -234,11 +229,6 @@ public class SharedPreferencesStore implements PreferencesStore {
     @Override
     public void setRepeatMode(int repeatMode) {
         putInt(R.string.pref_key_repeat, repeatMode);
-    }
-
-    @Override
-    public void setMultiRepeatCount(int count) {
-        putInt(R.string.pref_key_multi_repeat, count);
     }
 
     @Override
