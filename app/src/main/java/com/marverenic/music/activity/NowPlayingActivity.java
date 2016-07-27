@@ -54,6 +54,8 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     private static final String TAG_APPEND_PLAYLIST = "AppendPlaylistDialog";
     private static final String TAG_MULTI_REPEAT_PICKER = "MultiRepeatPickerDialog";
 
+    private static final int DEFAULT_MULTI_REPEAT_VALUE = 3;
+
     public static Intent newIntent(Context context) {
         return new Intent(context, NowPlayingActivity.class);
     }
@@ -332,10 +334,12 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     }
 
     private void showMultiRepeatDialog() {
+        int currentValue = PlayerController.getMultiRepeatCount();
+
         new NumberPickerDialogFragment.Builder(this)
                 .setMinValue(2)
                 .setMaxValue(10)
-                .setDefaultValue(3)
+                .setDefaultValue((currentValue > 1) ? currentValue : DEFAULT_MULTI_REPEAT_VALUE)
                 .setWrapSelectorWheel(false)
                 .setTitle(getString(R.string.enable_multi_repeat_title))
                 .setMessage(getString(R.string.multi_repeat_description))
