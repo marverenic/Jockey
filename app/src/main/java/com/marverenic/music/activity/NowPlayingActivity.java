@@ -392,6 +392,10 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
 
             lastPlaying = nowPlaying;
         }
+
+        if (mRepeatMenuItem != null) {
+            updateRepeatIcon();
+        }
     }
 
     private void showSnackbar(@StringRes int stringId) {
