@@ -243,7 +243,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             startForeground(NOTIFICATION_ID, notification);
-        } else if (!musicPlayer.isPlaying() && !mAppRunning) {
+        } else if (!musicPlayer.isPlaying()) {
             stopForeground(false);
 
             NotificationManager mgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
