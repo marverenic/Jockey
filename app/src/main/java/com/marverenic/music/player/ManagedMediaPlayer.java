@@ -192,9 +192,7 @@ public class ManagedMediaPlayer extends MediaPlayer implements MediaPlayer.OnPre
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
         if (onErrorListener != null && !onErrorListener.onError(mp, what, extra)) {
-            {
-                Timber.i("An error occurred and the player was reset");
-            }
+            Timber.i("An error occurred and the player was reset");
             reset();
         }
         return true;
