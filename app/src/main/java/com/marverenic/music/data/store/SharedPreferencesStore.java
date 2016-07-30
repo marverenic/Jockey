@@ -204,24 +204,6 @@ public class SharedPreferencesStore implements PreferencesStore {
     }
 
     @Override
-    public void cycleRepeatMode() {
-        int nextMode;
-        switch (getRepeatMode()) {
-            case MusicPlayer.REPEAT_NONE:
-                nextMode = MusicPlayer.REPEAT_ALL;
-                break;
-            case MusicPlayer.REPEAT_ALL:
-                nextMode = MusicPlayer.REPEAT_ONE;
-                break;
-            case MusicPlayer.REPEAT_ONE:
-            default:
-                nextMode = MusicPlayer.REPEAT_NONE;
-        }
-
-        setRepeatMode(nextMode);
-    }
-
-    @Override
     public void setShuffle(boolean shuffle) {
         putBoolean(R.string.pref_key_shuffle, shuffle);
     }

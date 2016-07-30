@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="AlwaysShowAction">
 
     <item
         android:id="@+id/action_shuffle"
         android:icon="@drawable/ic_shuffle_24dp"
         android:title="@string/action_enable_shuffle"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/action_repeat"
         android:icon="@drawable/ic_repeat_24dp"
         android:title="@string/action_enable_repeat"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/save"

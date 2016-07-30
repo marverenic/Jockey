@@ -11,9 +11,9 @@ import android.os.IBinder;
 import android.os.RemoteException;
 
 import com.marverenic.music.IPlayerService;
+import com.marverenic.music.data.store.ImmutablePreferenceStore;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.ReadOnlyPreferencesStore;
-import com.marverenic.music.data.store.RemotePreferencesStore;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Util;
 
@@ -259,7 +259,7 @@ public final class PlayerController {
     public static void updatePlayerPreferences(ReadOnlyPreferencesStore preferencesStore) {
         if (playerService != null) {
             try {
-                playerService.setPreferences(new RemotePreferencesStore(preferencesStore));
+                playerService.setPreferences(new ImmutablePreferenceStore(preferencesStore));
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to update remote player preferences");
             }
@@ -512,6 +512,31 @@ public final class PlayerController {
         } catch (RemoteException exception) {
             Timber.e(exception, "Failed to get song duration");
             return Integer.MAX_VALUE;
+        }
+    }
+
+    public static int getMultiRepeatCount() {
+        if (playerService == null) {
+            return 0;
+        }
+
+        try {
+            return playerService.getMultiRepeatCount();
+        } catch (RemoteException exception) {
+            Timber.e(exception, "Failed to get Multi-Repeat count");
+            return 0;
+        }
+    }
+
+    public static void setMultiRepeatCount(int count) {
+        if (playerService == null) {
+            return;
+        }
+
+        try {
+            playerService.setMultiRepeatCount(count);
+        } catch (RemoteException exception) {
+            Timber.e(exception, "Failed to set Multi-Repeat count");
         }
     }
 

@@ -8,7 +8,7 @@ import java.util.Set;
 
 import timber.log.Timber;
 
-public class RemotePreferencesStore implements ReadOnlyPreferencesStore, Parcelable {
+public class ImmutablePreferenceStore implements ReadOnlyPreferencesStore, Parcelable {
 
     private final boolean mShowFirstStart;
     private final boolean mAllowLogging;
@@ -24,7 +24,7 @@ public class RemotePreferencesStore implements ReadOnlyPreferencesStore, Parcela
     private final boolean mEqualizerEnabled;
     private final String mEqualizerSettings;
 
-    public RemotePreferencesStore(ReadOnlyPreferencesStore preferencesStore) {
+    public ImmutablePreferenceStore(ReadOnlyPreferencesStore preferencesStore) {
         mShowFirstStart = preferencesStore.showFirstStart();
         mAllowLogging = preferencesStore.allowLogging();
         mUseMobileNetwork = preferencesStore.useMobileNetwork();
@@ -46,7 +46,7 @@ public class RemotePreferencesStore implements ReadOnlyPreferencesStore, Parcela
         }
     }
 
-    protected RemotePreferencesStore(Parcel in) {
+    protected ImmutablePreferenceStore(Parcel in) {
         mShowFirstStart = in.readByte() != 0;
         mAllowLogging = in.readByte() != 0;
         mUseMobileNetwork = in.readByte() != 0;
@@ -84,15 +84,15 @@ public class RemotePreferencesStore implements ReadOnlyPreferencesStore, Parcela
         return 0;
     }
 
-    public static final Creator<RemotePreferencesStore> CREATOR = new Creator<RemotePreferencesStore>() {
+    public static final Creator<ImmutablePreferenceStore> CREATOR = new Creator<ImmutablePreferenceStore>() {
         @Override
-        public RemotePreferencesStore createFromParcel(Parcel in) {
-            return new RemotePreferencesStore(in);
+        public ImmutablePreferenceStore createFromParcel(Parcel in) {
+            return new ImmutablePreferenceStore(in);
         }
 
         @Override
-        public RemotePreferencesStore[] newArray(int size) {
-            return new RemotePreferencesStore[size];
+        public ImmutablePreferenceStore[] newArray(int size) {
+            return new ImmutablePreferenceStore[size];
         }
     };
 
@@ -171,12 +171,12 @@ public class RemotePreferencesStore implements ReadOnlyPreferencesStore, Parcela
     @Override
     public Set<String> getIncludedDirectories() {
         throw new UnsupportedOperationException(
-                "RemotePreferencesStore does not save included directories");
+                "ImmutablePreferenceStore does not save included directories");
     }
 
     @Override
     public Set<String> getExcludedDirectories() {
         throw new UnsupportedOperationException(
-                "RemotePreferencesStore does not save excluded directories");
+                "ImmutablePreferenceStore does not save excluded directories");
     }
 }

@@ -9,10 +9,13 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.PopupMenu;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +28,7 @@ import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
+import com.marverenic.music.dialog.NumberPickerDialogFragment;
 import com.marverenic.music.fragments.QueueFragment;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.MusicPlayer;
@@ -43,10 +47,14 @@ import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 import static android.support.design.widget.Snackbar.LENGTH_LONG;
 import static android.support.design.widget.Snackbar.LENGTH_SHORT;
 
-public class NowPlayingActivity extends BaseActivity implements GestureView.OnGestureListener {
+public class NowPlayingActivity extends BaseActivity implements GestureView.OnGestureListener,
+        NumberPickerDialogFragment.OnNumberPickedListener {
 
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
     private static final String TAG_APPEND_PLAYLIST = "AppendPlaylistDialog";
+    private static final String TAG_MULTI_REPEAT_PICKER = "MultiRepeatPickerDialog";
+
+    private static final int DEFAULT_MULTI_REPEAT_VALUE = 3;
 
     public static Intent newIntent(Context context) {
         return new Intent(context, NowPlayingActivity.class);
@@ -58,6 +66,9 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     private GestureView artworkWrapper;
     private Song lastPlaying;
     private QueueFragment queueFragment;
+
+    private MenuItem mRepeatMenuItem;
+    private MenuItem mShuffleMenuItem;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -179,44 +190,79 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.activity_now_playing, menu);
 
-        updateShuffleIcon(menu.findItem(R.id.action_shuffle));
-        updateRepeatIcon(menu.findItem(R.id.action_repeat));
+        mShuffleMenuItem = menu.findItem(R.id.action_shuffle);
+        mRepeatMenuItem = menu.findItem(R.id.action_repeat);
+
+        updateShuffleIcon();
+        updateRepeatIcon();
 
         return true;
     }
 
-    private void updateShuffleIcon(MenuItem shuffleMenuItem) {
+    private void updateShuffleIcon() {
         if (mPrefStore.isShuffled()) {
-            shuffleMenuItem.getIcon().setAlpha(255);
-            shuffleMenuItem.setTitle(getResources().getString(R.string.action_disable_shuffle));
+            mShuffleMenuItem.getIcon().setAlpha(255);
+            mShuffleMenuItem.setTitle(getResources().getString(R.string.action_disable_shuffle));
         } else {
-            shuffleMenuItem.getIcon().setAlpha(128);
-            shuffleMenuItem.setTitle(getResources().getString(R.string.action_enable_shuffle));
+            mShuffleMenuItem.getIcon().setAlpha(128);
+            mShuffleMenuItem.setTitle(getResources().getString(R.string.action_enable_shuffle));
         }
     }
 
-    private void updateRepeatIcon(MenuItem repeatMenuItem) {
-        if (mPrefStore.getRepeatMode() == MusicPlayer.REPEAT_ALL) {
-            repeatMenuItem.getIcon().setAlpha(255);
-            repeatMenuItem.setTitle(getResources().getString(R.string.action_enable_repeat_one));
+    private void updateRepeatIcon() {
+        @DrawableRes int icon;
+        boolean active = true;
+
+        int multiRepeatCount = PlayerController.getMultiRepeatCount();
+        if (multiRepeatCount > 1) {
+            switch (multiRepeatCount) {
+                case 2:
+                    icon = R.drawable.ic_repeat_two_24dp;
+                    break;
+                case 3:
+                    icon = R.drawable.ic_repeat_three_24dp;
+                    break;
+                case 4:
+                    icon = R.drawable.ic_repeat_four_24dp;
+                    break;
+                case 5:
+                    icon = R.drawable.ic_repeat_five_24dp;
+                    break;
+                case 6:
+                    icon = R.drawable.ic_repeat_six_24dp;
+                    break;
+                case 7:
+                    icon = R.drawable.ic_repeat_seven_24dp;
+                    break;
+                case 8:
+                    icon = R.drawable.ic_repeat_eight_24dp;
+                    break;
+                case 9:
+                default:
+                    icon = R.drawable.ic_repeat_nine_24dp;
+                    break;
+            }
+        } else if (mPrefStore.getRepeatMode() == MusicPlayer.REPEAT_ALL) {
+            icon = R.drawable.ic_repeat_24dp;
         } else if (mPrefStore.getRepeatMode() == MusicPlayer.REPEAT_ONE) {
-            repeatMenuItem.setIcon(R.drawable.ic_repeat_one_24dp);
-            repeatMenuItem.setTitle(getResources().getString(R.string.action_disable_repeat));
+            icon = R.drawable.ic_repeat_one_24dp;
         } else {
-            repeatMenuItem.setIcon(R.drawable.ic_repeat_24dp);
-            repeatMenuItem.getIcon().setAlpha(128);
-            repeatMenuItem.setTitle(getResources().getString(R.string.action_enable_repeat));
+            icon = R.drawable.ic_repeat_24dp;
+            active = false;
         }
+
+        mRepeatMenuItem.setIcon(icon);
+        mRepeatMenuItem.getIcon().setAlpha(active ? 255 : 128);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_shuffle:
-                toggleShuffle(item);
+                toggleShuffle();
                 return true;
             case R.id.action_repeat:
-                toggleRepeat(item);
+                showRepeatMenu();
                 return true;
             case R.id.save:
                 saveQueueAsPlaylist();
@@ -231,7 +277,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         return super.onOptionsItemSelected(item);
     }
 
-    private void toggleShuffle(MenuItem shuffleMenuItem) {
+    private void toggleShuffle() {
         mPrefStore.toggleShuffle();
         PlayerController.updatePlayerPreferences(mPrefStore);
 
@@ -241,23 +287,63 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
             showSnackbar(R.string.confirm_disable_shuffle);
         }
 
-        updateShuffleIcon(shuffleMenuItem);
+        updateShuffleIcon();
         queueFragment.updateShuffle();
     }
 
-    private void toggleRepeat(MenuItem repeatMenuItem) {
-        mPrefStore.cycleRepeatMode();
+    private void showRepeatMenu() {
+        PopupMenu menu = new PopupMenu(this, findViewById(R.id.action_repeat), Gravity.END);
+        menu.inflate(R.menu.activity_now_playing_repeat);
+
+        menu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.menu_item_repeat_all:
+                    changeRepeatMode(MusicPlayer.REPEAT_ALL, R.string.confirm_enable_repeat);
+                    return true;
+                case R.id.menu_item_repeat_none:
+                    changeRepeatMode(MusicPlayer.REPEAT_NONE, R.string.confirm_disable_repeat);
+                    return true;
+                case R.id.menu_item_repeat_one:
+                    changeRepeatMode(MusicPlayer.REPEAT_ONE, R.string.confirm_enable_repeat_one);
+                    return true;
+                case R.id.menu_item_repeat_multi:
+                    showMultiRepeatDialog();
+                    return true;
+                default:
+                    return false;
+            }
+        });
+
+        menu.show();
+    }
+
+    @Override
+    public void onNumberPicked(int chosen) {
+        // Callback for when a Multi-Repeat value is chosen
+        PlayerController.setMultiRepeatCount(chosen);
+        updateRepeatIcon();
+        showSnackbar(getString(R.string.confirm_enable_multi_repeat, chosen));
+    }
+
+    private void changeRepeatMode(int repeatMode, @StringRes int confirmationMessage) {
+        mPrefStore.setRepeatMode(repeatMode);
+        PlayerController.setMultiRepeatCount(0);
         PlayerController.updatePlayerPreferences(mPrefStore);
+        updateRepeatIcon();
+        showSnackbar(confirmationMessage);
+    }
 
-        if (mPrefStore.getRepeatMode() == MusicPlayer.REPEAT_ALL) {
-            showSnackbar(R.string.confirm_enable_repeat);
-        } else if (mPrefStore.getRepeatMode() == MusicPlayer.REPEAT_ONE) {
-            showSnackbar(R.string.confirm_enable_repeat_one);
-        } else {
-            showSnackbar(R.string.confirm_disable_repeat);
-        }
+    private void showMultiRepeatDialog() {
+        int currentValue = PlayerController.getMultiRepeatCount();
 
-        updateRepeatIcon(repeatMenuItem);
+        new NumberPickerDialogFragment.Builder(this)
+                .setMinValue(2)
+                .setMaxValue(10)
+                .setDefaultValue((currentValue > 1) ? currentValue : DEFAULT_MULTI_REPEAT_VALUE)
+                .setWrapSelectorWheel(false)
+                .setTitle(getString(R.string.enable_multi_repeat_title))
+                .setMessage(getString(R.string.multi_repeat_description))
+                .show(TAG_MULTI_REPEAT_PICKER);
     }
 
     private void saveQueueAsPlaylist() {
@@ -309,6 +395,10 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
             }
 
             lastPlaying = nowPlaying;
+        }
+
+        if (mRepeatMenuItem != null) {
+            updateRepeatIcon();
         }
     }
 

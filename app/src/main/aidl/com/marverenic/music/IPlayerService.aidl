@@ -2,7 +2,7 @@
 package com.marverenic.music;
 
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.data.store.RemotePreferencesStore;
+import com.marverenic.music.data.store.ImmutablePreferenceStore;
 
 interface IPlayerService {
 
@@ -13,7 +13,7 @@ interface IPlayerService {
     void togglePlay();
     void play();
     void pause();
-    void setPreferences(in RemotePreferencesStore preferences);
+    void setPreferences(in ImmutablePreferenceStore preferences);
     void setQueue(in List<Song> newQueue, int newPosition);
     void changeSong(int position);
     void editQueue(in List<Song> newQueue, int newPosition);
@@ -31,5 +31,8 @@ interface IPlayerService {
     int getCurrentPosition();
     int getDuration();
     int getAudioSessionId();
+
+    int getMultiRepeatCount();
+    void setMultiRepeatCount(int count);
 
 }
