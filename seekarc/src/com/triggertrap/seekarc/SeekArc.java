@@ -262,8 +262,7 @@ public class SeekArc extends View {
         final int arcStart = mStartAngle + mAngleOffset + mRotation;
         final int arcSweep = mSweepAngle;
         canvas.drawArc(mArcRect, arcStart, arcSweep, false, mArcPaint);
-        canvas.drawArc(mArcRect, arcStart, mProgressSweep, false,
-                mProgressPaint);
+        canvas.drawArc(mArcRect, arcStart, mProgressSweep, false, mProgressPaint);
 
         if (mEnabled) {
             // Draw the thumb nail
@@ -274,28 +273,25 @@ public class SeekArc extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        final int height = getDefaultSize(getSuggestedMinimumHeight(), heightMeasureSpec);
-        final int width = getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec);
-        final int min = Math.min(width, height);
-        float top;
-        float left;
-        int arcDiameter;
+        int width = getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec);
+        int height = getDefaultSize(getSuggestedMinimumHeight(), heightMeasureSpec);
+        int min = Math.min(width, height);
 
-        mTranslateX = (int) (width * 0.5f);
-        mTranslateY = (int) (height * 0.5f);
+        mTranslateX = min / 2;
+        mTranslateY = min / 2;
 
-        arcDiameter = min - getPaddingLeft();
+        int arcDiameter = min - getPaddingLeft() - getPaddingRight();
         mArcRadius = arcDiameter / 2;
-        top = height / 2 - (arcDiameter / 2);
-        left = width / 2 - (arcDiameter / 2);
+        int top = min / 2 - (arcDiameter / 2);
+        int left = min / 2 - (arcDiameter / 2);
         mArcRect.set(left, top, left + arcDiameter, top + arcDiameter);
 
-        int arcStart = (int)mProgressSweep + mStartAngle  + mRotation + 90;
+        int arcStart = (int) mProgressSweep + mStartAngle + mRotation - mAngleOffset;
         mThumbXPos = (int) (mArcRadius * Math.cos(Math.toRadians(arcStart)));
         mThumbYPos = (int) (mArcRadius * Math.sin(Math.toRadians(arcStart)));
 
         setTouchInSide(mTouchInside);
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        setMeasuredDimension(min, min);
     }
 
     @Override
