@@ -188,7 +188,7 @@ public class SeekArc extends View {
 		// Defaults, may need to link this into theme settings
 		int arcColor = ContextCompat.getColor(context, R.color.progress_gray);
 		int progressColor = ContextCompat.getColor(context, R.color.default_blue_light);
-		int thumbHalfheight;
+		int thumbHalfHeight;
 		int thumbHalfWidth;
 		mThumb = ContextCompat.getDrawable(context, R.drawable.seek_arc_control_selector);
 		// Convert progress width to pixels for current density
@@ -207,10 +207,10 @@ public class SeekArc extends View {
 
 
 
-			thumbHalfheight = mThumb.getIntrinsicHeight() / 2;
+			thumbHalfHeight = mThumb.getIntrinsicHeight() / 2;
 			thumbHalfWidth = mThumb.getIntrinsicWidth() / 2;
-			mThumb.setBounds(-thumbHalfWidth, -thumbHalfheight, thumbHalfWidth,
-					thumbHalfheight);
+			mThumb.setBounds(-thumbHalfWidth, -thumbHalfHeight, thumbHalfWidth,
+					thumbHalfHeight);
 
 			mMax = a.getInteger(R.styleable.SeekArc_max, mMax);
 			mProgress = a.getInteger(R.styleable.SeekArc_progress, mProgress);
@@ -529,7 +529,7 @@ public class SeekArc extends View {
 	}
 
 	public void setTouchInSide(boolean isEnabled) {
-		int thumbHalfheight = mThumb.getIntrinsicHeight() / 2;
+		int thumbHalfHeight = mThumb.getIntrinsicHeight() / 2;
 		int thumbHalfWidth = mThumb.getIntrinsicWidth() / 2;
 		mTouchInside = isEnabled;
 		if (mTouchInside) {
@@ -537,7 +537,7 @@ public class SeekArc extends View {
 		} else {
 			// Don't use the exact radius makes interaction too tricky
 			mTouchIgnoreRadius = mArcRadius
-					- Math.min(thumbHalfWidth, thumbHalfheight);
+					- Math.min(thumbHalfWidth, thumbHalfHeight);
 		}
 	}
 
