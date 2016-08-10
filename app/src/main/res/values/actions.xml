@@ -6,6 +6,7 @@
     <string name="action_go_to_queue">Queue</string>
     <string name="action_search">Search Library</string>
     <string name="action_export_playlist">Save queue as playlist&#8230;</string>
+    <string name="action_set_sleep_timer">Sleep Timer&#8230;</string>
     <string name="action_sort">Sort&#8230;</string>
     <string name="action_sort_random">Randomize</string>
     <string name="action_sort_name">Sort by name</string>

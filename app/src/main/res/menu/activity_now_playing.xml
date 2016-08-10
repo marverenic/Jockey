@@ -17,6 +17,11 @@
         app:showAsAction="always"/>
 
     <item
+        android:id="@+id/action_set_sleep_timer"
+        android:title="@string/action_set_sleep_timer"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/save"
         android:title="@string/action_export_playlist"
         app:showAsAction="never" />

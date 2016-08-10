@@ -264,6 +264,9 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
             case R.id.action_repeat:
                 showRepeatMenu();
                 return true;
+            case R.id.action_set_sleep_timer:
+                showSleepTimer();
+                return true;
             case R.id.save:
                 saveQueueAsPlaylist();
                 return true;
@@ -331,6 +334,9 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         PlayerController.updatePlayerPreferences(mPrefStore);
         updateRepeatIcon();
         showSnackbar(confirmationMessage);
+    }
+
+    private void showSleepTimer() {
     }
 
     private void showMultiRepeatDialog() {
