@@ -208,8 +208,8 @@ public class SeekArc extends View {
 
 
 
-			thumbHalfheight = (int) mThumb.getIntrinsicHeight() / 2;
-			thumbHalfWidth = (int) mThumb.getIntrinsicWidth() / 2;
+			thumbHalfheight = mThumb.getIntrinsicHeight() / 2;
+			thumbHalfWidth = mThumb.getIntrinsicWidth() / 2;
 			mThumb.setBounds(-thumbHalfWidth, -thumbHalfheight, thumbHalfWidth,
 					thumbHalfheight);
 
@@ -530,8 +530,8 @@ public class SeekArc extends View {
 	}
 
 	public void setTouchInSide(boolean isEnabled) {
-		int thumbHalfheight = (int) mThumb.getIntrinsicHeight() / 2;
-		int thumbHalfWidth = (int) mThumb.getIntrinsicWidth() / 2;
+		int thumbHalfheight = mThumb.getIntrinsicHeight() / 2;
+		int thumbHalfWidth = mThumb.getIntrinsicWidth() / 2;
 		mTouchInside = isEnabled;
 		if (mTouchInside) {
 			mTouchIgnoreRadius = (float) mArcRadius / 4;
