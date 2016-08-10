@@ -27,6 +27,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
@@ -194,9 +195,13 @@ public class SeekArc extends View {
             final TypedArray a = context.obtainStyledAttributes(attrs,
                     R.styleable.SeekArc, defStyle, 0);
 
+            arcColor = a.getColor(R.styleable.SeekArc_arcColor, arcColor);
+            progressColor = a.getColor(R.styleable.SeekArc_progressColor, progressColor);
+
             Drawable thumb = a.getDrawable(R.styleable.SeekArc_thumb);
             if (thumb != null) {
                 setThumb(thumb);
+                mThumb.setColorFilter(progressColor, PorterDuff.Mode.SRC_IN);
             } else {
                 setThumb(ContextCompat.getDrawable(context, R.drawable.seek_arc_control_selector));
             }
@@ -213,10 +218,6 @@ public class SeekArc extends View {
             mTouchInside = a.getBoolean(R.styleable.SeekArc_touchInside, mTouchInside);
             mClockwise = a.getBoolean(R.styleable.SeekArc_clockwise, mClockwise);
             mEnabled = a.getBoolean(R.styleable.SeekArc_enabled, mEnabled);
-
-            arcColor = a.getColor(R.styleable.SeekArc_arcColor, arcColor);
-            progressColor = a.getColor(R.styleable.SeekArc_progressColor,
-                    progressColor);
 
             a.recycle();
         }

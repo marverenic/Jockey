@@ -1,19 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:paddingLeft="32dp"
+    android:paddingRight="32dp"
+    android:clipToPadding="false">
 
     <com.triggertrap.seekarc.SeekArc
         android:id="@+id/duration_picker_slider"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:padding="30dp"
+        android:padding="16dp"
+        app:thumb="@drawable/abc_seekbar_thumb_material"
+        app:progressColor="?attr/colorAccent"
         app:rotation="180"
         app:startAngle="30"
         app:sweepAngle="300"
-        app:touchInside="true"/>
+        app:touchInside="true"
+        tools:ignore="PrivateResource"/>
 
 </LinearLayout>
