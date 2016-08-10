@@ -186,9 +186,6 @@ public class SeekArc extends View {
         // Defaults, may need to link this into theme settings
         int arcColor = ContextCompat.getColor(context, R.color.progress_gray);
         int progressColor = ContextCompat.getColor(context, R.color.default_blue_light);
-        int thumbHalfHeight;
-        int thumbHalfWidth;
-        mThumb = ContextCompat.getDrawable(context, R.drawable.seek_arc_control_selector);
         // Convert progress width to pixels for current density
         mProgressWidth = (int) (mProgressWidth * density);
 
@@ -199,12 +196,10 @@ public class SeekArc extends View {
 
             Drawable thumb = a.getDrawable(R.styleable.SeekArc_thumb);
             if (thumb != null) {
-                mThumb = thumb;
+                setThumb(thumb);
+            } else {
+                setThumb(ContextCompat.getDrawable(context, R.drawable.seek_arc_control_selector));
             }
-
-            thumbHalfHeight = mThumb.getIntrinsicHeight() / 2;
-            thumbHalfWidth = mThumb.getIntrinsicWidth() / 2;
-            mThumb.setBounds(-thumbHalfWidth, -thumbHalfHeight, thumbHalfWidth, thumbHalfHeight);
 
             mMax = a.getInteger(R.styleable.SeekArc_max, mMax);
             mProgress = a.getInteger(R.styleable.SeekArc_progress, mProgress);
@@ -445,6 +440,18 @@ public class SeekArc extends View {
      */
     public void setOnSeekArcChangeListener(OnSeekArcChangeListener l) {
         mOnSeekArcChangeListener = l;
+    }
+
+    public void setThumb(Drawable thumb) {
+        mThumb = thumb;
+
+        int thumbHalfHeight = mThumb.getIntrinsicHeight() / 2;
+        int thumbHalfWidth = mThumb.getIntrinsicWidth() / 2;
+        mThumb.setBounds(-thumbHalfWidth, -thumbHalfHeight, thumbHalfWidth, thumbHalfHeight);
+    }
+
+    public Drawable getThumb() {
+        return mThumb;
     }
 
     public void setProgress(int progress) {
