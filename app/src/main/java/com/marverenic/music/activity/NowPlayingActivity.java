@@ -28,6 +28,7 @@ import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
+import com.marverenic.music.dialog.DurationPickerDialogFragment;
 import com.marverenic.music.dialog.NumberPickerDialogFragment;
 import com.marverenic.music.fragments.QueueFragment;
 import com.marverenic.music.instances.Song;
@@ -53,6 +54,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
     private static final String TAG_APPEND_PLAYLIST = "AppendPlaylistDialog";
     private static final String TAG_MULTI_REPEAT_PICKER = "MultiRepeatPickerDialog";
+    private static final String TAG_SLEEP_TIMER_PICKER = "SleepTimerPickerDialog";
 
     private static final int DEFAULT_MULTI_REPEAT_VALUE = 3;
 
@@ -337,6 +339,11 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     }
 
     private void showSleepTimer() {
+        new DurationPickerDialogFragment.Builder(this)
+                .setDefaultValue(5)
+                .setMaxValue(120)
+                .setTitle(getString(R.string.enable_sleep_timer))
+                .show(TAG_SLEEP_TIMER_PICKER);
     }
 
     private void showMultiRepeatDialog() {

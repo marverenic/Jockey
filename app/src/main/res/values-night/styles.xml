@@ -10,6 +10,7 @@
         <item name="popupTheme">@style/ThemeOverlay.AppCompat</item>
         <item name="popupMenuStyle">@style/PopupMenu</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <item name="seekArcStyle">@style/SeekArc</item>
     </style>
 
     <style name="PopupMenu" parent="@style/Widget.AppCompat.PopupMenu">
