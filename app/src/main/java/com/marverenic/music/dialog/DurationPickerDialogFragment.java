@@ -1,5 +1,6 @@
 package com.marverenic.music.dialog;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,6 +15,8 @@ import android.widget.TextView;
 
 import com.marverenic.music.R;
 import com.triggertrap.seekarc.SeekArc;
+
+import timber.log.Timber;
 
 public class DurationPickerDialogFragment extends DialogFragment
         implements SeekArc.OnSeekArcChangeListener {
@@ -61,9 +64,23 @@ public class DurationPickerDialogFragment extends DialogFragment
         return new AlertDialog.Builder(getContext())
                 .setTitle(title)
                 .setView(contentView)
-                .setPositiveButton(R.string.action_done, null)
+                .setPositiveButton(R.string.action_done, (dialogInterface, i) -> {
+                    onValueSelected();
+                })
                 .setNegativeButton(R.string.action_cancel, null)
                 .show();
+    }
+
+    private void onValueSelected() {
+        int value = mSlider.getProgress() + mMinValue;
+        Activity parent = getActivity();
+
+        if (parent instanceof OnDurationPickedListener) {
+            ((OnDurationPickedListener) parent).onDurationPicked(value);
+        } else {
+            Timber.w("%s does not implement OnDurationPickedListener. Ignoring chosen value.",
+                    parent.getClass().getSimpleName());
+        }
     }
 
     @Override
@@ -80,6 +97,10 @@ public class DurationPickerDialogFragment extends DialogFragment
     @Override
     public void onStopTrackingTouch(SeekArc seekArc) {
 
+    }
+
+    public interface OnDurationPickedListener {
+        void onDurationPicked(int durationInMinutes);
     }
 
     public static class Builder {

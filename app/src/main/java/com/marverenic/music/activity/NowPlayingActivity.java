@@ -49,7 +49,8 @@ import static android.support.design.widget.Snackbar.LENGTH_LONG;
 import static android.support.design.widget.Snackbar.LENGTH_SHORT;
 
 public class NowPlayingActivity extends BaseActivity implements GestureView.OnGestureListener,
-        NumberPickerDialogFragment.OnNumberPickedListener {
+        NumberPickerDialogFragment.OnNumberPickedListener,
+        DurationPickerDialogFragment.OnDurationPickedListener {
 
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
     private static final String TAG_APPEND_PLAYLIST = "AppendPlaylistDialog";
@@ -328,6 +329,10 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         PlayerController.setMultiRepeatCount(chosen);
         updateRepeatIcon();
         showSnackbar(getString(R.string.confirm_enable_multi_repeat, chosen));
+    }
+
+    @Override
+    public void onDurationPicked(int durationInMinutes) {
     }
 
     private void changeRepeatMode(int repeatMode, @StringRes int confirmationMessage) {
