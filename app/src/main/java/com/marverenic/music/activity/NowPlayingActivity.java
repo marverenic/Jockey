@@ -340,7 +340,8 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
 
     private void showSleepTimer() {
         new DurationPickerDialogFragment.Builder(this)
-                .setDefaultValue(5)
+                .setMinValue(1)
+                .setDefaultValue(15)
                 .setMaxValue(120)
                 .setTitle(getString(R.string.enable_sleep_timer))
                 .show(TAG_SLEEP_TIMER_PICKER);
