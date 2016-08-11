@@ -43,4 +43,14 @@ public class RemotePreferenceStore {
         mSharedPreferences.edit().putInt(key, count).apply();
     }
 
+    public long getSleepTimerEndTime() {
+        String key = mContext.getString(R.string.pref_key_sleep_timer);
+        return mSharedPreferences.getLong(key, 0);
+    }
+
+    public void setSleepTimerEndTime(long timestampInMs) {
+        String key = mContext.getString(R.string.pref_key_sleep_timer);
+        mSharedPreferences.edit().putLong(key, timestampInMs).apply();
+    }
+
 }
