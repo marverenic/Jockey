@@ -10,11 +10,13 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 import com.marverenic.music.R;
 import com.triggertrap.seekarc.SeekArc;
 
-public class DurationPickerDialogFragment extends DialogFragment {
+public class DurationPickerDialogFragment extends DialogFragment
+        implements SeekArc.OnSeekArcChangeListener {
 
     private static final String KEY_TITlE = "DurationPickerDialogFragment.TITLE";
     private static final String KEY_MIN_VAL = "DurationPickerDialogFragment.MIN_VALUE";
@@ -23,6 +25,8 @@ public class DurationPickerDialogFragment extends DialogFragment {
     private static final String KEY_SAVED_VAL = "DurationPickerDialogFragment.SAVED_VALUE";
 
     private SeekArc mSlider;
+    private TextView mLabel;
+
     private int mMinValue;
     private int mOffsetValue;
 
@@ -45,10 +49,12 @@ public class DurationPickerDialogFragment extends DialogFragment {
                 .inflate(R.layout.dialog_duration_picker, null);
 
         mSlider = (SeekArc) contentView.findViewById(R.id.duration_picker_slider);
+        mLabel = (TextView) contentView.findViewById(R.id.duration_picker_time);
 
         String title = getArguments().getString(KEY_TITlE);
         int maxValue = getArguments().getInt(KEY_MAX_VAL, Integer.MAX_VALUE);
 
+        mSlider.setOnSeekArcChangeListener(this);
         mSlider.setMax(maxValue - mMinValue);
         mSlider.setProgress(mOffsetValue - mMinValue);
 
@@ -58,6 +64,22 @@ public class DurationPickerDialogFragment extends DialogFragment {
                 .setPositiveButton(R.string.action_done, null)
                 .setNegativeButton(R.string.action_cancel, null)
                 .show();
+    }
+
+    @Override
+    public void onProgressChanged(SeekArc seekArc, int progress, boolean fromUser) {
+        mOffsetValue = progress + mMinValue;
+        mLabel.setText(getString(R.string.time_in_min_format, mOffsetValue));
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekArc seekArc) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekArc seekArc) {
+
     }
 
     public static class Builder {
