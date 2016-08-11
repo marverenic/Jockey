@@ -897,6 +897,16 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         return mMultiRepeat;
     }
 
+    public void setSleepTimer(long endTimestampInMillis) {
+        Timber.i("Changing sleep timer end time to %d", endTimestampInMillis);
+        // TODO pause music when sleep timer expires
+        mRemotePreferenceStore.setSleepTimerEndTime(endTimestampInMillis);
+    }
+
+    public long getSleepTimerEndTime() {
+        return mRemotePreferenceStore.getSleepTimerEndTime();
+    }
+
     /**
      * Sets the shuffle option and immediately applies it to the queue
      * @param shuffle The new shuffle option. {@code true} will switch the current playback to a

@@ -540,6 +540,31 @@ public final class PlayerController {
         }
     }
 
+    public static long getSleepTimerEndTime() {
+        if (playerService == null) {
+            return 0;
+        }
+
+        try {
+            return playerService.getSleepTimerEndTime();
+        } catch (RemoteException exception) {
+            Timber.e(exception, "Failed to get sleep timer value");
+            return 0;
+        }
+    }
+
+    public static void setSleepTimerEndTime(long timestampInMillis) {
+        if (playerService == null) {
+            return;
+        }
+
+        try {
+            playerService.setSleepTimerEndTime(timestampInMillis);
+        } catch (RemoteException exception) {
+            Timber.e(exception, "Failed to set sleep timer value");
+        }
+    }
+
     /**
      * @return The album artwork for the current song
      */

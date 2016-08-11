@@ -558,6 +558,25 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
                 throw exception;
             }
         }
+
+        @Override
+        public long getSleepTimerEndTime() throws RemoteException {
+            try {
+                return instance.musicPlayer.getSleepTimerEndTime();
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.getSleepTimerEndTime() failed");
+                throw exception;
+            }
+        }
+
+        @Override
+        public void setSleepTimerEndTime(long timestampInMillis) throws RemoteException {
+            try {
+                instance.musicPlayer.setSleepTimer(timestampInMillis);
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.setSleepTimerEndTime() failed");
+            }
+        }
     }
 }
 

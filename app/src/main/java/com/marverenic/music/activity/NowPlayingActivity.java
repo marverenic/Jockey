@@ -39,6 +39,7 @@ import com.marverenic.music.view.GestureView;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -333,6 +334,13 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
 
     @Override
     public void onDurationPicked(int durationInMinutes) {
+        long durationInMillis = TimeUnit.MINUTES.convert(durationInMinutes, TimeUnit.MILLISECONDS);
+        long endTimestamp = System.currentTimeMillis() + durationInMillis;
+        PlayerController.setSleepTimerEndTime(endTimestamp);
+
+        String confirmationMessage = getResources().getQuantityString(
+                R.plurals.confirm_enable_sleep_timer, durationInMinutes, durationInMinutes);
+        showSnackbar(confirmationMessage);
     }
 
     private void changeRepeatMode(int repeatMode, @StringRes int confirmationMessage) {

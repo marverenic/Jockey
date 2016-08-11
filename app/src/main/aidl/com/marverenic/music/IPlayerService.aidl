@@ -35,4 +35,7 @@ interface IPlayerService {
     int getMultiRepeatCount();
     void setMultiRepeatCount(int count);
 
+    long getSleepTimerEndTime();
+    void setSleepTimerEndTime(long timestampInMillis);
+
 }
