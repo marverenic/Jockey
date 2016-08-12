@@ -334,7 +334,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
 
     @Override
     public void onDurationPicked(int durationInMinutes) {
-        long durationInMillis = TimeUnit.MINUTES.convert(durationInMinutes, TimeUnit.MILLISECONDS);
+        long durationInMillis = TimeUnit.MILLISECONDS.convert(durationInMinutes, TimeUnit.MINUTES);
         long endTimestamp = System.currentTimeMillis() + durationInMillis;
         PlayerController.setSleepTimerEndTime(endTimestamp);
 
