@@ -147,6 +147,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     private QueuedMediaPlayer mMediaPlayer;
     private Equalizer mEqualizer;
     private Context mContext;
+    private Handler mHandler;
     private MediaSessionCompat mMediaSession;
     private HeadsetListener mHeadphoneListener;
     private OnPlaybackChangeListener mCallback;
@@ -177,6 +178,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     @Inject PlayCountStore mPlayCountStore;
     private RemotePreferenceStore mRemotePreferenceStore;
 
+    private final Runnable mSleepTimerRunnable = this::onSleepTimerEnd;
+
     /**
      * Creates a new MusicPlayer with an empty queue. The backing {@link android.media.MediaPlayer}
      * will create a wakelock (specified by {@link PowerManager#PARTIAL_WAKE_LOCK}), and all
@@ -186,6 +189,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     public MusicPlayer(Context context) {
         mContext = context;
+        mHandler = new Handler();
         JockeyApplication.getComponent(mContext).inject(this);
         mRemotePreferenceStore = new RemotePreferenceStore(mContext);
 
@@ -237,6 +241,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         mMultiRepeat = mRemotePreferenceStore.getMultiRepeatCount();
 
         initEqualizer(preferencesStore);
+        startSleepTimer(mRemotePreferenceStore.getSleepTimerEndTime());
     }
 
     /**
@@ -899,8 +904,26 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
     public void setSleepTimer(long endTimestampInMillis) {
         Timber.i("Changing sleep timer end time to %d", endTimestampInMillis);
-        // TODO pause music when sleep timer expires
+        startSleepTimer(endTimestampInMillis);
         mRemotePreferenceStore.setSleepTimerEndTime(endTimestampInMillis);
+    }
+
+    private void startSleepTimer(long endTimestampInMillis) {
+        if (endTimestampInMillis <= System.currentTimeMillis()) {
+            Timber.i("Sleep timer end time (%1$d) is in the past (currently %2$d). Stopping timer",
+                    endTimestampInMillis, System.currentTimeMillis());
+            mHandler.removeCallbacks(mSleepTimerRunnable);
+        } else {
+            long delay = endTimestampInMillis - System.currentTimeMillis();
+            Timber.i("Setting sleep timer for %d ms", delay);
+            mHandler.postDelayed(mSleepTimerRunnable, delay);
+        }
+    }
+
+    private void onSleepTimerEnd() {
+        Timber.i("Sleep timer ended.");
+        pause();
+        updateUi();
     }
 
     public long getSleepTimerEndTime() {
@@ -1003,6 +1026,9 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
         intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, mContext.getPackageName());
         mContext.sendBroadcast(intent);
+
+        // Make sure to disable the sleep timer to purge any delayed runnables in the message queue
+        startSleepTimer(0);
 
         if (mEqualizer != null) {
             mEqualizer.release();
