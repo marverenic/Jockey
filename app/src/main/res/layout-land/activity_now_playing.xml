@@ -7,13 +7,37 @@
 
     <include layout="@layout/toolbar" />
 
-    <ImageView
-        android:id="@+id/imageArtwork"
-        android:layout_width="@dimen/player_frame_height"
-        android:layout_height="@dimen/player_frame_height"
-        android:layout_below="@id/toolbar"
-        android:src="@drawable/art_default_xl"
-        android:background="@android:color/black"/>
+    <FrameLayout
+        android:id="@+id/artwork_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar">
+
+        <ImageView
+            android:id="@+id/imageArtwork"
+            android:layout_width="@dimen/player_frame_height"
+            android:layout_height="@dimen/player_frame_height"
+            android:src="@drawable/art_default_xl"
+            android:background="@android:color/black"/>
+
+        <com.marverenic.music.view.TimeView
+            android:id="@+id/now_playing_sleep_timer"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            style="@style/TextAppearance.AppCompat.Button"
+            android:textColor="@android:color/white"
+            android:background="@drawable/tooltip_bg"
+            android:layout_gravity="center_horizontal|bottom"
+            android:gravity="center"
+            android:drawableStart="@drawable/ic_sleep_timer_24dp"
+            android:drawableLeft="@drawable/ic_sleep_timer_24dp"
+            android:drawablePadding="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_marginBottom="24dp"
+            tools:text="5:00"/>
+
+    </FrameLayout>
 
     <fragment
         android:id="@+id/controlFragment"
@@ -21,7 +45,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/toolbar"
-        android:layout_toRightOf="@+id/imageArtwork"
+        android:layout_toRightOf="@+id/artwork_container"
+        android:layout_toEndOf="@id/artwork_container"
         tools:layout="@layout/view_now_playing_control_panel" />
 
     <fragment
