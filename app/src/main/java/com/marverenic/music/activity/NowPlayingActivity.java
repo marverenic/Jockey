@@ -35,6 +35,7 @@ import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.view.GestureView;
+import com.marverenic.music.view.TimeView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -43,6 +44,10 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
@@ -73,6 +78,8 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
 
     private MenuItem mRepeatMenuItem;
     private MenuItem mShuffleMenuItem;
+
+    private Subscription mSleepTimerSubscription;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -269,7 +276,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                 showRepeatMenu();
                 return true;
             case R.id.action_set_sleep_timer:
-                showSleepTimer();
+                showSleepTimerDialog();
                 return true;
             case R.id.save:
                 saveQueueAsPlaylist();
@@ -334,6 +341,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
 
     @Override
     public void onDurationPicked(int durationInMinutes) {
+        // Callback for when a sleep timer value is chosen
         long durationInMillis = TimeUnit.MILLISECONDS.convert(durationInMinutes, TimeUnit.MINUTES);
         long endTimestamp = System.currentTimeMillis() + durationInMillis;
         PlayerController.setSleepTimerEndTime(endTimestamp);
@@ -341,6 +349,8 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         String confirmationMessage = getResources().getQuantityString(
                 R.plurals.confirm_enable_sleep_timer, durationInMinutes, durationInMinutes);
         showSnackbar(confirmationMessage);
+
+        updateSleepTimerCounter();
     }
 
     private void changeRepeatMode(int repeatMode, @StringRes int confirmationMessage) {
@@ -351,13 +361,42 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         showSnackbar(confirmationMessage);
     }
 
-    private void showSleepTimer() {
+    private void showSleepTimerDialog() {
         new DurationPickerDialogFragment.Builder(this)
                 .setMinValue(1)
                 .setDefaultValue(15)
                 .setMaxValue(120)
                 .setTitle(getString(R.string.enable_sleep_timer))
                 .show(TAG_SLEEP_TIMER_PICKER);
+    }
+
+    private void updateSleepTimerCounter() {
+        TimeView sleepTimerCounter = (TimeView) findViewById(R.id.now_playing_sleep_timer);
+        long sleepTimerValue = PlayerController.getSleepTimerEndTime() - System.currentTimeMillis();
+
+        if (mSleepTimerSubscription != null) {
+            mSleepTimerSubscription.unsubscribe();
+        }
+
+        if (sleepTimerValue <= 0) {
+            sleepTimerCounter.setVisibility(View.GONE);
+        } else {
+            sleepTimerCounter.setVisibility(View.VISIBLE);
+            sleepTimerCounter.setTime((int) sleepTimerValue);
+
+            mSleepTimerSubscription = Observable.interval(500, TimeUnit.MILLISECONDS)
+                    .subscribeOn(Schedulers.computation())
+                    .map(tick -> (int) (sleepTimerValue - 500 * tick))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(time -> {
+                        sleepTimerCounter.setTime(time);
+                        if (time <= 0) {
+                            mSleepTimerSubscription.unsubscribe();
+                        }
+                    }, throwable -> {
+                        Timber.e(throwable, "Failed to update sleep timer value");
+                    });
+        }
     }
 
     private void showMultiRepeatDialog() {
@@ -427,6 +466,8 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         if (mRepeatMenuItem != null) {
             updateRepeatIcon();
         }
+
+        updateSleepTimerCounter();
     }
 
     private void showSnackbar(@StringRes int stringId) {
