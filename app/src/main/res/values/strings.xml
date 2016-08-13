@@ -35,6 +35,7 @@
 
     <!-- Formatted Strings -->
     <string name="format_time">%1$s:%2$s</string>
+    <string name="format_time_hours">%1$s:%2$s:%3$s</string>
     <string name="format_compact_song_info">%1$s - %2$s</string>
 
     <!-- About Activity Strings -->
