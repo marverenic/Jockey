@@ -26,7 +26,8 @@ import javax.inject.Inject;
 import timber.log.Timber;
 
 public abstract class BaseActivity extends RxAppCompatActivity
-        implements PlayerController.UpdateListener, PlayerController.ErrorListener {
+        implements PlayerController.UpdateListener, PlayerController.InfoListener,
+        PlayerController.ErrorListener {
 
     // Used when resuming the Activity to respond to a potential theme change
     @PresetTheme
@@ -121,6 +122,7 @@ public abstract class BaseActivity extends RxAppCompatActivity
             recreate();
         } else {
             PlayerController.registerUpdateListener(this);
+            PlayerController.registerInfoListener(this);
             PlayerController.registerErrorListener(this);
             onUpdate();
         }
@@ -141,6 +143,7 @@ public abstract class BaseActivity extends RxAppCompatActivity
     public void onPause() {
         super.onPause();
         PlayerController.unregisterUpdateListener(this);
+        PlayerController.unregisterInfoListener(this);
         PlayerController.unregisterErrorListener(this);
     }
 
@@ -164,6 +167,11 @@ public abstract class BaseActivity extends RxAppCompatActivity
         Timber.v("onBackPressed");
         super.onBackPressed();
         finish();
+    }
+
+    @Override
+    public void onInfo(String message) {
+        showSnackbar(message);
     }
 
     @Override

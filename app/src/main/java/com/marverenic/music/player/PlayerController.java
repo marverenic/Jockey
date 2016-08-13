@@ -30,12 +30,14 @@ public final class PlayerController {
     private static Context applicationContext;
     private static IPlayerService playerService;
     private static Set<UpdateListener> updateListeners;
+    private static Set<InfoListener> infoListeners;
     private static Set<ErrorListener> errorListeners;
     private static Bitmap artwork;
 
     static {
         updateListeners = new HashSet<>();
         errorListeners = new HashSet<>();
+        infoListeners = new HashSet<>();
     }
 
     // This class is never instantiated
@@ -108,6 +110,25 @@ public final class PlayerController {
     }
 
     /**
+     * Register a callback for when the Player Service sends a message to the UI thread containing
+     * information that should be directly presented to the user. Don't forget to unregister this
+     * listener when you're done, otherwise you'll probably leak an Activity or Context.
+     * @param l The InfoListener to be registered
+     * @see #unregisterInfoListener(InfoListener)
+     */
+    public static void registerInfoListener(InfoListener l) {
+        infoListeners.add(l);
+    }
+
+    /**
+     * Unregister an InfoListener callback added in {@link #registerInfoListener(InfoListener)}
+     * @param l The listener to be removed. If it's not currently registered, then nothing happens
+     */
+    public static void unregisterInfoListener(InfoListener l) {
+        infoListeners.remove(l);
+    }
+
+    /**
      * Register a callback for when the Player Service encounters an exception that affects
      * music playback that the user should be alerted of. Don't forget to unregister this listener
      * when you're done, otherwise you'll probably leak an Activity or something bad.
@@ -133,6 +154,17 @@ public final class PlayerController {
     private static void updateUi() {
         for (UpdateListener l : updateListeners) {
             l.onUpdate();
+        }
+    }
+
+    /**
+     * Called to alert all Info Listeners that a significant event has occurred that the service
+     * would like to inform the user of
+     * @param message The user-friendly String sent by the player service
+     */
+    private static void alertInfo(String message) {
+        for (InfoListener l : infoListeners) {
+            l.onInfo(message);
         }
     }
 
@@ -601,6 +633,8 @@ public final class PlayerController {
             if (intent.getAction().equals(MusicPlayer.UPDATE_BROADCAST)) {
                 artwork = null;
                 updateUi();
+            } else if (intent.getAction().equals(MusicPlayer.INFO_BROADCAST)) {
+                alertInfo(intent.getExtras().getString(MusicPlayer.INFO_EXTRA_MESSAGE));
             } else if (intent.getAction().equals(MusicPlayer.ERROR_BROADCAST)) {
                 alertError(intent.getExtras().getString(MusicPlayer.ERROR_EXTRA_MSG));
             }
@@ -610,6 +644,10 @@ public final class PlayerController {
 
     public interface UpdateListener {
         void onUpdate();
+    }
+
+    public interface InfoListener {
+        void onInfo(String message);
     }
 
     public interface ErrorListener {

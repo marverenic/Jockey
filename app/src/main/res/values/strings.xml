@@ -146,6 +146,7 @@
     <string name="enable_multi_repeat_title">Enable Multi-Repeat</string>
     <string name="multi_repeat_description">Multi-Repeat will play the current song back-to-back a certain number of times. When the next song starts, Multi-Repeat will be disabled.</string>
     <string name="enable_sleep_timer">Sleep Timer</string>
+    <string name="confirm_sleep_timer_end">Sleep Timer ended</string>
     <string name="time_in_min_format">%1$d min</string>
 
 </resources>

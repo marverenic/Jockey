@@ -81,6 +81,19 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public static final String UPDATE_BROADCAST = "marverenic.jockey.player.REFRESH";
 
     /**
+     * An {@link Intent} action broadcasted when a MusicPlayer has information that should be
+     * presented to the user
+     * @see #INFO_EXTRA_MESSAGE
+     */
+    public static final String INFO_BROADCAST = "marverenic.jockey.player.INFO";
+
+    /**
+     * An {@link Intent} extra sent with {@link #INFO_BROADCAST} intents which maps to a
+     * user-friendly information message
+     */
+    public static final String INFO_EXTRA_MESSAGE = "marverenic.jockey.player.INFO:MSG";
+
+    /**
      * An {@link Intent} action broadcasted when a MusicPlayer has encountered an error when
      * setting the current playback source
      * @see #ERROR_EXTRA_MSG
@@ -535,6 +548,17 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     }
 
     /**
+     * Called to notify the UI thread of a non-critical event. The typical listener will show the
+     * message passed in to the user
+     * @param message A user-friendly message associated with this event that may be shown in the UI
+     */
+    protected void postInfo(String message) {
+        Timber.i("Posting info to UI process: %s", message);
+        mContext.sendBroadcast(
+                new Intent(INFO_BROADCAST).putExtra(INFO_EXTRA_MESSAGE, message), null);
+    }
+
+    /**
      * Gain Audio focus from the system if we don't already have it
      * @return whether we have gained focus (or already had it)
      */
@@ -924,6 +948,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         Timber.i("Sleep timer ended.");
         pause();
         updateUi();
+
+        postInfo(mContext.getString(R.string.confirm_sleep_timer_end));
     }
 
     public long getSleepTimerEndTime() {
