@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
@@ -19,6 +20,8 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -210,6 +213,12 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         return true;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateSleepTimerCounter();
+    }
+
     private void updateShuffleIcon() {
         if (mPrefStore.isShuffled()) {
             mShuffleMenuItem.getIcon().setAlpha(255);
@@ -392,11 +401,25 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                         sleepTimerCounter.setTime(time);
                         if (time <= 0) {
                             mSleepTimerSubscription.unsubscribe();
+                            animateOutSleepTimerCounter();
                         }
                     }, throwable -> {
                         Timber.e(throwable, "Failed to update sleep timer value");
                     });
         }
+    }
+
+    private void animateOutSleepTimerCounter() {
+        TimeView sleepTimerCounter = (TimeView) findViewById(R.id.now_playing_sleep_timer);
+
+        Animation transition = AnimationUtils.loadAnimation(this, R.anim.tooltip_out_down);
+        transition.setStartOffset(250);
+        transition.setDuration(300);
+        transition.setInterpolator(this, android.R.interpolator.accelerate_quint);
+
+        sleepTimerCounter.startAnimation(transition);
+
+        new Handler().postDelayed(() -> sleepTimerCounter.setVisibility(View.GONE), 550);
     }
 
     private void showMultiRepeatDialog() {
@@ -466,8 +489,6 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         if (mRepeatMenuItem != null) {
             updateRepeatIcon();
         }
-
-        updateSleepTimerCounter();
     }
 
     private void showSnackbar(@StringRes int stringId) {
