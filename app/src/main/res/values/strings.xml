@@ -35,6 +35,7 @@
 
     <!-- Formatted Strings -->
     <string name="format_time">%1$s:%2$s</string>
+    <string name="format_time_hours">%1$s:%2$s:%3$s</string>
     <string name="format_compact_song_info">%1$s - %2$s</string>
 
     <!-- About Activity Strings -->
@@ -74,6 +75,9 @@
     <string name="uses_vert_slider_header">VerticalSeekBar</string>
     <string name="uses_vert_slider_detail">Version 0.5.2; distributed by Haruki Hasegawa
         under an Apache License, Version 2.0</string>
+    <string name="uses_seek_arc_header">SeekArc</string>
+    <string name="uses_seek_arc_detail">Version 1.1; distributed by Triggertrap Ltd (Neil Davies)
+        under an MIT License</string>
     <string name="uses_timber_header">Timber</string>
     <string name="uses_timber_detail">Version 4.1.2; distributed by Jake Wharton under an Apache
         License, Version 2.0</string>
@@ -94,6 +98,8 @@
     <string name="pref_key_shuffle" translatable="false">Player.shuffle</string>
     <string name="pref_key_repeat" translatable="false">Player.repeat</string>
     <string name="pref_key_multi_repeat" translatable="false">Player.multiRepeat</string>
+    <string name="pref_key_sleep_timer" translatable="false">Player.sleepTimer</string>
+    <string name="pref_key_last_sleep_timer" translatable="false">Player.defaultSleepTimer</string>
     <string name="pref_key_included_dirs" translatable="false">Library.includedDirs</string>
     <string name="pref_key_excluded_dirs" translatable="false">Library.excludedDirs</string>
 
@@ -143,5 +149,8 @@
 
     <string name="enable_multi_repeat_title">Enable Multi-Repeat</string>
     <string name="multi_repeat_description">Multi-Repeat will play the current song back-to-back a certain number of times. When the next song starts, Multi-Repeat will be disabled.</string>
+    <string name="enable_sleep_timer">Sleep Timer</string>
+    <string name="confirm_sleep_timer_end">Sleep Timer ended</string>
+    <string name="time_in_min_format">%1$d min</string>
 
 </resources>

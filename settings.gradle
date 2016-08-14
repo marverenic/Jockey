@@ -1,1 +1,1 @@
-include ':app', ':heterogeneousadapter'
+include ':app', ':heterogeneousadapter', ':seekarc'

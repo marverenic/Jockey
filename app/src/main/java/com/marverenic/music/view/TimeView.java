@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.marverenic.music.R;
 
 import java.text.DecimalFormat;
+import java.util.concurrent.TimeUnit;
 
 /**
  * An extension of TextView used to display times
@@ -46,10 +47,15 @@ public class TimeView extends TextView {
     }
 
     public static String getValue(Context context, int time) {
-        time /= 1000;
-        int sec = time % 60;
-        int min = time / 60 % 60;
+        int sec = (int) TimeUnit.SECONDS.convert(time, TimeUnit.MILLISECONDS) % 60;
+        int min = (int) TimeUnit.MINUTES.convert(time, TimeUnit.MILLISECONDS) % 60;
+        int hours = (int) TimeUnit.HOURS.convert(time, TimeUnit.MILLISECONDS);
 
-        return context.getString(R.string.format_time, min, DIGIT_FORMAT.format(sec));
+        if (hours == 0) {
+            return context.getString(R.string.format_time, min, DIGIT_FORMAT.format(sec));
+        } else {
+            return context.getString(R.string.format_time_hours, hours,
+                    DIGIT_FORMAT.format(min), DIGIT_FORMAT.format(sec));
+        }
     }
 }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.triggertrap.seekarc.SeekArc
+        android:id="@+id/duration_picker_slider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="24dp"
+        android:padding="8dp"
+        app:thumb="@drawable/abc_seekbar_thumb_material"
+        app:progressColor="?attr/colorAccent"
+        app:rotation="180"
+        app:startAngle="30"
+        app:sweepAngle="300"
+        app:touchInside="true"
+        tools:ignore="PrivateResource"/>
+
+    <TextView
+        android:id="@+id/duration_picker_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        style="@style/Base.TextAppearance.AppCompat.Headline"
+        tools:text="5 min"/>
+
+</FrameLayout>

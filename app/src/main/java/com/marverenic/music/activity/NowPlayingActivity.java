@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
@@ -19,6 +20,8 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -28,19 +31,26 @@ import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
+import com.marverenic.music.dialog.DurationPickerDialogFragment;
 import com.marverenic.music.dialog.NumberPickerDialogFragment;
 import com.marverenic.music.fragments.QueueFragment;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.view.GestureView;
+import com.marverenic.music.view.TimeView;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
@@ -48,11 +58,13 @@ import static android.support.design.widget.Snackbar.LENGTH_LONG;
 import static android.support.design.widget.Snackbar.LENGTH_SHORT;
 
 public class NowPlayingActivity extends BaseActivity implements GestureView.OnGestureListener,
-        NumberPickerDialogFragment.OnNumberPickedListener {
+        NumberPickerDialogFragment.OnNumberPickedListener,
+        DurationPickerDialogFragment.OnDurationPickedListener {
 
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
     private static final String TAG_APPEND_PLAYLIST = "AppendPlaylistDialog";
     private static final String TAG_MULTI_REPEAT_PICKER = "MultiRepeatPickerDialog";
+    private static final String TAG_SLEEP_TIMER_PICKER = "SleepTimerPickerDialog";
 
     private static final int DEFAULT_MULTI_REPEAT_VALUE = 3;
 
@@ -69,6 +81,8 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
 
     private MenuItem mRepeatMenuItem;
     private MenuItem mShuffleMenuItem;
+
+    private Subscription mSleepTimerSubscription;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -199,6 +213,12 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         return true;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateSleepTimerCounter();
+    }
+
     private void updateShuffleIcon() {
         if (mPrefStore.isShuffled()) {
             mShuffleMenuItem.getIcon().setAlpha(255);
@@ -264,6 +284,9 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
             case R.id.action_repeat:
                 showRepeatMenu();
                 return true;
+            case R.id.action_set_sleep_timer:
+                showSleepTimerDialog();
+                return true;
             case R.id.save:
                 saveQueueAsPlaylist();
                 return true;
@@ -325,12 +348,103 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         showSnackbar(getString(R.string.confirm_enable_multi_repeat, chosen));
     }
 
+    @Override
+    public void onDurationPicked(int durationInMinutes) {
+        // Callback for when a sleep timer value is chosen
+        if (durationInMinutes == DurationPickerDialogFragment.NO_VALUE) {
+            PlayerController.disableSleepTimer();
+            updateSleepTimerCounter();
+            showSnackbar(R.string.confirm_disable_sleep_timer);
+            return;
+        }
+
+        long durationInMillis = TimeUnit.MILLISECONDS.convert(durationInMinutes, TimeUnit.MINUTES);
+        long endTimestamp = System.currentTimeMillis() + durationInMillis;
+        PlayerController.setSleepTimerEndTime(endTimestamp);
+
+        String confirmationMessage = getResources().getQuantityString(
+                R.plurals.confirm_enable_sleep_timer, durationInMinutes, durationInMinutes);
+        showSnackbar(confirmationMessage);
+
+        updateSleepTimerCounter();
+        mPrefStore.setLastSleepTimerDuration(durationInMillis);
+    }
+
     private void changeRepeatMode(int repeatMode, @StringRes int confirmationMessage) {
         mPrefStore.setRepeatMode(repeatMode);
         PlayerController.setMultiRepeatCount(0);
         PlayerController.updatePlayerPreferences(mPrefStore);
         updateRepeatIcon();
         showSnackbar(confirmationMessage);
+    }
+
+    private void showSleepTimerDialog() {
+        long timeLeftInMs = PlayerController.getSleepTimerEndTime() - System.currentTimeMillis();
+        int defaultValue;
+
+        if (timeLeftInMs > 0) {
+            long minutes = TimeUnit.MINUTES.convert(timeLeftInMs, TimeUnit.MILLISECONDS);
+            long seconds = TimeUnit.SECONDS.convert(timeLeftInMs, TimeUnit.MILLISECONDS) % 60;
+
+            defaultValue = (int) minutes + ((seconds >= 30) ? 1 : 0);
+            defaultValue = Math.max(defaultValue, 1);
+        } else {
+            long prevTimeInMillis = mPrefStore.getLastSleepTimerDuration();
+            defaultValue = (int) TimeUnit.MINUTES.convert(prevTimeInMillis, TimeUnit.MILLISECONDS);
+        }
+
+        new DurationPickerDialogFragment.Builder(this)
+                .setMinValue(1)
+                .setDefaultValue(defaultValue)
+                .setMaxValue(120)
+                .setTitle(getString(R.string.enable_sleep_timer))
+                .setDisableButtonText((timeLeftInMs > 0)
+                        ? getString(R.string.action_disable_sleep_timer)
+                        : null)
+                .show(TAG_SLEEP_TIMER_PICKER);
+    }
+
+    private void updateSleepTimerCounter() {
+        TimeView sleepTimerCounter = (TimeView) findViewById(R.id.now_playing_sleep_timer);
+        long sleepTimerValue = PlayerController.getSleepTimerEndTime() - System.currentTimeMillis();
+
+        if (mSleepTimerSubscription != null) {
+            mSleepTimerSubscription.unsubscribe();
+        }
+
+        if (sleepTimerValue <= 0) {
+            sleepTimerCounter.setVisibility(View.GONE);
+        } else {
+            sleepTimerCounter.setVisibility(View.VISIBLE);
+            sleepTimerCounter.setTime((int) sleepTimerValue);
+
+            mSleepTimerSubscription = Observable.interval(500, TimeUnit.MILLISECONDS)
+                    .subscribeOn(Schedulers.computation())
+                    .map(tick -> (int) (sleepTimerValue - 500 * tick))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(time -> {
+                        sleepTimerCounter.setTime(time);
+                        if (time <= 0) {
+                            mSleepTimerSubscription.unsubscribe();
+                            animateOutSleepTimerCounter();
+                        }
+                    }, throwable -> {
+                        Timber.e(throwable, "Failed to update sleep timer value");
+                    });
+        }
+    }
+
+    private void animateOutSleepTimerCounter() {
+        TimeView sleepTimerCounter = (TimeView) findViewById(R.id.now_playing_sleep_timer);
+
+        Animation transition = AnimationUtils.loadAnimation(this, R.anim.tooltip_out_down);
+        transition.setStartOffset(250);
+        transition.setDuration(300);
+        transition.setInterpolator(this, android.R.interpolator.accelerate_quint);
+
+        sleepTimerCounter.startAnimation(transition);
+
+        new Handler().postDelayed(() -> sleepTimerCounter.setVisibility(View.GONE), 550);
     }
 
     private void showMultiRepeatDialog() {

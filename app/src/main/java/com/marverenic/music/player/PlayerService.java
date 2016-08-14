@@ -265,6 +265,9 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
             return;
         }
 
+        // If the service is being completely stopped by the user, turn off the sleep timer
+        musicPlayer.setSleepTimer(0);
+
         // If the UI process has already ended, kill the service and close the player
         finish();
     }
@@ -556,6 +559,25 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.setMultiRepeatCount() failed");
                 throw exception;
+            }
+        }
+
+        @Override
+        public long getSleepTimerEndTime() throws RemoteException {
+            try {
+                return instance.musicPlayer.getSleepTimerEndTime();
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.getSleepTimerEndTime() failed");
+                throw exception;
+            }
+        }
+
+        @Override
+        public void setSleepTimerEndTime(long timestampInMillis) throws RemoteException {
+            try {
+                instance.musicPlayer.setSleepTimer(timestampInMillis);
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.setSleepTimerEndTime() failed");
             }
         }
     }

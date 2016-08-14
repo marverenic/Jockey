@@ -26,6 +26,23 @@
             android:src="@drawable/art_default_xl"
             android:background="@android:color/black"/>
 
+        <com.marverenic.music.view.TimeView
+            android:id="@+id/now_playing_sleep_timer"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            style="@style/TextAppearance.AppCompat.Button"
+            android:textColor="@android:color/white"
+            android:background="@drawable/tooltip_bg"
+            android:layout_gravity="center_horizontal|bottom"
+            android:gravity="center"
+            android:drawableStart="@drawable/ic_sleep_timer_24dp"
+            android:drawableLeft="@drawable/ic_sleep_timer_24dp"
+            android:drawablePadding="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_marginBottom="24dp"
+            tools:text="5:00"/>
+
     </com.marverenic.music.view.GestureView>
 
     <fragment

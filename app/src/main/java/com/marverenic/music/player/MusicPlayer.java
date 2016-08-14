@@ -81,6 +81,19 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public static final String UPDATE_BROADCAST = "marverenic.jockey.player.REFRESH";
 
     /**
+     * An {@link Intent} action broadcasted when a MusicPlayer has information that should be
+     * presented to the user
+     * @see #INFO_EXTRA_MESSAGE
+     */
+    public static final String INFO_BROADCAST = "marverenic.jockey.player.INFO";
+
+    /**
+     * An {@link Intent} extra sent with {@link #INFO_BROADCAST} intents which maps to a
+     * user-friendly information message
+     */
+    public static final String INFO_EXTRA_MESSAGE = "marverenic.jockey.player.INFO:MSG";
+
+    /**
      * An {@link Intent} action broadcasted when a MusicPlayer has encountered an error when
      * setting the current playback source
      * @see #ERROR_EXTRA_MSG
@@ -147,6 +160,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     private QueuedMediaPlayer mMediaPlayer;
     private Equalizer mEqualizer;
     private Context mContext;
+    private Handler mHandler;
     private MediaSessionCompat mMediaSession;
     private HeadsetListener mHeadphoneListener;
     private OnPlaybackChangeListener mCallback;
@@ -177,6 +191,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     @Inject PlayCountStore mPlayCountStore;
     private RemotePreferenceStore mRemotePreferenceStore;
 
+    private final Runnable mSleepTimerRunnable = this::onSleepTimerEnd;
+
     /**
      * Creates a new MusicPlayer with an empty queue. The backing {@link android.media.MediaPlayer}
      * will create a wakelock (specified by {@link PowerManager#PARTIAL_WAKE_LOCK}), and all
@@ -186,6 +202,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     public MusicPlayer(Context context) {
         mContext = context;
+        mHandler = new Handler();
         JockeyApplication.getComponent(mContext).inject(this);
         mRemotePreferenceStore = new RemotePreferenceStore(mContext);
 
@@ -237,6 +254,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         mMultiRepeat = mRemotePreferenceStore.getMultiRepeatCount();
 
         initEqualizer(preferencesStore);
+        startSleepTimer(mRemotePreferenceStore.getSleepTimerEndTime());
     }
 
     /**
@@ -527,6 +545,17 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         Timber.i("Posting error to UI process: %s", message);
         mContext.sendBroadcast(
                 new Intent(ERROR_BROADCAST).putExtra(ERROR_EXTRA_MSG, message), null);
+    }
+
+    /**
+     * Called to notify the UI thread of a non-critical event. The typical listener will show the
+     * message passed in to the user
+     * @param message A user-friendly message associated with this event that may be shown in the UI
+     */
+    protected void postInfo(String message) {
+        Timber.i("Posting info to UI process: %s", message);
+        mContext.sendBroadcast(
+                new Intent(INFO_BROADCAST).putExtra(INFO_EXTRA_MESSAGE, message), null);
     }
 
     /**
@@ -897,6 +926,36 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         return mMultiRepeat;
     }
 
+    public void setSleepTimer(long endTimestampInMillis) {
+        Timber.i("Changing sleep timer end time to %d", endTimestampInMillis);
+        startSleepTimer(endTimestampInMillis);
+        mRemotePreferenceStore.setSleepTimerEndTime(endTimestampInMillis);
+    }
+
+    private void startSleepTimer(long endTimestampInMillis) {
+        if (endTimestampInMillis <= System.currentTimeMillis()) {
+            Timber.i("Sleep timer end time (%1$d) is in the past (currently %2$d). Stopping timer",
+                    endTimestampInMillis, System.currentTimeMillis());
+            mHandler.removeCallbacks(mSleepTimerRunnable);
+        } else {
+            long delay = endTimestampInMillis - System.currentTimeMillis();
+            Timber.i("Setting sleep timer for %d ms", delay);
+            mHandler.postDelayed(mSleepTimerRunnable, delay);
+        }
+    }
+
+    private void onSleepTimerEnd() {
+        Timber.i("Sleep timer ended.");
+        pause();
+        updateUi();
+
+        postInfo(mContext.getString(R.string.confirm_sleep_timer_end));
+    }
+
+    public long getSleepTimerEndTime() {
+        return mRemotePreferenceStore.getSleepTimerEndTime();
+    }
+
     /**
      * Sets the shuffle option and immediately applies it to the queue
      * @param shuffle The new shuffle option. {@code true} will switch the current playback to a
@@ -993,6 +1052,9 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
         intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, mContext.getPackageName());
         mContext.sendBroadcast(intent);
+
+        // Make sure to disable the sleep timer to purge any delayed runnables in the message queue
+        startSleepTimer(0);
 
         if (mEqualizer != null) {
             mEqualizer.release();

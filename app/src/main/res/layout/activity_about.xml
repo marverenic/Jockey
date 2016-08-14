@@ -261,10 +261,29 @@
                 android:textSize="@dimen/list_text_detail_size" />
 
             <TextView
-                android:id="@+id/aboutTimberHeader"
+                android:id="@+id/aboutSeekArcHeader"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/aboutVerticalSeekBarDetail"
+                android:layout_marginTop="16dp"
+                android:text="@string/uses_seek_arc_header"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/list_text_header_size" />
+
+            <TextView
+                android:id="@+id/aboutSeekArcDetail"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutSeekArcHeader"
+                android:text="@string/uses_seek_arc_detail"
+                android:textColor="@color/about_detail_text"
+                android:textSize="@dimen/list_text_detail_size" />
+
+            <TextView
+                android:id="@+id/aboutTimberHeader"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutSeekArcDetail"
                 android:layout_marginTop="16dp"
                 android:text="@string/uses_timber_header"
                 android:textColor="@android:color/white"
