@@ -371,9 +371,22 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     }
 
     private void showSleepTimerDialog() {
+        long timeLeftInMs = PlayerController.getSleepTimerEndTime() - System.currentTimeMillis();
+        int defaultValue;
+
+        if (timeLeftInMs > 0) {
+            long minutes = TimeUnit.MINUTES.convert(timeLeftInMs, TimeUnit.MILLISECONDS);
+            long seconds = TimeUnit.SECONDS.convert(timeLeftInMs, TimeUnit.MILLISECONDS) % 60;
+
+            defaultValue = (int) minutes + ((seconds >= 30) ? 1 : 0);
+            defaultValue = Math.max(defaultValue, 1);
+        } else {
+            defaultValue = 15;
+        }
+
         new DurationPickerDialogFragment.Builder(this)
                 .setMinValue(1)
-                .setDefaultValue(15)
+                .setDefaultValue(defaultValue)
                 .setMaxValue(120)
                 .setTitle(getString(R.string.enable_sleep_timer))
                 .show(TAG_SLEEP_TIMER_PICKER);
