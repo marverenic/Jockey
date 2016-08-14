@@ -21,6 +21,7 @@
     <string name="action_disable_repeat">Disable repeat</string>
     <string name="action_enable_repeat">Enable repeat</string>
     <string name="action_enable_repeat_one">Enable repeat one</string>
+    <string name="action_disable_sleep_timer">Disable Sleep Timer</string>
     <string name="action_add_to_playlist">Add queue to playlist&#8230;</string>
     <string name="action_clear_queue">Clear queue</string>
     <string name="action_done">Done</string>

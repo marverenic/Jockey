@@ -597,6 +597,10 @@ public final class PlayerController {
         }
     }
 
+    public static void disableSleepTimer() {
+        setSleepTimerEndTime(0);
+    }
+
     /**
      * @return The album artwork for the current song
      */

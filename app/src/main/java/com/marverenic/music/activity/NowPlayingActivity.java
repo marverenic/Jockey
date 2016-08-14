@@ -351,6 +351,13 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     @Override
     public void onDurationPicked(int durationInMinutes) {
         // Callback for when a sleep timer value is chosen
+        if (durationInMinutes == DurationPickerDialogFragment.NO_VALUE) {
+            PlayerController.disableSleepTimer();
+            updateSleepTimerCounter();
+            showSnackbar(R.string.confirm_disable_sleep_timer);
+            return;
+        }
+
         long durationInMillis = TimeUnit.MILLISECONDS.convert(durationInMinutes, TimeUnit.MINUTES);
         long endTimestamp = System.currentTimeMillis() + durationInMillis;
         PlayerController.setSleepTimerEndTime(endTimestamp);
@@ -391,6 +398,9 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                 .setDefaultValue(defaultValue)
                 .setMaxValue(120)
                 .setTitle(getString(R.string.enable_sleep_timer))
+                .setDisableButtonText((timeLeftInMs > 0)
+                        ? getString(R.string.action_disable_sleep_timer)
+                        : null)
                 .show(TAG_SLEEP_TIMER_PICKER);
     }
 

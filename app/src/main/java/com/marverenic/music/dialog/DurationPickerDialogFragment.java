@@ -25,7 +25,10 @@ public class DurationPickerDialogFragment extends DialogFragment
     private static final String KEY_MIN_VAL = "DurationPickerDialogFragment.MIN_VALUE";
     private static final String KEY_MAX_VAL = "DurationPickerDialogFragment.MAX_VALUE";
     private static final String KEY_DEFAULT_VAL = "DurationPickerDialogFragment.DEFAULT_VALUE";
+    private static final String KEY_DISABLE_BUTTON = "DurationPickerDialogFragment.DISABLE_BUTTON";
     private static final String KEY_SAVED_VAL = "DurationPickerDialogFragment.SAVED_VALUE";
+
+    public static final int NO_VALUE = Integer.MIN_VALUE;
 
     private SeekArc mSlider;
     private TextView mLabel;
@@ -55,24 +58,31 @@ public class DurationPickerDialogFragment extends DialogFragment
         mLabel = (TextView) contentView.findViewById(R.id.duration_picker_time);
 
         String title = getArguments().getString(KEY_TITlE);
+        String disableButton = getArguments().getString(KEY_DISABLE_BUTTON);
         int maxValue = getArguments().getInt(KEY_MAX_VAL, Integer.MAX_VALUE);
 
         mSlider.setOnSeekArcChangeListener(this);
         mSlider.setMax(maxValue - mMinValue);
         mSlider.setProgress(mOffsetValue - mMinValue);
 
-        return new AlertDialog.Builder(getContext())
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext())
                 .setTitle(title)
                 .setView(contentView)
                 .setPositiveButton(R.string.action_done, (dialogInterface, i) -> {
-                    onValueSelected();
+                    onValueSelected(mSlider.getProgress() + mMinValue);
                 })
-                .setNegativeButton(R.string.action_cancel, null)
-                .show();
+                .setNegativeButton(R.string.action_cancel, null);
+
+        if (disableButton != null) {
+            dialogBuilder.setNeutralButton(disableButton, (dialogInterface, i) -> {
+                onValueSelected(NO_VALUE);
+            });
+        }
+
+        return dialogBuilder.show();
     }
 
-    private void onValueSelected() {
-        int value = mSlider.getProgress() + mMinValue;
+    private void onValueSelected(int value) {
         Activity parent = getActivity();
 
         if (parent instanceof OnDurationPickedListener) {
@@ -111,6 +121,7 @@ public class DurationPickerDialogFragment extends DialogFragment
         private int mMin;
         private int mMax;
         private int mDefault;
+        private String mDisableButton;
 
         public Builder(AppCompatActivity activity) {
             this(activity.getSupportFragmentManager());
@@ -140,11 +151,17 @@ public class DurationPickerDialogFragment extends DialogFragment
             return this;
         }
 
+        public Builder setDisableButtonText(String disableButtonText) {
+            mDisableButton = disableButtonText;
+            return this;
+        }
+
         public void show(String tag) {
             Bundle args = new Bundle();
             args.putString(KEY_TITlE, mTitle);
             args.putInt(KEY_MIN_VAL, mMin);
             args.putInt(KEY_MAX_VAL, mMax);
+            args.putString(KEY_DISABLE_BUTTON, mDisableButton);
             args.putInt(KEY_DEFAULT_VAL, mDefault);
 
             DurationPickerDialogFragment dialogFragment = new DurationPickerDialogFragment();
