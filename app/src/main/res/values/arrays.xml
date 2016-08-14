@@ -2,17 +2,6 @@
 <resources>
 
     <!-- Menu Arrays -->
-    <string-array name="queue_options_playlist">
-        <item>Queue next</item>
-        <item>Queue last</item>
-        <item>Delete</item>
-    </string-array>
-    <string-array name="queue_options_smart_playlist">
-        <item>Queue next</item>
-        <item>Queue last</item>
-        <item>Edit&#8230;</item>
-        <item>Delete</item>
-    </string-array>
     <string-array name="now_playing_options">
         <item>Go to artist</item>
         <item>Go to album</item>
