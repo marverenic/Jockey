@@ -2,12 +2,6 @@
 <resources>
 
     <!-- Menu Arrays -->
-    <string-array name="queue_options_artist_page">
-        <item>Queue next</item>
-        <item>Queue last</item>
-        <item>Go to album</item>
-        <item>Add to playlist&#8230;</item>
-    </string-array>
     <string-array name="queue_options_artist">
         <item>Queue next</item>
         <item>Queue last</item>
