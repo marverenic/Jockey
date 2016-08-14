@@ -6,7 +6,6 @@ import android.databinding.BaseObservable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
-import android.view.Menu;
 import android.view.View;
 
 import com.marverenic.music.JockeyApplication;
@@ -71,20 +70,11 @@ public class PlaylistViewModel extends BaseObservable {
     public View.OnClickListener onClickMenu() {
         return v -> {
             PopupMenu menu = new PopupMenu(mContext, v, Gravity.END);
-            String[] options = mContext.getResources().getStringArray(
-                    (mPlaylist instanceof AutoPlaylist)
-                            ? R.array.queue_options_smart_playlist
-                            : R.array.queue_options_playlist);
+            menu.inflate((mPlaylist instanceof AutoPlaylist)
+                    ? R.menu.instance_smart_playlist
+                    : R.menu.instance_playlist);
 
-            for (int i = 0; i < options.length;  i++) {
-                menu.getMenu().add(Menu.NONE, i, i, options[i]);
-            }
-
-            menu.setOnMenuItemClickListener(
-                    (mPlaylist instanceof  AutoPlaylist)
-                            ? onSmartMenuItemClick(v)
-                            : onMenuItemClick(v));
-
+            menu.setOnMenuItemClickListener(onMenuItemClick(v));
             menu.show();
         };
     }
@@ -92,34 +82,21 @@ public class PlaylistViewModel extends BaseObservable {
     private PopupMenu.OnMenuItemClickListener onMenuItemClick(View view) {
         return menuItem -> {
             switch (menuItem.getItemId()) {
-                case 0: //Queue this playlist next
+                case R.id.menu_item_queue_item_next:
                     queuePlaylistNext();
                     return true;
-                case 1: //Queue this playlist last
+                case R.id.menu_item_queue_item_last:
                     queuePlaylistLast();
                     return true;
-                case 2: //Delete this playlist
-                    deletePlaylist(view);
-                    return true;
-            }
-            return false;
-        };
-    }
-
-    private PopupMenu.OnMenuItemClickListener onSmartMenuItemClick(View view) {
-        return menuItem -> {
-            switch (menuItem.getItemId()) {
-                case 0: //Queue this playlist next
-                    queuePlaylistNext();
-                    return true;
-                case 1: //Queue this playlist last
-                    queuePlaylistLast();
-                    return true;
-                case 2: //Edit this playlist
+                case R.id.menu_item_edit:
                     editThisAsAutoPlaylist();
                     return true;
-                case 3: // Delete this playlist
-                    deleteAutoPlaylist(view);
+                case R.id.menu_item_delete:
+                    if (mPlaylist instanceof AutoPlaylist) {
+                        deleteAutoPlaylist(view);
+                    } else {
+                        deletePlaylist(view);
+                    }
                     return true;
             }
             return false;

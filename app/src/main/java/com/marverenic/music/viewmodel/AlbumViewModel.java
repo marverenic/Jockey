@@ -15,7 +15,6 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
-import android.view.Menu;
 import android.view.View;
 
 import com.bumptech.glide.Glide;
@@ -140,10 +139,7 @@ public class AlbumViewModel extends BaseObservable {
     public View.OnClickListener onClickMenu() {
         return v -> {
             PopupMenu menu = new android.support.v7.widget.PopupMenu(mContext, v, Gravity.END);
-            String[] options = mContext.getResources().getStringArray(R.array.queue_options_album);
-            for (int i = 0; i < options.length; i++) {
-                menu.getMenu().add(Menu.NONE, i, i, options[i]);
-            }
+            menu.inflate(R.menu.instance_album);
             menu.setOnMenuItemClickListener(onMenuItemClick());
             menu.show();
         };
@@ -152,7 +148,7 @@ public class AlbumViewModel extends BaseObservable {
     private PopupMenu.OnMenuItemClickListener onMenuItemClick() {
         return menuItem -> {
             switch (menuItem.getItemId()) {
-                case 0: //Queue this album next
+                case R.id.menu_item_queue_item_next:
                     mMusicStore.getSongs(mAlbum).subscribe(
                             PlayerController::queueNext,
                             throwable -> {
@@ -160,7 +156,7 @@ public class AlbumViewModel extends BaseObservable {
                             });
 
                     return true;
-                case 1: //Queue this album last
+                case R.id.menu_item_queue_item_last:
                     mMusicStore.getSongs(mAlbum).subscribe(
                             PlayerController::queueLast,
                             throwable -> {
@@ -168,7 +164,7 @@ public class AlbumViewModel extends BaseObservable {
                             });
 
                     return true;
-                case 2: //Go to artist
+                case R.id.menu_item_navigate_to_artist:
                     mMusicStore.findArtistById(mAlbum.getArtistId()).subscribe(
                             artist -> {
                                 mContext.startActivity(ArtistActivity.newIntent(mContext, artist));
@@ -177,7 +173,7 @@ public class AlbumViewModel extends BaseObservable {
                             });
 
                     return true;
-                case 3: //Add to playlist...
+                case R.id.menu_item_add_to_playlist:
                     mMusicStore.getSongs(mAlbum).subscribe(
                             songs -> {
                                 new AppendPlaylistDialogFragment.Builder(mContext, mFragmentManager)

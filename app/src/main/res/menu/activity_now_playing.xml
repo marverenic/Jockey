@@ -28,7 +28,7 @@
 
     <item
         android:id="@+id/add_to_playlist"
-        android:title="@string/action_add_to_playlist"
+        android:title="@string/action_add_queue_to_playlist"
         app:showAsAction="never" />
 
     <item

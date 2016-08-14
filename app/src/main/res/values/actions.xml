@@ -22,7 +22,7 @@
     <string name="action_enable_repeat">Enable repeat</string>
     <string name="action_enable_repeat_one">Enable repeat one</string>
     <string name="action_disable_sleep_timer">Disable Sleep Timer</string>
-    <string name="action_add_to_playlist">Add queue to playlist&#8230;</string>
+    <string name="action_add_queue_to_playlist">Add queue to playlist&#8230;</string>
     <string name="action_clear_queue">Clear queue</string>
     <string name="action_done">Done</string>
     <string name="action_select">Select</string>
@@ -30,6 +30,15 @@
     <string name="action_include">Include folder</string>
     <string name="action_exclude">Exclude folder</string>
     <string name="action_remove">Remove</string>
+
+    <!-- Item menu actions -->
+    <string name="action_queue_next">Queue next</string>
+    <string name="action_queue_last">Queue last</string>
+    <string name="action_navigate_to_artist">Go to artist</string>
+    <string name="action_navigate_to_album">Go to album</string>
+    <string name="action_add_to_playlist">Add to playlist&#8230;</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_edit_smart_playlist">Edit&#8230;</string>
 
     <!-- Other Actions -->
     <string name="action_skip">Skip</string>

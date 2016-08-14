@@ -5,7 +5,6 @@ import android.databinding.BaseObservable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
-import android.view.Menu;
 import android.view.View;
 
 import com.marverenic.music.JockeyApplication;
@@ -53,12 +52,7 @@ public class ArtistViewModel extends BaseObservable {
     public View.OnClickListener onClickMenu() {
         return v -> {
             PopupMenu menu = new PopupMenu(mContext, v, Gravity.END);
-
-            String[] options = mContext.getResources().getStringArray(R.array.queue_options_artist);
-            for (int i = 0; i < options.length;  i++) {
-                menu.getMenu().add(Menu.NONE, i, i, options[i]);
-            }
-
+            menu.inflate(R.menu.instance_artist);
             menu.setOnMenuItemClickListener(onMenuItemClick());
             menu.show();
         };
@@ -67,7 +61,7 @@ public class ArtistViewModel extends BaseObservable {
     private PopupMenu.OnMenuItemClickListener onMenuItemClick() {
         return menuItem -> {
             switch (menuItem.getItemId()) {
-                case 0: //Queue this artist next
+                case R.id.menu_item_queue_item_next:
                     mMusicStore.getSongs(mArtist).subscribe(
                             PlayerController::queueNext,
                             throwable -> {
@@ -75,7 +69,7 @@ public class ArtistViewModel extends BaseObservable {
                             });
 
                     return true;
-                case 1: //Queue this artist last
+                case R.id.menu_item_queue_item_last:
                     mMusicStore.getSongs(mArtist).subscribe(
                             PlayerController::queueLast,
                             throwable -> {
@@ -83,7 +77,7 @@ public class ArtistViewModel extends BaseObservable {
                             });
 
                     return true;
-                case 2: //Add to playlist...
+                case R.id.menu_item_add_to_playlist:
                     mMusicStore.getSongs(mArtist).subscribe(
                             songs -> {
                                 new AppendPlaylistDialogFragment.Builder(mContext, mFragmentManager)
