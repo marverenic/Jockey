@@ -5,7 +5,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
-import android.view.Menu;
 import android.view.View;
 
 import com.marverenic.music.R;
@@ -38,12 +37,7 @@ public class PlaylistSongViewModel extends SongViewModel {
     public View.OnClickListener onClickMenu() {
         return v -> {
             final PopupMenu menu = new PopupMenu(mContext, v, Gravity.END);
-            String[] options = mContext.getResources()
-                    .getStringArray(R.array.edit_playlist_options);
-
-            for (int i = 0; i < options.length;  i++) {
-                menu.getMenu().add(Menu.NONE, i, i, options[i]);
-            }
+            menu.inflate(R.menu.instance_song_playlist);
             menu.setOnMenuItemClickListener(onMenuItemClick(v));
             menu.show();
         };
@@ -52,13 +46,13 @@ public class PlaylistSongViewModel extends SongViewModel {
     private PopupMenu.OnMenuItemClickListener onMenuItemClick(View view) {
         return menuItem -> {
             switch (menuItem.getItemId()) {
-                case 0: //Queue this song next
+                case R.id.menu_item_queue_item_next:
                     PlayerController.queueNext(getReference());
                     return true;
-                case 1: //Queue this song last
+                case R.id.menu_item_queue_item_last:
                     PlayerController.queueLast(getReference());
                     return true;
-                case 2: //Go to artist
+                case R.id.menu_item_navigate_to_artist:
                     mMusicStore.findArtistById(getReference().getArtistId()).subscribe(
                             artist -> {
                                 mContext.startActivity(ArtistActivity.newIntent(mContext, artist));
@@ -67,7 +61,7 @@ public class PlaylistSongViewModel extends SongViewModel {
                             });
 
                     return true;
-                case 3: // Go to album
+                case R.id.menu_item_navigate_to_album:
                     mMusicStore.findAlbumById(getReference().getAlbumId()).subscribe(
                             album -> {
                                 mContext.startActivity(AlbumActivity.newIntent(mContext, album));
@@ -76,7 +70,7 @@ public class PlaylistSongViewModel extends SongViewModel {
                             });
 
                     return true;
-                case 4: // Remove
+                case R.id.menu_item_remove:
                     removeFromPlaylist(view);
                     return true;
             }
