@@ -14,7 +14,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
-import android.view.Menu;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -244,11 +243,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
             }
 
             PopupMenu menu = new PopupMenu(mContext, v, Gravity.END);
-            String[] options = mContext.getResources().getStringArray(R.array.now_playing_options);
-
-            for (int i = 0; i < options.length;  i++) {
-                menu.getMenu().add(Menu.NONE, i, i, options[i]);
-            }
+            menu.inflate(R.menu.instance_song_now_playing);
             menu.setOnMenuItemClickListener(onMoreInfoItemClick(mSong));
             menu.show();
         };
@@ -257,7 +252,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
     private PopupMenu.OnMenuItemClickListener onMoreInfoItemClick(Song song) {
         return item -> {
             switch (item.getItemId()) {
-                case 0: //Go to artist
+                case R.id.menu_item_navigate_to_artist:
                     mMusicStore.findArtistById(song.getArtistId()).subscribe(
                             artist -> {
                                 mContext.startActivity(ArtistActivity.newIntent(mContext, artist));
@@ -267,7 +262,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
                             });
 
                     return true;
-                case 1: //Go to album
+                case R.id.menu_item_navigate_to_album:
                     mMusicStore.findAlbumById(song.getAlbumId()).subscribe(
                             album -> {
                                 mContext.startActivity(AlbumActivity.newIntent(mContext, album));
@@ -277,7 +272,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
                             });
 
                     return true;
-                case 2: //Add to playlist
+                case R.id.menu_item_add_to_playlist:
                     new AppendPlaylistDialogFragment.Builder(mContext, mFragmentManager)
                             .setSongs(song)
                             .showSnackbarIn(R.id.imageArtwork)

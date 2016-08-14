@@ -2,11 +2,6 @@
 <resources>
 
     <!-- Menu Arrays -->
-    <string-array name="now_playing_options">
-        <item>Go to artist</item>
-        <item>Go to album</item>
-        <item>Add to playlist&#8230;</item>
-    </string-array>
     <string-array name="edit_playlist_options">
         <item>Queue next</item>
         <item>Queue last</item>
