@@ -75,6 +75,9 @@
     <string name="uses_vert_slider_header">VerticalSeekBar</string>
     <string name="uses_vert_slider_detail">Version 0.5.2; distributed by Haruki Hasegawa
         under an Apache License, Version 2.0</string>
+    <string name="uses_seek_arc_header">SeekArc</string>
+    <string name="uses_seek_arc_detail">Version 1.1; distributed by Triggertrap Ltd (Neil Davies)
+        under an MIT License</string>
     <string name="uses_timber_header">Timber</string>
     <string name="uses_timber_detail">Version 4.1.2; distributed by Jake Wharton under an Apache
         License, Version 2.0</string>
