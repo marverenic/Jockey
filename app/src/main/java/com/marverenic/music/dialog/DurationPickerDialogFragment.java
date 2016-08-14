@@ -21,7 +21,7 @@ import timber.log.Timber;
 public class DurationPickerDialogFragment extends DialogFragment
         implements SeekArc.OnSeekArcChangeListener {
 
-    private static final String KEY_TITlE = "DurationPickerDialogFragment.TITLE";
+    private static final String KEY_TITLE = "DurationPickerDialogFragment.TITLE";
     private static final String KEY_MIN_VAL = "DurationPickerDialogFragment.MIN_VALUE";
     private static final String KEY_MAX_VAL = "DurationPickerDialogFragment.MAX_VALUE";
     private static final String KEY_DEFAULT_VAL = "DurationPickerDialogFragment.DEFAULT_VALUE";
@@ -57,7 +57,7 @@ public class DurationPickerDialogFragment extends DialogFragment
         mSlider = (SeekArc) contentView.findViewById(R.id.duration_picker_slider);
         mLabel = (TextView) contentView.findViewById(R.id.duration_picker_time);
 
-        String title = getArguments().getString(KEY_TITlE);
+        String title = getArguments().getString(KEY_TITLE);
         String disableButton = getArguments().getString(KEY_DISABLE_BUTTON);
         int maxValue = getArguments().getInt(KEY_MAX_VAL, Integer.MAX_VALUE);
 
@@ -158,7 +158,7 @@ public class DurationPickerDialogFragment extends DialogFragment
 
         public void show(String tag) {
             Bundle args = new Bundle();
-            args.putString(KEY_TITlE, mTitle);
+            args.putString(KEY_TITLE, mTitle);
             args.putInt(KEY_MIN_VAL, mMin);
             args.putInt(KEY_MAX_VAL, mMax);
             args.putString(KEY_DISABLE_BUTTON, mDisableButton);
