@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Menu Arrays -->
-    <string-array name="edit_queue_options">
-        <item>Go to artist</item>
-        <item>Go to album</item>
-        <item>Add to playlist&#8230;</item>
-        <item>Remove</item>
-    </string-array>
-
     <!-- Settings Arrays -->
     <string-array name="pages">
         <item name="0">Playlists</item>

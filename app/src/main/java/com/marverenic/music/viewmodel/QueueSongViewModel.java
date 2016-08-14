@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
-import android.view.Menu;
 import android.view.View;
 
 import com.marverenic.music.R;
@@ -55,12 +54,7 @@ public class QueueSongViewModel extends SongViewModel {
     public View.OnClickListener onClickMenu() {
         return v -> {
             PopupMenu menu = new PopupMenu(mContext, v, Gravity.END);
-            String[] options = mContext.getResources().getStringArray(R.array.edit_queue_options);
-
-            for (int i = 0; i < options.length;  i++) {
-                menu.getMenu().add(Menu.NONE, i, i, options[i]);
-            }
-
+            menu.inflate(R.menu.instance_song_queue);
             menu.setOnMenuItemClickListener(onMenuItemClick(v));
             menu.show();
         };
@@ -69,7 +63,7 @@ public class QueueSongViewModel extends SongViewModel {
     private PopupMenu.OnMenuItemClickListener onMenuItemClick(View view) {
         return menuItem -> {
             switch (menuItem.getItemId()) {
-                case 0: //Go to artist
+                case R.id.menu_item_navigate_to_artist:
                     mMusicStore.findArtistById(getReference().getArtistId()).subscribe(
                             artist -> {
                                 mContext.startActivity(ArtistActivity.newIntent(mContext, artist));
@@ -78,7 +72,7 @@ public class QueueSongViewModel extends SongViewModel {
                             });
 
                     return true;
-                case 1: // Go to album
+                case R.id.menu_item_navigate_to_album:
                     mMusicStore.findAlbumById(getReference().getAlbumId()).subscribe(
                             album -> {
                                 mContext.startActivity(AlbumActivity.newIntent(mContext, album));
@@ -87,7 +81,7 @@ public class QueueSongViewModel extends SongViewModel {
                             });
 
                     return true;
-                case 2: // Add to playlist
+                case R.id.menu_item_add_to_playlist:
                     new AppendPlaylistDialogFragment.Builder(mContext, mFragmentManager)
                             .setTitle(mContext.getResources().getString(
                                     R.string.header_add_song_name_to_playlist, getReference()))
@@ -95,7 +89,7 @@ public class QueueSongViewModel extends SongViewModel {
                             .showSnackbarIn(R.id.imageArtwork)
                             .show(TAG_PLAYLIST_DIALOG);
                     return true;
-                case 3: // Remove
+                case R.id.menu_item_remove:
                     int queuePosition = PlayerController.getQueuePosition();
                     int itemPosition = getIndex();
 
