@@ -5,7 +5,6 @@ import android.databinding.BaseObservable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
-import android.view.Menu;
 import android.view.View;
 
 import com.marverenic.music.JockeyApplication;
@@ -94,12 +93,7 @@ public class SongViewModel extends BaseObservable {
     public View.OnClickListener onClickMenu() {
         return v -> {
             final PopupMenu menu = new PopupMenu(mContext, v, Gravity.END);
-            String[] options = mContext.getResources()
-                    .getStringArray(R.array.queue_options_song);
-
-            for (int i = 0; i < options.length;  i++) {
-                menu.getMenu().add(Menu.NONE, i, i, options[i]);
-            }
+            menu.inflate(R.menu.instance_song);
             menu.setOnMenuItemClickListener(onMenuItemClick());
             menu.show();
         };
@@ -108,13 +102,13 @@ public class SongViewModel extends BaseObservable {
     private PopupMenu.OnMenuItemClickListener onMenuItemClick() {
         return menuItem -> {
             switch (menuItem.getItemId()) {
-                case 0: //Queue this song next
+                case R.id.menu_item_queue_item_next:
                     PlayerController.queueNext(mReference);
                     return true;
-                case 1: //Queue this song last
+                case R.id.menu_item_queue_item_last:
                     PlayerController.queueLast(mReference);
                     return true;
-                case 2: //Go to artist
+                case R.id.menu_item_navigate_to_artist:
                     mMusicStore.findArtistById(mReference.getArtistId()).subscribe(
                             artist -> {
                                 mContext.startActivity(ArtistActivity.newIntent(mContext, artist));
@@ -123,16 +117,15 @@ public class SongViewModel extends BaseObservable {
                             });
 
                     return true;
-                case 3: // Go to album
+                case R.id.menu_item_navigate_to_album:
                     mMusicStore.findAlbumById(mReference.getAlbumId()).subscribe(
                             album -> {
                                 mContext.startActivity(AlbumActivity.newIntent(mContext, album));
                             }, throwable -> {
                                 Timber.e(throwable, "Failed to find album", throwable);
                             });
-
                     return true;
-                case 4: //Add to playlist...
+                case R.id.menu_item_add_to_playlist:
                     new AppendPlaylistDialogFragment.Builder(mContext, mFragmentManager)
                             .setSongs(mReference)
                             .showSnackbarIn(R.id.list)
