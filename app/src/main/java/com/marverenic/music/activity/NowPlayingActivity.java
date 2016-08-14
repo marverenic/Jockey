@@ -360,6 +360,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         showSnackbar(confirmationMessage);
 
         updateSleepTimerCounter();
+        mPrefStore.setLastSleepTimerDuration(durationInMillis);
     }
 
     private void changeRepeatMode(int repeatMode, @StringRes int confirmationMessage) {
@@ -381,7 +382,8 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
             defaultValue = (int) minutes + ((seconds >= 30) ? 1 : 0);
             defaultValue = Math.max(defaultValue, 1);
         } else {
-            defaultValue = 15;
+            long prevTimeInMillis = mPrefStore.getLastSleepTimerDuration();
+            defaultValue = (int) TimeUnit.MINUTES.convert(prevTimeInMillis, TimeUnit.MILLISECONDS);
         }
 
         new DurationPickerDialogFragment.Builder(this)

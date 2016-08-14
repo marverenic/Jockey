@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import timber.log.Timber;
 
@@ -41,6 +42,10 @@ public class SharedPreferencesStore implements PreferencesStore {
         return mPrefs.getInt(mContext.getString(keyRes), defaultValue);
     }
 
+    private long getLong(@StringRes int keyRes, long defaultValue) {
+        return mPrefs.getLong(mContext.getString(keyRes), defaultValue);
+    }
+
     private String getString(@StringRes int keyRes, String defaultValue) {
         return mPrefs.getString(mContext.getString(keyRes), defaultValue);
     }
@@ -58,6 +63,12 @@ public class SharedPreferencesStore implements PreferencesStore {
     private void putInt(@StringRes int keyRes, int value) {
         mPrefs.edit()
                 .putInt(mContext.getString(keyRes), value)
+                .apply();
+    }
+
+    private void putLong(@StringRes int keyRes, long value) {
+        mPrefs.edit()
+                .putLong(mContext.getString(keyRes), value)
                 .apply();
     }
 
@@ -124,6 +135,11 @@ public class SharedPreferencesStore implements PreferencesStore {
     @Override
     public int getRepeatMode() {
         return getInt(R.string.pref_key_repeat, MusicPlayer.REPEAT_NONE);
+    }
+
+    @Override
+    public long getLastSleepTimerDuration() {
+        return getLong(R.string.pref_key_last_sleep_timer, TimeUnit.MINUTES.toMillis(15));
     }
 
     @Override
@@ -211,6 +227,11 @@ public class SharedPreferencesStore implements PreferencesStore {
     @Override
     public void setRepeatMode(int repeatMode) {
         putInt(R.string.pref_key_repeat, repeatMode);
+    }
+
+    @Override
+    public void setLastSleepTimerDuration(long timeInMillis) {
+        putLong(R.string.pref_key_last_sleep_timer, timeInMillis);
     }
 
     @Override

@@ -23,6 +23,8 @@ public interface ReadOnlyPreferencesStore {
     boolean isShuffled();
     int getRepeatMode();
 
+    long getLastSleepTimerDuration();
+
     int getEqualizerPresetId();
     boolean getEqualizerEnabled();
     Equalizer.Settings getEqualizerSettings();

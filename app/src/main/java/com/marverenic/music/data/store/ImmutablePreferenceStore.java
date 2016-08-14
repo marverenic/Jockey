@@ -20,6 +20,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferencesStore, Parce
     private final int mBaseColor;
     private final boolean mShuffled;
     private final int mRepeatMode;
+    private final long mPreviousSleepTimerDurationMillis;
     private final int mEqualizerPresetId;
     private final boolean mEqualizerEnabled;
     private final String mEqualizerSettings;
@@ -34,6 +35,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferencesStore, Parce
         mPrimaryColor = preferencesStore.getPrimaryColor();
         mBaseColor = preferencesStore.getBaseColor();
         mShuffled = preferencesStore.isShuffled();
+        mPreviousSleepTimerDurationMillis = preferencesStore.getLastSleepTimerDuration();
         mRepeatMode = preferencesStore.getRepeatMode();
         mEqualizerPresetId = preferencesStore.getEqualizerPresetId();
         mEqualizerEnabled = preferencesStore.getEqualizerEnabled();
@@ -56,6 +58,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferencesStore, Parce
         mPrimaryColor = in.readInt();
         mBaseColor = in.readInt();
         mShuffled = in.readByte() != 0;
+        mPreviousSleepTimerDurationMillis = in.readLong();
         mRepeatMode = in.readInt();
         mEqualizerPresetId = in.readInt();
         mEqualizerEnabled = in.readByte() != 0;
@@ -73,6 +76,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferencesStore, Parce
         dest.writeInt(mPrimaryColor);
         dest.writeInt(mBaseColor);
         dest.writeByte((byte) (mShuffled ? 1 : 0));
+        dest.writeLong(mPreviousSleepTimerDurationMillis);
         dest.writeInt(mRepeatMode);
         dest.writeInt(mEqualizerPresetId);
         dest.writeByte((byte) (mEqualizerEnabled ? 1 : 0));
@@ -144,6 +148,11 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferencesStore, Parce
     @Override
     public int getRepeatMode() {
         return mRepeatMode;
+    }
+
+    @Override
+    public long getLastSleepTimerDuration() {
+        return mPreviousSleepTimerDurationMillis;
     }
 
     @Override
