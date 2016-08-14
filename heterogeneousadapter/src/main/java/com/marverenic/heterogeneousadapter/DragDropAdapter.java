@@ -1,5 +1,6 @@
 package com.marverenic.heterogeneousadapter;
 
+import android.os.Handler;
 import android.support.annotation.IdRes;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -11,8 +12,14 @@ import java.util.List;
 
 public class DragDropAdapter extends HeterogeneousAdapter {
 
+    private final Handler mHandler;
+
     private DragSection mDragSection;
     private ItemTouchHelper mTouchHelper;
+
+    public DragDropAdapter() {
+        mHandler = new Handler();
+    }
 
     /**
      * Attach this adapter to a View. You MUST call this method if you want drag and drop to work.
@@ -73,7 +80,13 @@ public class DragDropAdapter extends HeterogeneousAdapter {
                 ((DragMarker) viewHolder.itemView.getTag()).from - leadingViews,
                 viewHolder.getAdapterPosition() - leadingViews);
         viewHolder.itemView.setTag(null);
-        notifyDataSetChanged();
+
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                notifyDataSetChanged();
+            }
+        });
     }
 
     public static abstract class DragSection<Type> extends Section<Type> {
