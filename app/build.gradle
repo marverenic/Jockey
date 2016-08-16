@@ -45,6 +45,12 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             zipAlignEnabled true
+
+            // Setting the "NO_CRASHLYTICS" environment variable to "true" prevents crashlytics from
+            // being processed on release builds. This is allows Travis CI builds to succeed without
+            // checking API keys into version control
+            boolean disableCrashlytics = "true".equalsIgnoreCase("$System.env.NO_CRASHLYTICS")
+            ext.enableCrashlytics = !disableCrashlytics
         }
         debug {
             applicationIdSuffix ".debug"
@@ -70,8 +76,9 @@ dependencies {
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:0.5.2'
 
-    compile 'com.google.dagger:dagger:2.4'
-    apt 'com.google.dagger:dagger-compiler:2.4'
+    compile 'com.google.dagger:dagger:2.6'
+    apt 'com.google.dagger:dagger-compiler:2.6'
+    apt 'com.google.guava:guava:19.0'
 
     compile 'io.reactivex:rxjava:1.1.6'
     compile 'io.reactivex:rxandroid:1.2.1'
