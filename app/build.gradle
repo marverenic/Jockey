@@ -70,8 +70,9 @@ dependencies {
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:0.5.2'
 
-    compile 'com.google.dagger:dagger:2.4'
-    apt 'com.google.dagger:dagger-compiler:2.4'
+    compile 'com.google.dagger:dagger:2.6'
+    apt 'com.google.dagger:dagger-compiler:2.6'
+    apt 'com.google.guava:guava:19.0'
 
     compile 'io.reactivex:rxjava:1.1.6'
     compile 'io.reactivex:rxandroid:1.2.1'
