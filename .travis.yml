@@ -1,0 +1,21 @@
+sudo: false
+language: android
+branches:
+    only:
+        - master
+cache:
+    directories:
+        - $HOME/.m2
+        - $HOME/.gradle
+jdk:
+    - oraclejdk8
+android:
+    components:
+        - tools
+        - build-tools-24.0.0
+        - android-24
+        - extra-android-support
+        - extra-google-m2repository
+        - extra-android-m2repository
+notifications:
+    email: false
