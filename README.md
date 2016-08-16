@@ -26,6 +26,9 @@ Used to play music while the device's screen is off
 Allows Jockey to (optionally) add shortcuts to Jockey to the launcher. This is only done when explicitly requested from the settings page and is intended so that the launcher icon matches the chosen theme
 
 ### Building Jockey from Source
+
+Required  Android Studio 2.1
+
 To build a release APK of Jockey, you'll need to either setup Crashlytics using your own API key, or remove the dependency and all logging calls. You can specify your own API key by making a new file in `app/fabric.properties` and add the following lines:  
 ```
 apiSecret="yourApiSecret"
