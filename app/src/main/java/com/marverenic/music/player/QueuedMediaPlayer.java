@@ -360,7 +360,6 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
     /**
      * Seeks to a different time within the current song
      * @param mSec The new time position to seek to, in milliseconds since the beginning of the song
-     * @see MediaPlayer#seekTo(int)
      */
     public void seekTo(int mSec) {
         if (getState().canSeek()) {
@@ -374,7 +373,6 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
 
     /**
      * Ends playback of the current song
-     * @see MediaPlayer#stop()
      */
     public void stop() {
         Timber.w("Stop called. Future playback may be inconsistent.");
@@ -385,7 +383,6 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
     /**
      * Resumes playback of the current song
      * To begin new playback, use {@link #prepare(boolean)} and pass in {@code true} instead
-     * @see MediaPlayer#start()
      */
     public void play() {
         Timber.i("play() called");
@@ -394,7 +391,6 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
 
     /**
      * Pauses playback of the current song
-     * @see MediaPlayer#pause()
      */
     public void pause() {
         Timber.i("pause() called");
@@ -403,7 +399,6 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
 
     /**
      * @return The current seek position of the now playing song in milliseconds
-     * @see MediaPlayer#getCurrentPosition()
      */
     public int getCurrentPosition() {
         return mCurrentPlayer.getCurrentPosition();
@@ -411,7 +406,6 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
 
     /**
      * @return The duration of the currently playing song in milliseconds
-     * @see MediaPlayer#getDuration()
      */
     public int getDuration() {
         return mCurrentPlayer.getDuration();
@@ -427,7 +421,6 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
     /**
      * @return {@link true} if the current {@link MediaPlayer} has become idle after completing
      *         playback.
-     * @see ManagedMediaPlayer#isComplete()
      */
     public boolean isComplete() {
         return mCurrentPlayer.isComplete();
@@ -472,7 +465,6 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
          *             {@link MediaPlayer#MEDIA_ERROR_SERVER_DIED}
          * @param extra An extra code received from the backing {@link MediaPlayer}
          * @return {@code true} if the error was handled, {@code false} otherwise
-         * @see android.media.MediaPlayer.OnErrorListener#onError(MediaPlayer, int, int)
          */
         boolean onError(int what, int extra);
 
@@ -490,7 +482,6 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
      * Sets the volume of both the left and right audio channels
      * @param leftVolume Left volume multiplier. Must be between {@code 0.0f} and {@code 1.0f}
      * @param rightVolume Right volume multiplier. Must be between {@code 0.0f} and {@code 1.0f}
-     * @see MediaPlayer#setVolume(float, float)
      */
     public void setVolume(float leftVolume, float rightVolume) {
         mCurrentPlayer.setVolume(leftVolume, rightVolume);
@@ -501,7 +492,6 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
      * Sets the AudioSessionId of the backing {@link MediaPlayer} Objects.
      * @param sessionId The audio session ID
      * @throws IllegalStateException If one of the {@link MediaPlayer}s is in an invalid state
-     * @see MediaPlayer#setAudioSessionId(int)
      */
     public void setAudioSessionId(int sessionId) throws IllegalStateException {
         mCurrentPlayer.setAudioSessionId(sessionId);
@@ -511,7 +501,6 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
     /**
      * @return The Audio Session ID of the backing {@link MediaPlayer}s. Both MediaPlayers will
      *         always share this value
-     * @see MediaPlayer#getAudioSessionId()
      */
     public int getAudioSessionId() {
         return mCurrentPlayer.getAudioSessionId();
@@ -523,8 +512,6 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
      * become effective.
      *
      * @param streamtype The audio stream type
-     * @see MediaPlayer#setAudioStreamType(int)
-     * @see android.media.AudioManager
      */
     public void setAudioStreamType(int streamtype) {
         mCurrentPlayer.setAudioStreamType(streamtype);
@@ -533,7 +520,6 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
 
     /**
      * @return {@code true} if the current song is being played, {@code false} otherwise
-     * @see MediaPlayer#isPlaying()
      */
     public boolean isPlaying() {
         return mCurrentPlayer.isPlaying();
@@ -543,7 +529,6 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
      * Sets an optional wake mode on the backing {@link MediaPlayer}s which may be used to allow
      * playback while the device is locked
      * @param mode The new wake mode to set on the backing MediaPlayers
-     * @see MediaPlayer#setWakeMode(Context, int)
      * @see android.os.PowerManager
      */
     public void setWakeMode(int mode) {
@@ -554,7 +539,6 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
     /**
      * Resets both MediaPlayers, and clears the queue. This makes the current instance act like a
      * new one, retaining any attached callbacks and other properties unrelated to the queue.
-     * @see MediaPlayer#reset()
      */
     public void reset() {
         Timber.i("resetting QueuedMediaPlayer...");
@@ -572,7 +556,6 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
     /**
      * Releases both MediaPlayers and the Context used to create this Object. Once this method is
      * called, this instance will no longer be able to play music
-     * @see MediaPlayer#release()
      */
     public void release() {
         Timber.i("Releasing QueuedMediaPlayer...");
