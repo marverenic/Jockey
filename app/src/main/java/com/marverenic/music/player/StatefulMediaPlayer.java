@@ -1,6 +1,7 @@
 package com.marverenic.music.player;
 
 import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 
@@ -24,6 +25,7 @@ public class StatefulMediaPlayer implements Player {
     public StatefulMediaPlayer(Context context) {
         mContext = context;
         mMediaPlayer = new MediaPlayer();
+        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
         mPreparedListeners = new HashSet<>();
         mErrorListeners = new HashSet<>();
@@ -94,15 +96,6 @@ public class StatefulMediaPlayer implements Player {
     @Override
     public void setWakeMode(int wakeMode) {
         mMediaPlayer.setWakeMode(mContext, wakeMode);
-    }
-
-    @Override
-    public void setAudioStreamType(int streamType) {
-        if (mState.canSetAudioStreamType()) {
-            mMediaPlayer.setAudioStreamType(streamType);
-        } else {
-            Timber.e("Cannot set audio stream type while in state %s", mState);
-        }
     }
 
     @Override

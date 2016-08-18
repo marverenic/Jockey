@@ -9,7 +9,6 @@ public interface Player {
     void reset();
 
     void setWakeMode(int wakeMode);
-    void setAudioStreamType(int streamType);
     void setAudioSessionId(int audioSessionId);
     void setVolume(float leftVolume, float rightVolume);
 

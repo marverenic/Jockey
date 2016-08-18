@@ -1,7 +1,6 @@
 package com.marverenic.music.player;
 
 import android.content.Context;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -512,18 +511,6 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
      */
     public int getAudioSessionId() {
         return mCurrentPlayer.getAudioSessionId();
-    }
-
-    /**
-     * Sets the audio stream type for this MediaPlayer. See {@link AudioManager} for a list of
-     * stream types. This method must be called before preparing either MediaPlayer for it to
-     * become effective.
-     *
-     * @param streamtype The audio stream type
-     */
-    public void setAudioStreamType(int streamtype) {
-        mCurrentPlayer.setAudioStreamType(streamtype);
-        mNextPlayer.setAudioStreamType(streamtype);
     }
 
     /**

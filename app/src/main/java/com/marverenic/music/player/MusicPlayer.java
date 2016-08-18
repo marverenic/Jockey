@@ -217,7 +217,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         // Initialize the media player
         mMediaPlayer = new QueuedMediaPlayer(context);
 
-        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mMediaPlayer.setWakeMode(PowerManager.PARTIAL_WAKE_LOCK);
         mMediaPlayer.setPlaybackEventListener(this);
 
