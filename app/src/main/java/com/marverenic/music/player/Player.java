@@ -46,7 +46,7 @@ public interface Player {
     }
 
     interface OnErrorListener {
-        boolean onError(Player player, int what, int extra);
+        boolean onError(Player player, Throwable error);
     }
 
     interface OnCompletionListener {

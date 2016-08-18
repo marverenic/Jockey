@@ -49,8 +49,30 @@ public class StatefulMediaPlayer implements Player {
         boolean handled = false;
         mState = MediaPlayerState.ERROR;
 
+        Throwable error;
+        String message = "Error (" + what + ", " + extra + ")";
+
+        switch (what) {
+            case MediaPlayer.MEDIA_ERROR_IO:
+            case MediaPlayer.MEDIA_ERROR_MALFORMED:
+            case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK:
+            case MediaPlayer.MEDIA_ERROR_TIMED_OUT:
+                error = new IOException(message);
+                break;
+            case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
+                error = new UnknownError(message);
+                break;
+            case MediaPlayer.MEDIA_ERROR_UNSUPPORTED:
+                error = new UnsupportedOperationException(message);
+                break;
+            case MediaPlayer.MEDIA_ERROR_UNKNOWN:
+            default:
+                error = new RuntimeException(message);
+        }
+
+
         for (OnErrorListener errorListener : mErrorListeners) {
-            handled |= errorListener.onError(this, what, extra);
+            handled |= errorListener.onError(this, error);
         }
         return handled;
     }

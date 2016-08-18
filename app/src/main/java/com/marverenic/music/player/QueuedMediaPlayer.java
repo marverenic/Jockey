@@ -471,13 +471,10 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
         /**
          * Invoked when an error has occurred during playback. This may be called with respect
          * to either the current or next media player.
-         * @param what The type of error that occurred. May be one of
-         *             {@link MediaPlayer#MEDIA_ERROR_UNKNOWN} or
-         *             {@link MediaPlayer#MEDIA_ERROR_SERVER_DIED}
-         * @param extra An extra code received from the backing {@link MediaPlayer}
+         * @param error The exception that was raised by one of the internal Players
          * @return {@code true} if the error was handled, {@code false} otherwise
          */
-        boolean onError(int what, int extra);
+        boolean onError(Throwable error);
 
         /**
          * Invoked when an {@link IOException} was thrown while calling

@@ -1119,8 +1119,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     }
 
     @Override
-    public boolean onError(int what, int extra) {
-        Timber.i("onError(%d, %d). Sending error message to UI...", what, extra);
+    public boolean onError(Throwable error) {
+        Timber.i(error, "Sending error message to UI...");
         postError(mContext.getString(
                 R.string.message_play_error_io_exception,
                 getNowPlaying().getSongName()));
