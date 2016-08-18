@@ -36,6 +36,7 @@ public interface Player {
     boolean isComplete();
     boolean isPlaying();
     boolean isPaused();
+    boolean isStopped();
     boolean isPrepared();
     boolean isPreparing();
 

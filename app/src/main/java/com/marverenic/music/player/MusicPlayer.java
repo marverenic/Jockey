@@ -467,18 +467,14 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                             | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
                             | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS);
 
-            switch (mMediaPlayer.getState()) {
-                case STARTED:
-                    state.setState(PlaybackStateCompat.STATE_PLAYING, getCurrentPosition(), 1f);
-                    break;
-                case PAUSED:
-                    state.setState(PlaybackStateCompat.STATE_PAUSED, getCurrentPosition(), 1f);
-                    break;
-                case STOPPED:
-                    state.setState(PlaybackStateCompat.STATE_STOPPED, getCurrentPosition(), 1f);
-                    break;
-                default:
-                    state.setState(PlaybackStateCompat.STATE_NONE, getCurrentPosition(), 1f);
+            if (mMediaPlayer.isPlaying()) {
+                state.setState(PlaybackStateCompat.STATE_PLAYING, getCurrentPosition(), 1f);
+            } else if (mMediaPlayer.isPaused()) {
+                state.setState(PlaybackStateCompat.STATE_PAUSED, getCurrentPosition(), 1f);
+            } else if (mMediaPlayer.isStopped()) {
+                state.setState(PlaybackStateCompat.STATE_STOPPED, getCurrentPosition(), 1f);
+            } else {
+                state.setState(PlaybackStateCompat.STATE_NONE, getCurrentPosition(), 1f);
             }
             mMediaSession.setPlaybackState(state.build());
             mMediaSession.setActive(mFocused);

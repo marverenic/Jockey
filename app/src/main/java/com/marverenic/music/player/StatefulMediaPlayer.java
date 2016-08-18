@@ -234,6 +234,11 @@ public class StatefulMediaPlayer implements Player {
     }
 
     @Override
+    public boolean isStopped() {
+        return mState == MediaPlayerState.STOPPED;
+    }
+
+    @Override
     public boolean isPrepared() {
         return mState == MediaPlayerState.PREPARED;
     }
