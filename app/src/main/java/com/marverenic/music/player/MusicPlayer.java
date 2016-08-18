@@ -762,7 +762,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @return Whether the current song is getting ready to be played
      */
     public boolean isPreparing() {
-        return getState() == MediaPlayerState.PREPARING;
+        return mMediaPlayer.isPreparing();
     }
 
     /**

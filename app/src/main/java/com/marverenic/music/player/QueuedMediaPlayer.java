@@ -433,6 +433,10 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
         return mCurrentPlayer.isStopped();
     }
 
+    public boolean isPreparing() {
+        return mCurrentPlayer.isPreparing();
+    }
+
     /**
      * Interface definition to act as a callback when important lifecycle events occur within the
      * backing {@link MediaPlayer} objects. This allows higher-level behaviors to be defined more
