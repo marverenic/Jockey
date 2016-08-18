@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 
 import com.marverenic.music.instances.Song;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -17,8 +16,7 @@ import java.util.List;
 import timber.log.Timber;
 
 /**
- * QueuedMediaPlayer is a wrapper class that holds and manages two {@link ManagedMediaPlayer}
- * Objects.
+ * QueuedMediaPlayer is a wrapper class that holds and manages two {@link Player} Objects.
  *
  * This class will manage its own playback by default. The playback queue may be modified through
  * {@link #setQueue(List, int)}, {@link #setQueue(List)}, and {@link #setQueueIndex(int)}.
@@ -36,12 +34,11 @@ import timber.log.Timber;
  * with {@link #setPlaybackEventListener(PlaybackEventListener)} and implement
  * {@link PlaybackEventListener#onCompletion()} to call {@link #skip()} as appropriate.
  */
-public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
-        MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
+public class QueuedMediaPlayer implements Player.OnPreparedListener,
+        Player.OnCompletionListener, Player.OnErrorListener {
 
-    private Context mContext;
-    private ManagedMediaPlayer mCurrentPlayer;
-    private ManagedMediaPlayer mNextPlayer;
+    private Player mCurrentPlayer;
+    private Player mNextPlayer;
     private PlaybackEventListener mCallback;
     private List<Song> mQueue;
     private int mQueueIndex;
@@ -54,19 +51,17 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
      *                for the lifetime of this QueuedMediaPlayer until {@link #release()} is called
      */
     public QueuedMediaPlayer(Context context) {
-        mContext = context;
-
-        mCurrentPlayer = new ManagedMediaPlayer();
-        mNextPlayer = new ManagedMediaPlayer();
+        mCurrentPlayer = new StatefulMediaPlayer(context);
+        mNextPlayer = new StatefulMediaPlayer(context);
         mNextPlayer.setAudioSessionId(mCurrentPlayer.getAudioSessionId());
 
-        mCurrentPlayer.setOnPreparedListener(this);
-        mCurrentPlayer.setOnErrorListener(this);
-        mCurrentPlayer.setOnCompletionListener(this);
+        mCurrentPlayer.addOnPreparedListener(this);
+        mCurrentPlayer.addOnErrorListener(this);
+        mCurrentPlayer.addOnCompletionListener(this);
 
-        mNextPlayer.setOnPreparedListener(this);
-        mNextPlayer.setOnErrorListener(this);
-        mNextPlayer.setOnCompletionListener(this);
+        mNextPlayer.addOnPreparedListener(this);
+        mNextPlayer.addOnErrorListener(this);
+        mNextPlayer.addOnCompletionListener(this);
 
         mQueue = Collections.emptyList();
         mQueueIndex = 0;
@@ -202,7 +197,7 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
      */
     private void swapMediaPlayers() {
         Timber.i("Swapping media players");
-        ManagedMediaPlayer previous = mCurrentPlayer;
+        Player previous = mCurrentPlayer;
         mCurrentPlayer = mNextPlayer;
         mNextPlayer = previous;
     }
@@ -235,9 +230,8 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
             mPlayWhenPrepared = playWhenReady;
 
             try {
-                File source = new File(getNowPlaying().getLocation());
-                mCurrentPlayer.setDataSource(mContext, Uri.fromFile(source));
-                mCurrentPlayer.prepareAsync();
+                mCurrentPlayer.setDataSource(getNowPlaying().getLocation());
+                mCurrentPlayer.prepare();
             } catch (IOException e) {
                 Timber.e(e, "Failed to prepare current player");
                 if (mCallback != null) {
@@ -261,9 +255,8 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
         Song next = getNext();
         if (next != null) {
             try {
-                File source = new File(next.getLocation());
-                mNextPlayer.setDataSource(mContext, Uri.fromFile(source));
-                mNextPlayer.prepareAsync();
+                mNextPlayer.setDataSource(getNext().getLocation());
+                mNextPlayer.prepare();
             } catch (IOException e) {
                 // If the song couldn't be loaded in advance, try again when it's about to be played
                 Timber.e(e, "Failed to prepare next MediaPlayer");
@@ -323,17 +316,17 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
     }
 
     @Override
-    public void onCompletion(MediaPlayer mp) {
+    public void onCompletion(Player player) {
         if (mCallback != null) {
             mCallback.onCompletion();
         }
     }
 
     @Override
-    public boolean onError(MediaPlayer mp, int what, int extra) {
+    public boolean onError(Player player, int what, int extra) {
         Timber.e("Error (%d, %d)", what, extra);
 
-        if (mp.equals(mCurrentPlayer)) {
+        if (player.equals(mCurrentPlayer)) {
             mPlayWhenPrepared = false;
         }
 
@@ -346,8 +339,8 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
     }
 
     @Override
-    public void onPrepared(MediaPlayer mp) {
-        if (mp.equals(mCurrentPlayer)) {
+    public void onPrepared(Player player) {
+        if (player.equals(mCurrentPlayer)) {
             Timber.i("Current MediaPlayer is prepared");
 
             mCurrentPlayer.seekTo(mRequestedSeekPosition);
@@ -370,9 +363,7 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
      * @see MediaPlayer#seekTo(int)
      */
     public void seekTo(int mSec) {
-        if (getState() == ManagedMediaPlayer.Status.PREPARED
-                || getState() == ManagedMediaPlayer.Status.STARTED
-                || getState() == ManagedMediaPlayer.Status.PAUSED) {
+        if (getState().canSeek()) {
             Timber.i("Seeking to %d", mSec);
             mCurrentPlayer.seekTo(mSec);
         } else {
@@ -427,11 +418,10 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
     }
 
     /**
-     * @return The current state of the backing {@link ManagedMediaPlayer}
-     * @see ManagedMediaPlayer#getState()
+     * @return The current state of the backing {@link Player}
      */
-    public ManagedMediaPlayer.Status getState() {
-        return mCurrentPlayer.getState();
+    public PlayerState getState() {
+        return mCurrentPlayer.getPlayerState();
     }
 
     /**
@@ -557,8 +547,8 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
      * @see android.os.PowerManager
      */
     public void setWakeMode(int mode) {
-        mCurrentPlayer.setWakeMode(mContext, mode);
-        mNextPlayer.setWakeMode(mContext, mode);
+        mCurrentPlayer.setWakeMode(mode);
+        mNextPlayer.setWakeMode(mode);
     }
 
     /**
@@ -591,6 +581,5 @@ public class QueuedMediaPlayer implements MediaPlayer.OnPreparedListener,
         mNextPlayer.release();
         mCurrentPlayer = null;
         mNextPlayer = null;
-        mContext = null;
     }
 }

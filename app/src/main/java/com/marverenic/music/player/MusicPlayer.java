@@ -767,7 +767,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @return Whether the current song is getting ready to be played
      */
     public boolean isPreparing() {
-        return getState() == ManagedMediaPlayer.Status.PREPARING;
+        return getState() == PlayerState.PREPARING;
     }
 
     /**
@@ -1079,7 +1079,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @return The state that the backing {@link QueuedMediaPlayer is in}
      * @see QueuedMediaPlayer#getState()
      */
-    public ManagedMediaPlayer.Status getState() {
+    public PlayerState getState() {
         return mMediaPlayer.getState();
     }
 
