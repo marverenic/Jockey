@@ -12,6 +12,7 @@ import static com.marverenic.music.player.PlayerState.IDLE;
 import static com.marverenic.music.player.PlayerState.INITIALIZED;
 import static com.marverenic.music.player.PlayerState.PAUSED;
 import static com.marverenic.music.player.PlayerState.PREPARED;
+import static com.marverenic.music.player.PlayerState.PREPARING;
 import static com.marverenic.music.player.PlayerState.STARTED;
 import static com.marverenic.music.player.PlayerState.STOPPED;
 import static org.junit.Assert.assertEquals;
@@ -87,7 +88,7 @@ public class PlayerStateTest {
     @Test
     public void resetIsCorrect() throws Exception {
         assertValidStatesForProperty("reset", PlayerState::canReset,
-                IDLE, INITIALIZED, PREPARED, STARTED, PAUSED, STOPPED, COMPLETED, ERROR);
+                IDLE, INITIALIZED, PREPARED, PREPARING, STARTED, PAUSED, STOPPED, COMPLETED, ERROR);
     }
 
     private interface Property {

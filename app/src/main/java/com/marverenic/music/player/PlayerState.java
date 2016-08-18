@@ -4,7 +4,7 @@ enum PlayerState {
 
     IDLE(true, true, true, false, false, true, false, false, false, true, false, true),
     INITIALIZED(false, true, false, true, false, true, false, false, false, true, false, true),
-    PREPARING(false, false, false, false, false, false, false, false, false, false, false, false),
+    PREPARING(false, false, false, false, false, false, false, false, false, false, false, true),
     PREPARED(false, false, false, false, true, true, true, false, true, true, true, true),
     STARTED(false, false, false, false, true, true, true, true, true, true, true, true),
     PAUSED(false, false, false, false, true, true, true, true, true, true, true, true),
