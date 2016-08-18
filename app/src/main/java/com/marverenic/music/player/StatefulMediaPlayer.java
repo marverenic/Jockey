@@ -15,7 +15,7 @@ public class StatefulMediaPlayer implements Player {
 
     private Context mContext;
     private MediaPlayer mMediaPlayer;
-    private PlayerState mState;
+    private MediaPlayerState mState;
 
     private Set<OnPreparedListener> mPreparedListeners;
     private Set<OnErrorListener> mErrorListeners;
@@ -33,11 +33,11 @@ public class StatefulMediaPlayer implements Player {
         mMediaPlayer.setOnErrorListener((mediaPlayer, what, extra) -> onError(what, extra));
         mMediaPlayer.setOnCompletionListener(mediaPlayer -> onCompletion());
 
-        mState = PlayerState.IDLE;
+        mState = MediaPlayerState.IDLE;
     }
 
     private void onPrepared() {
-        mState = PlayerState.PREPARED;
+        mState = MediaPlayerState.PREPARED;
         for (OnPreparedListener preparedListener : mPreparedListeners) {
             preparedListener.onPrepared(this);
         }
@@ -45,7 +45,7 @@ public class StatefulMediaPlayer implements Player {
 
     private boolean onError(int what, int extra) {
         boolean handled = false;
-        mState = PlayerState.ERROR;
+        mState = MediaPlayerState.ERROR;
 
         for (OnErrorListener errorListener : mErrorListeners) {
             handled |= errorListener.onError(this, what, extra);
@@ -54,7 +54,7 @@ public class StatefulMediaPlayer implements Player {
     }
 
     private void onCompletion() {
-        mState = PlayerState.COMPLETED;
+        mState = MediaPlayerState.COMPLETED;
         for (OnCompletionListener completionListener : mCompletionListeners) {
             completionListener.onCompletion(this);
         }
@@ -65,7 +65,7 @@ public class StatefulMediaPlayer implements Player {
         if (mState.canSetDataSource()) {
             File source = new File(path);
             mMediaPlayer.setDataSource(mContext, Uri.fromFile(source));
-            mState = PlayerState.INITIALIZED;
+            mState = MediaPlayerState.INITIALIZED;
         } else {
             Timber.e("Cannot set data source while in state %s", mState);
         }
@@ -75,7 +75,7 @@ public class StatefulMediaPlayer implements Player {
     public void prepare() {
         if (mState.canPrepare()) {
             mMediaPlayer.prepareAsync();
-            mState = PlayerState.PREPARING;
+            mState = MediaPlayerState.PREPARING;
         } else {
             Timber.e("Cannot prepare while in state %s", mState);
         }
@@ -85,7 +85,7 @@ public class StatefulMediaPlayer implements Player {
     public void reset() {
         if (mState.canReset()) {
             mMediaPlayer.reset();
-            mState = PlayerState.IDLE;
+            mState = MediaPlayerState.IDLE;
         } else {
             Timber.e("Cannot reset while in state %s", mState);
         }
@@ -166,7 +166,7 @@ public class StatefulMediaPlayer implements Player {
     public void start() {
         if (mState.canStart()) {
             mMediaPlayer.start();
-            mState = PlayerState.STARTED;
+            mState = MediaPlayerState.STARTED;
         } else {
             Timber.e("Cannot start while in state %s", mState);
         }
@@ -176,7 +176,7 @@ public class StatefulMediaPlayer implements Player {
     public void pause() {
         if (mState.canPause()) {
             mMediaPlayer.pause();
-            mState = PlayerState.PAUSED;
+            mState = MediaPlayerState.PAUSED;
         } else {
             Timber.e("Cannot pause while in state %s", mState);
         }
@@ -186,7 +186,7 @@ public class StatefulMediaPlayer implements Player {
     public void stop() {
         if (mState.canStop()) {
             mMediaPlayer.stop();
-            mState = PlayerState.STOPPED;
+            mState = MediaPlayerState.STOPPED;
         } else {
             Timber.e("Cannot stop while in state %s", mState);
         }
@@ -220,27 +220,27 @@ public class StatefulMediaPlayer implements Player {
 
     @Override
     public boolean isComplete() {
-        return mState == PlayerState.COMPLETED;
+        return mState == MediaPlayerState.COMPLETED;
     }
 
     @Override
     public boolean isPlaying() {
-        return mState == PlayerState.STARTED;
+        return mState == MediaPlayerState.STARTED;
     }
 
     @Override
     public boolean isPaused() {
-        return mState == PlayerState.PAUSED;
+        return mState == MediaPlayerState.PAUSED;
     }
 
     @Override
     public boolean isPrepared() {
-        return mState == PlayerState.PREPARED;
+        return mState == MediaPlayerState.PREPARED;
     }
 
     @Override
     public boolean isPreparing() {
-        return mState == PlayerState.PREPARING;
+        return mState == MediaPlayerState.PREPARING;
     }
 
     @Override
@@ -248,6 +248,6 @@ public class StatefulMediaPlayer implements Player {
         mContext = null;
         mMediaPlayer.release();
         mMediaPlayer = null;
-        mState = PlayerState.RELEASED;
+        mState = MediaPlayerState.RELEASED;
     }
 }

@@ -6,18 +6,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.marverenic.music.player.PlayerState.COMPLETED;
-import static com.marverenic.music.player.PlayerState.ERROR;
-import static com.marverenic.music.player.PlayerState.IDLE;
-import static com.marverenic.music.player.PlayerState.INITIALIZED;
-import static com.marverenic.music.player.PlayerState.PAUSED;
-import static com.marverenic.music.player.PlayerState.PREPARED;
-import static com.marverenic.music.player.PlayerState.PREPARING;
-import static com.marverenic.music.player.PlayerState.STARTED;
-import static com.marverenic.music.player.PlayerState.STOPPED;
+import static com.marverenic.music.player.MediaPlayerState.COMPLETED;
+import static com.marverenic.music.player.MediaPlayerState.ERROR;
+import static com.marverenic.music.player.MediaPlayerState.IDLE;
+import static com.marverenic.music.player.MediaPlayerState.INITIALIZED;
+import static com.marverenic.music.player.MediaPlayerState.PAUSED;
+import static com.marverenic.music.player.MediaPlayerState.PREPARED;
+import static com.marverenic.music.player.MediaPlayerState.PREPARING;
+import static com.marverenic.music.player.MediaPlayerState.STARTED;
+import static com.marverenic.music.player.MediaPlayerState.STOPPED;
 import static org.junit.Assert.assertEquals;
 
-public class PlayerStateTest {
+public class MediaPlayerStateTest {
 
     @Test
     public void audioSessionIdIsCorrect() throws Exception {
@@ -103,7 +103,7 @@ public class PlayerStateTest {
                     true, property.isValidState(state));
         }
 
-        List<PlayerState> invalidStates = new ArrayList<>(Arrays.asList(PlayerState.values()));
+        List<PlayerState> invalidStates = new ArrayList<>(Arrays.asList(MediaPlayerState.values()));
         invalidStates.removeAll(Arrays.asList(validStates));
 
         for (PlayerState state : invalidStates) {
