@@ -487,12 +487,11 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
 
     /**
      * Sets the volume of both the left and right audio channels
-     * @param leftVolume Left volume multiplier. Must be between {@code 0.0f} and {@code 1.0f}
-     * @param rightVolume Right volume multiplier. Must be between {@code 0.0f} and {@code 1.0f}
+     * @param volume Volume multiplier. Must be between {@code 0.0f} and {@code 1.0f}
      */
-    public void setVolume(float leftVolume, float rightVolume) {
-        mCurrentPlayer.setVolume(leftVolume, rightVolume);
-        mNextPlayer.setVolume(leftVolume, rightVolume);
+    public void setVolume(float volume) {
+        mCurrentPlayer.setVolume(volume);
+        mNextPlayer.setVolume(volume);
     }
 
     /**

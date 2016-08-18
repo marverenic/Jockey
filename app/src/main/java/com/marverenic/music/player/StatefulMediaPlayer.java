@@ -108,9 +108,9 @@ public class StatefulMediaPlayer implements Player {
     }
 
     @Override
-    public void setVolume(float leftVolume, float rightVolume) {
+    public void setVolume(float volume) {
         if (mState.canSetVolume()) {
-            mMediaPlayer.setVolume(leftVolume, rightVolume);
+            mMediaPlayer.setVolume(volume, volume);
         } else {
             Timber.e("Cannot set volume while in state %s", mState);
         }

@@ -10,7 +10,7 @@ public interface Player {
 
     void setWakeMode(int wakeMode);
     void setAudioSessionId(int audioSessionId);
-    void setVolume(float leftVolume, float rightVolume);
+    void setVolume(float volume);
 
     void addOnPreparedListener(OnPreparedListener onPreparedListener);
     void addOnErrorListener(OnErrorListener onErrorListener);

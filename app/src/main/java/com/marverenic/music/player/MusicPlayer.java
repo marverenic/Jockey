@@ -494,11 +494,11 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                 Timber.i("Focus lost transiently. Ducking.");
-                mMediaPlayer.setVolume(DUCK_VOLUME, DUCK_VOLUME);
+                mMediaPlayer.setVolume(DUCK_VOLUME);
                 break;
             case AudioManager.AUDIOFOCUS_GAIN:
                 Timber.i("Regained AudioFocus");
-                mMediaPlayer.setVolume(1f, 1f);
+                mMediaPlayer.setVolume(1f);
                 if (mResumeOnFocusGain) play();
                 mResumeOnFocusGain = false;
                 break;
