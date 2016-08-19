@@ -92,11 +92,6 @@ public class DeferredMediaPlayer implements Player {
     }
 
     @Override
-    public void setAudioSessionId(int audioSessionId) {
-        mPlayer.setAudioSessionId(audioSessionId);
-    }
-
-    @Override
     public void setVolume(float volume) {
         mPlayer.setVolume(volume);
     }

@@ -50,7 +50,6 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
     public QueuedMediaPlayer(Context context) {
         mCurrentPlayer = new DeferredMediaPlayer(context);
         mNextPlayer = new DeferredMediaPlayer(context);
-        mNextPlayer.setAudioSessionId(mCurrentPlayer.getAudioSessionId());
 
         mCurrentPlayer.addOnPreparedListener(this);
         mCurrentPlayer.addOnErrorListener(this);
@@ -472,16 +471,6 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
     public void setVolume(float volume) {
         mCurrentPlayer.setVolume(volume);
         mNextPlayer.setVolume(volume);
-    }
-
-    /**
-     * Sets the AudioSessionId of the backing {@link MediaPlayer} Objects.
-     * @param sessionId The audio session ID
-     * @throws IllegalStateException If one of the {@link MediaPlayer}s is in an invalid state
-     */
-    public void setAudioSessionId(int sessionId) throws IllegalStateException {
-        mCurrentPlayer.setAudioSessionId(sessionId);
-        mNextPlayer.setAudioSessionId(sessionId);
     }
 
     /**

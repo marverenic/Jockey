@@ -121,15 +121,6 @@ public class StatefulMediaPlayer implements Player {
     }
 
     @Override
-    public void setAudioSessionId(int audioSessionId) {
-        if (mState.canSetAudioSessionId()) {
-            mMediaPlayer.setAudioSessionId(audioSessionId);
-        } else {
-            Timber.e("Cannot set audio session id while in state %s", mState);
-        }
-    }
-
-    @Override
     public void setVolume(float volume) {
         if (mState.canSetVolume()) {
             mMediaPlayer.setVolume(volume, volume);
