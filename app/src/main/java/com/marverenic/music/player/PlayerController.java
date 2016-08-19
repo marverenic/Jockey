@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
-import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.os.RemoteException;
 
@@ -609,19 +608,6 @@ public final class PlayerController {
             artwork = Util.fetchFullArt(getNowPlaying());
         }
         return artwork;
-    }
-
-    /**
-     * @return The Audio Session Id from {@link MediaPlayer#getAudioSessionId()}. If an exception
-     *         was raised, 0 is returned.
-     */
-    public static int getAudioSessionId() {
-        try {
-            return playerService.getAudioSessionId();
-        } catch (RemoteException exception) {
-            Timber.e(exception, "Failed to get audio session ID");
-            return 0;
-        }
     }
 
     /**

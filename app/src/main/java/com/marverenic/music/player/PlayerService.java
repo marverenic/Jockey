@@ -533,16 +533,6 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public int getAudioSessionId() throws RemoteException {
-            try {
-                return instance.musicPlayer.getAudioSessionId();
-            } catch (RuntimeException exception) {
-                Timber.e(exception, "Remote call to PlayerService.getAudioSessionId() failed");
-                throw exception;
-            }
-        }
-
-        @Override
         public int getMultiRepeatCount() throws RemoteException {
             try {
                 return instance.musicPlayer.getMultiRepeatCount();

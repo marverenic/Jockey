@@ -30,7 +30,6 @@ interface IPlayerService {
     int getQueueSize();
     int getCurrentPosition();
     int getDuration();
-    int getAudioSessionId();
 
     int getMultiRepeatCount();
     void setMultiRepeatCount(int count);
