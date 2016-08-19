@@ -41,8 +41,6 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
     private PlaybackEventListener mCallback;
     private List<Song> mQueue;
     private int mQueueIndex;
-    private int mRequestedSeekPosition;
-    private boolean mPlayWhenPrepared;
 
     /**
      * Initialize a new QueuedMediaPlayer
@@ -50,8 +48,8 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
      *                for the lifetime of this QueuedMediaPlayer until {@link #release()} is called
      */
     public QueuedMediaPlayer(Context context) {
-        mCurrentPlayer = new StatefulMediaPlayer(context);
-        mNextPlayer = new StatefulMediaPlayer(context);
+        mCurrentPlayer = new DeferredMediaPlayer(context);
+        mNextPlayer = new DeferredMediaPlayer(context);
         mNextPlayer.setAudioSessionId(mCurrentPlayer.getAudioSessionId());
 
         mCurrentPlayer.addOnPreparedListener(this);
@@ -226,11 +224,12 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
         Song curr = getNowPlaying();
 
         if (curr != null) {
-            mPlayWhenPrepared = playWhenReady;
-
             try {
                 mCurrentPlayer.setDataSource(getNowPlaying().getLocation());
                 mCurrentPlayer.prepare();
+                if (playWhenReady) {
+                    mCurrentPlayer.start();
+                }
             } catch (IOException e) {
                 Timber.e(e, "Failed to prepare current player");
                 if (mCallback != null) {
@@ -322,16 +321,11 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
     }
 
     @Override
-    public boolean onError(Player player, int what, int extra) {
-        Timber.e("Error (%d, %d)", what, extra);
-
-        if (player.equals(mCurrentPlayer)) {
-            mPlayWhenPrepared = false;
-        }
-
+    public boolean onError(Player player, Throwable error) {
+        Timber.e(error, "media player error occurred");
         //noinspection SimplifiableIfStatement
         if (mCallback != null) {
-            return mCallback.onError(what, extra);
+            return mCallback.onError(error);
         } else {
             return false;
         }
@@ -341,15 +335,6 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
     public void onPrepared(Player player) {
         if (player.equals(mCurrentPlayer)) {
             Timber.i("Current MediaPlayer is prepared");
-
-            mCurrentPlayer.seekTo(mRequestedSeekPosition);
-            mRequestedSeekPosition = 0;
-
-            if (mPlayWhenPrepared) {
-                Timber.i("This MediaPlayer was waiting to be started. Beginning playback...");
-                mPlayWhenPrepared = false;
-                play();
-            }
             if (mCallback != null) {
                 mCallback.onSongStart();
             }
@@ -361,13 +346,7 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
      * @param mSec The new time position to seek to, in milliseconds since the beginning of the song
      */
     public void seekTo(int mSec) {
-        if (getState().canSeek()) {
-            Timber.i("Seeking to %d", mSec);
-            mCurrentPlayer.seekTo(mSec);
-        } else {
-            Timber.i("Current MediaPlayer isn't ready yet. Deferring seek to %d", mSec);
-            mRequestedSeekPosition = mSec;
-        }
+        mCurrentPlayer.seekTo(mSec);
     }
 
     /**
@@ -543,9 +522,6 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
 
         mQueue = Collections.emptyList();
         mQueueIndex = 0;
-
-        mRequestedSeekPosition = 0;
-        mPlayWhenPrepared = false;
     }
 
     /**

@@ -401,9 +401,9 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 shuffleQueue(queuePosition);
             }
 
+            setBackingQueue(queuePosition);
             mMediaPlayer.seekTo(currentPosition);
 
-            setBackingQueue(queuePosition);
             mArtwork = Util.fetchFullArt(getNowPlaying());
         } catch(FileNotFoundException ignored) {
             Timber.i("State does not exist. Using empty state");
