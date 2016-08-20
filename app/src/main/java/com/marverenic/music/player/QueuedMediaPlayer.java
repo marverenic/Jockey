@@ -446,8 +446,8 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
         void onSongStart();
 
         /**
-         * Invoked when an error has occurred during playback. This may be called with respect
-         * to either the current or next media player.
+         * Invoked when an error has occurred while preparing music or during playback. This may be
+         * called with respect to either the current or next media player.
          * @param error The exception that was raised by one of the internal Players
          * @return {@code true} if the error was handled, {@code false} otherwise
          */
