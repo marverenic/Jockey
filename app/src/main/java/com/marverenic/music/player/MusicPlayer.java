@@ -1127,17 +1127,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         return false;
     }
 
-    @Override
-    public void onSetDataSourceException(IOException e) {
-        Timber.e(e, "Failed to play song %s", getNowPlaying().getLocation());
-
-        postError(mContext.getString(
-                (e instanceof FileNotFoundException)
-                        ? R.string.message_play_error_not_found
-                        : R.string.message_play_error_io_exception,
-                getNowPlaying().getSongName()));
-    }
-
     /**
      * A callback for receiving information about song changes -- useful for integrating
      * {@link MusicPlayer} with other components

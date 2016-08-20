@@ -2,7 +2,6 @@ package com.marverenic.music.player;
 
 import android.content.Context;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -233,7 +232,7 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
                 Timber.e(e, "Failed to prepare current player");
                 if (mCallback != null) {
                     Timber.i("Delegating callback to handle exception");
-                    mCallback.onSetDataSourceException(e);
+                    mCallback.onError(e);
                 } else {
                     Timber.i("Handling error by resetting current player");
                     mCurrentPlayer.reset();
@@ -453,15 +452,6 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
          * @return {@code true} if the error was handled, {@code false} otherwise
          */
         boolean onError(Throwable error);
-
-        /**
-         * Invoked when an {@link IOException} was thrown while calling
-         * {@link MediaPlayer#setDataSource(Context, Uri)}. Implementors should handle this
-         * exception by displaying a brief notification and optionally attempt to resume playback
-         * in a logical manner.
-         * @param exception The exception thrown during the call to {@code setDataSource(...)}
-         */
-        void onSetDataSourceException(IOException exception);
     }
 
     /**
