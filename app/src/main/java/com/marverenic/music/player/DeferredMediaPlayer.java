@@ -3,19 +3,13 @@ package com.marverenic.music.player;
 import android.content.Context;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
-public class DeferredMediaPlayer implements Player {
+public class DeferredMediaPlayer extends BasePlayer {
 
     private Player mPlayer;
 
     private boolean mDeferredStart;
     private int mDeferredSeek;
-
-    private Set<OnPreparedListener> mPreparedListeners;
-    private Set<OnErrorListener> mErrorListeners;
-    private Set<OnCompletionListener> mCompletionListeners;
 
     public DeferredMediaPlayer(Context context) {
         this(new StatefulMediaPlayer(context));
@@ -23,10 +17,6 @@ public class DeferredMediaPlayer implements Player {
 
     public DeferredMediaPlayer(Player player) {
         mPlayer = player;
-
-        mPreparedListeners = new HashSet<>();
-        mErrorListeners = new HashSet<>();
-        mCompletionListeners = new HashSet<>();
 
         mPlayer.addOnPreparedListener(this::onPrepared);
         mPlayer.addOnCompletionListener(this::onCompletion);
@@ -40,29 +30,17 @@ public class DeferredMediaPlayer implements Player {
         }
 
         mPlayer.seekTo(mDeferredSeek);
-
-        for (OnPreparedListener preparedListener : mPreparedListeners) {
-            preparedListener.onPrepared(this);
-        }
+        invokePreparedListeners();
     }
 
     private void onCompletion(Player player) {
         clearDeferredActions();
-
-        for (OnCompletionListener completionListener : mCompletionListeners) {
-            completionListener.onCompletion(this);
-        }
+        invokeCompletionListeners();
     }
 
     private boolean onError(Player player, Throwable error) {
         clearDeferredActions();
-
-        boolean handled = false;
-
-        for (OnErrorListener errorListener : mErrorListeners) {
-            handled |= errorListener.onError(this, error);
-        }
-        return handled;
+        return invokeErrorListeners(error);
     }
 
     private void clearDeferredActions() {
@@ -94,36 +72,6 @@ public class DeferredMediaPlayer implements Player {
     @Override
     public void setVolume(float volume) {
         mPlayer.setVolume(volume);
-    }
-
-    @Override
-    public void addOnPreparedListener(OnPreparedListener onPreparedListener) {
-        mPreparedListeners.add(onPreparedListener);
-    }
-
-    @Override
-    public void addOnErrorListener(OnErrorListener onErrorListener) {
-        mErrorListeners.add(onErrorListener);
-    }
-
-    @Override
-    public void addOnCompletionListener(OnCompletionListener onCompletionListener) {
-        mCompletionListeners.add(onCompletionListener);
-    }
-
-    @Override
-    public void removeOnPreparedListener(OnPreparedListener onPreparedListener) {
-        mPreparedListeners.remove(onPreparedListener);
-    }
-
-    @Override
-    public void removeOnErrorListener(OnErrorListener onErrorListener) {
-        mErrorListeners.remove(onErrorListener);
-    }
-
-    @Override
-    public void removeOnCompletionListener(OnCompletionListener onCompletionListener) {
-        mCompletionListeners.remove(onCompletionListener);
     }
 
     @Override

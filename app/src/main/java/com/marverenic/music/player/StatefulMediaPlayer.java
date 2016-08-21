@@ -7,29 +7,19 @@ import android.net.Uri;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 import timber.log.Timber;
 
-public class StatefulMediaPlayer implements Player {
+public class StatefulMediaPlayer extends BasePlayer {
 
     private Context mContext;
     private MediaPlayer mMediaPlayer;
     private MediaPlayerState mState;
 
-    private Set<OnPreparedListener> mPreparedListeners;
-    private Set<OnErrorListener> mErrorListeners;
-    private Set<OnCompletionListener> mCompletionListeners;
-
     public StatefulMediaPlayer(Context context) {
         mContext = context;
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
-        mPreparedListeners = new HashSet<>();
-        mErrorListeners = new HashSet<>();
-        mCompletionListeners = new HashSet<>();
 
         mMediaPlayer.setOnPreparedListener(mediaPlayer -> onPrepared());
         mMediaPlayer.setOnErrorListener((mediaPlayer, what, extra) -> onError(what, extra));
@@ -40,13 +30,10 @@ public class StatefulMediaPlayer implements Player {
 
     private void onPrepared() {
         mState = MediaPlayerState.PREPARED;
-        for (OnPreparedListener preparedListener : mPreparedListeners) {
-            preparedListener.onPrepared(this);
-        }
+        invokePreparedListeners();
     }
 
     private boolean onError(int what, int extra) {
-        boolean handled = false;
         mState = MediaPlayerState.ERROR;
 
         Throwable error;
@@ -71,17 +58,12 @@ public class StatefulMediaPlayer implements Player {
         }
 
 
-        for (OnErrorListener errorListener : mErrorListeners) {
-            handled |= errorListener.onError(this, error);
-        }
-        return handled;
+        return invokeErrorListeners(error);
     }
 
     private void onCompletion() {
         mState = MediaPlayerState.COMPLETED;
-        for (OnCompletionListener completionListener : mCompletionListeners) {
-            completionListener.onCompletion(this);
-        }
+        invokeCompletionListeners();
     }
 
     @Override
@@ -127,36 +109,6 @@ public class StatefulMediaPlayer implements Player {
         } else {
             Timber.e("Cannot set volume while in state %s", mState);
         }
-    }
-
-    @Override
-    public void addOnPreparedListener(OnPreparedListener onPreparedListener) {
-        mPreparedListeners.add(onPreparedListener);
-    }
-
-    @Override
-    public void addOnErrorListener(OnErrorListener onErrorListener) {
-        mErrorListeners.add(onErrorListener);
-    }
-
-    @Override
-    public void addOnCompletionListener(OnCompletionListener onCompletionListener) {
-        mCompletionListeners.add(onCompletionListener);
-    }
-
-    @Override
-    public void removeOnPreparedListener(OnPreparedListener onPreparedListener) {
-        mPreparedListeners.remove(onPreparedListener);
-    }
-
-    @Override
-    public void removeOnErrorListener(OnErrorListener onErrorListener) {
-        mErrorListeners.remove(onErrorListener);
-    }
-
-    @Override
-    public void removeOnCompletionListener(OnCompletionListener onCompletionListener) {
-        mCompletionListeners.remove(onCompletionListener);
     }
 
     @Override
