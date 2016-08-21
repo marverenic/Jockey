@@ -49,6 +49,8 @@ public class EndoPlayer extends BasePlayer {
         mVolume = 1f;
         mAudioSessionId = AudioTrack.SESSION_ID_NOT_SET;
 
+        AudioTrack.enablePreV21AudioSessionWorkaround = true;
+
         mExoPlayer = ExoPlayer.Factory.newInstance(RENDERER_COUNT);
         mPlayerControl = new PlayerControl(mExoPlayer);
         mAllocator = new DefaultAllocator(BUFFER_SEGMENT_SIZE);
