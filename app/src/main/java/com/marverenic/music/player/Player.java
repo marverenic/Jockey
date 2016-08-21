@@ -14,10 +14,12 @@ public interface Player {
     void addOnPreparedListener(OnPreparedListener onPreparedListener);
     void addOnErrorListener(OnErrorListener onErrorListener);
     void addOnCompletionListener(OnCompletionListener onCompletionListener);
+    void addAudioSessionIdListener(OnAudioSessionIdChangeListener sessionIdListener);
 
     void removeOnPreparedListener(OnPreparedListener onPreparedListener);
     void removeOnErrorListener(OnErrorListener onErrorListener);
     void removeOnCompletionListener(OnCompletionListener onCompletionListener);
+    void removeAudioSessionIdListener(OnAudioSessionIdChangeListener sessionIdListener);
 
     void seekTo(int mSec);
 
@@ -52,6 +54,10 @@ public interface Player {
 
     interface OnCompletionListener {
         void onCompletion(Player player);
+    }
+
+    interface OnAudioSessionIdChangeListener {
+        void onAudioSessionIdChanged(int audioSessionId);
     }
 
 }

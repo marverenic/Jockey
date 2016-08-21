@@ -20,6 +20,7 @@ public class StatefulMediaPlayer extends BasePlayer {
         mContext = context;
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        invokeAudioSessionIdListeners();
 
         mMediaPlayer.setOnPreparedListener(mediaPlayer -> onPrepared());
         mMediaPlayer.setOnErrorListener((mediaPlayer, what, extra) -> onError(what, extra));

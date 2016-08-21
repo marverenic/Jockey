@@ -12,7 +12,7 @@ public abstract class AudioEffectController<Effect extends AudioEffect> {
     private Player mPlayer;
     private int mAudioSessionId;
 
-    private final Player.OnPreparedListener mPreparedListener = p -> onPlayerPrepared();
+    private final Player.OnAudioSessionIdChangeListener mIdListener = this::onNextAudioSessionId;
 
     public AudioEffectController() {
         mAudioSessionId = NO_AUDIO_SESSION_ID;
@@ -38,14 +38,15 @@ public abstract class AudioEffectController<Effect extends AudioEffect> {
         }
 
         mPlayer = player;
-        player.addOnPreparedListener(mPreparedListener);
+        player.addAudioSessionIdListener(mIdListener);
+        onNextAudioSessionId(mPlayer.getAudioSessionId());
     }
 
-    private void onPlayerPrepared() {
-        if (mPlayer.getAudioSessionId() == mAudioSessionId) {
-            if (mPlayer.getAudioSessionId() == NO_AUDIO_SESSION_ID) {
-                Timber.w("The bound Player has no audio session ID. Cannot apply audio effect");
-            }
+    private void onNextAudioSessionId(int audioSessionId) {
+        if (audioSessionId == NO_AUDIO_SESSION_ID) {
+            Timber.w("The bound Player has no audio session ID. Cannot apply audio effect");
+        }
+        if (audioSessionId == mAudioSessionId) {
             return;
         }
 
@@ -56,7 +57,7 @@ public abstract class AudioEffectController<Effect extends AudioEffect> {
     }
 
     public void release() {
-        mPlayer.removeOnPreparedListener(mPreparedListener);
+        mPlayer.removeAudioSessionIdListener(mIdListener);
         mPlayer = null;
 
         onReleaseEffect(mEffect, mAudioSessionId);

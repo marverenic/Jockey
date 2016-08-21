@@ -12,11 +12,13 @@ public abstract class BasePlayer implements Player {
     private Set<OnPreparedListener> mPreparedListeners;
     private Set<OnErrorListener> mErrorListeners;
     private Set<OnCompletionListener> mCompletionListeners;
+    private Set<OnAudioSessionIdChangeListener> mAudioSessionIdListeners;
 
     public BasePlayer() {
         mPreparedListeners = new HashSet<>();
         mErrorListeners = new HashSet<>();
         mCompletionListeners = new HashSet<>();
+        mAudioSessionIdListeners = new HashSet<>();
     }
 
     protected void invokePreparedListeners() {
@@ -41,6 +43,12 @@ public abstract class BasePlayer implements Player {
         }
     }
 
+    protected void invokeAudioSessionIdListeners() {
+        for (OnAudioSessionIdChangeListener listener : mAudioSessionIdListeners) {
+            listener.onAudioSessionIdChanged(getAudioSessionId());
+        }
+    }
+
     @Override
     public void addOnPreparedListener(OnPreparedListener onPreparedListener) {
         mPreparedListeners.add(onPreparedListener);
@@ -57,6 +65,11 @@ public abstract class BasePlayer implements Player {
     }
 
     @Override
+    public void addAudioSessionIdListener(OnAudioSessionIdChangeListener sessionIdListener) {
+        mAudioSessionIdListeners.add(sessionIdListener);
+    }
+
+    @Override
     public void removeOnPreparedListener(OnPreparedListener onPreparedListener) {
         mPreparedListeners.remove(onPreparedListener);
     }
@@ -69,6 +82,11 @@ public abstract class BasePlayer implements Player {
     @Override
     public void removeOnCompletionListener(OnCompletionListener onCompletionListener) {
         mCompletionListeners.remove(onCompletionListener);
+    }
+
+    @Override
+    public void removeAudioSessionIdListener(OnAudioSessionIdChangeListener sessionIdListener) {
+        mAudioSessionIdListeners.remove(sessionIdListener);
     }
 
     @Override
