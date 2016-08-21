@@ -19,6 +19,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.KeyEvent;
 
+import com.google.android.exoplayer.audio.AudioTrack;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.NowPlayingActivity;
@@ -266,6 +267,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         }
 
         setRepeat(preferencesStore.getRepeatMode());
+        initEqualizer(preferencesStore);
     }
 
     /**
@@ -1164,6 +1166,14 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                     getNowPlaying().getSongName()));
         }
         return false;
+    }
+
+    public Equalizer getEqualizer() {
+        if (getAudioSessionId() == AudioTrack.SESSION_ID_NOT_SET) {
+            return null;
+        }
+
+        return new Equalizer(0, getAudioSessionId());
     }
 
     /**

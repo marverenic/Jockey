@@ -3,6 +3,7 @@ package com.marverenic.music;
 
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.data.store.ImmutablePreferenceStore;
+import com.marverenic.music.player.RemoteEqualizer;
 
 interface IPlayerService {
 
@@ -30,6 +31,8 @@ interface IPlayerService {
     int getQueueSize();
     int getCurrentPosition();
     int getDuration();
+
+    RemoteEqualizer getEqualizer();
 
     int getMultiRepeatCount();
     void setMultiRepeatCount(int count);
