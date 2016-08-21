@@ -138,7 +138,10 @@ public class ArtistActivity extends BaseActivity {
                     .compose(bindToLifecycle())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(this::setLastFmReference,
-                            throwable -> Timber.e(throwable, "Failed to get Last.fm artist info"));
+                            throwable -> {
+                                Timber.e(throwable, "Failed to get Last.fm artist info");
+                                hideLoadingSpinner();
+                            });
         }
     }
 
