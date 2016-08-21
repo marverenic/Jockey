@@ -31,6 +31,8 @@ public interface Player {
 
     PlayerState getPlayerState();
 
+    void setAudioEffects(AudioEffectController<?>... effects);
+
     boolean isComplete();
     boolean isPlaying();
     boolean isPaused();

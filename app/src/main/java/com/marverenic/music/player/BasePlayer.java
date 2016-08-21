@@ -1,9 +1,13 @@
 package com.marverenic.music.player;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 public abstract class BasePlayer implements Player {
+
+    private Set<AudioEffectController<?>> mEffects;
 
     private Set<OnPreparedListener> mPreparedListeners;
     private Set<OnErrorListener> mErrorListeners;
@@ -65,5 +69,27 @@ public abstract class BasePlayer implements Player {
     @Override
     public void removeOnCompletionListener(OnCompletionListener onCompletionListener) {
         mCompletionListeners.remove(onCompletionListener);
+    }
+
+    @Override
+    public void setAudioEffects(AudioEffectController<?>[] effects) {
+        if (mEffects != null) {
+            for (AudioEffectController<?> effect : mEffects) {
+                effect.release();
+            }
+        }
+
+        mEffects = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(effects)));
+
+        for (AudioEffectController<?> effect : mEffects) {
+            effect.setPlayer(this);
+        }
+    }
+
+    @Override
+    public void release() {
+        for (AudioEffectController<?> effect : mEffects) {
+            effect.release();
+        }
     }
 }

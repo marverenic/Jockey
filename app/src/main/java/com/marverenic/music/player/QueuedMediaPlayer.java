@@ -454,6 +454,20 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
         boolean onError(Throwable error);
     }
 
+    public void setAudioEffects(AudioEffectController.Generator... effects) {
+        // Make copies of both effects to avoid conflicts
+        AudioEffectController<?>[] effects1 = new AudioEffectController<?>[effects.length];
+        AudioEffectController<?>[] effects2 = new AudioEffectController<?>[effects.length];
+
+        for (int i = 0; i < effects.length; i++) {
+            effects1[i] = effects[i].generate();
+            effects2[i] = effects[i].generate();
+        }
+
+        mCurrentPlayer.setAudioEffects(effects1);
+        mNextPlayer.setAudioEffects(effects2);
+    }
+
     /**
      * Sets the volume of both the left and right audio channels
      * @param volume Volume multiplier. Must be between {@code 0.0f} and {@code 1.0f}

@@ -158,7 +158,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     private static final float DUCK_VOLUME = 0.5f;
 
     private QueuedMediaPlayer mMediaPlayer;
-    private Equalizer mEqualizer;
     private Context mContext;
     private Handler mHandler;
     private MediaSessionCompat mMediaSession;
@@ -308,23 +307,60 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         Timber.i("Initializing equalizer");
         Equalizer.Settings eqSettings = preferencesStore.getEqualizerSettings();
 
-        mEqualizer = new Equalizer(0, mMediaPlayer.getAudioSessionId());
+        AudioEffectController.Generator<Equalizer> equalizerGenerator;
+        if (preferencesStore.getEqualizerEnabled()) {
+            equalizerGenerator = new AudioEffectController.Generator<Equalizer>() {
+                @Override
+                protected Equalizer onInitializeEffect(int audioSessionId) {
+                    return setupCustomEqualizer(eqSettings, audioSessionId);
+                }
+            };
+        } else {
+            equalizerGenerator = new AudioEffectController.Generator<Equalizer>() {
+                @Override
+                protected Equalizer onInitializeEffect(int audioSessionId) {
+                    return setupSystemEqualizer(audioSessionId);
+                }
+
+                @Override
+                protected void onReleaseEffect(Equalizer effect, int audioSessionId) {
+                    releaseSystemEqualizer(audioSessionId);
+                }
+            };
+        }
+
+        mMediaPlayer.setAudioEffects(equalizerGenerator);
+    }
+
+    private Equalizer setupCustomEqualizer(Equalizer.Settings eqSettings, int audioSessionId) {
+        Equalizer equalizer = new Equalizer(0, audioSessionId);
+
         if (eqSettings != null) {
             try {
-                mEqualizer.setProperties(eqSettings);
+                equalizer.setProperties(eqSettings);
             } catch (IllegalArgumentException | UnsupportedOperationException e) {
                 Timber.e(e, "Failed to load equalizer settings %s", eqSettings);
             }
         }
-        mEqualizer.setEnabled(preferencesStore.getEqualizerEnabled());
+        equalizer.setEnabled(true);
 
-        // If the built in equalizer is off, bind to the system equalizer if one is available
-        if (!preferencesStore.getEqualizerEnabled()) {
-            final Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
-            intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
-            intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, mContext.getPackageName());
-            mContext.sendBroadcast(intent);
-        }
+        return equalizer;
+    }
+
+    private Equalizer setupSystemEqualizer(int audioSessionId) {
+        Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
+        intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, audioSessionId);
+        intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, mContext.getPackageName());
+        mContext.sendBroadcast(intent);
+
+        return null;
+    }
+
+    private void releaseSystemEqualizer(int audioSessionId) {
+        Intent intent = new Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION);
+        intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, audioSessionId);
+        intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, mContext.getPackageName());
+        mContext.sendBroadcast(intent);
     }
 
     /**
@@ -1051,9 +1087,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         // Make sure to disable the sleep timer to purge any delayed runnables in the message queue
         startSleepTimer(0);
 
-        if (mEqualizer != null) {
-            mEqualizer.release();
-        }
         mFocused = false;
         mCallback = null;
         mMediaPlayer.stop();
