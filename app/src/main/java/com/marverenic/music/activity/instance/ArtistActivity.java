@@ -155,18 +155,20 @@ public class ArtistActivity extends BaseActivity {
         mLfmReference = lfmArtist;
         mRelatedArtists = new ArrayList<>();
 
-        for (LfmArtist relatedArtist : lfmArtist.getSimilarArtists()) {
-            mMusicStore.findArtistByName(relatedArtist.getName())
-                    .subscribe(
-                            found -> {
-                                if (found != null) {
-                                    mRelatedArtists.add(relatedArtist);
-                                    setupAdapter();
-                                }
-                            },
-                            throwable -> {
-                                Timber.e(throwable, "Failed to find artist");
-                            });
+        if (lfmArtist.getSimilarArtists() != null) {
+            for (LfmArtist relatedArtist : lfmArtist.getSimilarArtists()) {
+                mMusicStore.findArtistByName(relatedArtist.getName())
+                        .subscribe(
+                                found -> {
+                                    if (found != null) {
+                                        mRelatedArtists.add(relatedArtist);
+                                        setupAdapter();
+                                    }
+                                },
+                                throwable -> {
+                                    Timber.e(throwable, "Failed to find artist");
+                                });
+            }
         }
         setupAdapter();
 
