@@ -47,6 +47,8 @@ import timber.log.Timber;
 
 public class SearchActivity extends BaseActivity implements SearchView.OnQueryTextListener {
 
+    private static final String KEY_SAVED_QUERY = "SearchActivity.LAST_QUERY";
+
     public static Intent newIntent(Context context) {
         return new Intent(context, SearchActivity.class);
     }
@@ -70,9 +72,16 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instance);
-
         JockeyApplication.getComponent(this).inject(this);
-        mQueryObservable = BehaviorSubject.create("");
+
+        String lastQuery;
+        if (savedInstanceState != null) {
+            lastQuery = savedInstanceState.getString(KEY_SAVED_QUERY);
+        } else {
+            lastQuery = "";
+        }
+
+        mQueryObservable = BehaviorSubject.create(lastQuery);
 
         // Set up the RecyclerView's adapter
         mRecyclerView = (RecyclerView) findViewById(R.id.list);
@@ -129,6 +138,12 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 });
 
         handleIntent(getIntent());
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(KEY_SAVED_QUERY, mQueryObservable.getValue());
     }
 
     private void initAdapter() {
