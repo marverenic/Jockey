@@ -138,7 +138,10 @@ public class ArtistActivity extends BaseActivity {
                     .compose(bindToLifecycle())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(this::setLastFmReference,
-                            throwable -> Timber.e(throwable, "Failed to get Last.fm artist info"));
+                            throwable -> {
+                                Timber.e(throwable, "Failed to get Last.fm artist info");
+                                hideLoadingSpinner();
+                            });
         }
     }
 
@@ -152,6 +155,11 @@ public class ArtistActivity extends BaseActivity {
     }
 
     private void setLastFmReference(LfmArtist lfmArtist) {
+        if (lfmArtist == null) {
+            hideLoadingSpinner();
+            return;
+        }
+
         mLfmReference = lfmArtist;
         mRelatedArtists = new ArrayList<>();
 
@@ -277,10 +285,7 @@ public class ArtistActivity extends BaseActivity {
             return;
         }
 
-        if (mLoadingSection != null) {
-            mAdapter.removeSection(0);
-            mLoadingSection = null;
-        }
+        hideLoadingSpinner();
 
         if (mBioSection == null) {
             mBioSection = new ArtistBioSingleton(mLfmReference, !mRelatedArtists.isEmpty());
@@ -294,6 +299,13 @@ public class ArtistActivity extends BaseActivity {
                     new GridSpacingDecoration(
                             (int) getResources().getDimension(R.dimen.card_margin),
                             mColumnCount, mRelatedArtistSection.getTypeId()));
+        }
+    }
+
+    private void hideLoadingSpinner() {
+        if (mLoadingSection != null) {
+            mAdapter.removeSection(0);
+            mLoadingSection = null;
         }
     }
 
