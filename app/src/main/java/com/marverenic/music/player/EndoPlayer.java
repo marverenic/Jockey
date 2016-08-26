@@ -1,7 +1,9 @@
 package com.marverenic.music.player;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 
 import com.google.android.exoplayer.ExoPlaybackException;
 import com.google.android.exoplayer.ExoPlayer;
@@ -23,6 +25,7 @@ import java.io.IOException;
 /**
  * A wrapper class for ExoPlayer that implements the Player interface
  */
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class EndoPlayer extends BasePlayer {
 
     private static final int RENDERER_COUNT = 1;

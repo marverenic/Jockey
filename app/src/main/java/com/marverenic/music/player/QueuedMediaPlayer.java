@@ -2,6 +2,7 @@ package com.marverenic.music.player;
 
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -47,8 +48,13 @@ public class QueuedMediaPlayer implements Player.OnPreparedListener,
      *                for the lifetime of this QueuedMediaPlayer until {@link #release()} is called
      */
     public QueuedMediaPlayer(Context context) {
-        mCurrentPlayer = new EndoPlayer(context);
-        mNextPlayer = new EndoPlayer(context);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+            mCurrentPlayer = new DeferredMediaPlayer(context);
+            mNextPlayer = new DeferredMediaPlayer(context);
+        } else {
+            mCurrentPlayer = new EndoPlayer(context);
+            mNextPlayer = new EndoPlayer(context);
+        }
 
         mCurrentPlayer.addOnPreparedListener(this);
         mCurrentPlayer.addOnErrorListener(this);
