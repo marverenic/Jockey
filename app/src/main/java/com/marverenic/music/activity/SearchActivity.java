@@ -47,6 +47,8 @@ import timber.log.Timber;
 
 public class SearchActivity extends BaseActivity implements SearchView.OnQueryTextListener {
 
+    private static final String KEY_SAVED_QUERY = "SearchActivity.LAST_QUERY";
+
     public static Intent newIntent(Context context) {
         return new Intent(context, SearchActivity.class);
     }
@@ -54,7 +56,6 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
     @Inject MusicStore mMusicStore;
     @Inject PlaylistStore mPlaylistStore;
 
-    private static String lastQuery = null;
     private SearchView searchView;
     private BehaviorSubject<String> mQueryObservable;
 
@@ -71,9 +72,16 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instance);
-
         JockeyApplication.getComponent(this).inject(this);
-        mQueryObservable = BehaviorSubject.create("");
+
+        String lastQuery;
+        if (savedInstanceState != null) {
+            lastQuery = savedInstanceState.getString(KEY_SAVED_QUERY);
+        } else {
+            lastQuery = "";
+        }
+
+        mQueryObservable = BehaviorSubject.create(lastQuery);
 
         // Set up the RecyclerView's adapter
         mRecyclerView = (RecyclerView) findViewById(R.id.list);
@@ -132,6 +140,12 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         handleIntent(getIntent());
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(KEY_SAVED_QUERY, mQueryObservable.getValue());
+    }
+
     private void initAdapter() {
         mPlaylistSection = new PlaylistSection(Collections.emptyList());
         mSongSection = new SongSection(this, Collections.emptyList());
@@ -154,7 +168,8 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         mAdapter.setEmptyState(new BasicEmptyState() {
             @Override
             public String getMessage() {
-                return (lastQuery == null || lastQuery.isEmpty())
+                String query = mQueryObservable.getValue();
+                return (query == null || query.isEmpty())
                         ? ""
                         : getString(R.string.empty_search);
             }
@@ -188,12 +203,6 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
     }
 
     @Override
-    public void onBackPressed() {
-        lastQuery = null;
-        super.onBackPressed();
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_search, menu);
 
@@ -202,8 +211,9 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         searchView.setOnQueryTextListener(this);
         searchView.setIconified(false);
 
-        if (lastQuery != null && !lastQuery.isEmpty()) {
-            searchView.setQuery(lastQuery, true);
+        String query = mQueryObservable.getValue();
+        if (query != null && !query.isEmpty()) {
+            searchView.setQuery(query, true);
         } else {
             searchView.requestFocus();
         }
@@ -214,7 +224,6 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                lastQuery = null;
                 navigateHome();
                 return true;
             case R.id.search:
@@ -288,15 +297,16 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 // Handle play from search actions
                 search(intent.getStringExtra(SearchManager.QUERY));
                 String focus = intent.getStringExtra(MediaStore.EXTRA_MEDIA_FOCUS);
+                String query = mQueryObservable.getValue();
 
                 if (MediaStore.Audio.Playlists.ENTRY_CONTENT_TYPE.equals(focus)) {
-                    playPlaylistResults();
+                    playPlaylistResults(query);
                 } else if (MediaStore.Audio.Artists.ENTRY_CONTENT_TYPE.equals(focus)) {
                     playArtistResults();
                 } else if (MediaStore.Audio.Albums.ENTRY_CONTENT_TYPE.equals(focus)) {
-                    playAlbumResults();
+                    playAlbumResults(query);
                 } else if (focus.equals(MediaStore.Audio.Genres.ENTRY_CONTENT_TYPE)) {
-                    playGenreResults();
+                    playGenreResults(query);
                 } else {
                     playSongResults();
                 }
@@ -311,7 +321,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         }
     }
 
-    private void playPlaylistResults() {
+    private void playPlaylistResults(String query) {
         if (getPlaylistResults().isEmpty()) {
             return;
         }
@@ -320,7 +330,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         // to the first result
         Playlist playlist = getPlaylistResults().get(0);
         for (Playlist p : getPlaylistResults()) {
-            if (p.getPlaylistName().equalsIgnoreCase(lastQuery)) {
+            if (p.getPlaylistName().equalsIgnoreCase(query)) {
                 playlist = p;
                 break;
             }
@@ -361,7 +371,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 });
     }
 
-    private void playAlbumResults() {
+    private void playAlbumResults(String query) {
         if (getAlbumResults().isEmpty()) {
             return;
         }
@@ -370,7 +380,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         // If we find one then use it, otherwise fallback to the first result
         Album album = getAlbumResults().get(0);
         for (Album a : getAlbumResults()) {
-            if (a.getAlbumName().equalsIgnoreCase(lastQuery)) {
+            if (a.getAlbumName().equalsIgnoreCase(query)) {
                 album = a;
                 break;
             }
@@ -385,7 +395,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 });
     }
 
-    private void playGenreResults() {
+    private void playGenreResults(String query) {
         if (!getGenreResults().isEmpty()) {
             return;
         }
@@ -393,7 +403,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         // If we find one then use it, otherwise fallback to the first result
         Genre genre = getGenreResults().get(0);
         for (Genre g : getGenreResults()) {
-            if (g.getGenreName().equalsIgnoreCase(lastQuery)) {
+            if (g.getGenreName().equalsIgnoreCase(query)) {
                 genre = g;
                 break;
             }

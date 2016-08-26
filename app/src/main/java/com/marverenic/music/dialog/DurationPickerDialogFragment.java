@@ -48,6 +48,12 @@ public class DurationPickerDialogFragment extends DialogFragment
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_SAVED_VAL, mOffsetValue);
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
