@@ -237,4 +237,13 @@ public class Song implements Parcelable, Comparable<Song> {
 
     public static final Comparator<Song> YEAR_COMPARATOR = (s1, s2) ->
             s2.getYear() - s1.getYear();
+
+    public static final Comparator<Song> TRACK_COMPARATOR = (s1, s2) -> {
+        int diff = s1.getTrackNumber() - s2.getTrackNumber();
+        if (diff == 0) {
+            // Sort by name when there's a conflict
+            diff = s1.compareTo(s2);
+        }
+        return diff;
+    };
 }
