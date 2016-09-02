@@ -64,50 +64,64 @@ public class QueueSongViewModel extends SongViewModel {
         return menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.menu_item_navigate_to_artist:
-                    mMusicStore.findArtistById(getReference().getArtistId()).subscribe(
-                            artist -> {
-                                mContext.startActivity(ArtistActivity.newIntent(mContext, artist));
-                            }, throwable -> {
-                                Timber.e(throwable, "Failed to find artist");
-                            });
-
+                    navigateToArtist();
                     return true;
                 case R.id.menu_item_navigate_to_album:
-                    mMusicStore.findAlbumById(getReference().getAlbumId()).subscribe(
-                            album -> {
-                                mContext.startActivity(AlbumActivity.newIntent(mContext, album));
-                            }, throwable -> {
-                                Timber.e(throwable, "Failed to find album");
-                            });
-
+                    navigateToAlbum();
                     return true;
                 case R.id.menu_item_add_to_playlist:
-                    new AppendPlaylistDialogFragment.Builder(mContext, mFragmentManager)
-                            .setTitle(mContext.getResources().getString(
-                                    R.string.header_add_song_name_to_playlist, getReference()))
-                            .setSongs(getSongs())
-                            .showSnackbarIn(R.id.imageArtwork)
-                            .show(TAG_PLAYLIST_DIALOG);
+                    addToPlaylist();
                     return true;
                 case R.id.menu_item_remove:
-                    int queuePosition = PlayerController.getQueuePosition();
-                    int itemPosition = getIndex();
-
-                    getSongs().remove(itemPosition);
-
-                    PlayerController.editQueue(getSongs(),
-                            (queuePosition > itemPosition)
-                                    ? queuePosition - 1
-                                    : queuePosition);
-
-                    if (queuePosition == itemPosition) {
-                        PlayerController.begin();
-                    }
-
-                    mRemoveListener.onRemove();
+                    removeFromQueue();
                     return true;
             }
             return false;
         };
+    }
+
+    private void navigateToArtist() {
+        mMusicStore.findArtistById(getReference().getArtistId()).subscribe(
+                artist -> {
+                    mContext.startActivity(ArtistActivity.newIntent(mContext, artist));
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to find artist");
+                });
+    }
+
+    private void navigateToAlbum() {
+        mMusicStore.findAlbumById(getReference().getAlbumId()).subscribe(
+                album -> {
+                    mContext.startActivity(AlbumActivity.newIntent(mContext, album));
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to find album");
+                });
+    }
+
+    private void addToPlaylist() {
+        new AppendPlaylistDialogFragment.Builder(mContext, mFragmentManager)
+                .setTitle(mContext.getResources().getString(
+                        R.string.header_add_song_name_to_playlist, getReference()))
+                .setSongs(getSongs())
+                .showSnackbarIn(R.id.imageArtwork)
+                .show(TAG_PLAYLIST_DIALOG);
+    }
+
+    private void removeFromQueue() {
+        int queuePosition = PlayerController.getQueuePosition();
+        int itemPosition = getIndex();
+
+        getSongs().remove(itemPosition);
+
+        PlayerController.editQueue(getSongs(),
+                (queuePosition > itemPosition)
+                        ? queuePosition - 1
+                        : queuePosition);
+
+        if (queuePosition == itemPosition) {
+            PlayerController.begin();
+        }
+
+        mRemoveListener.onRemove();
     }
 }
