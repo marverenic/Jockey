@@ -1,6 +1,7 @@
 package com.marverenic.music.viewmodel;
 
 import android.content.Context;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
@@ -16,6 +17,8 @@ import com.marverenic.music.player.PlayerController;
 import java.util.List;
 
 import timber.log.Timber;
+
+import static android.support.design.widget.Snackbar.LENGTH_LONG;
 
 public class QueueSongViewModel extends SongViewModel {
 
@@ -73,7 +76,7 @@ public class QueueSongViewModel extends SongViewModel {
                     addToPlaylist();
                     return true;
                 case R.id.menu_item_remove:
-                    removeFromQueue();
+                    removeFromQueue(view);
                     return true;
             }
             return false;
@@ -107,7 +110,7 @@ public class QueueSongViewModel extends SongViewModel {
                 .show(TAG_PLAYLIST_DIALOG);
     }
 
-    private void removeFromQueue() {
+    private void removeFromQueue(View snackbarContainer) {
         int queuePosition = PlayerController.getQueuePosition();
         int itemPosition = getIndex();
 
@@ -123,5 +126,9 @@ public class QueueSongViewModel extends SongViewModel {
         }
 
         mRemoveListener.onRemove();
+
+        Song removed = getReference();
+        String message = mContext.getString(R.string.message_removed_song, removed.getSongName());
+        Snackbar.make(snackbarContainer, message, LENGTH_LONG).show();
     }
 }
