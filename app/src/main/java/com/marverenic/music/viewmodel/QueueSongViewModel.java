@@ -111,17 +111,20 @@ public class QueueSongViewModel extends SongViewModel {
     }
 
     private void removeFromQueue(View snackbarContainer) {
-        int queuePosition = PlayerController.getQueuePosition();
+        int oldQueuePosition = PlayerController.getQueuePosition();
         int itemPosition = getIndex();
 
         getSongs().remove(itemPosition);
 
-        PlayerController.editQueue(getSongs(),
-                (queuePosition > itemPosition)
-                        ? queuePosition - 1
-                        : queuePosition);
+        int newQueuePosition = (oldQueuePosition > itemPosition)
+                ? oldQueuePosition - 1
+                : oldQueuePosition;
 
-        if (queuePosition == itemPosition) {
+        newQueuePosition = Math.min(newQueuePosition, getSongs().size() - 1);
+
+        PlayerController.editQueue(getSongs(), newQueuePosition);
+
+        if (oldQueuePosition == itemPosition) {
             PlayerController.begin();
         }
 
@@ -133,8 +136,8 @@ public class QueueSongViewModel extends SongViewModel {
         Snackbar.make(snackbarContainer, message, LENGTH_LONG)
                 .setAction(R.string.action_undo, v -> {
                     getSongs().add(itemPosition, removed);
-                    PlayerController.editQueue(getSongs(), queuePosition);
-                    if (queuePosition == itemPosition) {
+                    PlayerController.editQueue(getSongs(), oldQueuePosition);
+                    if (oldQueuePosition == itemPosition) {
                         PlayerController.begin();
                     }
                     mRemoveListener.onRemove();
