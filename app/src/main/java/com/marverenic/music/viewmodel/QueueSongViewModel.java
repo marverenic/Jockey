@@ -129,6 +129,16 @@ public class QueueSongViewModel extends SongViewModel {
 
         Song removed = getReference();
         String message = mContext.getString(R.string.message_removed_song, removed.getSongName());
-        Snackbar.make(snackbarContainer, message, LENGTH_LONG).show();
+
+        Snackbar.make(snackbarContainer, message, LENGTH_LONG)
+                .setAction(R.string.action_undo, v -> {
+                    getSongs().add(itemPosition, removed);
+                    PlayerController.editQueue(getSongs(), queuePosition);
+                    if (queuePosition == itemPosition) {
+                        PlayerController.begin();
+                    }
+                    mRemoveListener.onRemove();
+                })
+                .show();
     }
 }
