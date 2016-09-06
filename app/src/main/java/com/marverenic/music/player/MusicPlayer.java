@@ -604,12 +604,12 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         List<Song> unshuffled = new ArrayList<>(mQueue);
         List<Song> songs = new ArrayList<>(mQueueShuffled);
 
-        // TODO make this not O(n^2)
-        for (Iterator<Song> it = unshuffled.iterator(); it.hasNext(); ) {
-            Song song = it.next();
+        Iterator<Song> unshuffledIterator = unshuffled.iterator();
+        while (unshuffledIterator.hasNext()) {
+            Song song = unshuffledIterator.next();
 
             if (!songs.remove(song)) {
-                it.remove();
+                unshuffledIterator.remove();
             }
         }
 
