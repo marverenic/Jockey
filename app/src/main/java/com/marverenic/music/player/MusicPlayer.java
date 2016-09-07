@@ -37,6 +37,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -599,6 +600,22 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         }
     }
 
+    private void unshuffleQueue() {
+        List<Song> unshuffled = new ArrayList<>(mQueue);
+        List<Song> songs = new ArrayList<>(mQueueShuffled);
+
+        Iterator<Song> unshuffledIterator = unshuffled.iterator();
+        while (unshuffledIterator.hasNext()) {
+            Song song = unshuffledIterator.next();
+
+            if (!songs.remove(song)) {
+                unshuffledIterator.remove();
+            }
+        }
+
+        mQueue = unshuffled;
+    }
+
     /**
      * Prepares the backing {@link QueuedMediaPlayer} for playback
      * @param playWhenReady Whether playback will begin when the current song has been prepared
@@ -969,7 +986,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             mMediaPlayer.setQueue(mQueueShuffled, 0);
         } else {
             Timber.i("Disabling shuffle...");
-            int position = mQueue.indexOf(mQueueShuffled.get(mMediaPlayer.getQueueIndex()));
+            unshuffleQueue();
+            int position = mQueue.indexOf(getNowPlaying());
             mMediaPlayer.setQueue(mQueue, position);
         }
         mShuffle = shuffle;
