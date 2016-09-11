@@ -15,6 +15,8 @@
     <string name="error_no_permission_dirs">To exclude folders, grant Jockey access to storage</string>
     <string name="empty">Couldn\'t find any music here</string>
     <string name="empty_detail">You can sync songs from your computer or download them from the Internet</string>
+    <string name="empty_genres">Couldn\'t find any genres</string>
+    <string name="empty_genres_detail">Make sure your music is correctly tagged</string>
     <string name="empty_playlists">You don\'t have any playlists</string>
     <string name="empty_playlists_detail">You can make a new one by pressing the &#8220;+&#8221; button</string>
     <string name="empty_playlist">This playlist is empty</string>
