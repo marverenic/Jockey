@@ -32,11 +32,25 @@ public class GenreFragment extends BaseFragment {
     private HeterogeneousAdapter mAdapter;
     private GenreSection mGenreSection;
     private List<Genre> mGenres;
+    private Boolean mLibraryHasSongs;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         JockeyApplication.getComponent(this).inject(this);
+
+        mMusicStore.getSongs()
+                .compose(bindToLifecycle())
+                .map(List::isEmpty)
+                .subscribe(
+                        isLibraryEmpty -> {
+                            mLibraryHasSongs = !isLibraryEmpty;
+                            setupAdapter();
+                        }, throwable -> {
+                            Timber.e(throwable, "Failed to check if MusicStore has songs");
+                        }
+                );
+
         mMusicStore.getGenres()
                 .compose(bindToLifecycle())
                 .subscribe(
@@ -82,7 +96,7 @@ public class GenreFragment extends BaseFragment {
     }
 
     private void setupAdapter() {
-        if (mRecyclerView == null || mGenres == null) {
+        if (mRecyclerView == null || mGenres == null || mLibraryHasSongs == null) {
             return;
         }
 
@@ -96,7 +110,26 @@ public class GenreFragment extends BaseFragment {
 
             mGenreSection = new GenreSection(this, mGenres);
             mAdapter.addSection(mGenreSection);
-            mAdapter.setEmptyState(new LibraryEmptyState(getActivity()));
+
+            mAdapter.setEmptyState(new LibraryEmptyState(getActivity()) {
+                @Override
+                public String getEmptyMessage() {
+                    if (mLibraryHasSongs) {
+                        return getString(R.string.empty_genres);
+                    } else {
+                        return super.getEmptyMessage();
+                    }
+                }
+
+                @Override
+                public String getEmptyMessageDetail() {
+                    if (mLibraryHasSongs) {
+                        return getString(R.string.empty_genres_detail);
+                    } else {
+                        return super.getEmptyMessageDetail();
+                    }
+                }
+            });
         }
     }
 }
