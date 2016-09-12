@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,12 +50,16 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
     @Inject PlaylistStore mPlaylistStore;
     @Inject PreferencesStore mPrefStore;
 
+    private SwipeRefreshLayout mRefreshLayout;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_library);
 
         JockeyApplication.getComponent(this).inject(this);
+
+        initRefreshLayout();
 
         // Setup the FAB
         FABMenu fab = (FABMenu) findViewById(R.id.fab);
@@ -81,6 +86,26 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
             getSupportActionBar().setHomeButtonEnabled(false);
             getSupportActionBar().setDisplayShowHomeEnabled(false);
         }
+    }
+
+    private void initRefreshLayout() {
+        mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.library_refresh_layout);
+        mRefreshLayout.setSize(SwipeRefreshLayout.DEFAULT);
+        mRefreshLayout.setColorSchemeColors(mThemeStore.getPrimaryColor(),
+                mThemeStore.getAccentColor());
+        mRefreshLayout.setEnabled(false);
+
+        Observable.combineLatest(mMusicStore.isLoading(), mPlaylistStore.isLoading(),
+                (musicLoading, playlistLoading) -> {
+                    return musicLoading || playlistLoading;
+                })
+                .subscribe(
+                        refreshing -> {
+                            mRefreshLayout.setEnabled(refreshing);
+                            mRefreshLayout.setRefreshing(refreshing);
+                        }, throwable -> {
+                            Timber.e(throwable, "Failed to update refresh indicator");
+                        });
     }
 
     @TargetApi(Build.VERSION_CODES.M)
