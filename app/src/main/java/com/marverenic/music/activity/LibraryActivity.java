@@ -118,7 +118,8 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
     }
 
     private void loadAllData() {
-        Observable.combineLatest(mPlaylistStore.getPlaylists(), mMusicStore.getSongs(), mMusicStore.getArtists(), mMusicStore.getAlbums(), mMusicStore.getGenres(),
+        Observable.combineLatest(mPlaylistStore.getPlaylists(), mMusicStore.getSongs(),
+                mMusicStore.getArtists(), mMusicStore.getAlbums(), mMusicStore.getGenres(),
                 (Func5<List<Playlist>, List<Song>, List<Artist>, List<Album>, List<Genre>, Void>)
                         (playlists, songs, artists, alba, genres) -> null)
                 .subscribe();
