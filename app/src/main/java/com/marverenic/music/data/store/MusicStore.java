@@ -13,6 +13,8 @@ public interface MusicStore {
 
     Observable<Boolean> refresh();
 
+    Observable<Boolean> isLoading();
+
     Observable<List<Song>> getSongs();
 
     Observable<List<Album>> getAlbums();

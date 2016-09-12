@@ -38,16 +38,25 @@ public class LocalPlaylistStore implements PlaylistStore {
     private BehaviorSubject<List<Playlist>> mPlaylists;
     private Map<AutoPlaylist, BehaviorSubject<List<Song>>> mAutoPlaylistSessionContents;
 
+    private BehaviorSubject<Boolean> mLoadingState;
+
     public LocalPlaylistStore(Context context, MusicStore musicStore,
                               PlayCountStore playCountStore) {
         mContext = context;
         mMusicStore = musicStore;
         mPlayCountStore = playCountStore;
         mAutoPlaylistSessionContents = new ArrayMap<>();
+        mLoadingState = BehaviorSubject.create(false);
     }
 
     @Override
     public Observable<Boolean> refresh() {
+        if (mPlaylists == null) {
+            return Observable.just(true);
+        }
+
+        mLoadingState.onNext(true);
+
         return MediaStoreUtil.promptPermission(mContext)
                 .observeOn(Schedulers.io())
                 .map(granted -> {
@@ -55,15 +64,22 @@ public class LocalPlaylistStore implements PlaylistStore {
                         mPlaylists.onNext(getAllPlaylists());
                         mAutoPlaylistSessionContents.clear();
                     }
+                    mLoadingState.onNext(false);
                     return granted;
                 })
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
     @Override
+    public Observable<Boolean> isLoading() {
+        return mLoadingState.asObservable().observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
     public Observable<List<Playlist>> getPlaylists() {
         if (mPlaylists == null) {
             mPlaylists = BehaviorSubject.create();
+            mLoadingState.onNext(true);
 
             MediaStoreUtil.getPermission(mContext)
                     .observeOn(Schedulers.io())
@@ -73,6 +89,7 @@ public class LocalPlaylistStore implements PlaylistStore {
                         } else {
                             mPlaylists.onNext(Collections.emptyList());
                         }
+                        mLoadingState.onNext(false);
                     }, throwable -> {
                         Timber.e(throwable, "Failed to query MediaStore for playlists");
                     });

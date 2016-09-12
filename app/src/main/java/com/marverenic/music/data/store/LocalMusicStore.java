@@ -24,6 +24,11 @@ public class LocalMusicStore implements MusicStore {
     private Context mContext;
     private PreferencesStore mPreferencesStore;
 
+    private BehaviorSubject<Boolean> mSongLoadingState;
+    private BehaviorSubject<Boolean> mArtistLoadingState;
+    private BehaviorSubject<Boolean> mAlbumLoadingState;
+    private BehaviorSubject<Boolean> mGenreLoadingState;
+
     private BehaviorSubject<List<Song>> mSongs;
     private BehaviorSubject<List<Album>> mAlbums;
     private BehaviorSubject<List<Artist>> mArtists;
@@ -32,10 +37,20 @@ public class LocalMusicStore implements MusicStore {
     public LocalMusicStore(Context context, PreferencesStore preferencesStore) {
         mContext = context;
         mPreferencesStore = preferencesStore;
+
+        mSongLoadingState = BehaviorSubject.create(false);
+        mAlbumLoadingState = BehaviorSubject.create(false);
+        mArtistLoadingState = BehaviorSubject.create(false);
+        mGenreLoadingState = BehaviorSubject.create(false);
     }
 
     @Override
     public Observable<Boolean> refresh() {
+        mSongLoadingState.onNext(true);
+        mArtistLoadingState.onNext(true);
+        mAlbumLoadingState.onNext(true);
+        mGenreLoadingState.onNext(true);
+
         return MediaStoreUtil.promptPermission(mContext)
                 .observeOn(Schedulers.io())
                 .map(granted -> {
@@ -53,7 +68,20 @@ public class LocalMusicStore implements MusicStore {
                             mGenres.onNext(getAllGenres());
                         }
                     }
+                    mSongLoadingState.onNext(false);
+                    mArtistLoadingState.onNext(false);
+                    mAlbumLoadingState.onNext(false);
+                    mGenreLoadingState.onNext(false);
                     return granted;
+                })
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Observable<Boolean> isLoading() {
+        return Observable.combineLatest(mSongLoadingState, mArtistLoadingState, mAlbumLoadingState,
+                mGenreLoadingState, (songState, artistState, albumState, genreState) -> {
+                    return songState || artistState || albumState || genreState;
                 })
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -62,6 +90,7 @@ public class LocalMusicStore implements MusicStore {
     public Observable<List<Song>> getSongs() {
         if (mSongs == null) {
             mSongs = BehaviorSubject.create();
+            mSongLoadingState.onNext(true);
 
             MediaStoreUtil.getPermission(mContext)
                     .observeOn(Schedulers.io())
@@ -71,6 +100,7 @@ public class LocalMusicStore implements MusicStore {
                         } else {
                             mSongs.onNext(Collections.emptyList());
                         }
+                        mSongLoadingState.onNext(false);
                     }, throwable -> {
                         Timber.e(throwable, "Failed to query MediaStore for songs");
                     });
@@ -145,6 +175,7 @@ public class LocalMusicStore implements MusicStore {
     public Observable<List<Album>> getAlbums() {
         if (mAlbums == null) {
             mAlbums = BehaviorSubject.create();
+            mAlbumLoadingState.onNext(true);
 
             MediaStoreUtil.getPermission(mContext)
                     .flatMap(granted -> {
@@ -161,6 +192,7 @@ public class LocalMusicStore implements MusicStore {
                         } else {
                             mAlbums.onNext(Collections.emptyList());
                         }
+                        mAlbumLoadingState.onNext(false);
                     }, throwable -> {
                         Timber.e(throwable, "Failed to query MediaStore for albums");
                     });
@@ -176,6 +208,7 @@ public class LocalMusicStore implements MusicStore {
     public Observable<List<Artist>> getArtists() {
         if (mArtists == null) {
             mArtists = BehaviorSubject.create();
+            mArtistLoadingState.onNext(true);
 
             MediaStoreUtil.getPermission(mContext)
                     .flatMap(granted -> {
@@ -192,6 +225,7 @@ public class LocalMusicStore implements MusicStore {
                         } else {
                             mArtists.onNext(Collections.emptyList());
                         }
+                        mArtistLoadingState.onNext(false);
                     }, throwable -> {
                         Timber.e(throwable, "Failed to query MediaStore for artists");
                     });
@@ -207,6 +241,7 @@ public class LocalMusicStore implements MusicStore {
     public Observable<List<Genre>> getGenres() {
         if (mGenres == null) {
             mGenres = BehaviorSubject.create();
+            mGenreLoadingState.onNext(true);
 
             MediaStoreUtil.getPermission(mContext)
                     .observeOn(Schedulers.io())
@@ -216,6 +251,7 @@ public class LocalMusicStore implements MusicStore {
                         } else {
                             mGenres.onNext(Collections.emptyList());
                         }
+                        mGenreLoadingState.onNext(false);
                     }, throwable -> {
                         Timber.e(throwable, "Failed to query MediaStore for genres");
                     });

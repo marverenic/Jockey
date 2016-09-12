@@ -14,6 +14,8 @@ public interface PlaylistStore {
 
     Observable<Boolean> refresh();
 
+    Observable<Boolean> isLoading();
+
     Observable<List<Playlist>> getPlaylists();
 
     Observable<List<Song>> getSongs(Playlist playlist);
