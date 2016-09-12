@@ -31,12 +31,20 @@ import com.marverenic.music.fragments.ArtistFragment;
 import com.marverenic.music.fragments.GenreFragment;
 import com.marverenic.music.fragments.PlaylistFragment;
 import com.marverenic.music.fragments.SongFragment;
+import com.marverenic.music.instances.Album;
+import com.marverenic.music.instances.Artist;
+import com.marverenic.music.instances.Genre;
+import com.marverenic.music.instances.Playlist;
+import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.FABMenu;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.functions.Func5;
 import timber.log.Timber;
 
 import static android.support.design.widget.Snackbar.LENGTH_LONG;
@@ -60,6 +68,7 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
         JockeyApplication.getComponent(this).inject(this);
 
         initRefreshLayout();
+        loadAllData();
 
         // Setup the FAB
         FABMenu fab = (FABMenu) findViewById(R.id.fab);
@@ -106,6 +115,13 @@ public class LibraryActivity extends BaseActivity implements View.OnClickListene
                         }, throwable -> {
                             Timber.e(throwable, "Failed to update refresh indicator");
                         });
+    }
+
+    private void loadAllData() {
+        Observable.combineLatest(mPlaylistStore.getPlaylists(), mMusicStore.getSongs(), mMusicStore.getArtists(), mMusicStore.getAlbums(), mMusicStore.getGenres(),
+                (Func5<List<Playlist>, List<Song>, List<Artist>, List<Album>, List<Genre>, Void>)
+                        (playlists, songs, artists, alba, genres) -> null)
+                .subscribe();
     }
 
     @TargetApi(Build.VERSION_CODES.M)
