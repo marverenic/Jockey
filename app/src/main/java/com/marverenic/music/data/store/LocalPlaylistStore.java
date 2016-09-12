@@ -50,6 +50,11 @@ public class LocalPlaylistStore implements PlaylistStore {
     }
 
     @Override
+    public void loadPlaylists() {
+        getPlaylists().take(1).subscribe();
+    }
+
+    @Override
     public Observable<Boolean> refresh() {
         if (mPlaylists == null) {
             return Observable.just(true);

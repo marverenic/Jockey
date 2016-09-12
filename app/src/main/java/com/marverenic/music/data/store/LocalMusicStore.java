@@ -45,6 +45,14 @@ public class LocalMusicStore implements MusicStore {
     }
 
     @Override
+    public void loadAll() {
+        getSongs().take(1).subscribe();
+        getArtists().take(1).subscribe();
+        getAlbums().take(1).subscribe();
+        getGenres().take(1).subscribe();
+    }
+
+    @Override
     public Observable<Boolean> refresh() {
         mSongLoadingState.onNext(true);
         mArtistLoadingState.onNext(true);

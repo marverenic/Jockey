@@ -12,6 +12,8 @@ import rx.Observable;
 
 public interface PlaylistStore {
 
+    void loadPlaylists();
+
     Observable<Boolean> refresh();
 
     Observable<Boolean> isLoading();
