@@ -40,8 +40,6 @@
                     android:fitsSystemWindows="true"
                     android:background="@android:color/black"/>
 
-            </com.marverenic.music.view.GestureView>
-
                 <com.marverenic.music.view.TimeView
                     android:id="@+id/now_playing_sleep_timer"
                     android:layout_width="wrap_content"
@@ -58,6 +56,8 @@
                     android:paddingRight="16dp"
                     android:layout_marginBottom="24dp"
                     tools:text="5:00"/>
+
+            </com.marverenic.music.view.GestureView>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
