@@ -4,23 +4,23 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 
-import com.google.android.exoplayer.ExoPlaybackException;
-import com.google.android.exoplayer.ExoPlayer;
-import com.google.android.exoplayer.MediaCodecAudioTrackRenderer;
-import com.google.android.exoplayer.MediaCodecSelector;
-import com.google.android.exoplayer.SampleSource;
-import com.google.android.exoplayer.TrackRenderer;
-import com.google.android.exoplayer.audio.AudioTrack;
-import com.google.android.exoplayer.extractor.ExtractorSampleSource;
-import com.google.android.exoplayer.upstream.Allocator;
-import com.google.android.exoplayer.upstream.DataSource;
-import com.google.android.exoplayer.upstream.DefaultAllocator;
-import com.google.android.exoplayer.upstream.DefaultUriDataSource;
-import com.google.android.exoplayer.util.PlayerControl;
-import com.marverenic.music.BuildConfig;
-
-import java.io.IOException;
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.LoadControl;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.audio.AudioTrack;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.FileDataSourceFactory;
 
 /**
  * A wrapper class for ExoPlayer that implements the Player interface
@@ -28,51 +28,40 @@ import java.io.IOException;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class EndoPlayer extends BasePlayer {
 
-    private static final int RENDERER_COUNT = 1;
-    private static final int BUFFER_SEGMENT_SIZE = 64 * 1024; // 64KB
-    private static final int BUFFER_SEGMENT_COUNT = 256;
-    private static final int BUFFER_SIZE = BUFFER_SEGMENT_SIZE * BUFFER_SEGMENT_COUNT;
-
-    private static final String USER_AGENT = "Jockey/" + BuildConfig.VERSION_NAME;
-
     private Context mContext;
-    private PlayerControl mPlayerControl;
-    private ExoPlayer mExoPlayer;
-    private Allocator mAllocator;
-    private TrackRenderer mRenderer;
-
+    private SimpleExoPlayer mExoPlayer;
     private ExoPlayerState mState;
-    private float mVolume;
-    private int mAudioSessionId;
+    private Uri mDataSource;
 
     public EndoPlayer(Context context) {
         mContext = context;
 
         mState = ExoPlayerState.IDLE;
-        mVolume = 1f;
-        mAudioSessionId = AudioTrack.SESSION_ID_NOT_SET;
-
         AudioTrack.enablePreV21AudioSessionWorkaround = true;
 
-        mExoPlayer = ExoPlayer.Factory.newInstance(RENDERER_COUNT);
-        mPlayerControl = new PlayerControl(mExoPlayer);
-        mAllocator = new DefaultAllocator(BUFFER_SEGMENT_SIZE);
+        TrackSelector trackSelector = new DefaultTrackSelector(new Handler());
+        LoadControl loadControl = new DefaultLoadControl();
+        mExoPlayer = ExoPlayerFactory.newSimpleInstance(mContext, trackSelector, loadControl);
 
-        mExoPlayer.addListener(new ExoPlayer.Listener() {
+        mExoPlayer.addListener(new ExoPlayer.EventListener() {
+            @Override
+            public void onLoadingChanged(boolean isLoading) {}
+
             @Override
             public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
                 EndoPlayer.this.onPlayerStateChanged(playWhenReady, playbackState);
             }
 
             @Override
-            public void onPlayWhenReadyCommitted() {
-                EndoPlayer.this.onPlayWhenReadyCommitted();
-            }
+            public void onTimelineChanged(Timeline timeline, Object manifest) {}
 
             @Override
             public void onPlayerError(ExoPlaybackException error) {
-                invokeErrorListeners(error);
+                // TODO delegate this
             }
+
+            @Override
+            public void onPositionDiscontinuity() {}
         });
     }
 
@@ -91,44 +80,25 @@ public class EndoPlayer extends BasePlayer {
         }
     }
 
-    private void onPlayWhenReadyCommitted() {
-        // Do nothing.
-    }
-
     @Override
-    public void setDataSource(String path) throws IOException {
-        Uri uri = Uri.parse(path);
-        mRenderer = getRendererForDataSource(uri);
-    }
-
-    private SampleSource getSampleSourceForDataSource(Uri uri) {
-        DataSource dataSource = new DefaultUriDataSource(mContext, USER_AGENT);
-        return new ExtractorSampleSource(uri, dataSource, mAllocator, BUFFER_SIZE);
-    }
-
-    private TrackRenderer getRendererForDataSource(Uri uri) {
-        SampleSource sampleSource = getSampleSourceForDataSource(uri);
-        return new MediaCodecAudioTrackRenderer(sampleSource, MediaCodecSelector.DEFAULT) {
-            @Override
-            protected void onAudioSessionId(int audioSessionId) {
-                mAudioSessionId = audioSessionId;
-                invokeAudioSessionIdListeners();
-            }
-        };
+    public void setDataSource(String path) {
+        mDataSource = Uri.parse(path);
     }
 
     @Override
     public void prepare() {
-        mAudioSessionId = AudioTrack.SESSION_ID_NOT_SET;
-        mExoPlayer.seekTo(0);
-        mExoPlayer.setPlayWhenReady(false);
-        mExoPlayer.prepare(mRenderer);
-        applyVolume();
+        DataSource.Factory dataSourceFactory = new FileDataSourceFactory();
+        MediaSource source = new ExtractorMediaSource(mDataSource, dataSourceFactory,
+                new DefaultExtractorsFactory(), null, null);
+
+        mExoPlayer.prepare(source, true);
     }
 
     @Override
     public void reset() {
-        // TODO
+        pause();
+        mExoPlayer.stop();
+        mDataSource = null;
     }
 
     @Override
@@ -138,27 +108,22 @@ public class EndoPlayer extends BasePlayer {
 
     @Override
     public void setVolume(float volume) {
-        mVolume = volume;
-        applyVolume();
-    }
-
-    private void applyVolume() {
-        mExoPlayer.sendMessage(mRenderer, MediaCodecAudioTrackRenderer.MSG_SET_VOLUME, mVolume);
+        mExoPlayer.setVolume(volume);
     }
 
     @Override
     public void seekTo(int mSec) {
-        mPlayerControl.seekTo(mSec);
+        mExoPlayer.seekTo(mSec);
     }
 
     @Override
     public void start() {
-        mPlayerControl.start();
+        mExoPlayer.setPlayWhenReady(true);
     }
 
     @Override
     public void pause() {
-        mPlayerControl.pause();
+        mExoPlayer.setPlayWhenReady(false);
     }
 
     @Override
@@ -169,17 +134,17 @@ public class EndoPlayer extends BasePlayer {
 
     @Override
     public int getAudioSessionId() {
-        return mAudioSessionId;
+        return mExoPlayer.getAudioSessionId();
     }
 
     @Override
     public int getCurrentPosition() {
-        return mPlayerControl.getCurrentPosition();
+        return (int) mExoPlayer.getCurrentPosition();
     }
 
     @Override
     public int getDuration() {
-        return mPlayerControl.getDuration();
+        return (int) mExoPlayer.getDuration();
     }
 
     @Override
@@ -194,12 +159,12 @@ public class EndoPlayer extends BasePlayer {
 
     @Override
     public boolean isPlaying() {
-        return mPlayerControl.isPlaying();
+        return mExoPlayer.getPlayWhenReady();
     }
 
     @Override
     public boolean isPaused() {
-        return !mPlayerControl.isPlaying();
+        return !mExoPlayer.getPlayWhenReady();
     }
 
     @Override
@@ -214,13 +179,12 @@ public class EndoPlayer extends BasePlayer {
 
     @Override
     public boolean isPreparing() {
-        return mState == ExoPlayerState.PREPARING;
+        return mState == ExoPlayerState.BUFFERING;
     }
 
     @Override
     public void release() {
         mExoPlayer.release();
-        mPlayerControl = null;
         mExoPlayer = null;
         mContext = null;
     }

@@ -1,17 +1,15 @@
 package com.marverenic.music.player;
 
-import com.google.android.exoplayer.ExoPlayer;
+import com.google.android.exoplayer2.ExoPlayer;
 
 public enum ExoPlayerState implements PlayerState {
 
-    IDLE, PREPARING, BUFFERING, READY, ENDED;
+    IDLE, BUFFERING, READY, ENDED;
 
     public static ExoPlayerState fromInt(int exoPlayerState) {
         switch (exoPlayerState) {
             case ExoPlayer.STATE_IDLE:
                 return IDLE;
-            case ExoPlayer.STATE_PREPARING:
-                return PREPARING;
             case ExoPlayer.STATE_BUFFERING:
                 return BUFFERING;
             case ExoPlayer.STATE_READY:
