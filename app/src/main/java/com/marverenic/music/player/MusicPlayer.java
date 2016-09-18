@@ -216,7 +216,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 });
 
         // Initialize the media player
-        mMediaPlayer = new QueuedMediaPlayer(context);
+        mMediaPlayer = new SimpleQueuedMediaPlayer(context);
 
         mMediaPlayer.setWakeMode(PowerManager.PARTIAL_WAKE_LOCK);
         mMediaPlayer.setPlaybackEventListener(this);
@@ -1124,8 +1124,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     }
 
     /**
-     * @return The state that the backing {@link QueuedMediaPlayer is in}
-     * @see QueuedMediaPlayer#getState()
+     * @return The state that the backing {@link SimpleQueuedMediaPlayer is in}
+     * @see SimpleQueuedMediaPlayer#getState()
      */
     public PlayerState getState() {
         return mMediaPlayer.getState();
