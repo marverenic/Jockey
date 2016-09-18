@@ -1,6 +1,7 @@
 package com.marverenic.music.viewmodel;
 
 import android.content.Context;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
@@ -16,6 +17,8 @@ import com.marverenic.music.player.PlayerController;
 import java.util.List;
 
 import timber.log.Timber;
+
+import static android.support.design.widget.Snackbar.LENGTH_LONG;
 
 public class QueueSongViewModel extends SongViewModel {
 
@@ -64,50 +67,81 @@ public class QueueSongViewModel extends SongViewModel {
         return menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.menu_item_navigate_to_artist:
-                    mMusicStore.findArtistById(getReference().getArtistId()).subscribe(
-                            artist -> {
-                                mContext.startActivity(ArtistActivity.newIntent(mContext, artist));
-                            }, throwable -> {
-                                Timber.e(throwable, "Failed to find artist");
-                            });
-
+                    navigateToArtist();
                     return true;
                 case R.id.menu_item_navigate_to_album:
-                    mMusicStore.findAlbumById(getReference().getAlbumId()).subscribe(
-                            album -> {
-                                mContext.startActivity(AlbumActivity.newIntent(mContext, album));
-                            }, throwable -> {
-                                Timber.e(throwable, "Failed to find album");
-                            });
-
+                    navigateToAlbum();
                     return true;
                 case R.id.menu_item_add_to_playlist:
-                    new AppendPlaylistDialogFragment.Builder(mContext, mFragmentManager)
-                            .setTitle(mContext.getResources().getString(
-                                    R.string.header_add_song_name_to_playlist, getReference()))
-                            .setSongs(getSongs())
-                            .showSnackbarIn(R.id.imageArtwork)
-                            .show(TAG_PLAYLIST_DIALOG);
+                    addToPlaylist();
                     return true;
                 case R.id.menu_item_remove:
-                    int queuePosition = PlayerController.getQueuePosition();
-                    int itemPosition = getIndex();
-
-                    getSongs().remove(itemPosition);
-
-                    PlayerController.editQueue(getSongs(),
-                            (queuePosition > itemPosition)
-                                    ? queuePosition - 1
-                                    : queuePosition);
-
-                    if (queuePosition == itemPosition) {
-                        PlayerController.begin();
-                    }
-
-                    mRemoveListener.onRemove();
+                    removeFromQueue(view);
                     return true;
             }
             return false;
         };
+    }
+
+    private void navigateToArtist() {
+        mMusicStore.findArtistById(getReference().getArtistId()).subscribe(
+                artist -> {
+                    mContext.startActivity(ArtistActivity.newIntent(mContext, artist));
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to find artist");
+                });
+    }
+
+    private void navigateToAlbum() {
+        mMusicStore.findAlbumById(getReference().getAlbumId()).subscribe(
+                album -> {
+                    mContext.startActivity(AlbumActivity.newIntent(mContext, album));
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to find album");
+                });
+    }
+
+    private void addToPlaylist() {
+        new AppendPlaylistDialogFragment.Builder(mContext, mFragmentManager)
+                .setTitle(mContext.getResources().getString(
+                        R.string.header_add_song_name_to_playlist, getReference()))
+                .setSongs(getSongs())
+                .showSnackbarIn(R.id.imageArtwork)
+                .show(TAG_PLAYLIST_DIALOG);
+    }
+
+    private void removeFromQueue(View snackbarContainer) {
+        int oldQueuePosition = PlayerController.getQueuePosition();
+        int itemPosition = getIndex();
+
+        getSongs().remove(itemPosition);
+
+        int newQueuePosition = (oldQueuePosition > itemPosition)
+                ? oldQueuePosition - 1
+                : oldQueuePosition;
+
+        newQueuePosition = Math.min(newQueuePosition, getSongs().size() - 1);
+
+        PlayerController.editQueue(getSongs(), newQueuePosition);
+
+        if (oldQueuePosition == itemPosition) {
+            PlayerController.begin();
+        }
+
+        mRemoveListener.onRemove();
+
+        Song removed = getReference();
+        String message = mContext.getString(R.string.message_removed_song, removed.getSongName());
+
+        Snackbar.make(snackbarContainer, message, LENGTH_LONG)
+                .setAction(R.string.action_undo, v -> {
+                    getSongs().add(itemPosition, removed);
+                    PlayerController.editQueue(getSongs(), oldQueuePosition);
+                    if (oldQueuePosition == itemPosition) {
+                        PlayerController.begin();
+                    }
+                    mRemoveListener.onRemove();
+                })
+                .show();
     }
 }

@@ -23,6 +23,7 @@ import com.marverenic.music.instances.section.SongSection;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -60,7 +61,8 @@ public class AlbumActivity extends BaseActivity {
                     .compose(bindToLifecycle())
                     .subscribe(
                             songs -> {
-                                mSongs = songs;
+                                mSongs = new ArrayList<>(songs);
+                                Collections.sort(mSongs, Song.TRACK_COMPARATOR);
                                 setupAdapter();
                             }, throwable -> {
                                 Timber.e(throwable, "Failed to get song contents");

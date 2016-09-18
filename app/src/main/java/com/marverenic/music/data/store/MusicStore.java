@@ -11,7 +11,11 @@ import rx.Observable;
 
 public interface MusicStore {
 
+    void loadAll();
+
     Observable<Boolean> refresh();
+
+    Observable<Boolean> isLoading();
 
     Observable<List<Song>> getSongs();
 

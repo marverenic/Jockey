@@ -32,7 +32,6 @@ public abstract class BaseActivity extends RxAppCompatActivity
     // Used when resuming the Activity to respond to a potential theme change
     @PresetTheme
     private int mTheme;
-    private boolean mIsDark;
 
     @Inject PreferencesStore mPreferencesStore;
     @Inject ThemeStore mThemeStore;
@@ -45,7 +44,6 @@ public abstract class BaseActivity extends RxAppCompatActivity
         JockeyApplication.getComponent(this).injectBaseActivity(this);
 
         mThemeStore.setTheme(this);
-        mIsDark = getResources().getBoolean(R.bool.night);
         mTheme = mPreferencesStore.getPrimaryColor();
 
         super.onCreate(savedInstanceState);
@@ -116,9 +114,8 @@ public abstract class BaseActivity extends RxAppCompatActivity
         // theme has changed state, recreate this activity
         mThemeStore.setTheme(this);
         boolean themeChanged = mTheme != mPreferencesStore.getPrimaryColor();
-        boolean nightChanged = mIsDark != getResources().getBoolean(R.bool.night);
 
-        if (themeChanged || nightChanged) {
+        if (themeChanged) {
             recreate();
         } else {
             PlayerController.registerUpdateListener(this);
