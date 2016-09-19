@@ -217,8 +217,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
         // Initialize the media player
         mMediaPlayer = new QueuedExoPlayer(context);
-
-        mMediaPlayer.setWakeMode(PowerManager.PARTIAL_WAKE_LOCK);
         mMediaPlayer.setPlaybackEventListener(this);
 
         mQueue = new ArrayList<>();
@@ -309,30 +307,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     private void initEqualizer(ReadOnlyPreferencesStore preferencesStore) {
         Timber.i("Initializing equalizer");
         Equalizer.Settings eqSettings = preferencesStore.getEqualizerSettings();
-
-        AudioEffectController.Generator<Equalizer> equalizerGenerator;
-        if (preferencesStore.getEqualizerEnabled()) {
-            equalizerGenerator = new AudioEffectController.Generator<Equalizer>() {
-                @Override
-                protected Equalizer onInitializeEffect(int audioSessionId) {
-                    return setupCustomEqualizer(eqSettings, audioSessionId);
-                }
-            };
-        } else {
-            equalizerGenerator = new AudioEffectController.Generator<Equalizer>() {
-                @Override
-                protected Equalizer onInitializeEffect(int audioSessionId) {
-                    return setupSystemEqualizer(audioSessionId);
-                }
-
-                @Override
-                protected void onReleaseEffect(Equalizer effect, int audioSessionId) {
-                    releaseSystemEqualizer(audioSessionId);
-                }
-            };
-        }
-
-        mMediaPlayer.setAudioEffects(equalizerGenerator);
+        // TODO implement equalizer loading
     }
 
     private Equalizer setupCustomEqualizer(Equalizer.Settings eqSettings, int audioSessionId) {
@@ -1124,8 +1099,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     }
 
     /**
-     * @return The state that the backing {@link SimpleQueuedMediaPlayer is in}
-     * @see SimpleQueuedMediaPlayer#getState()
+     * @return The state that the backing {@link QueuedMediaPlayer is in}
+     * @see QueuedMediaPlayer#getState()
      */
     public PlayerState getState() {
         return mMediaPlayer.getState();

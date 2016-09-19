@@ -53,15 +53,11 @@ public interface QueuedMediaPlayer {
 
     boolean isPreparing();
 
-    void setAudioEffects(AudioEffectController.Generator... effects);
-
     void setVolume(float volume);
 
     int getAudioSessionId();
 
     boolean isPlaying();
-
-    void setWakeMode(int mode);
 
     void reset();
 

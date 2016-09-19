@@ -252,11 +252,6 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     }
 
     @Override
-    public void setAudioEffects(AudioEffectController.Generator... effects) {
-        // TODO
-    }
-
-    @Override
     public void setVolume(float volume) {
         mExoPlayer.setVolume(volume);
     }
@@ -269,11 +264,6 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     @Override
     public boolean isPlaying() {
         return mExoPlayer.getPlayWhenReady();
-    }
-
-    @Override
-    public void setWakeMode(int mode) {
-        // TODO remove this method from the QueuedMediaPlayer interface
     }
 
     @Override
