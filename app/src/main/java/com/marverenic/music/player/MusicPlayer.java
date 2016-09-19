@@ -216,7 +216,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 });
 
         // Initialize the media player
-        mMediaPlayer = new SimpleQueuedMediaPlayer(context);
+        mMediaPlayer = new QueuedExoPlayer(context);
 
         mMediaPlayer.setWakeMode(PowerManager.PARTIAL_WAKE_LOCK);
         mMediaPlayer.setPlaybackEventListener(this);

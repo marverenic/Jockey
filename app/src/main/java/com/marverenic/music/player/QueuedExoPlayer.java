@@ -1,0 +1,290 @@
+package com.marverenic.music.player;
+
+import android.content.Context;
+import android.net.Uri;
+import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.LoadControl;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.audio.AudioTrack;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.extractor.ExtractorsFactory;
+import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.FileDataSourceFactory;
+import com.marverenic.music.instances.Song;
+
+import java.util.Collections;
+import java.util.List;
+
+public class QueuedExoPlayer implements QueuedMediaPlayer {
+
+    private Context mContext;
+    private SimpleExoPlayer mExoPlayer;
+    private ExoPlayerState mState;
+
+    @Nullable PlaybackEventListener mEventListener;
+
+    private List<Song> mQueue;
+    private int mQueueIndex;
+
+    static {
+        AudioTrack.enablePreV21AudioSessionWorkaround = true;
+    }
+
+    public QueuedExoPlayer(Context context) {
+        mContext = context;
+        mState = ExoPlayerState.IDLE;
+
+        TrackSelector trackSelector = new DefaultTrackSelector(new Handler());
+        LoadControl loadControl = new DefaultLoadControl();
+        mExoPlayer = ExoPlayerFactory.newSimpleInstance(mContext, trackSelector, loadControl);
+
+        mExoPlayer.addListener(new ExoPlayer.EventListener() {
+            @Override
+            public void onLoadingChanged(boolean isLoading) {}
+
+            @Override
+            public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+                mState = ExoPlayerState.fromInt(playbackState);
+            }
+
+            @Override
+            public void onTimelineChanged(Timeline timeline, Object manifest) {
+                mEventListener.onSongStart();
+            }
+
+            @Override
+            public void onPlayerError(ExoPlaybackException error) {
+                if (mEventListener != null) {
+                    mEventListener.onError(error);
+                }
+            }
+
+            @Override
+            public void onPositionDiscontinuity() {
+                int currentQueueIndex = mExoPlayer.getCurrentWindowIndex();
+                if (!getNowPlaying().equals(mQueue.get(currentQueueIndex))) {
+                    mQueueIndex = mExoPlayer.getCurrentWindowIndex();
+                    if (mEventListener != null) {
+                        mEventListener.onSongStart();
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    public void setPlaybackEventListener(@Nullable PlaybackEventListener listener) {
+        mEventListener = listener;
+    }
+
+    @Override
+    public Song getNowPlaying() {
+        if (mQueue == null) {
+            return null;
+        }
+        return mQueue.get(mQueueIndex);
+    }
+
+    @Override
+    public List<Song> getQueue() {
+        return mQueue;
+    }
+
+    @Override
+    public int getQueueSize() {
+        return mQueue.size();
+    }
+
+    @Override
+    public void setQueue(@NonNull List<Song> queue) {
+        if (queue.size() >= mQueue.size()) {
+            setQueue(queue, mQueueIndex);
+        } else {
+            setQueue(queue, 0);
+        }
+    }
+
+    @Override
+    public void setQueue(@NonNull List<Song> queue, int index) {
+        if (index < 0 || index >= queue.size()) {
+            throw new IllegalArgumentException("index must between 0 and queue.size");
+        }
+
+        if (queue.isEmpty()) {
+            reset();
+        } else {
+            mQueue = queue;
+            mQueueIndex = index;
+
+            Song nowPlaying = getNowPlaying();
+            boolean songChanged = nowPlaying == null || !nowPlaying.equals(queue.get(index));
+            prepare(isPlaying(), songChanged);
+        }
+    }
+
+    @Override
+    public void setQueueIndex(int index) {
+        if (index == mQueueIndex) {
+            seekTo(0);
+        } else {
+            mExoPlayer.seekTo(index, 0);
+        }
+        mQueueIndex = index;
+    }
+
+    @Override
+    public int getQueueIndex() {
+        return mQueueIndex;
+    }
+
+    @Override
+    public void prepare(boolean playWhenReady) {
+        mExoPlayer.seekTo(0);
+        mExoPlayer.setPlayWhenReady(playWhenReady);
+    }
+
+    private void prepare(boolean playWhenReady, boolean resetPosition) {
+        DataSource.Factory sourceFactory = new FileDataSourceFactory();
+        ExtractorsFactory extractorFactory = new DefaultExtractorsFactory();
+
+        MediaSource[] sources = new MediaSource[mQueue.size()];
+
+        for (int i = 0; i < sources.length; i++) {
+            Uri uri = Uri.parse(mQueue.get(i).getLocation());
+            sources[i] = new ExtractorMediaSource(uri, sourceFactory, extractorFactory, null, null);
+        }
+
+        MediaSource concatenated = new ConcatenatingMediaSource(sources);
+
+        int startingPosition = resetPosition ? 0 : getCurrentPosition();
+        mExoPlayer.prepare(concatenated);
+        mExoPlayer.seekTo(mQueueIndex, startingPosition);
+
+        mExoPlayer.setPlayWhenReady(playWhenReady);
+    }
+
+    @Override
+    public void skip() {
+        mQueueIndex++;
+        mQueueIndex %= mQueue.size();
+
+        mExoPlayer.seekTo(mQueueIndex, 0);
+    }
+
+    @Override
+    public void skipPrevious() {
+        mQueueIndex--;
+        mQueueIndex %= mQueue.size();
+        if (mQueueIndex < 0) {
+            mQueueIndex += mQueue.size();
+        }
+
+        mExoPlayer.seekTo(mQueueIndex, 0);
+    }
+
+    @Override
+    public void seekTo(int mSec) {
+        mExoPlayer.seekTo(mQueueIndex, mSec);
+    }
+
+    @Override
+    public void stop() {
+        mExoPlayer.stop();
+        mExoPlayer.seekToDefaultPosition();
+    }
+
+    @Override
+    public void play() {
+        mExoPlayer.setPlayWhenReady(true);
+    }
+
+    @Override
+    public void pause() {
+        mExoPlayer.setPlayWhenReady(false);
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        return (int) mExoPlayer.getCurrentPosition();
+    }
+
+    @Override
+    public int getDuration() {
+        return (int) mExoPlayer.getDuration();
+    }
+
+    @Override
+    public PlayerState getState() {
+        return mState;
+    }
+
+    @Override
+    public boolean isComplete() {
+        return mState == ExoPlayerState.ENDED;
+    }
+
+    @Override
+    public boolean isPaused() {
+        return mExoPlayer.getPlayWhenReady();
+    }
+
+    @Override
+    public boolean isStopped() {
+        return mState == ExoPlayerState.IDLE;
+    }
+
+    @Override
+    public boolean isPreparing() {
+        return mState == ExoPlayerState.BUFFERING;
+    }
+
+    @Override
+    public void setAudioEffects(AudioEffectController.Generator... effects) {
+        // TODO
+    }
+
+    @Override
+    public void setVolume(float volume) {
+        mExoPlayer.setVolume(volume);
+    }
+
+    @Override
+    public int getAudioSessionId() {
+        return mExoPlayer.getAudioSessionId();
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return mExoPlayer.getPlayWhenReady();
+    }
+
+    @Override
+    public void setWakeMode(int mode) {
+        // TODO remove this method from the QueuedMediaPlayer interface
+    }
+
+    @Override
+    public void reset() {
+        setQueue(Collections.emptyList(), 0);
+    }
+
+    @Override
+    public void release() {
+        mExoPlayer.release();
+        mExoPlayer = null;
+        mContext = null;
+    }
+}
