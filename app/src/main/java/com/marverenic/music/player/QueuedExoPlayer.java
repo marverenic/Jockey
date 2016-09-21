@@ -61,38 +61,54 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
             @Override
             public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-                mState = ExoPlayerState.fromInt(playbackState);
+                QueuedExoPlayer.this.onPlayerStateChanged(playbackState);
             }
 
             @Override
             public void onTimelineChanged(Timeline timeline, Object manifest) {
-                if (mEventListener != null) {
-                    mEventListener.onSongStart();
-                }
+                QueuedExoPlayer.this.onTimelineChanged();
             }
 
             @Override
             public void onPlayerError(ExoPlaybackException error) {
-                if (mEventListener != null) {
-                    mEventListener.onError(error);
-                }
+                QueuedExoPlayer.this.onPlayerError(error);
             }
 
             @Override
             public void onPositionDiscontinuity() {
-                int currentQueueIndex = mExoPlayer.getCurrentWindowIndex() % mQueue.size();
-                if (mQueueIndex != currentQueueIndex) {
-                    if (mRepeatOne) {
-                        mEventListener.onCompletion();
-                    } else {
-                        mQueueIndex = currentQueueIndex;
-                        if (mEventListener != null) {
-                            mEventListener.onSongStart();
-                        }
-                    }
-                }
+                QueuedExoPlayer.this.onPositionDiscontinuity();
             }
         });
+    }
+
+    private void onPlayerStateChanged(int playbackState) {
+        mState = ExoPlayerState.fromInt(playbackState);
+    }
+
+    private void onTimelineChanged() {
+        if (mEventListener != null) {
+            mEventListener.onSongStart();
+        }
+    }
+
+    private void onPlayerError(ExoPlaybackException error) {
+        if (mEventListener != null) {
+            mEventListener.onError(error);
+        }
+    }
+
+    private void onPositionDiscontinuity() {
+        int currentQueueIndex = mExoPlayer.getCurrentWindowIndex() % mQueue.size();
+        if (mQueueIndex != currentQueueIndex) {
+            if (mRepeatOne) {
+                mEventListener.onCompletion();
+            } else {
+                mQueueIndex = currentQueueIndex;
+                if (mEventListener != null) {
+                    mEventListener.onSongStart();
+                }
+            }
+        }
     }
 
     @Override
