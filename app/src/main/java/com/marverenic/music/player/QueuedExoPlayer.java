@@ -18,6 +18,7 @@ import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.LoopingMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
@@ -33,6 +34,9 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     private Context mContext;
     private SimpleExoPlayer mExoPlayer;
     private ExoPlayerState mState;
+
+    private boolean mRepeatAll;
+    private boolean mRepeatOne;
 
     @Nullable PlaybackEventListener mEventListener;
 
@@ -76,11 +80,15 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
             @Override
             public void onPositionDiscontinuity() {
-                int currentQueueIndex = mExoPlayer.getCurrentWindowIndex();
-                if (!getNowPlaying().equals(mQueue.get(currentQueueIndex))) {
-                    mQueueIndex = mExoPlayer.getCurrentWindowIndex();
-                    if (mEventListener != null) {
-                        mEventListener.onSongStart();
+                int currentQueueIndex = mExoPlayer.getCurrentWindowIndex() % mQueue.size();
+                if (mQueueIndex != currentQueueIndex) {
+                    if (mRepeatOne) {
+                        mEventListener.onCompletion();
+                    } else {
+                        mQueueIndex = currentQueueIndex;
+                        if (mEventListener != null) {
+                            mEventListener.onSongStart();
+                        }
                     }
                 }
             }
@@ -142,9 +150,13 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         if (index == mQueueIndex) {
             seekTo(0);
         } else {
-            mExoPlayer.seekTo(index, 0);
+            mQueueIndex = index;
+            if (mRepeatOne) {
+                prepare(true, true);
+            } else {
+                mExoPlayer.seekTo(index, 0);
+            }
         }
-        mQueueIndex = index;
     }
 
     @Override
@@ -159,23 +171,53 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     }
 
     private void prepare(boolean playWhenReady, boolean resetPosition) {
-        DataSource.Factory sourceFactory = new FileDataSourceFactory();
-        ExtractorsFactory extractorFactory = new DefaultExtractorsFactory();
-
-        MediaSource[] sources = new MediaSource[mQueue.size()];
-
-        for (int i = 0; i < sources.length; i++) {
-            Uri uri = Uri.parse(mQueue.get(i).getLocation());
-            sources[i] = new ExtractorMediaSource(uri, sourceFactory, extractorFactory, null, null);
+        if (mQueue == null) {
+            return;
         }
 
-        MediaSource concatenated = new ConcatenatingMediaSource(sources);
+        DataSource.Factory srcFactory = new FileDataSourceFactory();
+        ExtractorsFactory extFactory = new DefaultExtractorsFactory();
 
         int startingPosition = resetPosition ? 0 : getCurrentPosition();
-        mExoPlayer.prepare(concatenated);
-        mExoPlayer.seekTo(mQueueIndex, startingPosition);
 
+        if (mRepeatOne) {
+            mExoPlayer.prepare(buildRepeatOneMediaSource(srcFactory, extFactory));
+        } else if (mRepeatAll) {
+            mExoPlayer.prepare(buildRepeatAllMediaSource(srcFactory, extFactory));
+        } else {
+            mExoPlayer.prepare(buildNoRepeatMediaSource(srcFactory, extFactory));
+        }
+
+        mExoPlayer.seekTo(mQueueIndex, startingPosition);
         mExoPlayer.setPlayWhenReady(playWhenReady);
+    }
+
+    private MediaSource buildRepeatOneMediaSource(DataSource.Factory srcFactory,
+                                                  ExtractorsFactory extFactory) {
+
+        Uri uri = Uri.parse(mQueue.get(mQueueIndex).getLocation());
+        MediaSource source = new ExtractorMediaSource(uri, srcFactory, extFactory, null, null);
+        return new LoopingMediaSource(source);
+    }
+
+    private MediaSource buildNoRepeatMediaSource(DataSource.Factory srcFactory,
+                                                 ExtractorsFactory extFactory) {
+
+        MediaSource[] queue = new MediaSource[mQueue.size()];
+
+        for (int i = 0; i < queue.length; i++) {
+            Uri uri = Uri.parse(mQueue.get(i).getLocation());
+            queue[i] = new ExtractorMediaSource(uri, srcFactory, extFactory, null, null);
+        }
+
+        return new ConcatenatingMediaSource(queue);
+    }
+
+    private MediaSource buildRepeatAllMediaSource(DataSource.Factory sourceFactory,
+                                                  ExtractorsFactory extractorsFactory) {
+
+        MediaSource queue = buildNoRepeatMediaSource(sourceFactory, extractorsFactory);
+        return new LoopingMediaSource(queue);
     }
 
     @Override
@@ -183,7 +225,11 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         mQueueIndex++;
         mQueueIndex %= mQueue.size();
 
-        mExoPlayer.seekTo(mQueueIndex, 0);
+        if (mRepeatAll) {
+            prepare(true, true);
+        } else {
+            mExoPlayer.seekTo(mQueueIndex, 0);
+        }
     }
 
     @Override
@@ -194,7 +240,11 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
             mQueueIndex += mQueue.size();
         }
 
-        mExoPlayer.seekTo(mQueueIndex, 0);
+        if (mRepeatAll) {
+           prepare(true, true);
+        } else {
+            mExoPlayer.seekTo(mQueueIndex, 0);
+        }
     }
 
     @Override
@@ -256,6 +306,33 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     @Override
     public void setVolume(float volume) {
         mExoPlayer.setVolume(volume);
+    }
+
+    @Override
+    public void enableRepeatAll() {
+        if (!mRepeatAll) {
+            mRepeatAll = true;
+            mRepeatOne = false;
+            prepare(isPlaying(), false);
+        }
+    }
+
+    @Override
+    public void enableRepeatOne() {
+        if (!mRepeatOne) {
+            mRepeatOne = true;
+            mRepeatAll = false;
+            prepare(isPlaying(), false);
+        }
+    }
+
+    @Override
+    public void enableRepeatNone() {
+        if (mRepeatAll || mRepeatOne) {
+            mRepeatOne = false;
+            mRepeatAll = false;
+            prepare(isPlaying(), false);
+        }
     }
 
     @Override

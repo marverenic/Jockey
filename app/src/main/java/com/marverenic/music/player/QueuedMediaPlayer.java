@@ -55,6 +55,12 @@ public interface QueuedMediaPlayer {
 
     void setVolume(float volume);
 
+    void enableRepeatAll();
+
+    void enableRepeatOne();
+
+    void enableRepeatNone();
+
     int getAudioSessionId();
 
     boolean isPlaying();
@@ -70,16 +76,9 @@ public interface QueuedMediaPlayer {
      */
     interface PlaybackEventListener {
         /**
-         * Invoked when the current song has finished playing. If the implementor wishes to
-         * start the next song after the previous song completes, it should call {@link #skip()}
-         * here. It may also do so conditionally by testing that {@link #getQueueIndex()} isn't
-         * {@link #getQueueSize()} - 1 to prevent the queue from always looping in a repeat-all
-         * pattern.
-         *
-         * Implementors should not assume that {@link #skip()} will instantly begin the next song.
-         * In the event that the next player has failed to initialize or has gone out-of sync
-         * somehow, any implementations that depend on this assumption will fail. To implement
-         * such behavior, implement {@link #onSongStart()} instead.
+         * Invoked when the current song has finished playing. Do not use this callback to control
+         * looping behavior – use {@link #enableRepeatAll()}, {@link #enableRepeatOne()}, and
+         * {@link #enableRepeatNone()} instead
          */
         void onCompletion();
 

@@ -248,8 +248,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         PreferencesStore preferencesStore = new SharedPreferencesStore(mContext);
 
         mShuffle = preferencesStore.isShuffled();
-        mRepeat = preferencesStore.getRepeatMode();
-        mMultiRepeat = mRemotePreferenceStore.getMultiRepeatCount();
+        setRepeat(preferencesStore.getRepeatMode());
+        setMultiRepeat(mRemotePreferenceStore.getMultiRepeatCount());
 
         initEqualizer(preferencesStore);
         startSleepTimer(mRemotePreferenceStore.getSleepTimerEndTime());
@@ -929,6 +929,17 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public void setRepeat(int repeat) {
         Timber.i("Changing repeat setting to %d", repeat);
         mRepeat = repeat;
+        switch (repeat) {
+            case REPEAT_ALL:
+                mMediaPlayer.enableRepeatAll();
+                break;
+            case REPEAT_ONE:
+                mMediaPlayer.enableRepeatOne();
+                break;
+            case REPEAT_NONE:
+            default:
+                mMediaPlayer.enableRepeatNone();
+        }
     }
 
     /**
@@ -945,6 +956,11 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         Timber.i("Changing Multi-Repeat counter to %d", count);
         mMultiRepeat = count;
         mRemotePreferenceStore.setMultiRepeatCount(count);
+        if (count > 1) {
+            mMediaPlayer.enableRepeatOne();
+        } else {
+            setRepeat(mRepeat);
+        }
     }
 
     public int getMultiRepeatCount() {
@@ -1119,23 +1135,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             Timber.i("Multi-Repeat (%d) is enabled. Restarting current song and decrementing.",
                     mMultiRepeat);
 
-            setMultiRepeat(getMultiRepeatCount() - 1);
-            mMediaPlayer.play();
-        } else if (mRepeat == REPEAT_NONE) {
-            if (mMediaPlayer.getQueueIndex() < mMediaPlayer.getQueue().size()) {
-                Timber.i("This is not the last song in the queue. Starting next song");
-                skip();
-            }
-        } else if (mRepeat == REPEAT_ALL) {
-            Timber.i("Repeat all is enabled. Starting next song");
-            skip();
-        } else if (mRepeat == REPEAT_ONE) {
-            Timber.i("Repeat one is enabled. Restarting current song");
-            mMediaPlayer.play();
+            setMultiRepeat(mMultiRepeat - 1);
         }
-
-        updateNowPlaying();
-        updateUi();
     }
 
     @Override
