@@ -62,7 +62,9 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
             @Override
             public void onTimelineChanged(Timeline timeline, Object manifest) {
-                mEventListener.onSongStart();
+                if (mEventListener != null) {
+                    mEventListener.onSongStart();
+                }
             }
 
             @Override
