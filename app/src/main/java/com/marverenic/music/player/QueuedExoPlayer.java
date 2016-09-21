@@ -25,6 +25,7 @@ import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.FileDataSourceFactory;
 import com.marverenic.music.instances.Song;
+import com.marverenic.music.utils.Internal;
 
 import java.util.Collections;
 import java.util.List;
@@ -81,33 +82,35 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         });
     }
 
-    private void onPlayerStateChanged(int playbackState) {
+    @Internal void onPlayerStateChanged(int playbackState) {
         mState = ExoPlayerState.fromInt(playbackState);
     }
 
-    private void onTimelineChanged() {
+    @Internal void onTimelineChanged() {
         if (mEventListener != null) {
             mEventListener.onSongStart();
         }
     }
 
-    private void onPlayerError(ExoPlaybackException error) {
-        if (mEventListener != null) {
-            mEventListener.onError(error);
-        }
-    }
-
-    private void onPositionDiscontinuity() {
+    @Internal void onPositionDiscontinuity() {
         int currentQueueIndex = mExoPlayer.getCurrentWindowIndex() % mQueue.size();
         if (mQueueIndex != currentQueueIndex) {
             if (mRepeatOne) {
-                mEventListener.onCompletion();
+                if (mEventListener != null) {
+                    mEventListener.onCompletion();
+                }
             } else {
                 mQueueIndex = currentQueueIndex;
                 if (mEventListener != null) {
                     mEventListener.onSongStart();
                 }
             }
+        }
+    }
+
+    @Internal void onPlayerError(ExoPlaybackException error) {
+        if (mEventListener != null) {
+            mEventListener.onError(error);
         }
     }
 
