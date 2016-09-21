@@ -39,7 +39,8 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     private boolean mRepeatAll;
     private boolean mRepeatOne;
 
-    @Nullable PlaybackEventListener mEventListener;
+    @Nullable
+    private PlaybackEventListener mEventListener;
 
     private List<Song> mQueue;
     private int mQueueIndex;
