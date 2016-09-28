@@ -269,7 +269,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         }
 
         if (mRepeatAll) {
-           prepare(true, true);
+            prepare(true, true);
         } else {
             mExoPlayer.seekTo(mQueueIndex, 0);
         }
