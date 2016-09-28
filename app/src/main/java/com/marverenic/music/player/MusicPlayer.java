@@ -722,7 +722,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @param skip Whether the song was skipped (true if skipped, false if played)
      */
     private void logPlayCount(Song song, boolean skip) {
-        Timber.i("Logging play count to PlayCountStore...");
+        Timber.i("Logging %s count to PlayCountStore...", (skip) ? "skip" : "play");
         if (skip) {
             mPlayCountStore.incrementSkipCount(song);
         } else {
@@ -1127,9 +1127,9 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     }
 
     @Override
-    public void onCompletion() {
+    public void onCompletion(Song completed) {
         Timber.i("onCompletion called");
-        logPlay();
+        logPlayCount(completed, false);
 
         if (mMultiRepeat > 1) {
             Timber.i("Multi-Repeat (%d) is enabled. Restarting current song and decrementing.",

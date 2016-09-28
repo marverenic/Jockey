@@ -79,8 +79,10 @@ public interface QueuedMediaPlayer {
          * Invoked when the current song has finished playing. Do not use this callback to control
          * looping behavior – use {@link #enableRepeatAll()}, {@link #enableRepeatOne()}, and
          * {@link #enableRepeatNone()} instead
+         *
+         * @param completed The Song that just finished playing
          */
-        void onCompletion();
+        void onCompletion(Song completed);
 
         /**
          * Invoked when a new song is currently loaded by the active media player after calling

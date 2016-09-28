@@ -85,26 +85,34 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
     @Internal void onPlayerStateChanged(int playbackState) {
         mState = ExoPlayerState.fromInt(playbackState);
+        if (mState == ExoPlayerState.ENDED) {
+            onCompletion();
+        }
     }
 
-    @Internal void onTimelineChanged() {
+    private void onCompletion() {
+        if (mEventListener != null) {
+            mEventListener.onCompletion(getNowPlaying());
+        }
+    }
+
+    private void onStart() {
         if (mEventListener != null) {
             mEventListener.onSongStart();
         }
     }
 
+    @Internal void onTimelineChanged() {
+        onStart();
+    }
+
     @Internal void onPositionDiscontinuity() {
         int currentQueueIndex = mExoPlayer.getCurrentWindowIndex() % mQueue.size();
         if (mQueueIndex != currentQueueIndex) {
-            if (mRepeatOne) {
-                if (mEventListener != null) {
-                    mEventListener.onCompletion();
-                }
-            } else {
+            onCompletion();
+            if (!mRepeatOne) {
                 mQueueIndex = currentQueueIndex;
-                if (mEventListener != null) {
-                    mEventListener.onSongStart();
-                }
+                onStart();
             }
         }
     }
