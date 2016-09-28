@@ -32,12 +32,19 @@ public class MiniplayerViewModel extends BaseObservable {
     private Song mSong;
     private boolean mPlaying;
 
+    private final int mExpandedHeight;
+    private final int mCollapsedHeight = 0;
+
+    private final ObservableInt mHeight;
     private final ObservableInt mProgress;
     private Subscription mPositionSubscription;
 
     public MiniplayerViewModel(Context context) {
         mContext = context;
         mProgress = new ObservableInt();
+        mHeight = new ObservableInt(mCollapsedHeight);
+
+        mExpandedHeight = mContext.getResources().getDimensionPixelSize(R.dimen.miniplayer_height);
     }
 
     public void setSong(@Nullable Song song) {
@@ -46,6 +53,9 @@ public class MiniplayerViewModel extends BaseObservable {
         notifyPropertyChanged(BR.songArtist);
         notifyPropertyChanged(BR.songDuration);
         notifyPropertyChanged(BR.artwork);
+
+        int nextHeight = (mSong == null) ? mCollapsedHeight : mExpandedHeight;
+        mHeight.set(nextHeight);
     }
 
     public void setPlaying(boolean playing) {
@@ -62,6 +72,10 @@ public class MiniplayerViewModel extends BaseObservable {
 
     public void onActivityExitForeground() {
         stopPollingPosition();
+    }
+
+    public ObservableInt getHeight() {
+        return mHeight;
     }
 
     @Bindable

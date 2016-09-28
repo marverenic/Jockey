@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
         <variable
@@ -11,10 +12,11 @@
     <RelativeLayout
         android:id="@+id/miniplayer"
         android:layout_width="fill_parent"
-        android:layout_height="@dimen/miniplayer_height"
+        android:layout_height="@{viewModel.height}"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:gravity="center"
-        android:onClick="@{viewModel.onClickMiniplayer()}">
+        android:onClick="@{viewModel.onClickMiniplayer()}"
+        tools:layout_height="@dimen/miniplayer_height">
 
         <ImageView
             android:id="@+id/imageArtwork"
