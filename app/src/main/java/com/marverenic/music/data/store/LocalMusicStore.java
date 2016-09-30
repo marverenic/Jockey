@@ -390,6 +390,10 @@ public class LocalMusicStore implements MusicStore {
 
     @Override
     public Observable<List<Song>> searchForSongs(String query) {
+        if (query == null || query.isEmpty()) {
+            return Observable.just(Collections.emptyList());
+        }
+
         return getSongs().map(songs -> {
             List<Song> filtered = new ArrayList<>();
             String lowerCaseQuery = query.toLowerCase();
@@ -408,6 +412,10 @@ public class LocalMusicStore implements MusicStore {
 
     @Override
     public Observable<List<Artist>> searchForArtists(String query) {
+        if (query == null || query.isEmpty()) {
+            return Observable.just(Collections.emptyList());
+        }
+
         return getArtists().map(artists -> {
             List<Artist> filtered = new ArrayList<>();
             String lowerCaseQuery = query.toLowerCase();
@@ -424,6 +432,10 @@ public class LocalMusicStore implements MusicStore {
 
     @Override
     public Observable<List<Album>> searchForAlbums(String query) {
+        if (query == null || query.isEmpty()) {
+            return Observable.just(Collections.emptyList());
+        }
+
         return getAlbums().map(albums -> {
             List<Album> filtered = new ArrayList<>();
             String lowerCaseQuery = query.toLowerCase();
@@ -441,6 +453,10 @@ public class LocalMusicStore implements MusicStore {
 
     @Override
     public Observable<List<Genre>> searchForGenres(String query) {
+        if (query == null || query.isEmpty()) {
+            return Observable.just(Collections.emptyList());
+        }
+
         return getGenres().map(genres -> {
             List<Genre> filtered = new ArrayList<>();
             String lowerCaseQuery = query.toLowerCase();
