@@ -395,61 +395,6 @@ public final class MediaStoreUtil {
         return found;
     }
 
-    public static List<Song> searchForSongs(Context context, String query) {
-        if (query == null || query.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        String whereClause = "UPPER(" + MediaStore.Audio.Media.TITLE + ") LIKE ?";
-        String[] args = {"%" + query.toUpperCase() + "%"};
-
-        return getSongs(context, whereClause, args);
-    }
-
-    public static List<Artist> searchForArtists(Context context, String query) {
-        if (query == null || query.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        String whereClause = "UPPER(" + MediaStore.Audio.Artists.ARTIST + ") LIKE ?";
-        String[] args = {"%" + query.toUpperCase() + "%"};
-
-        return getArtists(context, whereClause, args);
-    }
-
-    public static List<Album> searchForAlbums(Context context, String query) {
-        if (query == null || query.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        String whereClause = "UPPER(" + MediaStore.Audio.Albums.ALBUM + ") LIKE ?";
-        String[] args = {"%" + query.toUpperCase() + "%"};
-
-        return getAlbums(context, whereClause, args);
-    }
-
-    public static List<Genre> searchForGenres(Context context, String query) {
-        if (query == null || query.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        String whereClause = "UPPER(" + MediaStore.Audio.Genres.NAME + ") LIKE ?";
-        String[] args = {"%" + query.toUpperCase() + "%"};
-
-        return getGenres(context, whereClause, args);
-    }
-
-    public static List<Playlist> searchForPlaylists(Context context, String query) {
-        if (query == null || query.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        String whereClause = "UPPER(" + MediaStore.Audio.Playlists.NAME + ") LIKE ?";
-        String[] args = {"%" + query.toUpperCase() + "%"};
-
-        return getPlaylists(context, whereClause, args);
-    }
-
     public static Playlist createPlaylist(Context context, String playlistName,
                                           @Nullable List<Song> songs) {
 
