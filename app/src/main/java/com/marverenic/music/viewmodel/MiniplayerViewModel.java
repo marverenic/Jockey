@@ -1,6 +1,7 @@
 package com.marverenic.music.viewmodel;
 
 import android.animation.ObjectAnimator;
+import android.animation.TimeInterpolator;
 import android.content.Context;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
@@ -9,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.animation.FastOutLinearInInterpolator;
+import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.view.View;
 
 import com.marverenic.music.BR;
@@ -55,11 +58,21 @@ public class MiniplayerViewModel extends BaseObservable {
         notifyPropertyChanged(BR.artwork);
 
         int currentTranslation = mVerticalTranslation.get();
-        int nextTranslation = (mSong == null) ? -mExpandedHeight : 0;
+        int nextTranslation;
+        TimeInterpolator interpolator;
+        if (mSong == null) {
+            nextTranslation = -mExpandedHeight;
+            interpolator = new FastOutLinearInInterpolator();
+        } else {
+            nextTranslation = 0;
+            interpolator = new LinearOutSlowInInterpolator();
+        }
 
-        ObjectAnimator.ofInt(mVerticalTranslation, "", currentTranslation, nextTranslation)
-                .setDuration(300)
-                .start();
+        ObjectAnimator slideAnimation = ObjectAnimator.ofInt(mVerticalTranslation, "",
+                currentTranslation, nextTranslation);
+        slideAnimation.setInterpolator(interpolator);
+        slideAnimation.setDuration(225);
+        slideAnimation.start();
     }
 
     public void setPlaying(boolean playing) {
