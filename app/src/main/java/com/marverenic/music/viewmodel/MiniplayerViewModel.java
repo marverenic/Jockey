@@ -1,5 +1,6 @@
 package com.marverenic.music.viewmodel;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
@@ -33,16 +34,15 @@ public class MiniplayerViewModel extends BaseObservable {
     private boolean mPlaying;
 
     private final int mExpandedHeight;
-    private final int mCollapsedHeight = 0;
 
-    private final ObservableInt mHeight;
     private final ObservableInt mProgress;
+    private final ObservableInt mVerticalTranslation;
     private Subscription mPositionSubscription;
 
     public MiniplayerViewModel(Context context) {
         mContext = context;
         mProgress = new ObservableInt();
-        mHeight = new ObservableInt(mCollapsedHeight);
+        mVerticalTranslation = new ObservableInt(0);
 
         mExpandedHeight = mContext.getResources().getDimensionPixelSize(R.dimen.miniplayer_height);
     }
@@ -54,8 +54,12 @@ public class MiniplayerViewModel extends BaseObservable {
         notifyPropertyChanged(BR.songDuration);
         notifyPropertyChanged(BR.artwork);
 
-        int nextHeight = (mSong == null) ? mCollapsedHeight : mExpandedHeight;
-        mHeight.set(nextHeight);
+        int currentTranslation = mVerticalTranslation.get();
+        int nextTranslation = (mSong == null) ? -mExpandedHeight : 0;
+
+        ObjectAnimator.ofInt(mVerticalTranslation, "", currentTranslation, nextTranslation)
+                .setDuration(300)
+                .start();
     }
 
     public void setPlaying(boolean playing) {
@@ -74,8 +78,8 @@ public class MiniplayerViewModel extends BaseObservable {
         stopPollingPosition();
     }
 
-    public ObservableInt getHeight() {
-        return mHeight;
+    public ObservableInt getVerticalTranslation() {
+        return mVerticalTranslation;
     }
 
     @Bindable

@@ -44,6 +44,13 @@ public class BindingAdapters {
         view.getParent().requestLayout();
     }
 
+    @BindingAdapter("android:layout_marginBottom")
+    public static void bindBottomMargin(View view, int margin) {
+        MarginLayoutParams params = (MarginLayoutParams) view.getLayoutParams();
+        params.bottomMargin = margin;
+        view.getParent().requestLayout();
+    }
+
     @BindingAdapter("animation")
     public static void bindAnimation(View view, @Nullable Animation animation) {
         if (animation == null) {
