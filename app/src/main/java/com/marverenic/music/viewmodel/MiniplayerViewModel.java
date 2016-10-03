@@ -35,6 +35,7 @@ public class MiniplayerViewModel extends BaseObservable {
     @Nullable
     private Song mSong;
     private boolean mPlaying;
+    private boolean mAnimateSlideInOut;
 
     private final int mExpandedHeight;
 
@@ -48,6 +49,7 @@ public class MiniplayerViewModel extends BaseObservable {
         mVerticalTranslation = new ObservableInt(0);
 
         mExpandedHeight = mContext.getResources().getDimensionPixelSize(R.dimen.miniplayer_height);
+        mAnimateSlideInOut = false;
     }
 
     public void setSong(@Nullable Song song) {
@@ -57,6 +59,14 @@ public class MiniplayerViewModel extends BaseObservable {
         notifyPropertyChanged(BR.songDuration);
         notifyPropertyChanged(BR.artwork);
 
+        if (mAnimateSlideInOut) {
+            animateTranslation();
+        } else {
+            mVerticalTranslation.set((mSong == null) ? -mExpandedHeight : 0);
+        }
+    }
+
+    private void animateTranslation() {
         int currentTranslation = mVerticalTranslation.get();
         int nextTranslation;
         TimeInterpolator interpolator;
@@ -89,6 +99,11 @@ public class MiniplayerViewModel extends BaseObservable {
 
     public void onActivityExitForeground() {
         stopPollingPosition();
+        mAnimateSlideInOut = false;
+    }
+
+    public void onActivityEnterForeground() {
+        mAnimateSlideInOut = true;
     }
 
     public ObservableInt getVerticalTranslation() {

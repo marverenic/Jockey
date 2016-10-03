@@ -56,6 +56,7 @@ public class MiniplayerFragment extends Fragment implements PlayerController.Upd
         super.onResume();
         PlayerController.registerUpdateListener(this);
         onUpdate();
+        mBinding.getViewModel().onActivityEnterForeground();
     }
 
     @Override
