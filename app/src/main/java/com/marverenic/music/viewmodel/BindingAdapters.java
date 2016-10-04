@@ -7,20 +7,12 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.animation.Animation;
 import android.widget.EditText;
 import android.widget.ImageView;
 
 public class BindingAdapters {
-
-    @BindingAdapter("android:layout_height")
-    public static void bindLayoutHeight(View view, int height) {
-        LayoutParams params = view.getLayoutParams();
-        params.height = height;
-        view.setLayoutParams(params);
-    }
 
     @BindingAdapter("bitmap")
     public static void bindBitmap(ImageView imageView, Bitmap bitmap) {
