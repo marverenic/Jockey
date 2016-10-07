@@ -144,7 +144,22 @@ public class LocalPlaylistStore implements PlaylistStore {
 
     @Override
     public Observable<List<Playlist>> searchForPlaylists(String query) {
-        return Observable.just(MediaStoreUtil.searchForPlaylists(mContext, query));
+        if (query == null || query.isEmpty()) {
+            return Observable.just(Collections.emptyList());
+        }
+
+        return getPlaylists().map(playlists -> {
+            List<Playlist> filtered = new ArrayList<>();
+            String lowerCaseQuery = query.toLowerCase();
+
+            for (Playlist playlist : playlists) {
+                if (playlist.getPlaylistName().toLowerCase().contains(lowerCaseQuery)) {
+                    filtered.add(playlist);
+                }
+            }
+
+            return filtered;
+        });
     }
 
     @Override

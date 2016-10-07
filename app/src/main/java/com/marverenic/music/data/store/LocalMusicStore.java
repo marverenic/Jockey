@@ -390,21 +390,84 @@ public class LocalMusicStore implements MusicStore {
 
     @Override
     public Observable<List<Song>> searchForSongs(String query) {
-        return Observable.just(MediaStoreUtil.searchForSongs(mContext, query));
+        if (query == null || query.isEmpty()) {
+            return Observable.just(Collections.emptyList());
+        }
+
+        return getSongs().map(songs -> {
+            List<Song> filtered = new ArrayList<>();
+            String lowerCaseQuery = query.toLowerCase();
+
+            for (Song song : songs) {
+                if (song.getSongName().toLowerCase().contains(lowerCaseQuery)
+                        || song.getAlbumName().toLowerCase().contains(lowerCaseQuery)
+                        || song.getArtistName().toLowerCase().contains(lowerCaseQuery)) {
+                    filtered.add(song);
+                }
+            }
+
+            return filtered;
+        });
     }
 
     @Override
     public Observable<List<Artist>> searchForArtists(String query) {
-        return Observable.just(MediaStoreUtil.searchForArtists(mContext, query));
+        if (query == null || query.isEmpty()) {
+            return Observable.just(Collections.emptyList());
+        }
+
+        return getArtists().map(artists -> {
+            List<Artist> filtered = new ArrayList<>();
+            String lowerCaseQuery = query.toLowerCase();
+
+            for (Artist artist : artists) {
+                if (artist.getArtistName().toLowerCase().contains(lowerCaseQuery)) {
+                    filtered.add(artist);
+                }
+            }
+
+            return filtered;
+        });
     }
 
     @Override
     public Observable<List<Album>> searchForAlbums(String query) {
-        return Observable.just(MediaStoreUtil.searchForAlbums(mContext, query));
+        if (query == null || query.isEmpty()) {
+            return Observable.just(Collections.emptyList());
+        }
+
+        return getAlbums().map(albums -> {
+            List<Album> filtered = new ArrayList<>();
+            String lowerCaseQuery = query.toLowerCase();
+
+            for (Album album : albums) {
+                if (album.getAlbumName().toLowerCase().contains(lowerCaseQuery)
+                        || album.getArtistName().toLowerCase().contains(lowerCaseQuery)) {
+                    filtered.add(album);
+                }
+            }
+
+            return filtered;
+        });
     }
 
     @Override
     public Observable<List<Genre>> searchForGenres(String query) {
-        return Observable.just(MediaStoreUtil.searchForGenres(mContext, query));
+        if (query == null || query.isEmpty()) {
+            return Observable.just(Collections.emptyList());
+        }
+
+        return getGenres().map(genres -> {
+            List<Genre> filtered = new ArrayList<>();
+            String lowerCaseQuery = query.toLowerCase();
+
+            for (Genre genre : genres) {
+                if (genre.getGenreName().toLowerCase().contains(lowerCaseQuery)) {
+                    filtered.add(genre);
+                }
+            }
+
+            return filtered;
+        });
     }
 }
