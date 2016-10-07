@@ -81,6 +81,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
         notifyPropertyChanged(BR.albumName);
         notifyPropertyChanged(BR.songDuration);
         notifyPropertyChanged(BR.positionVisibility);
+        notifyPropertyChanged(BR.seekbarEnabled);
     }
 
     public void setPlaying(boolean playing) {
