@@ -166,6 +166,9 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     private HeadsetListener mHeadphoneListener;
     private OnPlaybackChangeListener mCallback;
 
+    private Equalizer.Settings mEqualizerSettings;
+    private boolean mEqualizerEnabled;
+
     private List<Song> mQueue;
     private List<Song> mQueueShuffled;
 
@@ -306,28 +309,41 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     private void initEqualizer(ReadOnlyPreferencesStore preferencesStore) {
         Timber.i("Initializing equalizer");
-        Equalizer.Settings eqSettings = preferencesStore.getEqualizerSettings();
-        // TODO implement equalizer loading
+        mEqualizerSettings = preferencesStore.getEqualizerSettings();
+        mEqualizerEnabled = preferencesStore.getEqualizerEnabled();
+
+        int audioSessionId = getAudioSessionId();
+        if (audioSessionId == AudioTrack.SESSION_ID_NOT_SET) {
+            Timber.i("No audio session ID has been set. Aborting equalizer initialization");
+        } else {
+            setupCustomEqualizer();
+        }
     }
 
-    private Equalizer setupCustomEqualizer(Equalizer.Settings eqSettings, int audioSessionId) {
-        Equalizer equalizer = new Equalizer(0, audioSessionId);
+    private Equalizer setupCustomEqualizer() {
+        Equalizer equalizer = new Equalizer(0, getAudioSessionId());
 
-        if (eqSettings != null) {
+        if (mEqualizerSettings != null) {
             try {
-                equalizer.setProperties(eqSettings);
+                equalizer.setProperties(mEqualizerSettings);
             } catch (IllegalArgumentException | UnsupportedOperationException e) {
-                Timber.e(e, "Failed to load equalizer settings %s", eqSettings);
+                Timber.e(e, "Failed to load equalizer settings %s", mEqualizerSettings);
             }
         }
-        equalizer.setEnabled(true);
+
+        equalizer.setEnabled(mEqualizerEnabled);
+        if (mEqualizerEnabled) {
+            releaseSystemEqualizer(getAudioSessionId());
+        } else {
+            setupSystemEqualizer();
+        }
 
         return equalizer;
     }
 
-    private Equalizer setupSystemEqualizer(int audioSessionId) {
+    private Equalizer setupSystemEqualizer() {
         Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
-        intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, audioSessionId);
+        intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
         intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, mContext.getPackageName());
         mContext.sendBroadcast(intent);
 
@@ -426,7 +442,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             Timber.i("Failed to parse previous state. Resetting...");
             mQueue.clear();
             mQueueShuffled.clear();
-            setBackingQueue(0);
+            mMediaPlayer.reset();
         } finally {
             if (scanner != null) {
                 scanner.close();
@@ -1136,6 +1152,17 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                     mMultiRepeat);
 
             setMultiRepeat(mMultiRepeat - 1);
+        }
+    }
+
+    @Override
+    public void onAudioSessionId(int oldAudioSessionId, int newAudioSessionId) {
+        if (oldAudioSessionId != 0) {
+            releaseSystemEqualizer(oldAudioSessionId);
+        }
+
+        if (newAudioSessionId != 0) {
+            setupCustomEqualizer();
         }
     }
 

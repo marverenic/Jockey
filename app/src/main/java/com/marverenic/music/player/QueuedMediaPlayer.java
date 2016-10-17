@@ -85,6 +85,17 @@ public interface QueuedMediaPlayer {
         void onCompletion(Song completed);
 
         /**
+         * Invoked when a QueuedMediaPlayer has been assigned a new AudioSessionId. This is useful
+         * for extensions like {@link android.media.audiofx.AudioEffect AudioEffects}.
+         * @param oldAudioSessionId The audioSessionId that this QueuedMediaPlayer was previously
+         *                          assigned. Will be {@code 0} if this is the first audioSessionID
+         *                          to be assigned
+         * @param newAudioSessionId The audioSessionID that this QueuedMediaPlayer is now
+         *                          assigned to
+         */
+        void onAudioSessionId(int oldAudioSessionId, int newAudioSessionId);
+
+        /**
          * Invoked when a new song is currently loaded by the active media player after calling
          * {@link #skip()}, {@link #skipPrevious()}, or any other method that directly changes the
          * currently playing song. This is called even if the song isn't playing and only implies

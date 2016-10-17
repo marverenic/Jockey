@@ -10,10 +10,13 @@ import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.audio.AudioRendererEventListener;
 import com.google.android.exoplayer2.audio.AudioTrack;
+import com.google.android.exoplayer2.decoder.DecoderCounters;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
@@ -30,6 +33,8 @@ import com.marverenic.music.utils.Internal;
 import java.util.Collections;
 import java.util.List;
 
+import timber.log.Timber;
+
 public class QueuedExoPlayer implements QueuedMediaPlayer {
 
     private Context mContext;
@@ -45,6 +50,8 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     private List<Song> mQueue;
     private int mQueueIndex;
 
+    private int mPreviousAudioSessionId;
+
     static {
         AudioTrack.enablePreV21AudioSessionWorkaround = true;
     }
@@ -56,28 +63,73 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         TrackSelector trackSelector = new DefaultTrackSelector(new Handler());
         LoadControl loadControl = new DefaultLoadControl();
         mExoPlayer = ExoPlayerFactory.newSimpleInstance(mContext, trackSelector, loadControl);
+        mExoPlayer.setAudioDebugListener(new AudioRendererEventListener() {
+            @Override
+            public void onAudioEnabled(DecoderCounters counters) {
+                Timber.i("onAudioEnabled");
+            }
+
+            @Override
+            public void onAudioSessionId(int audioSessionId) {
+                Timber.i("onAudioSessionId (%d)", audioSessionId);
+                if (mEventListener != null) {
+                    mEventListener.onAudioSessionId(mPreviousAudioSessionId, audioSessionId);
+                }
+                mPreviousAudioSessionId = audioSessionId;
+            }
+
+            @Override
+            public void onAudioDecoderInitialized(String decoderName, long initializedTimestampMs, long initializationDurationMs) {
+                Timber.i("onAudioDecoderInitialized (initializedTimestampMs = %d, initializationDurationMs = %d)", initializedTimestampMs, initializationDurationMs);
+            }
+
+            @Override
+            public void onAudioInputFormatChanged(Format format) {
+                Timber.i("onAudioInputFormatChanged");
+            }
+
+            @Override
+            public void onAudioTrackUnderrun(int bufferSize, long bufferSizeMs, long elapsedSinceLastFeedMs) {
+                Timber.i("onAudioTrackUnderrun (bufferSize = %d, bufferSizeMs = %d, elapsedSinceLastFeedMs = %d)", bufferSize, bufferSizeMs, elapsedSinceLastFeedMs);
+            }
+
+            @Override
+            public void onAudioDisabled(DecoderCounters counters) {
+                Timber.i("onAudioDisabled");
+                if (mEventListener != null) {
+                    mEventListener.onAudioSessionId(mPreviousAudioSessionId, mExoPlayer.getAudioSessionId());
+                }
+                mPreviousAudioSessionId = mExoPlayer.getAudioSessionId();
+            }
+        });
 
         mExoPlayer.addListener(new ExoPlayer.EventListener() {
             @Override
-            public void onLoadingChanged(boolean isLoading) {}
+            public void onLoadingChanged(boolean isLoading) {
+                Timber.i("onLoadingChanged (%b)", isLoading);
+            }
 
             @Override
             public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+                Timber.i("onPlayerStateChanged");
                 QueuedExoPlayer.this.onPlayerStateChanged(playbackState);
             }
 
             @Override
             public void onTimelineChanged(Timeline timeline, Object manifest) {
+                Timber.i("onTimelineChanged");
                 QueuedExoPlayer.this.onTimelineChanged();
             }
 
             @Override
             public void onPlayerError(ExoPlaybackException error) {
+                Timber.i("onPlayerError");
                 QueuedExoPlayer.this.onPlayerError(error);
             }
 
             @Override
             public void onPositionDiscontinuity() {
+                Timber.i("onPositionDiscontinuity");
                 QueuedExoPlayer.this.onPositionDiscontinuity();
             }
         });
@@ -375,7 +427,9 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
     @Override
     public void reset() {
-        setQueue(Collections.emptyList(), 0);
+        mQueue = Collections.emptyList();
+        mQueueIndex = 0;
+        prepare(false, true);
     }
 
     @Override
