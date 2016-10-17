@@ -42,6 +42,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
 
@@ -88,8 +90,10 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         initAdapter();
 
         mQueryObservable
+                .subscribeOn(Schedulers.io())
                 .flatMap(query -> mPlaylistStore.searchForPlaylists(query))
                 .compose(bindToLifecycle())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(playlists -> {
                     mPlaylistSection.setData(playlists);
                     mAdapter.notifyDataSetChanged();
@@ -98,8 +102,10 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 });
 
         mQueryObservable
+                .subscribeOn(Schedulers.io())
                 .flatMap(query -> mMusicStore.searchForSongs(query))
                 .compose(bindToLifecycle())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(songs -> {
                     mSongSection.setData(songs);
                     mAdapter.notifyDataSetChanged();
@@ -108,8 +114,10 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 });
 
         mQueryObservable
+                .subscribeOn(Schedulers.io())
                 .flatMap(query -> mMusicStore.searchForAlbums(query))
                 .compose(bindToLifecycle())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(albums -> {
                     mAlbumSection.setData(albums);
                     mAdapter.notifyDataSetChanged();
@@ -118,8 +126,10 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 });
 
         mQueryObservable
+                .subscribeOn(Schedulers.io())
                 .flatMap(query -> mMusicStore.searchForArtists(query))
                 .compose(bindToLifecycle())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(artists -> {
                     mArtistSection.setData(artists);
                     mAdapter.notifyDataSetChanged();
@@ -128,8 +138,10 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 });
 
         mQueryObservable
+                .subscribeOn(Schedulers.io())
                 .flatMap(query -> mMusicStore.searchForGenres(query))
                 .compose(bindToLifecycle())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(genres -> {
                     mGenreSection.setData(genres);
                     mAdapter.notifyDataSetChanged();
