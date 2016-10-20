@@ -12,6 +12,5 @@ public interface ThemeStore {
     void setTheme(AppCompatActivity activity);
 
     Bitmap getLargeAppIcon();
-    void createThemedLauncherIcon();
 
 }
