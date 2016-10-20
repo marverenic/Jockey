@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    tools:targetApi="n_mr1">
+
+    <shortcut
+        android:shortcutId="search"
+        android:icon="@drawable/shortcut_search"
+        android:shortcutShortLabel="@string/header_search">
+
+        <!-- Put the Library Activity in the back stack -->
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.marverenic.music"
+            android:targetClass="com.marverenic.music.activity.LibraryActivity" />
+
+        <!-- Show the Search Activity in the foreground -->
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.marverenic.music"
+            android:targetClass="com.marverenic.music.activity.SearchActivity" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="now_playing"
+        android:icon="@drawable/shortcut_now_playing"
+        android:shortcutShortLabel="@string/header_now_playing">
+
+        <!-- Put the Library Activity in the back stack -->
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.marverenic.music"
+            android:targetClass="com.marverenic.music.activity.LibraryActivity" />
+
+        <!-- Show the Now Playing Activity in the foreground -->
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.marverenic.music"
+            android:targetClass="com.marverenic.music.activity.NowPlayingActivity" />
+    </shortcut>
+
+</shortcuts>
