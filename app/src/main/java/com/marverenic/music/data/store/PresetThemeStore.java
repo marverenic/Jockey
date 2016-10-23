@@ -212,19 +212,4 @@ public class PresetThemeStore implements ThemeStore {
                 return R.mipmap.ic_launcher;
         }
     }
-
-    @Override
-    public void createThemedLauncherIcon() {
-        Intent shortcutIntent = new Intent(mContext, LibraryActivity.class);
-        String shortcutName = mContext.getResources().getString(R.string.app_name);
-        Bitmap shortcutIcon = getLargeAppIcon();
-
-        Intent addIntent = new Intent();
-        addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-        addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, shortcutName);
-        addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON, shortcutIcon);
-        addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-
-        mContext.sendBroadcast(addIntent);
-    }
 }

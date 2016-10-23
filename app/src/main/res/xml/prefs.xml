@@ -25,10 +25,6 @@
             android:key="@string/pref_key_color_base"
             android:summary="@string/theme_base_description"
             android:title="Theme" />
-        <Preference
-            android:defaultValue="false"
-            android:key="@string/pref_key_create_launcher_icon"
-            android:title="@string/add_shortcut" />
     </PreferenceCategoryCompat>
     <PreferenceCategoryCompat android:title="@string/pref_category_library">
         <Preference
