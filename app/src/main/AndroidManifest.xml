@@ -8,7 +8,6 @@
     <uses-permission android:name="android.permission.INTERNET" /> <!-- Used to fetch data from Last.fm and send bug reports -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- Used to limit data usage on metered connections -->
     <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- Used to play music when the device is locked -->
-    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" /> <!-- Used to add themed icons to the launcher -->
 
     <supports-screens
         android:largeScreens="true"
@@ -35,6 +34,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="com.anddoes.launcher.THEME" />
             </intent-filter>
+
+            <!-- Static launcher shortcut actions -->
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
         </activity>
 
         <!-- Search Activity -->

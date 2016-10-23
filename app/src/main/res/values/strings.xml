@@ -46,8 +46,8 @@
     <string name="lastfm_description">Last.fm</string>
     <string name="uses_header">Jockey also uses the following open-source libraries:</string>
     <string name="uses_aosp_header">Android Support Libraries</string>
-    <string name="uses_aosp_detail">Support-v4 24.2.1, Appcompat-v7 24.2.1, RecyclerView 24.2.1,
-        CardView 24.2.1, Design 24.2.1, Palette 24.2.1, Preference-v14 24.2.1; distributed by the
+    <string name="uses_aosp_detail">Support-v4 25.0.0, Appcompat-v7 25.0.0, RecyclerView 25.0.0,
+        CardView 25.0.0, Design 25.0.0, Palette 25.0.0, Preference-v14 25.0.0; distributed by the
         Android Open Source Project under an Apache License, Version 2.0</string>
     <string name="uses_dagger_header">Dagger</string>
     <string name="uses_dagger_detail">Version 2.4; distributed by Google Inc. and Square Inc. under
@@ -94,7 +94,6 @@
     <string name="pref_key_eq_id" translatable="false">Equalizer.presetId</string>
     <string name="pref_key_eq_enabled" translatable="false">Equalizer.enabled</string>
     <string name="pref_key_eq_settings" translatable="false">Equalizer.equalizerSettings</string>
-    <string name="pref_key_create_launcher_icon" translatable="false">Action.newShortcut</string>
     <string name="pref_key_shuffle" translatable="false">Player.shuffle</string>
     <string name="pref_key_repeat" translatable="false">Player.repeat</string>
     <string name="pref_key_multi_repeat" translatable="false">Player.multiRepeat</string>
