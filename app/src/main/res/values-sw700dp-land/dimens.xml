@@ -2,5 +2,6 @@
 
     <dimen name="global_padding">100dp</dimen>
     <dimen name="extended_actionbar_height">280dp</dimen>
+    <item name="now_playing_control_end_weight" format="float" type="dimen">1</item>
 
 </resources>
