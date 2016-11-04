@@ -33,10 +33,7 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
     private RecyclerView mRecyclerView;
     private DragDropAdapter mAdapter;
     private QueueSection mQueueSection;
-    private SpacerSingleton mBottomSpacer;
-
-    private int itemHeight;
-    private int dividerHeight;
+    private SpacerSingleton[] mBottomSpacers;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -73,14 +70,15 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
     private void setupAdapter() {
         if (mQueueSection == null) {
             mAdapter = new DragDropAdapter();
-            mAdapter.setHasStableIds(true);
             mAdapter.attach(mRecyclerView);
 
             mQueueSection = new QueueSection(this, PlayerController.getQueue());
-            mBottomSpacer = new SpacerSingleton(0);
 
             mAdapter.setDragSection(mQueueSection);
-            mAdapter.addSection(mBottomSpacer);
+
+            // Wait for a layout pass before calculating bottom spacing since it is dependent on the
+            // height of the RecyclerView (which has not been computed yet)
+            mRecyclerView.post(this::setupSpacers);
 
             mAdapter.setEmptyState(new LibraryEmptyState(getActivity()) {
                 @Override
@@ -109,10 +107,38 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
         }
     }
 
-    private void setupRecyclerView() {
-        itemHeight = (int) getResources().getDimension(R.dimen.list_height);
-        dividerHeight = (int) getResources().getDisplayMetrics().density;
+    private void setupSpacers() {
+        if (mBottomSpacers != null) {
+            return;
+        }
 
+        int itemHeight = (int) getResources().getDimension(R.dimen.list_height);
+        int dividerHeight = (int) getResources().getDisplayMetrics().density;
+
+        int listHeight = mRecyclerView.getMeasuredHeight();
+        int listItemHeight = itemHeight + dividerHeight;
+        int numberOfSpacers = (int) Math.ceil(listHeight / (float) listItemHeight) - 1;
+
+        int remainingListHeight = listHeight - listItemHeight;
+        mBottomSpacers = new SpacerSingleton[numberOfSpacers];
+        for (int i = 0; i < numberOfSpacers; i++) {
+            int height;
+            if (remainingListHeight % listItemHeight > 0) {
+                height = remainingListHeight % listItemHeight;
+            } else {
+                height = listItemHeight;
+            }
+            remainingListHeight -= height;
+
+            mBottomSpacers[i] = new SpacerSingleton(height);
+            mAdapter.addSection(mBottomSpacers[i]);
+        }
+
+        mAdapter.notifyDataSetChanged();
+        scrollToNowPlaying();
+    }
+
+    private void setupRecyclerView() {
         Drawable shadow = ContextCompat.getDrawable(getContext(), R.drawable.list_drag_shadow);
 
         ItemDecoration background = new DragBackgroundDecoration();
@@ -160,43 +186,12 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
         if (currentIndex != lastPlayIndex) {
             lastPlayIndex = currentIndex;
 
-            updateView(previousIndex);
-            updateView(currentIndex);
+            mAdapter.notifyItemChanged(previousIndex);
+            mAdapter.notifyItemChanged(currentIndex);
 
             if (shouldScrollToCurrent()) {
                 scrollToNowPlaying();
             }
-        }
-    }
-
-    /**
-     * When views are being updated and scrolled passed at the same time, the attached
-     * {@link ItemDecoration}s will not appear on the
-     * changed item because of its animation.
-     *
-     * Because this animation implies that items are being removed from the queue, this method
-     * will manually update a specific view in a RecyclerView if it's visible. If it's not visible,
-     * {@link android.support.v7.widget.RecyclerView.Adapter#notifyItemChanged(int)} will be
-     * called instead.
-     * @param index The index of the item in the attached RecyclerView adapter to be updated
-     */
-    private void updateView(int index) {
-        View topView = mRecyclerView.getChildAt(0);
-        View bottomView = mRecyclerView.getChildAt(mRecyclerView.getChildCount() - 1);
-
-        int start = mRecyclerView.getChildAdapterPosition(topView);
-        int end = mRecyclerView.getChildAdapterPosition(bottomView);
-
-        if (index - start >= 0 && index - start < end) {
-            ViewGroup itemView = (ViewGroup) mRecyclerView.getChildAt(index - start);
-            if (itemView != null) {
-                itemView.findViewById(R.id.instancePlayingIndicator)
-                        .setVisibility(index == lastPlayIndex
-                                ? View.VISIBLE
-                                : View.GONE);
-            }
-        } else {
-            mAdapter.notifyItemChanged(index);
         }
     }
 
@@ -220,12 +215,31 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
     }
 
     private void scrollToNowPlaying() {
+        if (mBottomSpacers == null) {
+            return;
+        }
+
         int queueSize = mQueueSection.getData().size();
+        int visibleSpacers = mBottomSpacers.length - (queueSize - lastPlayIndex) + 1;
+        visibleSpacers = Math.max(0, visibleSpacers);
+        int prevVisibleSpacers = 0;
 
-        int padding = (lastPlayIndex - queueSize) * (itemHeight + dividerHeight) - dividerHeight;
-        mBottomSpacer.setHeight(padding);
+        for (int i = 0; i < mBottomSpacers.length; i++) {
+            if (mBottomSpacers[i].showSection()) {
+                prevVisibleSpacers++;
+            }
+            mBottomSpacers[i].setShowSection(i < visibleSpacers);
+        }
 
-        mAdapter.notifyItemChanged(queueSize);
+        if (visibleSpacers > prevVisibleSpacers) {
+            int addedSpacers = visibleSpacers - prevVisibleSpacers;
+            mAdapter.notifyItemRangeInserted(queueSize, addedSpacers);
+        } else if (visibleSpacers < prevVisibleSpacers) {
+            int firstSpacerIndex = queueSize + visibleSpacers;
+            int removedSpacers = prevVisibleSpacers - visibleSpacers;
+            mAdapter.notifyItemRangeRemoved(firstSpacerIndex, removedSpacers);
+        }
+
         ((LinearLayoutManager) mRecyclerView.getLayoutManager())
                 .scrollToPositionWithOffset(lastPlayIndex, 0);
     }
