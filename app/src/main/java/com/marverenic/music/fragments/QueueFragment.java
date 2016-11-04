@@ -101,7 +101,7 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
                     return "";
                 }
             });
-        } else {
+        } else if (!mQueueSection.getData().equals(PlayerController.getQueue())) {
             mQueueSection.setData(PlayerController.getQueue());
             mAdapter.notifyDataSetChanged();
         }
