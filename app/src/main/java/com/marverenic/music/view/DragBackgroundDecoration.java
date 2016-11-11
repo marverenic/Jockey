@@ -121,10 +121,17 @@ public class DragBackgroundDecoration extends RecyclerView.ItemDecoration {
 
         // If the last item in the list is being moved, make sure to draw the
         // background to fill the view
-        View lastView = parent.getChildAt(parent.getChildCount() - 1);
-        if (sectionCount == 0 || mRectPool.get(sectionCount - 1).bottom + lastView.getHeight()
-                < parent.getBottom()) {
-            addRect(sectionCount, left, lastView.getBottom(), right, parent.getBottom());
+        View lastView = null;
+        for (int i = parent.getChildCount() - 1; lastView == null && i >= 0; i--) {
+            View view = parent.getChildAt(i);
+            if (parent.getChildLayoutPosition(view) != RecyclerView.NO_POSITION) {
+                lastView = view;
+            }
+        }
+
+        if (lastView != null && (sectionCount == 0 || mRectPool.get(sectionCount - 1).bottom
+                + lastView.getHeight() < parent.getBottom())) {
+            addRect(sectionCount, left, lastView.getTop(), right, parent.getHeight());
             sectionCount++;
         }
 
