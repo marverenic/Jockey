@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.marverenic.heterogeneousadapter.DragDropAdapter;
+import com.marverenic.heterogeneousadapter.DragDropDecoration;
 import com.marverenic.music.R;
 import com.marverenic.music.instances.section.LibraryEmptyState;
 import com.marverenic.music.instances.section.QueueSection;
@@ -20,9 +22,8 @@ import com.marverenic.music.instances.section.SpacerSingleton;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.view.DragBackgroundDecoration;
 import com.marverenic.music.view.DragDividerDecoration;
-import com.marverenic.heterogeneousadapter.DragDropAdapter;
-import com.marverenic.heterogeneousadapter.DragDropDecoration;
 import com.marverenic.music.view.InsetDecoration;
+import com.marverenic.music.view.QueueAnimator;
 import com.marverenic.music.view.SnappingScroller;
 
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
@@ -75,6 +76,7 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
         if (mQueueSection == null) {
             mAdapter = new DragDropAdapter();
             mAdapter.attach(mRecyclerView);
+            mRecyclerView.setItemAnimator(new QueueAnimator());
 
             mQueueSection = new QueueSection(this, PlayerController.getQueue());
 

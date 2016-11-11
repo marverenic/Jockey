@@ -63,9 +63,10 @@ public class QueueSection extends EditableSongSection {
         return new ViewHolder(binding, getData(), adapter);
     }
 
-    private class ViewHolder extends EnhancedViewHolder<Song> {
+    public class ViewHolder extends EnhancedViewHolder<Song> {
 
         private InstanceSongQueueBinding mBinding;
+        private boolean mRemoved;
 
         public ViewHolder(InstanceSongQueueBinding binding, List<Song> songList,
                           HeterogeneousAdapter adapter) {
@@ -73,12 +74,22 @@ public class QueueSection extends EditableSongSection {
             mBinding = binding;
 
             binding.setViewModel(new QueueSongViewModel(itemView.getContext(), mFragmentManager,
-                    songList, adapter::notifyDataSetChanged));
+                    songList, () -> onRemove(adapter)));
+        }
+
+        private void onRemove(HeterogeneousAdapter adapter) {
+            mRemoved = true;
+            adapter.notifyDataSetChanged();
+        }
+
+        public boolean isRemoved() {
+            return mRemoved;
         }
 
         @Override
         public void onUpdate(Song s, int sectionPosition) {
             mBinding.getViewModel().setSong(getData(), sectionPosition);
+            mRemoved = false;
         }
     }
 }
