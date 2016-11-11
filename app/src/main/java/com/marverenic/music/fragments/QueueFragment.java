@@ -141,7 +141,7 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
         }
 
         mAdapter.notifyDataSetChanged();
-        scrollToNowPlaying();
+        smoothScrollToNowPlaying();
     }
 
     private void setupRecyclerView() {
@@ -196,7 +196,7 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
             mAdapter.notifyItemChanged(currentIndex);
 
             if (shouldScrollToCurrent()) {
-                scrollToNowPlaying();
+                smoothScrollToNowPlaying();
             }
         }
     }
@@ -220,7 +220,7 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
                 || (bottomIndex - queueSize <= 2 && lastPlayIndex == queueSize - 1);
     }
 
-    private void scrollToNowPlaying() {
+    private void updateSpacers() {
         if (mBottomSpacers == null) {
             return;
         }
@@ -245,9 +245,20 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
             int removedSpacers = prevVisibleSpacers - visibleSpacers;
             mAdapter.notifyItemRangeRemoved(firstSpacerIndex, removedSpacers);
         }
+    }
+
+    private void smoothScrollToNowPlaying() {
+        updateSpacers();
 
         mScroller.setTargetPosition(lastPlayIndex);
         mRecyclerView.getLayoutManager().startSmoothScroll(mScroller);
+    }
+
+    private void scrollToNowPlaying() {
+        updateSpacers();
+
+        ((LinearLayoutManager) mRecyclerView.getLayoutManager())
+                .scrollToPositionWithOffset(lastPlayIndex, 0);
     }
 
     public void updateShuffle() {
