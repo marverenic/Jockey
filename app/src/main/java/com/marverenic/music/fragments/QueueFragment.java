@@ -75,11 +75,11 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
     private void setupAdapter() {
         if (mQueueSection == null) {
             mAdapter = new DragDropAdapter();
+            mAdapter.setHasStableIds(true);
             mAdapter.attach(mRecyclerView);
+
             mRecyclerView.setItemAnimator(new QueueAnimator());
-
             mQueueSection = new QueueSection(this, PlayerController.getQueue());
-
             mAdapter.setDragSection(mQueueSection);
 
             // Wait for a layout pass before calculating bottom spacing since it is dependent on the

@@ -1,7 +1,7 @@
 package com.marverenic.music.view;
 
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.ViewHolder;
 
 import com.marverenic.music.instances.section.QueueSection;
 import com.marverenic.music.instances.section.SpacerSingleton;
@@ -13,7 +13,7 @@ public class QueueAnimator extends DefaultItemAnimator {
     }
 
     @Override
-    public boolean animateAdd(RecyclerView.ViewHolder holder) {
+    public boolean animateAdd(ViewHolder holder) {
         if (shouldAnimateAdd(holder)) {
             return super.animateAdd(holder);
         } else {
@@ -22,17 +22,17 @@ public class QueueAnimator extends DefaultItemAnimator {
         }
     }
 
-    private boolean shouldAnimateAdd(RecyclerView.ViewHolder holder) {
+    private boolean shouldAnimateAdd(ViewHolder holder) {
         if (holder instanceof SpacerSingleton.ViewHolder) {
             return false;
         } else if (holder instanceof QueueSection.ViewHolder) {
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override
-    public boolean animateRemove(RecyclerView.ViewHolder holder) {
+    public boolean animateRemove(ViewHolder holder) {
         if (shouldAnimateRemove(holder)) {
             return super.animateRemove(holder);
         } else {
@@ -41,11 +41,11 @@ public class QueueAnimator extends DefaultItemAnimator {
         }
     }
 
-    private boolean shouldAnimateRemove(RecyclerView.ViewHolder holder) {
+    private boolean shouldAnimateRemove(ViewHolder holder) {
         if (holder instanceof SpacerSingleton.ViewHolder) {
-            return true;
+            return false;
         } else if (holder instanceof QueueSection.ViewHolder) {
-            return ((QueueSection.ViewHolder) holder).isRemoved();
+            return true;
         }
         return true;
     }
