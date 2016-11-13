@@ -611,19 +611,6 @@ public final class PlayerController {
         return artwork;
     }
 
-    public static RemoteEqualizer getEqualizer() {
-        if (playerService == null) {
-            return null;
-        }
-
-        try {
-            return playerService.getEqualizer();
-        } catch (RemoteException exception) {
-            Timber.e(exception, "Failed to get remote equalizer");
-            return null;
-        }
-    }
-
     /**
      * A {@link BroadcastReceiver} class listening for intents with an
      * {@link MusicPlayer#UPDATE_BROADCAST} action. This broadcast must be sent ordered with this

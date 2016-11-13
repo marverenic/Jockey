@@ -2,6 +2,7 @@ package com.marverenic.music.fragments;
 
 import android.app.ActionBar;
 import android.content.Context;
+import android.media.audiofx.Equalizer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -78,7 +79,7 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
 
         LinearLayout equalizerPanel = (LinearLayout) layout.findViewById(R.id.equalizer_panel);
 
-        equalizer = PlayerController.getEqualizer();
+        equalizer = generateEqualizerConfig();
         int bandCount = (equalizer != null) ? equalizer.getNumberOfBands() : 0;
 
         sliders = new EqualizerFrame[bandCount];
@@ -104,6 +105,13 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
         }
 
         return layout;
+    }
+
+    private RemoteEqualizer generateEqualizerConfig() {
+        RemoteEqualizer eq = new RemoteEqualizer(new Equalizer(0, 1));
+        eq.setProperties(mPrefStore.getEqualizerSettings());
+
+        return eq;
     }
 
     private void applyEqualizer() {
@@ -224,7 +232,7 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
             equalizer.usePreset((short) id);
             if (id != -1) {
                 applyEqualizer();
-                equalizer = PlayerController.getEqualizer();
+                equalizer = generateEqualizerConfig();
 
                 for (short i = 0; i < sliders.length; i++) {
                     sliders[i].update(equalizer.getBandLevel(i));

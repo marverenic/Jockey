@@ -1,5 +1,6 @@
 package com.marverenic.music.player;
 
+import android.media.audiofx.Equalizer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -55,13 +56,13 @@ public interface QueuedMediaPlayer {
 
     void setVolume(float volume);
 
+    void setEqualizer(boolean enabled, Equalizer.Settings settings);
+
     void enableRepeatAll();
 
     void enableRepeatOne();
 
     void enableRepeatNone();
-
-    int getAudioSessionId();
 
     boolean isPlaying();
 
@@ -83,17 +84,6 @@ public interface QueuedMediaPlayer {
          * @param completed The Song that just finished playing
          */
         void onCompletion(Song completed);
-
-        /**
-         * Invoked when a QueuedMediaPlayer has been assigned a new AudioSessionId. This is useful
-         * for extensions like {@link android.media.audiofx.AudioEffect AudioEffects}.
-         * @param oldAudioSessionId The audioSessionId that this QueuedMediaPlayer was previously
-         *                          assigned. Will be {@code 0} if this is the first audioSessionID
-         *                          to be assigned
-         * @param newAudioSessionId The audioSessionID that this QueuedMediaPlayer is now
-         *                          assigned to
-         */
-        void onAudioSessionId(int oldAudioSessionId, int newAudioSessionId);
 
         /**
          * Invoked when a new song is currently loaded by the active media player after calling

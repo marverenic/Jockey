@@ -1,6 +1,7 @@
 package com.marverenic.music.player;
 
 import android.content.Context;
+import android.media.audiofx.Equalizer;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -10,13 +11,10 @@ import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
-import com.google.android.exoplayer2.audio.AudioRendererEventListener;
 import com.google.android.exoplayer2.audio.AudioTrack;
-import com.google.android.exoplayer2.decoder.DecoderCounters;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
@@ -38,7 +36,7 @@ import timber.log.Timber;
 public class QueuedExoPlayer implements QueuedMediaPlayer {
 
     private Context mContext;
-    private SimpleExoPlayer mExoPlayer;
+    private EqualizedExoPlayer mExoPlayer;
     private ExoPlayerState mState;
 
     private boolean mRepeatAll;
@@ -50,8 +48,6 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     private List<Song> mQueue;
     private int mQueueIndex;
 
-    private int mPreviousAudioSessionId;
-
     static {
         AudioTrack.enablePreV21AudioSessionWorkaround = true;
     }
@@ -62,46 +58,10 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
         TrackSelector trackSelector = new DefaultTrackSelector(new Handler());
         LoadControl loadControl = new DefaultLoadControl();
-        mExoPlayer = ExoPlayerFactory.newSimpleInstance(mContext, trackSelector, loadControl);
-        mExoPlayer.setAudioDebugListener(new AudioRendererEventListener() {
-            @Override
-            public void onAudioEnabled(DecoderCounters counters) {
-                Timber.i("onAudioEnabled");
-            }
+        SimpleExoPlayer baseInstance = ExoPlayerFactory.newSimpleInstance(mContext,
+                trackSelector, loadControl);
+        mExoPlayer = new EqualizedExoPlayer(context, baseInstance);
 
-            @Override
-            public void onAudioSessionId(int audioSessionId) {
-                Timber.i("onAudioSessionId (%d)", audioSessionId);
-                if (mEventListener != null) {
-                    mEventListener.onAudioSessionId(mPreviousAudioSessionId, audioSessionId);
-                }
-                mPreviousAudioSessionId = audioSessionId;
-            }
-
-            @Override
-            public void onAudioDecoderInitialized(String decoderName, long initializedTimestampMs, long initializationDurationMs) {
-                Timber.i("onAudioDecoderInitialized (initializedTimestampMs = %d, initializationDurationMs = %d)", initializedTimestampMs, initializationDurationMs);
-            }
-
-            @Override
-            public void onAudioInputFormatChanged(Format format) {
-                Timber.i("onAudioInputFormatChanged");
-            }
-
-            @Override
-            public void onAudioTrackUnderrun(int bufferSize, long bufferSizeMs, long elapsedSinceLastFeedMs) {
-                Timber.i("onAudioTrackUnderrun (bufferSize = %d, bufferSizeMs = %d, elapsedSinceLastFeedMs = %d)", bufferSize, bufferSizeMs, elapsedSinceLastFeedMs);
-            }
-
-            @Override
-            public void onAudioDisabled(DecoderCounters counters) {
-                Timber.i("onAudioDisabled");
-                if (mEventListener != null) {
-                    mEventListener.onAudioSessionId(mPreviousAudioSessionId, mExoPlayer.getAudioSessionId());
-                }
-                mPreviousAudioSessionId = mExoPlayer.getAudioSessionId();
-            }
-        });
 
         mExoPlayer.addListener(new ExoPlayer.EventListener() {
             @Override
@@ -389,6 +349,11 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     }
 
     @Override
+    public void setEqualizer(boolean enabled, Equalizer.Settings settings) {
+        mExoPlayer.setEqualizerSettings(enabled, settings);
+    }
+
+    @Override
     public void enableRepeatAll() {
         if (!mRepeatAll) {
             mRepeatAll = true;
@@ -413,11 +378,6 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
             mRepeatAll = false;
             prepare(isPlaying(), false);
         }
-    }
-
-    @Override
-    public int getAudioSessionId() {
-        return mExoPlayer.getAudioSessionId();
     }
 
     @Override

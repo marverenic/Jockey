@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.audiofx.AudioEffect;
 import android.media.audiofx.Equalizer;
 import android.os.Handler;
 import android.os.PowerManager;
@@ -19,7 +18,6 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.KeyEvent;
 
-import com.google.android.exoplayer2.audio.AudioTrack;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.NowPlayingActivity;
@@ -312,49 +310,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         mEqualizerSettings = preferencesStore.getEqualizerSettings();
         mEqualizerEnabled = preferencesStore.getEqualizerEnabled();
 
-        int audioSessionId = getAudioSessionId();
-        if (audioSessionId == AudioTrack.SESSION_ID_NOT_SET) {
-            Timber.i("No audio session ID has been set. Aborting equalizer initialization");
-        } else {
-            setupCustomEqualizer();
-        }
-    }
-
-    private Equalizer setupCustomEqualizer() {
-        Equalizer equalizer = new Equalizer(0, getAudioSessionId());
-
-        if (mEqualizerSettings != null) {
-            try {
-                equalizer.setProperties(mEqualizerSettings);
-            } catch (IllegalArgumentException | UnsupportedOperationException e) {
-                Timber.e(e, "Failed to load equalizer settings %s", mEqualizerSettings);
-            }
-        }
-
-        equalizer.setEnabled(mEqualizerEnabled);
-        if (mEqualizerEnabled) {
-            releaseSystemEqualizer(getAudioSessionId());
-        } else {
-            setupSystemEqualizer();
-        }
-
-        return equalizer;
-    }
-
-    private Equalizer setupSystemEqualizer() {
-        Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
-        intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
-        intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, mContext.getPackageName());
-        mContext.sendBroadcast(intent);
-
-        return null;
-    }
-
-    private void releaseSystemEqualizer(int audioSessionId) {
-        Intent intent = new Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION);
-        intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, audioSessionId);
-        intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, mContext.getPackageName());
-        mContext.sendBroadcast(intent);
+        mMediaPlayer.setEqualizer(mEqualizerEnabled, mEqualizerSettings);
     }
 
     /**
@@ -452,14 +408,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
     public void setPlaybackChangeListener(OnPlaybackChangeListener listener) {
         mCallback = listener;
-    }
-
-    /**
-     * @return The audio session of the backing {@link android.media.MediaPlayer}
-     * @see MediaPlayer#getAudioSessionId()
-     */
-    public int getAudioSessionId() {
-        return mMediaPlayer.getAudioSessionId();
     }
 
     /**
@@ -1105,12 +1053,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         ((AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE)).abandonAudioFocus(this);
         mContext.unregisterReceiver(mHeadphoneListener);
 
-        // Unbind from the system audio effects
-        final Intent intent = new Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION);
-        intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
-        intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, mContext.getPackageName());
-        mContext.sendBroadcast(intent);
-
         // Make sure to disable the sleep timer to purge any delayed runnables in the message queue
         startSleepTimer(0);
 
@@ -1156,17 +1098,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     }
 
     @Override
-    public void onAudioSessionId(int oldAudioSessionId, int newAudioSessionId) {
-        if (oldAudioSessionId != 0) {
-            releaseSystemEqualizer(oldAudioSessionId);
-        }
-
-        if (newAudioSessionId != 0) {
-            setupCustomEqualizer();
-        }
-    }
-
-    @Override
     public void onSongStart() {
         Timber.i("Started new song");
         mArtwork = Util.fetchFullArt(getNowPlaying());
@@ -1187,14 +1118,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                     getNowPlaying().getSongName()));
         }
         return false;
-    }
-
-    public Equalizer getEqualizer() {
-        if (getAudioSessionId() == AudioTrack.SESSION_ID_NOT_SET) {
-            return null;
-        }
-
-        return new Equalizer(0, getAudioSessionId());
     }
 
     /**

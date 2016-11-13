@@ -32,8 +32,6 @@ interface IPlayerService {
     int getCurrentPosition();
     int getDuration();
 
-    RemoteEqualizer getEqualizer();
-
     int getMultiRepeatCount();
     void setMultiRepeatCount(int count);
 
