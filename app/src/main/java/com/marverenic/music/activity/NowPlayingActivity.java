@@ -278,6 +278,9 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                navigateUp();
+                return true;
             case R.id.action_shuffle:
                 toggleShuffle();
                 return true;
@@ -298,6 +301,14 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void navigateUp() {
+        if (isTaskRoot()) {
+            Intent libraryIntent = new Intent(this, LibraryActivity.class);
+            startActivity(libraryIntent);
+        }
+        finish();
     }
 
     private void toggleShuffle() {

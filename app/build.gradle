@@ -10,7 +10,6 @@ buildscript {
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'io.fabric'
 
@@ -27,6 +26,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    
+    dexOptions {
+        javaMaxHeapSize "2g"
+    }
 
     dataBinding {
         enabled = true
@@ -36,8 +39,8 @@ android {
         applicationId "com.marverenic.music"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 40303
-        versionName "2.0 Beta 4"
+        versionCode 40304
+        versionName "2.0 Beta 5"
     }
 
     buildTypes {
@@ -80,8 +83,7 @@ dependencies {
     compile 'com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:0.5.2'
 
     compile 'com.google.dagger:dagger:2.6'
-    apt 'com.google.dagger:dagger-compiler:2.6'
-    apt 'com.google.guava:guava:19.0'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.6'
 
     compile 'io.reactivex:rxjava:1.1.6'
     compile 'io.reactivex:rxandroid:1.2.1'

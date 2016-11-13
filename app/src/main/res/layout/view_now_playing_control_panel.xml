@@ -38,9 +38,6 @@
 
             <include
                 android:id="@+id/playerControls"
-                android:layout_width="@dimen/now_playing_max_control_width"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 layout="@layout/view_now_playing_controls"
                 bind:viewModel="@{viewModel}"/>
 
