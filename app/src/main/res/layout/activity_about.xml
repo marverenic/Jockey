@@ -15,9 +15,10 @@
         android:paddingLeft="@dimen/global_padding"
         android:paddingRight="@dimen/global_padding">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:gravity="center_horizontal"
             android:paddingLeft="@dimen/list_padding"
             android:paddingRight="@dimen/list_padding">
@@ -30,10 +31,8 @@
                 tools:src="@mipmap/ic_launcher" />
 
             <TextView
-                android:id="@+id/aboutAppName"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutAppIcon"
                 android:gravity="center"
                 android:text="@string/app_name"
                 android:textColor="@android:color/white"
@@ -43,68 +42,71 @@
                 android:id="@+id/aboutVersion"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutAppName"
                 android:gravity="center"
                 android:text="@string/about_version"
                 android:textColor="@color/about_detail_text"
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/aboutDescription"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutVersion"
                 android:layout_marginTop="16dp"
                 android:text="@string/about_description"
                 android:textColor="@color/about_detail_text"
                 android:textSize="@dimen/list_text_header_size" />
 
             <TextView
-                android:id="@+id/lastFmHeader"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutDescription"
                 android:layout_marginTop="16dp"
                 android:text="@string/lastfm_header"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/list_text_header_size" />
 
             <ImageView
-                android:id="@+id/lastFmDetail"
                 android:layout_width="fill_parent"
                 android:layout_height="50dp"
-                android:layout_below="@id/lastFmHeader"
                 android:src="@drawable/last_fm_logo"
                 android:textColor="@color/about_detail_text"
                 android:contentDescription="@string/lastfm_description"
                 android:textSize="@dimen/list_text_header_size" />
 
             <TextView
-                android:id="@+id/aboutUsesHeader"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/lastFmDetail"
                 android:layout_marginTop="16dp"
                 android:text="@string/uses_header"
                 android:textColor="@color/about_detail_text"
                 android:textSize="@dimen/list_text_header_size" />
 
             <TextView
-                android:id="@+id/aboutAOSPHeader"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutUsesHeader"
                 android:layout_marginTop="16dp"
                 android:text="@string/uses_aosp_header"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/list_text_header_size" />
 
             <TextView
-                android:id="@+id/aboutAOSPDetail"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutAOSPHeader"
                 android:text="@string/uses_aosp_detail"
+                android:textColor="@color/about_detail_text"
+                android:textSize="@dimen/list_text_detail_size" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/uses_exoplayer_header"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/list_text_header_size" />
+
+            <TextView
+                android:id="@+id/aboutExoPlayerDetail"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/uses_exoplayer_detail"
                 android:textColor="@color/about_detail_text"
                 android:textSize="@dimen/list_text_detail_size" />
 
@@ -112,7 +114,6 @@
                 android:id="@+id/aboutDagger"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutAOSPDetail"
                 android:layout_marginTop="16dp"
                 android:text="@string/uses_dagger_header"
                 android:textColor="@android:color/white"
@@ -122,7 +123,6 @@
                 android:id="@+id/aboutDaggerDetail"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutDagger"
                 android:text="@string/uses_dagger_detail"
                 android:textColor="@color/about_detail_text"
                 android:textSize="@dimen/list_text_detail_size" />
@@ -131,7 +131,6 @@
                 android:id="@+id/aboutRxJava"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutDaggerDetail"
                 android:layout_marginTop="16dp"
                 android:text="@string/uses_rx_java_header"
                 android:textColor="@android:color/white"
@@ -141,7 +140,6 @@
                 android:id="@+id/aboutRxJavaDetail"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutRxJava"
                 android:text="@string/uses_rx_java_detail"
                 android:textColor="@color/about_detail_text"
                 android:textSize="@dimen/list_text_detail_size" />
@@ -150,7 +148,6 @@
                 android:id="@+id/aboutRxAndroid"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutRxJavaDetail"
                 android:layout_marginTop="16dp"
                 android:text="@string/uses_rx_android_header"
                 android:textColor="@android:color/white"
@@ -160,7 +157,6 @@
                 android:id="@+id/aboutRxAndroidDetail"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutRxAndroid"
                 android:text="@string/uses_rx_android_detail"
                 android:textColor="@color/about_detail_text"
                 android:textSize="@dimen/list_text_detail_size" />
@@ -169,7 +165,6 @@
                 android:id="@+id/aboutRxPermissions"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutRxAndroidDetail"
                 android:layout_marginTop="16dp"
                 android:text="@string/uses_rx_permissions_header"
                 android:textColor="@android:color/white"
@@ -179,7 +174,6 @@
                 android:id="@+id/aboutRxPermissionsDetail"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutRxPermissions"
                 android:text="@string/uses_rx_permissions_detail"
                 android:textColor="@color/about_detail_text"
                 android:textSize="@dimen/list_text_detail_size" />
@@ -188,7 +182,6 @@
                 android:id="@+id/aboutRetrofit"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutRxPermissionsDetail"
                 android:layout_marginTop="16dp"
                 android:text="@string/uses_retrofit_header"
                 android:textColor="@android:color/white"
@@ -198,7 +191,6 @@
                 android:id="@+id/aboutRetrofitDetail"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutRetrofit"
                 android:text="@string/uses_retrofit_detail"
                 android:textColor="@color/about_detail_text"
                 android:textSize="@dimen/list_text_detail_size" />
@@ -207,36 +199,29 @@
                 android:id="@+id/aboutGsonHeader"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutRetrofitDetail"
                 android:layout_marginTop="16dp"
                 android:text="@string/uses_gson_header"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/list_text_header_size" />
 
             <TextView
-                android:id="@+id/aboutGsonDetail"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutGsonHeader"
                 android:text="@string/uses_gson_detail"
                 android:textColor="@color/about_detail_text"
                 android:textSize="@dimen/list_text_detail_size" />
 
             <TextView
-                android:id="@+id/aboutPicassoHeader"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutGsonDetail"
                 android:layout_marginTop="16dp"
                 android:text="@string/uses_glide_header"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/list_text_header_size" />
 
             <TextView
-                android:id="@+id/aboutPicassoDetail"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutPicassoHeader"
                 android:text="@string/uses_glide_detail"
                 android:textColor="@color/about_detail_text"
                 android:textSize="@dimen/list_text_detail_size" />
@@ -245,7 +230,6 @@
                 android:id="@+id/aboutVerticalSeekBarHeader"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutPicassoDetail"
                 android:layout_marginTop="16dp"
                 android:text="@string/uses_vert_slider_header"
                 android:textColor="@android:color/white"
@@ -255,7 +239,6 @@
                 android:id="@+id/aboutVerticalSeekBarDetail"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutVerticalSeekBarHeader"
                 android:text="@string/uses_vert_slider_detail"
                 android:textColor="@color/about_detail_text"
                 android:textSize="@dimen/list_text_detail_size" />
@@ -264,7 +247,6 @@
                 android:id="@+id/aboutSeekArcHeader"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutVerticalSeekBarDetail"
                 android:layout_marginTop="16dp"
                 android:text="@string/uses_seek_arc_header"
                 android:textColor="@android:color/white"
@@ -274,7 +256,6 @@
                 android:id="@+id/aboutSeekArcDetail"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutSeekArcHeader"
                 android:text="@string/uses_seek_arc_detail"
                 android:textColor="@color/about_detail_text"
                 android:textSize="@dimen/list_text_detail_size" />
@@ -283,7 +264,6 @@
                 android:id="@+id/aboutTimberHeader"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutSeekArcDetail"
                 android:layout_marginTop="16dp"
                 android:text="@string/uses_timber_header"
                 android:textColor="@android:color/white"
@@ -293,7 +273,6 @@
                 android:id="@+id/aboutTimberDetail"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutTimberHeader"
                 android:text="@string/uses_timber_detail"
                 android:textColor="@color/about_detail_text"
                 android:textSize="@dimen/list_text_detail_size" />
@@ -302,8 +281,6 @@
                 android:id="@+id/aboutMarverenicLogo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/aboutTimberDetail"
-                android:layout_centerHorizontal="true"
                 android:layout_margin="32dp"
                 android:background="?attr/selectableItemBackgroundBorderless">
 
@@ -330,7 +307,7 @@
 
             </RelativeLayout>
 
-        </RelativeLayout>
+        </LinearLayout>
 
     </ScrollView>
 </LinearLayout>

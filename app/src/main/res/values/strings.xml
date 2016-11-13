@@ -49,8 +49,11 @@
     <string name="uses_aosp_detail">Support-v4 25.0.0, Appcompat-v7 25.0.0, RecyclerView 25.0.0,
         CardView 25.0.0, Design 25.0.0, Palette 25.0.0, Preference-v14 25.0.0; distributed by the
         Android Open Source Project under an Apache License, Version 2.0</string>
+    <string name="uses_exoplayer_header">ExoPlayer</string>
+    <string name="uses_exoplayer_detail">Version 2.0.4; distributed by Google Inc. under an Apache
+        License, Version 2.0</string>
     <string name="uses_dagger_header">Dagger</string>
-    <string name="uses_dagger_detail">Version 2.4; distributed by Google Inc. and Square Inc. under
+    <string name="uses_dagger_detail">Version 2.6; distributed by Google Inc. and Square Inc. under
         an Apache License, Version 2.0</string>
     <string name="uses_rx_java_header">RxJava</string>
     <string name="uses_rx_java_detail">Version 1.6.1; distributed by Netflix, Inc. under an Apache
