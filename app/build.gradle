@@ -26,6 +26,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    
+    dexOptions {
+        javaMaxHeapSize "2g"
+    }
 
     dataBinding {
         enabled = true
@@ -35,8 +39,8 @@ android {
         applicationId "com.marverenic.music"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 40303
-        versionName "2.0 Beta 4"
+        versionCode 40304
+        versionName "2.0 Beta 5"
     }
 
     buildTypes {
