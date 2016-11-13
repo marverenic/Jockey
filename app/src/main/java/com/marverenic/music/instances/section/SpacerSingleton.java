@@ -11,21 +11,26 @@ import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 
 public class SpacerSingleton extends HeterogeneousAdapter.SingletonSection<Void> {
 
-    private int mHeight;
+    private final int mHeight;
+    private boolean mVisible;
 
     public SpacerSingleton(int height) {
         super(null);
         mHeight = height;
+        mVisible = true;
     }
 
-    public void setHeight(int height) {
-        mHeight = height;
+    public void setShowSection(boolean visible) {
+        mVisible = visible;
+    }
+
+    public boolean showSection() {
+        return mVisible;
     }
 
     @Override
     public boolean showSection(HeterogeneousAdapter adapter) {
-        int thisIndex = adapter.getSectionIndex(this);
-        return adapter.getSection(thisIndex - 1).getItemCount(adapter) > 0;
+        return mVisible;
     }
 
     @Override

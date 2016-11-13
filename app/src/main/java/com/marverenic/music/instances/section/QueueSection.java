@@ -63,7 +63,7 @@ public class QueueSection extends EditableSongSection {
         return new ViewHolder(binding, getData(), adapter);
     }
 
-    private class ViewHolder extends EnhancedViewHolder<Song> {
+    public class ViewHolder extends EnhancedViewHolder<Song> {
 
         private InstanceSongQueueBinding mBinding;
 

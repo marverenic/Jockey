@@ -1,25 +1,46 @@
 package com.marverenic.music.instances.section;
 
+import android.support.v4.util.ArrayMap;
 import android.view.ViewGroup;
 
-import com.marverenic.music.R;
-import com.marverenic.music.instances.Song;
 import com.marverenic.heterogeneousadapter.DragDropAdapter;
 import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
+import com.marverenic.music.R;
+import com.marverenic.music.instances.Song;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public abstract class EditableSongSection extends DragDropAdapter.DragSection<Song> {
 
     protected List<Song> mData;
+    private final List<Integer> mIds;
 
     public EditableSongSection(List<Song> data) {
-        mData = data;
+        mIds = new ArrayList<>();
+        setData(data);
     }
 
     public void setData(List<Song> data) {
         mData = data;
+        buildIdMap();
+    }
+
+    private void buildIdMap() {
+        mIds.clear();
+        Map<Song, Integer> occurrences = new ArrayMap<>();
+        for (Song song : mData) {
+            Integer count = occurrences.get(song);
+            if (count == null) {
+                count = 0;
+            }
+
+            int id = (int) (song.getSongId() * Math.pow(7, count));
+            mIds.add(id);
+            occurrences.put(song, ++count);
+        }
     }
 
     public List<Song> getData() {
@@ -28,7 +49,7 @@ public abstract class EditableSongSection extends DragDropAdapter.DragSection<So
 
     @Override
     public int getId(int position) {
-        return (int) get(position).getSongId();
+        return mIds.get(position);
     }
 
     @Override
@@ -46,6 +67,12 @@ public abstract class EditableSongSection extends DragDropAdapter.DragSection<So
 
         mData.set(to, fromObject);
         mData.set(from, toObject);
+
+        Integer fromId = mIds.get(from);
+        Integer toId = mIds.get(to);
+
+        mIds.set(to, fromId);
+        mIds.set(from, toId);
     }
 
     @Override
