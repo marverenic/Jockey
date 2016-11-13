@@ -28,6 +28,7 @@ import com.google.android.exoplayer2.upstream.FileDataSourceFactory;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.utils.Internal;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
@@ -235,7 +236,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     private MediaSource buildRepeatOneMediaSource(DataSource.Factory srcFactory,
                                                   ExtractorsFactory extFactory) {
 
-        Uri uri = Uri.parse(mQueue.get(mQueueIndex).getLocation());
+        Uri uri = Uri.fromFile(new File(mQueue.get(mQueueIndex).getLocation()));
         MediaSource source = new ExtractorMediaSource(uri, srcFactory, extFactory, null, null);
         return new LoopingMediaSource(source);
     }
@@ -246,7 +247,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         MediaSource[] queue = new MediaSource[mQueue.size()];
 
         for (int i = 0; i < queue.length; i++) {
-            Uri uri = Uri.parse(mQueue.get(i).getLocation());
+            Uri uri = Uri.fromFile(new File(mQueue.get(i).getLocation()));
             queue[i] = new ExtractorMediaSource(uri, srcFactory, extFactory, null, null);
         }
 
