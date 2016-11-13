@@ -37,15 +37,12 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
     private QueueSection mQueueSection;
     private SpacerSingleton[] mBottomSpacers;
 
-    private SnappingScroller mScroller;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.list, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.list);
-        mScroller = new SnappingScroller(getContext(), SnappingScroller.SNAP_TO_START);
 
         setupAdapter();
         setupRecyclerView();
@@ -250,8 +247,10 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
     private void smoothScrollToNowPlaying() {
         updateSpacers();
 
-        mScroller.setTargetPosition(lastPlayIndex);
-        mRecyclerView.getLayoutManager().startSmoothScroll(mScroller);
+        RecyclerView.SmoothScroller scroller =
+                new SnappingScroller(getContext(), SnappingScroller.SNAP_TO_START);
+        scroller.setTargetPosition(lastPlayIndex);
+        mRecyclerView.getLayoutManager().startSmoothScroll(scroller);
     }
 
     private void scrollToNowPlaying() {
