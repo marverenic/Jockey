@@ -14,7 +14,6 @@ import android.net.NetworkInfo;
 import android.os.Build;
 
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.player.PlayerController;
 
 import java.util.UUID;
 
@@ -96,7 +95,6 @@ public final class Util {
     public static Intent getSystemEqIntent(Context c) {
         Intent systemEq = new Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
         systemEq.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, c.getPackageName());
-        systemEq.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, PlayerController.getAudioSessionId());
 
         ActivityInfo info = systemEq.resolveActivityInfo(c.getPackageManager(), 0);
         if (info != null && !info.name.startsWith("com.android.musicfx")) {

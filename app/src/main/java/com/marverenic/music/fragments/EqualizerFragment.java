@@ -2,8 +2,6 @@ package com.marverenic.music.fragments;
 
 import android.app.ActionBar;
 import android.content.Context;
-import android.content.Intent;
-import android.media.audiofx.AudioEffect;
 import android.media.audiofx.Equalizer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,6 +26,7 @@ import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.player.RemoteEqualizer;
 import com.marverenic.music.utils.Util;
 
 import javax.inject.Inject;
@@ -37,7 +36,7 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
 
     @Inject PreferencesStore mPrefStore;
 
-    private Equalizer equalizer;
+    private RemoteEqualizer equalizer;
     private EqualizerFrame[] sliders;
     private TextView presetSpinnerPrefix;
     private Spinner presetSpinner;
@@ -80,27 +79,23 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
 
         LinearLayout equalizerPanel = (LinearLayout) layout.findViewById(R.id.equalizer_panel);
 
-        int audioSession = PlayerController.getAudioSessionId();
-        // Make sure that the audio session is valid before displaying the equalizer
-        if (audioSession != 0) {
-            equalizer = new Equalizer(0, PlayerController.getAudioSessionId());
-            int bandCount = equalizer.getNumberOfBands();
+        equalizer = generateEqualizerConfig();
+        int bandCount = (equalizer != null) ? equalizer.getNumberOfBands() : 0;
 
-            sliders = new EqualizerFrame[bandCount];
+        sliders = new EqualizerFrame[bandCount];
 
-            PresetAdapter presetAdapter = new PresetAdapter(getActivity(), equalizer, sliders);
-            presetSpinner.setAdapter(presetAdapter);
-            presetSpinner.setSelection(mPrefStore.getEqualizerPresetId() + 1);
-            presetSpinner.setOnItemSelectedListener(presetAdapter);
+        PresetAdapter presetAdapter = new PresetAdapter(getActivity(), equalizer, sliders);
+        presetSpinner.setAdapter(presetAdapter);
+        presetSpinner.setSelection(mPrefStore.getEqualizerPresetId() + 1);
+        presetSpinner.setOnItemSelectedListener(presetAdapter);
 
-            for (short i = 0; i < bandCount; i++) {
-                inflater.inflate(R.layout.instance_eq_slider, equalizerPanel, true);
-                sliders[i] = new EqualizerFrame(equalizerPanel.getChildAt(i), equalizer,
-                        i, presetSpinner);
-            }
-
-            setEqualizerEnabled(mPrefStore.getEqualizerEnabled());
+        for (short i = 0; i < bandCount; i++) {
+            inflater.inflate(R.layout.instance_eq_slider, equalizerPanel, true);
+            sliders[i] = new EqualizerFrame(equalizerPanel.getChildAt(i), equalizer,
+                    i, presetSpinner);
         }
+
+        setEqualizerEnabled(mPrefStore.getEqualizerEnabled());
 
         // If this device already has an application that can handle equalizers system-wide, inform
         // the user of possible issues by using Jockey's built-in equalizer
@@ -110,6 +105,21 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
         }
 
         return layout;
+    }
+
+    private RemoteEqualizer generateEqualizerConfig() {
+        RemoteEqualizer eq = new RemoteEqualizer(new Equalizer(0, 1));
+        eq.setProperties(mPrefStore.getEqualizerSettings());
+
+        return eq;
+    }
+
+    private void applyEqualizer() {
+        mPrefStore.setEqualizerPresetId((int) presetSpinner.getSelectedItemId());
+        mPrefStore.setEqualizerSettings(equalizer.getProperties());
+        mPrefStore.setEqualizerEnabled(equalizerToggle.isChecked());
+
+        PlayerController.updatePlayerPreferences(mPrefStore);
     }
 
     @Override
@@ -125,30 +135,19 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
         if (equalizerToggle.isChecked() != enabled) {
             equalizerToggle.setChecked(enabled);
         }
-        equalizer.setEnabled(enabled);
         presetSpinnerPrefix.setEnabled(enabled);
         presetSpinner.setEnabled(enabled);
         for (EqualizerFrame f : sliders) {
-            f.update(enabled);
+            f.update(equalizer.getCurrentPreset() == -1 && enabled);
         }
 
-        // Bind or unbind from the system equalizer as needed
-        if (!enabled) {
-            final Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
-            intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, PlayerController.getAudioSessionId());
-            intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, getActivity().getPackageName());
-            getActivity().sendBroadcast(intent);
-        } else {
-            final Intent intent = new Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION);
-            intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, PlayerController.getAudioSessionId());
-            intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, getActivity().getPackageName());
-            getActivity().sendBroadcast(intent);
-        }
+        applyEqualizer();
     }
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         setEqualizerEnabled(isChecked);
+        applyEqualizer();
     }
 
     @Override
@@ -166,27 +165,18 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
                 new Handler().postDelayed(() -> toolbar.removeView(equalizerToggle), duration);
             }
 
-            if (equalizer != null) {
-                mPrefStore.setEqualizerSettings(equalizer.getProperties());
-                mPrefStore.setEqualizerEnabled(equalizerToggle.isChecked());
-                mPrefStore.setEqualizerPresetId((int) presetSpinner.getSelectedItemId());
-
-                equalizer.release();
-            }
+            applyEqualizer();
         }
     }
 
-    private static class PresetAdapter extends BaseAdapter
-            implements AdapterView.OnItemSelectedListener {
+    private class PresetAdapter extends BaseAdapter implements AdapterView.OnItemSelectedListener {
 
         private Context context;
-        private Equalizer equalizer;
         private String[] presets;
         private EqualizerFrame[] sliders;
 
-        PresetAdapter(Context context, Equalizer equalizer, EqualizerFrame[] sliders) {
+        PresetAdapter(Context context, RemoteEqualizer equalizer, EqualizerFrame[] sliders) {
             this.context = context;
-            this.equalizer = equalizer;
             this.sliders = sliders;
 
             presets = new String[equalizer.getNumberOfPresets() + 1];
@@ -239,12 +229,11 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
 
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            if (id != -1) {
-                equalizer.usePreset((short) id);
+            equalizer.usePreset((short) id);
+            applyEqualizer();
 
-                for (short i = 0; i < sliders.length; i++) {
-                    sliders[i].update(equalizer.getBandLevel(i));
-                }
+            for (EqualizerFrame f : sliders) {
+                f.update(id == -1 && equalizerToggle.isChecked());
             }
         }
 
@@ -254,19 +243,19 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
         }
     }
 
-    public static class EqualizerFrame implements SeekBar.OnSeekBarChangeListener {
+    private class EqualizerFrame implements SeekBar.OnSeekBarChangeListener {
 
-        final Equalizer equalizer;
         final short bandNumber;
         final SeekBar bandSlider;
         final TextView bandLabel;
         final Spinner presetSpinner;
 
-        final short minLevel;
-        final short maxLevel;
+        final int minLevel;
+        final int maxLevel;
 
-        public EqualizerFrame(View root, Equalizer eq, short bandNumber, Spinner presetSpinner) {
-            this.equalizer = eq;
+        public EqualizerFrame(View root, RemoteEqualizer eq, short bandNumber,
+                              Spinner presetSpinner) {
+
             this.bandNumber = bandNumber;
             this.presetSpinner = presetSpinner;
 
@@ -281,7 +270,7 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
                 bandLabel.setText(Integer.toString(frequency));
             }
 
-            short[] range = eq.getBandLevelRange();
+            int[] range = eq.getBandLevelRange();
             minLevel = range[0];
             maxLevel = range[1];
 
@@ -311,8 +300,9 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-            // Disable any preset
             presetSpinner.setSelection(0);
+            equalizer.usePreset(-1);
+            applyEqualizer();
         }
     }
 }

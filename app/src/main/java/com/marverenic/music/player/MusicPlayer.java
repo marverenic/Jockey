@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.audiofx.AudioEffect;
 import android.media.audiofx.Equalizer;
 import android.os.Handler;
 import android.os.PowerManager;
@@ -159,12 +158,14 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     private static final float DUCK_VOLUME = 0.5f;
 
     private QueuedMediaPlayer mMediaPlayer;
-    private Equalizer mEqualizer;
     private Context mContext;
     private Handler mHandler;
     private MediaSessionCompat mMediaSession;
     private HeadsetListener mHeadphoneListener;
     private OnPlaybackChangeListener mCallback;
+
+    private Equalizer.Settings mEqualizerSettings;
+    private boolean mEqualizerEnabled;
 
     private List<Song> mQueue;
     private List<Song> mQueueShuffled;
@@ -216,10 +217,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 });
 
         // Initialize the media player
-        mMediaPlayer = new QueuedMediaPlayer(context);
-
-        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mMediaPlayer.setWakeMode(PowerManager.PARTIAL_WAKE_LOCK);
+        mMediaPlayer = new QueuedExoPlayer(context);
         mMediaPlayer.setPlaybackEventListener(this);
 
         mQueue = new ArrayList<>();
@@ -251,8 +249,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         PreferencesStore preferencesStore = new SharedPreferencesStore(mContext);
 
         mShuffle = preferencesStore.isShuffled();
-        mRepeat = preferencesStore.getRepeatMode();
-        mMultiRepeat = mRemotePreferenceStore.getMultiRepeatCount();
+        setRepeat(preferencesStore.getRepeatMode());
+        setMultiRepeat(mRemotePreferenceStore.getMultiRepeatCount());
 
         initEqualizer(preferencesStore);
         startSleepTimer(mRemotePreferenceStore.getSleepTimerEndTime());
@@ -269,6 +267,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         }
 
         setRepeat(preferencesStore.getRepeatMode());
+        initEqualizer(preferencesStore);
     }
 
     /**
@@ -308,25 +307,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     private void initEqualizer(ReadOnlyPreferencesStore preferencesStore) {
         Timber.i("Initializing equalizer");
-        Equalizer.Settings eqSettings = preferencesStore.getEqualizerSettings();
+        mEqualizerSettings = preferencesStore.getEqualizerSettings();
+        mEqualizerEnabled = preferencesStore.getEqualizerEnabled();
 
-        mEqualizer = new Equalizer(0, mMediaPlayer.getAudioSessionId());
-        if (eqSettings != null) {
-            try {
-                mEqualizer.setProperties(eqSettings);
-            } catch (IllegalArgumentException | UnsupportedOperationException e) {
-                Timber.e(e, "Failed to load equalizer settings %s", eqSettings);
-            }
-        }
-        mEqualizer.setEnabled(preferencesStore.getEqualizerEnabled());
-
-        // If the built in equalizer is off, bind to the system equalizer if one is available
-        if (!preferencesStore.getEqualizerEnabled()) {
-            final Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
-            intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
-            intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, mContext.getPackageName());
-            mContext.sendBroadcast(intent);
-        }
+        mMediaPlayer.setEqualizer(mEqualizerEnabled, mEqualizerSettings);
     }
 
     /**
@@ -403,9 +387,9 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 shuffleQueue(queuePosition);
             }
 
+            setBackingQueue(queuePosition);
             mMediaPlayer.seekTo(currentPosition);
 
-            setBackingQueue(queuePosition);
             mArtwork = Util.fetchFullArt(getNowPlaying());
         } catch(FileNotFoundException ignored) {
             Timber.i("State does not exist. Using empty state");
@@ -414,7 +398,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             Timber.i("Failed to parse previous state. Resetting...");
             mQueue.clear();
             mQueueShuffled.clear();
-            setBackingQueue(0);
+            mMediaPlayer.reset();
         } finally {
             if (scanner != null) {
                 scanner.close();
@@ -424,14 +408,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
     public void setPlaybackChangeListener(OnPlaybackChangeListener listener) {
         mCallback = listener;
-    }
-
-    /**
-     * @return The audio session of the backing {@link android.media.MediaPlayer}
-     * @see MediaPlayer#getAudioSessionId()
-     */
-    public int getAudioSessionId() {
-        return mMediaPlayer.getAudioSessionId();
     }
 
     /**
@@ -468,18 +444,14 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                             | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
                             | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS);
 
-            switch (mMediaPlayer.getState()) {
-                case STARTED:
-                    state.setState(PlaybackStateCompat.STATE_PLAYING, getCurrentPosition(), 1f);
-                    break;
-                case PAUSED:
-                    state.setState(PlaybackStateCompat.STATE_PAUSED, getCurrentPosition(), 1f);
-                    break;
-                case STOPPED:
-                    state.setState(PlaybackStateCompat.STATE_STOPPED, getCurrentPosition(), 1f);
-                    break;
-                default:
-                    state.setState(PlaybackStateCompat.STATE_NONE, getCurrentPosition(), 1f);
+            if (mMediaPlayer.isPlaying()) {
+                state.setState(PlaybackStateCompat.STATE_PLAYING, getCurrentPosition(), 1f);
+            } else if (mMediaPlayer.isPaused()) {
+                state.setState(PlaybackStateCompat.STATE_PAUSED, getCurrentPosition(), 1f);
+            } else if (mMediaPlayer.isStopped()) {
+                state.setState(PlaybackStateCompat.STATE_STOPPED, getCurrentPosition(), 1f);
+            } else {
+                state.setState(PlaybackStateCompat.STATE_NONE, getCurrentPosition(), 1f);
             }
             mMediaSession.setPlaybackState(state.build());
             mMediaSession.setActive(mFocused);
@@ -500,11 +472,11 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                 Timber.i("Focus lost transiently. Ducking.");
-                mMediaPlayer.setVolume(DUCK_VOLUME, DUCK_VOLUME);
+                mMediaPlayer.setVolume(DUCK_VOLUME);
                 break;
             case AudioManager.AUDIOFOCUS_GAIN:
                 Timber.i("Regained AudioFocus");
-                mMediaPlayer.setVolume(1f, 1f);
+                mMediaPlayer.setVolume(1f);
                 if (mResumeOnFocusGain) play();
                 mResumeOnFocusGain = false;
                 break;
@@ -714,7 +686,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @param skip Whether the song was skipped (true if skipped, false if played)
      */
     private void logPlayCount(Song song, boolean skip) {
-        Timber.i("Logging play count to PlayCountStore...");
+        Timber.i("Logging %s count to PlayCountStore...", (skip) ? "skip" : "play");
         if (skip) {
             mPlayCountStore.incrementSkipCount(song);
         } else {
@@ -784,7 +756,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @return Whether the current song is getting ready to be played
      */
     public boolean isPreparing() {
-        return getState() == ManagedMediaPlayer.Status.PREPARING;
+        return mMediaPlayer.isPreparing();
     }
 
     /**
@@ -921,6 +893,17 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public void setRepeat(int repeat) {
         Timber.i("Changing repeat setting to %d", repeat);
         mRepeat = repeat;
+        switch (repeat) {
+            case REPEAT_ALL:
+                mMediaPlayer.enableRepeatAll();
+                break;
+            case REPEAT_ONE:
+                mMediaPlayer.enableRepeatOne();
+                break;
+            case REPEAT_NONE:
+            default:
+                mMediaPlayer.enableRepeatNone();
+        }
     }
 
     /**
@@ -937,6 +920,11 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         Timber.i("Changing Multi-Repeat counter to %d", count);
         mMultiRepeat = count;
         mRemotePreferenceStore.setMultiRepeatCount(count);
+        if (count > 1) {
+            mMediaPlayer.enableRepeatOne();
+        } else {
+            setRepeat(mRepeat);
+        }
     }
 
     public int getMultiRepeatCount() {
@@ -1065,18 +1053,9 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         ((AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE)).abandonAudioFocus(this);
         mContext.unregisterReceiver(mHeadphoneListener);
 
-        // Unbind from the system audio effects
-        final Intent intent = new Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION);
-        intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
-        intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, mContext.getPackageName());
-        mContext.sendBroadcast(intent);
-
         // Make sure to disable the sleep timer to purge any delayed runnables in the message queue
         startSleepTimer(0);
 
-        if (mEqualizer != null) {
-            mEqualizer.release();
-        }
         mFocused = false;
         mCallback = null;
         mMediaPlayer.stop();
@@ -1097,7 +1076,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @return The state that the backing {@link QueuedMediaPlayer is in}
      * @see QueuedMediaPlayer#getState()
      */
-    public ManagedMediaPlayer.Status getState() {
+    public PlayerState getState() {
         return mMediaPlayer.getState();
     }
 
@@ -1106,31 +1085,16 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     }
 
     @Override
-    public void onCompletion() {
+    public void onCompletion(Song completed) {
         Timber.i("onCompletion called");
-        logPlay();
+        logPlayCount(completed, false);
 
         if (mMultiRepeat > 1) {
             Timber.i("Multi-Repeat (%d) is enabled. Restarting current song and decrementing.",
                     mMultiRepeat);
 
-            setMultiRepeat(getMultiRepeatCount() - 1);
-            mMediaPlayer.play();
-        } else if (mRepeat == REPEAT_NONE) {
-            if (mMediaPlayer.getQueueIndex() < mMediaPlayer.getQueue().size()) {
-                Timber.i("This is not the last song in the queue. Starting next song");
-                skip();
-            }
-        } else if (mRepeat == REPEAT_ALL) {
-            Timber.i("Repeat all is enabled. Starting next song");
-            skip();
-        } else if (mRepeat == REPEAT_ONE) {
-            Timber.i("Repeat one is enabled. Restarting current song");
-            mMediaPlayer.play();
+            setMultiRepeat(mMultiRepeat - 1);
         }
-
-        updateNowPlaying();
-        updateUi();
     }
 
     @Override
@@ -1142,23 +1106,18 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     }
 
     @Override
-    public boolean onError(int what, int extra) {
-        Timber.i("onError(%d, %d). Sending error message to UI...", what, extra);
-        postError(mContext.getString(
-                R.string.message_play_error_io_exception,
-                getNowPlaying().getSongName()));
+    public boolean onError(Throwable error) {
+        Timber.i(error, "Sending error message to UI...");
+        if (error instanceof FileNotFoundException) {
+            postError(mContext.getString(
+                    R.string.message_play_error_not_found,
+                    getNowPlaying().getSongName()));
+        } else {
+            postError(mContext.getString(
+                    R.string.message_play_error_io_exception,
+                    getNowPlaying().getSongName()));
+        }
         return false;
-    }
-
-    @Override
-    public void onSetDataSourceException(IOException e) {
-        Timber.e(e, "Failed to play song %s", getNowPlaying().getLocation());
-
-        postError(mContext.getString(
-                (e instanceof FileNotFoundException)
-                        ? R.string.message_play_error_not_found
-                        : R.string.message_play_error_io_exception,
-                getNowPlaying().getSongName()));
     }
 
     /**
