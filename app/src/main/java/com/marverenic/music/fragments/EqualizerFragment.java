@@ -138,7 +138,7 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
         presetSpinnerPrefix.setEnabled(enabled);
         presetSpinner.setEnabled(enabled);
         for (EqualizerFrame f : sliders) {
-            f.update(enabled);
+            f.update(equalizer.getCurrentPreset() == -1 && enabled);
         }
 
         applyEqualizer();
@@ -230,13 +230,10 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             equalizer.usePreset((short) id);
-            if (id != -1) {
-                applyEqualizer();
-                equalizer = generateEqualizerConfig();
+            applyEqualizer();
 
-                for (short i = 0; i < sliders.length; i++) {
-                    sliders[i].update(equalizer.getBandLevel(i));
-                }
+            for (EqualizerFrame f : sliders) {
+                f.update(id == -1 && equalizerToggle.isChecked());
             }
         }
 
