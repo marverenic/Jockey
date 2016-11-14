@@ -97,10 +97,11 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     }
 
     @Internal void onPlayerStateChanged(int playbackState) {
-        mState = ExoPlayerState.fromInt(playbackState);
-        if (mState == ExoPlayerState.ENDED) {
+        if (mState != ExoPlayerState.ENDED && playbackState == ExoPlayer.STATE_ENDED) {
+            mExoPlayer.setPlayWhenReady(false);
             onCompletion();
         }
+        mState = ExoPlayerState.fromInt(playbackState);
     }
 
     private void onCompletion() {
@@ -331,7 +332,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
     @Override
     public boolean isPaused() {
-        return mExoPlayer.getPlayWhenReady();
+        return !mExoPlayer.getPlayWhenReady();
     }
 
     @Override
