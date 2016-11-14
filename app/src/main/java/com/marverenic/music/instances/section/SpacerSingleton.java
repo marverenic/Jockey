@@ -30,7 +30,12 @@ public class SpacerSingleton extends HeterogeneousAdapter.SingletonSection<Void>
 
     @Override
     public boolean showSection(HeterogeneousAdapter adapter) {
-        return mVisible;
+        if (!mVisible) {
+            return false;
+        }
+
+        int thisIndex = adapter.getSectionIndex(this);
+        return adapter.getSection(thisIndex - 1).getItemCount(adapter) > 0;
     }
 
     @Override
