@@ -108,12 +108,18 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
     }
 
     private RemoteEqualizer generateEqualizerConfig() {
-        RemoteEqualizer eq = new RemoteEqualizer(new Equalizer(0, 1));
+        // Obtain an instance of the system equalizer to discover available configuration options
+        // for an equalizer including bands and presets. This equalizer is not used to control
+        // audio settings and is released before this method ends
+        Equalizer systemEqualizer = new Equalizer(0, 1);
+
+        RemoteEqualizer eq = new RemoteEqualizer(systemEqualizer);
         Equalizer.Settings settings = mPrefStore.getEqualizerSettings();
         if (settings != null) {
             eq.setProperties(mPrefStore.getEqualizerSettings());
         }
 
+        systemEqualizer.release();
         return eq;
     }
 
