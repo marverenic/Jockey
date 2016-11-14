@@ -109,7 +109,10 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
 
     private RemoteEqualizer generateEqualizerConfig() {
         RemoteEqualizer eq = new RemoteEqualizer(new Equalizer(0, 1));
-        eq.setProperties(mPrefStore.getEqualizerSettings());
+        Equalizer.Settings settings = mPrefStore.getEqualizerSettings();
+        if (settings != null) {
+            eq.setProperties(mPrefStore.getEqualizerSettings());
+        }
 
         return eq;
     }
