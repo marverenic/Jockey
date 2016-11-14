@@ -332,7 +332,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
     @Override
     public boolean isPaused() {
-        return mExoPlayer.getPlayWhenReady();
+        return !mExoPlayer.getPlayWhenReady();
     }
 
     @Override
