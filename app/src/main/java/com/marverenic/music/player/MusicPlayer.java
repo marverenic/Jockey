@@ -1094,6 +1094,9 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                     mMultiRepeat);
 
             setMultiRepeat(mMultiRepeat - 1);
+        } else if (mMediaPlayer.isComplete()) {
+            updateNowPlaying();
+            updateUi();
         }
     }
 
