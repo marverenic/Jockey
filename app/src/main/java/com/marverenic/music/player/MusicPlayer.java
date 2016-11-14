@@ -607,6 +607,9 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         Timber.i("Toggling playback");
         if (isPlaying()) {
             pause();
+        } else if (mMediaPlayer.isComplete()) {
+            mMediaPlayer.setQueueIndex(0);
+            play();
         } else {
             play();
         }
