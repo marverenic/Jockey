@@ -144,7 +144,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
     @Override
     public Song getNowPlaying() {
-        if (mQueue == null) {
+        if (mQueue == null || mQueue.isEmpty()) {
             return null;
         }
         return mQueue.get(mQueueIndex);
@@ -171,7 +171,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
     @Override
     public void setQueue(@NonNull List<Song> queue, int index) {
-        if (index < 0 || index >= queue.size()) {
+        if (index < 0 || (index >= queue.size() && !queue.isEmpty())) {
             throw new IllegalArgumentException("index must between 0 and queue.size");
         }
 
