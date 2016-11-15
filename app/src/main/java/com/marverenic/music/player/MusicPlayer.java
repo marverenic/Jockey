@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.audiofx.Equalizer;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.support.annotation.NonNull;
@@ -164,9 +163,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     private HeadsetListener mHeadphoneListener;
     private OnPlaybackChangeListener mCallback;
 
-    private Equalizer.Settings mEqualizerSettings;
-    private boolean mEqualizerEnabled;
-
     private List<Song> mQueue;
     private List<Song> mQueueShuffled;
 
@@ -307,10 +303,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     private void initEqualizer(ReadOnlyPreferencesStore preferencesStore) {
         Timber.i("Initializing equalizer");
-        mEqualizerSettings = preferencesStore.getEqualizerSettings();
-        mEqualizerEnabled = preferencesStore.getEqualizerEnabled();
-
-        mMediaPlayer.setEqualizer(mEqualizerEnabled, mEqualizerSettings);
+        mMediaPlayer.setEqualizer(preferencesStore.getEqualizerEnabled(),
+                preferencesStore.getEqualizerSettings());
     }
 
     /**
