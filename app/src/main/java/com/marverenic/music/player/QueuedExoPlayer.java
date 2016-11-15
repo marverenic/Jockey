@@ -102,13 +102,14 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         mState = ExoPlayerState.fromInt(playbackState);
 
         if (stateDiff && playbackState == ExoPlayer.STATE_ENDED) {
-            mExoPlayer.setPlayWhenReady(false);
             onCompletion();
+            pause();
+            setQueueIndex(0);
         }
     }
 
     private void onCompletion() {
-        Song finished = getNowPlaying();
+        Song completed = getNowPlaying();
 
         if (mInvalid) {
             boolean ended = false;
@@ -118,15 +119,18 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
                 } else if (mQueueIndex < mQueue.size() - 1) {
                     mQueueIndex++;
                 } else {
+                    mQueueIndex = 0;
                     ended = true;
                 }
             }
 
-            prepare(!ended, !ended);
-        }
+            prepare(!ended, true);
 
-        if (mEventListener != null) {
-            mEventListener.onCompletion(finished);
+            if (!ended && mEventListener != null) {
+                mEventListener.onCompletion(completed);
+            }
+        } else if (mEventListener != null) {
+            mEventListener.onCompletion(completed);
         }
     }
 
@@ -142,9 +146,10 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
     @Internal void onPositionDiscontinuity() {
         int currentQueueIndex = mExoPlayer.getCurrentWindowIndex() % mQueue.size();
-        if (mQueueIndex != currentQueueIndex || mInvalid) {
+        boolean invalid = mInvalid;
+        if (mQueueIndex != currentQueueIndex || invalid) {
             onCompletion();
-            if (!mRepeatOne) {
+            if (!mRepeatOne && !invalid) {
                 mQueueIndex = currentQueueIndex;
                 onStart();
             }
