@@ -159,7 +159,7 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
         if (portrait || tablet) {
             // Add an inner shadow on phones and portrait tablets
             mRecyclerView.addItemDecoration(new InsetDecoration(
-                    ContextCompat.getDrawable(getContext(), R.drawable.inset_shadow),
+                    ContextCompat.getDrawable(getContext(), R.drawable.inset_top_shadow),
                     (int) getResources().getDimension(R.dimen.inset_shadow_height)));
         }
     }
