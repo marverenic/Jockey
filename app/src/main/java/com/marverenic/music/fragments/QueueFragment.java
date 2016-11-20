@@ -161,13 +161,13 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
             // Add an inner shadow at the top of the list
             mRecyclerView.addItemDecoration(new InsetDecoration(
                     ContextCompat.getDrawable(getContext(), R.drawable.inset_top_shadow),
-                    (int) getResources().getDimension(R.dimen.inset_shadow_height),
+                    (int) getResources().getDimension(R.dimen.inset_top_shadow_height),
                     Gravity.TOP));
         } else {
             // Add an inner shadow at the bottom of the list
             mRecyclerView.addItemDecoration(new InsetDecoration(
                     ContextCompat.getDrawable(getContext(), R.drawable.inset_bottom_shadow),
-                    getResources().getDimensionPixelSize(R.dimen.inset_shadow_height),
+                    getResources().getDimensionPixelSize(R.dimen.inset_bottom_shadow_height),
                     Gravity.BOTTOM));
         }
     }

@@ -61,7 +61,7 @@
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/inset_shadow_height"
+                android:layout_height="@dimen/inset_bottom_shadow_height"
                 android:layout_gravity="bottom"
                 android:background="@drawable/inset_bottom_shadow"/>
 
