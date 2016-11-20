@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="player_frame_outer_bevel">#0C000000</color>
+    <color name="player_frame_emboss">#1AFFFFFF</color>
+
+</resources>
