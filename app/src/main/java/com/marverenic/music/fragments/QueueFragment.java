@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ItemDecoration;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -155,12 +156,19 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         boolean portrait = getResources().getConfiguration().orientation != ORIENTATION_LANDSCAPE;
-        boolean tablet = getResources().getConfiguration().smallestScreenWidthDp < 600;
-        if (portrait || tablet) {
-            // Add an inner shadow on phones and portrait tablets
+        boolean tablet = getResources().getConfiguration().smallestScreenWidthDp > 600;
+        if (portrait || !tablet) {
+            // Add an inner shadow at the top of the list
             mRecyclerView.addItemDecoration(new InsetDecoration(
                     ContextCompat.getDrawable(getContext(), R.drawable.inset_top_shadow),
-                    (int) getResources().getDimension(R.dimen.inset_shadow_height)));
+                    (int) getResources().getDimension(R.dimen.inset_shadow_height),
+                    Gravity.TOP));
+        } else {
+            // Add an inner shadow at the bottom of the list
+            mRecyclerView.addItemDecoration(new InsetDecoration(
+                    ContextCompat.getDrawable(getContext(), R.drawable.inset_bottom_shadow),
+                    getResources().getDimensionPixelSize(R.dimen.inset_shadow_height),
+                    Gravity.BOTTOM));
         }
     }
 
