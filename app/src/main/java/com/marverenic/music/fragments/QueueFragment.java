@@ -156,7 +156,7 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         boolean portrait = getResources().getConfiguration().orientation != ORIENTATION_LANDSCAPE;
-        boolean tablet = getResources().getConfiguration().smallestScreenWidthDp > 600;
+        boolean tablet = getResources().getConfiguration().smallestScreenWidthDp >= 600;
         if (portrait || !tablet) {
             // Add an inner shadow at the top of the list
             mRecyclerView.addItemDecoration(new InsetDecoration(
