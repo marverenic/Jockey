@@ -651,6 +651,9 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 || mRepeat == REPEAT_ALL) {
             // If we're in the middle of the queue, or repeat all is on, start the next song
             mMediaPlayer.skip();
+        } else {
+            mMediaPlayer.setQueueIndex(0);
+            mMediaPlayer.pause();
         }
     }
 
