@@ -7,6 +7,9 @@
     <color name="grid_detail_text">#97000000</color>
     <color name="about_detail_text">#B4FFFFFF</color>
 
+    <color name="player_frame_outer_bevel">#8F000000</color>
+    <color name="player_frame_bevel">#30000000</color>
+    <color name="player_frame_emboss">#30FFFFFF</color>
     <color name="player_frame_info_background">#37474f</color>
     <color name="player_frame_ctrl_background">#455a64</color>
     <color name="player_control_background">#212121</color>

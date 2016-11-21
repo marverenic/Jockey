@@ -27,6 +27,12 @@
                 layout="@layout/view_now_playing_details"
                 bind:viewModel="@{viewModel}"/>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/inset_bevel_height"
+                android:background="@color/player_frame_emboss"
+                android:layout_gravity="top"/>
+
         </FrameLayout>
 
         <FrameLayout
@@ -40,6 +46,12 @@
                 android:id="@+id/playerControls"
                 layout="@layout/view_now_playing_controls"
                 bind:viewModel="@{viewModel}"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/inset_bevel_height"
+                android:background="@color/player_frame_bevel"
+                android:layout_gravity="bottom"/>
 
         </FrameLayout>
 

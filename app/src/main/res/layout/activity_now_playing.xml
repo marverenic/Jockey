@@ -59,6 +59,12 @@
 
             </com.marverenic.music.view.GestureView>
 
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/inset_bottom_shadow_height"
+                android:layout_gravity="bottom"
+                android:background="@drawable/inset_bottom_shadow"/>
+
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
@@ -66,6 +72,12 @@
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 app:layout_collapseMode="pin"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/inset_bevel_height"
+                android:background="@color/player_frame_outer_bevel"
+                android:layout_gravity="bottom"/>
 
         </android.support.design.widget.CollapsingToolbarLayout>
 

@@ -29,7 +29,9 @@
     <dimen name="player_frame_peek">208dp</dimen>
     <dimen name="player_frame_info_height">128dp</dimen>
     <dimen name="player_frame_ctrl_height">64dp</dimen>
-    <dimen name="inset_shadow_height">3dp</dimen>
+    <dimen name="inset_bottom_shadow_height">4dp</dimen>
+    <dimen name="inset_top_shadow_height">6dp</dimen>
+    <dimen name="inset_bevel_height">1dp</dimen>
     <dimen name="seekbar_head_width">54dp</dimen>
     <dimen name="seekbar_head_height">64dp</dimen>
 
