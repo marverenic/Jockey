@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -63,7 +64,7 @@ public class GestureView extends FrameLayout {
     public GestureView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mOverlayPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        setAlpha(255);
+        setOverlayAlpha(255);
 
         float densityMultiplier = getResources().getDisplayMetrics().density;
         mIndicatorSize = (int) (INDICATOR_SIZE_DP * densityMultiplier);
@@ -123,7 +124,7 @@ public class GestureView extends FrameLayout {
      *                     {@link android.graphics.Color} integer.
      */
     @SuppressWarnings("unused")
-    public void setAlpha(int alpha) {
+    public void setOverlayAlpha(int alpha) {
         mAlpha = alpha;
         invalidate();
     }
@@ -217,11 +218,13 @@ public class GestureView extends FrameLayout {
                 indicator.draw(canvas);
 
                 /*
-                    Because RotateDrawable does not respect .mutate(), reset the alpha to make
-                    sure that it doesn't change the transparency of any Drawables elsewhere
+                    Because RotateDrawable does not respect .mutate() on API < 23, reset the alpha
+                    to make sure that it doesn't change the transparency of any Drawables elsewhere
                     in the app
                  */
-                indicator.setAlpha(255);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    indicator.setAlpha(255);
+                }
             }
         }
     }
@@ -327,7 +330,7 @@ public class GestureView extends FrameLayout {
      */
     private void animateOutRadius(int targetRadius, int time, int alphaDelay) {
         ObjectAnimator alphaAnim = ObjectAnimator.ofObject(
-                this, "alpha",
+                this, "overlayAlpha",
                 new IntEvaluator(), mAlpha, 0);
         ObjectAnimator radiusAnim = ObjectAnimator.ofObject(
                 this, "radius",
@@ -346,12 +349,9 @@ public class GestureView extends FrameLayout {
         alphaAnim.setStartDelay(alphaDelay);
         alphaAnim.start();
 
-        postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mOverlayEdge = null;
-                mOverlayOrigin = null;
-            }
+        postDelayed(() -> {
+            mOverlayEdge = null;
+            mOverlayOrigin = null;
         }, time + alphaDelay);
     }
 
