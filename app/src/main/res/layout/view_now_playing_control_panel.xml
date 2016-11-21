@@ -30,14 +30,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/inset_bevel_height"
-                android:background="@color/player_frame_outer_bevel"
-                android:layout_gravity="top"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/inset_bevel_height"
                 android:background="@color/player_frame_emboss"
-                android:layout_marginTop="@dimen/inset_bevel_height"
                 android:layout_gravity="top"/>
 
         </FrameLayout>

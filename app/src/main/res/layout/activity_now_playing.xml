@@ -73,6 +73,12 @@
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 app:layout_collapseMode="pin"/>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/inset_bevel_height"
+                android:background="@color/player_frame_outer_bevel"
+                android:layout_gravity="bottom"/>
+
         </android.support.design.widget.CollapsingToolbarLayout>
 
     </android.support.design.widget.AppBarLayout>
