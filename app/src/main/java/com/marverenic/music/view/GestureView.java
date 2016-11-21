@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -217,11 +218,13 @@ public class GestureView extends FrameLayout {
                 indicator.draw(canvas);
 
                 /*
-                    Because RotateDrawable does not respect .mutate(), reset the alpha to make
-                    sure that it doesn't change the transparency of any Drawables elsewhere
+                    Because RotateDrawable does not respect .mutate() on API < 23, reset the alpha
+                    to make sure that it doesn't change the transparency of any Drawables elsewhere
                     in the app
                  */
-                indicator.setAlpha(255);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    indicator.setAlpha(255);
+                }
             }
         }
     }
