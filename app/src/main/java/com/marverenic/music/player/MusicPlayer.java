@@ -651,6 +651,9 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 || mRepeat == REPEAT_ALL) {
             // If we're in the middle of the queue, or repeat all is on, start the next song
             mMediaPlayer.skip();
+        } else {
+            mMediaPlayer.setQueueIndex(0);
+            mMediaPlayer.pause();
         }
     }
 
@@ -704,10 +707,12 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     public void skipPrevious() {
         Timber.i("skipPrevious() called");
-        if (getQueuePosition() == 0 || getCurrentPosition() > SKIP_PREVIOUS_THRESHOLD
+        if ((getQueuePosition() == 0 && mRepeat != REPEAT_ALL)
+                || getCurrentPosition() > SKIP_PREVIOUS_THRESHOLD
                 || getCurrentPosition() > getDuration() / 2) {
             Timber.i("Restarting current song...");
             mMediaPlayer.seekTo(0);
+            mMediaPlayer.play();
             updateNowPlaying();
         } else {
             Timber.i("Starting previous song...");
