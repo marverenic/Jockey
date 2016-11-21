@@ -704,7 +704,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     public void skipPrevious() {
         Timber.i("skipPrevious() called");
-        if (getQueuePosition() == 0 || getCurrentPosition() > SKIP_PREVIOUS_THRESHOLD
+        if ((getQueuePosition() == 0 && mRepeat != REPEAT_ALL)
+                || getCurrentPosition() > SKIP_PREVIOUS_THRESHOLD
                 || getCurrentPosition() > getDuration() / 2) {
             Timber.i("Restarting current song...");
             mMediaPlayer.seekTo(0);
