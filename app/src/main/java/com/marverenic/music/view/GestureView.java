@@ -63,7 +63,7 @@ public class GestureView extends FrameLayout {
     public GestureView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mOverlayPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        setAlpha(255);
+        setOverlayAlpha(255);
 
         float densityMultiplier = getResources().getDisplayMetrics().density;
         mIndicatorSize = (int) (INDICATOR_SIZE_DP * densityMultiplier);
@@ -123,7 +123,7 @@ public class GestureView extends FrameLayout {
      *                     {@link android.graphics.Color} integer.
      */
     @SuppressWarnings("unused")
-    public void setAlpha(int alpha) {
+    public void setOverlayAlpha(int alpha) {
         mAlpha = alpha;
         invalidate();
     }
@@ -327,7 +327,7 @@ public class GestureView extends FrameLayout {
      */
     private void animateOutRadius(int targetRadius, int time, int alphaDelay) {
         ObjectAnimator alphaAnim = ObjectAnimator.ofObject(
-                this, "alpha",
+                this, "overlayAlpha",
                 new IntEvaluator(), mAlpha, 0);
         ObjectAnimator radiusAnim = ObjectAnimator.ofObject(
                 this, "radius",
