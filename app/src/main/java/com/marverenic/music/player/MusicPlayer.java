@@ -683,7 +683,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @param skip Whether the song was skipped (true if skipped, false if played)
      */
     private void logPlayCount(Song song, boolean skip) {
-        Timber.i("Logging %s count to PlayCountStore...", (skip) ? "skip" : "play");
+        Timber.i("Logging %s count to PlayCountStore for %s...", (skip) ? "skip" : "play", song.toString());
         if (skip) {
             mPlayCountStore.incrementSkipCount(song);
         } else {
