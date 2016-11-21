@@ -708,6 +708,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 || getCurrentPosition() > getDuration() / 2) {
             Timber.i("Restarting current song...");
             mMediaPlayer.seekTo(0);
+            mMediaPlayer.play();
             updateNowPlaying();
         } else {
             Timber.i("Starting previous song...");

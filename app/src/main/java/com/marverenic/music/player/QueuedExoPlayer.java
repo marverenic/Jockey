@@ -303,6 +303,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
             prepare(true, true);
         } else {
             mExoPlayer.seekTo(mQueueIndex, 0);
+            mExoPlayer.setPlayWhenReady(true);
         }
     }
 
@@ -318,6 +319,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
             prepare(true, true);
         } else {
             mExoPlayer.seekTo(mQueueIndex, 0);
+            mExoPlayer.setPlayWhenReady(true);
         }
     }
 
