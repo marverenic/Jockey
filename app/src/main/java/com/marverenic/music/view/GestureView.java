@@ -346,12 +346,9 @@ public class GestureView extends FrameLayout {
         alphaAnim.setStartDelay(alphaDelay);
         alphaAnim.start();
 
-        postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mOverlayEdge = null;
-                mOverlayOrigin = null;
-            }
+        postDelayed(() -> {
+            mOverlayEdge = null;
+            mOverlayOrigin = null;
         }, time + alphaDelay);
     }
 
