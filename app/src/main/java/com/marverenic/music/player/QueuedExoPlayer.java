@@ -46,6 +46,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     @Nullable
     private PlaybackEventListener mEventListener;
 
+    private boolean mInvalid;
     private List<Song> mQueue;
     private int mQueueIndex;
 
@@ -97,16 +98,39 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     }
 
     @Internal void onPlayerStateChanged(int playbackState) {
-        if (mState != ExoPlayerState.ENDED && playbackState == ExoPlayer.STATE_ENDED) {
-            mExoPlayer.setPlayWhenReady(false);
-            onCompletion();
-        }
+        boolean stateDiff = mState != ExoPlayerState.fromInt(playbackState);
         mState = ExoPlayerState.fromInt(playbackState);
+
+        if (stateDiff && playbackState == ExoPlayer.STATE_ENDED) {
+            onCompletion();
+            pause();
+            setQueueIndex(0);
+        }
     }
 
     private void onCompletion() {
-        if (mEventListener != null) {
-            mEventListener.onCompletion(getNowPlaying());
+        Song completed = getNowPlaying();
+
+        if (mInvalid) {
+            boolean ended = false;
+            if (!mRepeatOne) {
+                if (mRepeatAll && mQueueIndex == mQueue.size() - 1) {
+                    mQueueIndex = 0;
+                } else if (mQueueIndex < mQueue.size() - 1) {
+                    mQueueIndex++;
+                } else {
+                    mQueueIndex = 0;
+                    ended = true;
+                }
+            }
+
+            prepare(!ended, true);
+
+            if (!ended && mEventListener != null) {
+                mEventListener.onCompletion(completed);
+            }
+        } else if (mEventListener != null) {
+            mEventListener.onCompletion(completed);
         }
     }
 
@@ -122,9 +146,10 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
     @Internal void onPositionDiscontinuity() {
         int currentQueueIndex = mExoPlayer.getCurrentWindowIndex() % mQueue.size();
-        if (mQueueIndex != currentQueueIndex) {
+        boolean invalid = mInvalid;
+        if (mQueueIndex != currentQueueIndex || invalid) {
             onCompletion();
-            if (!mRepeatOne) {
+            if (!mRepeatOne && !invalid) {
                 mQueueIndex = currentQueueIndex;
                 onStart();
             }
@@ -178,12 +203,17 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         if (queue.isEmpty()) {
             reset();
         } else {
+            boolean nowPlayingDiff = !queue.get(index).equals(getNowPlaying());
+            boolean queueDiff = !queue.equals(mQueue);
+
             mQueue = queue;
             mQueueIndex = index;
 
-            Song nowPlaying = getNowPlaying();
-            boolean songChanged = nowPlaying == null || !nowPlaying.equals(queue.get(index));
-            prepare(isPlaying(), songChanged);
+            if (nowPlayingDiff) {
+                prepare(isPlaying(), true);
+            } else {
+                mInvalid |= queueDiff;
+            }
         }
     }
 
@@ -193,7 +223,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
             seekTo(0);
         } else {
             mQueueIndex = index;
-            if (mRepeatOne) {
+            if (mRepeatOne || mInvalid) {
                 prepare(true, true);
             } else {
                 mExoPlayer.seekTo(index, 0);
@@ -213,6 +243,8 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     }
 
     private void prepare(boolean playWhenReady, boolean resetPosition) {
+        mInvalid = false;
+
         if (mQueue == null) {
             return;
         }
@@ -291,6 +323,9 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
     @Override
     public void seekTo(int mSec) {
+        if (mInvalid) {
+            prepare(isPlaying(), false);
+        }
         mExoPlayer.seekTo(mQueueIndex, mSec);
     }
 
@@ -308,11 +343,14 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     @Override
     public void pause() {
         mExoPlayer.setPlayWhenReady(false);
+        if (mInvalid) {
+            prepare(false, false);
+        }
     }
 
     @Override
     public int getCurrentPosition() {
-        return (int) mExoPlayer.getCurrentPosition();
+        return (int) Math.min(mExoPlayer.getCurrentPosition(), getDuration());
     }
 
     @Override
@@ -360,7 +398,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         if (!mRepeatAll) {
             mRepeatAll = true;
             mRepeatOne = false;
-            prepare(isPlaying(), false);
+            mInvalid = true;
         }
     }
 
@@ -369,7 +407,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         if (!mRepeatOne) {
             mRepeatOne = true;
             mRepeatAll = false;
-            prepare(isPlaying(), false);
+            mInvalid = true;
         }
     }
 
@@ -378,7 +416,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         if (mRepeatAll || mRepeatOne) {
             mRepeatOne = false;
             mRepeatAll = false;
-            prepare(isPlaying(), false);
+            mInvalid = true;
         }
     }
 
