@@ -231,15 +231,7 @@ public final class PlayerController {
      * See {@link MusicPlayer#prepare(boolean)}
      */
     public static void begin() {
-        if (playerService != null) {
-            try {
-                playerService.begin();
-                artwork = null;
-                updateUi();
-            } catch (RemoteException exception) {
-                Timber.e(exception, "Failed to begin playback");
-            }
-        }
+        play();
     }
 
     /**

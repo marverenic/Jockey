@@ -330,16 +330,6 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void begin() throws RemoteException {
-            try {
-                instance.musicPlayer.prepare(true);
-            } catch (RuntimeException exception) {
-                Timber.e(exception, "Remote call to PlayerService.begin() failed");
-                throw exception;
-            }
-        }
-
-        @Override
         public void togglePlay() throws RemoteException {
             try {
                 instance.musicPlayer.togglePlay();
