@@ -18,8 +18,6 @@ public interface QueuedMediaPlayer {
 
     int getQueueSize();
 
-    void setQueue(@NonNull List<Song> queue);
-
     void setQueue(@NonNull List<Song> queue, int index);
 
     void setQueueIndex(int index);
