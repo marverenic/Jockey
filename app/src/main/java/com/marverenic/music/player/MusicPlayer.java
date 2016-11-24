@@ -833,6 +833,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             Timber.i("Setting new backing queue (starting at index %d)", index);
             setBackingQueue(index);
         }
+        seekTo(0);
     }
 
     /**
