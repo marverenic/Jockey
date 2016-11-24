@@ -227,14 +227,6 @@ public final class PlayerController {
     }
 
     /**
-     * Begin playback of a new song
-     * See {@link MusicPlayer#prepare(boolean)}
-     */
-    public static void begin() {
-        play();
-    }
-
-    /**
      * Toggle between play and pause states.
      * See {@link MusicPlayer#togglePlay()}
      */

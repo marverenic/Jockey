@@ -174,7 +174,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
             } else {
                 if (PlayerController.isServiceStarted()) {
                     PlayerController.setQueue(queue, position);
-                    PlayerController.begin();
+                    PlayerController.play();
                 } else {
                     // If the service hasn't been bound yet, then we need to wait for the service to
                     // start before we can pass data to it. This code will bind a short-lived
@@ -189,7 +189,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                         @Override
                         public void onReceive(Context context, Intent intent) {
                             PlayerController.setQueue(pendingQueue, pendingPosition);
-                            PlayerController.begin();
+                            PlayerController.play();
                             NowPlayingActivity.this.unregisterReceiver(this);
                         }
                     };
@@ -501,7 +501,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                     PlayerController.seek(previousSeekPosition);
 
                     if (wasPlaying) {
-                        PlayerController.begin();
+                        PlayerController.play();
                     }
                 })
                 .show();

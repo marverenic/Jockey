@@ -125,7 +125,7 @@ public class QueueSongViewModel extends SongViewModel {
         PlayerController.editQueue(getSongs(), newQueuePosition);
 
         if (oldQueuePosition == itemPosition) {
-            PlayerController.begin();
+            PlayerController.play();
         }
 
         mRemoveListener.onRemove();
@@ -138,7 +138,7 @@ public class QueueSongViewModel extends SongViewModel {
                     getSongs().add(itemPosition, removed);
                     PlayerController.editQueue(getSongs(), oldQueuePosition);
                     if (oldQueuePosition == itemPosition) {
-                        PlayerController.begin();
+                        PlayerController.play();
                     }
                     mRemoveListener.onRemove();
                 })

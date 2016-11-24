@@ -82,7 +82,7 @@ public class SongViewModel extends BaseObservable {
     public View.OnClickListener onClickSong() {
         return v -> {
             PlayerController.setQueue(mSongList, mIndex);
-            PlayerController.begin();
+            PlayerController.play();
 
             if (mPrefStore.openNowPlayingOnNewQueue()) {
                 mContext.startActivity(NowPlayingActivity.newIntent(mContext));
