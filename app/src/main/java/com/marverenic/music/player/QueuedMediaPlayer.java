@@ -24,8 +24,6 @@ public interface QueuedMediaPlayer {
 
     int getQueueIndex();
 
-    void prepare(boolean playWhenReady);
-
     void skip();
 
     void skipPrevious();

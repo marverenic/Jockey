@@ -583,16 +583,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     }
 
     /**
-     * Prepares the backing {@link QueuedMediaPlayer} for playback
-     * @param playWhenReady Whether playback will begin when the current song has been prepared
-     * @see QueuedMediaPlayer#prepare(boolean)
-     */
-    public void prepare(boolean playWhenReady) {
-        Timber.i("Preparing current song...");
-        mMediaPlayer.prepare(playWhenReady && getFocus());
-    }
-
-    /**
      * Toggles playback between playing and paused states
      * @see #play()
      * @see #pause()
@@ -810,7 +800,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public void changeSong(int position) {
         Timber.i("changeSong called (position = %d)", position);
         mMediaPlayer.setQueueIndex(position);
-        prepare(true);
     }
 
     /**

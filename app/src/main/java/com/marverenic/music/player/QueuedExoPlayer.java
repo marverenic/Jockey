@@ -227,12 +227,6 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         return mQueueIndex;
     }
 
-    @Override
-    public void prepare(boolean playWhenReady) {
-        mExoPlayer.seekTo(0);
-        mExoPlayer.setPlayWhenReady(playWhenReady);
-    }
-
     private void prepare(boolean playWhenReady, boolean resetPosition) {
         mInvalid = false;
 
