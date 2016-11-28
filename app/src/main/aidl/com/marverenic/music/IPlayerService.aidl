@@ -1,7 +1,7 @@
 // IPlayerService.aidl
 package com.marverenic.music;
 
-import com.marverenic.music.instances.Song;
+import com.marverenic.music.model.Song;
 import com.marverenic.music.data.store.ImmutablePreferenceStore;
 import com.marverenic.music.player.RemoteEqualizer;
 
