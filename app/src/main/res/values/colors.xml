@@ -7,7 +7,6 @@
     <color name="grid_detail_text">#97000000</color>
     <color name="about_detail_text">#B4FFFFFF</color>
 
-    <color name="player_frame_outer_bevel">#8F000000</color>
     <color name="player_frame_bevel">#30000000</color>
     <color name="player_frame_emboss">#30FFFFFF</color>
     <color name="player_frame_info_background">#37474f</color>
@@ -33,6 +32,11 @@
     <color name="primary_grey">#37474F</color>
     <color name="primary_dark_grey">#263238</color>
     <color name="accent_grey">#90A4AE</color>
+
+    <!-- Black -->
+    <color name="primary_black">#212121</color>
+    <color name="primary_dark_black">#171717</color>
+    <color name="accent_black">#00BFA5</color>
 
     <!-- Red -->
     <color name="primary_red">#C62828</color>

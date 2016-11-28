@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager.TaskDescription;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -20,7 +19,6 @@ import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.app.NightMode;
 
 import com.marverenic.music.R;
-import com.marverenic.music.activity.LibraryActivity;
 
 import static android.util.DisplayMetrics.DENSITY_HIGH;
 import static android.util.DisplayMetrics.DENSITY_LOW;
@@ -28,6 +26,7 @@ import static android.util.DisplayMetrics.DENSITY_MEDIUM;
 import static android.util.DisplayMetrics.DENSITY_XHIGH;
 import static android.util.DisplayMetrics.DENSITY_XXHIGH;
 import static android.util.DisplayMetrics.DENSITY_XXXHIGH;
+
 import static com.marverenic.music.data.annotations.BaseTheme.*;
 import static com.marverenic.music.data.annotations.PresetTheme.*;
 
@@ -63,6 +62,8 @@ public class PresetThemeStore implements ThemeStore {
                 return R.color.primary;
             case PURPLE:
                 return R.color.primary_purple;
+            case BLACK:
+                return R.color.primary_black;
             default:
                 return R.color.primary;
         }
@@ -90,6 +91,8 @@ public class PresetThemeStore implements ThemeStore {
                 return R.color.accent;
             case PURPLE:
                 return R.color.accent_purple;
+            case BLACK:
+                return R.color.accent_black;
             default:
                 return R.color.accent;
         }
@@ -127,7 +130,7 @@ public class PresetThemeStore implements ThemeStore {
     private int getThemeId() {
         switch (mPreferencesStore.getPrimaryColor()) {
             case GRAY:
-                return R.style.AppTheme_Black;
+                return R.style.AppTheme_Grey;
             case RED:
                 return R.style.AppTheme_Red;
             case ORANGE:
@@ -140,6 +143,8 @@ public class PresetThemeStore implements ThemeStore {
                 return R.style.AppTheme_Blue;
             case PURPLE:
                 return R.style.AppTheme_Purple;
+            case BLACK:
+                return R.style.AppTheme_Black;
             default:
                 return R.style.AppTheme_Blue;
         }
@@ -208,6 +213,8 @@ public class PresetThemeStore implements ThemeStore {
                 return R.mipmap.ic_launcher;
             case PURPLE:
                 return R.mipmap.ic_launcher_purple;
+            case BLACK:
+                return R.mipmap.ic_launcher_black;
             default:
                 return R.mipmap.ic_launcher;
         }
