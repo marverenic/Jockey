@@ -21,8 +21,8 @@ import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.Song;
 import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
-import com.marverenic.music.section.LibraryEmptyState;
-import com.marverenic.music.section.SongSection;
+import com.marverenic.music.adapter.LibraryEmptyState;
+import com.marverenic.music.adapter.SongSection;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 

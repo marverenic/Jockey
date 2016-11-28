@@ -22,7 +22,7 @@ import com.marverenic.music.fragments.MiniplayerFragment;
 import com.marverenic.music.fragments.PlaylistFragment;
 import com.marverenic.music.fragments.PreferenceFragment;
 import com.marverenic.music.fragments.SongFragment;
-import com.marverenic.music.section.LibraryEmptyState;
+import com.marverenic.music.adapter.LibraryEmptyState;
 import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.viewmodel.AlbumViewModel;
 import com.marverenic.music.viewmodel.ArtistViewModel;

@@ -1,4 +1,4 @@
-package com.marverenic.music.section;
+package com.marverenic.music.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

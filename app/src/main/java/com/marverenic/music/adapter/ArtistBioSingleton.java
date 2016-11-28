@@ -1,4 +1,4 @@
-package com.marverenic.music.section;
+package com.marverenic.music.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
