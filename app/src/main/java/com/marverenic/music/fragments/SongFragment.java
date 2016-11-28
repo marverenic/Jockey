@@ -12,7 +12,7 @@ import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
-import com.marverenic.music.instances.Song;
+import com.marverenic.music.model.Song;
 import com.marverenic.music.adapter.LibraryEmptyState;
 import com.marverenic.music.adapter.SongSection;
 import com.marverenic.music.view.BackgroundDecoration;

@@ -12,7 +12,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
-import com.marverenic.music.instances.Artist;
+import com.marverenic.music.model.Artist;
 import com.marverenic.music.player.PlayerController;
 
 import javax.inject.Inject;

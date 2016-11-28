@@ -1,4 +1,4 @@
-package com.marverenic.music.instances;
+package com.marverenic.music.model;
 
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;

@@ -1,4 +1,4 @@
-package com.marverenic.music.instances;
+package com.marverenic.music.model;
 
 import android.annotation.SuppressLint;
 import android.os.Parcel;
@@ -8,8 +8,8 @@ import com.google.gson.annotations.SerializedName;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.data.store.PlaylistStore;
-import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
-import com.marverenic.music.instances.playlistrules.AutoPlaylistRule.Field;
+import com.marverenic.music.model.playlistrules.AutoPlaylistRule;
+import com.marverenic.music.model.playlistrules.AutoPlaylistRule.Field;
 
 import java.util.ArrayList;
 import java.util.Arrays;

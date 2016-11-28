@@ -7,7 +7,7 @@ import com.marverenic.heterogeneousadapter.DragDropAdapter;
 import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.R;
-import com.marverenic.music.instances.Song;
+import com.marverenic.music.model.Song;
 
 import java.util.ArrayList;
 import java.util.List;

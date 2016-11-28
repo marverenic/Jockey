@@ -14,13 +14,13 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.marverenic.music.instances.Album;
-import com.marverenic.music.instances.Artist;
-import com.marverenic.music.instances.AutoPlaylist;
-import com.marverenic.music.instances.Genre;
-import com.marverenic.music.instances.Playlist;
-import com.marverenic.music.instances.Song;
-import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
+import com.marverenic.music.model.Album;
+import com.marverenic.music.model.Artist;
+import com.marverenic.music.model.AutoPlaylist;
+import com.marverenic.music.model.Genre;
+import com.marverenic.music.model.Playlist;
+import com.marverenic.music.model.Song;
+import com.marverenic.music.model.playlistrules.AutoPlaylistRule;
 import com.marverenic.music.utils.Util;
 import com.tbruyelle.rxpermissions.RxPermissions;
 

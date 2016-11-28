@@ -9,8 +9,8 @@ import android.view.ViewGroup;
 
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.databinding.InstanceSongDragBinding;
-import com.marverenic.music.instances.Playlist;
-import com.marverenic.music.instances.Song;
+import com.marverenic.music.model.Playlist;
+import com.marverenic.music.model.Song;
 import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.viewmodel.PlaylistSongViewModel;

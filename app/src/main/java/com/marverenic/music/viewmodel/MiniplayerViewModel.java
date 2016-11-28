@@ -17,7 +17,7 @@ import android.view.View;
 import com.marverenic.music.BR;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.NowPlayingActivity;
-import com.marverenic.music.instances.Song;
+import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.view.ViewUtils;
 

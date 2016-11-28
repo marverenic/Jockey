@@ -34,7 +34,7 @@ import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
 import com.marverenic.music.dialog.DurationPickerDialogFragment;
 import com.marverenic.music.dialog.NumberPickerDialogFragment;
 import com.marverenic.music.fragments.QueueFragment;
-import com.marverenic.music.instances.Song;
+import com.marverenic.music.model.Song;
 import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.view.GestureView;

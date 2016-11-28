@@ -7,10 +7,10 @@ import android.support.v4.util.ArrayMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.marverenic.music.R;
-import com.marverenic.music.instances.AutoPlaylist;
-import com.marverenic.music.instances.Playlist;
-import com.marverenic.music.instances.Song;
-import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
+import com.marverenic.music.model.AutoPlaylist;
+import com.marverenic.music.model.Playlist;
+import com.marverenic.music.model.Song;
+import com.marverenic.music.model.playlistrules.AutoPlaylistRule;
 
 import java.io.File;
 import java.io.FileWriter;

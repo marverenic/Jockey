@@ -1,26 +1,26 @@
-package com.marverenic.music.instances.playlistrules;
+package com.marverenic.music.model.playlistrules;
 
 import android.support.annotation.StringRes;
 import android.text.InputType;
 
 import com.marverenic.music.R;
-import com.marverenic.music.instances.playlistrules.AutoPlaylistRule.Field;
-import com.marverenic.music.instances.playlistrules.AutoPlaylistRule.Match;
+import com.marverenic.music.model.playlistrules.AutoPlaylistRule.Field;
+import com.marverenic.music.model.playlistrules.AutoPlaylistRule.Match;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static com.marverenic.music.instances.playlistrules.AutoPlaylistRule.CONTAINS;
-import static com.marverenic.music.instances.playlistrules.AutoPlaylistRule.DATE_ADDED;
-import static com.marverenic.music.instances.playlistrules.AutoPlaylistRule.DATE_PLAYED;
-import static com.marverenic.music.instances.playlistrules.AutoPlaylistRule.EQUALS;
-import static com.marverenic.music.instances.playlistrules.AutoPlaylistRule.GREATER_THAN;
-import static com.marverenic.music.instances.playlistrules.AutoPlaylistRule.ID;
-import static com.marverenic.music.instances.playlistrules.AutoPlaylistRule.LESS_THAN;
-import static com.marverenic.music.instances.playlistrules.AutoPlaylistRule.NAME;
-import static com.marverenic.music.instances.playlistrules.AutoPlaylistRule.NOT_EQUALS;
-import static com.marverenic.music.instances.playlistrules.AutoPlaylistRule.PLAY_COUNT;
-import static com.marverenic.music.instances.playlistrules.AutoPlaylistRule.SKIP_COUNT;
+import static com.marverenic.music.model.playlistrules.AutoPlaylistRule.CONTAINS;
+import static com.marverenic.music.model.playlistrules.AutoPlaylistRule.DATE_ADDED;
+import static com.marverenic.music.model.playlistrules.AutoPlaylistRule.DATE_PLAYED;
+import static com.marverenic.music.model.playlistrules.AutoPlaylistRule.EQUALS;
+import static com.marverenic.music.model.playlistrules.AutoPlaylistRule.GREATER_THAN;
+import static com.marverenic.music.model.playlistrules.AutoPlaylistRule.ID;
+import static com.marverenic.music.model.playlistrules.AutoPlaylistRule.LESS_THAN;
+import static com.marverenic.music.model.playlistrules.AutoPlaylistRule.NAME;
+import static com.marverenic.music.model.playlistrules.AutoPlaylistRule.NOT_EQUALS;
+import static com.marverenic.music.model.playlistrules.AutoPlaylistRule.PLAY_COUNT;
+import static com.marverenic.music.model.playlistrules.AutoPlaylistRule.SKIP_COUNT;
 
 public enum RuleEnumeration {
 

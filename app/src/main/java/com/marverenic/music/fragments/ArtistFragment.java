@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
-import com.marverenic.music.instances.Artist;
+import com.marverenic.music.model.Artist;
 import com.marverenic.music.adapter.ArtistSection;
 import com.marverenic.music.adapter.LibraryEmptyState;
 import com.marverenic.music.view.BackgroundDecoration;

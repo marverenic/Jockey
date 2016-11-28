@@ -1,4 +1,4 @@
-package com.marverenic.music.instances;
+package com.marverenic.music.model;
 
 import android.database.Cursor;
 import android.os.Parcel;
@@ -12,8 +12,8 @@ import com.marverenic.music.data.store.MediaStoreUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.marverenic.music.instances.Util.compareTitle;
-import static com.marverenic.music.instances.Util.hashLong;
+import static com.marverenic.music.model.Util.compareTitle;
+import static com.marverenic.music.model.Util.hashLong;
 
 public class Playlist implements Parcelable, Comparable<Playlist> {
 

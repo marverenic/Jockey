@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
-import com.marverenic.music.instances.Album;
+import com.marverenic.music.model.Album;
 import com.marverenic.music.adapter.AlbumSection;
 import com.marverenic.music.adapter.LibraryEmptyState;
 import com.marverenic.music.view.BackgroundDecoration;

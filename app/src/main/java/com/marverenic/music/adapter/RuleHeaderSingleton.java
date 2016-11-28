@@ -7,7 +7,7 @@ import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter.SingletonSection;
 import com.marverenic.music.databinding.InstanceRulesHeaderBinding;
-import com.marverenic.music.instances.AutoPlaylist;
+import com.marverenic.music.model.AutoPlaylist;
 import com.marverenic.music.viewmodel.RuleHeaderViewModel;
 
 public class RuleHeaderSingleton extends SingletonSection<AutoPlaylist.Builder> {

@@ -26,7 +26,7 @@ import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.data.store.ReadOnlyPreferencesStore;
 import com.marverenic.music.data.store.RemotePreferenceStore;
 import com.marverenic.music.data.store.SharedPreferencesStore;
-import com.marverenic.music.instances.Song;
+import com.marverenic.music.model.Song;
 import com.marverenic.music.utils.Util;
 
 import java.io.File;

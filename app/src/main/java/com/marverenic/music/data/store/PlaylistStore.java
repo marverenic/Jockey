@@ -2,9 +2,9 @@ package com.marverenic.music.data.store;
 
 import android.support.annotation.Nullable;
 
-import com.marverenic.music.instances.AutoPlaylist;
-import com.marverenic.music.instances.Playlist;
-import com.marverenic.music.instances.Song;
+import com.marverenic.music.model.AutoPlaylist;
+import com.marverenic.music.model.Playlist;
+import com.marverenic.music.model.Song;
 
 import java.util.List;
 

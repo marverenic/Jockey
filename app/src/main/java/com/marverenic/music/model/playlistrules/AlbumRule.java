@@ -1,4 +1,4 @@
-package com.marverenic.music.instances.playlistrules;
+package com.marverenic.music.model.playlistrules;
 
 import android.annotation.SuppressLint;
 import android.os.Parcel;
@@ -7,8 +7,8 @@ import android.os.Parcelable;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.data.store.PlaylistStore;
-import com.marverenic.music.instances.Artist;
-import com.marverenic.music.instances.Song;
+import com.marverenic.music.model.Album;
+import com.marverenic.music.model.Song;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,46 +18,46 @@ import java.util.Set;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
-public class ArtistRule extends AutoPlaylistRule implements Parcelable {
+public class AlbumRule extends AutoPlaylistRule implements Parcelable {
 
-    protected ArtistRule(@Field int field, @Match int match, String value) {
-        super(ARTIST, field, match, value);
+    protected AlbumRule(@Field int field, @Match int match, String value) {
+        super(ALBUM, field, match, value);
     }
 
-    protected ArtistRule(Parcel in) {
+    protected AlbumRule(Parcel in) {
         super(in);
     }
 
     @Override
     public Observable<List<Song>> applyFilter(PlaylistStore playlistStore, MusicStore musicStore,
                                               PlayCountStore playCountStore) {
-        return musicStore.getArtists()
+        return musicStore.getAlbums()
                 .observeOn(Schedulers.computation())
                 .take(1)
                 .map(library -> {
-                    List<Artist> filtered = new ArrayList<>();
-                    for (Artist artist : library) {
-                        if (includeArtist(artist)) {
-                            filtered.add(artist);
+                    List<Album> filtered = new ArrayList<>();
+                    for (Album album : library) {
+                        if (includeAlbum(album)) {
+                            filtered.add(album);
                         }
                     }
 
                     return filtered;
                 })
-                .map(artists -> {
-                    Set<Long> artistIds = new HashSet<>();
+                .map(albums -> {
+                    Set<Long> albumIds = new HashSet<>();
 
-                    for (Artist artist : artists) {
-                        artistIds.add((long) artist.getArtistId());
+                    for (Album album : albums) {
+                        albumIds.add(album.getAlbumId());
                     }
 
-                    return artistIds;
+                    return albumIds;
                 })
-                .zipWith(musicStore.getSongs(), (artistIds, songs) -> {
+                .zipWith(musicStore.getSongs(), (albumIds, songs) -> {
                     List<Song> filtered = new ArrayList<>();
 
                     for (Song song : songs) {
-                        if (artistIds.contains(song.getArtistId())) {
+                        if (albumIds.contains(song.getAlbumId())) {
                             filtered.add(song);
                         }
                     }
@@ -67,12 +67,12 @@ public class ArtistRule extends AutoPlaylistRule implements Parcelable {
     }
 
     @SuppressLint("SwitchIntDef")
-    private boolean includeArtist(Artist artist) {
+    private boolean includeAlbum(Album album) {
         switch (getField()) {
             case AutoPlaylistRule.ID:
-                return checkId(artist.getArtistId());
+                return checkId(album.getAlbumId());
             case AutoPlaylistRule.NAME:
-                return checkString(artist.getArtistName());
+                return checkString(album.getAlbumName());
         }
         throw new IllegalArgumentException("Cannot compare against field " + getField());
     }
@@ -87,15 +87,15 @@ public class ArtistRule extends AutoPlaylistRule implements Parcelable {
         return 0;
     }
 
-    public static final Creator<ArtistRule> CREATOR = new Creator<ArtistRule>() {
+    public static final Creator<AlbumRule> CREATOR = new Creator<AlbumRule>() {
         @Override
-        public ArtistRule createFromParcel(Parcel in) {
-            return new ArtistRule(in);
+        public AlbumRule createFromParcel(Parcel in) {
+            return new AlbumRule(in);
         }
 
         @Override
-        public ArtistRule[] newArray(int size) {
-            return new ArtistRule[size];
+        public AlbumRule[] newArray(int size) {
+            return new AlbumRule[size];
         }
     };
 }

@@ -1,4 +1,4 @@
-package com.marverenic.music.instances.playlistrules;
+package com.marverenic.music.model.playlistrules;
 
 import android.annotation.SuppressLint;
 import android.os.Parcel;
@@ -7,8 +7,8 @@ import android.os.Parcelable;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.data.store.PlaylistStore;
-import com.marverenic.music.instances.Playlist;
-import com.marverenic.music.instances.Song;
+import com.marverenic.music.model.Playlist;
+import com.marverenic.music.model.Song;
 
 import java.util.ArrayList;
 import java.util.List;

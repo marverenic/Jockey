@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.marverenic.music.databinding.InstanceAlbumBinding;
-import com.marverenic.music.instances.Album;
+import com.marverenic.music.model.Album;
 import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.viewmodel.AlbumViewModel;

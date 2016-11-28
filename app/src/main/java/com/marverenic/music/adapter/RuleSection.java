@@ -9,7 +9,7 @@ import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.R;
 import com.marverenic.music.databinding.InstanceRuleBinding;
-import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
+import com.marverenic.music.model.playlistrules.AutoPlaylistRule;
 import com.marverenic.music.viewmodel.RuleViewModel;
 
 import java.util.List;

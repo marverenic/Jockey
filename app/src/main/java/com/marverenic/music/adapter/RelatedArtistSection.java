@@ -20,7 +20,7 @@ import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.data.store.MusicStore;
-import com.marverenic.music.instances.Artist;
+import com.marverenic.music.model.Artist;
 import com.marverenic.music.lastfm.model.Image;
 import com.marverenic.music.lastfm.model.LfmArtist;
 

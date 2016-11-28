@@ -1,4 +1,4 @@
-package com.marverenic.music.instances.playlistrules;
+package com.marverenic.music.model.playlistrules;
 
 import android.annotation.SuppressLint;
 import android.os.Parcel;
@@ -12,7 +12,7 @@ import com.google.gson.stream.JsonWriter;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.data.store.PlaylistStore;
-import com.marverenic.music.instances.Song;
+import com.marverenic.music.model.Song;
 
 import java.io.IOException;
 import java.util.List;

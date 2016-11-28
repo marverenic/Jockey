@@ -1,4 +1,4 @@
-package com.marverenic.music.instances;
+package com.marverenic.music.model;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -14,9 +14,9 @@ import com.marverenic.music.data.store.MediaStoreUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.marverenic.music.instances.Util.compareTitle;
-import static com.marverenic.music.instances.Util.hashLong;
-import static com.marverenic.music.instances.Util.parseUnknown;
+import static com.marverenic.music.model.Util.compareTitle;
+import static com.marverenic.music.model.Util.hashLong;
+import static com.marverenic.music.model.Util.parseUnknown;
 
 public final class Album implements Parcelable, Comparable<Album> {
 

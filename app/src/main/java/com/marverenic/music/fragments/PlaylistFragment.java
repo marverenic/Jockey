@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.PlaylistStore;
-import com.marverenic.music.instances.Playlist;
+import com.marverenic.music.model.Playlist;
 import com.marverenic.music.adapter.LibraryEmptyState;
 import com.marverenic.music.adapter.PlaylistSection;
 import com.marverenic.music.adapter.SpacerSingleton;
