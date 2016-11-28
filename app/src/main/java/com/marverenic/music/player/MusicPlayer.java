@@ -794,6 +794,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public void changeSong(int position) {
         Timber.i("changeSong called (position = %d)", position);
         mMediaPlayer.setQueueIndex(position);
+        play();
     }
 
     /**
