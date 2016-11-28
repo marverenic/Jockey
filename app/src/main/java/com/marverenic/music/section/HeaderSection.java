@@ -1,4 +1,4 @@
-package com.marverenic.music.instances.section;
+package com.marverenic.music.section;
 
 import android.view.LayoutInflater;
 import android.view.View;

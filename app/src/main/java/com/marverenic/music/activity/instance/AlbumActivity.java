@@ -19,8 +19,8 @@ import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.instances.Album;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.instances.section.LibraryEmptyState;
-import com.marverenic.music.instances.section.SongSection;
+import com.marverenic.music.section.LibraryEmptyState;
+import com.marverenic.music.section.SongSection;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 

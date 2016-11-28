@@ -1,4 +1,4 @@
-package com.marverenic.music.instances.section;
+package com.marverenic.music.section;
 
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;

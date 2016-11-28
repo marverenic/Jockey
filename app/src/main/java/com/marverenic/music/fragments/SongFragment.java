@@ -13,8 +13,8 @@ import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.instances.Song;
-import com.marverenic.music.instances.section.LibraryEmptyState;
-import com.marverenic.music.instances.section.SongSection;
+import com.marverenic.music.section.LibraryEmptyState;
+import com.marverenic.music.section.SongSection;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 

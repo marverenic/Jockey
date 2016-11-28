@@ -16,8 +16,8 @@ import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.instances.AutoPlaylist;
 import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
-import com.marverenic.music.instances.section.RuleHeaderSingleton;
-import com.marverenic.music.instances.section.RuleSection;
+import com.marverenic.music.section.RuleHeaderSingleton;
+import com.marverenic.music.section.RuleSection;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 
