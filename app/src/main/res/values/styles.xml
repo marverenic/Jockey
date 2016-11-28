@@ -16,15 +16,15 @@
         <item name="overlapAnchor">true</item>
     </style>
 
-    <style name="AppTheme.Black" parent="AppTheme">
+    <style name="AppTheme.Grey" parent="AppTheme">
         <item name="colorPrimary">@color/primary_grey</item>
         <item name="colorPrimaryDark">@color/primary_dark_grey</item>
         <item name="colorAccent">@color/accent_grey</item>
         <item name="colorControlHighlight">@color/accent_grey</item>
-        <item name="alertDialogTheme">@style/AppTheme.Black.AlertDialog</item>
+        <item name="alertDialogTheme">@style/AppTheme.Grey.AlertDialog</item>
     </style>
 
-    <style name="AppTheme.Black.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+    <style name="AppTheme.Grey.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
         <item name="colorAccent">@color/accent_grey</item>
     </style>
 

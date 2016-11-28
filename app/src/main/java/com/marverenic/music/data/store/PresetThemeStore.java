@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager.TaskDescription;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -20,7 +19,6 @@ import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.app.NightMode;
 
 import com.marverenic.music.R;
-import com.marverenic.music.activity.LibraryActivity;
 
 import static android.util.DisplayMetrics.DENSITY_HIGH;
 import static android.util.DisplayMetrics.DENSITY_LOW;
@@ -127,7 +125,7 @@ public class PresetThemeStore implements ThemeStore {
     private int getThemeId() {
         switch (mPreferencesStore.getPrimaryColor()) {
             case GRAY:
-                return R.style.AppTheme_Black;
+                return R.style.AppTheme_Grey;
             case RED:
                 return R.style.AppTheme_Red;
             case ORANGE:
