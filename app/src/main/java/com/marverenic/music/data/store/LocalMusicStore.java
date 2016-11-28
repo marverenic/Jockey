@@ -3,10 +3,10 @@ package com.marverenic.music.data.store;
 import android.content.Context;
 import android.provider.MediaStore;
 
-import com.marverenic.music.instances.Album;
-import com.marverenic.music.instances.Artist;
-import com.marverenic.music.instances.Genre;
-import com.marverenic.music.instances.Song;
+import com.marverenic.music.model.Album;
+import com.marverenic.music.model.Artist;
+import com.marverenic.music.model.Genre;
+import com.marverenic.music.model.Song;
 
 import java.io.File;
 import java.util.ArrayList;

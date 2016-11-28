@@ -20,10 +20,10 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.data.store.PlaylistStore;
-import com.marverenic.music.instances.Playlist;
-import com.marverenic.music.instances.Song;
-import com.marverenic.music.instances.section.LibraryEmptyState;
-import com.marverenic.music.instances.section.PlaylistSongSection;
+import com.marverenic.music.model.Playlist;
+import com.marverenic.music.model.Song;
+import com.marverenic.music.adapter.LibraryEmptyState;
+import com.marverenic.music.adapter.PlaylistSongSection;
 import com.marverenic.music.view.DragBackgroundDecoration;
 import com.marverenic.music.view.DragDividerDecoration;
 

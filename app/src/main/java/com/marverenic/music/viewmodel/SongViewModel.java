@@ -15,7 +15,7 @@ import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
-import com.marverenic.music.instances.Song;
+import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 
 import java.util.List;

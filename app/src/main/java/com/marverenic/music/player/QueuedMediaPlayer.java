@@ -4,7 +4,7 @@ import android.media.audiofx.Equalizer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.marverenic.music.instances.Song;
+import com.marverenic.music.model.Song;
 
 import java.util.List;
 

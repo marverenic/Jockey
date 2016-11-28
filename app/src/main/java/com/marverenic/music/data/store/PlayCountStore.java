@@ -1,6 +1,6 @@
 package com.marverenic.music.data.store;
 
-import com.marverenic.music.instances.Song;
+import com.marverenic.music.model.Song;
 
 import rx.Observable;
 

@@ -29,7 +29,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PreferencesStore;
 import com.marverenic.music.dialog.DirectoryDialogFragment;
-import com.marverenic.music.instances.section.BasicEmptyState;
+import com.marverenic.music.adapter.BasicEmptyState;
 import com.marverenic.music.view.DividerDecoration;
 import com.tbruyelle.rxpermissions.RxPermissions;
 

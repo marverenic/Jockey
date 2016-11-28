@@ -14,8 +14,8 @@ import com.marverenic.music.activity.instance.AutoPlaylistActivity;
 import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
 import com.marverenic.music.activity.instance.PlaylistActivity;
 import com.marverenic.music.data.store.PlaylistStore;
-import com.marverenic.music.instances.AutoPlaylist;
-import com.marverenic.music.instances.Playlist;
+import com.marverenic.music.model.AutoPlaylist;
+import com.marverenic.music.model.Playlist;
 import com.marverenic.music.player.PlayerController;
 
 import javax.inject.Inject;

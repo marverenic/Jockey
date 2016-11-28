@@ -29,7 +29,7 @@ import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
-import com.marverenic.music.instances.Album;
+import com.marverenic.music.model.Album;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.view.ViewUtils;
 

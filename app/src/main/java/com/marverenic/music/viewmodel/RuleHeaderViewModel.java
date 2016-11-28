@@ -14,8 +14,8 @@ import android.widget.Switch;
 import com.marverenic.music.BR;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.data.store.PlaylistStore;
-import com.marverenic.music.instances.AutoPlaylist;
-import com.marverenic.music.instances.playlistrules.AutoPlaylistRule;
+import com.marverenic.music.model.AutoPlaylist;
+import com.marverenic.music.model.playlistrules.AutoPlaylistRule;
 
 import javax.inject.Inject;
 

@@ -3,7 +3,7 @@ package com.marverenic.music.data.store;
 import android.content.Context;
 import android.support.v4.util.LongSparseArray;
 
-import com.marverenic.music.instances.Song;
+import com.marverenic.music.model.Song;
 
 import java.io.File;
 import java.io.FileInputStream;

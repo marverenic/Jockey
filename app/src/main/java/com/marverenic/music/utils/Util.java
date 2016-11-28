@@ -13,7 +13,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 
-import com.marverenic.music.instances.Song;
+import com.marverenic.music.model.Song;
 
 import java.util.UUID;
 
