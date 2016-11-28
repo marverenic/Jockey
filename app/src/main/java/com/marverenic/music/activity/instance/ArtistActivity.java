@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -93,6 +94,9 @@ public class ArtistActivity extends BaseActivity {
                 (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbar.setTitle(mReference.getArtistName());
 
+        ImageView artistImage = (ImageView) findViewById(R.id.backdrop);
+        artistImage.getLayoutParams().height = calculateHeroHeight();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
@@ -143,6 +147,18 @@ public class ArtistActivity extends BaseActivity {
                                 hideLoadingSpinner();
                             });
         }
+    }
+
+    private int calculateHeroHeight() {
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int screenWidth = metrics.widthPixels;
+        int screenHeight = metrics.heightPixels;
+
+        // prefer a 3:2 aspect ratio
+        int preferredHeight = screenWidth * 2 / 3;
+        int maxHeight = screenHeight / 2;
+
+        return Math.min(preferredHeight, maxHeight);
     }
 
     private boolean allEntriesHaveYears() {
