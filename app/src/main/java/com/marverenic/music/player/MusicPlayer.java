@@ -550,13 +550,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     private void shuffleQueue(int currentIndex) {
         Timber.i("Shuffling queue...");
-
-        if (mQueueShuffled == null) {
-            mQueueShuffled = new ArrayList<>(mQueue);
-        } else {
-            mQueueShuffled.clear();
-            mQueueShuffled.addAll(mQueue);
-        }
+        mQueueShuffled = new ArrayList<>(mQueue);
 
         if (!mQueueShuffled.isEmpty()) {
             Song first = mQueueShuffled.remove(currentIndex);
@@ -580,16 +574,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         }
 
         mQueue = unshuffled;
-    }
-
-    /**
-     * Prepares the backing {@link QueuedMediaPlayer} for playback
-     * @param playWhenReady Whether playback will begin when the current song has been prepared
-     * @see QueuedMediaPlayer#prepare(boolean)
-     */
-    public void prepare(boolean playWhenReady) {
-        Timber.i("Preparing current song...");
-        mMediaPlayer.prepare(playWhenReady && getFocus());
     }
 
     /**
@@ -810,7 +794,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public void changeSong(int position) {
         Timber.i("changeSong called (position = %d)", position);
         mMediaPlayer.setQueueIndex(position);
-        prepare(true);
     }
 
     /**
@@ -844,6 +827,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             Timber.i("Setting new backing queue (starting at index %d)", index);
             setBackingQueue(index);
         }
+        seekTo(0);
     }
 
     /**

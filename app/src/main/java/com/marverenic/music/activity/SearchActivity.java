@@ -329,7 +329,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
     private void playSongResults() {
         if (!getSongResults().isEmpty()) {
             PlayerController.setQueue(getSongResults(), 0);
-            PlayerController.begin();
+            PlayerController.play();
         }
     }
 
@@ -351,7 +351,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         mPlaylistStore.getSongs(playlist).subscribe(
                 songs -> {
                     PlayerController.setQueue(songs, 0);
-                    PlayerController.begin();
+                    PlayerController.play();
                 }, throwable -> {
                     Timber.e(throwable, "Failed to play playlist from intent");
                 });
@@ -376,7 +376,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         combinedSongs.subscribe(
                 songs -> {
                     PlayerController.setQueue(songs, 0);
-                    PlayerController.begin();
+                    PlayerController.play();
                 },
                 throwable -> {
                     Timber.e(throwable, "Failed to play artist from intent");
@@ -401,7 +401,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         mMusicStore.getSongs(album).subscribe(
                 songs -> {
                     PlayerController.setQueue(songs, 0);
-                    PlayerController.begin();
+                    PlayerController.play();
                 }, throwable -> {
                     Timber.e(throwable, "Failed to play album from intent");
                 });
@@ -424,7 +424,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         mMusicStore.getSongs(genre).subscribe(
                 songs -> {
                     PlayerController.setQueue(songs, 0);
-                    PlayerController.begin();
+                    PlayerController.play();
                 }, throwable -> {
                     Timber.e(throwable, "Failed to play genre from intent");
                 });

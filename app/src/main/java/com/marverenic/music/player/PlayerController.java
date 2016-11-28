@@ -227,22 +227,6 @@ public final class PlayerController {
     }
 
     /**
-     * Begin playback of a new song
-     * See {@link MusicPlayer#prepare(boolean)}
-     */
-    public static void begin() {
-        if (playerService != null) {
-            try {
-                playerService.begin();
-                artwork = null;
-                updateUi();
-            } catch (RemoteException exception) {
-                Timber.e(exception, "Failed to begin playback");
-            }
-        }
-    }
-
-    /**
      * Toggle between play and pause states.
      * See {@link MusicPlayer#togglePlay()}
      */

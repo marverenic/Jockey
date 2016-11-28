@@ -186,15 +186,6 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     }
 
     @Override
-    public void setQueue(@NonNull List<Song> queue) {
-        if (queue.size() >= mQueue.size()) {
-            setQueue(queue, mQueueIndex);
-        } else {
-            setQueue(queue, 0);
-        }
-    }
-
-    @Override
     public void setQueue(@NonNull List<Song> queue, int index) {
         if (index < 0 || (index >= queue.size() && !queue.isEmpty())) {
             throw new IllegalArgumentException("index must between 0 and queue.size");
@@ -234,12 +225,6 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     @Override
     public int getQueueIndex() {
         return mQueueIndex;
-    }
-
-    @Override
-    public void prepare(boolean playWhenReady) {
-        mExoPlayer.seekTo(0);
-        mExoPlayer.setPlayWhenReady(playWhenReady);
     }
 
     private void prepare(boolean playWhenReady, boolean resetPosition) {

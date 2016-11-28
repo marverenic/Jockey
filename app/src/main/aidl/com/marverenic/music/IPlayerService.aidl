@@ -10,7 +10,6 @@ interface IPlayerService {
     void stop();
     void skip();
     void previous();
-    void begin();
     void togglePlay();
     void play();
     void pause();
