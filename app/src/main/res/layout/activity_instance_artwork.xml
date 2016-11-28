@@ -49,10 +49,10 @@
                     android:foreground="@drawable/scrim_instance_artwork"
                     android:fitsSystemWindows="true">
 
-                    <com.marverenic.music.view.SquareImageViewH
+                    <ImageView
                         android:id="@+id/backdrop"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:fitsSystemWindows="true"/>
 
                 </FrameLayout>

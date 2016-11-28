@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -85,6 +86,9 @@ public class AlbumActivity extends BaseActivity {
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
 
+        ImageView artistImage = (ImageView) findViewById(R.id.backdrop);
+        artistImage.getLayoutParams().height = calculateHeroHeight();
+
         mAdapter = new HeterogeneousAdapter();
         setupAdapter();
         mAdapter.setEmptyState(new LibraryEmptyState(this) {
@@ -120,6 +124,17 @@ public class AlbumActivity extends BaseActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         list.setLayoutManager(layoutManager);
+    }
+
+    private int calculateHeroHeight() {
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int screenWidth = metrics.widthPixels;
+        int screenHeight = metrics.heightPixels;
+
+        int maxHeight = screenHeight / 2;
+
+        // prefer a 1:1 aspect ratio
+        return Math.min(screenWidth, maxHeight);
     }
 
     private void setupAdapter() {
