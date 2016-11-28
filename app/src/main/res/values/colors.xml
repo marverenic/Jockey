@@ -34,6 +34,11 @@
     <color name="primary_dark_grey">#263238</color>
     <color name="accent_grey">#90A4AE</color>
 
+    <!-- Black -->
+    <color name="primary_black">#212121</color>
+    <color name="primary_dark_black">#171717</color>
+    <color name="accent_black">#80cbc4</color>
+
     <!-- Red -->
     <color name="primary_red">#C62828</color>
     <color name="primary_dark_red">#B71C1C</color>

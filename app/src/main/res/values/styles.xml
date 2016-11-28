@@ -28,6 +28,18 @@
         <item name="colorAccent">@color/accent_grey</item>
     </style>
 
+    <style name="AppTheme.Black" parent="AppTheme">
+        <item name="colorPrimary">@color/primary_black</item>
+        <item name="colorPrimaryDark">@color/primary_dark_black</item>
+        <item name="colorAccent">@color/accent_black</item>
+        <item name="colorControlHighlight">@color/accent_black</item>
+        <item name="alertDialogTheme">@style/AppTheme.Black.AlertDialog</item>
+    </style>
+
+    <style name="AppTheme.Black.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="colorAccent">@color/accent_grey</item>
+    </style>
+
     <style name="AppTheme.Red" parent="AppTheme">
         <item name="colorPrimary">@color/primary_red</item>
         <item name="colorPrimaryDark">@color/primary_dark_red</item>
