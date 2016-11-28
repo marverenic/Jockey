@@ -190,7 +190,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
                 .setDeleteIntent(getStopIntent())
                 .setStyle(
                         new NotificationCompat.MediaStyle()
-                                .setShowActionsInCompactView(1, 2)
+                                .setShowActionsInCompactView(0, 1, 2)
                                 .setShowCancelButton(true)
                                 .setCancelButtonIntent(getStopIntent())
                                 .setMediaSession(musicPlayer.getMediaSession().getSessionToken()));
