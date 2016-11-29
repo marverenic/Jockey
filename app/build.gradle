@@ -41,6 +41,7 @@ android {
         targetSdkVersion 25
         versionCode 40304
         versionName "2.0 Beta 5"
+        resConfigs "en"
     }
 
     buildTypes {
