@@ -41,6 +41,7 @@ import com.marverenic.music.view.GestureView;
 import com.marverenic.music.view.TimeView;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -153,14 +154,13 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                 || intent.getType().contains("application/x-ogg")
                 || intent.getType().contains("application/itunes")) {
 
-            // The queue to be passed to the player service
-            ArrayList<Song> queue = new ArrayList<>();
-            int position = 0;
+            List<Song> queue = new ArrayList<>();
+            int position;
 
             try {
                 position = MediaStoreUtil.getSongListFromFile(this,
                         new File(intent.getData().getPath()), intent.getType(), queue);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 Timber.e(e, "Failed to generate queue from intent");
                 queue = new ArrayList<>();
             }
