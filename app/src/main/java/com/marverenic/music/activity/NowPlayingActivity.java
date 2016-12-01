@@ -1,9 +1,7 @@
 package com.marverenic.music.activity;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -178,24 +176,11 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                     PlayerController.setQueue(queue, position);
                     PlayerController.play();
                 } else {
-                    // If the service hasn't been bound yet, then we need to wait for the service to
-                    // start before we can pass data to it. This code will bind a short-lived
-                    // BroadcastReceiver to wait for the initial UPDATE broadcast to be sent before
-                    // sending data. Once it has fulfilled its purpose it will unbind itself to
-                    // avoid a lot of problems later on.
-
-                    final ArrayList<Song> pendingQueue = queue;
-                    final int pendingPosition = position;
-
-                    final BroadcastReceiver binderWaiter = new BroadcastReceiver() {
-                        @Override
-                        public void onReceive(Context context, Intent intent) {
-                            PlayerController.setQueue(pendingQueue, pendingPosition);
-                            PlayerController.play();
-                            NowPlayingActivity.this.unregisterReceiver(this);
-                        }
-                    };
-                    registerReceiver(binderWaiter, new IntentFilter(MusicPlayer.UPDATE_BROADCAST));
+                    PlayerController.startService(getApplicationContext());
+                    PlayerController.registerServiceStartListener(() -> {
+                        PlayerController.setQueue(queue, position);
+                        PlayerController.play();
+                    });
                 }
             }
         }
