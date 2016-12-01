@@ -23,7 +23,6 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
@@ -155,6 +154,11 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                 || intent.getType().contains("application/itunes")) {
 
             String path = MediaStoreUtil.getPathFromUri(this, intent.getData());
+            if (path == null) {
+                showSnackbar(getString(R.string.message_play_error_unknown_path));
+                return;
+            }
+
             List<Song> queue = new ArrayList<>();
             int position;
 
@@ -163,15 +167,12 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                         intent.getType(), queue);
             } catch (IOException e) {
                 Timber.e(e, "Failed to generate queue from intent");
-                queue = new ArrayList<>();
+                showSnackbar(getString(R.string.message_play_error_io_exception, path));
+                return;
             }
 
             if (queue.isEmpty()) {
-                // No music was found
-                Toast toast = Toast.makeText(this, R.string.message_play_error_not_found,
-                        Toast.LENGTH_SHORT);
-                toast.show();
-                finish();
+                showSnackbar(getString(R.string.message_play_error_not_found, path));
             } else {
                 if (PlayerController.isServiceStarted()) {
                     PlayerController.setQueue(queue, position);
