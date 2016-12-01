@@ -291,6 +291,8 @@ public final class PlayerController {
         if (playerService != null) {
             try {
                 playerService.setQueue(newQueue, newPosition);
+                artwork = null;
+                updateUi();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to set queue");
             }
