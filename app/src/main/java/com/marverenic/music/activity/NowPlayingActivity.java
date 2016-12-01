@@ -154,12 +154,13 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                 || intent.getType().contains("application/x-ogg")
                 || intent.getType().contains("application/itunes")) {
 
+            String path = MediaStoreUtil.getPathFromUri(this, intent.getData());
             List<Song> queue = new ArrayList<>();
             int position;
 
             try {
-                position = MediaStoreUtil.getSongListFromFile(this,
-                        new File(intent.getData().getPath()), intent.getType(), queue);
+                position = MediaStoreUtil.getSongListFromFile(this, new File(path),
+                        intent.getType(), queue);
             } catch (IOException e) {
                 Timber.e(e, "Failed to generate queue from intent");
                 queue = new ArrayList<>();
