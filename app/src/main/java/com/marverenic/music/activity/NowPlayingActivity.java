@@ -197,6 +197,9 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                 }
             }
         }
+
+        // Don't try to process this intent again
+        setIntent(newIntent(this));
     }
 
     @Override
