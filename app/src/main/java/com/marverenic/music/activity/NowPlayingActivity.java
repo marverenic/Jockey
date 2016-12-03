@@ -85,8 +85,8 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        onNewIntent(getIntent());
         setContentView(R.layout.activity_now_playing);
+        onNewIntent(getIntent());
 
         JockeyApplication.getComponent(this).inject(this);
 
