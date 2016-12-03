@@ -170,21 +170,25 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
             if (queue.isEmpty()) {
                 showSnackbar(getString(R.string.message_play_error_not_found, path));
             } else {
-                if (PlayerController.isServiceStarted()) {
-                    PlayerController.setQueue(queue, position);
-                    PlayerController.play();
-                } else {
-                    PlayerController.startService(getApplicationContext());
-                    PlayerController.registerServiceStartListener(() -> {
-                        PlayerController.setQueue(queue, position);
-                        PlayerController.play();
-                    });
-                }
+                startIntentQueue(queue, position);
             }
         }
 
         // Don't try to process this intent again
         setIntent(newIntent(this));
+    }
+
+    private void startIntentQueue(List<Song> queue, int position) {
+        if (PlayerController.isServiceStarted()) {
+            PlayerController.setQueue(queue, position);
+            PlayerController.play();
+        } else {
+            PlayerController.startService(getApplicationContext());
+            PlayerController.registerServiceStartListener(() -> {
+                PlayerController.setQueue(queue, position);
+                PlayerController.play();
+            });
+        }
     }
 
     @Override
