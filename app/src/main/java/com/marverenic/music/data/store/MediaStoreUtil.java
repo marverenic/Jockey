@@ -550,19 +550,19 @@ public final class MediaStoreUtil {
      * the list will include other songs in the same directory. If a playlist is passed as the file,
      * then the playlist will be opened as a regular playlist.
      *
-     * @param activity An {@link Activity} to use when building the list
+     * @param context A {@link Context} used to resolve media paths
      * @param file The {@link File} which the list will be built around
      * @param type The MIME type of the file being opened
      * @param queue An {@link ArrayList} which will be populated with the {@link Song}s
      * @return The position that this list should be started from
      * @throws IOException
      */
-    public static int getSongListFromFile(Activity activity, File file, String type,
+    public static int getSongListFromFile(Context context, File file, String type,
                                           final List<Song> queue) throws IOException {
         // PLAYLISTS
         if (MediaStore.Audio.Playlists.CONTENT_TYPE.equals(type)) {
             // If a playlist was opened, try to find and play its entry from the MediaStore
-            Cursor cur = activity.getContentResolver().query(
+            Cursor cur = context.getContentResolver().query(
                     MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
                     null,
                     MediaStore.Audio.Playlists.DATA + "=?",
@@ -576,7 +576,7 @@ public final class MediaStoreUtil {
             // If the media store contains this playlist, play it like a regular playlist
             if (cur.getCount() > 0) {
                 cur.moveToFirst();
-                queue.addAll(getPlaylistSongs(activity, new Playlist(cur)));
+                queue.addAll(getPlaylistSongs(context, new Playlist(cur)));
             }
             //TODO Attempt to manually read common playlist writing schemes
             /*else{
@@ -598,7 +598,7 @@ public final class MediaStoreUtil {
         } else { // ALL OTHER TYPES OF MEDIA
             // If the file isn't a playlist, use a content resolver to find the song and play it
             // Find all songs in the directory
-            Cursor cur = activity.getContentResolver().query(
+            Cursor cur = context.getContentResolver().query(
                     MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                     null,
                     MediaStore.Audio.Media.DATA + " like ?",
@@ -610,7 +610,7 @@ public final class MediaStoreUtil {
             }
 
             // Create song objects to match those in the music library
-            queue.addAll(Song.buildSongList(cur, activity.getResources()));
+            queue.addAll(Song.buildSongList(cur, context.getResources()));
             cur.close();
 
             // Find the position of the song that should be played
