@@ -560,8 +560,7 @@ public final class MediaStoreUtil {
     public static int getSongListFromFile(Activity activity, File file, String type,
                                           final List<Song> queue) throws IOException {
         // PLAYLISTS
-        if (type.equals("audio/x-mpegurl") || type.equals("audio/x-scpls")
-                || type.equals("application/vnd.ms-wpl")) {
+        if (MediaStore.Audio.Playlists.CONTENT_TYPE.equals(type)) {
             // If a playlist was opened, try to find and play its entry from the MediaStore
             Cursor cur = activity.getContentResolver().query(
                     MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,

@@ -147,9 +147,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         if (intent.getData() == null) return;
 
         // If this intent is a music intent, process it
-        if (intent.getType().contains("audio") || intent.getType().contains("application/ogg")
-                || intent.getType().contains("application/x-ogg")
-                || intent.getType().contains("application/itunes")) {
+        if (intent.getAction().equals(Intent.ACTION_VIEW)) {
 
             String path = MediaStoreUtil.getPathFromUri(this, intent.getData());
             if (path == null) {
