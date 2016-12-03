@@ -68,8 +68,7 @@
         <activity
             android:name=".activity.NowPlayingActivity"
             android:label="@string/header_now_playing"
-            android:windowSoftInputMode="adjustNothing"
-            android:launchMode="singleInstance"/>
+            android:windowSoftInputMode="adjustNothing"/>
 
         <!-- Play with Jockey (from search) intent filter -->
         <activity-alias
