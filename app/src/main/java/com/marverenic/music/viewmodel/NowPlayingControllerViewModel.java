@@ -244,7 +244,9 @@ public class NowPlayingControllerViewModel extends BaseObservable {
             }
 
             PopupMenu menu = new PopupMenu(mContext, v, Gravity.END);
-            menu.inflate(R.menu.instance_song_now_playing);
+            menu.inflate(mSong.isInLibrary()
+                    ? R.menu.instance_song_now_playing
+                    : R.menu.instance_song_now_playing_remote);
             menu.setOnMenuItemClickListener(onMoreInfoItemClick(mSong));
             menu.show();
         };

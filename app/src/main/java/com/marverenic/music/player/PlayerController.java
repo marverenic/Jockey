@@ -28,12 +28,14 @@ public final class PlayerController {
 
     private static Context applicationContext;
     private static IPlayerService playerService;
+    private static Set<ServiceStartListener> startListeners;
     private static Set<UpdateListener> updateListeners;
     private static Set<InfoListener> infoListeners;
     private static Set<ErrorListener> errorListeners;
     private static Bitmap artwork;
 
     static {
+        startListeners = new HashSet<>();
         updateListeners = new HashSet<>();
         errorListeners = new HashSet<>();
         infoListeners = new HashSet<>();
@@ -69,6 +71,7 @@ public final class PlayerController {
                 @Override
                 public void onServiceConnected(ComponentName name, IBinder service) {
                     playerService = IPlayerService.Stub.asInterface(service);
+                    notifyStart();
                     updateUi();
                 }
 
@@ -86,6 +89,20 @@ public final class PlayerController {
      */
     public static boolean isServiceStarted() {
         return playerService != null;
+    }
+
+    /**
+     * Registers a callback for when the Player Service is started. If the service is already
+     * started, this callback will be fired immediately. After this callback is executed, it will
+     * be unregistered automatically.
+     * @param l The listener to be register
+     */
+    public static void registerServiceStartListener(ServiceStartListener l) {
+        if (isServiceStarted()) {
+            l.onServiceStart();
+        } else {
+            startListeners.add(l);
+        }
     }
 
     /**
@@ -145,6 +162,13 @@ public final class PlayerController {
      */
     public static void unregisterErrorListener(ErrorListener l) {
         errorListeners.remove(l);
+    }
+
+    private static void notifyStart() {
+        for (ServiceStartListener l : startListeners) {
+            l.onServiceStart();
+        }
+        startListeners.clear();
     }
 
     /**
@@ -291,6 +315,8 @@ public final class PlayerController {
         if (playerService != null) {
             try {
                 playerService.setQueue(newQueue, newPosition);
+                artwork = null;
+                updateUi();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to set queue");
             }
@@ -590,7 +616,7 @@ public final class PlayerController {
      */
     public static Bitmap getArtwork() {
         if (artwork == null) {
-            artwork = Util.fetchFullArt(getNowPlaying());
+            artwork = Util.fetchFullArt(applicationContext, getNowPlaying());
         }
         return artwork;
     }
@@ -615,6 +641,10 @@ public final class PlayerController {
             }
         }
 
+    }
+
+    public interface ServiceStartListener {
+        void onServiceStart();
     }
 
     public interface UpdateListener {

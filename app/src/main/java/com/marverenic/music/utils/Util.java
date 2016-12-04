@@ -118,7 +118,7 @@ public final class Util {
         return false;
     }
 
-    public static Bitmap fetchFullArt(Song song) {
+    public static Bitmap fetchFullArt(Context context, Song song) {
         if (song == null) {
             return null;
         }
@@ -126,7 +126,7 @@ public final class Util {
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 
         try {
-            retriever.setDataSource(song.getLocation());
+            retriever.setDataSource(context, song.getLocation());
             byte[] stream = retriever.getEmbeddedPicture();
             if (stream != null) {
                 return BitmapFactory.decodeByteArray(stream, 0, stream.length);

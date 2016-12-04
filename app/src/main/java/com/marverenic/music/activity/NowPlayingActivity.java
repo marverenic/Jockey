@@ -1,12 +1,11 @@
 package com.marverenic.music.activity;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,7 +22,6 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
@@ -37,11 +35,12 @@ import com.marverenic.music.fragments.QueueFragment;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.utils.UriUtils;
 import com.marverenic.music.view.GestureView;
 import com.marverenic.music.view.TimeView;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -87,8 +86,8 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        onNewIntent(getIntent());
         setContentView(R.layout.activity_now_playing);
+        onNewIntent(getIntent());
 
         JockeyApplication.getComponent(this).inject(this);
 
@@ -149,53 +148,70 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         if (intent.getData() == null) return;
 
         // If this intent is a music intent, process it
-        if (intent.getType().contains("audio") || intent.getType().contains("application/ogg")
-                || intent.getType().contains("application/x-ogg")
-                || intent.getType().contains("application/itunes")) {
+        if (intent.getAction().equals(Intent.ACTION_VIEW)) {
+            Uri songUri = intent.getData();
+            String songName = UriUtils.getDisplayName(this, songUri);
 
-            // The queue to be passed to the player service
-            ArrayList<Song> queue = new ArrayList<>();
-            int position = 0;
+            List<Song> queue = buildQueueFromFileUri(songUri);
+            int position;
 
-            try {
-                position = MediaStoreUtil.getSongListFromFile(this,
-                        new File(intent.getData().getPath()), intent.getType(), queue);
-            } catch (Exception e) {
-                Timber.e(e, "Failed to generate queue from intent");
-                queue = new ArrayList<>();
+            if (queue == null || queue.isEmpty()) {
+                queue = buildQueueFromUri(intent.getData());
+                position = findStartingPositionInQueue(songUri, queue);
+            } else {
+                String path = UriUtils.getPathFromUri(this, songUri);
+                //noinspection ConstantConditions This won't be null, because we found data from it
+                Uri fileUri = Uri.fromFile(new File(path));
+                position = findStartingPositionInQueue(fileUri, queue);
             }
 
             if (queue.isEmpty()) {
-                // No music was found
-                Toast toast = Toast.makeText(this, R.string.message_play_error_not_found,
-                        Toast.LENGTH_SHORT);
-                toast.show();
-                finish();
+                showSnackbar(getString(R.string.message_play_error_not_found, songName));
             } else {
-                if (PlayerController.isServiceStarted()) {
-                    PlayerController.setQueue(queue, position);
-                    PlayerController.play();
-                } else {
-                    // If the service hasn't been bound yet, then we need to wait for the service to
-                    // start before we can pass data to it. This code will bind a short-lived
-                    // BroadcastReceiver to wait for the initial UPDATE broadcast to be sent before
-                    // sending data. Once it has fulfilled its purpose it will unbind itself to
-                    // avoid a lot of problems later on.
-
-                    final ArrayList<Song> pendingQueue = queue;
-                    final int pendingPosition = position;
-
-                    final BroadcastReceiver binderWaiter = new BroadcastReceiver() {
-                        @Override
-                        public void onReceive(Context context, Intent intent) {
-                            PlayerController.setQueue(pendingQueue, pendingPosition);
-                            PlayerController.play();
-                            NowPlayingActivity.this.unregisterReceiver(this);
-                        }
-                    };
-                    registerReceiver(binderWaiter, new IntentFilter(MusicPlayer.UPDATE_BROADCAST));
-                }
+                startIntentQueue(queue, position);
             }
+        }
+
+        // Don't try to process this intent again
+        setIntent(newIntent(this));
+    }
+
+    private List<Song> buildQueueFromFileUri(Uri fileUri) {
+        // URI is not a file URI
+        String path = UriUtils.getPathFromUri(this, fileUri);
+        if (path == null || path.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        File file = new File(path);
+        String mimeType = getContentResolver().getType(fileUri);
+        return MediaStoreUtil.buildSongListFromFile(this, file, mimeType);
+    }
+
+    private List<Song> buildQueueFromUri(Uri uri) {
+        return Collections.singletonList(Song.fromUri(this, uri));
+    }
+
+    private int findStartingPositionInQueue(Uri originalUri, List<Song> queue) {
+        for (int i = 0; i < queue.size(); i++) {
+            if (queue.get(i).getLocation().equals(originalUri)) {
+                return i;
+            }
+        }
+
+        return 0;
+    }
+
+    private void startIntentQueue(List<Song> queue, int position) {
+        if (PlayerController.isServiceStarted()) {
+            PlayerController.setQueue(queue, position);
+            PlayerController.play();
+        } else {
+            PlayerController.startService(getApplicationContext());
+            PlayerController.registerServiceStartListener(() -> {
+                PlayerController.setQueue(queue, position);
+                PlayerController.play();
+            });
         }
     }
 

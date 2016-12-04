@@ -384,7 +384,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             setBackingQueue(queuePosition);
             mMediaPlayer.seekTo(currentPosition);
 
-            mArtwork = Util.fetchFullArt(getNowPlaying());
+            mArtwork = Util.fetchFullArt(mContext, getNowPlaying());
         } catch(FileNotFoundException ignored) {
             Timber.i("State does not exist. Using empty state");
             // If there's no queue file, just restore to an empty state
@@ -1090,7 +1090,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     @Override
     public void onSongStart() {
         Timber.i("Started new song");
-        mArtwork = Util.fetchFullArt(getNowPlaying());
+        mArtwork = Util.fetchFullArt(mContext, getNowPlaying());
         updateNowPlaying();
         updateUi();
     }

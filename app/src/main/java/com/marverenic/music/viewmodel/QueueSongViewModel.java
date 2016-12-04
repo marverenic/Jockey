@@ -57,7 +57,9 @@ public class QueueSongViewModel extends SongViewModel {
     public View.OnClickListener onClickMenu() {
         return v -> {
             PopupMenu menu = new PopupMenu(mContext, v, Gravity.END);
-            menu.inflate(R.menu.instance_song_queue);
+            menu.inflate(getReference().isInLibrary()
+                    ? R.menu.instance_song_queue
+                    : R.menu.instance_song_queue_remote);
             menu.setOnMenuItemClickListener(onMenuItemClick(v));
             menu.show();
         };

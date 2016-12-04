@@ -3,6 +3,8 @@ package com.marverenic.music.model;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.MediaStore;
@@ -11,15 +13,25 @@ import android.support.annotation.NonNull;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PlayCountStore;
+import com.marverenic.music.utils.UriUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import static android.media.MediaMetadataRetriever.METADATA_KEY_ALBUM;
+import static android.media.MediaMetadataRetriever.METADATA_KEY_ARTIST;
+import static android.media.MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER;
+import static android.media.MediaMetadataRetriever.METADATA_KEY_DATE;
+import static android.media.MediaMetadataRetriever.METADATA_KEY_DURATION;
+import static android.media.MediaMetadataRetriever.METADATA_KEY_TITLE;
 import static com.marverenic.music.model.Util.compareLong;
 import static com.marverenic.music.model.Util.compareTitle;
 import static com.marverenic.music.model.Util.hashLong;
 import static com.marverenic.music.model.Util.parseUnknown;
+import static com.marverenic.music.model.Util.stringToInt;
+import static com.marverenic.music.model.Util.stringToLong;
 
 public class Song implements Parcelable, Comparable<Song> {
 
@@ -38,12 +50,13 @@ public class Song implements Parcelable, Comparable<Song> {
     protected String artistName;
     protected String albumName;
     protected long songDuration;
-    protected String location;
+    protected Uri location;
     protected int year;
     protected long dateAdded; // seconds since Jan 1, 1970
     protected long albumId;
     protected long artistId;
     protected int trackNumber;
+    private boolean isInLibrary;
 
     private Song() {
 
@@ -55,11 +68,12 @@ public class Song implements Parcelable, Comparable<Song> {
         albumName = in.readString();
         artistName = in.readString();
         songDuration = in.readLong();
-        location = in.readString();
+        location = in.readParcelable(Uri.class.getClassLoader());
         year = in.readInt();
         dateAdded = in.readLong();
         albumId = in.readLong();
         artistId = in.readLong();
+        isInLibrary = (in.readByte() != 0);
     }
 
     public Song(Song s) {
@@ -74,6 +88,7 @@ public class Song implements Parcelable, Comparable<Song> {
         this.albumId = s.albumId;
         this.artistId = s.artistId;
         this.trackNumber = s.trackNumber;
+        this.isInLibrary = s.isInLibrary;
     }
 
     /**
@@ -108,7 +123,6 @@ public class Song implements Parcelable, Comparable<Song> {
         final String unknownSong = res.getString(R.string.unknown);
         final String unknownArtist = res.getString(R.string.unknown_artist);
         final String unknownAlbum = res.getString(R.string.unknown_album);
-        final String unknownData = "";
 
         for (int i = 0; i < cur.getCount(); i++) {
             cur.moveToPosition(i);
@@ -118,17 +132,60 @@ public class Song implements Parcelable, Comparable<Song> {
             next.artistName = parseUnknown(cur.getString(artistIndex), unknownArtist);
             next.albumName = parseUnknown(cur.getString(albumIndex), unknownAlbum);
             next.songDuration = cur.getLong(durationIndex);
-            next.location = parseUnknown(cur.getString(dataIndex), unknownData);
+            next.location = Uri.fromFile(new File(cur.getString(dataIndex)));
             next.year = cur.getInt(yearIndex);
             next.dateAdded = cur.getLong(dateIndex);
             next.albumId = cur.getLong(albumIdIndex);
             next.artistId = cur.getLong(artistIdIndex);
             next.trackNumber = cur.getInt(trackIndex);
+            next.isInLibrary = true;
 
             songs.add(next);
         }
 
         return songs;
+    }
+
+    /**
+     * Builds a Song that corresponds to a specific URI
+     * @param context A Context used to load information about the URI
+     * @param uri The URI to build a song from
+     * @return A Song with data corresponding to that of the given URI
+     */
+    public static Song fromUri(Context context, Uri uri) {
+        Song song = new Song();
+        song.location = uri;
+        song.songName = UriUtils.getDisplayName(context, uri);
+        song.artistName = context.getResources().getString(R.string.unknown_artist);
+        song.albumName = context.getResources().getString(R.string.unknown_album);
+        song.songDuration = 0;
+        song.year = 0;
+        song.trackNumber = 0;
+        song.dateAdded = 0;
+        song.songId = -1 * Math.abs(uri.hashCode());
+        song.albumId = -1;
+        song.artistId = -1;
+        song.isInLibrary = false;
+
+        if (uri.getScheme().equals("content") || uri.getScheme().equals("file")) {
+            song.loadInfoFromMetadata(context);
+        }
+
+        return song;
+    }
+
+    private void loadInfoFromMetadata(Context context) {
+        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+        mmr.setDataSource(context, location);
+
+        songName = parseUnknown(mmr.extractMetadata(METADATA_KEY_TITLE), songName);
+        artistName = parseUnknown(mmr.extractMetadata(METADATA_KEY_ARTIST), artistName);
+        albumName = parseUnknown(mmr.extractMetadata(METADATA_KEY_ALBUM), albumName);
+        songDuration = stringToLong(mmr.extractMetadata(METADATA_KEY_DURATION), songDuration);
+        year = stringToInt(mmr.extractMetadata(METADATA_KEY_DATE), year);
+        trackNumber = stringToInt(mmr.extractMetadata(METADATA_KEY_CD_TRACK_NUMBER), trackNumber);
+
+        mmr.release();
     }
 
     public String getSongName() {
@@ -151,7 +208,7 @@ public class Song implements Parcelable, Comparable<Song> {
         return songDuration;
     }
 
-    public String getLocation() {
+    public Uri getLocation() {
         return location;
     }
 
@@ -173,6 +230,10 @@ public class Song implements Parcelable, Comparable<Song> {
 
     public int getTrackNumber() {
         return trackNumber;
+    }
+
+    public boolean isInLibrary() {
+        return isInLibrary;
     }
 
     @Override
@@ -202,11 +263,12 @@ public class Song implements Parcelable, Comparable<Song> {
         dest.writeString(albumName);
         dest.writeString(artistName);
         dest.writeLong(songDuration);
-        dest.writeString(location);
+        dest.writeParcelable(location, 0);
         dest.writeInt(year);
         dest.writeLong(dateAdded);
         dest.writeLong(albumId);
         dest.writeLong(artistId);
+        dest.writeByte((byte) (isInLibrary ? 1 : 0));
     }
 
     @Override

@@ -23,6 +23,22 @@ class Util {
         }
     }
 
+    public static int stringToInt(String string, int defaultValue) {
+        try {
+            return Integer.parseInt(string);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
+    public static long stringToLong(String string, long defaultValue) {
+        try {
+            return Long.parseLong(string);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
     protected static int compareLong(long lhs, long rhs) {
         return lhs < rhs ? -1 : (lhs == rhs ? 0 : 1);
     }
