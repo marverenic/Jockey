@@ -24,7 +24,8 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.FileDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.marverenic.music.BuildConfig;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.utils.Internal;
 
@@ -34,6 +35,8 @@ import java.util.List;
 import timber.log.Timber;
 
 public class QueuedExoPlayer implements QueuedMediaPlayer {
+
+    private static final String USER_AGENT = "Jockey/" + BuildConfig.VERSION_NAME;
 
     private Context mContext;
     private EqualizedExoPlayer mExoPlayer;
@@ -233,7 +236,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
             return;
         }
 
-        DataSource.Factory srcFactory = new FileDataSourceFactory();
+        DataSource.Factory srcFactory = new DefaultDataSourceFactory(mContext, USER_AGENT);
         ExtractorsFactory extFactory = new DefaultExtractorsFactory();
 
         int startingPosition = resetPosition ? 0 : getCurrentPosition();
