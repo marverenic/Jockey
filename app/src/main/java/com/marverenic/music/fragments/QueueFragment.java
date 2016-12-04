@@ -65,7 +65,10 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
             This post request will be run after the layout has been assigned a height and before
             it's shown to the user so that we can set the bottom padding correctly.
          */
-        view.post(this::scrollToNowPlaying);
+        view.post(() -> {
+            LinearLayoutManager manager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
+            manager.scrollToPositionWithOffset(lastPlayIndex, 0);
+        });
 
         return view;
     }
