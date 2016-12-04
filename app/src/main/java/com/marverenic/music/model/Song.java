@@ -56,6 +56,7 @@ public class Song implements Parcelable, Comparable<Song> {
     protected long albumId;
     protected long artistId;
     protected int trackNumber;
+    private boolean isInLibrary;
 
     private Song() {
 
@@ -72,6 +73,7 @@ public class Song implements Parcelable, Comparable<Song> {
         dateAdded = in.readLong();
         albumId = in.readLong();
         artistId = in.readLong();
+        isInLibrary = (in.readByte() != 0);
     }
 
     public Song(Song s) {
@@ -86,6 +88,7 @@ public class Song implements Parcelable, Comparable<Song> {
         this.albumId = s.albumId;
         this.artistId = s.artistId;
         this.trackNumber = s.trackNumber;
+        this.isInLibrary = s.isInLibrary;
     }
 
     /**
@@ -135,6 +138,7 @@ public class Song implements Parcelable, Comparable<Song> {
             next.albumId = cur.getLong(albumIdIndex);
             next.artistId = cur.getLong(artistIdIndex);
             next.trackNumber = cur.getInt(trackIndex);
+            next.isInLibrary = true;
 
             songs.add(next);
         }
@@ -161,6 +165,7 @@ public class Song implements Parcelable, Comparable<Song> {
         song.songId = -1 * Math.abs(uri.hashCode());
         song.albumId = -1;
         song.artistId = -1;
+        song.isInLibrary = false;
 
         if (uri.getScheme().equals("content") || uri.getScheme().equals("file")) {
             song.loadInfoFromMetadata(context);
@@ -227,6 +232,10 @@ public class Song implements Parcelable, Comparable<Song> {
         return trackNumber;
     }
 
+    public boolean isInLibrary() {
+        return isInLibrary;
+    }
+
     @Override
     public int hashCode() {
         return hashLong(songId);
@@ -259,6 +268,7 @@ public class Song implements Parcelable, Comparable<Song> {
         dest.writeLong(dateAdded);
         dest.writeLong(albumId);
         dest.writeLong(artistId);
+        dest.writeByte((byte) (isInLibrary ? 1 : 0));
     }
 
     @Override
