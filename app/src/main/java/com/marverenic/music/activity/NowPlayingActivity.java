@@ -159,7 +159,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                 queue = buildQueueFromUri(intent.getData());
                 position = findStartingPositionInQueue(songUri, queue);
             } else {
-                String path = MediaStoreUtil.getPathFromUri(this, songUri);
+                String path = UriUtils.getPathFromUri(this, songUri);
                 //noinspection ConstantConditions This won't be null, because we found data from it
                 Uri fileUri = Uri.fromFile(new File(path));
                 position = findStartingPositionInQueue(fileUri, queue);
@@ -178,7 +178,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
 
     private List<Song> buildQueueFromFileUri(Uri fileUri) {
         // URI is not a file URI
-        String path = MediaStoreUtil.getPathFromUri(this, fileUri);
+        String path = UriUtils.getPathFromUri(this, fileUri);
         if (path == null || path.trim().isEmpty()) {
             return Collections.emptyList();
         }

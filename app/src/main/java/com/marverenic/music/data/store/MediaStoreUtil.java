@@ -530,20 +530,6 @@ public final class MediaStoreUtil {
         resolver.notifyChange(Uri.parse("content://media"), null);
     }
 
-    public static String getPathFromUri(Context context, Uri contentUri) {
-        String[] projection = {MediaStore.Images.Media.DATA};
-        Cursor cur = context.getContentResolver().query(contentUri, projection, null, null, null);
-
-        if (cur != null) {
-            cur.moveToFirst();
-            String result = cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA));
-            cur.close();
-            return result;
-        } else {
-            return null;
-        }
-    }
-
     /**
      * Get a list of songs to play for a certain input file. If a song is passed as the file, then
      * the list will include other songs in the same directory. If a playlist is passed as the file,
