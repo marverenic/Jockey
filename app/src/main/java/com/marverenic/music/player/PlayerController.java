@@ -616,7 +616,7 @@ public final class PlayerController {
      */
     public static Bitmap getArtwork() {
         if (artwork == null) {
-            artwork = Util.fetchFullArt(getNowPlaying());
+            artwork = Util.fetchFullArt(applicationContext, getNowPlaying());
         }
         return artwork;
     }

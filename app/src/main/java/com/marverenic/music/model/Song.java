@@ -3,6 +3,7 @@ package com.marverenic.music.model;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.MediaStore;
@@ -12,6 +13,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PlayCountStore;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -38,7 +40,7 @@ public class Song implements Parcelable, Comparable<Song> {
     protected String artistName;
     protected String albumName;
     protected long songDuration;
-    protected String location;
+    protected Uri location;
     protected int year;
     protected long dateAdded; // seconds since Jan 1, 1970
     protected long albumId;
@@ -55,7 +57,7 @@ public class Song implements Parcelable, Comparable<Song> {
         albumName = in.readString();
         artistName = in.readString();
         songDuration = in.readLong();
-        location = in.readString();
+        location = in.readParcelable(Uri.class.getClassLoader());
         year = in.readInt();
         dateAdded = in.readLong();
         albumId = in.readLong();
@@ -108,7 +110,6 @@ public class Song implements Parcelable, Comparable<Song> {
         final String unknownSong = res.getString(R.string.unknown);
         final String unknownArtist = res.getString(R.string.unknown_artist);
         final String unknownAlbum = res.getString(R.string.unknown_album);
-        final String unknownData = "";
 
         for (int i = 0; i < cur.getCount(); i++) {
             cur.moveToPosition(i);
@@ -118,7 +119,7 @@ public class Song implements Parcelable, Comparable<Song> {
             next.artistName = parseUnknown(cur.getString(artistIndex), unknownArtist);
             next.albumName = parseUnknown(cur.getString(albumIndex), unknownAlbum);
             next.songDuration = cur.getLong(durationIndex);
-            next.location = parseUnknown(cur.getString(dataIndex), unknownData);
+            next.location = Uri.fromFile(new File(cur.getString(dataIndex)));
             next.year = cur.getInt(yearIndex);
             next.dateAdded = cur.getLong(dateIndex);
             next.albumId = cur.getLong(albumIdIndex);
@@ -151,7 +152,7 @@ public class Song implements Parcelable, Comparable<Song> {
         return songDuration;
     }
 
-    public String getLocation() {
+    public Uri getLocation() {
         return location;
     }
 
@@ -202,7 +203,7 @@ public class Song implements Parcelable, Comparable<Song> {
         dest.writeString(albumName);
         dest.writeString(artistName);
         dest.writeLong(songDuration);
-        dest.writeString(location);
+        dest.writeParcelable(location, 0);
         dest.writeInt(year);
         dest.writeLong(dateAdded);
         dest.writeLong(albumId);
