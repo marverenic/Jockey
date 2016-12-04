@@ -62,7 +62,7 @@ public class UriUtils {
             }
         }
 
-        if ("content".equals(contentUri.getPath())) {
+        if ("content".equals(contentUri.getScheme())) {
             return getPathFromGeneralUri(context, contentUri);
         }
 
