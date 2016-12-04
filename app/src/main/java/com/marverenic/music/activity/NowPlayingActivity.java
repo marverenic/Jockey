@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -34,12 +35,12 @@ import com.marverenic.music.fragments.QueueFragment;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.utils.UriUtils;
 import com.marverenic.music.view.GestureView;
 import com.marverenic.music.view.TimeView;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -148,27 +149,24 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
 
         // If this intent is a music intent, process it
         if (intent.getAction().equals(Intent.ACTION_VIEW)) {
+            Uri songUri = intent.getData();
+            String songName = UriUtils.getDisplayName(this, songUri);
 
-            String path = MediaStoreUtil.getPathFromUri(this, intent.getData());
-            if (path == null) {
-                showSnackbar(getString(R.string.message_play_error_unknown_path));
-                return;
-            }
-
-            List<Song> queue = new ArrayList<>();
+            List<Song> queue = buildQueueFromFileUri(songUri);
             int position;
 
-            try {
-                position = MediaStoreUtil.getSongListFromFile(this, new File(path),
-                        intent.getType(), queue);
-            } catch (IOException e) {
-                Timber.e(e, "Failed to generate queue from intent");
-                showSnackbar(getString(R.string.message_play_error_io_exception, path));
-                return;
+            if (queue == null || queue.isEmpty()) {
+                queue = buildQueueFromUri(intent.getData());
+                position = findStartingPositionInQueue(songUri, queue);
+            } else {
+                String path = MediaStoreUtil.getPathFromUri(this, songUri);
+                //noinspection ConstantConditions This won't be null, because we found data from it
+                Uri fileUri = Uri.fromFile(new File(path));
+                position = findStartingPositionInQueue(fileUri, queue);
             }
 
             if (queue.isEmpty()) {
-                showSnackbar(getString(R.string.message_play_error_not_found, path));
+                showSnackbar(getString(R.string.message_play_error_not_found, songName));
             } else {
                 startIntentQueue(queue, position);
             }
@@ -176,6 +174,32 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
 
         // Don't try to process this intent again
         setIntent(newIntent(this));
+    }
+
+    private List<Song> buildQueueFromFileUri(Uri fileUri) {
+        // URI is not a file URI
+        String path = MediaStoreUtil.getPathFromUri(this, fileUri);
+        if (path == null || path.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        File file = new File(path);
+        String mimeType = getContentResolver().getType(fileUri);
+        return MediaStoreUtil.buildSongListFromFile(this, file, mimeType);
+    }
+
+    private List<Song> buildQueueFromUri(Uri uri) {
+        return Collections.singletonList(Song.fromUri(this, uri));
+    }
+
+    private int findStartingPositionInQueue(Uri originalUri, List<Song> queue) {
+        for (int i = 0; i < queue.size(); i++) {
+            if (queue.get(i).getLocation().equals(originalUri)) {
+                return i;
+            }
+        }
+
+        return 0;
     }
 
     private void startIntentQueue(List<Song> queue, int position) {
