@@ -35,9 +35,99 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Static launcher shortcut actions -->
             <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
         </activity>
+
+        <activity-alias
+            android:name=".activity.LibraryActivity$Red"
+            android:targetActivity=".activity.LibraryActivity"
+            android:icon="@mipmap/ic_launcher_red"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LibraryActivity$Orange"
+            android:targetActivity=".activity.LibraryActivity"
+            android:icon="@mipmap/ic_launcher_orange"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LibraryActivity$Yellow"
+            android:targetActivity=".activity.LibraryActivity"
+            android:icon="@mipmap/ic_launcher_yellow"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LibraryActivity$Green"
+            android:targetActivity=".activity.LibraryActivity"
+            android:icon="@mipmap/ic_launcher_green"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LibraryActivity$Purple"
+            android:targetActivity=".activity.LibraryActivity"
+            android:icon="@mipmap/ic_launcher_purple"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LibraryActivity$Grey"
+            android:targetActivity=".activity.LibraryActivity"
+            android:icon="@mipmap/ic_launcher_grey"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".activity.LibraryActivity$Black"
+            android:targetActivity=".activity.LibraryActivity"
+            android:icon="@mipmap/ic_launcher_black"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+        </activity-alias>
 
         <!-- Search Activity -->
         <activity

@@ -19,6 +19,7 @@ public interface ReadOnlyPreferencesStore {
     @StartPage int getDefaultPage();
     @PresetTheme int getPrimaryColor();
     @BaseTheme int getBaseColor();
+    @PresetTheme int getIconColor();
 
     boolean isShuffled();
     int getRepeatMode();

@@ -3,8 +3,9 @@ package com.marverenic.music.data.store;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager.TaskDescription;
+import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -21,6 +22,7 @@ import android.support.v7.app.NightMode;
 
 import com.marverenic.music.R;
 import com.marverenic.music.activity.LibraryActivity;
+import com.marverenic.music.player.PlayerController;
 
 import static android.util.DisplayMetrics.DENSITY_HIGH;
 import static android.util.DisplayMetrics.DENSITY_LOW;
@@ -28,9 +30,17 @@ import static android.util.DisplayMetrics.DENSITY_MEDIUM;
 import static android.util.DisplayMetrics.DENSITY_XHIGH;
 import static android.util.DisplayMetrics.DENSITY_XXHIGH;
 import static android.util.DisplayMetrics.DENSITY_XXXHIGH;
-
-import static com.marverenic.music.data.annotations.BaseTheme.*;
-import static com.marverenic.music.data.annotations.PresetTheme.*;
+import static com.marverenic.music.data.annotations.BaseTheme.AUTO;
+import static com.marverenic.music.data.annotations.BaseTheme.DARK;
+import static com.marverenic.music.data.annotations.BaseTheme.LIGHT;
+import static com.marverenic.music.data.annotations.PresetTheme.BLACK;
+import static com.marverenic.music.data.annotations.PresetTheme.BLUE;
+import static com.marverenic.music.data.annotations.PresetTheme.GRAY;
+import static com.marverenic.music.data.annotations.PresetTheme.GREEN;
+import static com.marverenic.music.data.annotations.PresetTheme.ORANGE;
+import static com.marverenic.music.data.annotations.PresetTheme.PURPLE;
+import static com.marverenic.music.data.annotations.PresetTheme.RED;
+import static com.marverenic.music.data.annotations.PresetTheme.YELLOW;
 
 public class PresetThemeStore implements ThemeStore {
 
@@ -224,16 +234,40 @@ public class PresetThemeStore implements ThemeStore {
 
     @Override
     public void createThemedLauncherIcon() {
-        Intent shortcutIntent = new Intent(mContext, LibraryActivity.class);
-        String shortcutName = mContext.getResources().getString(R.string.app_name);
-        Bitmap shortcutIcon = getLargeAppIcon();
+        String[] activityThemeSuffixes = {
+                "$Grey",
+                "$Red",
+                "$Orange",
+                "$Yellow",
+                "$Green",
+                "", // The blue theme does not have an Activity name suffix
+                "$Purple",
+                "$Black",
+        };
 
-        Intent addIntent = new Intent();
-        addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-        addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, shortcutName);
-        addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON, shortcutIcon);
-        addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+        String activityName = LibraryActivity.class.getName();
+        int nextIcon = mPreferencesStore.getPrimaryColor();
+        int currIcon = mPreferencesStore.getIconColor();
 
-        mContext.sendBroadcast(addIntent);
+        if (nextIcon == currIcon) {
+            return;
+        }
+
+        mPreferencesStore.setIconColor(nextIcon);
+
+        PlayerController.stop();
+        setComponentEnabled(activityName + activityThemeSuffixes[nextIcon], true, false);
+        setComponentEnabled(activityName + activityThemeSuffixes[currIcon], false, true);
+    }
+
+    private void setComponentEnabled(String fullyQualifiedName, boolean enabled, boolean killApp) {
+        mContext.getPackageManager().setComponentEnabledSetting(
+                new ComponentName(mContext, fullyQualifiedName),
+                (enabled)
+                        ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                        : PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                (killApp)
+                        ? 0
+                        : PackageManager.DONT_KILL_APP);
     }
 }
