@@ -167,8 +167,16 @@ public class CreatePlaylistDialogFragment extends DialogFragment implements Text
         }
 
         public Builder setSongs(List<Song> songs) {
-            mArgs.putParcelableArrayList(KEY_SONGS, new ArrayList<>(songs));
+            mArgs.putParcelableArrayList(KEY_SONGS, copyLocalSongs(songs));
             return this;
+        }
+
+        private ArrayList<Song> copyLocalSongs(List<Song> from) {
+            ArrayList<Song> copy = new ArrayList<>();
+            for (Song song : from) {
+                if (song.isInLibrary()) copy.add(song);
+            }
+            return copy;
         }
 
         public Builder showSnackbarIn(@IdRes int snackbarContainerId) {

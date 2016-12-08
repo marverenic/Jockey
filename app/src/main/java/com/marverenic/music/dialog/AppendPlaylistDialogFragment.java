@@ -220,6 +220,10 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
         }
 
         public Builder setSongs(Song song) {
+            if (!song.isInLibrary()) {
+                throw new IllegalArgumentException("Cannot add a remote song to a local playlist");
+            }
+
             mArgs.putParcelable(KEY_SONG, song);
             mArgs.remove(KEY_SONGS);
 
@@ -232,17 +236,25 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
         }
 
         public Builder setSongs(List<Song> songs) {
-            mArgs.putParcelableArrayList(KEY_SONGS, new ArrayList<>(songs));
+            mArgs.putParcelableArrayList(KEY_SONGS, copyLocalSongs(songs));
             mArgs.remove(KEY_SONG);
             return this;
         }
 
         public Builder setSongs(List<Song> songs, String name) {
-            mArgs.putParcelableArrayList(KEY_SONGS, new ArrayList<>(songs));
+            mArgs.putParcelableArrayList(KEY_SONGS, copyLocalSongs(songs));
             mArgs.remove(KEY_SONG);
             String title = mContext.getString(R.string.header_add_song_name_to_playlist, name);
             setTitle(title);
             return this;
+        }
+
+        private ArrayList<Song> copyLocalSongs(List<Song> from) {
+            ArrayList<Song> copy = new ArrayList<>();
+            for (Song song : from) {
+                if (song.isInLibrary()) copy.add(song);
+            }
+            return copy;
         }
 
         public Builder showSnackbarIn(@IdRes int snackbarContainerId) {

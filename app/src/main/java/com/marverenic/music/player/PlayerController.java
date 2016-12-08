@@ -487,7 +487,8 @@ public final class PlayerController {
         }
 
         try {
-            return playerService.getQueue();
+            List<Song> queue = playerService.getQueue();
+            return (queue == null) ? Collections.emptyList() : queue;
         } catch (RemoteException exception) {
             Timber.e(exception, "Failed to get current queue");
             return Collections.emptyList();
