@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
@@ -107,7 +106,7 @@ public class RuleViewModel extends BaseObservable {
         return mFactory.getType();
     }
 
-    public Spinner.OnItemSelectedListener getTypeSelectedListener() {
+    public AdapterView.OnItemSelectedListener getTypeSelectedListener() {
         return new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
@@ -145,7 +144,7 @@ public class RuleViewModel extends BaseObservable {
         return -1;
     }
 
-    public Spinner.OnItemSelectedListener getFilterSelectedListener() {
+    public AdapterView.OnItemSelectedListener getFilterSelectedListener() {
         return new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
