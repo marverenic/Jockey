@@ -23,6 +23,7 @@
     <string name="header_create_playlist">Create playlist</string>
     <string name="header_add_queue_to_playlist">Add queue to playlist</string>
     <string name="playlist_auto_new">New Smart Playlist</string>
+    <string name="playlist_auto_choose_by">Choose songs by</string>
 
     <!-- First start Strings -->
     <string name="first_launch_title">Welcome to Jockey</string>

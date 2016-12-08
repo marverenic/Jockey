@@ -34,6 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/typeSelector"
             android:layout_toEndOf="@+id/typeSelector"
+            android:spinnerMode="dialog"
             app:adapter="@{viewModel.filterAdapter}"
             app:selection="@{viewModel.selectedFilter}"
             app:onItemSelectedListener="@{viewModel.filterSelectedListener}"/>
@@ -43,6 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="@{viewModel.valueSpinnerVisibility}"
+            android:spinnerMode="dialog"
             android:layout_marginTop="8dp"
             android:layout_toStartOf="@+id/instanceRemove"
             android:layout_toLeftOf="@+id/instanceRemove"
