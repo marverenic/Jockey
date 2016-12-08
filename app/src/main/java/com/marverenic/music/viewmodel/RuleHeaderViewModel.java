@@ -7,9 +7,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.CheckBox;
-import android.widget.Spinner;
-import android.widget.Switch;
+import android.widget.CompoundButton;
 
 import com.marverenic.music.BR;
 import com.marverenic.music.JockeyApplication;
@@ -129,7 +127,7 @@ public class RuleHeaderViewModel extends BaseObservable {
         };
     }
 
-    public Switch.OnCheckedChangeListener onMatchAllToggle() {
+    public CompoundButton.OnCheckedChangeListener onMatchAllToggle() {
         return (checkBox, enabled) -> mBuilder.setMatchAllRules(enabled);
     }
 
@@ -189,7 +187,7 @@ public class RuleHeaderViewModel extends BaseObservable {
         return i;
     }
 
-    public Spinner.OnItemSelectedListener onTruncateMethodSelected() {
+    public AdapterView.OnItemSelectedListener onTruncateMethodSelected() {
         return new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
@@ -204,7 +202,7 @@ public class RuleHeaderViewModel extends BaseObservable {
         };
     }
 
-    public CheckBox.OnCheckedChangeListener onTruncateToggle() {
+    public CompoundButton.OnCheckedChangeListener onTruncateToggle() {
         return (checkBox, enabled) -> {
             if (enabled) {
                 mBuilder.setMaximumEntries(Math.abs(mBuilder.getMaximumEntries()));

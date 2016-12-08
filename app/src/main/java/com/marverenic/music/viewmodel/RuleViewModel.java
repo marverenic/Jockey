@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
@@ -107,7 +106,12 @@ public class RuleViewModel extends BaseObservable {
         return mFactory.getType();
     }
 
-    public Spinner.OnItemSelectedListener getTypeSelectedListener() {
+    @Bindable
+    public String getFieldPrompt() {
+        return mContext.getResources().getStringArray(R.array.auto_plist_types)[mFactory.getType()];
+    }
+
+    public AdapterView.OnItemSelectedListener getTypeSelectedListener() {
         return new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
@@ -123,6 +127,7 @@ public class RuleViewModel extends BaseObservable {
 
                 setupValueAdapter();
 
+                notifyPropertyChanged(BR.fieldPrompt);
                 notifyPropertyChanged(BR.valueTextVisibility);
                 notifyPropertyChanged(BR.valueSpinnerVisibility);
             }
@@ -145,7 +150,7 @@ public class RuleViewModel extends BaseObservable {
         return -1;
     }
 
-    public Spinner.OnItemSelectedListener getFilterSelectedListener() {
+    public AdapterView.OnItemSelectedListener getFilterSelectedListener() {
         return new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
@@ -170,11 +175,22 @@ public class RuleViewModel extends BaseObservable {
                 notifyPropertyChanged(BR.valueText);
                 notifyPropertyChanged(BR.valueTextVisibility);
                 notifyPropertyChanged(BR.valueSpinnerVisibility);
+                notifyPropertyChanged(BR.valuePrompt);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         };
+    }
+
+    @Bindable
+    public String getValuePrompt() {
+        Resources res = mContext.getResources();
+
+        String type = res.getStringArray(R.array.auto_plist_types)[getSelectedType()];
+        String match = res.getString(mEnumeratedRule.getNameRes()).toLowerCase();
+
+        return type + " " + match;
     }
 
     private void setupValueAdapter() {
