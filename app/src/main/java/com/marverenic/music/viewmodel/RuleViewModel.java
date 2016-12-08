@@ -106,6 +106,11 @@ public class RuleViewModel extends BaseObservable {
         return mFactory.getType();
     }
 
+    @Bindable
+    public String getFieldPrompt() {
+        return mContext.getResources().getStringArray(R.array.auto_plist_types)[mFactory.getType()];
+    }
+
     public AdapterView.OnItemSelectedListener getTypeSelectedListener() {
         return new AdapterView.OnItemSelectedListener() {
             @Override
@@ -122,6 +127,7 @@ public class RuleViewModel extends BaseObservable {
 
                 setupValueAdapter();
 
+                notifyPropertyChanged(BR.fieldPrompt);
                 notifyPropertyChanged(BR.valueTextVisibility);
                 notifyPropertyChanged(BR.valueSpinnerVisibility);
             }
@@ -169,11 +175,22 @@ public class RuleViewModel extends BaseObservable {
                 notifyPropertyChanged(BR.valueText);
                 notifyPropertyChanged(BR.valueTextVisibility);
                 notifyPropertyChanged(BR.valueSpinnerVisibility);
+                notifyPropertyChanged(BR.valuePrompt);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         };
+    }
+
+    @Bindable
+    public String getValuePrompt() {
+        Resources res = mContext.getResources();
+
+        String type = res.getStringArray(R.array.auto_plist_types)[getSelectedType()];
+        String match = res.getString(mEnumeratedRule.getNameRes()).toLowerCase();
+
+        return type + " " + match;
     }
 
     private void setupValueAdapter() {
