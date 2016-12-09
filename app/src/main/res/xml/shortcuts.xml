@@ -12,7 +12,7 @@
         <intent
             android:action="android.intent.action.VIEW"
             android:targetPackage="com.marverenic.music"
-            android:targetClass="com.marverenic.music.activity.LibraryActivity" />
+            android:targetClass="com.marverenic.music.activity.MainActivity" />
 
         <!-- Show the Search Activity in the foreground -->
         <intent
@@ -30,7 +30,7 @@
         <intent
             android:action="android.intent.action.VIEW"
             android:targetPackage="com.marverenic.music"
-            android:targetClass="com.marverenic.music.activity.LibraryActivity" />
+            android:targetClass="com.marverenic.music.activity.MainActivity" />
 
         <!-- Show the Now Playing Activity in the foreground -->
         <intent

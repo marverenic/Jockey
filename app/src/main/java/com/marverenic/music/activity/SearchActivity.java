@@ -15,13 +15,6 @@ import android.view.MenuItem;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.data.store.MusicStore;
-import com.marverenic.music.data.store.PlaylistStore;
-import com.marverenic.music.model.Album;
-import com.marverenic.music.model.Artist;
-import com.marverenic.music.model.Genre;
-import com.marverenic.music.model.Playlist;
-import com.marverenic.music.model.Song;
 import com.marverenic.music.adapter.AlbumSection;
 import com.marverenic.music.adapter.ArtistSection;
 import com.marverenic.music.adapter.BasicEmptyState;
@@ -29,6 +22,13 @@ import com.marverenic.music.adapter.GenreSection;
 import com.marverenic.music.adapter.HeaderSection;
 import com.marverenic.music.adapter.PlaylistSection;
 import com.marverenic.music.adapter.SongSection;
+import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
+import com.marverenic.music.model.Album;
+import com.marverenic.music.model.Artist;
+import com.marverenic.music.model.Genre;
+import com.marverenic.music.model.Playlist;
+import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
@@ -247,7 +247,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
     }
 
     private void navigateHome() {
-        Intent mainActivity = new Intent(this, LibraryActivity.class);;
+        Intent mainActivity = new Intent(this, MainActivity.class);;
         mainActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         startActivity(mainActivity);

@@ -42,7 +42,7 @@ import timber.log.Timber;
 import static android.support.design.widget.Snackbar.LENGTH_LONG;
 import static android.support.design.widget.Snackbar.LENGTH_SHORT;
 
-public class LibraryActivity extends BaseActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
 

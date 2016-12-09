@@ -25,22 +25,25 @@
         tools:ignore="UnusedAttribute">
 
         <!-- Library Activity -->
-        <activity
-            android:name=".activity.LibraryActivity"
-            android:label="@string/app_name"
+        <activity android:name=".activity.MainActivity"
             android:windowSoftInputMode="adjustPan|adjustNothing"
-            android:theme="@style/SplashTheme">
+            android:theme="@style/SplashTheme"/>
+
+        <activity-alias
+            android:name=".activity.LibraryActivity"
+            android:targetActivity=".activity.MainActivity"
+            android:icon="@mipmap/ic_launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
             <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
-        </activity>
+        </activity-alias>
 
         <activity-alias
             android:name=".activity.LibraryActivity$Red"
-            android:targetActivity=".activity.LibraryActivity"
+            android:targetActivity=".activity.MainActivity"
             android:icon="@mipmap/ic_launcher_red"
             android:enabled="false">
             <intent-filter>
@@ -53,7 +56,7 @@
 
         <activity-alias
             android:name=".activity.LibraryActivity$Orange"
-            android:targetActivity=".activity.LibraryActivity"
+            android:targetActivity=".activity.MainActivity"
             android:icon="@mipmap/ic_launcher_orange"
             android:enabled="false">
             <intent-filter>
@@ -66,7 +69,7 @@
 
         <activity-alias
             android:name=".activity.LibraryActivity$Yellow"
-            android:targetActivity=".activity.LibraryActivity"
+            android:targetActivity=".activity.MainActivity"
             android:icon="@mipmap/ic_launcher_yellow"
             android:enabled="false">
             <intent-filter>
@@ -79,7 +82,7 @@
 
         <activity-alias
             android:name=".activity.LibraryActivity$Green"
-            android:targetActivity=".activity.LibraryActivity"
+            android:targetActivity=".activity.MainActivity"
             android:icon="@mipmap/ic_launcher_green"
             android:enabled="false">
             <intent-filter>
@@ -92,7 +95,7 @@
 
         <activity-alias
             android:name=".activity.LibraryActivity$Purple"
-            android:targetActivity=".activity.LibraryActivity"
+            android:targetActivity=".activity.MainActivity"
             android:icon="@mipmap/ic_launcher_purple"
             android:enabled="false">
             <intent-filter>
@@ -105,7 +108,7 @@
 
         <activity-alias
             android:name=".activity.LibraryActivity$Grey"
-            android:targetActivity=".activity.LibraryActivity"
+            android:targetActivity=".activity.MainActivity"
             android:icon="@mipmap/ic_launcher_grey"
             android:enabled="false">
             <intent-filter>
@@ -118,7 +121,7 @@
 
         <activity-alias
             android:name=".activity.LibraryActivity$Black"
-            android:targetActivity=".activity.LibraryActivity"
+            android:targetActivity=".activity.MainActivity"
             android:icon="@mipmap/ic_launcher_black"
             android:enabled="false">
             <intent-filter>

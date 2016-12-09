@@ -21,7 +21,6 @@ import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.app.NightMode;
 
 import com.marverenic.music.R;
-import com.marverenic.music.activity.LibraryActivity;
 import com.marverenic.music.player.PlayerController;
 
 import static android.util.DisplayMetrics.DENSITY_HIGH;
@@ -245,7 +244,7 @@ public class PresetThemeStore implements ThemeStore {
                 "$Black",
         };
 
-        String activityName = LibraryActivity.class.getName();
+        String launchActivityName = "com.marverenic.music.activity.LibraryActivity";
         int nextIcon = mPreferencesStore.getPrimaryColor();
         int currIcon = mPreferencesStore.getIconColor();
 
@@ -256,8 +255,8 @@ public class PresetThemeStore implements ThemeStore {
         mPreferencesStore.setIconColor(nextIcon);
 
         PlayerController.stop();
-        setComponentEnabled(activityName + activityThemeSuffixes[nextIcon], true, false);
-        setComponentEnabled(activityName + activityThemeSuffixes[currIcon], false, true);
+        setComponentEnabled(launchActivityName + activityThemeSuffixes[nextIcon], true, false);
+        setComponentEnabled(launchActivityName + activityThemeSuffixes[currIcon], false, true);
     }
 
     private void setComponentEnabled(String fullyQualifiedName, boolean enabled, boolean killApp) {
