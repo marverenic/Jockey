@@ -739,13 +739,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     }
 
     /**
-     * @return Whether the current song is getting ready to be played
-     */
-    public boolean isPreparing() {
-        return mMediaPlayer.isPreparing();
-    }
-
-    /**
      * @return The current queue. If shuffle is enabled, then the shuffled queue will be returned,
      *         otherwise the regular queue will be returned
      */

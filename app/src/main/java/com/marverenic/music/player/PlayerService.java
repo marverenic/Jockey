@@ -200,7 +200,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
     @DrawableRes
     private int getNotificationIcon() {
-        if (musicPlayer.isPlaying() || musicPlayer.isPreparing()) {
+        if (musicPlayer.isPlaying()) {
             return R.drawable.ic_play_arrow_24dp;
         } else {
             return R.drawable.ic_pause_24dp;
