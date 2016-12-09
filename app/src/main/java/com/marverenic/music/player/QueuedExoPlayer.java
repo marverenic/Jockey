@@ -368,11 +368,6 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     }
 
     @Override
-    public boolean isPreparing() {
-        return mState == ExoPlayerState.BUFFERING;
-    }
-
-    @Override
     public void setVolume(float volume) {
         mExoPlayer.setVolume(volume);
     }
