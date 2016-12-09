@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ActivityManager.TaskDescription;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,7 +22,7 @@ import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.app.NightMode;
 
 import com.marverenic.music.R;
-import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.player.PlayerService;
 
 import static android.util.DisplayMetrics.DENSITY_HIGH;
 import static android.util.DisplayMetrics.DENSITY_LOW;
@@ -254,19 +255,24 @@ public class PresetThemeStore implements ThemeStore {
 
         mPreferencesStore.setIconColor(nextIcon);
 
-        PlayerController.stop();
-        setComponentEnabled(launchActivityName + activityThemeSuffixes[nextIcon], true, false);
-        setComponentEnabled(launchActivityName + activityThemeSuffixes[currIcon], false, true);
+        setComponentEnabled(launchActivityName + activityThemeSuffixes[nextIcon], true);
+        setComponentEnabled(launchActivityName + activityThemeSuffixes[currIcon], false);
+
+        // Restart application
+        mContext.stopService(new Intent(mContext, PlayerService.class));
+
+        Intent restartIntent = mContext.getPackageManager()
+                .getLaunchIntentForPackage(mContext.getPackageName());
+        restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        mContext.startActivity(restartIntent);
     }
 
-    private void setComponentEnabled(String fullyQualifiedName, boolean enabled, boolean killApp) {
+    private void setComponentEnabled(String fullyQualifiedName, boolean enabled) {
         mContext.getPackageManager().setComponentEnabledSetting(
-                new ComponentName(mContext, fullyQualifiedName),
+                new ComponentName(mContext.getPackageName(), fullyQualifiedName),
                 (enabled)
                         ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
                         : PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                (killApp)
-                        ? 0
-                        : PackageManager.DONT_KILL_APP);
+                PackageManager.DONT_KILL_APP);
     }
 }
