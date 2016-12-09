@@ -48,8 +48,6 @@ public interface QueuedMediaPlayer {
 
     boolean isStopped();
 
-    boolean isPreparing();
-
     void setVolume(float volume);
 
     void setEqualizer(boolean enabled, Equalizer.Settings settings);

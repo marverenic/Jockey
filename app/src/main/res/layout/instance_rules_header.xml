@@ -148,6 +148,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:entries="@array/auto_plist_choose_by"
+                android:prompt="@string/playlist_auto_choose_by"
+                android:spinnerMode="dialog"
                 android:enabled="@{viewModel.songCountCapped}"
                 android:paddingTop="4dp"
                 android:paddingBottom="4dp"

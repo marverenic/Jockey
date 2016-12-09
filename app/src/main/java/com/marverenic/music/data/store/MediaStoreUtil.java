@@ -1,6 +1,5 @@
 package com.marverenic.music.data.store;
 
-import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -31,7 +30,11 @@ import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
+import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
+
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public final class MediaStoreUtil {
 
@@ -95,7 +98,7 @@ public final class MediaStoreUtil {
             MediaStore.Audio.Playlists.Members.TRACK
     };
 
-    private static boolean sAlreadyRequestedPermission = false;
+    private static BehaviorSubject<Boolean> sPermissionObservable;
 
     /**
      * This class is never instantiated
@@ -106,13 +109,12 @@ public final class MediaStoreUtil {
     @TargetApi(Build.VERSION_CODES.M)
     public static boolean hasPermission(Context context) {
         return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Util.hasPermissions(context,
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE);
     }
 
     public static Observable<Boolean> getPermission(Context context) {
-        if (sAlreadyRequestedPermission) {
-            return Observable.just(hasPermission(context));
+        if (sPermissionObservable != null) {
+            return sPermissionObservable.asObservable();
         } else {
             return promptPermission(context);
         }
@@ -120,14 +122,17 @@ public final class MediaStoreUtil {
 
     @TargetApi(Build.VERSION_CODES.M)
     public static Observable<Boolean> promptPermission(Context context) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return Observable.just(true);
+        if (hasPermission(context)) {
+            sPermissionObservable = BehaviorSubject.create(true);
+            return sPermissionObservable;
         }
 
-        sAlreadyRequestedPermission = true;
-        return RxPermissions.getInstance(context).request(
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        sPermissionObservable = BehaviorSubject.create();
+
+        RxPermissions.getInstance(context).request(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE)
+                .subscribe(sPermissionObservable);
+
+        return sPermissionObservable.asObservable();
     }
 
     public static List<Song> getSongs(Context context, Uri uri, @Nullable String selection,

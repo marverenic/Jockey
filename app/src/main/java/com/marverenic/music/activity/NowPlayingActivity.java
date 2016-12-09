@@ -78,6 +78,8 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     private Song lastPlaying;
     private QueueFragment queueFragment;
 
+    private MenuItem mCreatePlaylistMenuItem;
+    private MenuItem mAppendToPlaylistMenuItem;
     private MenuItem mRepeatMenuItem;
     private MenuItem mShuffleMenuItem;
 
@@ -220,11 +222,14 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.activity_now_playing, menu);
 
+        mCreatePlaylistMenuItem = menu.findItem(R.id.save);
+        mAppendToPlaylistMenuItem = menu.findItem(R.id.add_to_playlist);
         mShuffleMenuItem = menu.findItem(R.id.action_shuffle);
         mRepeatMenuItem = menu.findItem(R.id.action_repeat);
 
         updateShuffleIcon();
         updateRepeatIcon();
+        updatePlaylistActionEnabled();
 
         return true;
     }
@@ -233,6 +238,12 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     public void onResume() {
         super.onResume();
         updateSleepTimerCounter();
+    }
+
+    private void updatePlaylistActionEnabled() {
+        boolean canCreatePlaylist = queueContainsLocalSongs();
+        mCreatePlaylistMenuItem.setEnabled(canCreatePlaylist);
+        mAppendToPlaylistMenuItem.setEnabled(canCreatePlaylist);
     }
 
     private void updateShuffleIcon() {
@@ -541,6 +552,19 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         if (mRepeatMenuItem != null) {
             updateRepeatIcon();
         }
+
+        if (mCreatePlaylistMenuItem != null && mAppendToPlaylistMenuItem != null) {
+            updatePlaylistActionEnabled();
+        }
+    }
+
+    private boolean queueContainsLocalSongs() {
+        for (Song song : PlayerController.getQueue()) {
+            if (song.isInLibrary()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void showSnackbar(@StringRes int stringId) {
