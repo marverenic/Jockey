@@ -271,17 +271,17 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     private void initMediaSession() {
         Timber.i("Initializing MediaSession");
-        mMediaSession = new MediaSessionCompat(mContext, TAG, null, null);
+        MediaSessionCompat session = new MediaSessionCompat(mContext, TAG, null, null);
 
-        mMediaSession.setCallback(new MediaSessionCallback(this));
-        mMediaSession.setSessionActivity(
+        session.setCallback(new MediaSessionCallback(this));
+        session.setSessionActivity(
                 PendingIntent.getActivity(
                         mContext, 0,
                         new Intent(mContext, NowPlayingActivity.class)
                                 .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
                         PendingIntent.FLAG_CANCEL_CURRENT));
 
-        mMediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS
+        session.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS
                 | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
 
         PlaybackStateCompat.Builder state = new PlaybackStateCompat.Builder()
@@ -294,8 +294,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                         | PlaybackStateCompat.ACTION_STOP)
                 .setState(PlaybackStateCompat.STATE_NONE, 0, 0f);
 
-        mMediaSession.setPlaybackState(state.build());
-        mMediaSession.setActive(true);
+        session.setPlaybackState(state.build());
+        session.setActive(true);
+
+        mMediaSession = session;
     }
 
     /**

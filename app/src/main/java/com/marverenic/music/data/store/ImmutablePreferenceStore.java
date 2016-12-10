@@ -18,6 +18,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferencesStore, Parce
     private final int mDefaultPage;
     private final int mPrimaryColor;
     private final int mBaseColor;
+    private final int mIconColor;
     private final boolean mShuffled;
     private final int mRepeatMode;
     private final long mPreviousSleepTimerDurationMillis;
@@ -34,6 +35,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferencesStore, Parce
         mDefaultPage = preferencesStore.getDefaultPage();
         mPrimaryColor = preferencesStore.getPrimaryColor();
         mBaseColor = preferencesStore.getBaseColor();
+        mIconColor = preferencesStore.getIconColor();
         mShuffled = preferencesStore.isShuffled();
         mPreviousSleepTimerDurationMillis = preferencesStore.getLastSleepTimerDuration();
         mRepeatMode = preferencesStore.getRepeatMode();
@@ -57,6 +59,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferencesStore, Parce
         mDefaultPage = in.readInt();
         mPrimaryColor = in.readInt();
         mBaseColor = in.readInt();
+        mIconColor = in.readInt();
         mShuffled = in.readByte() != 0;
         mPreviousSleepTimerDurationMillis = in.readLong();
         mRepeatMode = in.readInt();
@@ -75,6 +78,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferencesStore, Parce
         dest.writeInt(mDefaultPage);
         dest.writeInt(mPrimaryColor);
         dest.writeInt(mBaseColor);
+        dest.writeInt(mIconColor);
         dest.writeByte((byte) (mShuffled ? 1 : 0));
         dest.writeLong(mPreviousSleepTimerDurationMillis);
         dest.writeInt(mRepeatMode);
@@ -138,6 +142,11 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferencesStore, Parce
     @Override
     public int getBaseColor() {
         return mBaseColor;
+    }
+
+    @Override
+    public int getIconColor() {
+        return mIconColor;
     }
 
     @Override

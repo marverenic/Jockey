@@ -332,7 +332,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
 
     private void navigateUp() {
         if (isTaskRoot()) {
-            Intent libraryIntent = new Intent(this, LibraryActivity.class);
+            Intent libraryIntent = new Intent(this, MainActivity.class);
             startActivity(libraryIntent);
         }
         finish();

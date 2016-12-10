@@ -1,7 +1,7 @@
 package com.marverenic.music.data.inject;
 
 import com.marverenic.music.activity.BaseActivity;
-import com.marverenic.music.activity.LibraryActivity;
+import com.marverenic.music.activity.MainActivity;
 import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.activity.SearchActivity;
 import com.marverenic.music.activity.instance.AlbumActivity;
@@ -10,6 +10,7 @@ import com.marverenic.music.activity.instance.AutoPlaylistActivity;
 import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
 import com.marverenic.music.activity.instance.GenreActivity;
 import com.marverenic.music.activity.instance.PlaylistActivity;
+import com.marverenic.music.adapter.LibraryEmptyState;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
 import com.marverenic.music.dialog.PlaylistCollisionDialogFragment;
@@ -22,7 +23,6 @@ import com.marverenic.music.fragments.MiniplayerFragment;
 import com.marverenic.music.fragments.PlaylistFragment;
 import com.marverenic.music.fragments.PreferenceFragment;
 import com.marverenic.music.fragments.SongFragment;
-import com.marverenic.music.adapter.LibraryEmptyState;
 import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.viewmodel.AlbumViewModel;
 import com.marverenic.music.viewmodel.ArtistViewModel;
@@ -37,7 +37,7 @@ public interface JockeyGraph {
 
     void injectBaseActivity(BaseActivity baseActivity);
 
-    void inject(LibraryActivity activity);
+    void inject(MainActivity activity);
     void inject(SearchActivity activity);
     void inject(NowPlayingActivity activity);
     void inject(AlbumActivity activity);

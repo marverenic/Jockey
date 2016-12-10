@@ -17,8 +17,8 @@ import android.view.KeyEvent;
 
 import com.marverenic.music.IPlayerService;
 import com.marverenic.music.R;
-import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.ImmutablePreferenceStore;
+import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.utils.MediaStyleHelper;
 
@@ -182,6 +182,11 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         MediaSessionCompat mediaSession = musicPlayer.getMediaSession();
+        if (mediaSession == null) {
+            Timber.i("Not showing notification. Media session is uninitialized");
+            return;
+        }
+
         NotificationCompat.Builder builder = MediaStyleHelper.from(this, mediaSession);
 
         setupNotificationActions(builder);

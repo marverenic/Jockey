@@ -3,7 +3,10 @@ package com.marverenic.music.data.store;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager.TaskDescription;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -19,6 +22,7 @@ import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.app.NightMode;
 
 import com.marverenic.music.R;
+import com.marverenic.music.player.PlayerService;
 
 import static android.util.DisplayMetrics.DENSITY_HIGH;
 import static android.util.DisplayMetrics.DENSITY_LOW;
@@ -26,9 +30,17 @@ import static android.util.DisplayMetrics.DENSITY_MEDIUM;
 import static android.util.DisplayMetrics.DENSITY_XHIGH;
 import static android.util.DisplayMetrics.DENSITY_XXHIGH;
 import static android.util.DisplayMetrics.DENSITY_XXXHIGH;
-
-import static com.marverenic.music.data.annotations.BaseTheme.*;
-import static com.marverenic.music.data.annotations.PresetTheme.*;
+import static com.marverenic.music.data.annotations.BaseTheme.AUTO;
+import static com.marverenic.music.data.annotations.BaseTheme.DARK;
+import static com.marverenic.music.data.annotations.BaseTheme.LIGHT;
+import static com.marverenic.music.data.annotations.PresetTheme.BLACK;
+import static com.marverenic.music.data.annotations.PresetTheme.BLUE;
+import static com.marverenic.music.data.annotations.PresetTheme.GRAY;
+import static com.marverenic.music.data.annotations.PresetTheme.GREEN;
+import static com.marverenic.music.data.annotations.PresetTheme.ORANGE;
+import static com.marverenic.music.data.annotations.PresetTheme.PURPLE;
+import static com.marverenic.music.data.annotations.PresetTheme.RED;
+import static com.marverenic.music.data.annotations.PresetTheme.YELLOW;
 
 public class PresetThemeStore implements ThemeStore {
 
@@ -218,5 +230,49 @@ public class PresetThemeStore implements ThemeStore {
             default:
                 return R.mipmap.ic_launcher;
         }
+    }
+
+    @Override
+    public void createThemedLauncherIcon() {
+        String[] activityThemeSuffixes = {
+                "$Grey",
+                "$Red",
+                "$Orange",
+                "$Yellow",
+                "$Green",
+                "", // The blue theme does not have an Activity name suffix
+                "$Purple",
+                "$Black",
+        };
+
+        String launchActivityName = "com.marverenic.music.activity.LibraryActivity";
+        int nextIcon = mPreferencesStore.getPrimaryColor();
+        int currIcon = mPreferencesStore.getIconColor();
+
+        if (nextIcon == currIcon) {
+            return;
+        }
+
+        mPreferencesStore.setIconColor(nextIcon);
+
+        setComponentEnabled(launchActivityName + activityThemeSuffixes[nextIcon], true);
+        setComponentEnabled(launchActivityName + activityThemeSuffixes[currIcon], false);
+
+        // Restart application
+        mContext.stopService(new Intent(mContext, PlayerService.class));
+
+        Intent restartIntent = mContext.getPackageManager()
+                .getLaunchIntentForPackage(mContext.getPackageName());
+        restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        mContext.startActivity(restartIntent);
+    }
+
+    private void setComponentEnabled(String fullyQualifiedName, boolean enabled) {
+        mContext.getPackageManager().setComponentEnabledSetting(
+                new ComponentName(mContext.getPackageName(), fullyQualifiedName),
+                (enabled)
+                        ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                        : PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                PackageManager.DONT_KILL_APP);
     }
 }

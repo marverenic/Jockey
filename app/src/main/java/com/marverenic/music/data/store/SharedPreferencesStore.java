@@ -128,6 +128,12 @@ public class SharedPreferencesStore implements PreferencesStore {
     }
 
     @Override
+    public int getIconColor() {
+        //noinspection WrongConstant
+        return getInt(R.string.pref_key_color_icon, PresetTheme.BLUE);
+    }
+
+    @Override
     public boolean isShuffled() {
         return getBoolean(R.string.pref_key_shuffle, false);
     }
@@ -212,6 +218,11 @@ public class SharedPreferencesStore implements PreferencesStore {
     @Override
     public void setBaseColor(@BaseTheme int themeChoice) {
         putInt(R.string.pref_key_color_base, themeChoice);
+    }
+
+    @Override
+    public void setIconColor(@PresetTheme int theme) {
+        putInt(R.string.pref_key_color_icon, theme);
     }
 
     @Override

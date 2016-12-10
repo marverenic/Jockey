@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:paddingTop="2dp"
+    android:paddingBottom="2dp"
+    android:paddingStart="2dp"
+    android:paddingEnd="2dp">
 
-    <item>
+    <item
+        android:width="44dp"
+        android:height="44dp">
         <shape android:shape="oval" android:tint="#f5f5f5"/>
     </item>
 
-    <item>
-        <inset
-            android:drawable="@drawable/ic_shortcut_search"
-            android:insetTop="16dp"
-            android:insetRight="16dp"
-            android:insetBottom="16dp"
-            android:insetLeft="16dp"/>
+    <item
+        android:width="24dp"
+        android:height="24dp"
+        android:gravity="center">
+        <inset android:drawable="@drawable/ic_shortcut_search"/>
     </item>
 
 </layer-list>
