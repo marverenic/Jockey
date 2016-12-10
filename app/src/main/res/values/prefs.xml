@@ -11,8 +11,9 @@
     <string name="theme_primary_description">Controls the accent color. Takes effect when you leave this page</string>
     <string name="theme_base">Base Theme</string>
     <string name="theme_base_description">Controls the background color. Takes effect when you leave this page</string>
-    <string name="add_shortcut">Add themed icon to launcher</string>
-    <string name="add_shortcut_description">Do you want to add a link to Jockey that matches your current theme to your launcher?</string>
+    <string name="add_shortcut">Update launcher icon color</string>
+    <string name="add_shortcut_description">Do you want to change Jockey\'s launcher icon color to match your current theme?
+        \n\nThis will cause Jockey to restart and will remove any existing shortcuts to Jockey from your home screen.</string>
     <string name="switch_to_now_playing">Open Now Playing</string>
     <string name="switch_to_now_playing_detail_on">When a new song is chosen, the Now Playing page will be opened</string>
     <string name="switch_to_now_playing_detail_off">Changing songs won\'t navigate to another page</string>
