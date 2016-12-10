@@ -3,6 +3,7 @@ package com.marverenic.music.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -180,7 +181,13 @@ public class PreferenceFragment extends PreferenceFragmentCompat
             showDirectoryInclusionExclusionFragment(exclude);
             return true;
         } else if (getString(R.string.pref_key_create_launcher_icon).equals(preference.getKey())) {
-            showNewShortcutDialog();
+            if (mPrefStore.getIconColor() != mPrefStore.getPrimaryColor()) {
+                showNewShortcutDialog();
+            } else {
+                View root = getView();
+                Snackbar.make(root, R.string.add_shortcut_already_matched, Snackbar.LENGTH_LONG)
+                        .show();
+            }
             return true;
         }
         return super.onPreferenceTreeClick(preference);
