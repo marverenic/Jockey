@@ -164,4 +164,57 @@ public final class Album implements Parcelable, Comparable<Album> {
     public int compareTo(@NonNull Album another) {
         return compareTitle(getAlbumName(), another.getAlbumName());
     }
+
+    public static class Builder {
+
+        private long albumId;
+        private String albumName;
+        private long artistId;
+        private String artistName;
+        private int year;
+        private String artUri;
+
+        public Builder setAlbumId(long albumId) {
+            this.albumId = albumId;
+            return this;
+        }
+
+        public Builder setAlbumName(String albumName) {
+            this.albumName = albumName;
+            return this;
+        }
+
+        public Builder setArtistId(long artistId) {
+            this.artistId = artistId;
+            return this;
+        }
+
+        public Builder setArtistName(String artistName) {
+            this.artistName = artistName;
+            return this;
+        }
+
+        public Builder setYear(int year) {
+            this.year = year;
+            return this;
+        }
+
+        public Builder setArtUri(String artUri) {
+            this.artUri = artUri;
+            return this;
+        }
+
+        public Album build() {
+            Album built = new Album();
+
+            built.albumId = albumId;
+            built.albumName = albumName;
+            built.artistId = artistId;
+            built.artistName = artistName;
+            built.year = year;
+            built.artUri = artUri;
+
+            return built;
+        }
+    }
 }
