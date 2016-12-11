@@ -117,7 +117,9 @@ public class PresetThemeStore implements ThemeStore {
     @Override
     public void setTheme(AppCompatActivity activity) {
         applyNightMode(activity);
-        activity.setTheme(getThemeId());
+        activity.setTheme(R.style.AppTheme);
+        activity.getTheme().applyStyle(getPrimaryThemeId(), true);
+        activity.getTheme().applyStyle(getAccentThemeId(), true);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             applyTaskDescription(activity);
@@ -143,26 +145,50 @@ public class PresetThemeStore implements ThemeStore {
     }
 
     @StyleRes
-    private int getThemeId() {
+    private int getPrimaryThemeId() {
         switch (mPreferenceStore.getPrimaryColor()) {
             case GRAY:
-                return R.style.AppTheme_Grey;
+                return R.style.Primary_Grey;
             case RED:
-                return R.style.AppTheme_Red;
+                return R.style.Primary_Red;
             case ORANGE:
-                return R.style.AppTheme_Orange;
+                return R.style.Primary_Orange;
             case YELLOW:
-                return R.style.AppTheme_Yellow;
+                return R.style.Primary_Yellow;
             case GREEN:
-                return R.style.AppTheme_Green;
+                return R.style.Primary_Green;
             case BLUE:
-                return R.style.AppTheme_Blue;
+                return R.style.Primary_Blue;
             case PURPLE:
-                return R.style.AppTheme_Purple;
+                return R.style.Primary_Purple;
             case BLACK:
-                return R.style.AppTheme_Black;
+                return R.style.Primary_Black;
             default:
-                return R.style.AppTheme_Blue;
+                return R.style.Primary_Blue;
+        }
+    }
+
+    @StyleRes
+    private int getAccentThemeId() {
+        switch (mPreferenceStore.getPrimaryColor()) {
+            case GRAY:
+                return R.style.Accent_Grey;
+            case RED:
+                return R.style.Accent_Red;
+            case ORANGE:
+                return R.style.Accent_Orange;
+            case YELLOW:
+                return R.style.Accent_Yellow;
+            case GREEN:
+                return R.style.Accent_Green;
+            case BLUE:
+                return R.style.Accent_Blue;
+            case PURPLE:
+                return R.style.Accent_Purple;
+            case BLACK:
+                return R.style.Accent_Black;
+            default:
+                return R.style.Accent_Blue;
         }
     }
 
