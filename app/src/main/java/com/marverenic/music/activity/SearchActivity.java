@@ -218,7 +218,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_search, menu);
 
-        MenuItem searchItem = menu.findItem(R.id.search);
+        MenuItem searchItem = menu.findItem(R.id.menu_library_search);
         searchView = (SearchView) searchItem.getActionView();
         searchView.setOnQueryTextListener(this);
         searchView.setIconified(false);
@@ -238,7 +238,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
             case android.R.id.home:
                 navigateHome();
                 return true;
-            case R.id.search:
+            case R.id.menu_library_search:
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) onSearchRequested();
                 return true;
             default:

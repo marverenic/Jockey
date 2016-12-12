@@ -5,34 +5,34 @@
     tools:ignore="AlwaysShowAction">
 
     <item
-        android:id="@+id/action_shuffle"
+        android:id="@+id/menu_now_playing_shuffle"
         android:icon="@drawable/ic_shuffle_24dp"
         android:title="@string/action_enable_shuffle"
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/action_repeat"
+        android:id="@+id/menu_now_playing_repeat"
         android:icon="@drawable/ic_repeat_24dp"
         android:title="@string/action_enable_repeat"
         app:showAsAction="always"/>
 
     <item
-        android:id="@+id/action_set_sleep_timer"
+        android:id="@+id/menu_now_playing_sleep_timer"
         android:title="@string/action_set_sleep_timer"
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/save"
+        android:id="@+id/menu_now_playing_save"
         android:title="@string/action_export_playlist"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/add_to_playlist"
+        android:id="@+id/menu_now_playing_append"
         android:title="@string/action_add_queue_to_playlist"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/clear_queue"
+        android:id="@+id/menu_now_playing_clear"
         android:title="@string/action_clear_queue"
         app:showAsAction="never" />
 

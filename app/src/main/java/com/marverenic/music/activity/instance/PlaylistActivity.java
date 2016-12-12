@@ -147,8 +147,8 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
             return super.onOptionsItemSelected(item);
         }
 
-        if (item.getItemId() == R.id.action_sort) {
-            PopupMenu sortMenu = new PopupMenu(this, findViewById(R.id.action_sort), Gravity.END);
+        if (item.getItemId() == R.id.menu_playlist_sort) {
+            PopupMenu sortMenu = new PopupMenu(this, findViewById(R.id.menu_playlist_sort), Gravity.END);
             sortMenu.inflate(R.menu.sort_options);
             sortMenu.setOnMenuItemClickListener(this);
             sortMenu.show();
@@ -165,35 +165,35 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
         Comparator<Song> sortComparator;
 
         switch (item.getItemId()) {
-            case R.id.action_sort_random:
+            case R.id.menu_sort_random:
                 sortComparator = null;
                 result = getResources().getString(R.string.message_sorted_playlist_random);
                 break;
-            case R.id.action_sort_name:
+            case R.id.menu_sort_name:
                 sortComparator = null;
                 result = getResources().getString(R.string.message_sorted_playlist_name);
                 break;
-            case R.id.action_sort_artist:
+            case R.id.menu_sort_artist:
                 sortComparator = Song.ARTIST_COMPARATOR;
                 result = getResources().getString(R.string.message_sorted_playlist_artist);
                 break;
-            case R.id.action_sort_album:
+            case R.id.menu_sort_album:
                 sortComparator = Song.ALBUM_COMPARATOR;
                 result = getResources().getString(R.string.message_sorted_playlist_album);
                 break;
-            case R.id.action_sort_play:
+            case R.id.menu_sort_play:
                 sortComparator = Song.playCountComparator(mPlayCountStore);
                 result = getResources().getString(R.string.message_sorted_playlist_play);
                 break;
-            case R.id.action_sort_skip:
+            case R.id.menu_sort_skip:
                 sortComparator = Song.skipCountComparator(mPlayCountStore);
                 result = getResources().getString(R.string.message_sorted_playlist_skip);
                 break;
-            case R.id.action_sort_date_added:
+            case R.id.menu_sort_date_added:
                 sortComparator = Song.DATE_ADDED_COMPARATOR;
                 result = getResources().getString(R.string.message_sorted_playlist_date_added);
                 break;
-            case R.id.action_sort_date_played:
+            case R.id.menu_sort_date_played:
                 sortComparator = Song.playCountComparator(mPlayCountStore);
                 result = getResources().getString(R.string.message_sorted_playlist_date_played);
                 break;

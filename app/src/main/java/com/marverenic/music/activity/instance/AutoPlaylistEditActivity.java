@@ -162,11 +162,11 @@ public class AutoPlaylistEditActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.add:
+            case R.id.menu_auto_playlist_edit_add:
                 mBuilder.getRules().add(emptyRule());
                 mAdapter.notifyItemInserted(mBuilder.getRules().size());
                 return true;
-            case R.id.discard:
+            case R.id.menu_auto_playlist_discard:
                 if (rulesChanged()) {
                     new AlertDialog.Builder(this)
                             .setMessage("Discard changes?")

@@ -127,16 +127,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_settings:
+            case R.id.menu_library_settings:
                 startActivity(SettingsActivity.newIntent(this));
                 return true;
-            case R.id.action_refresh_library:
+            case R.id.menu_library_refresh:
                 refreshLibrary();
                 return true;
-            case R.id.search:
+            case R.id.menu_library_search:
                 startActivity(SearchActivity.newIntent(this));
                 return true;
-            case R.id.action_about:
+            case R.id.menu_library_about:
                 startActivity(AboutActivity.newIntent(this));
                 return true;
             default:

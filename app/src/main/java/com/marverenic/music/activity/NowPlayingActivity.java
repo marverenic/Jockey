@@ -222,10 +222,10 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.activity_now_playing, menu);
 
-        mCreatePlaylistMenuItem = menu.findItem(R.id.save);
-        mAppendToPlaylistMenuItem = menu.findItem(R.id.add_to_playlist);
-        mShuffleMenuItem = menu.findItem(R.id.action_shuffle);
-        mRepeatMenuItem = menu.findItem(R.id.action_repeat);
+        mCreatePlaylistMenuItem = menu.findItem(R.id.menu_now_playing_save);
+        mAppendToPlaylistMenuItem = menu.findItem(R.id.menu_now_playing_append);
+        mShuffleMenuItem = menu.findItem(R.id.menu_now_playing_shuffle);
+        mRepeatMenuItem = menu.findItem(R.id.menu_now_playing_repeat);
 
         updateShuffleIcon();
         updateRepeatIcon();
@@ -308,22 +308,22 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
             case android.R.id.home:
                 navigateUp();
                 return true;
-            case R.id.action_shuffle:
+            case R.id.menu_now_playing_shuffle:
                 toggleShuffle();
                 return true;
-            case R.id.action_repeat:
+            case R.id.menu_now_playing_repeat:
                 showRepeatMenu();
                 return true;
-            case R.id.action_set_sleep_timer:
+            case R.id.menu_now_playing_sleep_timer:
                 showSleepTimerDialog();
                 return true;
-            case R.id.save:
+            case R.id.menu_now_playing_save:
                 saveQueueAsPlaylist();
                 return true;
-            case R.id.add_to_playlist:
+            case R.id.menu_now_playing_append:
                 addQueueToPlaylist();
                 return true;
-            case R.id.clear_queue:
+            case R.id.menu_now_playing_clear:
                 clearQueue();
                 return true;
         }
@@ -353,7 +353,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     }
 
     private void showRepeatMenu() {
-        PopupMenu menu = new PopupMenu(this, findViewById(R.id.action_repeat), Gravity.END);
+        PopupMenu menu = new PopupMenu(this, findViewById(R.id.menu_now_playing_repeat), Gravity.END);
         menu.inflate(R.menu.activity_now_playing_repeat);
 
         menu.setOnMenuItemClickListener(item -> {
