@@ -121,4 +121,30 @@ public final class Artist implements Parcelable, Comparable<Artist> {
     public int compareTo(@NonNull Artist another) {
         return compareTitle(getArtistName(), another.getArtistName());
     }
+
+    public static class Builder {
+
+        private int artistId;
+        private String artistName;
+
+        public Builder setArtistId(int artistId) {
+            this.artistId = artistId;
+            return this;
+        }
+
+        public Builder setArtistName(String artistName) {
+            this.artistName = artistName;
+            return this;
+        }
+
+        public Artist build() {
+            Artist built = new Artist();
+
+            built.artistId = artistId;
+            built.artistName = artistName;
+
+            return built;
+        }
+
+    }
 }
