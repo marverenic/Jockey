@@ -9,11 +9,11 @@
     <include layout="@layout/toolbar"/>
 
     <com.marverenic.music.view.GestureView
-        android:id="@+id/artworkSwipeFrame"
+        android:id="@+id/now_playing_gesture_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_toLeftOf="@+id/controlFragment"
-        android:layout_toStartOf="@+id/controlFragment"
+        android:layout_toLeftOf="@+id/now_playing_control_fragment"
+        android:layout_toStartOf="@+id/now_playing_control_fragment"
         android:foreground="@android:color/transparent"
         app:leftIndicator="@drawable/ic_skip_next_36dp"
         app:rightIndicator="@drawable/ic_skip_previous_36dp"
@@ -21,7 +21,7 @@
         app:overlayColor="?attr/colorAccent">
 
         <ImageView
-            android:id="@+id/imageArtwork"
+            android:id="@+id/now_playing_artwork"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="?attr/actionBarSize"
@@ -49,7 +49,7 @@
     </com.marverenic.music.view.GestureView>
 
     <fragment
-        android:id="@+id/controlFragment"
+        android:id="@+id/now_playing_control_fragment"
         android:name="com.marverenic.music.fragments.PlayerControllerFragment"
         android:layout_width="@dimen/now_playing_control_min_width"
         android:layout_height="wrap_content"
@@ -59,14 +59,14 @@
         tools:layout="@layout/view_now_playing_control_panel" />
 
     <fragment
-        android:id="@+id/listFragment"
+        android:id="@+id/now_playing_queue_fragment"
         android:name="com.marverenic.music.fragments.QueueFragment"
         android:layout_width="@dimen/now_playing_control_min_width"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_below="@id/toolbar"
-        android:layout_above="@id/controlFragment"
+        android:layout_above="@id/now_playing_control_fragment"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:layout="@layout/list"/>
 

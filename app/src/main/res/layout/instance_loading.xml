@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/loadingView"
+    android:id="@+id/loading_frame"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/loadingDrawable"
+        android:id="@+id/loading_icon"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_gravity="center"/>

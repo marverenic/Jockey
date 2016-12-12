@@ -12,11 +12,11 @@
         android:onClick="@{viewModel.onClickArtist()}" >
 
         <TextView
-            android:id="@+id/instanceTitle"
+            android:id="@+id/artist_name"
             style="@style/listTitleText"
             android:text="@{viewModel.name}"
-            android:layout_toLeftOf="@+id/instanceMore"
-            android:layout_toStartOf="@+id/instanceMore"
+            android:layout_toLeftOf="@+id/artist_menu"
+            android:layout_toStartOf="@+id/artist_menu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -24,7 +24,7 @@
             android:singleLine="true" />
 
         <ImageView
-            android:id="@+id/instanceMore"
+            android:id="@+id/artist_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"

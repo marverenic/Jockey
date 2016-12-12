@@ -20,7 +20,7 @@
         tools:layout_height="@dimen/miniplayer_height">
 
         <ImageView
-            android:id="@+id/imageArtwork"
+            android:id="@+id/miniplayer_artwork"
             android:layout_width="@dimen/miniplayer_height"
             android:layout_height="@dimen/miniplayer_height"
             android:background="@android:color/black"
@@ -28,18 +28,18 @@
             app:bitmap="@{viewModel.artwork}"/>
 
         <ProgressBar
-            android:id="@+id/songProgress"
+            android:id="@+id/miniplayer_progress"
             android:layout_width="match_parent"
             android:layout_height="4dp"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             android:progressDrawable="@drawable/progress_drawable"
-            android:layout_toRightOf="@id/imageArtwork"
-            android:layout_toEndOf="@id/imageArtwork"
+            android:layout_toRightOf="@id/miniplayer_artwork"
+            android:layout_toEndOf="@id/miniplayer_artwork"
             android:max="@{viewModel.songDuration}"
             android:progress="@{viewModel.progress}"/>
 
         <ImageButton
-            android:id="@+id/skipButton"
+            android:id="@+id/miniplayer_skip_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="8dp"
@@ -53,13 +53,13 @@
             android:onClick="@{viewModel.onClickSkip()}" />
 
         <ImageButton
-            android:id="@+id/playButton"
+            android:id="@+id/miniplayer_play_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="8dp"
             android:layout_centerInParent="true"
-            android:layout_toLeftOf="@+id/skipButton"
-            android:layout_toStartOf="@id/skipButton"
+            android:layout_toLeftOf="@+id/miniplayer_skip_button"
+            android:layout_toStartOf="@id/miniplayer_skip_button"
             android:src="@{viewModel.togglePlayIcon}"
             android:tint="?textColorPrimary"
             android:background="?attr/selectableItemBackgroundBorderless"
@@ -71,20 +71,20 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_centerInParent="true"
-            android:layout_toRightOf="@id/imageArtwork"
-            android:layout_toEndOf="@+id/imageArtwork"
-            android:layout_toLeftOf="@id/playButton"
-            android:layout_toStartOf="@id/playButton">
+            android:layout_toRightOf="@id/miniplayer_artwork"
+            android:layout_toEndOf="@+id/miniplayer_artwork"
+            android:layout_toLeftOf="@id/miniplayer_play_button"
+            android:layout_toStartOf="@id/miniplayer_play_button">
 
             <TextView
-                android:id="@+id/textNowPlayingTitle"
+                android:id="@+id/miniplayer_song_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/miniplayerTitleText"
                 android:text="@{viewModel.songTitle}"/>
 
             <TextView
-                android:id="@+id/textNowPlayingDetail"
+                android:id="@+id/miniplayer_song_detail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/miniplayerDetailText"

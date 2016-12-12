@@ -6,7 +6,7 @@
     </data>
 
     <FrameLayout
-        android:id="@+id/albumInstance"
+        android:id="@+id/album_view"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:foreground="?android:attr/selectableItemBackground"
@@ -20,7 +20,7 @@
             android:orientation="vertical">
 
             <com.marverenic.music.view.SquareImageViewH
-                android:id="@+id/instanceArt"
+                android:id="@+id/album_art"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_margin="0dp"
@@ -33,10 +33,10 @@
                 android:layout_height="68dp"
                 android:paddingLeft="@dimen/grid_padding"
                 android:paddingStart="@dimen/grid_padding"
-                android:layout_below="@id/instanceArt">
+                android:layout_below="@id/album_art">
 
                 <ImageView
-                    android:id="@+id/instanceMore"
+                    android:id="@+id/album_menu"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/grid_padding"
@@ -49,7 +49,7 @@
                     android:onClick="@{viewModel.onClickMenu()}" />
 
                 <TextView
-                    android:id="@+id/instanceTitle"
+                    android:id="@+id/album_title"
                     style="@style/gridTitleText"
                     android:textColor="@{viewModel.titleTextColor}"
                     android:text="@{viewModel.albumTitle}"
@@ -59,11 +59,11 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:singleLine="true"
-                    android:layout_toLeftOf="@id/instanceMore"
-                    android:layout_toStartOf="@id/instanceMore" />
+                    android:layout_toLeftOf="@id/album_menu"
+                    android:layout_toStartOf="@id/album_menu" />
 
                 <TextView
-                    android:id="@+id/instanceDetail"
+                    android:id="@+id/album_detail"
                     style="@style/gridDetailText"
                     android:textColor="@{viewModel.artistTextColor}"
                     android:text="@{viewModel.albumArtist}"
@@ -73,8 +73,8 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:singleLine="true"
-                    android:layout_toLeftOf="@id/instanceMore"
-                    android:layout_toStartOf="@+id/instanceMore" />
+                    android:layout_toLeftOf="@id/album_menu"
+                    android:layout_toStartOf="@+id/album_menu" />
 
             </RelativeLayout>
         </RelativeLayout>

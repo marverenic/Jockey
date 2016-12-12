@@ -17,19 +17,19 @@
             android:layout_marginBottom="16dp">
 
             <TextView
-                android:id="@+id/equalizerPresetPrefix"
+                android:id="@+id/eq_preset_prefix"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:text="@string/equalizerPresetPrefix"/>
 
             <Spinner
-                android:id="@+id/equalizerPresetSpinner"
+                android:id="@+id/eq_preset_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_toEndOf="@+id/equalizerPresetPrefix"
-                android:layout_toRightOf="@id/equalizerPresetPrefix" />
+                android:layout_toEndOf="@+id/eq_preset_prefix"
+                android:layout_toRightOf="@id/eq_preset_prefix" />
 
         </RelativeLayout>
 
@@ -42,7 +42,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/equalizerNotes"
+            android:id="@+id/equalizer_notes"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"

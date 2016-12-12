@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/songInstance"
     android:layout_width="match_parent"
     android:layout_height="@dimen/list_height"
     android:layout_centerVertical="true"
@@ -12,11 +11,11 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_centerVertical="true"
-        android:layout_toStartOf="@id/instanceMore"
-        android:layout_toLeftOf="@id/instanceMore">
+        android:layout_toStartOf="@+id/directory_menu"
+        android:layout_toLeftOf="@+id/directory_menu">
 
         <TextView
-            android:id="@+id/instanceTitle"
+            android:id="@+id/directory_name"
             style="@style/listTitleText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,7 +23,7 @@
             android:singleLine="true" />
 
         <TextView
-            android:id="@+id/instanceDetail"
+            android:id="@+id/directory_detail"
             style="@style/listDetailText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -34,7 +33,7 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/instanceMore"
+        android:id="@+id/directory_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="10dp"

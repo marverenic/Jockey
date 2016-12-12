@@ -15,11 +15,11 @@
         android:paddingRight="16dp">
 
         <TextView
-            android:id="@+id/textSongTitle"
+            android:id="@+id/now_playing_detail_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toStartOf="@+id/songDetail"
-            android:layout_toLeftOf="@+id/songDetail"
+            android:layout_toStartOf="@+id/now_playing_detail_menu"
+            android:layout_toLeftOf="@+id/now_playing_detail_menu"
             android:ellipsize="end"
             android:singleLine="true"
             android:text="@{viewModel.songTitle}"
@@ -27,12 +27,12 @@
             style="@style/TextAppearance.AppCompat.Headline"/>
 
         <TextView
-            android:id="@+id/textArtistName"
+            android:id="@+id/now_playing_detail_artist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/textSongTitle"
-            android:layout_toStartOf="@+id/songDetail"
-            android:layout_toLeftOf="@+id/songDetail"
+            android:layout_below="@id/now_playing_detail_title"
+            android:layout_toStartOf="@+id/now_playing_detail_menu"
+            android:layout_toLeftOf="@+id/now_playing_detail_menu"
             android:ellipsize="end"
             android:singleLine="true"
             android:text="@{viewModel.artistName}"
@@ -40,12 +40,12 @@
             style="@style/TextAppearance.AppCompat.Subhead"/>
 
         <TextView
-            android:id="@+id/textAlbumTitle"
+            android:id="@+id/now_playing_detail_album"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/textArtistName"
-            android:layout_toStartOf="@+id/songDetail"
-            android:layout_toLeftOf="@+id/songDetail"
+            android:layout_below="@id/now_playing_detail_artist"
+            android:layout_toStartOf="@+id/now_playing_detail_menu"
+            android:layout_toLeftOf="@+id/now_playing_detail_menu"
             android:ellipsize="end"
             android:singleLine="true"
             android:text="@{viewModel.albumName}"
@@ -53,7 +53,7 @@
             style="@style/TextAppearance.AppCompat.Subhead"/>
 
         <ImageButton
-            android:id="@+id/songDetail"
+            android:id="@+id/now_playing_detail_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"

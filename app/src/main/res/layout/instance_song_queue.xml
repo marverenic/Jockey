@@ -6,7 +6,6 @@
     </data>
 
     <RelativeLayout
-        android:id="@+id/songInstance"
         android:layout_width="match_parent"
         android:layout_height="@dimen/list_height"
         android:background="?selectableItemBackground"
@@ -36,7 +35,7 @@
             android:layout_toLeftOf="@+id/instancePlayingIndicator">
 
             <TextView
-                android:id="@+id/instanceTitle"
+                android:id="@+id/song_name"
                 style="@style/listTitleText"
                 android:text="@{viewModel.title}"
                 android:paddingLeft="0dp"
@@ -46,7 +45,7 @@
                 android:singleLine="true" />
 
             <TextView
-                android:id="@+id/instanceDetail"
+                android:id="@+id/song_detail"
                 style="@style/listDetailText"
                 android:text="@{viewModel.detail}"
                 android:paddingLeft="0dp"
@@ -65,12 +64,12 @@
             android:src="@drawable/ic_play_circle_fill_24dp"
             android:tint="?attr/colorAccent"
             android:visibility="@{viewModel.nowPlayingIndicatorVisibility}"
-            android:layout_toLeftOf="@+id/instanceMore"
-            android:layout_toStartOf="@+id/instanceMore"
+            android:layout_toLeftOf="@id/song_menu"
+            android:layout_toStartOf="@id/song_menu"
             android:layout_centerVertical="true"/>
 
         <ImageView
-            android:id="@+id/instanceMore"
+            android:id="@+id/song_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"

@@ -68,7 +68,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         fab.addChild(R.drawable.ic_add_24dp, this, R.string.playlist);
         fab.addChild(R.drawable.ic_add_24dp, this, R.string.playlist_auto);
 
-        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        ViewPager pager = (ViewPager) findViewById(R.id.library_pager);
 
         int page = mPrefStore.getDefaultPage();
         if (page != 0 || !hasRwPermission()) {
@@ -79,7 +79,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         adapter.setFloatingActionButton(fab);
         pager.setAdapter(adapter);
         pager.addOnPageChangeListener(adapter);
-        ((TabLayout) findViewById(R.id.tabs)).setupWithViewPager(pager);
+        ((TabLayout) findViewById(R.id.library_tabs)).setupWithViewPager(pager);
 
         pager.setCurrentItem(page);
 

@@ -54,8 +54,8 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View layout = inflater.inflate(R.layout.fragment_equalizer, container, false);
-        presetSpinnerPrefix = (TextView) layout.findViewById(R.id.equalizerPresetPrefix);
-        presetSpinner = (Spinner) layout.findViewById(R.id.equalizerPresetSpinner);
+        presetSpinnerPrefix = (TextView) layout.findViewById(R.id.eq_preset_prefix);
+        presetSpinner = (Spinner) layout.findViewById(R.id.eq_preset_spinner);
 
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         if (toolbar != null) {
@@ -100,7 +100,7 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
         // If this device already has an application that can handle equalizers system-wide, inform
         // the user of possible issues by using Jockey's built-in equalizer
         if (Util.getSystemEqIntent(getActivity()) != null) {
-            ((TextView) layout.findViewById(R.id.equalizerNotes))
+            ((TextView) layout.findViewById(R.id.equalizer_notes))
                     .setText(R.string.equalizerNoteSystem);
         }
 

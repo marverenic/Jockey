@@ -209,7 +209,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat
         getFragmentManager().beginTransaction()
                 .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left,
                         R.anim.slide_in_left, R.anim.slide_out_right)
-                .replace(R.id.prefFrame, next)
+                .replace(R.id.pref_fragment_container, next)
                 .addToBackStack(null)
                 .commit();
     }

@@ -208,10 +208,10 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 (int) getResources().getDimension(R.dimen.grid_margin),
                 numColumns, mAlbumSection.getTypeId()));
         mRecyclerView.addItemDecoration(
-                new BackgroundDecoration(R.id.subheaderFrame));
+                new BackgroundDecoration(R.id.subheader_frame));
         mRecyclerView.addItemDecoration(
                 new DividerDecoration(this,
-                        R.id.albumInstance, R.id.subheaderFrame, R.id.empty_layout));
+                        R.id.album_view, R.id.subheader_frame, R.id.empty_layout));
     }
 
     @Override
