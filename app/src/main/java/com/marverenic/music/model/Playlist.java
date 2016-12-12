@@ -117,4 +117,24 @@ public class Playlist implements Parcelable, Comparable<Playlist> {
         }
         return compareTitle(getPlaylistName(), another.getPlaylistName());
     }
+
+    public static class Builder {
+
+        private long playlistId;
+        private String playlistName;
+
+        public Builder setPlaylistId(long playlistId) {
+            this.playlistId = playlistId;
+            return this;
+        }
+
+        public Builder setPlaylistName(String playlistName) {
+            this.playlistName = playlistName;
+            return this;
+        }
+
+        public Playlist build() {
+            return new Playlist(playlistId, playlistName);
+        }
+    }
 }
