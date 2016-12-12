@@ -23,7 +23,6 @@
     </FrameLayout>
 
     <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/coordinator_layout"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
         android:layout_above="@id/miniplayer_holder">
@@ -31,7 +30,6 @@
         <android.support.design.widget.AppBarLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/appBar"
             android:background="?attr/colorPrimary">
 
             <android.support.v7.widget.Toolbar

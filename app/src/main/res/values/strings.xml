@@ -41,8 +41,6 @@
 
     <!-- Menu actions -->
     <string name="action_refresh">Refresh Library</string>
-    <string name="action_go_to_queue">Queue</string>
-    <string name="action_search">Search Library</string>
     <string name="action_export_playlist">Save queue as playlist&#8230;</string>
     <string name="action_set_sleep_timer">Sleep Timer&#8230;</string>
     <string name="action_sort">Sort&#8230;</string>
@@ -56,9 +54,7 @@
     <string name="action_sort_date_played">Sort by date played</string>
     <string name="action_disable_shuffle">Disable shuffle</string>
     <string name="action_enable_shuffle">Enable shuffle</string>
-    <string name="action_disable_repeat">Disable repeat</string>
     <string name="action_enable_repeat">Enable repeat</string>
-    <string name="action_enable_repeat_one">Enable repeat one</string>
     <string name="action_disable_sleep_timer">Disable Sleep Timer</string>
     <string name="action_add_queue_to_playlist">Add queue to playlist&#8230;</string>
     <string name="action_clear_queue">Clear queue</string>
@@ -84,11 +80,9 @@
     <string name="action_pause">Pause</string>
     <string name="action_previous">Previous</string>
     <string name="action_undo">Undo</string>
-    <string name="action_info">Info</string>
     <string name="action_create">Create</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_add">Add</string>
-    <string name="action_add_all">Add all</string>
     <string name="action_add_new">Add new</string>
     <string name="action_agree">Agree</string>
     <string name="action_try_again">Try again</string>
@@ -113,8 +107,6 @@
     <!-- Error messages -->
     <string name="message_refresh_library_no_permission">Jockey doesn\'t have permission to read
         your music</string>
-    <string name="message_create_playlist_error_no_name">Can\'t create a playlist with no name</string>
-    <string name="message_play_error_unknown_path">Jockey couldn\'t find that song</string>
     <string name="message_play_error_not_found">Jockey couldn\'t find &#8220;%1$s&#8221;</string>
     <string name="message_play_error_io_exception">&#8220;%1$s&#8221; couldn\'t be played</string>
     <string name="error_hint_duplicate_playlist">Enter a unique playlist name</string>
@@ -125,8 +117,6 @@
     <string name="message_created_playlist">Created playlist &#8220;%1$s&#8221;</string>
     <string name="message_removed_playlist">Deleted playlist &#8220;%1$s&#8221;</string>
     <string name="message_removed_song">Removed song &#8220;%1$s&#8221;</string>
-    <string name="message_create_playlist_error_exists">Couldn\'t create playlist &#8220;%1$s&#8221;
-        because it already exists</string>
     <string name="message_sorted_playlist_random">Randomized &#8220;%1$s&#8221;</string>
     <string name="message_sorted_playlist_name">Sorted &#8220;%1$s&#8221; by name</string>
     <string name="message_sorted_playlist_artist">Sorted &#8220;%1$s&#8221; by artist name</string>
@@ -155,10 +145,6 @@
 
     <!-- Empty state & unknown strings -->
     <string name="nothing_playing">Nothing is playing</string>
-    <string name="no_artist">Unknown artist</string>
-    <string name="no_album">Unknown album</string>
-    <string name="no_description">No description available</string>
-    <string name="various_artists">Various Artists</string>
     <string name="unknown_artist">Unknown Artist</string>
     <string name="unknown_album">Unknown Album</string>
     <string name="unknown">Unknown</string>
@@ -216,9 +202,6 @@
         License, Version 2.0</string>
     <string name="uses_rx_android_header">RxAndroid</string>
     <string name="uses_rx_android_detail">Version 1.2.1; distributed by RxAndroid under an Apache
-        License, Version 2.0</string>
-    <string name="uses_rx_lifecycle_header">RxLifecycle</string>
-    <string name="uses_rx_lifecycle_detail">Version 0.6.1; distributed by Trello under an Apache
         License, Version 2.0</string>
     <string name="uses_rx_permissions_header">RxPermissions</string>
     <string name="uses_rx_permissions_detail">Version 0.7.0; distributed by Thomas Bruyelle
@@ -362,10 +345,8 @@
 
     <!-- Accessibility Content Descriptions -->
     <string name="button_play_description">Play Button</string>
-    <string name="button_pause_description">Pause Button</string>
     <string name="button_previous_description">Previous Song Button</string>
     <string name="button_skip_description">Next Song Button</string>
-    <string name="art_description">Album Art</string>
     <string name="description_album_art">Album Art</string>
 
 </resources>

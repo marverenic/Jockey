@@ -11,7 +11,6 @@
     <color name="player_frame_emboss">#30FFFFFF</color>
     <color name="player_frame_info_background">#37474f</color>
     <color name="player_frame_ctrl_background">#455a64</color>
-    <color name="player_control_background">#212121</color>
     <color name="player_text_main">#ffffff</color>
     <color name="player_text_detail">#ffffff</color>
 

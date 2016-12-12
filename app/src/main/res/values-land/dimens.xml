@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <dimen name="extended_actionbar_height">140dp</dimen>
     <dimen name="now_playing_button_size">36dp</dimen>
     <dimen name="player_frame_height">176dp</dimen>
     <dimen name="player_frame_info_height">120dp</dimen>
