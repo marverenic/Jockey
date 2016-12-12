@@ -19,10 +19,6 @@
         <item quantity="one">Add duplicate</item>
         <item quantity="other">Add duplicates</item>
     </plurals>
-    <plurals name="message_added_songs">
-        <item quantity="one" >Added 1 song to &#8220;%2$s&#8221;</item>
-        <item quantity="other">Added %1$d songs to &#8220;%2$s&#8221;</item>
-    </plurals>
     <plurals name="confirm_enable_sleep_timer">
         <item quantity="one">Enabled Sleep Timer for 1 minute</item>
         <item quantity="other">Enabled Sleep Timer for %1$d minutes</item>

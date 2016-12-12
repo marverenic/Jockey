@@ -33,7 +33,7 @@ public class LoadingSingleton extends HeterogeneousAdapter.SingletonSection<Void
 
         ViewHolder(View itemView) {
             super(itemView);
-            ImageView spinnerView = (ImageView) itemView.findViewById(R.id.loadingDrawable);
+            ImageView spinnerView = (ImageView) itemView.findViewById(R.id.loading_icon);
             spinner = new MaterialProgressDrawable(itemView.getContext(), spinnerView);
             spinner.setColorSchemeColors(mColors);
             spinner.updateSizes(MaterialProgressDrawable.LARGE);

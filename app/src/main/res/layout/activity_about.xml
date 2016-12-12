@@ -8,7 +8,6 @@
     <include layout="@layout/toolbar" android:id="@+id/toolbar"/>
 
     <ScrollView
-        android:id="@+id/aboutScroll"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="?attr/colorPrimary"
@@ -103,7 +102,6 @@
                 android:textSize="@dimen/list_text_header_size" />
 
             <TextView
-                android:id="@+id/aboutExoPlayerDetail"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/uses_exoplayer_detail"
@@ -111,7 +109,6 @@
                 android:textSize="@dimen/list_text_detail_size" />
 
             <TextView
-                android:id="@+id/aboutDagger"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -120,7 +117,6 @@
                 android:textSize="@dimen/list_text_header_size" />
 
             <TextView
-                android:id="@+id/aboutDaggerDetail"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/uses_dagger_detail"
@@ -128,7 +124,6 @@
                 android:textSize="@dimen/list_text_detail_size" />
 
             <TextView
-                android:id="@+id/aboutRxJava"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -137,7 +132,6 @@
                 android:textSize="@dimen/list_text_header_size" />
 
             <TextView
-                android:id="@+id/aboutRxJavaDetail"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/uses_rx_java_detail"
@@ -145,7 +139,6 @@
                 android:textSize="@dimen/list_text_detail_size" />
 
             <TextView
-                android:id="@+id/aboutRxAndroid"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -154,7 +147,6 @@
                 android:textSize="@dimen/list_text_header_size" />
 
             <TextView
-                android:id="@+id/aboutRxAndroidDetail"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/uses_rx_android_detail"
@@ -162,7 +154,6 @@
                 android:textSize="@dimen/list_text_detail_size" />
 
             <TextView
-                android:id="@+id/aboutRxPermissions"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -171,7 +162,6 @@
                 android:textSize="@dimen/list_text_header_size" />
 
             <TextView
-                android:id="@+id/aboutRxPermissionsDetail"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/uses_rx_permissions_detail"
@@ -179,7 +169,6 @@
                 android:textSize="@dimen/list_text_detail_size" />
 
             <TextView
-                android:id="@+id/aboutRetrofit"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -188,7 +177,6 @@
                 android:textSize="@dimen/list_text_header_size" />
 
             <TextView
-                android:id="@+id/aboutRetrofitDetail"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/uses_retrofit_detail"
@@ -196,7 +184,6 @@
                 android:textSize="@dimen/list_text_detail_size" />
 
             <TextView
-                android:id="@+id/aboutGsonHeader"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -227,7 +214,6 @@
                 android:textSize="@dimen/list_text_detail_size" />
 
             <TextView
-                android:id="@+id/aboutVerticalSeekBarHeader"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -236,7 +222,6 @@
                 android:textSize="@dimen/list_text_header_size" />
 
             <TextView
-                android:id="@+id/aboutVerticalSeekBarDetail"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/uses_vert_slider_detail"
@@ -244,7 +229,6 @@
                 android:textSize="@dimen/list_text_detail_size" />
 
             <TextView
-                android:id="@+id/aboutSeekArcHeader"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -253,7 +237,6 @@
                 android:textSize="@dimen/list_text_header_size" />
 
             <TextView
-                android:id="@+id/aboutSeekArcDetail"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/uses_seek_arc_detail"
@@ -261,7 +244,6 @@
                 android:textSize="@dimen/list_text_detail_size" />
 
             <TextView
-                android:id="@+id/aboutTimberHeader"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -270,7 +252,6 @@
                 android:textSize="@dimen/list_text_header_size" />
 
             <TextView
-                android:id="@+id/aboutTimberDetail"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/uses_timber_detail"
@@ -295,7 +276,6 @@
                     android:src="@drawable/ic_marverenic" />
 
                 <TextView
-                    android:id="@+id/aboutMarverenicName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/aboutMarverenicIcon"

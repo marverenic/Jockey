@@ -39,6 +39,147 @@
     <string name="format_time_hours">%1$s:%2$s:%3$s</string>
     <string name="format_compact_song_info">%1$s - %2$s</string>
 
+    <!-- Menu actions -->
+    <string name="action_refresh">Refresh Library</string>
+    <string name="action_export_playlist">Save queue as playlist&#8230;</string>
+    <string name="action_set_sleep_timer">Sleep Timer&#8230;</string>
+    <string name="action_sort">Sort&#8230;</string>
+    <string name="action_sort_random">Randomize</string>
+    <string name="action_sort_name">Sort by name</string>
+    <string name="action_sort_artist">Sort by artist</string>
+    <string name="action_sort_album">Sort by album</string>
+    <string name="action_sort_play">Sort by play count</string>
+    <string name="action_sort_skip">Sort by skip count</string>
+    <string name="action_sort_date_added">Sort by date added</string>
+    <string name="action_sort_date_played">Sort by date played</string>
+    <string name="action_disable_shuffle">Disable shuffle</string>
+    <string name="action_enable_shuffle">Enable shuffle</string>
+    <string name="action_enable_repeat">Enable repeat</string>
+    <string name="action_disable_sleep_timer">Disable Sleep Timer</string>
+    <string name="action_add_queue_to_playlist">Add queue to playlist&#8230;</string>
+    <string name="action_clear_queue">Clear queue</string>
+    <string name="action_done">Done</string>
+    <string name="action_select">Select</string>
+    <string name="action_navigate_up">Go up</string>
+    <string name="action_include">Include folder</string>
+    <string name="action_exclude">Exclude folder</string>
+    <string name="action_remove">Remove</string>
+
+    <!-- Item menu actions -->
+    <string name="action_queue_next">Queue next</string>
+    <string name="action_queue_last">Queue last</string>
+    <string name="action_navigate_to_artist">Go to artist</string>
+    <string name="action_navigate_to_album">Go to album</string>
+    <string name="action_add_to_playlist">Add to playlist&#8230;</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_edit_smart_playlist">Edit&#8230;</string>
+
+    <!-- Other Actions -->
+    <string name="action_skip">Skip</string>
+    <string name="action_play">Play</string>
+    <string name="action_pause">Pause</string>
+    <string name="action_previous">Previous</string>
+    <string name="action_undo">Undo</string>
+    <string name="action_create">Create</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_add">Add</string>
+    <string name="action_add_new">Add new</string>
+    <string name="action_agree">Agree</string>
+    <string name="action_try_again">Try again</string>
+    <string name="action_open_settings">Open settings</string>
+    <string name="action_make_new_playlist">Make new playlist&#8230;</string>
+    <string name="action_add_rule">Add rule</string>
+    <string name="action_discard_changes">Discard changes</string>
+    <string name="action_edit_playlist_rules">Edit filters</string>
+
+    <!-- Confirmation messages -->
+    <string name="confirm_disable_shuffle">Disabled shuffle</string>
+    <string name="confirm_enable_shuffle">Enabled shuffle</string>
+    <string name="confirm_disable_repeat">Disabled repeat</string>
+    <string name="confirm_enable_repeat">Enabled repeat</string>
+    <string name="confirm_enable_multi_repeat">Enabled Multi-Repeat %d</string>
+    <string name="confirm_enable_repeat_one">Enabled repeat one</string>
+    <string name="confirm_disable_sleep_timer">Disabled Sleep Timer</string>
+    <string name="confirm_refresh_library">Library refreshed</string>
+    <string name="confirm_clear_queue">Cleared queue</string>
+    <string name="confirm_removed_rule">Removed rule</string>
+
+    <!-- Error messages -->
+    <string name="message_refresh_library_no_permission">Jockey doesn\'t have permission to read
+        your music</string>
+    <string name="message_play_error_not_found">Jockey couldn\'t find &#8220;%1$s&#8221;</string>
+    <string name="message_play_error_io_exception">&#8220;%1$s&#8221; couldn\'t be played</string>
+    <string name="error_hint_duplicate_playlist">Enter a unique playlist name</string>
+    <string name="error_hint_empty_playlist">Enter a playlist name</string>
+
+    <!-- Formatted Messages -->
+    <string name="message_added_song">Added &#8220;%1$s&#8221; to &#8220;%2$s&#8221;</string>
+    <string name="message_created_playlist">Created playlist &#8220;%1$s&#8221;</string>
+    <string name="message_removed_playlist">Deleted playlist &#8220;%1$s&#8221;</string>
+    <string name="message_removed_song">Removed song &#8220;%1$s&#8221;</string>
+    <string name="message_sorted_playlist_random">Randomized &#8220;%1$s&#8221;</string>
+    <string name="message_sorted_playlist_name">Sorted &#8220;%1$s&#8221; by name</string>
+    <string name="message_sorted_playlist_artist">Sorted &#8220;%1$s&#8221; by artist name</string>
+    <string name="message_sorted_playlist_album">Sorted &#8220;%1$s&#8221; by album name</string>
+    <string name="message_sorted_playlist_play">Sorted &#8220;%1$s&#8221; by play count</string>
+    <string name="message_sorted_playlist_skip">Sorted &#8220;%1$s&#8221; by skip count</string>
+    <string name="message_sorted_playlist_date_added">Sorted &#8220;%1$s&#8221; by date added</string>
+    <string name="message_sorted_playlist_date_played">Sorted &#8220;%1$s&#8221; by date played</string>
+    <string name="header_add_song_name_to_playlist">Add &#8220;%1$s&#8221; to playlist</string>
+    <string name="confirm_add_songs">Added %1$d songs to playlist &#8220;%2$s&#8221;</string>
+    <string name="confirm_dir_include_excluded">
+        &#8220;%1$s&#8221; is already being excluded.
+        Do you want to move it to your included folders?
+    </string>
+    <string name="confirm_dir_exclude_included">
+        &#8220;%1$s&#8221; is already being included.
+        Do you want to move it to your excluded folders?
+    </string>
+    <string name="confirm_dir_already_excluded">
+        &#8220;%1$s&#8221; is already being excluded
+    </string>
+    <string name="confirm_dir_already_included">
+        &#8220;%1$s&#8221; is already being included
+    </string>
+    <string name="message_removed_directory">Removed folder &#8220;%1$s&#8221;</string>
+
+    <!-- Empty state & unknown strings -->
+    <string name="nothing_playing">Nothing is playing</string>
+    <string name="unknown_artist">Unknown Artist</string>
+    <string name="unknown_album">Unknown Album</string>
+    <string name="unknown">Unknown</string>
+    <string name="empty_no_permission">Jockey needs permission to read your music library</string>
+    <string name="empty_no_permission_detail">To show your music, grant Jockey access to storage</string>
+    <string name="error_no_permission_dirs">To exclude folders, grant Jockey access to storage</string>
+    <string name="empty">Couldn\'t find any music here</string>
+    <string name="empty_detail">You can sync songs from your computer or download them from the Internet</string>
+    <string name="empty_genres">Couldn\'t find any genres</string>
+    <string name="empty_genres_detail">Make sure your music is correctly tagged</string>
+    <string name="empty_playlists">You don\'t have any playlists</string>
+    <string name="empty_playlists_detail">You can make a new one by pressing the &#8220;+&#8221; button</string>
+    <string name="empty_playlist">This playlist is empty</string>
+    <string name="empty_playlist_detail">You can add songs from the library page</string>
+    <string name="empty_auto_playlist">This playlist is empty</string>
+    <string name="empty_auto_playlist_detail">No songs matched your filters</string>
+    <string name="empty_search">No results found</string>
+    <string name="empty_queue">Nothing is playing</string>
+    <string name="empty_queue_detail">You can play music from the library page</string>
+    <string name="empty_error_album">Couldn\'t load album</string>
+    <string name="empty_error_artist">Couldn\'t load artist</string>
+    <string name="empty_error_genre">Couldn\'t load genre</string>
+    <string name="empty_excluded_dirs">No folders are being excluded</string>
+    <string name="empty_excluded_dirs_detail">
+        To restrict Jockey to not look for music in certain folders, press the
+        &#8220;+&#8221; button to add an excluded folder
+    </string>
+    <string name="empty_included_dirs">All folders are being included</string>
+    <string name="empty_included_dirs_detail">
+        To restrict Jockey to only look for music in certain folders, press the
+        &#8220;+&#8221; button to add an included folder\n\n
+        If you don\'t specify any included folders, then all of your music will appear in Jockey
+    </string>
+    <string name="empty_directory">This folder has no folders</string>
+
     <!-- About Activity Strings -->
     <string name="about_version">Version</string>
     <string name="about_description">Jockey is a music player for Android 4.0 and higher focused on
@@ -62,9 +203,6 @@
     <string name="uses_rx_android_header">RxAndroid</string>
     <string name="uses_rx_android_detail">Version 1.2.1; distributed by RxAndroid under an Apache
         License, Version 2.0</string>
-    <string name="uses_rx_lifecycle_header">RxLifecycle</string>
-    <string name="uses_rx_lifecycle_detail">Version 0.6.1; distributed by Trello under an Apache
-        License, Version 2.0</string>
     <string name="uses_rx_permissions_header">RxPermissions</string>
     <string name="uses_rx_permissions_detail">Version 0.7.0; distributed by Thomas Bruyelle
         (tbruyelle) under an Apache License, Version 2.0</string>
@@ -85,6 +223,50 @@
     <string name="uses_timber_header">Timber</string>
     <string name="uses_timber_detail">Version 4.1.2; distributed by Jake Wharton under an Apache
         License, Version 2.0</string>
+
+    <!-- Preference Strings -->
+    <string name="settings_category_general">General</string>
+    <string name="appearance_header">Appearance</string>
+    <string name="pref_category_library">Library</string>
+    <string name="playback_header">Playback</string>
+    <string name="default_page_pref">Default Page</string>
+    <string name="theme_primary">Primary Color</string>
+    <string name="theme_primary_description">Controls the accent color. Takes effect when you leave this page</string>
+    <string name="theme_base">Base Theme</string>
+    <string name="theme_base_description">Controls the background color. Takes effect when you leave this page</string>
+    <string name="add_shortcut">Update launcher icon color</string>
+    <string name="add_shortcut_already_matched">Your launcher icon already matches your current theme</string>
+    <string name="add_shortcut_description">Do you want to change Jockey\'s launcher icon color to match your current theme?
+        \n\nThis will cause Jockey to restart and will remove any existing shortcuts to Jockey from your home screen.</string>
+    <string name="switch_to_now_playing">Open Now Playing</string>
+    <string name="switch_to_now_playing_detail_on">When a new song is chosen, the Now Playing page will be opened</string>
+    <string name="switch_to_now_playing_detail_off">Changing songs won\'t navigate to another page</string>
+    <string name="use_mobile">Use mobile data</string>
+    <string name="use_mobile_description_on">Album artwork and other data will always be downloaded</string>
+    <string name="use_mobile_description_off">Album artwork and other data will only be downloaded on Wi-Fi</string>
+    <string name="enable_additional_logging_detailed">Help make Jockey better by sending anonymous usage data</string>
+    <string name="logging_on">Anonymous usage data and crash information will be sent to Marverenic</string>
+    <string name="logging_off">Only anonymous crash information will be sent to Marverenic</string>
+    <string name="logging_description">Help improve Jockey</string>
+    <string name="pref_directory_include">Include folders</string>
+    <string name="pref_directory_exclude">Exclude folders</string>
+    <string name="pref_equalizer">Equalizer</string>
+    <string name="gesture_description">Enable now playing gestures</string>
+    <string name="gesture_detail">Swipe across the album art to skip songs,
+        or tap to play/pause music</string>
+
+    <!-- Equalizer Strings -->
+    <string name="header_equalizer">Equalizer</string>
+    <string name="equalizer_more_options_detail">Tap and hold for more options</string>
+    <string name="equalizerNoteSystem">It looks like you have another app that manages audio
+        effects. This may cause problems with Jockey\'s equalizer, so be prepared to
+        turn this off if you notice unexpected behavior.
+        \n\nTo use the global equalizer, disable Jockey\'s equalizer and tap Equalizer in the
+        settings page.
+        \nTo return to this page, tap and hold Equalizer in the settings page.
+    </string>
+    <string name="equalizerPresetPrefix">Preset:</string>
+    <string name="equalizerUnsupported">Your device doesn\'t support equalizers</string>
 
     <!-- Preference keys -->
     <string name="pref_key_show_first_start" translatable="false">showFirstStart</string>
@@ -157,5 +339,14 @@
     <string name="enable_sleep_timer">Sleep Timer</string>
     <string name="confirm_sleep_timer_end">Sleep Timer ended</string>
     <string name="time_in_min_format">%1$d min</string>
+
+    <!-- Hints -->
+    <string name="hint_playlist_name">Playlist name</string>
+
+    <!-- Accessibility Content Descriptions -->
+    <string name="button_play_description">Play Button</string>
+    <string name="button_previous_description">Previous Song Button</string>
+    <string name="button_skip_description">Next Song Button</string>
+    <string name="description_album_art">Album Art</string>
 
 </resources>

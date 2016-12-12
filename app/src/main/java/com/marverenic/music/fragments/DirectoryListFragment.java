@@ -127,7 +127,7 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(mAdapter);
 
-        recyclerView.addItemDecoration(new DividerDecoration(getContext(), R.id.subheaderFrame));
+        recyclerView.addItemDecoration(new DividerDecoration(getContext(), R.id.subheader_frame));
 
         return view;
     }
@@ -294,10 +294,10 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
         public DirectoryViewHolder(View itemView) {
             super(itemView);
 
-            directoryName = (TextView) itemView.findViewById(R.id.instanceTitle);
-            directoryPath = (TextView) itemView.findViewById(R.id.instanceDetail);
+            directoryName = (TextView) itemView.findViewById(R.id.directory_name);
+            directoryPath = (TextView) itemView.findViewById(R.id.directory_detail);
 
-            itemView.findViewById(R.id.instanceMore).setOnClickListener(this);
+            itemView.findViewById(R.id.directory_menu).setOnClickListener(this);
         }
 
         @SuppressLint("SetTextI18n")

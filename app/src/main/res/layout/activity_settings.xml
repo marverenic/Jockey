@@ -8,6 +8,6 @@
     <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/prefFrame"/>
+        android:id="@+id/pref_fragment_container"/>
 
 </LinearLayout>

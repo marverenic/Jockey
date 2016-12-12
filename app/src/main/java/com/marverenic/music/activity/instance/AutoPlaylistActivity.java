@@ -145,8 +145,8 @@ public class AutoPlaylistActivity extends BaseActivity
             return super.onOptionsItemSelected(item);
         }
 
-        if (item.getItemId() == R.id.action_sort) {
-            PopupMenu sortMenu = new PopupMenu(this, findViewById(R.id.action_sort), Gravity.END);
+        if (item.getItemId() == R.id.menu_playlist_sort) {
+            PopupMenu sortMenu = new PopupMenu(this, findViewById(R.id.menu_playlist_sort), Gravity.END);
             sortMenu.inflate(R.menu.sort_options_auto_playlist);
             sortMenu.setOnMenuItemClickListener(this);
             sortMenu.show();
@@ -163,32 +163,32 @@ public class AutoPlaylistActivity extends BaseActivity
         boolean ascending;
 
         switch (item.getItemId()) {
-            case R.id.action_sort_random:
+            case R.id.menu_sort_random:
                 result = getString(R.string.message_sorted_playlist_random);
                 sortFlag = AutoPlaylistRule.ID;
                 ascending = false;
                 break;
-            case R.id.action_sort_name:
+            case R.id.menu_sort_name:
                 result = getString(R.string.message_sorted_playlist_name);
                 sortFlag = AutoPlaylistRule.NAME;
                 ascending = true;
                 break;
-            case R.id.action_sort_play:
+            case R.id.menu_sort_play:
                 result = getString(R.string.message_sorted_playlist_play);
                 sortFlag = AutoPlaylistRule.PLAY_COUNT;
                 ascending = false;
                 break;
-            case R.id.action_sort_skip:
+            case R.id.menu_sort_skip:
                 result = getString(R.string.message_sorted_playlist_skip);
                 sortFlag = AutoPlaylistRule.SKIP_COUNT;
                 ascending = false;
                 break;
-            case R.id.action_sort_date_added:
+            case R.id.menu_sort_date_added:
                 result = getString(R.string.message_sorted_playlist_date_added);
                 sortFlag = AutoPlaylistRule.DATE_ADDED;
                 ascending = false;
                 break;
-            case R.id.action_sort_date_played:
+            case R.id.menu_sort_date_played:
                 result = getString(R.string.message_sorted_playlist_date_played);
                 sortFlag = AutoPlaylistRule.DATE_PLAYED;
                 ascending = false;

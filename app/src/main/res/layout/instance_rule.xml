@@ -7,7 +7,6 @@
     </data>
 
     <RelativeLayout
-        android:id="@+id/ruleInstance"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -21,7 +20,7 @@
          -->
 
         <Spinner
-            android:id="@+id/typeSelector"
+            android:id="@+id/auto_rule_type_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:entries="@array/auto_plist_types"
@@ -29,11 +28,11 @@
             app:selection="@{viewModel.selectedType}"/>
 
         <Spinner
-            android:id="@+id/fieldSelector"
+            android:id="@+id/auto_rule_field_spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/typeSelector"
-            android:layout_toEndOf="@+id/typeSelector"
+            android:layout_toRightOf="@+id/auto_rule_type_spinner"
+            android:layout_toEndOf="@+id/auto_rule_type_spinner"
             android:prompt="@{viewModel.fieldPrompt}"
             android:spinnerMode="dialog"
             app:adapter="@{viewModel.filterAdapter}"
@@ -41,34 +40,34 @@
             app:onItemSelectedListener="@{viewModel.filterSelectedListener}"/>
 
         <Spinner
-            android:id="@+id/valueSpinner"
+            android:id="@+id/auto_rule_value_spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="@{viewModel.valueSpinnerVisibility}"
             android:prompt="@{viewModel.valuePrompt}"
             android:spinnerMode="dialog"
             android:layout_marginTop="8dp"
-            android:layout_toStartOf="@+id/instanceRemove"
-            android:layout_toLeftOf="@+id/instanceRemove"
-            android:layout_below="@id/fieldSelector"
+            android:layout_toStartOf="@+id/auto_rule_remove"
+            android:layout_toLeftOf="@+id/auto_rule_remove"
+            android:layout_below="@id/auto_rule_field_spinner"
             app:adapter="@{viewModel.valueAdapter}"
             app:selection="@{viewModel.selectedValue}"
             app:onItemSelectedListener="@{viewModel.valueSelectedListener}"/>
 
         <FrameLayout
-            android:id="@+id/valueTextWrapper"
+            android:id="@+id/auto_rule_value_text_wrapper"
             android:layout_width="match_parent"
             android:layout_height="46dp"
             android:visibility="@{viewModel.valueTextVisibility}"
             android:layout_marginTop="8dp"
             android:paddingLeft="6dp"
             android:paddingRight="6dp"
-            android:layout_toStartOf="@+id/instanceRemove"
-            android:layout_toLeftOf="@+id/instanceRemove"
-            android:layout_below="@id/fieldSelector">
+            android:layout_toStartOf="@+id/auto_rule_remove"
+            android:layout_toLeftOf="@+id/auto_rule_remove"
+            android:layout_below="@id/auto_rule_field_spinner">
 
             <TextView
-                android:id="@+id/valueText"
+                android:id="@+id/auto_rule_value_text"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 style="@style/Widget.AppCompat.EditText"
@@ -80,7 +79,7 @@
         </FrameLayout>
 
         <ImageView
-            android:id="@+id/instanceRemove"
+            android:id="@+id/auto_rule_remove"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -90,7 +89,7 @@
             android:background="?android:attr/selectableItemBackground"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_below="@id/fieldSelector"
+            android:layout_below="@id/auto_rule_field_spinner"
             android:onClick="@{viewModel.onRemoveClick()}"/>
 
     </RelativeLayout>

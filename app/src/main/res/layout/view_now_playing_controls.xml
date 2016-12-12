@@ -24,7 +24,7 @@
             android:layout_gravity="center"
             android:layout_weight="1">
             <ImageButton
-                android:id="@+id/previousButton"
+                android:id="@+id/now_playing_previous"
                 android:layout_width="@dimen/now_playing_button_size"
                 android:layout_height="@dimen/now_playing_button_size"
                 android:layout_alignParentStart="true"
@@ -41,7 +41,7 @@
             android:layout_gravity="center"
             android:layout_weight="1">
             <ImageButton
-                android:id="@+id/playButton"
+                android:id="@+id/now_playing_play"
                 android:layout_width="@dimen/now_playing_button_size"
                 android:layout_height="@dimen/now_playing_button_size"
                 android:layout_centerInParent="true"
@@ -57,7 +57,7 @@
             android:layout_gravity="center"
             android:layout_weight="1">
             <ImageButton
-                android:id="@+id/nextButton"
+                android:id="@+id/now_playing_next"
                 android:layout_width="@dimen/now_playing_button_size"
                 android:layout_height="@dimen/now_playing_button_size"
                 android:layout_alignParentEnd="true"

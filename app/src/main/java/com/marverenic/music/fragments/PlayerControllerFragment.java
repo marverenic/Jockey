@@ -28,7 +28,7 @@ public class PlayerControllerFragment extends Fragment implements PlayerControll
 
         onUpdate();
 
-        Drawable progress = mBinding.playerScrubber.songSeekBar.getProgressDrawable();
+        Drawable progress = mBinding.nowPlayingControllerScrubber.nowPlayingSeekBar.getProgressDrawable();
         if (progress instanceof StateListDrawable) {
             progress = progress.getCurrent();
         }

@@ -2,21 +2,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/search"
+        android:id="@+id/menu_library_search"
         android:icon="@drawable/ic_search_24dp"
         android:title="@string/header_search"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/action_refresh_library"
+        android:id="@+id/menu_library_refresh"
         android:title="@string/action_refresh" />
 
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/menu_library_settings"
         android:title="@string/action_settings" />
 
     <item
-        android:id="@+id/action_about"
+        android:id="@+id/menu_library_about"
         android:title="@string/header_about" />
 
 </menu>
