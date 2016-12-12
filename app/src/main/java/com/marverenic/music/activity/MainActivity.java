@@ -68,7 +68,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         fab.addChild(R.drawable.ic_add_24dp, this, R.string.playlist);
         fab.addChild(R.drawable.ic_add_24dp, this, R.string.playlist_auto);
 
-        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        ViewPager pager = (ViewPager) findViewById(R.id.library_pager);
 
         int page = mPrefStore.getDefaultPage();
         if (page != 0 || !hasRwPermission()) {
@@ -79,7 +79,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         adapter.setFloatingActionButton(fab);
         pager.setAdapter(adapter);
         pager.addOnPageChangeListener(adapter);
-        ((TabLayout) findViewById(R.id.tabs)).setupWithViewPager(pager);
+        ((TabLayout) findViewById(R.id.library_tabs)).setupWithViewPager(pager);
 
         pager.setCurrentItem(page);
 
@@ -127,16 +127,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_settings:
+            case R.id.menu_library_settings:
                 startActivity(SettingsActivity.newIntent(this));
                 return true;
-            case R.id.action_refresh_library:
+            case R.id.menu_library_refresh:
                 refreshLibrary();
                 return true;
-            case R.id.search:
+            case R.id.menu_library_search:
                 startActivity(SearchActivity.newIntent(this));
                 return true;
-            case R.id.action_about:
+            case R.id.menu_library_about:
                 startActivity(AboutActivity.newIntent(this));
                 return true;
             default:

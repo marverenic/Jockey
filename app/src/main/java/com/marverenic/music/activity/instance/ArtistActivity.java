@@ -94,7 +94,7 @@ public class ArtistActivity extends BaseActivity {
                 (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbar.setTitle(mReference.getArtistName());
 
-        ImageView artistImage = (ImageView) findViewById(R.id.backdrop);
+        ImageView artistImage = (ImageView) findViewById(R.id.activity_backdrop);
         artistImage.getLayoutParams().height = calculateHeroHeight();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -202,7 +202,7 @@ public class ArtistActivity extends BaseActivity {
                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .centerCrop()
                     .animate(android.R.anim.fade_in)
-                    .into((ImageView) findViewById(R.id.backdrop));
+                    .into((ImageView) findViewById(R.id.activity_backdrop));
         }
     }
 
@@ -282,9 +282,9 @@ public class ArtistActivity extends BaseActivity {
 
     private void setupListDecorations() {
         mRecyclerView.addItemDecoration(
-                new BackgroundDecoration(R.id.loadingView, R.id.infoCard, R.id.relatedCard));
+                new BackgroundDecoration(R.id.loading_frame, R.id.artist_bio_card, R.id.relatedCard));
         mRecyclerView.addItemDecoration(
-                new DividerDecoration(this, R.id.infoCard, R.id.albumInstance, R.id.subheaderFrame,
+                new DividerDecoration(this, R.id.artist_bio_card, R.id.album_view, R.id.subheader_frame,
                         R.id.relatedCard, R.id.empty_layout));
     }
 

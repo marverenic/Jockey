@@ -20,7 +20,7 @@
             android:background="@color/player_frame_info_background">
 
             <include
-                android:id="@+id/playerDetails"
+                android:id="@+id/now_playing_controller_details"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -43,7 +43,7 @@
             android:background="@color/player_frame_ctrl_background">
 
             <include
-                android:id="@+id/playerControls"
+                android:id="@+id/now_playing_controller_controls"
                 layout="@layout/view_now_playing_controls"
                 bind:viewModel="@{viewModel}"/>
 
@@ -62,7 +62,7 @@
             android:translationY="@dimen/seekbarMargin">
 
             <include
-                android:id="@+id/playerScrubber"
+                android:id="@+id/now_playing_controller_scrubber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"

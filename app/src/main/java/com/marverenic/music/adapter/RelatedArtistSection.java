@@ -65,8 +65,8 @@ public class RelatedArtistSection extends HeterogeneousAdapter.ListSection<LfmAr
 
             itemView.setOnClickListener(this);
 
-            artwork = (ImageView) itemView.findViewById(R.id.imageArtwork);
-            artistName = (TextView) itemView.findViewById(R.id.textArtistName);
+            artwork = (ImageView) itemView.findViewById(R.id.artist_suggested_artwork);
+            artistName = (TextView) itemView.findViewById(R.id.artist_suggested_name);
         }
 
         @Override

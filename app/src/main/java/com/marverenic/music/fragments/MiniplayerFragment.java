@@ -41,7 +41,7 @@ public class MiniplayerFragment extends Fragment implements PlayerController.Upd
         mBinding.setViewModel(new MiniplayerViewModel(getContext()));
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            ProgressBar progressBar = mBinding.songProgress;
+            ProgressBar progressBar = mBinding.miniplayerProgress;
             LayerDrawable progressBarDrawable = (LayerDrawable) progressBar.getProgressDrawable();
 
             Drawable progress = progressBarDrawable.findDrawableByLayerId(android.R.id.progress);

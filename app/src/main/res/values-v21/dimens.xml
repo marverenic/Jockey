@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <dimen name="scrimMargin">25dp</dimen>
     <dimen name="player_frame_peek">@dimen/player_frame_height</dimen>
 
 </resources>

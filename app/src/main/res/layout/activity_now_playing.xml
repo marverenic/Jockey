@@ -20,7 +20,7 @@
             android:fitsSystemWindows="true">
 
             <com.marverenic.music.view.GestureView
-                android:id="@+id/artworkSwipeFrame"
+                android:id="@+id/now_playing_gesture_frame"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_collapseMode="parallax"
@@ -32,7 +32,7 @@
                 app:overlayColor="?attr/colorAccent">
 
                 <com.marverenic.music.view.SquareImageViewH
-                    android:id="@+id/imageArtwork"
+                    android:id="@+id/now_playing_artwork"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -83,7 +83,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <fragment
-            android:id="@+id/controlFragment"
+            android:id="@+id/now_playing_control_fragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:name="com.marverenic.music.fragments.PlayerControllerFragment"
@@ -92,7 +92,7 @@
     </android.support.v4.widget.NestedScrollView>
 
     <fragment
-        android:id="@+id/listFragment"
+        android:id="@+id/now_playing_queue_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/player_frame_height"

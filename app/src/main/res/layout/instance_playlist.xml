@@ -12,11 +12,11 @@
         android:onClick="@{viewModel.onClickPlaylist()}" >
 
         <TextView
-            android:id="@+id/instanceTitle"
+            android:id="@+id/playlist_name"
             style="@style/listTitleText"
             android:text="@{viewModel.name}"
-            android:layout_toLeftOf="@+id/instanceAutoIndicator"
-            android:layout_toStartOf="@+id/instanceAutoIndicator"
+            android:layout_toLeftOf="@+id/playlist_auto_indicator"
+            android:layout_toStartOf="@+id/playlist_auto_indicator"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -24,7 +24,7 @@
             android:singleLine="true" />
 
         <ImageView
-            android:id="@+id/instanceAutoIndicator"
+            android:id="@+id/playlist_auto_indicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="@{viewModel.smartIndicatorVisibility}"
@@ -33,12 +33,12 @@
             android:src="@drawable/ic_filter_24dp"
             android:tint="?textColorSecondary"
             android:alpha="0.5"
-            android:layout_toLeftOf="@+id/instanceMore"
-            android:layout_toStartOf="@+id/instanceMore"
+            android:layout_toLeftOf="@+id/playlist_menu"
+            android:layout_toStartOf="@+id/playlist_menu"
             android:layout_centerVertical="true" />
 
         <ImageView
-            android:id="@+id/instanceMore"
+            android:id="@+id/playlist_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"

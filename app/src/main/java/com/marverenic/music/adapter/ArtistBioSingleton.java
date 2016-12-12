@@ -44,8 +44,8 @@ public class ArtistBioSingleton extends HeterogeneousAdapter.SingletonSection<Lf
         public ViewHolder(View itemView, boolean hasRelatedArtists) {
             super(itemView);
 
-            bioText = (TextView) itemView.findViewById(R.id.infoText);
-            lfmButton = (FrameLayout) itemView.findViewById(R.id.openLFMButton);
+            bioText = (TextView) itemView.findViewById(R.id.artist_bio_content);
+            lfmButton = (FrameLayout) itemView.findViewById(R.id.artist_bio_lfm_link);
             lfmButton.setOnClickListener(this);
 
             if (hasRelatedArtists) {

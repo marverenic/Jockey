@@ -101,14 +101,14 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                         View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
                 getWindow().setStatusBarColor(Color.TRANSPARENT);
             }
-            findViewById(R.id.artworkSwipeFrame).getLayoutParams().height = getArtworkHeight();
+            findViewById(R.id.now_playing_gesture_frame).getLayoutParams().height = getArtworkHeight();
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         }
 
-        artwork = (ImageView) findViewById(R.id.imageArtwork);
+        artwork = (ImageView) findViewById(R.id.now_playing_artwork);
         queueFragment =
-                (QueueFragment) getSupportFragmentManager().findFragmentById(R.id.listFragment);
+                (QueueFragment) getSupportFragmentManager().findFragmentById(R.id.now_playing_queue_fragment);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -121,7 +121,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
             actionBar.setHomeAsUpIndicator(R.drawable.ic_clear_24dp);
         }
 
-        artworkWrapper = (GestureView) findViewById(R.id.artworkSwipeFrame);
+        artworkWrapper = (GestureView) findViewById(R.id.now_playing_gesture_frame);
         if (artworkWrapper != null) {
             artworkWrapper.setGestureListener(this);
             artworkWrapper.setGesturesEnabled(mPrefStore.enableNowPlayingGestures());
@@ -222,10 +222,10 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.activity_now_playing, menu);
 
-        mCreatePlaylistMenuItem = menu.findItem(R.id.save);
-        mAppendToPlaylistMenuItem = menu.findItem(R.id.add_to_playlist);
-        mShuffleMenuItem = menu.findItem(R.id.action_shuffle);
-        mRepeatMenuItem = menu.findItem(R.id.action_repeat);
+        mCreatePlaylistMenuItem = menu.findItem(R.id.menu_now_playing_save);
+        mAppendToPlaylistMenuItem = menu.findItem(R.id.menu_now_playing_append);
+        mShuffleMenuItem = menu.findItem(R.id.menu_now_playing_shuffle);
+        mRepeatMenuItem = menu.findItem(R.id.menu_now_playing_repeat);
 
         updateShuffleIcon();
         updateRepeatIcon();
@@ -308,22 +308,22 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
             case android.R.id.home:
                 navigateUp();
                 return true;
-            case R.id.action_shuffle:
+            case R.id.menu_now_playing_shuffle:
                 toggleShuffle();
                 return true;
-            case R.id.action_repeat:
+            case R.id.menu_now_playing_repeat:
                 showRepeatMenu();
                 return true;
-            case R.id.action_set_sleep_timer:
+            case R.id.menu_now_playing_sleep_timer:
                 showSleepTimerDialog();
                 return true;
-            case R.id.save:
+            case R.id.menu_now_playing_save:
                 saveQueueAsPlaylist();
                 return true;
-            case R.id.add_to_playlist:
+            case R.id.menu_now_playing_append:
                 addQueueToPlaylist();
                 return true;
-            case R.id.clear_queue:
+            case R.id.menu_now_playing_clear:
                 clearQueue();
                 return true;
         }
@@ -353,7 +353,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     }
 
     private void showRepeatMenu() {
-        PopupMenu menu = new PopupMenu(this, findViewById(R.id.action_repeat), Gravity.END);
+        PopupMenu menu = new PopupMenu(this, findViewById(R.id.menu_now_playing_repeat), Gravity.END);
         menu.inflate(R.menu.activity_now_playing_repeat);
 
         menu.setOnMenuItemClickListener(item -> {
@@ -501,7 +501,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     private void saveQueueAsPlaylist() {
         new CreatePlaylistDialogFragment.Builder(getSupportFragmentManager())
                 .setSongs(PlayerController.getQueue())
-                .showSnackbarIn(R.id.imageArtwork)
+                .showSnackbarIn(R.id.now_playing_artwork)
                 .show(TAG_MAKE_PLAYLIST);
     }
 
@@ -509,7 +509,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         new AppendPlaylistDialogFragment.Builder(this)
                 .setTitle(getString(R.string.header_add_queue_to_playlist))
                 .setSongs(PlayerController.getQueue())
-                .showSnackbarIn(R.id.imageArtwork)
+                .showSnackbarIn(R.id.now_playing_artwork)
                 .show(TAG_APPEND_PLAYLIST);
     }
 
@@ -522,7 +522,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
 
         PlayerController.clearQueue();
 
-        Snackbar.make(findViewById(R.id.imageArtwork), R.string.confirm_clear_queue, LENGTH_LONG)
+        Snackbar.make(findViewById(R.id.now_playing_artwork), R.string.confirm_clear_queue, LENGTH_LONG)
                 .setAction(R.string.action_undo, view -> {
                     PlayerController.editQueue(previousQueue, previousQueueIndex);
                     PlayerController.seek(previousSeekPosition);
@@ -573,7 +573,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
 
     @Override
     protected void showSnackbar(String message) {
-        Snackbar.make(findViewById(R.id.imageArtwork), message, LENGTH_SHORT).show();
+        Snackbar.make(findViewById(R.id.now_playing_artwork), message, LENGTH_SHORT).show();
     }
 
     @Override

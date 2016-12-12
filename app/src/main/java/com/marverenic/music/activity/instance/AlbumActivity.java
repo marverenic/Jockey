@@ -75,7 +75,7 @@ public class AlbumActivity extends BaseActivity {
 
             Glide.with(this).load(reference.getArtUri())
                     .centerCrop()
-                    .into((ImageView) findViewById(R.id.backdrop));
+                    .into((ImageView) findViewById(R.id.activity_backdrop));
         } else {
             mSongs = Collections.emptyList();
         }
@@ -86,7 +86,7 @@ public class AlbumActivity extends BaseActivity {
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
 
-        ImageView artistImage = (ImageView) findViewById(R.id.backdrop);
+        ImageView artistImage = (ImageView) findViewById(R.id.activity_backdrop);
         artistImage.getLayoutParams().height = calculateHeroHeight();
 
         mAdapter = new HeterogeneousAdapter();

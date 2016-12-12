@@ -14,7 +14,7 @@
         android:layout_below="@id/toolbar">
 
         <ImageView
-            android:id="@+id/imageArtwork"
+            android:id="@+id/now_playing_artwork"
             android:layout_width="@dimen/player_frame_height"
             android:layout_height="@dimen/player_frame_height"
             android:src="@drawable/art_default_xl"
@@ -40,7 +40,7 @@
     </FrameLayout>
 
     <fragment
-        android:id="@+id/controlFragment"
+        android:id="@+id/now_playing_control_fragment"
         android:name="com.marverenic.music.fragments.PlayerControllerFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -50,11 +50,11 @@
         tools:layout="@layout/view_now_playing_control_panel" />
 
     <fragment
-        android:id="@+id/listFragment"
+        android:id="@+id/now_playing_queue_fragment"
         android:name="com.marverenic.music.fragments.QueueFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/controlFragment"
+        android:layout_below="@id/now_playing_control_fragment"
         tools:layout="@layout/list" />
 
 </RelativeLayout>
