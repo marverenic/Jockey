@@ -1,0 +1,66 @@
+[
+  {
+    "artistName": "Hedgeclipper",
+    "artistId": 0
+  },
+  {
+    "artistName": "Cosmic Microwave Background",
+    "artistId": 1
+  },
+  {
+    "artistName": "Neurosis",
+    "artistId": 2
+  },
+  {
+    "artistName": "Pandemonium Tremor",
+    "artistId": 3
+  },
+  {
+    "artistName": "Entropy",
+    "artistId": 4
+  },
+  {
+    "artistName": "All Logic",
+    "artistId": 5
+  },
+  {
+    "artistName": "Diode Discontinuity",
+    "artistId": 6
+  },
+  {
+    "artistName": "Intrepid",
+    "artistId": 7
+  },
+  {
+    "artistName": "Turquoise",
+    "artistId": 8
+  },
+  {
+    "artistName": "Roulette",
+    "artistId": 9
+  },
+  {
+    "artistName": "Elision",
+    "artistId": 10
+  },
+  {
+    "artistName": "Thyself",
+    "artistId": 11
+  },
+  {
+    "artistName": "Venom Lynx",
+    "artistId": 12
+  },
+  {
+    "artistName": "Quasar Gamblers",
+    "artistId": 13
+  },
+  {
+    "artistName": "Solitary Romance",
+    "artistId": 14
+  },
+  {
+    "artistName": "Computational Velocity",
+    "artistId": 15
+  }
+]

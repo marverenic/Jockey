@@ -26,7 +26,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    
+
     dexOptions {
         javaMaxHeapSize "2g"
     }
@@ -60,6 +60,16 @@ android {
         debug {
             applicationIdSuffix ".debug"
             versionNameSuffix '.debug'
+            ext.enableCrashlytics = false
+        }
+    }
+
+    productFlavors {
+        standard {}
+
+        demo {
+            applicationIdSuffix ".demo"
+            versionNameSuffix ".demo"
             ext.enableCrashlytics = false
         }
     }

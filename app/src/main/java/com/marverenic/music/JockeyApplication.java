@@ -7,9 +7,8 @@ import android.support.v4.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.crashlytics.android.Crashlytics;
-import com.marverenic.music.data.inject.ContextModule;
-import com.marverenic.music.data.inject.DaggerJockeyComponent;
-import com.marverenic.music.data.inject.JockeyComponent;
+import com.marverenic.music.data.inject.JockeyComponentFactory;
+import com.marverenic.music.data.inject.JockeyGraph;
 import com.marverenic.music.utils.CrashlyticsTree;
 import com.marverenic.music.utils.compat.JockeyPreferencesCompat;
 
@@ -18,7 +17,7 @@ import timber.log.Timber;
 
 public class JockeyApplication extends Application {
 
-    private JockeyComponent mComponent;
+    private JockeyGraph mComponent;
 
     @Override
     public void onCreate() {
@@ -28,8 +27,7 @@ public class JockeyApplication extends Application {
         setupCrashlytics();
         setupTimber();
 
-        createComponent();
-
+        mComponent = JockeyComponentFactory.create(this);
         JockeyPreferencesCompat.upgradeSharedPreferences(this);
     }
 
@@ -61,23 +59,17 @@ public class JockeyApplication extends Application {
         }
     }
 
-    private void createComponent() {
-        mComponent = DaggerJockeyComponent.builder()
-                .contextModule(new ContextModule(this))
-                .build();
-    }
-
     @Override
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
         Glide.with(this).onTrimMemory(level);
     }
 
-    public static JockeyComponent getComponent(Fragment fragment) {
+    public static JockeyGraph getComponent(Fragment fragment) {
         return getComponent(fragment.getContext());
     }
 
-    public static JockeyComponent getComponent(Context context) {
+    public static JockeyGraph getComponent(Context context) {
         return ((JockeyApplication) context.getApplicationContext()).mComponent;
     }
 }

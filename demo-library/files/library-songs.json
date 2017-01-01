@@ -1,0 +1,462 @@
+[
+  {
+    "albumName": "Shrub Polemics",
+    "artistName": "Hedgeclipper",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Dewdrops",
+    "albumId": 0,
+    "artistId": 0,
+    "songId": 0,
+    "trackNumber": 0
+  },
+  {
+    "albumName": "Shrub Polemics",
+    "artistName": "Hedgeclipper",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Lawn Subspace",
+    "albumId": 0,
+    "artistId": 0,
+    "songId": 1,
+    "trackNumber": 1
+  },
+  {
+    "albumName": "CMB (Single)",
+    "artistName": "Cosmic Microwave Background",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "CMB",
+    "albumId": 1,
+    "artistId": 1,
+    "songId": 2,
+    "trackNumber": 0
+  },
+  {
+    "albumName": "Influences",
+    "artistName": "Neurosis",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Antisocial Leap",
+    "albumId": 2,
+    "artistId": 2,
+    "songId": 3,
+    "trackNumber": 4
+  },
+  {
+    "albumName": "Influences",
+    "artistName": "Neurosis",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Cobalt",
+    "albumId": 2,
+    "artistId": 2,
+    "songId": 4,
+    "trackNumber": 2
+  },
+  {
+    "albumName": "Hydra",
+    "artistName": "Pandemonium Tremor",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Membrane",
+    "albumId": 3,
+    "artistId": 3,
+    "songId": 5,
+    "trackNumber": 1
+  },
+  {
+    "albumName": "Hydra",
+    "artistName": "Pandemonium Tremor",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Probation",
+    "albumId": 3,
+    "artistId": 3,
+    "songId": 6,
+    "trackNumber": 2
+  },
+  {
+    "albumName": "Hydra",
+    "artistName": "Pandemonium Tremor",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Arsenic",
+    "albumId": 3,
+    "artistId": 3,
+    "songId": 7,
+    "trackNumber": 4
+  },
+  {
+    "albumName": "Hydra",
+    "artistName": "Pandemonium Tremor",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Vortex Redirection",
+    "albumId": 3,
+    "artistId": 3,
+    "songId": 8,
+    "trackNumber": 5
+  },
+  {
+    "albumName": "Irregularity",
+    "artistName": "Entropy",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Fusion",
+    "albumId": 4,
+    "artistId": 4,
+    "songId": 9,
+    "trackNumber": 6
+  },
+  {
+    "albumName": "Irregularity",
+    "artistName": "Entropy",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Vector",
+    "albumId": 4,
+    "artistId": 4,
+    "songId": 10,
+    "trackNumber": 7
+  },
+  {
+    "albumName": "Irregularity",
+    "artistName": "Entropy",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Vector",
+    "albumId": 4,
+    "artistId": 4,
+    "songId": 11,
+    "trackNumber": 8
+  },
+  {
+    "albumName": "Irregularity",
+    "artistName": "Entropy",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Convergent",
+    "albumId": 4,
+    "artistId": 4,
+    "songId": 12,
+    "trackNumber": 9
+  },
+  {
+    "albumName": "Irregularity",
+    "artistName": "Entropy",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Nebula",
+    "albumId": 4,
+    "artistId": 4,
+    "songId": 13,
+    "trackNumber": 10
+  },
+  {
+    "albumName": "Oracle",
+    "artistName": "All Logic",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Equator",
+    "albumId": 5,
+    "artistId": 5,
+    "songId": 14,
+    "trackNumber": 2
+  },
+  {
+    "albumName": "Oracle",
+    "artistName": "All Logic",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/oracle.mp3",
+    "songName": "Octet",
+    "albumId": 5,
+    "artistId": 5,
+    "songId": 15,
+    "trackNumber": 3
+  },
+  {
+    "albumName": "Oracle",
+    "artistName": "All Logic",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/oracle.mp3",
+    "songName": "Roundabout",
+    "albumId": 5,
+    "artistId": 5,
+    "songId": 16,
+    "trackNumber": 3
+  },
+  {
+    "albumName": "Illogical Capacitance",
+    "artistName": "Diode Discontinuity",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Molecular Opulence",
+    "albumId": 6,
+    "artistId": 6,
+    "songId": 17,
+    "trackNumber": 0
+  },
+  {
+    "albumName": "Illogical Capacitance",
+    "artistName": "Diode Discontinuity",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Terrestrial Download",
+    "albumId": 6,
+    "artistId": 6,
+    "songId": 18,
+    "trackNumber": 1
+  },
+  {
+    "albumName": "Illogical Capacitance",
+    "artistName": "Diode Discontinuity",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Optic Spore",
+    "albumId": 6,
+    "artistId": 6,
+    "songId": 19,
+    "trackNumber": 2
+  },
+  {
+    "albumName": "Illogical Capacitance",
+    "artistName": "Diode Discontinuity",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Citation",
+    "albumId": 6,
+    "artistId": 6,
+    "songId": 20,
+    "trackNumber": 3
+  },
+  {
+    "albumName": "Illogical Capacitance",
+    "artistName": "Diode Discontinuity",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Quanta",
+    "albumId": 6,
+    "artistId": 6,
+    "songId": 21,
+    "trackNumber": 4
+  },
+  {
+    "albumName": "Illogical Capacitance",
+    "artistName": "Diode Discontinuity",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Central Transistor",
+    "albumId": 6,
+    "artistId": 6,
+    "songId": 22,
+    "trackNumber": 1
+  },
+  {
+    "albumName": "Catalyst Reaper",
+    "artistName": "Diode Discontinuity",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Tertiary",
+    "albumId": 7,
+    "artistId": 6,
+    "songId": 23,
+    "trackNumber": 2
+  },
+  {
+    "albumName": "Catalyst Reaper",
+    "artistName": "Diode Discontinuity",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Soluble",
+    "albumId": 7,
+    "artistId": 6,
+    "songId": 24,
+    "trackNumber": 3
+  },
+  {
+    "albumName": "Catalyst Reaper",
+    "artistName": "Diode Discontinuity",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Perimeter Cyclotron",
+    "albumId": 7,
+    "artistId": 6,
+    "songId": 25,
+    "trackNumber": 4
+  },
+  {
+    "albumName": "Catalyst Reaper",
+    "artistName": "Diode Discontinuity",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Resistor Gyroscope",
+    "albumId": 7,
+    "artistId": 6,
+    "songId": 26,
+    "trackNumber": 4
+  },
+  {
+    "albumName": "Moonlight",
+    "artistName": "Intrepid",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Insomnia",
+    "albumId": 8,
+    "artistId": 7,
+    "songId": 27,
+    "trackNumber": 8
+  },
+  {
+    "albumName": "Moonlight",
+    "artistName": "Insomnia",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Depend",
+    "albumId": 8,
+    "artistId": 7,
+    "songId": 28,
+    "trackNumber": 11
+  },
+  {
+    "albumName": "Indignant",
+    "artistName": "Turquoise",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/indignant.mp3",
+    "songName": "Glances",
+    "albumId": 9,
+    "artistId": 8,
+    "songId": 29,
+    "trackNumber": 5
+  },
+  {
+    "albumName": "Blue Career",
+    "artistName": "Turquoise",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "8100",
+    "albumId": 10,
+    "artistId": 8,
+    "songId": 30,
+    "trackNumber": 7
+  },
+  {
+    "albumName": "Blue Career",
+    "artistName": "Turquoise",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Violet",
+    "albumId": 10,
+    "artistId": 8,
+    "songId": 31,
+    "trackNumber": 10
+  },
+  {
+    "albumName": "Vanquish",
+    "artistName": "Roulette",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Plume",
+    "albumId": 11,
+    "artistId": 9,
+    "songId": 32,
+    "trackNumber": 6
+  },
+  {
+    "albumName": "Vanquish",
+    "artistName": "Roulette",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Unwound",
+    "albumId": 11,
+    "artistId": 9,
+    "songId": 33,
+    "trackNumber": 7
+  },
+  {
+    "albumName": "Hereditary",
+    "artistName": "Elision",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Avant",
+    "albumId": 12,
+    "artistId": 10,
+    "songId": 34,
+    "trackNumber": 4
+  },
+  {
+    "albumName": "Hereditary",
+    "artistName": "Elision",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Omicron",
+    "albumId": 12,
+    "artistId": 10,
+    "songId": 35,
+    "trackNumber": 5
+  },
+  {
+    "albumName": "Monsoon",
+    "artistName": "Thyself",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Fortress",
+    "albumId": 13,
+    "artistId": 11,
+    "songId": 36,
+    "trackNumber": 2
+  },
+  {
+    "albumName": "Monsoon",
+    "artistName": "Thyself",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Interact",
+    "albumId": 13,
+    "artistId": 11,
+    "songId": 37,
+    "trackNumber": 8
+  },
+  {
+    "albumName": "Flock",
+    "artistName": "Venom Lynx",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Snare",
+    "albumId": 14,
+    "artistId": 12,
+    "songId": 38,
+    "trackNumber": 9
+  },
+  {
+    "albumName": "Flock",
+    "artistName": "Venom Lynx",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Geographic Freedom",
+    "albumId": 14,
+    "artistId": 12,
+    "songId": 39,
+    "trackNumber": 10
+  },
+  {
+    "albumName": "Flock",
+    "artistName": "Venom Lynx",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Autumn",
+    "albumId": 14,
+    "artistId": 12,
+    "songId": 40,
+    "trackNumber": 0
+  },
+  {
+    "albumName": "Polytechnic Tide",
+    "artistName": "Quasar Gamblers",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Chemical Anarchy",
+    "albumId": 15,
+    "artistId": 13,
+    "songId": 41,
+    "trackNumber": 9
+  },
+  {
+    "albumName": "Polytechnic Tide",
+    "artistName": "Quasar Gamblers",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Oddity",
+    "albumId": 15,
+    "artistId": 13,
+    "songId": 42,
+    "trackNumber": 10
+  },
+  {
+    "albumName": "Dynasty Homicide",
+    "artistName": "Solitary Romance",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Tremors",
+    "albumId": 16,
+    "artistId": 14,
+    "songId": 43,
+    "trackNumber": 4
+  },
+  {
+    "albumName": "Dynasty Homicide",
+    "artistName": "Solitary Romance",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Infidel",
+    "albumId": 16,
+    "artistId": 14,
+    "songId": 44,
+    "trackNumber": 9
+  },
+  {
+    "albumName": "BST",
+    "artistName": "Computational Velocity",
+    "location": "/storage/emulated/0/Android/data/com.marverenic.music.demo/files/song.mp3",
+    "songName": "Technically Recursive",
+    "albumId": 17,
+    "artistId": 15,
+    "songId": 45,
+    "trackNumber": 2
+  }
+]
