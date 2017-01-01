@@ -29,7 +29,7 @@
 
 # GSON rules
 # Don't obfuscate instance field names for GSON
--keepnames class com.marverenic.music.instances.** { *; }
+-keepnames class com.marverenic.music.model.** { *; }
 # From https://github.com/google/gson/blob/master/examples/android-proguard-example/proguard.cfg
 -keepattributes Signature
 -keep class sun.misc.Unsafe { *; }
