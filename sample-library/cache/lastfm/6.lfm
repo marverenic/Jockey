@@ -1,0 +1,41 @@
+{
+    "bio": {
+        "content": "Diode Discontinuity is an electronic rock band from Chicago formed in 2011. The group currently comprises Roland Tabor (Vocals/Synth), Michael Williams (Drums) and Silvia Dellinger (Guitar). Their first album, Illogical Capacitance, debuted in 2012 and was received very positively in both the United States and United Kingdom.\u003ca href\u003d\"http://www.last.fm\"\u003eRead more on Last.fm\u003c/a\u003e. User-contributed text is available under the Creative Commons By-SA License; additional terms may apply.",
+        "date": "1 Nov 2014, 18:11",
+        "summary": "Diode Discontinuity is an electronic rock band from Chicago formed in 2011. The group currently comprises Roland Tabor (Vocals/Synth), Michael Williams (Drums) and Silvia Dellinger (Guitar). Their first album, Illogical Capacitance, debuted in 2012 and was received very positively in both the United States and United Kingdom.\u003ca href\u003d\"http://www.last.fm\"\u003eRead more on Last.fm\u003c/a\u003e"
+    },
+    "images": {
+        "mega": "/storage/emulated/0/Android/data/com.marverenic.music.demo/cache/lastfm/diode.png"
+    },
+    "mbid": "",
+    "name": "Diode Discontinuity",
+    "related": [
+        {
+            "name": "Intrepid",
+            "images": {
+                "medium": "/storage/emulated/0/Android/data/com.marverenic.music.demo/cache/lastfm/intrepid.jpg"
+            }
+        },
+        {
+            "name": "All Logic",
+            "images": {
+                "medium": "/storage/emulated/0/Android/data/com.marverenic.music.demo/cache/lastfm/logic.jpg"
+            }
+        }
+    ],
+    "tags": [
+        {
+            "name": "rock",
+            "url": "http://www.last.fm/tag/rock"
+        },
+        {
+            "name": "electronic",
+            "url": "http://www.last.fm/tag/electronic"
+        },
+        {
+            "name": "alternative",
+            "url": "http://www.last.fm/tag/alternative"
+        }
+    ],
+    "url": "http://www.last.fm/music/Diode+Discontinuity"
+}
