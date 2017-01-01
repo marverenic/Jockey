@@ -188,8 +188,8 @@
     <string name="lastfm_description">Last.fm</string>
     <string name="uses_header">Jockey also uses the following open-source libraries:</string>
     <string name="uses_aosp_header">Android Support Libraries</string>
-    <string name="uses_aosp_detail">Support-v4 25.0.1, Appcompat-v7 25.0.1, RecyclerView 25.0.1,
-        CardView 25.0.1, Design 25.0.1, Palette 25.0.1, Preference-v14 25.0.1; distributed by the
+    <string name="uses_aosp_detail">Support-v4 25.1.0, Appcompat-v7 25.1.0, RecyclerView 25.1.0,
+        CardView 25.1.0, Design 25.1.0, Palette 25.1.0, Preference-v14 25.1.0; distributed by the
         Android Open Source Project under an Apache License, Version 2.0</string>
     <string name="uses_exoplayer_header">ExoPlayer</string>
     <string name="uses_exoplayer_detail">Version 2.0.4; distributed by Google Inc. under an Apache
