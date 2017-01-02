@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
@@ -123,7 +124,9 @@ public class DemoMusicStore implements MusicStore {
     }
 
     @SuppressWarnings("ThrowFromFinallyBlock")
-    private <T> List<T> parseJson(String filename, Class<? extends T[]> type) throws IOException {
+    private <T extends Comparable<? super T>> List<T> parseJson(
+            String filename, Class<? extends T[]> type) throws IOException {
+
         InputStream stream = null;
         InputStreamReader reader = null;
 
@@ -138,7 +141,9 @@ public class DemoMusicStore implements MusicStore {
                     .create();
 
             T[] values = gson.fromJson(reader, type);
-            return new ArrayList<>(Arrays.asList(values));
+            ArrayList<T> list = new ArrayList<>(Arrays.asList(values));
+            Collections.sort(list);
+            return list;
         } finally {
             if (stream != null) stream.close();
             if (reader != null) reader.close();
