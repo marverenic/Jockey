@@ -61,6 +61,8 @@ public class ArtistActivity extends BaseActivity {
     private RecyclerView mRecyclerView;
     private HeterogeneousAdapter mAdapter;
     private int mColumnCount;
+    private int mAlbumColumnCount;
+    private int mRelatedColumnCount;
 
     private LoadingSingleton mLoadingSection;
     private ArtistBioSingleton mBioSection;
@@ -251,7 +253,9 @@ public class ArtistActivity extends BaseActivity {
     }
 
     private void setupRecyclerView() {
-        mColumnCount = ViewUtils.getNumberOfGridColumns(this, R.dimen.grid_width);
+        mAlbumColumnCount = ViewUtils.getNumberOfGridColumns(this, R.dimen.grid_width);
+        mRelatedColumnCount = ViewUtils.getNumberOfGridColumns(this, R.dimen.large_grid_width);
+        mColumnCount = mAlbumColumnCount * mRelatedColumnCount;
 
         // Setup the GridLayoutManager
         GridLayoutManager layoutManager = new GridLayoutManager(this, mColumnCount);
@@ -265,8 +269,10 @@ public class ArtistActivity extends BaseActivity {
                 boolean isRelatedArtist = mRelatedArtistSection != null
                         && mAdapter.getItemViewType(position) == mRelatedArtistSection.getTypeId();
 
-                if (isArtist || isRelatedArtist) {
-                    return 1;
+                if (isArtist) {
+                    return mRelatedColumnCount;
+                } else if (isRelatedArtist) {
+                    return mAlbumColumnCount;
                 } else {
                     return mColumnCount;
                 }
@@ -314,7 +320,7 @@ public class ArtistActivity extends BaseActivity {
             mRecyclerView.addItemDecoration(
                     new GridSpacingDecoration(
                             (int) getResources().getDimension(R.dimen.card_margin),
-                            mColumnCount, mRelatedArtistSection.getTypeId()));
+                            mRelatedColumnCount, mRelatedArtistSection.getTypeId()));
         }
     }
 
@@ -355,7 +361,7 @@ public class ArtistActivity extends BaseActivity {
             mRecyclerView.addItemDecoration(
                     new GridSpacingDecoration(
                             (int) getResources().getDimension(R.dimen.grid_margin),
-                            mColumnCount, mAlbumSection.getTypeId()));
+                            mAlbumColumnCount, mAlbumSection.getTypeId()));
         } else {
             mAlbumSection.setData(mAlbums);
         }

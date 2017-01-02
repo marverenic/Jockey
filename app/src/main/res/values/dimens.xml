@@ -10,6 +10,7 @@
     <dimen name="list_height">72dp</dimen>
     <dimen name="list_padding">16dp</dimen>
     <dimen name="grid_width">120dp</dimen>
+    <dimen name="large_grid_width">140dp</dimen>
     <dimen name="grid_margin">4dp</dimen>
     <dimen name="grid_padding">16dp</dimen>
     <dimen name="card_margin">8dp</dimen>
