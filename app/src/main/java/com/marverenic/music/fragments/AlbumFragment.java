@@ -57,7 +57,7 @@ public class AlbumFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.list, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.list);
 
-        final int numColumns = ViewUtils.getNumberOfGridColumns(getActivity());
+        int numColumns = ViewUtils.getNumberOfGridColumns(getActivity(), R.dimen.grid_width);
 
         GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), numColumns);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);

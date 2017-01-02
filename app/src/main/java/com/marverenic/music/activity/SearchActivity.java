@@ -189,7 +189,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
 
         mRecyclerView.setAdapter(mAdapter);
 
-        final int numColumns = ViewUtils.getNumberOfGridColumns(this);
+        final int numColumns = ViewUtils.getNumberOfGridColumns(this, R.dimen.grid_width);
 
         GridLayoutManager layoutManager = new GridLayoutManager(this, numColumns);
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {

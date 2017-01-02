@@ -251,7 +251,7 @@ public class ArtistActivity extends BaseActivity {
     }
 
     private void setupRecyclerView() {
-        mColumnCount = ViewUtils.getNumberOfGridColumns(this);
+        mColumnCount = ViewUtils.getNumberOfGridColumns(this, R.dimen.grid_width);
 
         // Setup the GridLayoutManager
         GridLayoutManager layoutManager = new GridLayoutManager(this, mColumnCount);
