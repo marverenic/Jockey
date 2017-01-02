@@ -130,11 +130,7 @@ public class MiniplayerViewModel extends BaseObservable {
 
     @Bindable
     public int getSongDuration() {
-        if (mSong == null) {
-            return Integer.MAX_VALUE;
-        } else {
-            return (int) mSong.getSongDuration();
-        }
+        return PlayerController.getDuration();
     }
 
     @Bindable
