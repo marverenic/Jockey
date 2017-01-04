@@ -189,8 +189,13 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
     @Override
     public void setQueue(@NonNull List<Song> queue, int index) {
-        if (index < 0 || (index >= queue.size() && !queue.isEmpty())) {
-            throw new IllegalArgumentException("index must between 0 and queue.size");
+        if (index < 0) {
+            throw new IllegalArgumentException("index cannot be negative");
+        }
+
+        if (!queue.isEmpty() && index >= queue.size()) {
+            throw new IllegalArgumentException("index must be smaller than the queue size ("
+                    + queue.size() + ")");
         }
 
         if (queue.isEmpty()) {
