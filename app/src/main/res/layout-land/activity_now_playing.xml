@@ -1,60 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="fill_parent">
+<layout>
 
-    <include layout="@layout/toolbar" />
+    <data>
+        <variable
+            name="artworkViewModel"
+            type="com.marverenic.music.viewmodel.NowPlayingArtworkViewModel"/>
+    </data>
 
-    <FrameLayout
-        android:id="@+id/artwork_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/toolbar">
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent">
 
-        <ImageView
-            android:id="@+id/now_playing_artwork"
-            android:layout_width="@dimen/player_frame_height"
-            android:layout_height="@dimen/player_frame_height"
-            android:src="@drawable/art_default_xl"
-            android:background="@android:color/black"/>
+        <include layout="@layout/toolbar" />
 
-        <com.marverenic.music.view.TimeView
-            android:id="@+id/now_playing_sleep_timer"
+        <FrameLayout
+            android:id="@+id/artwork_container"
             android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            style="@style/TextAppearance.AppCompat.Button"
-            android:textColor="@android:color/white"
-            android:background="@drawable/tooltip_bg"
-            android:layout_gravity="center_horizontal|bottom"
-            android:gravity="center"
-            android:drawableStart="@drawable/ic_sleep_timer_24dp"
-            android:drawableLeft="@drawable/ic_sleep_timer_24dp"
-            android:drawablePadding="8dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:layout_marginBottom="24dp"
-            tools:text="5:00"/>
+            android:layout_height="wrap_content"
+            android:layout_below="@id/toolbar">
 
-    </FrameLayout>
+            <ImageView
+                android:id="@+id/now_playing_artwork"
+                android:layout_width="@dimen/player_frame_height"
+                android:layout_height="@dimen/player_frame_height"
+                android:src="@{artworkViewModel.nowPlayingArtwork}"
+                android:background="@android:color/black"/>
 
-    <fragment
-        android:id="@+id/now_playing_control_fragment"
-        android:name="com.marverenic.music.fragments.PlayerControllerFragment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/toolbar"
-        android:layout_toRightOf="@+id/artwork_container"
-        android:layout_toEndOf="@id/artwork_container"
-        tools:layout="@layout/view_now_playing_control_panel" />
+            <com.marverenic.music.view.TimeView
+                android:id="@+id/now_playing_sleep_timer"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                style="@style/TextAppearance.AppCompat.Button"
+                android:textColor="@android:color/white"
+                android:background="@drawable/tooltip_bg"
+                android:layout_gravity="center_horizontal|bottom"
+                android:gravity="center"
+                android:drawableStart="@drawable/ic_sleep_timer_24dp"
+                android:drawableLeft="@drawable/ic_sleep_timer_24dp"
+                android:drawablePadding="8dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:layout_marginBottom="24dp"
+                tools:text="5:00"/>
 
-    <fragment
-        android:id="@+id/now_playing_queue_fragment"
-        android:name="com.marverenic.music.fragments.QueueFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/now_playing_control_fragment"
-        tools:layout="@layout/list" />
+        </FrameLayout>
 
-</RelativeLayout>
+        <fragment
+            android:id="@+id/now_playing_control_fragment"
+            android:name="com.marverenic.music.fragments.PlayerControllerFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/toolbar"
+            android:layout_toRightOf="@+id/artwork_container"
+            android:layout_toEndOf="@id/artwork_container"
+            tools:layout="@layout/view_now_playing_control_panel" />
+
+        <fragment
+            android:id="@+id/now_playing_queue_fragment"
+            android:name="com.marverenic.music.fragments.QueueFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/now_playing_control_fragment"
+            tools:layout="@layout/list" />
+
+    </RelativeLayout>
+
+</layout>

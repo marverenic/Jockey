@@ -22,10 +22,10 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PlayCountStore;
-import com.marverenic.music.data.store.PreferencesStore;
-import com.marverenic.music.data.store.ReadOnlyPreferencesStore;
+import com.marverenic.music.data.store.PreferenceStore;
+import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.data.store.RemotePreferenceStore;
-import com.marverenic.music.data.store.SharedPreferencesStore;
+import com.marverenic.music.data.store.SharedPreferenceStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.utils.Util;
 
@@ -235,20 +235,20 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     private void loadPrefs() {
         Timber.i("Loading SharedPreferences...");
-        // SharedPreferencesStore is backed by an instance of SharedPreferences. Because
+        // SharedPreferenceStore is backed by an instance of SharedPreferences. Because
         // SharedPreferences isn't safe to use across processes, the only time we can get valid
         // data is right after we open the SharedPreferences for the first time in this process.
         //
         // We're going to take advantage of that here so that we can load the latest preferences
         // as soon as the MusicPlayer is started (which should be the same time that this process
-        // is started). To update these preferences, see updatePreferences(preferencesStore)
-        PreferencesStore preferencesStore = new SharedPreferencesStore(mContext);
+        // is started). To update these preferences, see updatePreferences(preferenceStore)
+        PreferenceStore preferenceStore = new SharedPreferenceStore(mContext);
 
-        mShuffle = preferencesStore.isShuffled();
-        setRepeat(preferencesStore.getRepeatMode());
+        mShuffle = preferenceStore.isShuffled();
+        setRepeat(preferenceStore.getRepeatMode());
         setMultiRepeat(mRemotePreferenceStore.getMultiRepeatCount());
 
-        initEqualizer(preferencesStore);
+        initEqualizer(preferenceStore);
         startSleepTimer(mRemotePreferenceStore.getSleepTimerEndTime());
     }
 
@@ -256,7 +256,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * Updates shuffle and repeat preferences from a Preference Store
      * @param preferencesStore The preference store to read values from
      */
-    public void updatePreferences(ReadOnlyPreferencesStore preferencesStore) {
+    public void updatePreferences(ReadOnlyPreferenceStore preferencesStore) {
         Timber.i("Updating preferences...");
         if (preferencesStore.isShuffled() != mShuffle) {
             setShuffle(preferencesStore.isShuffled());
@@ -303,7 +303,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     /**
      * Reload all equalizer settings from SharedPreferences
      */
-    private void initEqualizer(ReadOnlyPreferencesStore preferencesStore) {
+    private void initEqualizer(ReadOnlyPreferenceStore preferencesStore) {
         Timber.i("Initializing equalizer");
         mMediaPlayer.setEqualizer(preferencesStore.getEqualizerEnabled(),
                 preferencesStore.getEqualizerSettings());

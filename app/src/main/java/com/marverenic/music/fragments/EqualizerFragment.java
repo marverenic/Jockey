@@ -24,7 +24,7 @@ import android.widget.TextView;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.data.store.PreferencesStore;
+import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.player.RemoteEqualizer;
 import com.marverenic.music.utils.Util;
@@ -34,7 +34,7 @@ import javax.inject.Inject;
 public class EqualizerFragment extends Fragment implements CompoundButton.OnCheckedChangeListener,
         FragmentManager.OnBackStackChangedListener {
 
-    @Inject PreferencesStore mPrefStore;
+    @Inject PreferenceStore mPrefStore;
 
     private RemoteEqualizer equalizer;
     private EqualizerFrame[] sliders;

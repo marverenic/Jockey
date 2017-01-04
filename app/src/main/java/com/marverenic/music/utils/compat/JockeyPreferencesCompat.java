@@ -8,8 +8,8 @@ import android.preference.PreferenceManager;
 import com.marverenic.music.data.annotations.BaseTheme;
 import com.marverenic.music.data.annotations.PresetTheme;
 import com.marverenic.music.data.annotations.StartPage;
-import com.marverenic.music.data.store.PreferencesStore;
-import com.marverenic.music.data.store.SharedPreferencesStore;
+import com.marverenic.music.data.store.PreferenceStore;
+import com.marverenic.music.data.store.SharedPreferenceStore;
 
 import timber.log.Timber;
 
@@ -49,27 +49,27 @@ public class JockeyPreferencesCompat {
         boolean shuffle = prefs.getBoolean("prefShuffle", false);
 
         prefs.edit().clear().apply();
-        PreferencesStore preferencesStore = new SharedPreferencesStore(context);
+        PreferenceStore preferenceStore = new SharedPreferenceStore(context);
 
-        preferencesStore.setShowFirstStart(showFirstStart);
-        preferencesStore.setAllowLogging(allowLogging);
-        preferencesStore.setDefaultPage(convertStartPage1_2(firstPage));
-        preferencesStore.setPrimaryColor(convertPrimaryColor1_2(primaryColor));
-        preferencesStore.setBaseColor(convertBaseTheme1_2(baseTheme));
-        preferencesStore.setUseMobileNetwork(useMobileData);
-        preferencesStore.setOpenNowPlayingOnNewQueue(openNowPlaying);
-        preferencesStore.setEnableNowPlayingGestures(enableGestures);
-        preferencesStore.setEqualizerPresetId(eqPreset);
-        preferencesStore.setEqualizerEnabled(eqEnabled);
+        preferenceStore.setShowFirstStart(showFirstStart);
+        preferenceStore.setAllowLogging(allowLogging);
+        preferenceStore.setDefaultPage(convertStartPage1_2(firstPage));
+        preferenceStore.setPrimaryColor(convertPrimaryColor1_2(primaryColor));
+        preferenceStore.setBaseColor(convertBaseTheme1_2(baseTheme));
+        preferenceStore.setUseMobileNetwork(useMobileData);
+        preferenceStore.setOpenNowPlayingOnNewQueue(openNowPlaying);
+        preferenceStore.setEnableNowPlayingGestures(enableGestures);
+        preferenceStore.setEqualizerPresetId(eqPreset);
+        preferenceStore.setEqualizerEnabled(eqEnabled);
 
         try {
             if (eqSettings != null) {
-                preferencesStore.setEqualizerSettings(new Equalizer.Settings(eqSettings));
+                preferenceStore.setEqualizerSettings(new Equalizer.Settings(eqSettings));
             }
         } catch (IllegalArgumentException ignored) {}
 
-        preferencesStore.setRepeatMode(repeat);
-        preferencesStore.setShuffle(shuffle);
+        preferenceStore.setRepeatMode(repeat);
+        preferenceStore.setShuffle(shuffle);
     }
 
     @StartPage

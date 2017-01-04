@@ -22,7 +22,7 @@ import timber.log.Timber;
 public class LocalMusicStore implements MusicStore {
 
     private Context mContext;
-    private PreferencesStore mPreferencesStore;
+    private PreferenceStore mPreferenceStore;
 
     private BehaviorSubject<Boolean> mSongLoadingState;
     private BehaviorSubject<Boolean> mArtistLoadingState;
@@ -34,9 +34,9 @@ public class LocalMusicStore implements MusicStore {
     private BehaviorSubject<List<Artist>> mArtists;
     private BehaviorSubject<List<Genre>> mGenres;
 
-    public LocalMusicStore(Context context, PreferencesStore preferencesStore) {
+    public LocalMusicStore(Context context, PreferenceStore preferenceStore) {
         mContext = context;
-        mPreferencesStore = preferencesStore;
+        mPreferenceStore = preferenceStore;
 
         mSongLoadingState = BehaviorSubject.create(false);
         mAlbumLoadingState = BehaviorSubject.create(false);
@@ -140,13 +140,13 @@ public class LocalMusicStore implements MusicStore {
     }
 
     private String getDirectoryInclusionSelection() {
-        if (mPreferencesStore.getIncludedDirectories().isEmpty()) {
+        if (mPreferenceStore.getIncludedDirectories().isEmpty()) {
             return null;
         }
 
         StringBuilder builder = new StringBuilder();
 
-        for (String directory : mPreferencesStore.getIncludedDirectories()) {
+        for (String directory : mPreferenceStore.getIncludedDirectories()) {
             builder.append(MediaStore.Audio.Media.DATA)
                     .append(" LIKE \'")
                     .append(directory).append(File.separatorChar)
@@ -160,13 +160,13 @@ public class LocalMusicStore implements MusicStore {
     }
 
     private String getDirectoryExclusionSelection() {
-        if (mPreferencesStore.getExcludedDirectories().isEmpty()) {
+        if (mPreferenceStore.getExcludedDirectories().isEmpty()) {
             return null;
         }
 
         StringBuilder builder = new StringBuilder();
 
-        for (String directory : mPreferencesStore.getExcludedDirectories()) {
+        for (String directory : mPreferenceStore.getExcludedDirectories()) {
             builder.append(MediaStore.Audio.Media.DATA)
                     .append(" NOT LIKE \'")
                     .append(directory).append(File.separatorChar)
@@ -272,8 +272,8 @@ public class LocalMusicStore implements MusicStore {
     }
 
     private boolean noDirectoryFilters() {
-        boolean notIncludingFolders = mPreferencesStore.getIncludedDirectories().isEmpty();
-        boolean notExcludingFolders = mPreferencesStore.getExcludedDirectories().isEmpty();
+        boolean notIncludingFolders = mPreferenceStore.getIncludedDirectories().isEmpty();
+        boolean notExcludingFolders = mPreferenceStore.getExcludedDirectories().isEmpty();
 
         return notExcludingFolders && notIncludingFolders;
     }
