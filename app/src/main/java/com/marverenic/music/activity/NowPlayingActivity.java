@@ -24,7 +24,7 @@ import android.view.animation.AnimationUtils;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MediaStoreUtil;
-import com.marverenic.music.data.store.PreferencesStore;
+import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.databinding.ActivityNowPlayingBinding;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
@@ -69,7 +69,7 @@ public class NowPlayingActivity extends BaseActivity
         return new Intent(context, NowPlayingActivity.class);
     }
 
-    @Inject PreferencesStore mPrefStore;
+    @Inject PreferenceStore mPrefStore;
 
     private ActivityNowPlayingBinding mBinding;
     private NowPlayingArtworkViewModel mArtworkViewModel;

@@ -20,12 +20,12 @@ import java.util.concurrent.TimeUnit;
 
 import timber.log.Timber;
 
-public class SharedPreferencesStore implements PreferencesStore {
+public class SharedPreferenceStore implements PreferenceStore {
 
     private Context mContext;
     private SharedPreferences mPrefs;
 
-    public SharedPreferencesStore(Context context) {
+    public SharedPreferenceStore(Context context) {
         mContext = context;
         mPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
     }
