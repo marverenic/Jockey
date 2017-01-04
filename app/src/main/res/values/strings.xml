@@ -182,7 +182,7 @@
 
     <!-- About Activity Strings -->
     <string name="about_version">Version</string>
-    <string name="about_description">Jockey is a music player for Android 4.0 and higher focused on
+    <string name="about_description">Jockey is a music player for Android 4.1 and higher focused on
         simplicity, performance, and design distributed under an Apache 2.0 license.</string>
     <string name="lastfm_header">Artist information is provided by</string>
     <string name="lastfm_description">Last.fm</string>

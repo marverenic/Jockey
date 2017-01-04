@@ -125,6 +125,7 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
         int listHeight = mRecyclerView.getMeasuredHeight();
         int listItemHeight = itemHeight + dividerHeight;
         int numberOfSpacers = (int) Math.ceil(listHeight / (float) listItemHeight) - 1;
+        numberOfSpacers = Math.max(0, numberOfSpacers);
 
         int remainingListHeight = listHeight - listItemHeight;
         mBottomSpacers = new SpacerSingleton[numberOfSpacers];

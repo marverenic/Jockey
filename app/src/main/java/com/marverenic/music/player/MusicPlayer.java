@@ -390,8 +390,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         } catch(FileNotFoundException ignored) {
             Timber.i("State does not exist. Using empty state");
             // If there's no queue file, just restore to an empty state
-        } catch (NoSuchElementException e) {
-            Timber.i("Failed to parse previous state. Resetting...");
+        } catch (IllegalArgumentException|NoSuchElementException e) {
+            Timber.i(e, "Failed to parse previous state. Resetting...");
             mQueue.clear();
             mQueueShuffled.clear();
             mMediaPlayer.reset();
