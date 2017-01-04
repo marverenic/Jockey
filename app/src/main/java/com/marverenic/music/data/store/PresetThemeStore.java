@@ -22,6 +22,7 @@ import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.app.NightMode;
 
 import com.marverenic.music.R;
+import com.marverenic.music.activity.MainActivity;
 import com.marverenic.music.player.PlayerService;
 
 import static android.util.DisplayMetrics.DENSITY_HIGH;
@@ -261,8 +262,7 @@ public class PresetThemeStore implements ThemeStore {
         // Restart application
         mContext.stopService(new Intent(mContext, PlayerService.class));
 
-        Intent restartIntent = mContext.getPackageManager()
-                .getLaunchIntentForPackage(mContext.getPackageName());
+        Intent restartIntent = new Intent(mContext, MainActivity.class);
         restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         mContext.startActivity(restartIntent);
     }
@@ -273,6 +273,6 @@ public class PresetThemeStore implements ThemeStore {
                 (enabled)
                         ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
                         : PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                PackageManager.DONT_KILL_APP);
+                (enabled) ? PackageManager.DONT_KILL_APP : 0);
     }
 }
