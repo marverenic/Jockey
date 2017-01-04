@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 
 import com.marverenic.music.databinding.InstanceSongQueueBinding;
 import com.marverenic.music.model.Song;
-import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.player.OldPlayerController;
 import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.viewmodel.QueueSongViewModel;
@@ -37,7 +37,7 @@ public class QueueSection extends EditableSongSection {
         if (from == to) return;
 
         // Calculate where the current song index is moving to
-        final int nowPlayingIndex = PlayerController.getQueuePosition();
+        final int nowPlayingIndex = OldPlayerController.getQueuePosition();
         int futureNowPlayingIndex;
 
         if (from == nowPlayingIndex) {
@@ -51,7 +51,7 @@ public class QueueSection extends EditableSongSection {
         }
 
         // Push the change to the service
-        PlayerController.editQueue(mData, futureNowPlayingIndex);
+        OldPlayerController.editQueue(mData, futureNowPlayingIndex);
     }
 
     @Override

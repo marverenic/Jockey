@@ -11,7 +11,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.model.Song;
-import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.player.OldPlayerController;
 
 import java.util.List;
 
@@ -47,10 +47,10 @@ public class PlaylistSongViewModel extends SongViewModel {
         return menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.menu_item_queue_item_next:
-                    PlayerController.queueNext(getReference());
+                    OldPlayerController.queueNext(getReference());
                     return true;
                 case R.id.menu_item_queue_item_last:
-                    PlayerController.queueLast(getReference());
+                    OldPlayerController.queueLast(getReference());
                     return true;
                 case R.id.menu_item_navigate_to_artist:
                     mMusicStore.findArtistById(getReference().getArtistId()).subscribe(

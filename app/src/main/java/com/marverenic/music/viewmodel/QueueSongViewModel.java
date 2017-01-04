@@ -12,7 +12,7 @@ import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.model.Song;
-import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.player.OldPlayerController;
 
 import java.util.List;
 
@@ -42,11 +42,11 @@ public class QueueSongViewModel extends SongViewModel {
 
     @Override
     public View.OnClickListener onClickSong() {
-        return v -> PlayerController.changeSong(getIndex());
+        return v -> OldPlayerController.changeSong(getIndex());
     }
 
     public int getNowPlayingIndicatorVisibility() {
-        if (PlayerController.getQueuePosition() == getIndex()) {
+        if (OldPlayerController.getQueuePosition() == getIndex()) {
             return View.VISIBLE;
         } else {
             return View.GONE;
@@ -113,7 +113,7 @@ public class QueueSongViewModel extends SongViewModel {
     }
 
     private void removeFromQueue(View snackbarContainer) {
-        int oldQueuePosition = PlayerController.getQueuePosition();
+        int oldQueuePosition = OldPlayerController.getQueuePosition();
         int itemPosition = getIndex();
 
         getSongs().remove(itemPosition);
@@ -125,10 +125,10 @@ public class QueueSongViewModel extends SongViewModel {
         newQueuePosition = Math.min(newQueuePosition, getSongs().size() - 1);
         newQueuePosition = Math.max(newQueuePosition, 0);
 
-        PlayerController.editQueue(getSongs(), newQueuePosition);
+        OldPlayerController.editQueue(getSongs(), newQueuePosition);
 
         if (oldQueuePosition == itemPosition) {
-            PlayerController.play();
+            OldPlayerController.play();
         }
 
         mRemoveListener.onRemove();
@@ -139,9 +139,9 @@ public class QueueSongViewModel extends SongViewModel {
         Snackbar.make(snackbarContainer, message, LENGTH_LONG)
                 .setAction(R.string.action_undo, v -> {
                     getSongs().add(itemPosition, removed);
-                    PlayerController.editQueue(getSongs(), oldQueuePosition);
+                    OldPlayerController.editQueue(getSongs(), oldQueuePosition);
                     if (oldQueuePosition == itemPosition) {
-                        PlayerController.play();
+                        OldPlayerController.play();
                     }
                     mRemoveListener.onRemove();
                 })

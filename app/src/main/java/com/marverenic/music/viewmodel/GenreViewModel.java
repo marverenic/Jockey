@@ -13,7 +13,7 @@ import com.marverenic.music.activity.instance.GenreActivity;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.model.Genre;
-import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.player.OldPlayerController;
 
 import javax.inject.Inject;
 
@@ -63,7 +63,7 @@ public class GenreViewModel extends BaseObservable {
             switch (menuItem.getItemId()) {
                 case R.id.menu_item_queue_item_next:
                     mMusicStore.getSongs(mGenre).subscribe(
-                            PlayerController::queueNext,
+                            OldPlayerController::queueNext,
                             throwable -> {
                                 Timber.e(throwable, "Failed to get songs");
                             });
@@ -71,7 +71,7 @@ public class GenreViewModel extends BaseObservable {
                     return true;
                 case R.id.menu_item_queue_item_last:
                     mMusicStore.getSongs(mGenre).subscribe(
-                            PlayerController::queueLast,
+                            OldPlayerController::queueLast,
                             throwable -> {
                                 Timber.e(throwable, "Failed to get songs");
                             });

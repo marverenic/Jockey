@@ -14,7 +14,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.MusicPlayer;
-import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.player.OldPlayerController;
 import com.marverenic.music.view.GestureView;
 
 import javax.inject.Inject;
@@ -45,7 +45,7 @@ public class NowPlayingArtworkViewModel extends BaseObservable {
     }
 
     public void onSongChanged() {
-        Song nowPlaying = PlayerController.getNowPlaying();
+        Song nowPlaying = OldPlayerController.getNowPlaying();
         if (mLastPlaying == null || !mLastPlaying.equals(nowPlaying)) {
             notifyPropertyChanged(BR.nowPlayingArtwork);
             mLastPlaying = nowPlaying;
@@ -54,7 +54,7 @@ public class NowPlayingArtworkViewModel extends BaseObservable {
 
     @Bindable
     public Drawable getNowPlayingArtwork() {
-        Bitmap image = PlayerController.getArtwork();
+        Bitmap image = OldPlayerController.getArtwork();
         if (image == null) {
             return ContextCompat.getDrawable(mContext, R.drawable.art_default_xl);
         } else {
@@ -69,7 +69,7 @@ public class NowPlayingArtworkViewModel extends BaseObservable {
     @Bindable
     public Drawable getTapIndicator() {
         return ContextCompat.getDrawable(mContext,
-                (PlayerController.isPlaying())
+                (OldPlayerController.isPlaying())
                         ? R.drawable.ic_play_arrow_36dp
                         : R.drawable.ic_pause_36dp);
     }
@@ -78,27 +78,27 @@ public class NowPlayingArtworkViewModel extends BaseObservable {
         return new GestureView.OnGestureListener() {
             @Override
             public void onLeftSwipe() {
-                PlayerController.skip();
+                OldPlayerController.skip();
             }
 
             @Override
             public void onRightSwipe() {
-                int queuePosition = PlayerController.getQueuePosition() - 1;
+                int queuePosition = OldPlayerController.getQueuePosition() - 1;
                 if (queuePosition < 0 && mPrefStore.getRepeatMode() == MusicPlayer.REPEAT_ALL) {
-                    queuePosition += PlayerController.getQueueSize();
+                    queuePosition += OldPlayerController.getQueueSize();
                 }
 
                 if (queuePosition >= 0) {
-                    PlayerController.changeSong(queuePosition);
+                    OldPlayerController.changeSong(queuePosition);
                 } else {
-                    PlayerController.seek(0);
+                    OldPlayerController.seek(0);
                 }
 
             }
 
             @Override
             public void onTap() {
-                PlayerController.togglePlay();
+                OldPlayerController.togglePlay();
                 notifyPropertyChanged(BR.tapIndicator);
             }
         };

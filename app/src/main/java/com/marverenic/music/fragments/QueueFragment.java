@@ -20,7 +20,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.adapter.LibraryEmptyState;
 import com.marverenic.music.adapter.QueueSection;
 import com.marverenic.music.adapter.SpacerSingleton;
-import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.player.OldPlayerController;
 import com.marverenic.music.view.DragBackgroundDecoration;
 import com.marverenic.music.view.DragDividerDecoration;
 import com.marverenic.music.view.InsetDecoration;
@@ -29,7 +29,7 @@ import com.marverenic.music.view.SnappingScroller;
 
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 
-public class QueueFragment extends Fragment implements PlayerController.UpdateListener {
+public class QueueFragment extends Fragment implements OldPlayerController.UpdateListener {
 
     private int lastPlayIndex;
 
@@ -80,7 +80,7 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
             mAdapter.attach(mRecyclerView);
 
             mRecyclerView.setItemAnimator(new QueueAnimator());
-            mQueueSection = new QueueSection(this, PlayerController.getQueue());
+            mQueueSection = new QueueSection(this, OldPlayerController.getQueue());
             mAdapter.setDragSection(mQueueSection);
 
             // Wait for a layout pass before calculating bottom spacing since it is dependent on the
@@ -108,8 +108,8 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
                     return "";
                 }
             });
-        } else if (!mQueueSection.getData().equals(PlayerController.getQueue())) {
-            mQueueSection.setData(PlayerController.getQueue());
+        } else if (!mQueueSection.getData().equals(OldPlayerController.getQueue())) {
+            mQueueSection.setData(OldPlayerController.getQueue());
             mAdapter.notifyDataSetChanged();
         }
     }
@@ -179,7 +179,7 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
     @Override
     public void onResume() {
         super.onResume();
-        PlayerController.registerUpdateListener(this);
+        OldPlayerController.registerUpdateListener(this);
         // Assume this fragment's data has gone stale since it was last in the foreground
         onUpdate();
         scrollToNowPlaying();
@@ -188,14 +188,14 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
     @Override
     public void onPause() {
         super.onPause();
-        PlayerController.unregisterUpdateListener(this);
+        OldPlayerController.unregisterUpdateListener(this);
     }
 
     @Override
     public void onUpdate() {
         setupAdapter();
 
-        int currentIndex = PlayerController.getQueuePosition();
+        int currentIndex = OldPlayerController.getQueuePosition();
         int previousIndex = lastPlayIndex;
 
         if (currentIndex != lastPlayIndex) {
@@ -274,7 +274,7 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
 
     public void updateShuffle() {
         setupAdapter();
-        lastPlayIndex = PlayerController.getQueuePosition();
+        lastPlayIndex = OldPlayerController.getQueuePosition();
         scrollToNowPlaying();
     }
 }

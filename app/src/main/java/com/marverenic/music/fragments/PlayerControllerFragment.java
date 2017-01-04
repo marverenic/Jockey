@@ -12,10 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.marverenic.music.databinding.ViewNowPlayingControlPanelBinding;
-import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.player.OldPlayerController;
 import com.marverenic.music.viewmodel.NowPlayingControllerViewModel;
 
-public class PlayerControllerFragment extends Fragment implements PlayerController.UpdateListener {
+public class PlayerControllerFragment extends Fragment implements OldPlayerController.UpdateListener {
 
     private ViewNowPlayingControlPanelBinding mBinding;
 
@@ -44,13 +44,13 @@ public class PlayerControllerFragment extends Fragment implements PlayerControll
     @Override
     public void onPause() {
         super.onPause();
-        PlayerController.unregisterUpdateListener(this);
+        OldPlayerController.unregisterUpdateListener(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        PlayerController.registerUpdateListener(this);
+        OldPlayerController.registerUpdateListener(this);
         onUpdate();
     }
 
@@ -60,8 +60,8 @@ public class PlayerControllerFragment extends Fragment implements PlayerControll
             return;
         }
 
-        mBinding.getViewModel().setSong(PlayerController.getNowPlaying());
-        mBinding.getViewModel().setPlaying(PlayerController.isPlaying());
+        mBinding.getViewModel().setSong(OldPlayerController.getNowPlaying());
+        mBinding.getViewModel().setPlaying(OldPlayerController.isPlaying());
         mBinding.executePendingBindings();
     }
 

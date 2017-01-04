@@ -18,7 +18,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.data.annotations.PresetTheme;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ThemeStore;
-import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.player.OldPlayerController;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import javax.inject.Inject;
@@ -26,8 +26,8 @@ import javax.inject.Inject;
 import timber.log.Timber;
 
 public abstract class BaseActivity extends RxAppCompatActivity
-        implements PlayerController.UpdateListener, PlayerController.InfoListener,
-        PlayerController.ErrorListener {
+        implements OldPlayerController.UpdateListener, OldPlayerController.InfoListener,
+        OldPlayerController.ErrorListener {
 
     // Used when resuming the Activity to respond to a potential theme change
     @PresetTheme
@@ -108,7 +108,7 @@ public abstract class BaseActivity extends RxAppCompatActivity
             storage. Permission results will always trigger onResume (even when requested with
             RxPermissions), so we can use this to promptly start the service.
          */
-        PlayerController.startService(getApplicationContext());
+        OldPlayerController.startService(getApplicationContext());
 
         // If the theme was changed since this Activity was created, or the automatic day/night
         // theme has changed state, recreate this activity
@@ -118,9 +118,9 @@ public abstract class BaseActivity extends RxAppCompatActivity
         if (themeChanged) {
             recreate();
         } else {
-            PlayerController.registerUpdateListener(this);
-            PlayerController.registerInfoListener(this);
-            PlayerController.registerErrorListener(this);
+            OldPlayerController.registerUpdateListener(this);
+            OldPlayerController.registerInfoListener(this);
+            OldPlayerController.registerErrorListener(this);
             onUpdate();
         }
     }
@@ -139,9 +139,9 @@ public abstract class BaseActivity extends RxAppCompatActivity
     @Override
     public void onPause() {
         super.onPause();
-        PlayerController.unregisterUpdateListener(this);
-        PlayerController.unregisterInfoListener(this);
-        PlayerController.unregisterErrorListener(this);
+        OldPlayerController.unregisterUpdateListener(this);
+        OldPlayerController.unregisterInfoListener(this);
+        OldPlayerController.unregisterErrorListener(this);
     }
 
     /**

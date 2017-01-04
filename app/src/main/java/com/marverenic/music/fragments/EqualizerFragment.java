@@ -25,7 +25,7 @@ import android.widget.TextView;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.PreferenceStore;
-import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.player.OldPlayerController;
 import com.marverenic.music.player.RemoteEqualizer;
 import com.marverenic.music.utils.Util;
 
@@ -128,7 +128,7 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
         mPrefStore.setEqualizerSettings(equalizer.getProperties());
         mPrefStore.setEqualizerEnabled(equalizerToggle.isChecked());
 
-        PlayerController.updatePlayerPreferences(mPrefStore);
+        OldPlayerController.updatePlayerPreferences(mPrefStore);
     }
 
     @Override

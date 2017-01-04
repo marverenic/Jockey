@@ -18,7 +18,7 @@ import com.marverenic.music.BR;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.model.Song;
-import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.player.OldPlayerController;
 import com.marverenic.music.view.ViewUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -93,7 +93,7 @@ public class MiniplayerViewModel extends BaseObservable {
             pollPosition();
         } else {
             stopPollingPosition();
-            mProgress.set(PlayerController.getCurrentPosition());
+            mProgress.set(OldPlayerController.getCurrentPosition());
         }
     }
 
@@ -130,12 +130,12 @@ public class MiniplayerViewModel extends BaseObservable {
 
     @Bindable
     public int getSongDuration() {
-        return PlayerController.getDuration();
+        return OldPlayerController.getDuration();
     }
 
     @Bindable
     public Bitmap getArtwork() {
-        Bitmap art = PlayerController.getArtwork();
+        Bitmap art = OldPlayerController.getArtwork();
         if (art == null) {
             Drawable defaultArt = ContextCompat.getDrawable(mContext, R.drawable.art_default);
             return ViewUtils.drawableToBitmap(defaultArt);
@@ -164,7 +164,7 @@ public class MiniplayerViewModel extends BaseObservable {
 
         mPositionSubscription = Observable.interval(200, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.computation())
-                .map(tick -> PlayerController.getCurrentPosition())
+                .map(tick -> OldPlayerController.getCurrentPosition())
                 .subscribe(
                         mProgress::set,
                         throwable -> {
@@ -184,11 +184,11 @@ public class MiniplayerViewModel extends BaseObservable {
     }
 
     public View.OnClickListener onClickTogglePlay() {
-        return v -> PlayerController.togglePlay();
+        return v -> OldPlayerController.togglePlay();
     }
 
     public View.OnClickListener onClickSkip() {
-        return v -> PlayerController.skip();
+        return v -> OldPlayerController.skip();
     }
 
 }

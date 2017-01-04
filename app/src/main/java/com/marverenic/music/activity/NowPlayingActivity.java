@@ -33,7 +33,7 @@ import com.marverenic.music.dialog.NumberPickerDialogFragment;
 import com.marverenic.music.fragments.QueueFragment;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.MusicPlayer;
-import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.player.OldPlayerController;
 import com.marverenic.music.utils.UriUtils;
 import com.marverenic.music.view.TimeView;
 import com.marverenic.music.viewmodel.NowPlayingArtworkViewModel;
@@ -183,14 +183,14 @@ public class NowPlayingActivity extends BaseActivity
     }
 
     private void startIntentQueue(List<Song> queue, int position) {
-        if (PlayerController.isServiceStarted()) {
-            PlayerController.setQueue(queue, position);
-            PlayerController.play();
+        if (OldPlayerController.isServiceStarted()) {
+            OldPlayerController.setQueue(queue, position);
+            OldPlayerController.play();
         } else {
-            PlayerController.startService(getApplicationContext());
-            PlayerController.registerServiceStartListener(() -> {
-                PlayerController.setQueue(queue, position);
-                PlayerController.play();
+            OldPlayerController.startService(getApplicationContext());
+            OldPlayerController.registerServiceStartListener(() -> {
+                OldPlayerController.setQueue(queue, position);
+                OldPlayerController.play();
             });
         }
     }
@@ -238,7 +238,7 @@ public class NowPlayingActivity extends BaseActivity
         @DrawableRes int icon;
         boolean active = true;
 
-        int multiRepeatCount = PlayerController.getMultiRepeatCount();
+        int multiRepeatCount = OldPlayerController.getMultiRepeatCount();
         if (multiRepeatCount > 1) {
             switch (multiRepeatCount) {
                 case 2:
@@ -318,7 +318,7 @@ public class NowPlayingActivity extends BaseActivity
 
     private void toggleShuffle() {
         mPrefStore.toggleShuffle();
-        PlayerController.updatePlayerPreferences(mPrefStore);
+        OldPlayerController.updatePlayerPreferences(mPrefStore);
 
         if (mPrefStore.isShuffled()) {
             showSnackbar(R.string.confirm_enable_shuffle);
@@ -359,7 +359,7 @@ public class NowPlayingActivity extends BaseActivity
     @Override
     public void onNumberPicked(int chosen) {
         // Callback for when a Multi-Repeat value is chosen
-        PlayerController.setMultiRepeatCount(chosen);
+        OldPlayerController.setMultiRepeatCount(chosen);
         updateRepeatIcon();
         showSnackbar(getString(R.string.confirm_enable_multi_repeat, chosen));
     }
@@ -368,7 +368,7 @@ public class NowPlayingActivity extends BaseActivity
     public void onDurationPicked(int durationInMinutes) {
         // Callback for when a sleep timer value is chosen
         if (durationInMinutes == DurationPickerDialogFragment.NO_VALUE) {
-            PlayerController.disableSleepTimer();
+            OldPlayerController.disableSleepTimer();
             updateSleepTimerCounter();
             showSnackbar(R.string.confirm_disable_sleep_timer);
             return;
@@ -376,7 +376,7 @@ public class NowPlayingActivity extends BaseActivity
 
         long durationInMillis = TimeUnit.MILLISECONDS.convert(durationInMinutes, TimeUnit.MINUTES);
         long endTimestamp = System.currentTimeMillis() + durationInMillis;
-        PlayerController.setSleepTimerEndTime(endTimestamp);
+        OldPlayerController.setSleepTimerEndTime(endTimestamp);
 
         String confirmationMessage = getResources().getQuantityString(
                 R.plurals.confirm_enable_sleep_timer, durationInMinutes, durationInMinutes);
@@ -388,14 +388,14 @@ public class NowPlayingActivity extends BaseActivity
 
     private void changeRepeatMode(int repeatMode, @StringRes int confirmationMessage) {
         mPrefStore.setRepeatMode(repeatMode);
-        PlayerController.setMultiRepeatCount(0);
-        PlayerController.updatePlayerPreferences(mPrefStore);
+        OldPlayerController.setMultiRepeatCount(0);
+        OldPlayerController.updatePlayerPreferences(mPrefStore);
         updateRepeatIcon();
         showSnackbar(confirmationMessage);
     }
 
     private void showSleepTimerDialog() {
-        long timeLeftInMs = PlayerController.getSleepTimerEndTime() - System.currentTimeMillis();
+        long timeLeftInMs = OldPlayerController.getSleepTimerEndTime() - System.currentTimeMillis();
         int defaultValue;
 
         if (timeLeftInMs > 0) {
@@ -422,7 +422,7 @@ public class NowPlayingActivity extends BaseActivity
 
     private void updateSleepTimerCounter() {
         TimeView sleepTimerCounter = (TimeView) findViewById(R.id.now_playing_sleep_timer);
-        long sleepTimerValue = PlayerController.getSleepTimerEndTime() - System.currentTimeMillis();
+        long sleepTimerValue = OldPlayerController.getSleepTimerEndTime() - System.currentTimeMillis();
 
         if (mSleepTimerSubscription != null) {
             mSleepTimerSubscription.unsubscribe();
@@ -464,7 +464,7 @@ public class NowPlayingActivity extends BaseActivity
     }
 
     private void showMultiRepeatDialog() {
-        int currentValue = PlayerController.getMultiRepeatCount();
+        int currentValue = OldPlayerController.getMultiRepeatCount();
 
         new NumberPickerDialogFragment.Builder(this)
                 .setMinValue(2)
@@ -478,7 +478,7 @@ public class NowPlayingActivity extends BaseActivity
 
     private void saveQueueAsPlaylist() {
         new CreatePlaylistDialogFragment.Builder(getSupportFragmentManager())
-                .setSongs(PlayerController.getQueue())
+                .setSongs(OldPlayerController.getQueue())
                 .showSnackbarIn(R.id.now_playing_artwork)
                 .show(TAG_MAKE_PLAYLIST);
     }
@@ -486,27 +486,27 @@ public class NowPlayingActivity extends BaseActivity
     private void addQueueToPlaylist() {
         new AppendPlaylistDialogFragment.Builder(this)
                 .setTitle(getString(R.string.header_add_queue_to_playlist))
-                .setSongs(PlayerController.getQueue())
+                .setSongs(OldPlayerController.getQueue())
                 .showSnackbarIn(R.id.now_playing_artwork)
                 .show(TAG_APPEND_PLAYLIST);
     }
 
     private void clearQueue() {
-        List<Song> previousQueue = PlayerController.getQueue();
-        int previousQueueIndex = PlayerController.getQueuePosition();
+        List<Song> previousQueue = OldPlayerController.getQueue();
+        int previousQueueIndex = OldPlayerController.getQueuePosition();
 
-        int previousSeekPosition = PlayerController.getCurrentPosition();
-        boolean wasPlaying = PlayerController.isPlaying();
+        int previousSeekPosition = OldPlayerController.getCurrentPosition();
+        boolean wasPlaying = OldPlayerController.isPlaying();
 
-        PlayerController.clearQueue();
+        OldPlayerController.clearQueue();
 
         Snackbar.make(findViewById(R.id.now_playing_artwork), R.string.confirm_clear_queue, LENGTH_LONG)
                 .setAction(R.string.action_undo, view -> {
-                    PlayerController.editQueue(previousQueue, previousQueueIndex);
-                    PlayerController.seek(previousSeekPosition);
+                    OldPlayerController.editQueue(previousQueue, previousQueueIndex);
+                    OldPlayerController.seek(previousSeekPosition);
 
                     if (wasPlaying) {
-                        PlayerController.play();
+                        OldPlayerController.play();
                     }
                 })
                 .show();
@@ -527,7 +527,7 @@ public class NowPlayingActivity extends BaseActivity
     }
 
     private boolean queueContainsLocalSongs() {
-        for (Song song : PlayerController.getQueue()) {
+        for (Song song : OldPlayerController.getQueue()) {
             if (song.isInLibrary()) {
                 return true;
             }

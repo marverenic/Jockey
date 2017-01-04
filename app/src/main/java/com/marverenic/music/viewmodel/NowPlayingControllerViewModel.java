@@ -29,7 +29,7 @@ import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.model.Song;
-import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.player.OldPlayerController;
 
 import java.util.concurrent.TimeUnit;
 
@@ -95,8 +95,8 @@ public class NowPlayingControllerViewModel extends BaseObservable {
         }
 
         if (!mUserTouchingProgressBar) {
-            mSeekbarPosition.set(PlayerController.getCurrentPosition());
-            mCurrentPositionObservable.set(PlayerController.getCurrentPosition());
+            mSeekbarPosition.set(OldPlayerController.getCurrentPosition());
+            mCurrentPositionObservable.set(OldPlayerController.getCurrentPosition());
         }
     }
 
@@ -107,7 +107,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
 
         mPositionSubscription = Observable.interval(200, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.computation())
-                .map(tick -> PlayerController.getCurrentPosition())
+                .map(tick -> OldPlayerController.getCurrentPosition())
                 .subscribe(
                         position -> {
                             mCurrentPositionObservable.set(position);
@@ -157,7 +157,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
 
     @Bindable
     public int getSongDuration() {
-        return PlayerController.getDuration();
+        return OldPlayerController.getDuration();
     }
 
     @Bindable
@@ -284,22 +284,22 @@ public class NowPlayingControllerViewModel extends BaseObservable {
 
     public View.OnClickListener onSkipNextClick() {
         return v -> {
-            PlayerController.skip();
-            setSong(PlayerController.getNowPlaying());
+            OldPlayerController.skip();
+            setSong(OldPlayerController.getNowPlaying());
         };
     }
 
     public View.OnClickListener onSkipBackClick() {
         return v -> {
-            PlayerController.previous();
-            setSong(PlayerController.getNowPlaying());
+            OldPlayerController.previous();
+            setSong(OldPlayerController.getNowPlaying());
         };
     }
 
     public View.OnClickListener onTogglePlayClick() {
         return v -> {
-            PlayerController.togglePlay();
-            setPlaying(PlayerController.isPlaying());
+            OldPlayerController.togglePlay();
+            setPlaying(OldPlayerController.isPlaying());
         };
     }
 
@@ -331,7 +331,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
                 mUserTouchingProgressBar = false;
                 animateSeekBarHeadOut();
 
-                PlayerController.seek(seekBar.getProgress());
+                OldPlayerController.seek(seekBar.getProgress());
                 mCurrentPositionObservable.set(seekBar.getProgress());
 
                 if (mPlaying) {
