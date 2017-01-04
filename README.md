@@ -1,10 +1,11 @@
 # Jockey
 Jockey is a music player for Android based on Google's Material Design standards. The point of Jockey is to be a simple, lightweight media player with features designed for music enthusiasts and casual listeners alike. Currently Jockey is notably lacking a few enthusiast features like gapless playback, crossfade and replay gain which may be added in the future.
 
-[![Get it on Google Play](screenshots/play-badge.png)](https://play.google.com/store/apps/details?id=com.marverenic.music)  
+[![Get it on Google Play](https://github.com/marverenic/Jockey/raw/master/screenshots/play-badge.png)](https://play.google.com/store/apps/details?id=com.marverenic.music)  
 
-![Now Playing](screenshots/NowPlaying5_framed.png)
-![Designed for tablets](screenshots/Albums9_framed.png)
+
+<img align="left" height="480px" src="https://github.com/marverenic/Jockey/raw/master/screenshots/NowPlaying5_framed.png">
+<img align="left" height="480px" src="https://github.com/marverenic/Jockey/raw/master/screenshots/Albums9_framed.png">
 
 ### Downloads
 You can get Jockey on [Google Play](https://play.google.com/store/apps/details?id=com.marverenic.music), and [opt-in to Beta testing](https://play.google.com/apps/testing/com.marverenic.music) if you want to try new features before they're released.
