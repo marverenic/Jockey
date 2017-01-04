@@ -22,9 +22,7 @@ Used to retrieve information and thumbnails for artists from Last.fm and upload 
 **Network State**  
 Used to prevent Jockey from using mobile data (if this preference is enabled)  
 **Keep awake**  
-Used to play music while the device's screen is off  
-**Install shortcuts**  
-Allows Jockey to (optionally) add shortcuts to Jockey to the launcher. This is only done when explicitly requested from the settings page and is intended so that the launcher icon matches the chosen theme
+Used to play music while the device's screen is off
 
 ### Building Jockey from Source
 To build a release APK of Jockey, you'll need to either setup Crashlytics using your own API key, or remove the dependency and all logging calls. You can specify your own API key by making a new file in `app/fabric.properties` and add the following lines:  
