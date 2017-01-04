@@ -255,6 +255,7 @@ public class PresetThemeStore implements ThemeStore {
         }
 
         mPreferenceStore.setIconColor(nextIcon);
+        mPreferenceStore.commit();
 
         setComponentEnabled(launchActivityName + activityThemeSuffixes[nextIcon], true);
         setComponentEnabled(launchActivityName + activityThemeSuffixes[currIcon], false);
