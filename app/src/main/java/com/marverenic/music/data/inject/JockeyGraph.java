@@ -24,6 +24,7 @@ import com.marverenic.music.fragments.PlaylistFragment;
 import com.marverenic.music.fragments.PreferenceFragment;
 import com.marverenic.music.fragments.SongFragment;
 import com.marverenic.music.player.MusicPlayer;
+import com.marverenic.music.player.ServicePlayerController;
 import com.marverenic.music.viewmodel.AlbumViewModel;
 import com.marverenic.music.viewmodel.ArtistViewModel;
 import com.marverenic.music.viewmodel.GenreViewModel;
@@ -74,6 +75,7 @@ public interface JockeyGraph {
 
     void inject(LibraryEmptyState emptyState);
 
+    void inject(ServicePlayerController.Listener broadcastReceiver);
     void inject(MusicPlayer musicPlayer);
 
 }
