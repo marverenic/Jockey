@@ -365,6 +365,9 @@ public final class PlayerController {
         if (playerService != null) {
             try {
                 playerService.editQueue(queue, queuePosition);
+                if (queue.isEmpty()) {
+                    artwork = null;
+                }
                 updateUi();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to edit queue");

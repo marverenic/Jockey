@@ -123,6 +123,7 @@ public class QueueSongViewModel extends SongViewModel {
                 : oldQueuePosition;
 
         newQueuePosition = Math.min(newQueuePosition, getSongs().size() - 1);
+        newQueuePosition = Math.max(newQueuePosition, 0);
 
         PlayerController.editQueue(getSongs(), newQueuePosition);
 
