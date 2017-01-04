@@ -2,7 +2,7 @@ package com.marverenic.music.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -14,19 +14,18 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.PopupMenu;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PreferencesStore;
+import com.marverenic.music.databinding.ActivityNowPlayingBinding;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
 import com.marverenic.music.dialog.DurationPickerDialogFragment;
@@ -36,8 +35,8 @@ import com.marverenic.music.model.Song;
 import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.UriUtils;
-import com.marverenic.music.view.GestureView;
 import com.marverenic.music.view.TimeView;
+import com.marverenic.music.viewmodel.NowPlayingArtworkViewModel;
 
 import java.io.File;
 import java.util.Collections;
@@ -56,8 +55,8 @@ import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 import static android.support.design.widget.Snackbar.LENGTH_LONG;
 import static android.support.design.widget.Snackbar.LENGTH_SHORT;
 
-public class NowPlayingActivity extends BaseActivity implements GestureView.OnGestureListener,
-        NumberPickerDialogFragment.OnNumberPickedListener,
+public class NowPlayingActivity extends BaseActivity
+        implements NumberPickerDialogFragment.OnNumberPickedListener,
         DurationPickerDialogFragment.OnDurationPickedListener {
 
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
@@ -66,16 +65,14 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     private static final String TAG_SLEEP_TIMER_PICKER = "SleepTimerPickerDialog";
 
     private static final int DEFAULT_MULTI_REPEAT_VALUE = 3;
-
     public static Intent newIntent(Context context) {
         return new Intent(context, NowPlayingActivity.class);
     }
 
     @Inject PreferencesStore mPrefStore;
 
-    private ImageView artwork;
-    private GestureView artworkWrapper;
-    private Song lastPlaying;
+    private ActivityNowPlayingBinding mBinding;
+    private NowPlayingArtworkViewModel mArtworkViewModel;
     private QueueFragment queueFragment;
 
     private MenuItem mCreatePlaylistMenuItem;
@@ -88,10 +85,13 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_now_playing);
-        onNewIntent(getIntent());
+
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_now_playing);
+        mArtworkViewModel = new NowPlayingArtworkViewModel(this);
+        mBinding.setArtworkViewModel(mArtworkViewModel);
 
         JockeyApplication.getComponent(this).inject(this);
+        onNewIntent(getIntent());
 
         boolean landscape = getResources().getConfiguration().orientation == ORIENTATION_LANDSCAPE;
 
@@ -101,12 +101,10 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
                         View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
                 getWindow().setStatusBarColor(Color.TRANSPARENT);
             }
-            findViewById(R.id.now_playing_gesture_frame).getLayoutParams().height = getArtworkHeight();
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         }
 
-        artwork = (ImageView) findViewById(R.id.now_playing_artwork);
         queueFragment =
                 (QueueFragment) getSupportFragmentManager().findFragmentById(R.id.now_playing_queue_fragment);
 
@@ -121,27 +119,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
             actionBar.setHomeAsUpIndicator(R.drawable.ic_clear_24dp);
         }
 
-        artworkWrapper = (GestureView) findViewById(R.id.now_playing_gesture_frame);
-        if (artworkWrapper != null) {
-            artworkWrapper.setGestureListener(this);
-            artworkWrapper.setGesturesEnabled(mPrefStore.enableNowPlayingGestures());
-        }
-
         onUpdate();
-    }
-
-    private int getArtworkHeight() {
-        int reservedHeight = (int) getResources().getDimension(R.dimen.player_frame_peek);
-
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-
-        // Default to a square view, so set the height equal to the width
-        //noinspection SuspiciousNameCombination
-        int preferredHeight = metrics.widthPixels;
-        int maxHeight = metrics.heightPixels - reservedHeight;
-
-        return Math.min(preferredHeight, maxHeight);
     }
 
     @Override
@@ -538,16 +516,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     public void onUpdate() {
         super.onUpdate();
         final Song nowPlaying = PlayerController.getNowPlaying();
-        if (lastPlaying == null || !lastPlaying.equals(nowPlaying)) {
-            Bitmap image = PlayerController.getArtwork();
-            if (image == null) {
-                artwork.setImageResource(R.drawable.art_default_xl);
-            } else {
-                artwork.setImageBitmap(image);
-            }
-
-            lastPlaying = nowPlaying;
-        }
+        mArtworkViewModel.onSongChanged();
 
         if (mRepeatMenuItem != null) {
             updateRepeatIcon();
@@ -574,36 +543,5 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
     @Override
     protected void showSnackbar(String message) {
         Snackbar.make(findViewById(R.id.now_playing_artwork), message, LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onLeftSwipe() {
-        PlayerController.skip();
-    }
-
-    @Override
-    public void onRightSwipe() {
-        int queuePosition = PlayerController.getQueuePosition() - 1;
-        if (queuePosition < 0 && mPrefStore.getRepeatMode() == MusicPlayer.REPEAT_ALL) {
-            queuePosition += PlayerController.getQueueSize();
-        }
-
-        if (queuePosition >= 0) {
-            PlayerController.changeSong(queuePosition);
-        } else {
-            PlayerController.seek(0);
-        }
-
-    }
-
-    @Override
-    public void onTap() {
-        PlayerController.togglePlay();
-
-        //noinspection deprecation
-        artworkWrapper.setTapIndicator(getResources().getDrawable(
-                (PlayerController.isPlaying())
-                        ? R.drawable.ic_play_arrow_36dp
-                        : R.drawable.ic_pause_36dp));
     }
 }
