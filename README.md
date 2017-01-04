@@ -3,10 +3,12 @@ Jockey is a music player for Android based on Google's Material Design standards
 
 [![Get it on Google Play](https://github.com/marverenic/Jockey/raw/master/screenshots/play-badge.png)](https://play.google.com/store/apps/details?id=com.marverenic.music)  
 
-<img height="400px" src="https://github.com/marverenic/Jockey/raw/master/screenshots/NowPlaying5_framed.png">
-<img height="400px" src="https://github.com/marverenic/Jockey/raw/master/screenshots/Albums9_framed.png">
 
-_ _ _ _ _
+<img align="left" height="480px" src="https://github.com/marverenic/Jockey/raw/master/screenshots/Library5_framed.png">
+<img align="left" height="480px" src="https://github.com/marverenic/Jockey/raw/master/screenshots/NowPlaying5_framed.png">
+<img align="left" height="480px" src="https://github.com/marverenic/Jockey/raw/master/screenshots/Artist5_framed.png">
+<img height="320px" src="https://github.com/marverenic/Jockey/raw/master/screenshots/Albums9_framed.png">
+<img height="320px" src="https://github.com/marverenic/Jockey/raw/master/screenshots/NowPlaying9_framed.png">
 
 ### Downloads
 You can get Jockey on [Google Play](https://play.google.com/store/apps/details?id=com.marverenic.music), and [opt-in to Beta testing](https://play.google.com/apps/testing/com.marverenic.music) if you want to try new features before they're released.
