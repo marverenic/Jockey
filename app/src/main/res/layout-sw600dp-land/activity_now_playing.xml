@@ -1,73 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="fill_parent">
+<layout>
 
-    <include layout="@layout/toolbar"/>
+    <data>
+        <variable
+            name="artworkViewModel"
+            type="com.marverenic.music.viewmodel.NowPlayingArtworkViewModel"/>
+    </data>
 
-    <com.marverenic.music.view.GestureView
-        android:id="@+id/now_playing_gesture_frame"
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_toLeftOf="@+id/now_playing_control_fragment"
-        android:layout_toStartOf="@+id/now_playing_control_fragment"
-        android:foreground="@android:color/transparent"
-        app:leftIndicator="@drawable/ic_skip_next_36dp"
-        app:rightIndicator="@drawable/ic_skip_previous_36dp"
-        app:tapIndicator="@drawable/ic_play_arrow_36dp"
-        app:overlayColor="?attr/colorAccent">
+        android:layout_height="fill_parent">
 
-        <ImageView
-            android:id="@+id/now_playing_artwork"
+        <include layout="@layout/toolbar"/>
+
+        <com.marverenic.music.view.GestureView
+            android:id="@+id/now_playing_gesture_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="?attr/actionBarSize"
-            android:src="@drawable/art_default_xl"
-            android:background="@android:color/black"
-            android:scaleType="centerCrop"/>
+            android:layout_toLeftOf="@+id/now_playing_control_fragment"
+            android:layout_toStartOf="@+id/now_playing_control_fragment"
+            android:foreground="@android:color/transparent"
+            app:leftIndicator="@drawable/ic_skip_next_36dp"
+            app:rightIndicator="@drawable/ic_skip_previous_36dp"
+            app:tapIndicator="@{artworkViewModel.tapIndicator}"
+            app:overlayColor="?attr/colorAccent"
+            app:gesturesEnabled="@{artworkViewModel.gesturesEnabled}"
+            app:gestureListener="@{artworkViewModel.gestureListener}">
 
-        <com.marverenic.music.view.TimeView
-            android:id="@+id/now_playing_sleep_timer"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            style="@style/TextAppearance.AppCompat.Button"
-            android:textColor="@android:color/white"
-            android:background="@drawable/tooltip_bg"
-            android:layout_gravity="center_horizontal|bottom"
-            android:gravity="center"
-            android:drawableStart="@drawable/ic_sleep_timer_24dp"
-            android:drawableLeft="@drawable/ic_sleep_timer_24dp"
-            android:drawablePadding="8dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:layout_marginBottom="24dp"
-            tools:text="5:00"/>
+            <ImageView
+                android:id="@+id/now_playing_artwork"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="?attr/actionBarSize"
+                android:src="@{artworkViewModel.nowPlayingArtwork}"
+                android:background="@android:color/black"
+                android:scaleType="centerCrop"/>
 
-    </com.marverenic.music.view.GestureView>
+            <com.marverenic.music.view.TimeView
+                android:id="@+id/now_playing_sleep_timer"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                style="@style/TextAppearance.AppCompat.Button"
+                android:textColor="@android:color/white"
+                android:background="@drawable/tooltip_bg"
+                android:layout_gravity="center_horizontal|bottom"
+                android:gravity="center"
+                android:drawableStart="@drawable/ic_sleep_timer_24dp"
+                android:drawableLeft="@drawable/ic_sleep_timer_24dp"
+                android:drawablePadding="8dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:layout_marginBottom="24dp"
+                tools:text="5:00"/>
 
-    <fragment
-        android:id="@+id/now_playing_control_fragment"
-        android:name="com.marverenic.music.fragments.PlayerControllerFragment"
-        android:layout_width="@dimen/now_playing_control_min_width"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        tools:layout="@layout/view_now_playing_control_panel" />
+        </com.marverenic.music.view.GestureView>
 
-    <fragment
-        android:id="@+id/now_playing_queue_fragment"
-        android:name="com.marverenic.music.fragments.QueueFragment"
-        android:layout_width="@dimen/now_playing_control_min_width"
-        android:layout_height="match_parent"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@id/toolbar"
-        android:layout_above="@id/now_playing_control_fragment"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:layout="@layout/list"/>
+        <fragment
+            android:id="@+id/now_playing_control_fragment"
+            android:name="com.marverenic.music.fragments.PlayerControllerFragment"
+            android:layout_width="@dimen/now_playing_control_min_width"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            tools:layout="@layout/view_now_playing_control_panel" />
 
-</RelativeLayout>
+        <fragment
+            android:id="@+id/now_playing_queue_fragment"
+            android:name="com.marverenic.music.fragments.QueueFragment"
+            android:layout_width="@dimen/now_playing_control_min_width"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/toolbar"
+            android:layout_above="@id/now_playing_control_fragment"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            tools:layout="@layout/list"/>
+
+    </RelativeLayout>
+
+</layout>
