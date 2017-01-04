@@ -515,7 +515,6 @@ public class NowPlayingActivity extends BaseActivity
     @Override
     public void onUpdate() {
         super.onUpdate();
-        final Song nowPlaying = PlayerController.getNowPlaying();
         mArtworkViewModel.onSongChanged();
 
         if (mRepeatMenuItem != null) {

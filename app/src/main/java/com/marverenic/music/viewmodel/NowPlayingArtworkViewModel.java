@@ -46,7 +46,7 @@ public class NowPlayingArtworkViewModel extends BaseObservable {
 
     public void onSongChanged() {
         Song nowPlaying = PlayerController.getNowPlaying();
-        if (nowPlaying != mLastPlaying) {
+        if (mLastPlaying == null || !mLastPlaying.equals(nowPlaying)) {
             notifyPropertyChanged(BR.nowPlayingArtwork);
             mLastPlaying = nowPlaying;
         }
