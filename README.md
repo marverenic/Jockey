@@ -1,5 +1,5 @@
 # Jockey
-Jockey is a music player for Android based on Google's Material Design standards. The point of Jockey is to be a simple, lightweight media player with features designed for music enthusiasts and casual listeners alike. Currently Jockey is notably lacking a few enthusiast features like gapless playback, crossfade and replay gain which may be added in the future.
+Jockey is a music player for Android based on Google's Material Design standards. The point of Jockey is to be a simple, lightweight media player with features designed for music enthusiasts and casual listeners alike. Currently Jockey is notably lacking a few enthusiast features like crossfade and replay gain which may be added in the future.
 
 [![Get it on Google Play](https://github.com/marverenic/Jockey/raw/master/screenshots/play-badge.png)](https://play.google.com/store/apps/details?id=com.marverenic.music)  
 
