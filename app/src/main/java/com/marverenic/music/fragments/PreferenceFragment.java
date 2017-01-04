@@ -23,7 +23,7 @@ import android.widget.Toast;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.data.store.PreferencesStore;
+import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.BackgroundDecoration;
@@ -40,7 +40,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat
             "com.marverenic.music.fragments.EqualizerFragment";
 
     @Inject
-    PreferencesStore mPrefStore;
+    PreferenceStore mPrefStore;
     @Inject
     ThemeStore mThemeStore;
 

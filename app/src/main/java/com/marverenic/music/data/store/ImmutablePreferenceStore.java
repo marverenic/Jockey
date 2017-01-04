@@ -8,7 +8,7 @@ import java.util.Set;
 
 import timber.log.Timber;
 
-public class ImmutablePreferenceStore implements ReadOnlyPreferencesStore, Parcelable {
+public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcelable {
 
     private final boolean mShowFirstStart;
     private final boolean mAllowLogging;
@@ -26,7 +26,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferencesStore, Parce
     private final boolean mEqualizerEnabled;
     private final String mEqualizerSettings;
 
-    public ImmutablePreferenceStore(ReadOnlyPreferencesStore preferencesStore) {
+    public ImmutablePreferenceStore(ReadOnlyPreferenceStore preferencesStore) {
         mShowFirstStart = preferencesStore.showFirstStart();
         mAllowLogging = preferencesStore.allowLogging();
         mUseMobileNetwork = preferencesStore.useMobileNetwork();

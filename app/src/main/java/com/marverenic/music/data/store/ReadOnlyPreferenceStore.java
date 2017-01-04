@@ -8,7 +8,7 @@ import com.marverenic.music.data.annotations.StartPage;
 
 import java.util.Set;
 
-public interface ReadOnlyPreferencesStore {
+public interface ReadOnlyPreferenceStore {
 
     boolean showFirstStart();
     boolean allowLogging();

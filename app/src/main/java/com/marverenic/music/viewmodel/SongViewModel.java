@@ -13,7 +13,7 @@ import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.data.store.MusicStore;
-import com.marverenic.music.data.store.PreferencesStore;
+import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
@@ -29,7 +29,7 @@ public class SongViewModel extends BaseObservable {
     private static final String TAG_PLAYLIST_DIALOG = "SongViewModel.PlaylistDialog";
 
     @Inject MusicStore mMusicStore;
-    @Inject PreferencesStore mPrefStore;
+    @Inject PreferenceStore mPrefStore;
 
     private Context mContext;
     private FragmentManager mFragmentManager;

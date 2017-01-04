@@ -27,7 +27,7 @@ import com.marverenic.music.BuildConfig;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
-import com.marverenic.music.data.store.PreferencesStore;
+import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.dialog.DirectoryDialogFragment;
 import com.marverenic.music.adapter.BasicEmptyState;
 import com.marverenic.music.view.DividerDecoration;
@@ -54,7 +54,7 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
     private static final String TAG_DIR_DIALOG = "DirectoryListFragment_DirectoryDialog";
 
     @Inject MusicStore mMusicStore;
-    @Inject PreferencesStore mPreferencesStore;
+    @Inject PreferenceStore mPreferenceStore;
 
     private boolean mExclude;
     private List<String> mDirectories;
@@ -79,11 +79,11 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
         JockeyApplication.getComponent(this).inject(this);
 
         if (mExclude) {
-            mDirectories = new ArrayList<>(mPreferencesStore.getExcludedDirectories());
-            mOppositeDirectories = mPreferencesStore.getIncludedDirectories();
+            mDirectories = new ArrayList<>(mPreferenceStore.getExcludedDirectories());
+            mOppositeDirectories = mPreferenceStore.getIncludedDirectories();
         } else {
-            mDirectories = new ArrayList<>(mPreferencesStore.getIncludedDirectories());
-            mOppositeDirectories = mPreferencesStore.getExcludedDirectories();
+            mDirectories = new ArrayList<>(mPreferenceStore.getIncludedDirectories());
+            mOppositeDirectories = mPreferenceStore.getExcludedDirectories();
         }
         Collections.sort(mDirectories);
 
@@ -147,19 +147,19 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
     public void onPause() {
         super.onPause();
 
-        Set<String> previouslyIncluded = mPreferencesStore.getIncludedDirectories();
-        Set<String> previouslyExcluded = mPreferencesStore.getExcludedDirectories();
+        Set<String> previouslyIncluded = mPreferenceStore.getIncludedDirectories();
+        Set<String> previouslyExcluded = mPreferenceStore.getExcludedDirectories();
 
         if (mExclude) {
-            mPreferencesStore.setExcludedDirectories(mDirectories);
-            mPreferencesStore.setIncludedDirectories(mOppositeDirectories);
+            mPreferenceStore.setExcludedDirectories(mDirectories);
+            mPreferenceStore.setIncludedDirectories(mOppositeDirectories);
         } else {
-            mPreferencesStore.setIncludedDirectories(mDirectories);
-            mPreferencesStore.setExcludedDirectories(mOppositeDirectories);
+            mPreferenceStore.setIncludedDirectories(mDirectories);
+            mPreferenceStore.setExcludedDirectories(mOppositeDirectories);
         }
 
-        Set<String> currentlyIncluded = mPreferencesStore.getIncludedDirectories();
-        Set<String> currentlyExcluded = mPreferencesStore.getExcludedDirectories();
+        Set<String> currentlyIncluded = mPreferenceStore.getIncludedDirectories();
+        Set<String> currentlyExcluded = mPreferenceStore.getExcludedDirectories();
 
         boolean isDifferent = !currentlyExcluded.equals(previouslyExcluded)
                 || !currentlyIncluded.equals(previouslyIncluded);

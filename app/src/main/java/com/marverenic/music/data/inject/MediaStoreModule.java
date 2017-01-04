@@ -8,7 +8,7 @@ import com.marverenic.music.data.store.LocalPlaylistStore;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.data.store.PlaylistStore;
-import com.marverenic.music.data.store.PreferencesStore;
+import com.marverenic.music.data.store.PreferenceStore;
 
 import javax.inject.Singleton;
 
@@ -20,8 +20,8 @@ public class MediaStoreModule {
 
     @Provides
     @Singleton
-    public MusicStore provideMusicStore(Context context, PreferencesStore preferencesStore) {
-        return new LocalMusicStore(context, preferencesStore);
+    public MusicStore provideMusicStore(Context context, PreferenceStore preferenceStore) {
+        return new LocalMusicStore(context, preferenceStore);
     }
 
     @Provides

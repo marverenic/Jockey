@@ -19,7 +19,7 @@ import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.data.store.MusicStore;
-import com.marverenic.music.data.store.PreferencesStore;
+import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.model.Album;
 import com.marverenic.music.model.Artist;
@@ -55,7 +55,7 @@ public class ArtistActivity extends BaseActivity {
 
     @Inject MusicStore mMusicStore;
     @Inject LastFmStore mLfmStore;
-    @Inject PreferencesStore mPrefStore;
+    @Inject PreferenceStore mPrefStore;
     @Inject ThemeStore mThemeStore;
 
     private RecyclerView mRecyclerView;
