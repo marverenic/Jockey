@@ -24,7 +24,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
-import com.marverenic.music.data.store.PreferencesStore;
+import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
 import com.marverenic.music.fragments.AlbumFragment;
 import com.marverenic.music.fragments.ArtistFragment;
@@ -48,7 +48,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Inject MusicStore mMusicStore;
     @Inject PlaylistStore mPlaylistStore;
-    @Inject PreferencesStore mPrefStore;
+    @Inject PreferenceStore mPrefStore;
 
     private SwipeRefreshLayout mRefreshLayout;
 

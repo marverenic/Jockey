@@ -2,9 +2,9 @@ package com.marverenic.music.data.inject;
 
 import android.content.Context;
 
-import com.marverenic.music.data.store.PreferencesStore;
+import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.PresetThemeStore;
-import com.marverenic.music.data.store.SharedPreferencesStore;
+import com.marverenic.music.data.store.SharedPreferenceStore;
 import com.marverenic.music.data.store.ThemeStore;
 
 import javax.inject.Singleton;
@@ -28,14 +28,14 @@ public class ContextModule {
 
     @Provides
     @Singleton
-    public PreferencesStore providePreferencesStore(Context context) {
-        return new SharedPreferencesStore(context);
+    public PreferenceStore providePreferencesStore(Context context) {
+        return new SharedPreferenceStore(context);
     }
 
     @Provides
     @Singleton
-    public ThemeStore provideThemeStore(Context context, PreferencesStore preferencesStore) {
-        return new PresetThemeStore(context, preferencesStore);
+    public ThemeStore provideThemeStore(Context context, PreferenceStore preferenceStore) {
+        return new PresetThemeStore(context, preferenceStore);
     }
 
 }

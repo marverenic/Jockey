@@ -12,7 +12,7 @@ import android.os.RemoteException;
 import com.marverenic.music.IPlayerService;
 import com.marverenic.music.data.store.ImmutablePreferenceStore;
 import com.marverenic.music.data.store.MediaStoreUtil;
-import com.marverenic.music.data.store.ReadOnlyPreferencesStore;
+import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.utils.Util;
 
@@ -295,7 +295,7 @@ public final class PlayerController {
         }
     }
 
-    public static void updatePlayerPreferences(ReadOnlyPreferencesStore preferencesStore) {
+    public static void updatePlayerPreferences(ReadOnlyPreferenceStore preferencesStore) {
         if (playerService != null) {
             try {
                 playerService.setPreferences(new ImmutablePreferenceStore(preferencesStore));

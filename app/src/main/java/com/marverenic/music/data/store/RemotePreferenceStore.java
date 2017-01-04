@@ -14,7 +14,7 @@ import static android.content.Context.MODE_PRIVATE;
  *
  * The intent of this PreferenceStore is to allow certain processes to be modifiable in the remote
  * service, and others on the main process. Because of this, this class should have no overlap with
- * {@link SharedPreferencesStore}, because the key value pairs are not kept in sync between the two
+ * {@link SharedPreferenceStore}, because the key value pairs are not kept in sync between the two
  * processes.
  */
 public class RemotePreferenceStore {

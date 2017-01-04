@@ -26,7 +26,7 @@ import android.widget.ImageView;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MediaStoreUtil;
-import com.marverenic.music.data.store.PreferencesStore;
+import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
 import com.marverenic.music.dialog.DurationPickerDialogFragment;
@@ -71,7 +71,7 @@ public class NowPlayingActivity extends BaseActivity implements GestureView.OnGe
         return new Intent(context, NowPlayingActivity.class);
     }
 
-    @Inject PreferencesStore mPrefStore;
+    @Inject PreferenceStore mPrefStore;
 
     private ImageView artwork;
     private GestureView artworkWrapper;

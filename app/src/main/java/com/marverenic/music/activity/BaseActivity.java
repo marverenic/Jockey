@@ -16,7 +16,7 @@ import android.widget.TextView;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.annotations.PresetTheme;
-import com.marverenic.music.data.store.PreferencesStore;
+import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.player.PlayerController;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
@@ -33,7 +33,7 @@ public abstract class BaseActivity extends RxAppCompatActivity
     @PresetTheme
     private int mTheme;
 
-    @Inject PreferencesStore mPreferencesStore;
+    @Inject PreferenceStore mPreferenceStore;
     @Inject ThemeStore mThemeStore;
 
     /**
@@ -44,12 +44,12 @@ public abstract class BaseActivity extends RxAppCompatActivity
         JockeyApplication.getComponent(this).injectBaseActivity(this);
 
         mThemeStore.setTheme(this);
-        mTheme = mPreferencesStore.getPrimaryColor();
+        mTheme = mPreferenceStore.getPrimaryColor();
 
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-        if (mPreferencesStore.showFirstStart()) {
+        if (mPreferenceStore.showFirstStart()) {
             showFirstRunDialog();
         }
     }
@@ -70,8 +70,8 @@ public abstract class BaseActivity extends RxAppCompatActivity
                 .setView(messageView)
                 .setPositiveButton(R.string.action_agree,
                         (dialog, which) -> {
-                            mPreferencesStore.setAllowLogging(pref.isChecked());
-                            mPreferencesStore.setShowFirstStart(false);
+                            mPreferenceStore.setAllowLogging(pref.isChecked());
+                            mPreferenceStore.setShowFirstStart(false);
                         })
                 .setCancelable(false)
                 .show();
@@ -113,7 +113,7 @@ public abstract class BaseActivity extends RxAppCompatActivity
         // If the theme was changed since this Activity was created, or the automatic day/night
         // theme has changed state, recreate this activity
         mThemeStore.setTheme(this);
-        boolean themeChanged = mTheme != mPreferencesStore.getPrimaryColor();
+        boolean themeChanged = mTheme != mPreferenceStore.getPrimaryColor();
 
         if (themeChanged) {
             recreate();

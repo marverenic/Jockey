@@ -45,11 +45,11 @@ import static com.marverenic.music.data.annotations.PresetTheme.YELLOW;
 public class PresetThemeStore implements ThemeStore {
 
     private Context mContext;
-    private PreferencesStore mPreferencesStore;
+    private PreferenceStore mPreferenceStore;
 
-    public PresetThemeStore(Context context, PreferencesStore preferencesStore) {
+    public PresetThemeStore(Context context, PreferenceStore preferenceStore) {
         mContext = context;
-        mPreferencesStore = preferencesStore;
+        mPreferenceStore = preferenceStore;
     }
 
     @Override
@@ -59,7 +59,7 @@ public class PresetThemeStore implements ThemeStore {
 
     @ColorRes
     private int getPrimaryColorRes() {
-        switch (mPreferencesStore.getPrimaryColor()) {
+        switch (mPreferenceStore.getPrimaryColor()) {
             case GRAY:
                 return R.color.primary_grey;
             case RED:
@@ -88,7 +88,7 @@ public class PresetThemeStore implements ThemeStore {
 
     @ColorRes
     private int getAccentColorRes() {
-        switch (mPreferencesStore.getPrimaryColor()) {
+        switch (mPreferenceStore.getPrimaryColor()) {
             case GRAY:
                 return R.color.accent_grey;
             case RED:
@@ -127,7 +127,7 @@ public class PresetThemeStore implements ThemeStore {
 
     @NightMode
     private int getNightMode() {
-        switch (mPreferencesStore.getBaseColor()) {
+        switch (mPreferenceStore.getBaseColor()) {
             case AUTO:
                 return AppCompatDelegate.MODE_NIGHT_AUTO;
             case DARK:
@@ -140,7 +140,7 @@ public class PresetThemeStore implements ThemeStore {
 
     @StyleRes
     private int getThemeId() {
-        switch (mPreferencesStore.getPrimaryColor()) {
+        switch (mPreferenceStore.getPrimaryColor()) {
             case GRAY:
                 return R.style.AppTheme_Grey;
             case RED:
@@ -210,7 +210,7 @@ public class PresetThemeStore implements ThemeStore {
 
     @DrawableRes
     private int getIconId() {
-        switch (mPreferencesStore.getPrimaryColor()) {
+        switch (mPreferenceStore.getPrimaryColor()) {
             case GRAY:
                 return R.mipmap.ic_launcher_grey;
             case RED:
@@ -246,14 +246,14 @@ public class PresetThemeStore implements ThemeStore {
         };
 
         String launchActivityName = "com.marverenic.music.activity.LibraryActivity";
-        int nextIcon = mPreferencesStore.getPrimaryColor();
-        int currIcon = mPreferencesStore.getIconColor();
+        int nextIcon = mPreferenceStore.getPrimaryColor();
+        int currIcon = mPreferenceStore.getIconColor();
 
         if (nextIcon == currIcon) {
             return;
         }
 
-        mPreferencesStore.setIconColor(nextIcon);
+        mPreferenceStore.setIconColor(nextIcon);
 
         setComponentEnabled(launchActivityName + activityThemeSuffixes[nextIcon], true);
         setComponentEnabled(launchActivityName + activityThemeSuffixes[currIcon], false);
