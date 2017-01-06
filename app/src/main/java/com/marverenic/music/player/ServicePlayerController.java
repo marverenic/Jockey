@@ -115,6 +115,28 @@ public class ServicePlayerController implements PlayerController {
     }
 
     @Override
+    public Observable<PlayerState> getPlayerState() {
+        return isPlaying()
+                .map(isPlaying -> {
+                    PlayerState.Builder builder = new PlayerState.Builder();
+                    builder.setPlaying(isPlaying);
+                    return builder;
+                })
+                .concatMap(builder -> getQueue().map(builder::setQueue))
+                .concatMap(builder -> getQueuePosition().map(builder::setQueuePosition))
+                .concatMap(builder -> getCurrentPosition().map(builder::setSeekPosition))
+                .map(PlayerState.Builder::build);
+    }
+
+    @Override
+    public void restorePlayerState(PlayerState restoreState) {
+        editQueue(restoreState.getQueue(), restoreState.getQueuePosition());
+        seek(restoreState.getSeekPosition());
+
+        if (restoreState.isPlaying()) play();
+    }
+
+    @Override
     public void stop() {
         // TODO post to service
         mPlaying.setValue(false);

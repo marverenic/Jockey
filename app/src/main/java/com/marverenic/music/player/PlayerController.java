@@ -14,6 +14,9 @@ public interface PlayerController {
     Observable<String> getError();
     Observable<String> getInfo();
 
+    Observable<PlayerState> getPlayerState();
+    void restorePlayerState(PlayerState restoreState);
+
     void stop();
     void skip();
     void previous();
