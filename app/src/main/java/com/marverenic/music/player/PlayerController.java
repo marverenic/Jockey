@@ -47,6 +47,8 @@ public interface PlayerController {
     Observable<Integer> getCurrentPosition();
     Observable<Integer> getDuration();
 
+    Observable<Boolean> isShuffleEnabled();
+
     Observable<Integer> getMultiRepeatCount();
     void setMultiRepeatCount(int count);
 

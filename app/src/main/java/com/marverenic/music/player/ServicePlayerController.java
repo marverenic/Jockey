@@ -11,6 +11,7 @@ import android.os.RemoteException;
 
 import com.marverenic.music.IPlayerService;
 import com.marverenic.music.JockeyApplication;
+import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.utils.Util;
@@ -45,10 +46,12 @@ public class ServicePlayerController implements PlayerController {
     private final Prop<Integer> mMultiRepeatCount = new Prop<>("multi-repeat");
     private final Prop<Long> mSleepTimerEndTime = new Prop<>("sleep timer");
 
+    private BehaviorSubject<Boolean> mShuffled;
     private BehaviorSubject<Bitmap> mArtwork;
 
-    public ServicePlayerController(Context context) {
+    public ServicePlayerController(Context context, PreferenceStore preferenceStore) {
         mContext = context;
+        mShuffled = BehaviorSubject.create(preferenceStore.isShuffled());
         startService();
     }
 
@@ -193,6 +196,10 @@ public class ServicePlayerController implements PlayerController {
     @Override
     public void updatePlayerPreferences(ReadOnlyPreferenceStore preferenceStore) {
         // TODO post to service
+        if (mShuffled.getValue() != preferenceStore.isShuffled()) {
+            mShuffled.onNext(preferenceStore.isShuffled());
+            mQueue.invalidate();
+        }
     }
 
     @Override
@@ -286,6 +293,11 @@ public class ServicePlayerController implements PlayerController {
     @Override
     public Observable<Integer> getDuration() {
         return mDuration.getObservable();
+    }
+
+    @Override
+    public Observable<Boolean> isShuffleEnabled() {
+        return mShuffled.asObservable();
     }
 
     @Override
