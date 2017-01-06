@@ -17,6 +17,7 @@ import com.marverenic.music.model.Song;
 
 import java.util.List;
 
+import rx.Subscription;
 import timber.log.Timber;
 
 import static android.support.design.widget.Snackbar.LENGTH_LONG;
@@ -28,6 +29,7 @@ public class QueueSongViewModel extends SongViewModel {
     private Context mContext;
     private FragmentManager mFragmentManager;
     private OnRemoveListener mRemoveListener;
+    private Subscription mNowPlayingSubscription;
 
     private boolean mPlaying;
 
@@ -37,14 +39,24 @@ public class QueueSongViewModel extends SongViewModel {
         mContext = context;
         mFragmentManager = fragmentManager;
         mRemoveListener = removeListener;
+    }
+
+    @Override
+    public void setSong(List<Song> songList, int index) {
+        super.setSong(songList, index);
+
+        if (mNowPlayingSubscription != null) {
+            mNowPlayingSubscription.unsubscribe();
+        }
 
         // TODO bind to lifecycle
-        mPlayerController.getQueuePosition().subscribe(queuePosition -> {
-            mPlaying = (queuePosition == getIndex());
-            notifyPropertyChanged(BR.nowPlayingIndicatorVisibility);
-        }, throwable -> {
-            Timber.e(throwable, "Failed to update playing indicator");
-        });
+        mNowPlayingSubscription = mPlayerController.getQueuePosition()
+                .subscribe(queuePosition -> {
+                    mPlaying = (queuePosition == getIndex());
+                    notifyPropertyChanged(BR.nowPlayingIndicatorVisibility);
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to update playing indicator");
+                });
     }
 
     public interface OnRemoveListener {
