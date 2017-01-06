@@ -2,33 +2,33 @@ package com.marverenic.music.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.marverenic.music.databinding.InstanceSongQueueBinding;
-import com.marverenic.music.model.Song;
-import com.marverenic.music.player.OldPlayerController;
 import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
+import com.marverenic.music.databinding.InstanceSongQueueBinding;
+import com.marverenic.music.model.Song;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.viewmodel.QueueSongViewModel;
 
 import java.util.List;
 
+import timber.log.Timber;
+
 public class QueueSection extends EditableSongSection {
 
     private FragmentManager mFragmentManager;
+    private PlayerController mPlayerController;
 
-    public QueueSection(AppCompatActivity activity, List<Song> data) {
-        this(activity.getSupportFragmentManager(), data);
+    public QueueSection(Fragment fragment, PlayerController playerController, List<Song> data) {
+        this(fragment.getFragmentManager(), playerController, data);
     }
 
-    public QueueSection(Fragment fragment, List<Song> data) {
-        this(fragment.getFragmentManager(), data);
-    }
-
-    public QueueSection(FragmentManager fragmentManager, List<Song> data) {
+    public QueueSection(FragmentManager fragmentManager, PlayerController playerController,
+                        List<Song> data) {
         super(data);
+        mPlayerController = playerController;
         mFragmentManager = fragmentManager;
     }
 
@@ -37,21 +37,24 @@ public class QueueSection extends EditableSongSection {
         if (from == to) return;
 
         // Calculate where the current song index is moving to
-        final int nowPlayingIndex = OldPlayerController.getQueuePosition();
-        int futureNowPlayingIndex;
+        mPlayerController.getQueuePosition().take(1).subscribe(nowPlayingIndex -> {
+            int futureNowPlayingIndex;
 
-        if (from == nowPlayingIndex) {
-            futureNowPlayingIndex = to;
-        } else if (from < nowPlayingIndex && to >= nowPlayingIndex) {
-            futureNowPlayingIndex = nowPlayingIndex - 1;
-        } else if (from > nowPlayingIndex && to <= nowPlayingIndex) {
-            futureNowPlayingIndex = nowPlayingIndex + 1;
-        } else {
-            futureNowPlayingIndex = nowPlayingIndex;
-        }
+            if (from == nowPlayingIndex) {
+                futureNowPlayingIndex = to;
+            } else if (from < nowPlayingIndex && to >= nowPlayingIndex) {
+                futureNowPlayingIndex = nowPlayingIndex - 1;
+            } else if (from > nowPlayingIndex && to <= nowPlayingIndex) {
+                futureNowPlayingIndex = nowPlayingIndex + 1;
+            } else {
+                futureNowPlayingIndex = nowPlayingIndex;
+            }
 
-        // Push the change to the service
-        OldPlayerController.editQueue(mData, futureNowPlayingIndex);
+            // Push the change to the service
+            mPlayerController.editQueue(mData, futureNowPlayingIndex);
+        }, throwable -> {
+            Timber.e(throwable, "Failed to drop queue item");
+        });
     }
 
     @Override

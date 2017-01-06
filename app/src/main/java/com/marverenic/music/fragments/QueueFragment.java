@@ -96,7 +96,7 @@ public class QueueFragment extends BaseFragment {
             mAdapter.attach(mRecyclerView);
 
             mRecyclerView.setItemAnimator(new QueueAnimator());
-            mQueueSection = new QueueSection(this, queue);
+            mQueueSection = new QueueSection(this, mPlayerController, queue);
             mAdapter.setDragSection(mQueueSection);
 
             // Wait for a layout pass before calculating bottom spacing since it is dependent on the
