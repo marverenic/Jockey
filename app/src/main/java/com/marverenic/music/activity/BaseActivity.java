@@ -33,8 +33,8 @@ public abstract class BaseActivity extends RxAppCompatActivity
     @PresetTheme
     private int mTheme;
 
-    @Inject PreferenceStore mPreferenceStore;
-    @Inject ThemeStore mThemeStore;
+    @Inject PreferenceStore _mPreferenceStore;
+    @Inject ThemeStore _mThemeStore;
 
     /**
      * @inheritDoc
@@ -43,13 +43,13 @@ public abstract class BaseActivity extends RxAppCompatActivity
     public void onCreate(Bundle savedInstanceState) {
         JockeyApplication.getComponent(this).injectBaseActivity(this);
 
-        mThemeStore.setTheme(this);
-        mTheme = mPreferenceStore.getPrimaryColor();
+        _mThemeStore.setTheme(this);
+        mTheme = _mPreferenceStore.getPrimaryColor();
 
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-        if (mPreferenceStore.showFirstStart()) {
+        if (_mPreferenceStore.showFirstStart()) {
             showFirstRunDialog();
         }
     }
@@ -70,8 +70,8 @@ public abstract class BaseActivity extends RxAppCompatActivity
                 .setView(messageView)
                 .setPositiveButton(R.string.action_agree,
                         (dialog, which) -> {
-                            mPreferenceStore.setAllowLogging(pref.isChecked());
-                            mPreferenceStore.setShowFirstStart(false);
+                            _mPreferenceStore.setAllowLogging(pref.isChecked());
+                            _mPreferenceStore.setShowFirstStart(false);
                         })
                 .setCancelable(false)
                 .show();
@@ -112,8 +112,8 @@ public abstract class BaseActivity extends RxAppCompatActivity
 
         // If the theme was changed since this Activity was created, or the automatic day/night
         // theme has changed state, recreate this activity
-        mThemeStore.setTheme(this);
-        boolean themeChanged = mTheme != mPreferenceStore.getPrimaryColor();
+        _mThemeStore.setTheme(this);
+        boolean themeChanged = mTheme != _mPreferenceStore.getPrimaryColor();
 
         if (themeChanged) {
             recreate();

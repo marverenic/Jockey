@@ -25,6 +25,7 @@ import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.data.store.PreferenceStore;
+import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
 import com.marverenic.music.fragments.AlbumFragment;
 import com.marverenic.music.fragments.ArtistFragment;
@@ -46,6 +47,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
 
+    @Inject ThemeStore mThemeStore;
     @Inject MusicStore mMusicStore;
     @Inject PlaylistStore mPlaylistStore;
     @Inject PreferenceStore mPrefStore;
