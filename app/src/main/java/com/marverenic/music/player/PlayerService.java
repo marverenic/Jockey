@@ -358,7 +358,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         @Override
         public void pause() throws RemoteException {
             try {
-                instance.musicPlayer.play();
+                instance.musicPlayer.pause();
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.pause() failed");
                 throw exception;
