@@ -20,6 +20,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.data.store.ImmutablePreferenceStore;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.utils.Internal;
 import com.marverenic.music.utils.MediaStyleHelper;
 
 import java.io.IOException;
@@ -36,7 +37,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     /**
      * The service instance in use (singleton)
      */
-    private static PlayerService instance;
+    @Internal static PlayerService instance;
 
     /**
      * Used in binding and unbinding this service to the UI process
@@ -47,7 +48,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     /**
      * The media player for the service instance
      */
-    private MusicPlayer musicPlayer;
+    @Internal MusicPlayer musicPlayer;
 
     /**
      * Used to to prevent errors caused by freeing resources twice
