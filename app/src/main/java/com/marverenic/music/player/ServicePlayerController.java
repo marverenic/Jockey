@@ -11,6 +11,7 @@ import android.os.RemoteException;
 
 import com.marverenic.music.IPlayerService;
 import com.marverenic.music.JockeyApplication;
+import com.marverenic.music.data.store.ImmutablePreferenceStore;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.model.Song;
@@ -102,6 +103,7 @@ public class ServicePlayerController implements PlayerController {
 
     private void invalidateSong() {
         mNowPlaying.invalidate();
+        mQueuePosition.invalidate();
         mCurrentPosition.invalidate();
         mDuration.invalidate();
         if (mMultiRepeatCount.getValue(0) > 0) mMultiRepeatCount.invalidate();
@@ -141,8 +143,14 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public void stop() {
-        // TODO post to service
-        mPlaying.setValue(false);
+        if (mBinding != null) {
+            try {
+                mBinding.stop();
+                mPlaying.setValue(false);
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to stop service");
+            }
+        }
     }
 
     @Override
@@ -183,36 +191,62 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public void play() {
-        // TODO post to service
-        mPlaying.setValue(true);
+        if (mBinding != null) {
+            try {
+                mBinding.play();
+                mPlaying.setValue(true);
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to resume playback");
+            }
+        }
     }
 
     @Override
     public void pause() {
-        // TODO post to service
-        mPlaying.setValue(false);
+        if (mBinding != null) {
+            try {
+                mBinding.pause();
+                mPlaying.setValue(false);
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to pause playback");
+            }
+        }
     }
 
     @Override
     public void updatePlayerPreferences(ReadOnlyPreferenceStore preferenceStore) {
-        // TODO post to service
-        if (mShuffled.getValue() != preferenceStore.isShuffled()) {
-            mShuffled.onNext(preferenceStore.isShuffled());
-            mQueue.invalidate();
+        if (mBinding != null) {
+            try {
+                mBinding.setPreferences(new ImmutablePreferenceStore(preferenceStore));
+
+                if (mShuffled.getValue() != preferenceStore.isShuffled()) {
+                    mQueue.invalidate();
+                    mQueuePosition.invalidate();
+                    mShuffled.onNext(preferenceStore.isShuffled());
+                }
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to update remote player preferences");
+            }
         }
     }
 
     @Override
     public void setQueue(List<Song> newQueue, int newPosition) {
-        // TODO post to service
-        mQueue.setValue(Collections.unmodifiableList(new ArrayList<>(newQueue)));
+        if (mBinding != null) {
+            try {
+                mBinding.setQueue(newQueue, newPosition);
+                mQueue.setValue(Collections.unmodifiableList(new ArrayList<>(newQueue)));
+                mQueuePosition.setValue(newPosition);
+                invalidateSong();
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to set queue");
+            }
+        }
     }
 
     @Override
     public void clearQueue() {
-        // TODO post to service
-        mQueue.setValue(Collections.emptyList());
-        mQueuePosition.setValue(0);
+        setQueue(Collections.emptyList(), 0);
     }
 
     @Override
@@ -222,35 +256,70 @@ public class ServicePlayerController implements PlayerController {
                 mBinding.changeSong(newPosition);
                 invalidateSong();
             } catch (RemoteException exception) {
-                Timber.e(exception, "Failed to skip current track");
+                Timber.e(exception, "Failed to change song");
             }
         }
     }
 
     @Override
     public void editQueue(List<Song> queue, int newPosition) {
-        // TODO post to service
-
+        if (mBinding != null) {
+            try {
+                mBinding.editQueue(queue, newPosition);
+                mQueue.setValue(Collections.unmodifiableList(new ArrayList<>(queue)));
+                mQueuePosition.setValue(newPosition);
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to do work");
+            }
+        }
     }
 
     @Override
     public void queueNext(Song song) {
-        // TODO post to service
+        if (mBinding != null) {
+            try {
+                mBinding.queueNext(song);
+                mQueue.invalidate();
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to do work");
+            }
+        }
     }
 
     @Override
     public void queueNext(List<Song> songs) {
-        // TODO post to service
+        if (mBinding != null) {
+            try {
+                mBinding.queueNextList(songs);
+                mQueue.invalidate();
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to do work");
+            }
+        }
     }
 
     @Override
     public void queueLast(Song song) {
-        // TODO post to service
+        if (mBinding != null) {
+            try {
+                mBinding.queueLast(song);
+                mQueue.invalidate();
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to do work");
+            }
+        }
     }
 
     @Override
     public void queueLast(List<Song> songs) {
-        // TODO post to service
+        if (mBinding != null) {
+            try {
+                mBinding.queueLastList(songs);
+                mQueue.invalidate();
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to do work");
+            }
+        }
     }
 
     @Override
@@ -287,6 +356,7 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public Observable<Integer> getCurrentPosition() {
+        // TODO keep this in sync with the remote state
         return mCurrentPosition.getObservable();
     }
 
@@ -307,8 +377,14 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public void setMultiRepeatCount(int count) {
-        // TODO post to remote service
-        mMultiRepeatCount.setValue(count);
+        if (mBinding != null) {
+            try {
+                mBinding.setMultiRepeatCount(count);
+                mMultiRepeatCount.setValue(count);
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to do work");
+            }
+        }
     }
 
     @Override
@@ -318,8 +394,14 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public void setSleepTimerEndTime(long timestampInMillis) {
-        // TODO post to remote service
-        mSleepTimerEndTime.setValue(timestampInMillis);
+        if (mBinding != null) {
+            try {
+                mBinding.setSleepTimerEndTime(timestampInMillis);
+                mSleepTimerEndTime.setValue(timestampInMillis);
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to do work");
+            }
+        }
     }
 
     @Override
@@ -334,7 +416,13 @@ public class ServicePlayerController implements PlayerController {
 
             getNowPlaying()
                     .observeOn(Schedulers.io())
-                    .map((Song song) -> Util.fetchFullArt(mContext, song))
+                    .map((Song song) -> {
+                        if (song == null) {
+                            return null;
+                        }
+
+                        return Util.fetchFullArt(mContext, song);
+                    })
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(mArtwork::onNext, throwable -> {
                         Timber.e(throwable, "Failed to fetch artwork");
@@ -401,8 +489,8 @@ public class ServicePlayerController implements PlayerController {
                 Observable.fromCallable(mRetriever::retrieve)
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(mSubject::onNext, (Throwable t) -> {
-                            Timber.e(t, "Failed to fetch " + mName + " property.");
+                        .subscribe(mSubject::onNext, throwable -> {
+                            Timber.e(throwable, "Failed to fetch " + mName + " property.");
                         });
             }
         }
