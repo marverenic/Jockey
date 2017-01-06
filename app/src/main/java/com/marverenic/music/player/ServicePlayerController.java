@@ -20,10 +20,12 @@ import com.marverenic.music.utils.Util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
@@ -31,6 +33,8 @@ import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
 public class ServicePlayerController implements PlayerController {
+
+    private static final int POSITION_TICK_MS = 200;
 
     private Context mContext;
     private IPlayerService mBinding;
@@ -49,11 +53,23 @@ public class ServicePlayerController implements PlayerController {
 
     private BehaviorSubject<Boolean> mShuffled;
     private BehaviorSubject<Bitmap> mArtwork;
+    private Subscription mCurrentPositionClock;
 
     public ServicePlayerController(Context context, PreferenceStore preferenceStore) {
         mContext = context;
         mShuffled = BehaviorSubject.create(preferenceStore.isShuffled());
         startService();
+
+        isPlaying().subscribe(
+                isPlaying -> {
+                    if (isPlaying) {
+                        startCurrentPositionClock();
+                    } else {
+                        stopCurrentPositionClock();
+                    }
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to update current position clock");
+                });
     }
 
     private void startService() {
@@ -75,6 +91,32 @@ public class ServicePlayerController implements PlayerController {
                 mBinding = null;
             }
         }, Context.BIND_WAIVE_PRIORITY);
+    }
+
+    private void startCurrentPositionClock() {
+        if (mCurrentPositionClock != null && !mCurrentPositionClock.isUnsubscribed()) {
+            return;
+        }
+
+        mCurrentPositionClock = Observable.interval(POSITION_TICK_MS, TimeUnit.MILLISECONDS)
+                .observeOn(Schedulers.computation())
+                .flatMap(tick -> getCurrentPosition().take(1))
+                .subscribe(currentPosition -> {
+                    if (!mCurrentPosition.isSubscribedTo()) {
+                        stopCurrentPositionClock();
+                    } else {
+                        mCurrentPosition.invalidate();
+                    }
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to perform position tick");
+                });
+    }
+
+    private void stopCurrentPositionClock() {
+        if (mCurrentPositionClock != null) {
+            mCurrentPositionClock.unsubscribe();
+            mCurrentPositionClock = null;
+        }
     }
 
     private void initAllProperties() {
@@ -356,7 +398,7 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public Observable<Integer> getCurrentPosition() {
-        // TODO keep this in sync with the remote state
+        startCurrentPositionClock();
         return mCurrentPosition.getObservable();
     }
 
@@ -493,6 +535,10 @@ public class ServicePlayerController implements PlayerController {
                             Timber.e(throwable, "Failed to fetch " + mName + " property.");
                         });
             }
+        }
+
+        public boolean isSubscribedTo() {
+            return mSubject.hasObservers();
         }
 
         public void setValue(T value) {
