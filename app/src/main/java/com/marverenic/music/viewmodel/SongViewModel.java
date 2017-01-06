@@ -17,6 +17,7 @@ import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.OldPlayerController;
+import com.marverenic.music.player.PlayerController;
 
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class SongViewModel extends BaseObservable {
 
     @Inject MusicStore mMusicStore;
     @Inject PreferenceStore mPrefStore;
+    @Inject PlayerController mPlayerController;
 
     private Context mContext;
     private FragmentManager mFragmentManager;

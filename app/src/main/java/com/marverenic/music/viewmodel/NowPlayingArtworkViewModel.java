@@ -12,24 +12,41 @@ import com.marverenic.music.BR;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.PreferenceStore;
-import com.marverenic.music.model.Song;
 import com.marverenic.music.player.MusicPlayer;
-import com.marverenic.music.player.OldPlayerController;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.view.GestureView;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Observable;
+import timber.log.Timber;
+
 public class NowPlayingArtworkViewModel extends BaseObservable {
 
-    @Inject
-    PreferenceStore mPrefStore;
+    @Inject PreferenceStore mPrefStore;
+    @Inject PlayerController mPlayerController;
 
     private Context mContext;
-    private Song mLastPlaying;
+    private Bitmap mArtwork;
+    private boolean mPlaying;
 
     public NowPlayingArtworkViewModel(Context context) {
         mContext = context;
         JockeyApplication.getComponent(context).inject(this);
+
+        // TODO bind to lifecycle
+        mPlayerController.getArtwork().subscribe(this::setArtwork,
+                throwable -> Timber.e(throwable, "Failed to set artwork"));
+
+        mPlayerController.isPlaying().subscribe(this::setPlaying,
+                throwable -> Timber.e(throwable, "Failed to update playing state"));
+    }
+
+    private void setPlaying(boolean playing) {
+        mPlaying = playing;
+        notifyPropertyChanged(BR.tapIndicator);
     }
 
     public int getPortraitArtworkHeight() {
@@ -44,21 +61,17 @@ public class NowPlayingArtworkViewModel extends BaseObservable {
         return Math.min(preferredHeight, maxHeight);
     }
 
-    public void onSongChanged() {
-        Song nowPlaying = OldPlayerController.getNowPlaying();
-        if (mLastPlaying == null || !mLastPlaying.equals(nowPlaying)) {
-            notifyPropertyChanged(BR.nowPlayingArtwork);
-            mLastPlaying = nowPlaying;
-        }
+    private void setArtwork(Bitmap artwork) {
+        mArtwork = artwork;
+        notifyPropertyChanged(BR.nowPlayingArtwork);
     }
 
     @Bindable
     public Drawable getNowPlayingArtwork() {
-        Bitmap image = OldPlayerController.getArtwork();
-        if (image == null) {
+        if (mArtwork == null) {
             return ContextCompat.getDrawable(mContext, R.drawable.art_default_xl);
         } else {
-            return new BitmapDrawable(mContext.getResources(), image);
+            return new BitmapDrawable(mContext.getResources(), mArtwork);
         }
     }
 
@@ -69,7 +82,7 @@ public class NowPlayingArtworkViewModel extends BaseObservable {
     @Bindable
     public Drawable getTapIndicator() {
         return ContextCompat.getDrawable(mContext,
-                (OldPlayerController.isPlaying())
+                mPlaying
                         ? R.drawable.ic_play_arrow_36dp
                         : R.drawable.ic_pause_36dp);
     }
@@ -78,27 +91,39 @@ public class NowPlayingArtworkViewModel extends BaseObservable {
         return new GestureView.OnGestureListener() {
             @Override
             public void onLeftSwipe() {
-                OldPlayerController.skip();
+                mPlayerController.skip();
             }
 
             @Override
             public void onRightSwipe() {
-                int queuePosition = OldPlayerController.getQueuePosition() - 1;
-                if (queuePosition < 0 && mPrefStore.getRepeatMode() == MusicPlayer.REPEAT_ALL) {
-                    queuePosition += OldPlayerController.getQueueSize();
-                }
-
-                if (queuePosition >= 0) {
-                    OldPlayerController.changeSong(queuePosition);
-                } else {
-                    OldPlayerController.seek(0);
-                }
-
+                mPlayerController.getQueuePosition()
+                        .take(1)
+                        .flatMap((queuePosition) -> {
+                            // Wrap to end of the queue when repeat all is enabled
+                            if (queuePosition == 0
+                                    && mPrefStore.getRepeatMode() == MusicPlayer.REPEAT_ALL) {
+                                return mPlayerController.getQueue()
+                                        .take(1)
+                                        .map(List::size)
+                                        .map(size -> size - 1);
+                            } else {
+                                return Observable.just(queuePosition - 1);
+                            }
+                        })
+                        .subscribe((queuePosition) -> {
+                            if (queuePosition >= 0) {
+                                mPlayerController.changeSong(queuePosition);
+                            } else {
+                                mPlayerController.seek(0);
+                            }
+                        }, throwable -> {
+                            Timber.e(throwable, "Failed to handle skip gesture");
+                        });
             }
 
             @Override
             public void onTap() {
-                OldPlayerController.togglePlay();
+                mPlayerController.togglePlay();
                 notifyPropertyChanged(BR.tapIndicator);
             }
         };

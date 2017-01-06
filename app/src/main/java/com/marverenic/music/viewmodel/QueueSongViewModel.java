@@ -1,12 +1,14 @@
 package com.marverenic.music.viewmodel;
 
 import android.content.Context;
+import android.databinding.Bindable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.View;
 
+import com.marverenic.music.BR;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
@@ -28,12 +30,22 @@ public class QueueSongViewModel extends SongViewModel {
     private FragmentManager mFragmentManager;
     private OnRemoveListener mRemoveListener;
 
+    private boolean mPlaying;
+
     public QueueSongViewModel(Context context, FragmentManager fragmentManager, List<Song> songs,
                               OnRemoveListener removeListener) {
         super(context, fragmentManager, songs);
         mContext = context;
         mFragmentManager = fragmentManager;
         mRemoveListener = removeListener;
+
+        // TODO bind to lifecycle
+        mPlayerController.getQueuePosition().subscribe(queuePosition -> {
+            mPlaying = (queuePosition == getIndex());
+            notifyPropertyChanged(BR.nowPlayingIndicatorVisibility);
+        }, throwable -> {
+            Timber.e(throwable, "Failed to update playing indicator");
+        });
     }
 
     public interface OnRemoveListener {
@@ -42,11 +54,12 @@ public class QueueSongViewModel extends SongViewModel {
 
     @Override
     public View.OnClickListener onClickSong() {
-        return v -> OldPlayerController.changeSong(getIndex());
+        return v -> mPlayerController.changeSong(getIndex());
     }
 
+    @Bindable
     public int getNowPlayingIndicatorVisibility() {
-        if (OldPlayerController.getQueuePosition() == getIndex()) {
+        if (mPlaying) {
             return View.VISIBLE;
         } else {
             return View.GONE;

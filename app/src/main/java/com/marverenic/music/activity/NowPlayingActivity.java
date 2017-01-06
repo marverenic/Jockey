@@ -33,7 +33,7 @@ import com.marverenic.music.dialog.NumberPickerDialogFragment;
 import com.marverenic.music.fragments.QueueFragment;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.MusicPlayer;
-import com.marverenic.music.player.OldPlayerController;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.UriUtils;
 import com.marverenic.music.view.TimeView;
 import com.marverenic.music.viewmodel.NowPlayingArtworkViewModel;
@@ -70,6 +70,7 @@ public class NowPlayingActivity extends BaseActivity
     }
 
     @Inject PreferenceStore mPrefStore;
+    @Inject PlayerController mPlayerController;
 
     private ActivityNowPlayingBinding mBinding;
     private NowPlayingArtworkViewModel mArtworkViewModel;
@@ -119,7 +120,11 @@ public class NowPlayingActivity extends BaseActivity
             actionBar.setHomeAsUpIndicator(R.drawable.ic_clear_24dp);
         }
 
-        onUpdate();
+        mPlayerController.getSleepTimerEndTime()
+                .compose(bindToLifecycle())
+                .subscribe(this::updateSleepTimerCounter, throwable -> {
+                    Timber.e(throwable, "Failed to update sleep timer end timestamp");
+                });
     }
 
     @Override
@@ -183,16 +188,9 @@ public class NowPlayingActivity extends BaseActivity
     }
 
     private void startIntentQueue(List<Song> queue, int position) {
-        if (OldPlayerController.isServiceStarted()) {
-            OldPlayerController.setQueue(queue, position);
-            OldPlayerController.play();
-        } else {
-            OldPlayerController.startService(getApplicationContext());
-            OldPlayerController.registerServiceStartListener(() -> {
-                OldPlayerController.setQueue(queue, position);
-                OldPlayerController.play();
-            });
-        }
+        // TODO implement request queue in PlayerController
+        mPlayerController.setQueue(queue, position);
+        mPlayerController.play();
     }
 
     @Override
@@ -206,20 +204,33 @@ public class NowPlayingActivity extends BaseActivity
         mRepeatMenuItem = menu.findItem(R.id.menu_now_playing_repeat);
 
         updateShuffleIcon();
-        updateRepeatIcon();
-        updatePlaylistActionEnabled();
+
+        mPlayerController.getQueue()
+                .compose(bindToLifecycle())
+                .map(this::queueContainsLocalSongs)
+                .subscribe(this::updatePlaylistActionEnabled, throwable -> {
+                    Timber.e(throwable, "Failed to update playlist enabled state");
+                });
+
+        mPlayerController.getMultiRepeatCount()
+                .compose(bindToLifecycle())
+                .subscribe(this::setRepeatIcon, throwable -> {
+                    Timber.e(throwable, "Failed to update repeat icon");
+                });
 
         return true;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        updateSleepTimerCounter();
+    private boolean queueContainsLocalSongs(List<Song> queue) {
+        for (Song song : queue) {
+            if (song.isInLibrary()) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    private void updatePlaylistActionEnabled() {
-        boolean canCreatePlaylist = queueContainsLocalSongs();
+    private void updatePlaylistActionEnabled(boolean canCreatePlaylist) {
         mCreatePlaylistMenuItem.setEnabled(canCreatePlaylist);
         mAppendToPlaylistMenuItem.setEnabled(canCreatePlaylist);
     }
@@ -234,11 +245,10 @@ public class NowPlayingActivity extends BaseActivity
         }
     }
 
-    private void updateRepeatIcon() {
+    private void setRepeatIcon(int multiRepeatCount) {
         @DrawableRes int icon;
         boolean active = true;
 
-        int multiRepeatCount = OldPlayerController.getMultiRepeatCount();
         if (multiRepeatCount > 1) {
             switch (multiRepeatCount) {
                 case 2:
@@ -293,7 +303,12 @@ public class NowPlayingActivity extends BaseActivity
                 showRepeatMenu();
                 return true;
             case R.id.menu_now_playing_sleep_timer:
-                showSleepTimerDialog();
+                mPlayerController.getSleepTimerEndTime()
+                        .compose(bindToLifecycle())
+                        .take(1)
+                        .subscribe(this::showSleepTimerDialog, throwable -> {
+                            Timber.e(throwable, "Failed to show sleep timer dialog");
+                        });
                 return true;
             case R.id.menu_now_playing_save:
                 saveQueueAsPlaylist();
@@ -318,7 +333,7 @@ public class NowPlayingActivity extends BaseActivity
 
     private void toggleShuffle() {
         mPrefStore.toggleShuffle();
-        OldPlayerController.updatePlayerPreferences(mPrefStore);
+        mPlayerController.updatePlayerPreferences(mPrefStore);
 
         if (mPrefStore.isShuffled()) {
             showSnackbar(R.string.confirm_enable_shuffle);
@@ -359,8 +374,7 @@ public class NowPlayingActivity extends BaseActivity
     @Override
     public void onNumberPicked(int chosen) {
         // Callback for when a Multi-Repeat value is chosen
-        OldPlayerController.setMultiRepeatCount(chosen);
-        updateRepeatIcon();
+        mPlayerController.setMultiRepeatCount(chosen);
         showSnackbar(getString(R.string.confirm_enable_multi_repeat, chosen));
     }
 
@@ -368,34 +382,31 @@ public class NowPlayingActivity extends BaseActivity
     public void onDurationPicked(int durationInMinutes) {
         // Callback for when a sleep timer value is chosen
         if (durationInMinutes == DurationPickerDialogFragment.NO_VALUE) {
-            OldPlayerController.disableSleepTimer();
-            updateSleepTimerCounter();
+            mPlayerController.disableSleepTimer();
             showSnackbar(R.string.confirm_disable_sleep_timer);
             return;
         }
 
         long durationInMillis = TimeUnit.MILLISECONDS.convert(durationInMinutes, TimeUnit.MINUTES);
         long endTimestamp = System.currentTimeMillis() + durationInMillis;
-        OldPlayerController.setSleepTimerEndTime(endTimestamp);
+        mPlayerController.setSleepTimerEndTime(endTimestamp);
 
         String confirmationMessage = getResources().getQuantityString(
                 R.plurals.confirm_enable_sleep_timer, durationInMinutes, durationInMinutes);
         showSnackbar(confirmationMessage);
 
-        updateSleepTimerCounter();
         mPrefStore.setLastSleepTimerDuration(durationInMillis);
     }
 
     private void changeRepeatMode(int repeatMode, @StringRes int confirmationMessage) {
         mPrefStore.setRepeatMode(repeatMode);
-        OldPlayerController.setMultiRepeatCount(0);
-        OldPlayerController.updatePlayerPreferences(mPrefStore);
-        updateRepeatIcon();
+        mPlayerController.setMultiRepeatCount(0);
+        mPlayerController.updatePlayerPreferences(mPrefStore);
         showSnackbar(confirmationMessage);
     }
 
-    private void showSleepTimerDialog() {
-        long timeLeftInMs = OldPlayerController.getSleepTimerEndTime() - System.currentTimeMillis();
+    private void showSleepTimerDialog(long currentSleepTimerEndTime) {
+        long timeLeftInMs = currentSleepTimerEndTime - System.currentTimeMillis();
         int defaultValue;
 
         if (timeLeftInMs > 0) {
@@ -420,9 +431,9 @@ public class NowPlayingActivity extends BaseActivity
                 .show(TAG_SLEEP_TIMER_PICKER);
     }
 
-    private void updateSleepTimerCounter() {
+    private void updateSleepTimerCounter(long endTimestamp) {
         TimeView sleepTimerCounter = (TimeView) findViewById(R.id.now_playing_sleep_timer);
-        long sleepTimerValue = OldPlayerController.getSleepTimerEndTime() - System.currentTimeMillis();
+        long sleepTimerValue = endTimestamp - System.currentTimeMillis();
 
         if (mSleepTimerSubscription != null) {
             mSleepTimerSubscription.unsubscribe();
@@ -464,75 +475,65 @@ public class NowPlayingActivity extends BaseActivity
     }
 
     private void showMultiRepeatDialog() {
-        int currentValue = OldPlayerController.getMultiRepeatCount();
-
-        new NumberPickerDialogFragment.Builder(this)
-                .setMinValue(2)
-                .setMaxValue(10)
-                .setDefaultValue((currentValue > 1) ? currentValue : DEFAULT_MULTI_REPEAT_VALUE)
-                .setWrapSelectorWheel(false)
-                .setTitle(getString(R.string.enable_multi_repeat_title))
-                .setMessage(getString(R.string.multi_repeat_description))
-                .show(TAG_MULTI_REPEAT_PICKER);
+        mPlayerController.getMultiRepeatCount().take(1).subscribe(currentCount -> {
+            new NumberPickerDialogFragment.Builder(this)
+                    .setMinValue(2)
+                    .setMaxValue(10)
+                    .setDefaultValue((currentCount > 1)
+                            ? currentCount
+                            : DEFAULT_MULTI_REPEAT_VALUE)
+                    .setWrapSelectorWheel(false)
+                    .setTitle(getString(R.string.enable_multi_repeat_title))
+                    .setMessage(getString(R.string.multi_repeat_description))
+                    .show(TAG_MULTI_REPEAT_PICKER);
+        }, throwable -> {
+            Timber.e(throwable, "Failed to show multi repeat dialog");
+        });
     }
 
     private void saveQueueAsPlaylist() {
-        new CreatePlaylistDialogFragment.Builder(getSupportFragmentManager())
-                .setSongs(OldPlayerController.getQueue())
-                .showSnackbarIn(R.id.now_playing_artwork)
-                .show(TAG_MAKE_PLAYLIST);
+        mPlayerController.getQueue().take(1).subscribe(queue -> {
+            new CreatePlaylistDialogFragment.Builder(getSupportFragmentManager())
+                    .setSongs(queue)
+                    .showSnackbarIn(R.id.now_playing_artwork)
+                    .show(TAG_MAKE_PLAYLIST);
+        }, throwable -> {
+            Timber.e(throwable, "Failed to save queue as playlist");
+        });
+
     }
 
     private void addQueueToPlaylist() {
-        new AppendPlaylistDialogFragment.Builder(this)
-                .setTitle(getString(R.string.header_add_queue_to_playlist))
-                .setSongs(OldPlayerController.getQueue())
-                .showSnackbarIn(R.id.now_playing_artwork)
-                .show(TAG_APPEND_PLAYLIST);
+        mPlayerController.getQueue()
+                .compose(bindToLifecycle())
+                .take(1)
+                .subscribe(queue -> {
+                    new AppendPlaylistDialogFragment.Builder(this)
+                            .setTitle(getString(R.string.header_add_queue_to_playlist))
+                            .setSongs(queue)
+                            .showSnackbarIn(R.id.now_playing_artwork)
+                            .show(TAG_APPEND_PLAYLIST);
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to add queue to playlist");
+                });
     }
 
     private void clearQueue() {
-        List<Song> previousQueue = OldPlayerController.getQueue();
-        int previousQueueIndex = OldPlayerController.getQueuePosition();
+        mPlayerController.getPlayerState()
+                .take(1)
+                .compose(bindToLifecycle())
+                .subscribe(playerState -> {
+                    mPlayerController.clearQueue();
 
-        int previousSeekPosition = OldPlayerController.getCurrentPosition();
-        boolean wasPlaying = OldPlayerController.isPlaying();
-
-        OldPlayerController.clearQueue();
-
-        Snackbar.make(findViewById(R.id.now_playing_artwork), R.string.confirm_clear_queue, LENGTH_LONG)
-                .setAction(R.string.action_undo, view -> {
-                    OldPlayerController.editQueue(previousQueue, previousQueueIndex);
-                    OldPlayerController.seek(previousSeekPosition);
-
-                    if (wasPlaying) {
-                        OldPlayerController.play();
-                    }
-                })
-                .show();
-    }
-
-    @Override
-    public void onUpdate() {
-        super.onUpdate();
-        mArtworkViewModel.onSongChanged();
-
-        if (mRepeatMenuItem != null) {
-            updateRepeatIcon();
-        }
-
-        if (mCreatePlaylistMenuItem != null && mAppendToPlaylistMenuItem != null) {
-            updatePlaylistActionEnabled();
-        }
-    }
-
-    private boolean queueContainsLocalSongs() {
-        for (Song song : OldPlayerController.getQueue()) {
-            if (song.isInLibrary()) {
-                return true;
-            }
-        }
-        return false;
+                    View snackbarContainer = findViewById(R.id.now_playing_artwork);
+                    Snackbar.make(snackbarContainer, R.string.confirm_clear_queue, LENGTH_LONG)
+                            .setAction(R.string.action_undo, view -> {
+                                mPlayerController.restorePlayerState(playerState);
+                            })
+                            .show();
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to clear queue");
+                });
     }
 
     private void showSnackbar(@StringRes int stringId) {
