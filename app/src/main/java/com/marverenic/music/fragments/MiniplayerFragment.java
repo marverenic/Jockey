@@ -6,7 +6,6 @@ import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +14,11 @@ import android.widget.ProgressBar;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.databinding.FragmentMiniplayerBinding;
-import com.marverenic.music.player.OldPlayerController;
 import com.marverenic.music.viewmodel.MiniplayerViewModel;
 
 import javax.inject.Inject;
 
-public class MiniplayerFragment extends Fragment implements OldPlayerController.UpdateListener {
+public class MiniplayerFragment extends BaseFragment {
 
     private FragmentMiniplayerBinding mBinding;
 
@@ -54,21 +52,13 @@ public class MiniplayerFragment extends Fragment implements OldPlayerController.
     @Override
     public void onResume() {
         super.onResume();
-        OldPlayerController.registerUpdateListener(this);
-        onUpdate();
         mBinding.getViewModel().onActivityEnterForeground();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        OldPlayerController.unregisterUpdateListener(this);
         mBinding.getViewModel().onActivityExitForeground();
     }
 
-    @Override
-    public void onUpdate() {
-        mBinding.getViewModel().setSong(OldPlayerController.getNowPlaying());
-        mBinding.getViewModel().setPlaying(OldPlayerController.isPlaying());
-    }
 }
