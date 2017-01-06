@@ -248,7 +248,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
     }
 
     private void navigateHome() {
-        Intent mainActivity = new Intent(this, MainActivity.class);;
+        Intent mainActivity = new Intent(this, MainActivity.class);
         mainActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         startActivity(mainActivity);
