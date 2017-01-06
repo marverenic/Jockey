@@ -30,7 +30,6 @@ import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
 import com.marverenic.music.dialog.DurationPickerDialogFragment;
 import com.marverenic.music.dialog.NumberPickerDialogFragment;
-import com.marverenic.music.fragments.QueueFragment;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.PlayerController;
@@ -74,7 +73,6 @@ public class NowPlayingActivity extends BaseActivity
 
     private ActivityNowPlayingBinding mBinding;
     private NowPlayingArtworkViewModel mArtworkViewModel;
-    private QueueFragment queueFragment;
 
     private MenuItem mCreatePlaylistMenuItem;
     private MenuItem mAppendToPlaylistMenuItem;
@@ -105,9 +103,6 @@ public class NowPlayingActivity extends BaseActivity
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         }
-
-        queueFragment =
-                (QueueFragment) getSupportFragmentManager().findFragmentById(R.id.now_playing_queue_fragment);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -342,7 +337,6 @@ public class NowPlayingActivity extends BaseActivity
         }
 
         updateShuffleIcon();
-        queueFragment.updateShuffle();
     }
 
     private void showRepeatMenu() {
