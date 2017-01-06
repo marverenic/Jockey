@@ -18,16 +18,14 @@ import com.marverenic.music.R;
 import com.marverenic.music.data.annotations.PresetTheme;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ThemeStore;
-import com.marverenic.music.player.OldPlayerController;
+import com.marverenic.music.player.PlayerController;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import javax.inject.Inject;
 
 import timber.log.Timber;
 
-public abstract class BaseActivity extends RxAppCompatActivity
-        implements OldPlayerController.UpdateListener, OldPlayerController.InfoListener,
-        OldPlayerController.ErrorListener {
+public abstract class BaseActivity extends RxAppCompatActivity {
 
     // Used when resuming the Activity to respond to a potential theme change
     @PresetTheme
@@ -35,6 +33,7 @@ public abstract class BaseActivity extends RxAppCompatActivity
 
     @Inject PreferenceStore _mPreferenceStore;
     @Inject ThemeStore _mThemeStore;
+    @Inject PlayerController _mPlayerController;
 
     /**
      * @inheritDoc
@@ -52,6 +51,18 @@ public abstract class BaseActivity extends RxAppCompatActivity
         if (_mPreferenceStore.showFirstStart()) {
             showFirstRunDialog();
         }
+
+        _mPlayerController.getInfo()
+                .compose(bindToLifecycle())
+                .subscribe(this::showSnackbar, throwable -> {
+                    Timber.e(throwable, "Failed to show info message");
+                });
+
+        _mPlayerController.getError()
+                .compose(bindToLifecycle())
+                .subscribe(this::showSnackbar, throwable -> {
+                    Timber.e(throwable, "Failed to show error message");
+                });
     }
 
     private void showFirstRunDialog() {
@@ -103,13 +114,6 @@ public abstract class BaseActivity extends RxAppCompatActivity
     public void onResume() {
         super.onResume();
 
-        /*  Start the player service. If it's already running, this does nothing.
-            This call is placed here because the service is dependent on having permission to
-            storage. Permission results will always trigger onResume (even when requested with
-            RxPermissions), so we can use this to promptly start the service.
-         */
-        OldPlayerController.startService(getApplicationContext());
-
         // If the theme was changed since this Activity was created, or the automatic day/night
         // theme has changed state, recreate this activity
         _mThemeStore.setTheme(this);
@@ -117,31 +121,7 @@ public abstract class BaseActivity extends RxAppCompatActivity
 
         if (themeChanged) {
             recreate();
-        } else {
-            OldPlayerController.registerUpdateListener(this);
-            OldPlayerController.registerInfoListener(this);
-            OldPlayerController.registerErrorListener(this);
-            onUpdate();
         }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public void onUpdate() {
-
-    }
-
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public void onPause() {
-        super.onPause();
-        OldPlayerController.unregisterUpdateListener(this);
-        OldPlayerController.unregisterInfoListener(this);
-        OldPlayerController.unregisterErrorListener(this);
     }
 
     /**
@@ -164,16 +144,6 @@ public abstract class BaseActivity extends RxAppCompatActivity
         Timber.v("onBackPressed");
         super.onBackPressed();
         finish();
-    }
-
-    @Override
-    public void onInfo(String message) {
-        showSnackbar(message);
-    }
-
-    @Override
-    public void onError(String message) {
-        showSnackbar(message);
     }
 
     protected void showSnackbar(String message) {
