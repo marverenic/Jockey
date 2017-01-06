@@ -14,7 +14,6 @@ import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.model.Song;
-import com.marverenic.music.player.OldPlayerController;
 
 import java.util.List;
 
@@ -126,38 +125,43 @@ public class QueueSongViewModel extends SongViewModel {
     }
 
     private void removeFromQueue(View snackbarContainer) {
-        int oldQueuePosition = OldPlayerController.getQueuePosition();
-        int itemPosition = getIndex();
+        mPlayerController.getQueuePosition().take(1)
+                .subscribe(oldQueuePosition -> {
+                    int itemPosition = getIndex();
 
-        getSongs().remove(itemPosition);
+                    getSongs().remove(itemPosition);
 
-        int newQueuePosition = (oldQueuePosition > itemPosition)
-                ? oldQueuePosition - 1
-                : oldQueuePosition;
+                    int newQueuePosition = (oldQueuePosition > itemPosition)
+                            ? oldQueuePosition - 1
+                            : oldQueuePosition;
 
-        newQueuePosition = Math.min(newQueuePosition, getSongs().size() - 1);
-        newQueuePosition = Math.max(newQueuePosition, 0);
+                    newQueuePosition = Math.min(newQueuePosition, getSongs().size() - 1);
+                    newQueuePosition = Math.max(newQueuePosition, 0);
 
-        OldPlayerController.editQueue(getSongs(), newQueuePosition);
+                    mPlayerController.editQueue(getSongs(), newQueuePosition);
 
-        if (oldQueuePosition == itemPosition) {
-            OldPlayerController.play();
-        }
-
-        mRemoveListener.onRemove();
-
-        Song removed = getReference();
-        String message = mContext.getString(R.string.message_removed_song, removed.getSongName());
-
-        Snackbar.make(snackbarContainer, message, LENGTH_LONG)
-                .setAction(R.string.action_undo, v -> {
-                    getSongs().add(itemPosition, removed);
-                    OldPlayerController.editQueue(getSongs(), oldQueuePosition);
                     if (oldQueuePosition == itemPosition) {
-                        OldPlayerController.play();
+                        mPlayerController.play();
                     }
+
                     mRemoveListener.onRemove();
-                })
-                .show();
+
+                    Song removed = getReference();
+                    String message = mContext.getString(R.string.message_removed_song,
+                            removed.getSongName());
+
+                    Snackbar.make(snackbarContainer, message, LENGTH_LONG)
+                            .setAction(R.string.action_undo, v -> {
+                                getSongs().add(itemPosition, removed);
+                                mPlayerController.editQueue(getSongs(), oldQueuePosition);
+                                if (oldQueuePosition == itemPosition) {
+                                    mPlayerController.play();
+                                }
+                                mRemoveListener.onRemove();
+                            })
+                            .show();
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to remove song from queue");
+                });
     }
 }

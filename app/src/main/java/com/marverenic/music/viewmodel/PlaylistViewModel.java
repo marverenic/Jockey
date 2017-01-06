@@ -16,7 +16,7 @@ import com.marverenic.music.activity.instance.PlaylistActivity;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.model.AutoPlaylist;
 import com.marverenic.music.model.Playlist;
-import com.marverenic.music.player.OldPlayerController;
+import com.marverenic.music.player.PlayerController;
 
 import javax.inject.Inject;
 
@@ -29,6 +29,7 @@ import static android.view.View.VISIBLE;
 public class PlaylistViewModel extends BaseObservable {
 
     @Inject PlaylistStore mPlaylistStore;
+    @Inject PlayerController mPlayerController;
 
     private Context mContext;
     private Playlist mPlaylist;
@@ -105,7 +106,7 @@ public class PlaylistViewModel extends BaseObservable {
 
     private void queuePlaylistNext() {
         mPlaylistStore.getSongs(mPlaylist).subscribe(
-                OldPlayerController::queueNext,
+                mPlayerController::queueNext,
                 throwable -> {
                     Timber.e(throwable, "Failed to get songs");
                 });
@@ -113,7 +114,7 @@ public class PlaylistViewModel extends BaseObservable {
 
     private void queuePlaylistLast() {
         mPlaylistStore.getSongs(mPlaylist).subscribe(
-                OldPlayerController::queueLast,
+                mPlayerController::queueLast,
                 throwable -> {
                     Timber.e(throwable, "Failed to get songs");
                 });

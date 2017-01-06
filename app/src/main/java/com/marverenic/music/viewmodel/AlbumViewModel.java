@@ -30,7 +30,7 @@ import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.model.Album;
-import com.marverenic.music.player.OldPlayerController;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.view.ViewUtils;
 
 import java.io.File;
@@ -46,6 +46,7 @@ public class AlbumViewModel extends BaseObservable {
     private static final String TAG_PLAYLIST_DIALOG = "SongViewModel.PlaylistDialog";
 
     @Inject MusicStore mMusicStore;
+    @Inject PlayerController mPlayerController;
 
     private Context mContext;
     private FragmentManager mFragmentManager;
@@ -150,7 +151,7 @@ public class AlbumViewModel extends BaseObservable {
             switch (menuItem.getItemId()) {
                 case R.id.menu_item_queue_item_next:
                     mMusicStore.getSongs(mAlbum).subscribe(
-                            OldPlayerController::queueNext,
+                            mPlayerController::queueNext,
                             throwable -> {
                                 Timber.e(throwable, "Failed to get songs");
                             });
@@ -158,7 +159,7 @@ public class AlbumViewModel extends BaseObservable {
                     return true;
                 case R.id.menu_item_queue_item_last:
                     mMusicStore.getSongs(mAlbum).subscribe(
-                            OldPlayerController::queueLast,
+                            mPlayerController::queueLast,
                             throwable -> {
                                 Timber.e(throwable, "Failed to get songs");
                             });

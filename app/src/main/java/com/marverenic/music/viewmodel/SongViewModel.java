@@ -16,7 +16,6 @@ import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.model.Song;
-import com.marverenic.music.player.OldPlayerController;
 import com.marverenic.music.player.PlayerController;
 
 import java.util.List;
@@ -83,8 +82,8 @@ public class SongViewModel extends BaseObservable {
 
     public View.OnClickListener onClickSong() {
         return v -> {
-            OldPlayerController.setQueue(mSongList, mIndex);
-            OldPlayerController.play();
+            mPlayerController.setQueue(mSongList, mIndex);
+            mPlayerController.play();
 
             if (mPrefStore.openNowPlayingOnNewQueue()) {
                 mContext.startActivity(NowPlayingActivity.newIntent(mContext));
@@ -105,10 +104,10 @@ public class SongViewModel extends BaseObservable {
         return menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.menu_item_queue_item_next:
-                    OldPlayerController.queueNext(mReference);
+                    mPlayerController.queueNext(mReference);
                     return true;
                 case R.id.menu_item_queue_item_last:
-                    OldPlayerController.queueLast(mReference);
+                    mPlayerController.queueLast(mReference);
                     return true;
                 case R.id.menu_item_navigate_to_artist:
                     mMusicStore.findArtistById(mReference.getArtistId()).subscribe(
