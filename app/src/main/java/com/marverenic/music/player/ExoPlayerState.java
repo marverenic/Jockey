@@ -2,7 +2,7 @@ package com.marverenic.music.player;
 
 import com.google.android.exoplayer2.ExoPlayer;
 
-public enum ExoPlayerState implements PlayerState {
+public enum ExoPlayerState {
 
     IDLE, BUFFERING, READY, ENDED;
 
@@ -21,63 +21,4 @@ public enum ExoPlayerState implements PlayerState {
         }
     }
 
-    @Override
-    public boolean canSetAudioSessionId() {
-        return true;
-    }
-
-    @Override
-    public boolean canSetAudioStreamType() {
-        return true;
-    }
-
-    @Override
-    public boolean canSetDataSource() {
-        return true;
-    }
-
-    @Override
-    public boolean canPrepare() {
-        return true;
-    }
-
-    @Override
-    public boolean canGetDuration() {
-        return true;
-    }
-
-    @Override
-    public boolean canGetCurrentPosition() {
-        return true;
-    }
-
-    @Override
-    public boolean canStart() {
-        return true;
-    }
-
-    @Override
-    public boolean canPause() {
-        return true;
-    }
-
-    @Override
-    public boolean canSeek() {
-        return true;
-    }
-
-    @Override
-    public boolean canSetVolume() {
-        return true;
-    }
-
-    @Override
-    public boolean canStop() {
-        return true;
-    }
-
-    @Override
-    public boolean canReset() {
-        return true;
-    }
 }

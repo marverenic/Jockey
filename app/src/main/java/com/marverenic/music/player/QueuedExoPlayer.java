@@ -352,10 +352,6 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         return (int) mExoPlayer.getDuration();
     }
 
-    @Override
-    public PlayerState getState() {
-        return mState;
-    }
 
     @Override
     public boolean isComplete() {

@@ -40,8 +40,6 @@ public interface QueuedMediaPlayer {
 
     int getDuration();
 
-    PlayerState getState();
-
     boolean isComplete();
 
     boolean isPaused();

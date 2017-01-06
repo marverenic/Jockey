@@ -1054,14 +1054,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         return mArtwork;
     }
 
-    /**
-     * @return The state that the backing {@link QueuedMediaPlayer is in}
-     * @see QueuedMediaPlayer#getState()
-     */
-    public PlayerState getState() {
-        return mMediaPlayer.getState();
-    }
-
     protected MediaSessionCompat getMediaSession() {
         return mMediaSession;
     }
