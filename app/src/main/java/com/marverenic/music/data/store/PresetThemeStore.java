@@ -70,6 +70,8 @@ public class PresetThemeStore implements ThemeStore {
                 return R.color.primary_green;
             case PrimaryTheme.CYAN:
                 return R.color.primary;
+            case PrimaryTheme.BLUE:
+                return R.color.primary_blue;
             case PrimaryTheme.PURPLE:
                 return R.color.primary_purple;
             case PrimaryTheme.BLACK:
@@ -99,6 +101,8 @@ public class PresetThemeStore implements ThemeStore {
                 return R.color.accent_green;
             case AccentTheme.CYAN:
                 return R.color.accent;
+            case AccentTheme.BLUE:
+                return R.color.accent_blue;
             case AccentTheme.PURPLE:
                 return R.color.accent_purple;
             case AccentTheme.TEAL:
@@ -153,6 +157,8 @@ public class PresetThemeStore implements ThemeStore {
                 return R.style.Primary_Green;
             case PrimaryTheme.CYAN:
                 return R.style.Primary_Cyan;
+            case PrimaryTheme.BLUE:
+                return R.style.Primary_Blue;
             case PrimaryTheme.PURPLE:
                 return R.style.Primary_Purple;
             case PrimaryTheme.BLACK:
@@ -177,6 +183,8 @@ public class PresetThemeStore implements ThemeStore {
                 return R.style.Accent_Green;
             case AccentTheme.CYAN:
                 return R.style.Accent_Cyan;
+            case AccentTheme.BLUE:
+                return R.style.Accent_Blue;
             case AccentTheme.PURPLE:
                 return R.style.Accent_Purple;
             case AccentTheme.TEAL:
@@ -247,6 +255,8 @@ public class PresetThemeStore implements ThemeStore {
                 return R.mipmap.ic_launcher_green;
             case PrimaryTheme.CYAN:
                 return R.mipmap.ic_launcher;
+            case PrimaryTheme.BLUE:
+                return R.mipmap.ic_launcher_blue;
             case PrimaryTheme.PURPLE:
                 return R.mipmap.ic_launcher_purple;
             case PrimaryTheme.BLACK:
@@ -264,9 +274,10 @@ public class PresetThemeStore implements ThemeStore {
                 "$Orange",
                 "$Yellow",
                 "$Green",
-                "", // The blue theme does not have an Activity name suffix
+                "", // The cyan theme does not have an Activity name suffix
                 "$Purple",
                 "$Black",
+                "$Blue"
         };
 
         String launchActivityName = "com.marverenic.music.activity.LibraryActivity";

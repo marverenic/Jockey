@@ -23,6 +23,7 @@
         <item name="3">Yellow</item>
         <item name="4">Green</item>
         <item name="5">Cyan</item>
+        <item name="8">Blue</item>
         <item name="6">Purple</item>
         <item name="7">Black</item>
     </string-array>
@@ -33,6 +34,7 @@
         <item name="3">3</item>
         <item name="4">4</item>
         <item name="5">5</item>
+        <item name="8">8</item>
         <item name="6">6</item>
         <item name="7">7</item>
     </string-array>
@@ -43,6 +45,7 @@
         <item name="3">Yellow</item>
         <item name="4">Green</item>
         <item name="5">Cyan</item>
+        <item name="8">Blue</item>
         <item name="6">Purple</item>
         <item name="7">Teal</item>
     </string-array>
@@ -53,6 +56,7 @@
         <item name="3">3</item>
         <item name="4">4</item>
         <item name="5">5</item>
+        <item name="8">8</item>
         <item name="6">6</item>
         <item name="7">7</item>
     </string-array>

@@ -46,6 +46,11 @@
         <item name="colorPrimaryDark">@color/primary_dark</item>
     </style>
 
+    <style name="Primary.Blue">
+        <item name="colorPrimary">@color/primary_blue</item>
+        <item name="colorPrimaryDark">@color/primary_dark_blue</item>
+    </style>
+
     <style name="Primary.Purple">
         <item name="colorPrimary">@color/primary_purple</item>
         <item name="colorPrimaryDark">@color/primary_dark_purple</item>
@@ -114,6 +119,16 @@
     </style>
 
     <style name="Accent.Cyan.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="colorAccent">@color/accent</item>
+    </style>
+
+    <style name="Accent.Blue">
+        <item name="colorAccent">@color/accent_blue</item>
+        <item name="colorControlHighlight">@color/accent_blue</item>
+        <item name="alertDialogTheme">@style/Accent.Blue.AlertDialog</item>
+    </style>
+
+    <style name="Accent.Blue.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
         <item name="colorAccent">@color/accent</item>
     </style>
 
