@@ -101,7 +101,7 @@ public class PresetThemeStore implements ThemeStore {
                 return R.color.accent;
             case AccentTheme.PURPLE:
                 return R.color.accent_purple;
-            case AccentTheme.BLACK:
+            case AccentTheme.TEAL:
                 return R.color.accent_black;
             default:
                 return R.color.accent;
@@ -179,7 +179,7 @@ public class PresetThemeStore implements ThemeStore {
                 return R.style.Accent_Blue;
             case AccentTheme.PURPLE:
                 return R.style.Accent_Purple;
-            case AccentTheme.BLACK:
+            case AccentTheme.TEAL:
                 return R.style.Accent_Black;
             default:
                 return R.style.Accent_Blue;

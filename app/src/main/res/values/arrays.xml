@@ -24,7 +24,7 @@
         <item name="4">Green</item>
         <item name="5">Blue</item>
         <item name="6">Purple</item>
-        <item name="6">Black</item>
+        <item name="7">Black</item>
     </string-array>
     <string-array name="color_values">
         <item name="0">0</item>
@@ -44,7 +44,7 @@
         <item name="4">Green</item>
         <item name="5">Blue</item>
         <item name="6">Purple</item>
-        <item name="6">Black</item>
+        <item name="7">Teal</item>
     </string-array>
     <string-array name="accent_values">
         <item name="0">0</item>
