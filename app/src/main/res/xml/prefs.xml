@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategoryCompat android:title="@string/appearance_header">
-        <IntListPreference
+        <IntDropDownPreference
             android:defaultValue="1"
             android:dialogTitle="@string/default_page_pref"
             android:entries="@array/pages"
@@ -23,7 +23,7 @@
             android:entryValues="@array/accent_values"
             android:key="@string/pref_key_color_accent"
             android:title="@string/theme_accent" />
-        <IntListPreference
+        <IntDropDownPreference
             android:defaultValue="1"
             android:dialogTitle="@string/theme_base"
             android:entries="@array/themes"
