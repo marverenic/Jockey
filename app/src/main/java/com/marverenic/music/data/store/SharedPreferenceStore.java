@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.StringRes;
 
 import com.marverenic.music.R;
+import com.marverenic.music.data.annotations.AccentTheme;
 import com.marverenic.music.data.annotations.BaseTheme;
 import com.marverenic.music.data.annotations.PrimaryTheme;
 import com.marverenic.music.data.annotations.StartPage;
@@ -123,6 +124,12 @@ public class SharedPreferenceStore implements PreferenceStore {
 
     @Override
     @SuppressWarnings("WrongConstant")
+    public int getAccentColor() {
+        return getInt(R.string.pref_key_color_accent, getPrimaryColor());
+    }
+
+    @Override
+    @SuppressWarnings("WrongConstant")
     public int getBaseColor() {
         return getInt(R.string.pref_key_color_base, BaseTheme.LIGHT);
     }
@@ -218,6 +225,11 @@ public class SharedPreferenceStore implements PreferenceStore {
     @Override
     public void setPrimaryColor(@PrimaryTheme int colorChoice) {
         putInt(R.string.pref_key_color_primary, colorChoice);
+    }
+
+    @Override
+    public void setAccentColor(@AccentTheme int accentColor) {
+        putInt(R.string.pref_key_color_accent, accentColor);
     }
 
     @Override

@@ -26,6 +26,8 @@ import android.support.v7.app.NightMode;
 
 import com.marverenic.music.R;
 import com.marverenic.music.activity.MainActivity;
+import com.marverenic.music.data.annotations.AccentTheme;
+import com.marverenic.music.data.annotations.PrimaryTheme;
 import com.marverenic.music.player.PlayerService;
 
 import static android.util.DisplayMetrics.DENSITY_HIGH;
@@ -37,14 +39,6 @@ import static android.util.DisplayMetrics.DENSITY_XXXHIGH;
 import static com.marverenic.music.data.annotations.BaseTheme.AUTO;
 import static com.marverenic.music.data.annotations.BaseTheme.DARK;
 import static com.marverenic.music.data.annotations.BaseTheme.LIGHT;
-import static com.marverenic.music.data.annotations.PrimaryTheme.BLACK;
-import static com.marverenic.music.data.annotations.PrimaryTheme.BLUE;
-import static com.marverenic.music.data.annotations.PrimaryTheme.GRAY;
-import static com.marverenic.music.data.annotations.PrimaryTheme.GREEN;
-import static com.marverenic.music.data.annotations.PrimaryTheme.ORANGE;
-import static com.marverenic.music.data.annotations.PrimaryTheme.PURPLE;
-import static com.marverenic.music.data.annotations.PrimaryTheme.RED;
-import static com.marverenic.music.data.annotations.PrimaryTheme.YELLOW;
 
 public class PresetThemeStore implements ThemeStore {
 
@@ -64,21 +58,21 @@ public class PresetThemeStore implements ThemeStore {
     @ColorRes
     private int getPrimaryColorRes() {
         switch (mPreferenceStore.getPrimaryColor()) {
-            case GRAY:
+            case PrimaryTheme.GRAY:
                 return R.color.primary_grey;
-            case RED:
+            case PrimaryTheme.RED:
                 return R.color.primary_red;
-            case ORANGE:
+            case PrimaryTheme.ORANGE:
                 return R.color.primary_orange;
-            case YELLOW:
+            case PrimaryTheme.YELLOW:
                 return R.color.primary_yellow;
-            case GREEN:
+            case PrimaryTheme.GREEN:
                 return R.color.primary_green;
-            case BLUE:
+            case PrimaryTheme.BLUE:
                 return R.color.primary;
-            case PURPLE:
+            case PrimaryTheme.PURPLE:
                 return R.color.primary_purple;
-            case BLACK:
+            case PrimaryTheme.BLACK:
                 return R.color.primary_black;
             default:
                 return R.color.primary;
@@ -92,22 +86,22 @@ public class PresetThemeStore implements ThemeStore {
 
     @ColorRes
     private int getAccentColorRes() {
-        switch (mPreferenceStore.getPrimaryColor()) {
-            case GRAY:
+        switch (mPreferenceStore.getAccentColor()) {
+            case AccentTheme.GRAY:
                 return R.color.accent_grey;
-            case RED:
+            case AccentTheme.RED:
                 return R.color.accent_red;
-            case ORANGE:
+            case AccentTheme.ORANGE:
                 return R.color.accent_orange;
-            case YELLOW:
+            case AccentTheme.YELLOW:
                 return R.color.accent_yellow;
-            case GREEN:
+            case AccentTheme.GREEN:
                 return R.color.accent_green;
-            case BLUE:
+            case AccentTheme.BLUE:
                 return R.color.accent;
-            case PURPLE:
+            case AccentTheme.PURPLE:
                 return R.color.accent_purple;
-            case BLACK:
+            case AccentTheme.BLACK:
                 return R.color.accent_black;
             default:
                 return R.color.accent;
@@ -147,21 +141,21 @@ public class PresetThemeStore implements ThemeStore {
     @StyleRes
     private int getPrimaryThemeId() {
         switch (mPreferenceStore.getPrimaryColor()) {
-            case GRAY:
+            case PrimaryTheme.GRAY:
                 return R.style.Primary_Grey;
-            case RED:
+            case PrimaryTheme.RED:
                 return R.style.Primary_Red;
-            case ORANGE:
+            case PrimaryTheme.ORANGE:
                 return R.style.Primary_Orange;
-            case YELLOW:
+            case PrimaryTheme.YELLOW:
                 return R.style.Primary_Yellow;
-            case GREEN:
+            case PrimaryTheme.GREEN:
                 return R.style.Primary_Green;
-            case BLUE:
+            case PrimaryTheme.BLUE:
                 return R.style.Primary_Blue;
-            case PURPLE:
+            case PrimaryTheme.PURPLE:
                 return R.style.Primary_Purple;
-            case BLACK:
+            case PrimaryTheme.BLACK:
                 return R.style.Primary_Black;
             default:
                 return R.style.Primary_Blue;
@@ -170,22 +164,22 @@ public class PresetThemeStore implements ThemeStore {
 
     @StyleRes
     private int getAccentThemeId() {
-        switch (mPreferenceStore.getPrimaryColor()) {
-            case GRAY:
+        switch (mPreferenceStore.getAccentColor()) {
+            case AccentTheme.GRAY:
                 return R.style.Accent_Grey;
-            case RED:
+            case AccentTheme.RED:
                 return R.style.Accent_Red;
-            case ORANGE:
+            case AccentTheme.ORANGE:
                 return R.style.Accent_Orange;
-            case YELLOW:
+            case AccentTheme.YELLOW:
                 return R.style.Accent_Yellow;
-            case GREEN:
+            case AccentTheme.GREEN:
                 return R.style.Accent_Green;
-            case BLUE:
+            case AccentTheme.BLUE:
                 return R.style.Accent_Blue;
-            case PURPLE:
+            case AccentTheme.PURPLE:
                 return R.style.Accent_Purple;
-            case BLACK:
+            case AccentTheme.BLACK:
                 return R.style.Accent_Black;
             default:
                 return R.style.Accent_Blue;
@@ -241,21 +235,21 @@ public class PresetThemeStore implements ThemeStore {
     @DrawableRes
     private int getIconId() {
         switch (mPreferenceStore.getPrimaryColor()) {
-            case GRAY:
+            case PrimaryTheme.GRAY:
                 return R.mipmap.ic_launcher_grey;
-            case RED:
+            case PrimaryTheme.RED:
                 return R.mipmap.ic_launcher_red;
-            case ORANGE:
+            case PrimaryTheme.ORANGE:
                 return R.mipmap.ic_launcher_orange;
-            case YELLOW:
+            case PrimaryTheme.YELLOW:
                 return R.mipmap.ic_launcher_yellow;
-            case GREEN:
+            case PrimaryTheme.GREEN:
                 return R.mipmap.ic_launcher_green;
-            case BLUE:
+            case PrimaryTheme.BLUE:
                 return R.mipmap.ic_launcher;
-            case PURPLE:
+            case PrimaryTheme.PURPLE:
                 return R.mipmap.ic_launcher_purple;
-            case BLACK:
+            case PrimaryTheme.BLACK:
                 return R.mipmap.ic_launcher_black;
             default:
                 return R.mipmap.ic_launcher;
