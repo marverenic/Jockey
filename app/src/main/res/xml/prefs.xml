@@ -1,5 +1,6 @@
 <!--suppress AndroidElementNotAllowed -->
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategoryCompat android:title="@string/appearance_header">
         <IntDropDownPreference
@@ -9,18 +10,20 @@
             android:entryValues="@array/page_values"
             android:key="@string/pref_key_default_page"
             android:title="Default Page" />
-        <IntListPreference
+        <ColorPreference
             android:defaultValue="5"
             android:dialogTitle="@string/theme_primary"
             android:entries="@array/colors"
             android:entryValues="@array/color_values"
+            app:colorEntries="@array/primary_colors"
             android:key="@string/pref_key_color_primary"
             android:title="@string/theme_primary" />
-        <IntListPreference
+        <ColorPreference
             android:defaultValue="5"
             android:dialogTitle="@string/theme_accent"
             android:entries="@array/accents"
             android:entryValues="@array/accent_values"
+            app:colorEntries="@array/accent_colors"
             android:key="@string/pref_key_color_accent"
             android:title="@string/theme_accent" />
         <IntDropDownPreference
