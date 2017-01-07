@@ -231,11 +231,8 @@
     <string name="playback_header">Playback</string>
     <string name="default_page_pref">Default Page</string>
     <string name="theme_primary">Primary Color</string>
-    <string name="theme_primary_description">Controls the main color of the app shown in the toolbar. Takes effect when you leave this page.</string>
     <string name="theme_accent">Accent Color</string>
-    <string name="theme_accent_description">Controls the color of controls like buttons and sliders. Takes effect when you leave this page.</string>
-    <string name="theme_base">Base Theme</string>
-    <string name="theme_base_description">Controls the background color. Takes effect when you leave this page.</string>
+    <string name="theme_base">Background Color</string>
     <string name="add_shortcut">Update launcher icon color</string>
     <string name="add_shortcut_already_matched">Your launcher icon already matches your current theme</string>
     <string name="add_shortcut_description">Do you want to change Jockey\'s launcher icon color to match your current theme?

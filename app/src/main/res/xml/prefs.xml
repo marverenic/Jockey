@@ -15,7 +15,6 @@
             android:entries="@array/colors"
             android:entryValues="@array/color_values"
             android:key="@string/pref_key_color_primary"
-            android:summary="@string/theme_primary_description"
             android:title="@string/theme_primary" />
         <IntListPreference
             android:defaultValue="5"
@@ -23,7 +22,6 @@
             android:entries="@array/accents"
             android:entryValues="@array/accent_values"
             android:key="@string/pref_key_color_accent"
-            android:summary="@string/theme_accent_description"
             android:title="@string/theme_accent" />
         <IntListPreference
             android:defaultValue="1"
@@ -31,8 +29,7 @@
             android:entries="@array/themes"
             android:entryValues="@array/theme_values"
             android:key="@string/pref_key_color_base"
-            android:summary="@string/theme_base_description"
-            android:title="Theme" />
+            android:title="@string/theme_base" />
         <Preference
             android:defaultValue="false"
             android:key="@string/pref_key_create_launcher_icon"
