@@ -2,6 +2,7 @@ package com.marverenic.music.fragments;
 
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -31,7 +32,7 @@ import com.marverenic.music.view.DividerDecoration;
 import javax.inject.Inject;
 
 public class PreferenceFragment extends PreferenceFragmentCompat
-        implements View.OnLongClickListener {
+        implements View.OnLongClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String DIRECTORY_FRAGMENT =
             "com.marverenic.music.fragments.DirectoryListFragment";
@@ -121,10 +122,20 @@ public class PreferenceFragment extends PreferenceFragmentCompat
     @Override
     public void onResume() {
         super.onResume();
+        getPreferenceManager().getSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(this);
+
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         if (toolbar != null) {
             toolbar.setTitle(R.string.header_settings);
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getPreferenceManager().getSharedPreferences()
+                .unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -210,5 +221,14 @@ public class PreferenceFragment extends PreferenceFragmentCompat
                     .show();
         }
         return true;
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (getString(R.string.pref_key_color_base).equals(key)
+                || getString(R.string.pref_key_color_accent).equals(key)
+                || getString(R.string.pref_key_color_primary).equals(key)) {
+            getActivity().recreate();
+        }
     }
 }
