@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.data.annotations.AccentTheme;
 import com.marverenic.music.data.annotations.PrimaryTheme;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ThemeStore;
@@ -31,7 +32,9 @@ public abstract class BaseActivity extends RxAppCompatActivity
 
     // Used when resuming the Activity to respond to a potential theme change
     @PrimaryTheme
-    private int mTheme;
+    private int mPrimaryColor;
+    @AccentTheme
+    private int mAccentColor;
 
     @Inject PreferenceStore mPreferenceStore;
     @Inject ThemeStore mThemeStore;
@@ -44,7 +47,8 @@ public abstract class BaseActivity extends RxAppCompatActivity
         JockeyApplication.getComponent(this).injectBaseActivity(this);
 
         mThemeStore.setTheme(this);
-        mTheme = mPreferenceStore.getPrimaryColor();
+        mPrimaryColor = mPreferenceStore.getPrimaryColor();
+        mAccentColor = mPreferenceStore.getAccentColor();
 
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -113,9 +117,10 @@ public abstract class BaseActivity extends RxAppCompatActivity
         // If the theme was changed since this Activity was created, or the automatic day/night
         // theme has changed state, recreate this activity
         mThemeStore.setTheme(this);
-        boolean themeChanged = mTheme != mPreferenceStore.getPrimaryColor();
+        boolean primaryDiff = mPrimaryColor != mPreferenceStore.getPrimaryColor();
+        boolean accentDiff = mAccentColor != mPreferenceStore.getAccentColor();
 
-        if (themeChanged) {
+        if (primaryDiff || accentDiff) {
             recreate();
         } else {
             PlayerController.registerUpdateListener(this);
