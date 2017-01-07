@@ -5,20 +5,8 @@ import android.util.AttributeSet;
 
 public class IntListPreference extends ListPreference {
 
-    public IntListPreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
-    public IntListPreference(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
     public IntListPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-    }
-
-    public IntListPreference(Context context) {
-        super(context);
     }
 
     @Override

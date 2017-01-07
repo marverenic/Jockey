@@ -5,20 +5,8 @@ import android.util.AttributeSet;
 
 public class IntDropDownPreference extends DropDownPreference {
 
-    public IntDropDownPreference(Context context) {
-        super(context);
-    }
-
     public IntDropDownPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-    }
-
-    public IntDropDownPreference(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-    }
-
-    public IntDropDownPreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
     }
 
     @Override
