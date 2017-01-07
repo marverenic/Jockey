@@ -7,7 +7,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceGroupAdapter;
@@ -119,28 +118,6 @@ public class PreferenceFragment extends PreferenceFragmentCompat
                 }
             }
         };
-    }
-
-    @Override
-    public void onDisplayPreferenceDialog(Preference preference) {
-        if (preference instanceof ListPreference) {
-            final ListPreference listPref = (ListPreference) preference;
-
-            new AlertDialog.Builder(getContext())
-                    .setSingleChoiceItems(
-                            listPref.getEntries(),
-                            listPref.findIndexOfValue(listPref.getValue()),
-                            (dialog, which) -> {
-                                listPref.setValueIndex(which);
-                                dialog.dismiss();
-                            }
-                    )
-                    .setTitle(preference.getTitle())
-                    .setNegativeButton(R.string.action_cancel, null)
-                    .show();
-        } else {
-            super.onDisplayPreferenceDialog(preference);
-        }
     }
 
     @Override
