@@ -3,6 +3,8 @@ package com.marverenic.music.data.store;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager.TaskDescription;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +14,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.SystemClock;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StyleRes;
@@ -22,6 +25,7 @@ import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.app.NightMode;
 
 import com.marverenic.music.R;
+import com.marverenic.music.activity.MainActivity;
 import com.marverenic.music.player.PlayerService;
 
 import static android.util.DisplayMetrics.DENSITY_HIGH;
@@ -254,16 +258,34 @@ public class PresetThemeStore implements ThemeStore {
         }
 
         mPreferenceStore.setIconColor(nextIcon);
+        mPreferenceStore.commit();
+
+        restartApplication();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            // On Nougat and newer versions of Android, PackageManager will automatically restart
+            // Jockey. On older versions, it will just kill Jockey after disabling the current
+            // launcher component. Therefore, we schedule an alarm 100 ms in the future to restart
+            // Jockey.
+            scheduleRestart();
+        }
 
         setComponentEnabled(launchActivityName + activityThemeSuffixes[nextIcon], true);
         setComponentEnabled(launchActivityName + activityThemeSuffixes[currIcon], false);
+    }
 
-        // Restart application
+    private void scheduleRestart() {
+        PendingIntent intent = PendingIntent.getActivity(mContext, 0,
+                new Intent(mContext, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager mgr = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
+        mgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 100, intent);
+    }
+
+    private void restartApplication() {
         mContext.stopService(new Intent(mContext, PlayerService.class));
 
-        Intent restartIntent = mContext.getPackageManager()
-                .getLaunchIntentForPackage(mContext.getPackageName());
-        restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Intent restartIntent = new Intent(mContext, MainActivity.class);
+        restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(restartIntent);
     }
 
@@ -273,6 +295,6 @@ public class PresetThemeStore implements ThemeStore {
                 (enabled)
                         ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
                         : PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                PackageManager.DONT_KILL_APP);
+                (enabled) ? PackageManager.DONT_KILL_APP : 0);
     }
 }
