@@ -37,14 +37,14 @@ import static android.util.DisplayMetrics.DENSITY_XXXHIGH;
 import static com.marverenic.music.data.annotations.BaseTheme.AUTO;
 import static com.marverenic.music.data.annotations.BaseTheme.DARK;
 import static com.marverenic.music.data.annotations.BaseTheme.LIGHT;
-import static com.marverenic.music.data.annotations.PresetTheme.BLACK;
-import static com.marverenic.music.data.annotations.PresetTheme.BLUE;
-import static com.marverenic.music.data.annotations.PresetTheme.GRAY;
-import static com.marverenic.music.data.annotations.PresetTheme.GREEN;
-import static com.marverenic.music.data.annotations.PresetTheme.ORANGE;
-import static com.marverenic.music.data.annotations.PresetTheme.PURPLE;
-import static com.marverenic.music.data.annotations.PresetTheme.RED;
-import static com.marverenic.music.data.annotations.PresetTheme.YELLOW;
+import static com.marverenic.music.data.annotations.PrimaryTheme.BLACK;
+import static com.marverenic.music.data.annotations.PrimaryTheme.BLUE;
+import static com.marverenic.music.data.annotations.PrimaryTheme.GRAY;
+import static com.marverenic.music.data.annotations.PrimaryTheme.GREEN;
+import static com.marverenic.music.data.annotations.PrimaryTheme.ORANGE;
+import static com.marverenic.music.data.annotations.PrimaryTheme.PURPLE;
+import static com.marverenic.music.data.annotations.PrimaryTheme.RED;
+import static com.marverenic.music.data.annotations.PrimaryTheme.YELLOW;
 
 public class PresetThemeStore implements ThemeStore {
 

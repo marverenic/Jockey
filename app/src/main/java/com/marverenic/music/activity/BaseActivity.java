@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.data.annotations.PresetTheme;
+import com.marverenic.music.data.annotations.PrimaryTheme;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.player.PlayerController;
@@ -30,7 +30,7 @@ public abstract class BaseActivity extends RxAppCompatActivity
         PlayerController.ErrorListener {
 
     // Used when resuming the Activity to respond to a potential theme change
-    @PresetTheme
+    @PrimaryTheme
     private int mTheme;
 
     @Inject PreferenceStore mPreferenceStore;

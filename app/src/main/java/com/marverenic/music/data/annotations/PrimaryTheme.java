@@ -2,9 +2,9 @@ package com.marverenic.music.data.annotations;
 
 import android.support.annotation.IntDef;
 
-@IntDef(value = {PresetTheme.GRAY, PresetTheme.RED, PresetTheme.ORANGE, PresetTheme.YELLOW,
-        PresetTheme.GREEN, PresetTheme.BLUE, PresetTheme.PURPLE, PresetTheme.BLACK})
-public @interface PresetTheme {
+@IntDef(value = {PrimaryTheme.GRAY, PrimaryTheme.RED, PrimaryTheme.ORANGE, PrimaryTheme.YELLOW,
+        PrimaryTheme.GREEN, PrimaryTheme.BLUE, PrimaryTheme.PURPLE, PrimaryTheme.BLACK})
+public @interface PrimaryTheme {
     int GRAY = 0;
     int RED = 1;
     int ORANGE = 2;

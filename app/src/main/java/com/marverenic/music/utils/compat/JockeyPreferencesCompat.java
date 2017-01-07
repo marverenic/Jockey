@@ -6,7 +6,7 @@ import android.media.audiofx.Equalizer;
 import android.preference.PreferenceManager;
 
 import com.marverenic.music.data.annotations.BaseTheme;
-import com.marverenic.music.data.annotations.PresetTheme;
+import com.marverenic.music.data.annotations.PrimaryTheme;
 import com.marverenic.music.data.annotations.StartPage;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.SharedPreferenceStore;
@@ -14,7 +14,7 @@ import com.marverenic.music.data.store.SharedPreferenceStore;
 import timber.log.Timber;
 
 import static com.marverenic.music.data.annotations.BaseTheme.LIGHT;
-import static com.marverenic.music.data.annotations.PresetTheme.BLUE;
+import static com.marverenic.music.data.annotations.PrimaryTheme.BLUE;
 import static com.marverenic.music.data.annotations.StartPage.SONGS;
 
 public class JockeyPreferencesCompat {
@@ -87,7 +87,7 @@ public class JockeyPreferencesCompat {
         }
     }
 
-    @PresetTheme
+    @PrimaryTheme
     private static int convertPrimaryColor1_2(String primaryColor) {
         try {
             int convertedColor = Integer.parseInt(primaryColor);
