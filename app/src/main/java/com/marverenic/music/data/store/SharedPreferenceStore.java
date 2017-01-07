@@ -181,6 +181,11 @@ public class SharedPreferenceStore implements PreferenceStore {
     }
 
     @Override
+    public boolean commit() {
+        return mPrefs.edit().commit();
+    }
+
+    @Override
     public void setShowFirstStart(boolean showFirstStart) {
         putBoolean(R.string.pref_key_show_first_start, showFirstStart);
     }
