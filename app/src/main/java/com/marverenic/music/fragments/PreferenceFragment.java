@@ -47,13 +47,11 @@ public class PreferenceFragment extends PreferenceFragmentCompat
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         JockeyApplication.getComponent(this).inject(this);
-
-        addPreferencesFromResource(R.xml.prefs);
     }
 
     @Override
-    public void onCreatePreferences(Bundle bundle, String s) {
-
+    public void onCreatePreferences(Bundle bundle, String rootKey) {
+        addPreferencesFromResource(R.xml.prefs);
     }
 
     @Override
