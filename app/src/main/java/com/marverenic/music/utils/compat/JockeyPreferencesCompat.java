@@ -14,7 +14,7 @@ import com.marverenic.music.data.store.SharedPreferenceStore;
 import timber.log.Timber;
 
 import static com.marverenic.music.data.annotations.BaseTheme.LIGHT;
-import static com.marverenic.music.data.annotations.PrimaryTheme.BLUE;
+import static com.marverenic.music.data.annotations.PrimaryTheme.CYAN;
 import static com.marverenic.music.data.annotations.StartPage.SONGS;
 
 public class JockeyPreferencesCompat {
@@ -37,7 +37,7 @@ public class JockeyPreferencesCompat {
         boolean showFirstStart = prefs.getBoolean("prefShowFirstStart", true);
         boolean allowLogging = prefs.getBoolean("prefAllowLogging", false);
         String firstPage = prefs.getString("prefDefaultPage", Integer.toString(SONGS));
-        String primaryColor = prefs.getString("prefColorPrimary", Integer.toString(BLUE));
+        String primaryColor = prefs.getString("prefColorPrimary", Integer.toString(CYAN));
         String baseTheme = prefs.getString("prefBaseTheme", Integer.toString(LIGHT));
         boolean useMobileData = prefs.getBoolean("prefUseMobileData", true);
         boolean openNowPlaying = prefs.getBoolean("prefSwitchToNowPlaying", true);
@@ -92,13 +92,13 @@ public class JockeyPreferencesCompat {
         try {
             int convertedColor = Integer.parseInt(primaryColor);
             if (convertedColor < 0 || convertedColor > 6) {
-                return BLUE;
+                return CYAN;
             } else {
                 //noinspection WrongConstant
                 return convertedColor;
             }
         } catch (NumberFormatException ignored) {
-            return BLUE;
+            return CYAN;
         }
     }
 

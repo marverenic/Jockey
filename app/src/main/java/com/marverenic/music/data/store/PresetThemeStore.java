@@ -68,7 +68,7 @@ public class PresetThemeStore implements ThemeStore {
                 return R.color.primary_yellow;
             case PrimaryTheme.GREEN:
                 return R.color.primary_green;
-            case PrimaryTheme.BLUE:
+            case PrimaryTheme.CYAN:
                 return R.color.primary;
             case PrimaryTheme.PURPLE:
                 return R.color.primary_purple;
@@ -97,7 +97,7 @@ public class PresetThemeStore implements ThemeStore {
                 return R.color.accent_yellow;
             case AccentTheme.GREEN:
                 return R.color.accent_green;
-            case AccentTheme.BLUE:
+            case AccentTheme.CYAN:
                 return R.color.accent;
             case AccentTheme.PURPLE:
                 return R.color.accent_purple;
@@ -151,14 +151,14 @@ public class PresetThemeStore implements ThemeStore {
                 return R.style.Primary_Yellow;
             case PrimaryTheme.GREEN:
                 return R.style.Primary_Green;
-            case PrimaryTheme.BLUE:
-                return R.style.Primary_Blue;
+            case PrimaryTheme.CYAN:
+                return R.style.Primary_Cyan;
             case PrimaryTheme.PURPLE:
                 return R.style.Primary_Purple;
             case PrimaryTheme.BLACK:
                 return R.style.Primary_Black;
             default:
-                return R.style.Primary_Blue;
+                return R.style.Primary_Cyan;
         }
     }
 
@@ -175,14 +175,14 @@ public class PresetThemeStore implements ThemeStore {
                 return R.style.Accent_Yellow;
             case AccentTheme.GREEN:
                 return R.style.Accent_Green;
-            case AccentTheme.BLUE:
-                return R.style.Accent_Blue;
+            case AccentTheme.CYAN:
+                return R.style.Accent_Cyan;
             case AccentTheme.PURPLE:
                 return R.style.Accent_Purple;
             case AccentTheme.TEAL:
                 return R.style.Accent_Black;
             default:
-                return R.style.Accent_Blue;
+                return R.style.Accent_Cyan;
         }
     }
 
@@ -245,7 +245,7 @@ public class PresetThemeStore implements ThemeStore {
                 return R.mipmap.ic_launcher_yellow;
             case PrimaryTheme.GREEN:
                 return R.mipmap.ic_launcher_green;
-            case PrimaryTheme.BLUE:
+            case PrimaryTheme.CYAN:
                 return R.mipmap.ic_launcher;
             case PrimaryTheme.PURPLE:
                 return R.mipmap.ic_launcher_purple;

@@ -22,7 +22,7 @@
         <item name="2">Orange</item>
         <item name="3">Yellow</item>
         <item name="4">Green</item>
-        <item name="5">Blue</item>
+        <item name="5">Cyan</item>
         <item name="6">Purple</item>
         <item name="7">Black</item>
     </string-array>
@@ -42,7 +42,7 @@
         <item name="2">Orange</item>
         <item name="3">Yellow</item>
         <item name="4">Green</item>
-        <item name="5">Blue</item>
+        <item name="5">Cyan</item>
         <item name="6">Purple</item>
         <item name="7">Teal</item>
     </string-array>

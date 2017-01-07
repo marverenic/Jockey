@@ -119,7 +119,7 @@ public class SharedPreferenceStore implements PreferenceStore {
     @Override
     @SuppressWarnings("WrongConstant")
     public int getPrimaryColor() {
-        return getInt(R.string.pref_key_color_primary, PrimaryTheme.BLUE);
+        return getInt(R.string.pref_key_color_primary, PrimaryTheme.CYAN);
     }
 
     @Override
@@ -137,7 +137,7 @@ public class SharedPreferenceStore implements PreferenceStore {
     @Override
     public int getIconColor() {
         //noinspection WrongConstant
-        return getInt(R.string.pref_key_color_icon, PrimaryTheme.BLUE);
+        return getInt(R.string.pref_key_color_icon, PrimaryTheme.CYAN);
     }
 
     @Override

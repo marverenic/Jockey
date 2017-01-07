@@ -41,7 +41,7 @@
         <item name="colorPrimaryDark">@color/primary_dark_green</item>
     </style>
 
-    <style name="Primary.Blue">
+    <style name="Primary.Cyan">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
     </style>
@@ -107,13 +107,13 @@
         <item name="colorAccent">@color/accent_green</item>
     </style>
 
-    <style name="Accent.Blue">
+    <style name="Accent.Cyan">
         <item name="colorAccent">@color/accent</item>
         <item name="colorControlHighlight">@color/accent</item>
-        <item name="alertDialogTheme">@style/Accent.Blue.AlertDialog</item>
+        <item name="alertDialogTheme">@style/Accent.Cyan.AlertDialog</item>
     </style>
 
-    <style name="Accent.Blue.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+    <style name="Accent.Cyan.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
         <item name="colorAccent">@color/accent</item>
     </style>
 
