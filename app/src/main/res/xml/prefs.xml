@@ -16,7 +16,15 @@
             android:entryValues="@array/color_values"
             android:key="@string/pref_key_color_primary"
             android:summary="@string/theme_primary_description"
-            android:title="Primary Color" />
+            android:title="@string/theme_primary" />
+        <IntListPreference
+            android:defaultValue="5"
+            android:dialogTitle="@string/theme_accent"
+            android:entries="@array/accents"
+            android:entryValues="@array/accent_values"
+            android:key="@string/pref_key_color_accent"
+            android:summary="@string/theme_accent_description"
+            android:title="@string/theme_accent" />
         <IntListPreference
             android:defaultValue="1"
             android:dialogTitle="@string/theme_base"
