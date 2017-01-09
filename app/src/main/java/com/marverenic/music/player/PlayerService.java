@@ -20,9 +20,11 @@ import com.marverenic.music.R;
 import com.marverenic.music.data.store.ImmutablePreferenceStore;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.utils.Internal;
 import com.marverenic.music.utils.MediaStyleHelper;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import timber.log.Timber;
@@ -47,7 +49,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     /**
      * The media player for the service instance
      */
-    private MusicPlayer musicPlayer;
+    @Internal MusicPlayer musicPlayer;
 
     /**
      * Used to to prevent errors caused by freeing resources twice
@@ -67,7 +69,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         Timber.i("onBind called");
 
         if (binder == null) {
-            binder = new Stub();
+            binder = new Stub(this);
         }
         mAppRunning = true;
         return binder;
@@ -304,10 +306,20 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
     public static class Stub extends IPlayerService.Stub {
 
+        private PlayerService mService;
+
+        public Stub(PlayerService service) {
+            mService = service;
+        }
+
+        private boolean isMusicPlayerReady() {
+            return mService != null && mService.musicPlayer != null;
+        }
+
         @Override
         public void stop() throws RemoteException {
             try {
-                instance.stop();
+                mService.stop();
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.stop() failed");
                 throw exception;
@@ -316,8 +328,13 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public void skip() throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                Timber.i("PlayerService.skip(): Service is not ready. Dropping command");
+                return;
+            }
+
             try {
-                instance.musicPlayer.skip();
+                mService.musicPlayer.skip();
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.skip() failed");
                 throw exception;
@@ -326,8 +343,13 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public void previous() throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                Timber.i("PlayerService.skip(): Service is not ready. Dropping command");
+                return;
+            }
+
             try {
-                instance.musicPlayer.skipPrevious();
+                mService.musicPlayer.skipPrevious();
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.previous() failed");
                 throw exception;
@@ -336,8 +358,13 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public void togglePlay() throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                Timber.i("PlayerService.togglePlay(): Service is not ready. Dropping command");
+                return;
+            }
+
             try {
-                instance.musicPlayer.togglePlay();
+                mService.musicPlayer.togglePlay();
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.togglePlay() failed");
                 throw exception;
@@ -346,8 +373,13 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public void play() throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                Timber.i("PlayerService.play(): Service is not ready. Dropping command");
+                return;
+            }
+
             try {
-                instance.musicPlayer.play();
+                mService.musicPlayer.play();
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.play() failed");
                 throw exception;
@@ -356,8 +388,13 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public void pause() throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                Timber.i("PlayerService.pause(): Service is not ready. Dropping command");
+                return;
+            }
+
             try {
-                instance.musicPlayer.play();
+                mService.musicPlayer.pause();
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.pause() failed");
                 throw exception;
@@ -366,8 +403,13 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public void setPreferences(ImmutablePreferenceStore preferences) throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                Timber.i("PlayerService.setPreferences(): Service is not ready. Dropping command");
+                return;
+            }
+
             try {
-                instance.musicPlayer.updatePreferences(preferences);
+                mService.musicPlayer.updatePreferences(preferences);
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.setPreferences(...) failed");
                 throw exception;
@@ -376,10 +418,15 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public void setQueue(List<Song> newQueue, int newPosition) throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                Timber.i("PlayerService.setQueue(): Service is not ready. Dropping command");
+                return;
+            }
+
             try {
-                instance.musicPlayer.setQueue(newQueue, newPosition);
+                mService.musicPlayer.setQueue(newQueue, newPosition);
                 if (newQueue.isEmpty()) {
-                    instance.stop();
+                    mService.stop();
                 }
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.setQueue(...) failed");
@@ -389,8 +436,13 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public void changeSong(int position) throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                Timber.i("PlayerService.changeSong(): Service is not ready. Dropping command");
+                return;
+            }
+
             try {
-                instance.musicPlayer.changeSong(position);
+                mService.musicPlayer.changeSong(position);
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.changeSong(...) failed");
                 throw exception;
@@ -399,8 +451,13 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public void editQueue(List<Song> newQueue, int newPosition) throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                Timber.i("PlayerService.editQueue(): Service is not ready. Dropping command");
+                return;
+            }
+
             try {
-                instance.musicPlayer.editQueue(newQueue, newPosition);
+                mService.musicPlayer.editQueue(newQueue, newPosition);
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.editQueue(...) failed");
                 throw exception;
@@ -409,8 +466,13 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public void queueNext(Song song) throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                Timber.i("PlayerService.queueNext(): Service is not ready. Dropping command");
+                return;
+            }
+
             try {
-                instance.musicPlayer.queueNext(song);
+                mService.musicPlayer.queueNext(song);
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.queueNext(...) failed");
                 throw exception;
@@ -419,8 +481,13 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public void queueNextList(List<Song> songs) throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                Timber.i("PlayerService.queueNextList(): Service is not ready. Dropping command");
+                return;
+            }
+
             try {
-                instance.musicPlayer.queueNext(songs);
+                mService.musicPlayer.queueNext(songs);
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.queueNextList(...) failed");
                 throw exception;
@@ -429,8 +496,13 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public void queueLast(Song song) throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                Timber.i("PlayerService.queueLast(): Service is not ready. Dropping command");
+                return;
+            }
+
             try {
-                instance.musicPlayer.queueLast(song);
+                mService.musicPlayer.queueLast(song);
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.queueLast() failed");
                 throw exception;
@@ -439,8 +511,13 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public void queueLastList(List<Song> songs) throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                Timber.i("PlayerService.queueLastList(): Service is not ready. Dropping command");
+                return;
+            }
+
             try {
-                instance.musicPlayer.queueLast(songs);
+                mService.musicPlayer.queueLast(songs);
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.queueLastList(...) failed");
                 throw exception;
@@ -449,8 +526,13 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public void seekTo(int position) throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                Timber.i("PlayerService.seekTo(): Service is not ready. Dropping command");
+                return;
+            }
+
             try {
-                instance.musicPlayer.seekTo(position);
+                mService.musicPlayer.seekTo(position);
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.seekTo() failed");
                 throw exception;
@@ -459,8 +541,12 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public boolean isPlaying() throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                return false;
+            }
+
             try {
-                return instance.musicPlayer.isPlaying();
+                return mService.musicPlayer.isPlaying();
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.isPlaying() failed");
                 throw exception;
@@ -469,8 +555,12 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public Song getNowPlaying() throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                return null;
+            }
+
             try {
-                return instance.musicPlayer.getNowPlaying();
+                return mService.musicPlayer.getNowPlaying();
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.getNowPlaying() failed");
                 throw exception;
@@ -479,8 +569,12 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public List<Song> getQueue() throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                return Collections.emptyList();
+            }
+
             try {
-                return instance.musicPlayer.getQueue();
+                return mService.musicPlayer.getQueue();
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.editQueue() failed");
                 throw exception;
@@ -489,8 +583,12 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public int getQueuePosition() throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                return 0;
+            }
+
             try {
-                return instance.musicPlayer.getQueuePosition();
+                return mService.musicPlayer.getQueuePosition();
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.getQueuePosition() failed");
                 throw exception;
@@ -499,8 +597,12 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public int getQueueSize() throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                return 0;
+            }
+
             try {
-                return instance.musicPlayer.getQueueSize();
+                return mService.musicPlayer.getQueueSize();
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.getQueueSize() failed");
                 throw exception;
@@ -509,8 +611,12 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public int getCurrentPosition() throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                return 0;
+            }
+
             try {
-                return instance.musicPlayer.getCurrentPosition();
+                return mService.musicPlayer.getCurrentPosition();
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.getCurrentPosition() failed");
                 throw exception;
@@ -519,8 +625,12 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public int getDuration() throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                return 0;
+            }
+
             try {
-                return instance.musicPlayer.getDuration();
+                return mService.musicPlayer.getDuration();
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.getDuration() failed");
                 throw exception;
@@ -529,8 +639,12 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public int getMultiRepeatCount() throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                return 0;
+            }
+
             try {
-                return instance.musicPlayer.getMultiRepeatCount();
+                return mService.musicPlayer.getMultiRepeatCount();
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.getMultiRepeatCount() failed");
                 throw exception;
@@ -539,8 +653,13 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public void setMultiRepeatCount(int count) throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                Timber.i("PlayerService.setMultiRepeat(): Service is not ready. Dropping command");
+                return;
+            }
+
             try {
-                instance.musicPlayer.setMultiRepeat(count);
+                mService.musicPlayer.setMultiRepeat(count);
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.setMultiRepeatCount() failed");
                 throw exception;
@@ -549,8 +668,12 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public long getSleepTimerEndTime() throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                return 0;
+            }
+
             try {
-                return instance.musicPlayer.getSleepTimerEndTime();
+                return mService.musicPlayer.getSleepTimerEndTime();
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.getSleepTimerEndTime() failed");
                 throw exception;
@@ -559,8 +682,13 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public void setSleepTimerEndTime(long timestampInMillis) throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                Timber.i("PlayerService.setSleepTimer(): Service is not ready. Dropping command");
+                return;
+            }
+
             try {
-                instance.musicPlayer.setSleepTimer(timestampInMillis);
+                mService.musicPlayer.setSleepTimer(timestampInMillis);
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.setSleepTimerEndTime() failed");
             }

@@ -17,6 +17,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcel
     private final boolean mEnableNowPlayingGestures;
     private final int mDefaultPage;
     private final int mPrimaryColor;
+    private final int mAccentColor;
     private final int mBaseColor;
     private final int mIconColor;
     private final boolean mShuffled;
@@ -34,6 +35,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcel
         mEnableNowPlayingGestures = preferencesStore.enableNowPlayingGestures();
         mDefaultPage = preferencesStore.getDefaultPage();
         mPrimaryColor = preferencesStore.getPrimaryColor();
+        mAccentColor = preferencesStore.getAccentColor();
         mBaseColor = preferencesStore.getBaseColor();
         mIconColor = preferencesStore.getIconColor();
         mShuffled = preferencesStore.isShuffled();
@@ -58,6 +60,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcel
         mEnableNowPlayingGestures = in.readByte() != 0;
         mDefaultPage = in.readInt();
         mPrimaryColor = in.readInt();
+        mAccentColor = in.readInt();
         mBaseColor = in.readInt();
         mIconColor = in.readInt();
         mShuffled = in.readByte() != 0;
@@ -77,6 +80,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcel
         dest.writeByte((byte) (mEnableNowPlayingGestures ? 1 : 0));
         dest.writeInt(mDefaultPage);
         dest.writeInt(mPrimaryColor);
+        dest.writeInt(mAccentColor);
         dest.writeInt(mBaseColor);
         dest.writeInt(mIconColor);
         dest.writeByte((byte) (mShuffled ? 1 : 0));
@@ -137,6 +141,11 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcel
     @Override
     public int getPrimaryColor() {
         return mPrimaryColor;
+    }
+
+    @Override
+    public int getAccentColor() {
+        return mAccentColor;
     }
 
     @Override

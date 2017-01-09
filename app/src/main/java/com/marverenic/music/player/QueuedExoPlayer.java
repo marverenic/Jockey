@@ -3,7 +3,6 @@ package com.marverenic.music.player;
 import android.content.Context;
 import android.media.audiofx.Equalizer;
 import android.net.Uri;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -21,7 +20,10 @@ import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.LoopingMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.FixedTrackSelection;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
@@ -60,7 +62,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         mContext = context;
         mState = ExoPlayerState.IDLE;
 
-        TrackSelector trackSelector = new DefaultTrackSelector(new Handler());
+        TrackSelector trackSelector = new DefaultTrackSelector(new FixedTrackSelection.Factory());
         LoadControl loadControl = new DefaultLoadControl();
         SimpleExoPlayer baseInstance = ExoPlayerFactory.newSimpleInstance(mContext,
                 trackSelector, loadControl);
@@ -83,6 +85,12 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
             public void onTimelineChanged(Timeline timeline, Object manifest) {
                 Timber.i("onTimelineChanged");
                 QueuedExoPlayer.this.onTimelineChanged();
+            }
+
+            @Override
+            public void onTracksChanged(TrackGroupArray trackGroups,
+                                        TrackSelectionArray trackSelections) {
+                Timber.i("onTracksChanged");
             }
 
             @Override
