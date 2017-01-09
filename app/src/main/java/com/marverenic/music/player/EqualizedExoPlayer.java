@@ -13,6 +13,8 @@ import com.google.android.exoplayer2.audio.AudioRendererEventListener;
 import com.google.android.exoplayer2.audio.AudioTrack;
 import com.google.android.exoplayer2.decoder.DecoderCounters;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 
 public class EqualizedExoPlayer implements ExoPlayer {
 
@@ -237,6 +239,26 @@ public class EqualizedExoPlayer implements ExoPlayer {
     @Override
     public void blockingSendMessages(ExoPlayerMessage... messages) {
         mExoPlayer.blockingSendMessages(messages);
+    }
+
+    @Override
+    public int getRendererCount() {
+        return mExoPlayer.getRendererCount();
+    }
+
+    @Override
+    public int getRendererType(int index) {
+        return mExoPlayer.getRendererType(index);
+    }
+
+    @Override
+    public TrackGroupArray getCurrentTrackGroups() {
+        return mExoPlayer.getCurrentTrackGroups();
+    }
+
+    @Override
+    public TrackSelectionArray getCurrentTrackSelections() {
+        return mExoPlayer.getCurrentTrackSelections();
     }
 
     @Override

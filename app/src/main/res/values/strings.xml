@@ -192,7 +192,7 @@
         CardView 25.1.0, Design 25.1.0, Palette 25.1.0, Preference-v14 25.1.0; distributed by the
         Android Open Source Project under an Apache License, Version 2.0</string>
     <string name="uses_exoplayer_header">ExoPlayer</string>
-    <string name="uses_exoplayer_detail">Version 2.0.4; distributed by Google Inc. under an Apache
+    <string name="uses_exoplayer_detail">Version 2.1.1; distributed by Google Inc. under an Apache
         License, Version 2.0</string>
     <string name="uses_dagger_header">Dagger</string>
     <string name="uses_dagger_detail">Version 2.6; distributed by Google Inc. and Square Inc. under
