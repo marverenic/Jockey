@@ -88,8 +88,9 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
             }
 
             @Override
-            public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-
+            public void onTracksChanged(TrackGroupArray trackGroups,
+                                        TrackSelectionArray trackSelections) {
+                Timber.i("onTracksChanged");
             }
 
             @Override
