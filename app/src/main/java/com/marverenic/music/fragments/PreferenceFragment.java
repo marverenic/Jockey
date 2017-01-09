@@ -2,12 +2,12 @@ package com.marverenic.music.fragments;
 
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceGroupAdapter;
@@ -32,7 +32,7 @@ import com.marverenic.music.view.DividerDecoration;
 import javax.inject.Inject;
 
 public class PreferenceFragment extends PreferenceFragmentCompat
-        implements View.OnLongClickListener {
+        implements View.OnLongClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String DIRECTORY_FRAGMENT =
             "com.marverenic.music.fragments.DirectoryListFragment";
@@ -48,13 +48,11 @@ public class PreferenceFragment extends PreferenceFragmentCompat
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         JockeyApplication.getComponent(this).inject(this);
-
-        addPreferencesFromResource(R.xml.prefs);
     }
 
     @Override
-    public void onCreatePreferences(Bundle bundle, String s) {
-
+    public void onCreatePreferences(Bundle bundle, String rootKey) {
+        addPreferencesFromResource(R.xml.prefs);
     }
 
     @Override
@@ -122,34 +120,22 @@ public class PreferenceFragment extends PreferenceFragmentCompat
     }
 
     @Override
-    public void onDisplayPreferenceDialog(Preference preference) {
-        if (preference instanceof ListPreference) {
-            final ListPreference listPref = (ListPreference) preference;
-
-            new AlertDialog.Builder(getContext())
-                    .setSingleChoiceItems(
-                            listPref.getEntries(),
-                            listPref.findIndexOfValue(listPref.getValue()),
-                            (dialog, which) -> {
-                                listPref.setValueIndex(which);
-                                dialog.dismiss();
-                            }
-                    )
-                    .setTitle(preference.getTitle())
-                    .setNegativeButton(R.string.action_cancel, null)
-                    .show();
-        } else {
-            super.onDisplayPreferenceDialog(preference);
-        }
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
+        getPreferenceManager().getSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(this);
+
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         if (toolbar != null) {
             toolbar.setTitle(R.string.header_settings);
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getPreferenceManager().getSharedPreferences()
+                .unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -235,5 +221,14 @@ public class PreferenceFragment extends PreferenceFragmentCompat
                     .show();
         }
         return true;
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (getString(R.string.pref_key_color_base).equals(key)
+                || getString(R.string.pref_key_color_accent).equals(key)
+                || getString(R.string.pref_key_color_primary).equals(key)) {
+            getActivity().recreate();
+        }
     }
 }

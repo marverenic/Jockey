@@ -2,8 +2,9 @@ package com.marverenic.music.data.store;
 
 import android.media.audiofx.Equalizer;
 
+import com.marverenic.music.data.annotations.AccentTheme;
 import com.marverenic.music.data.annotations.BaseTheme;
-import com.marverenic.music.data.annotations.PresetTheme;
+import com.marverenic.music.data.annotations.PrimaryTheme;
 import com.marverenic.music.data.annotations.StartPage;
 
 import java.util.Set;
@@ -17,9 +18,11 @@ public interface ReadOnlyPreferenceStore {
     boolean openNowPlayingOnNewQueue();
     boolean enableNowPlayingGestures();
     @StartPage int getDefaultPage();
-    @PresetTheme int getPrimaryColor();
+    @PrimaryTheme int getPrimaryColor();
+    @AccentTheme
+    int getAccentColor();
     @BaseTheme int getBaseColor();
-    @PresetTheme int getIconColor();
+    @PrimaryTheme int getIconColor();
 
     boolean isShuffled();
     int getRepeatMode();

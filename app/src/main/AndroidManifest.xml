@@ -94,6 +94,19 @@
         </activity-alias>
 
         <activity-alias
+            android:name=".activity.LibraryActivity$Blue"
+            android:targetActivity=".activity.MainActivity"
+            android:icon="@mipmap/ic_launcher_blue"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+        </activity-alias>
+
+        <activity-alias
             android:name=".activity.LibraryActivity$Purple"
             android:targetActivity=".activity.MainActivity"
             android:icon="@mipmap/ic_launcher_purple"

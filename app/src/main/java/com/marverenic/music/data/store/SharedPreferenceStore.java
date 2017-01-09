@@ -7,8 +7,9 @@ import android.preference.PreferenceManager;
 import android.support.annotation.StringRes;
 
 import com.marverenic.music.R;
+import com.marverenic.music.data.annotations.AccentTheme;
 import com.marverenic.music.data.annotations.BaseTheme;
-import com.marverenic.music.data.annotations.PresetTheme;
+import com.marverenic.music.data.annotations.PrimaryTheme;
 import com.marverenic.music.data.annotations.StartPage;
 import com.marverenic.music.player.MusicPlayer;
 
@@ -118,7 +119,13 @@ public class SharedPreferenceStore implements PreferenceStore {
     @Override
     @SuppressWarnings("WrongConstant")
     public int getPrimaryColor() {
-        return getInt(R.string.pref_key_color_primary, PresetTheme.BLUE);
+        return getInt(R.string.pref_key_color_primary, PrimaryTheme.CYAN);
+    }
+
+    @Override
+    @SuppressWarnings("WrongConstant")
+    public int getAccentColor() {
+        return getInt(R.string.pref_key_color_accent, getPrimaryColor());
     }
 
     @Override
@@ -130,7 +137,7 @@ public class SharedPreferenceStore implements PreferenceStore {
     @Override
     public int getIconColor() {
         //noinspection WrongConstant
-        return getInt(R.string.pref_key_color_icon, PresetTheme.BLUE);
+        return getInt(R.string.pref_key_color_icon, PrimaryTheme.CYAN);
     }
 
     @Override
@@ -216,8 +223,13 @@ public class SharedPreferenceStore implements PreferenceStore {
     }
 
     @Override
-    public void setPrimaryColor(@PresetTheme int colorChoice) {
+    public void setPrimaryColor(@PrimaryTheme int colorChoice) {
         putInt(R.string.pref_key_color_primary, colorChoice);
+    }
+
+    @Override
+    public void setAccentColor(@AccentTheme int accentColor) {
+        putInt(R.string.pref_key_color_accent, accentColor);
     }
 
     @Override
@@ -226,7 +238,7 @@ public class SharedPreferenceStore implements PreferenceStore {
     }
 
     @Override
-    public void setIconColor(@PresetTheme int theme) {
+    public void setIconColor(@PrimaryTheme int theme) {
         putInt(R.string.pref_key_color_icon, theme);
     }
 

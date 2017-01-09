@@ -21,7 +21,9 @@
 -keep interface android.support.design.widget.** { *; }
 -dontwarn android.support.design.**
 -keep class android.support.v7.preference.PreferenceCategoryCompat { *; }
+-keep class android.support.v7.preference.ColorPreference { *; }
 -keep class android.support.v7.preference.IntListPreference { *; }
+-keep class android.support.v7.preference.IntDropDownPreference { *; }
 
 # Used to animate values of an Observable with an ObjectAnimator
 # (since it calls setters by name using reflection)
