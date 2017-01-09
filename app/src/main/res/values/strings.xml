@@ -231,9 +231,8 @@
     <string name="playback_header">Playback</string>
     <string name="default_page_pref">Default Page</string>
     <string name="theme_primary">Primary Color</string>
-    <string name="theme_primary_description">Controls the accent color. Takes effect when you leave this page</string>
-    <string name="theme_base">Base Theme</string>
-    <string name="theme_base_description">Controls the background color. Takes effect when you leave this page</string>
+    <string name="theme_accent">Accent Color</string>
+    <string name="theme_base">Background Color</string>
     <string name="add_shortcut">Update launcher icon color</string>
     <string name="add_shortcut_already_matched">Your launcher icon already matches your current theme</string>
     <string name="add_shortcut_description">Do you want to change Jockey\'s launcher icon color to match your current theme?
@@ -276,6 +275,7 @@
     <string name="pref_key_enable_gestures" translatable="false">enableGestures</string>
     <string name="pref_key_default_page" translatable="false">landingPage</string>
     <string name="pref_key_color_primary" translatable="false">Theme.presetColorPrimary</string>
+    <string name="pref_key_color_accent" translatable="false">Theme.presetColorAccent</string>
     <string name="pref_key_color_base" translatable="false">Theme.baseTheme</string>
     <string name="pref_key_color_icon" translatable="false">Theme.iconColor</string>
     <string name="pref_key_eq_id" translatable="false">Equalizer.presetId</string>
