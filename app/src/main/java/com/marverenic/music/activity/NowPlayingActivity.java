@@ -438,6 +438,7 @@ public class NowPlayingActivity extends BaseActivity
                     .subscribeOn(Schedulers.computation())
                     .map(tick -> (int) (sleepTimerValue - 500 * tick))
                     .observeOn(AndroidSchedulers.mainThread())
+                    .compose(bindToLifecycle())
                     .subscribe(time -> {
                         sleepTimerCounter.setTime(time);
                         if (time <= 0) {

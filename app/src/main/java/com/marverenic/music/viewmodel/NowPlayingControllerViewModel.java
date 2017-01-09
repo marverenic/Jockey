@@ -252,7 +252,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
         return item -> {
             switch (item.getItemId()) {
                 case R.id.menu_item_navigate_to_artist:
-                    mMusicStore.findArtistById(song.getArtistId()).subscribe(
+                    mMusicStore.findArtistById(song.getArtistId()).take(1).subscribe(
                             artist -> {
                                 mContext.startActivity(ArtistActivity.newIntent(mContext, artist));
                             },
@@ -262,7 +262,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
 
                     return true;
                 case R.id.menu_item_navigate_to_album:
-                    mMusicStore.findAlbumById(song.getAlbumId()).subscribe(
+                    mMusicStore.findAlbumById(song.getAlbumId()).take(1).subscribe(
                             album -> {
                                 mContext.startActivity(AlbumActivity.newIntent(mContext, album));
                             },
