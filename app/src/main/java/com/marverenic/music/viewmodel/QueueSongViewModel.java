@@ -13,7 +13,9 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
+import com.marverenic.music.fragments.BaseFragment;
 import com.marverenic.music.model.Song;
+import com.trello.rxlifecycle.LifecycleTransformer;
 
 import java.util.List;
 
@@ -28,17 +30,24 @@ public class QueueSongViewModel extends SongViewModel {
 
     private Context mContext;
     private FragmentManager mFragmentManager;
+    private LifecycleTransformer<?> mLifecycleTransformer;
     private OnRemoveListener mRemoveListener;
     private Subscription mNowPlayingSubscription;
 
     private boolean mPlaying;
 
-    public QueueSongViewModel(Context context, FragmentManager fragmentManager, List<Song> songs,
+    public QueueSongViewModel(BaseFragment fragment, List<Song> songs,
                               OnRemoveListener removeListener) {
-        super(context, fragmentManager, songs);
-        mContext = context;
-        mFragmentManager = fragmentManager;
+        super(fragment.getContext(), fragment.getFragmentManager(), songs);
+        mLifecycleTransformer = fragment.bindToLifecycle();
+        mContext = fragment.getContext();
+        mFragmentManager = fragment.getFragmentManager();
         mRemoveListener = removeListener;
+    }
+
+    private <T> LifecycleTransformer<T> bindToLifecycle() {
+        //noinspection unchecked
+        return (LifecycleTransformer<T>) mLifecycleTransformer;
     }
 
     @Override
@@ -49,8 +58,8 @@ public class QueueSongViewModel extends SongViewModel {
             mNowPlayingSubscription.unsubscribe();
         }
 
-        // TODO bind to lifecycle
         mNowPlayingSubscription = mPlayerController.getQueuePosition()
+                .compose(bindToLifecycle())
                 .subscribe(queuePosition -> {
                     mPlaying = (queuePosition == getIndex());
                     notifyPropertyChanged(BR.nowPlayingIndicatorVisibility);

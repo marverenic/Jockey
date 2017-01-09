@@ -1,13 +1,12 @@
 package com.marverenic.music.adapter;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.databinding.InstanceSongQueueBinding;
+import com.marverenic.music.fragments.BaseFragment;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.viewmodel.QueueSongViewModel;
@@ -18,18 +17,14 @@ import timber.log.Timber;
 
 public class QueueSection extends EditableSongSection {
 
-    private FragmentManager mFragmentManager;
+    private BaseFragment mFragment;
     private PlayerController mPlayerController;
 
-    public QueueSection(Fragment fragment, PlayerController playerController, List<Song> data) {
-        this(fragment.getFragmentManager(), playerController, data);
-    }
-
-    public QueueSection(FragmentManager fragmentManager, PlayerController playerController,
+    public QueueSection(BaseFragment fragment, PlayerController playerController,
                         List<Song> data) {
         super(data);
+        mFragment = fragment;
         mPlayerController = playerController;
-        mFragmentManager = fragmentManager;
     }
 
     @Override
@@ -75,8 +70,8 @@ public class QueueSection extends EditableSongSection {
             super(binding.getRoot());
             mBinding = binding;
 
-            binding.setViewModel(new QueueSongViewModel(itemView.getContext(), mFragmentManager,
-                    songList, adapter::notifyDataSetChanged));
+            binding.setViewModel(new QueueSongViewModel(mFragment, songList,
+                    adapter::notifyDataSetChanged));
         }
 
         @Override
