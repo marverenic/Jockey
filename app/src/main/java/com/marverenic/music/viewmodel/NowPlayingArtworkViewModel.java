@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import com.marverenic.music.BR;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.PlayerController;
@@ -32,16 +33,19 @@ public class NowPlayingArtworkViewModel extends BaseObservable {
     private Bitmap mArtwork;
     private boolean mPlaying;
 
-    public NowPlayingArtworkViewModel(Context context) {
-        mContext = context;
-        JockeyApplication.getComponent(context).inject(this);
+    public NowPlayingArtworkViewModel(BaseActivity activity) {
+        mContext = activity;
+        JockeyApplication.getComponent(activity).inject(this);
 
-        // TODO bind to lifecycle
-        mPlayerController.getArtwork().subscribe(this::setArtwork,
-                throwable -> Timber.e(throwable, "Failed to set artwork"));
+        mPlayerController.getArtwork()
+                .compose(activity.bindToLifecycle())
+                .subscribe(this::setArtwork,
+                        throwable -> Timber.e(throwable, "Failed to set artwork"));
 
-        mPlayerController.isPlaying().subscribe(this::setPlaying,
-                throwable -> Timber.e(throwable, "Failed to update playing state"));
+        mPlayerController.isPlaying()
+                .compose(activity.bindToLifecycle())
+                .subscribe(this::setPlaying,
+                        throwable -> Timber.e(throwable, "Failed to update playing state"));
     }
 
     private void setPlaying(boolean playing) {
