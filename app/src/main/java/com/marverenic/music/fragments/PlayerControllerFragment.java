@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,7 @@ import android.view.ViewGroup;
 import com.marverenic.music.databinding.ViewNowPlayingControlPanelBinding;
 import com.marverenic.music.viewmodel.NowPlayingControllerViewModel;
 
-public class PlayerControllerFragment extends Fragment {
+public class PlayerControllerFragment extends BaseFragment {
 
     private ViewNowPlayingControlPanelBinding mBinding;
 

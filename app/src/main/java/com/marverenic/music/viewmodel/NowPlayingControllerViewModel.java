@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
@@ -28,6 +27,7 @@ import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
+import com.marverenic.music.fragments.BaseFragment;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 
@@ -56,21 +56,17 @@ public class NowPlayingControllerViewModel extends BaseObservable {
     private final ObservableInt mSeekbarPosition;
     private final ObservableInt mCurrentPositionObservable;
 
-    public NowPlayingControllerViewModel(Fragment fragment) {
-        this(fragment.getContext(), fragment.getFragmentManager());
-    }
-
-    public NowPlayingControllerViewModel(Context context, FragmentManager fragmentManager) {
-        mContext = context;
-        mFragmentManager = fragmentManager;
+    public NowPlayingControllerViewModel(BaseFragment fragment) {
+        mContext = fragment.getContext();
+        mFragmentManager = fragment.getFragmentManager();
 
         mCurrentPositionObservable = new ObservableInt();
         mSeekbarPosition = new ObservableInt();
 
         JockeyApplication.getComponent(mContext).inject(this);
 
-        // TODO bind to lifecycle
         mPlayerController.getCurrentPosition()
+                .compose(fragment.bindToLifecycle())
                 .subscribe(
                         position -> {
                             mCurrentPositionObservable.set(position);
@@ -82,17 +78,20 @@ public class NowPlayingControllerViewModel extends BaseObservable {
                             Timber.e(throwable, "failed to update position");
                         });
 
-        // TODO bind to lifecycle
-        mPlayerController.getNowPlaying().subscribe(this::setSong,
-                throwable -> Timber.e(throwable, "Failed to set song"));
+        mPlayerController.getNowPlaying()
+                .compose(fragment.bindToLifecycle())
+                .subscribe(this::setSong,
+                        throwable -> Timber.e(throwable, "Failed to set song"));
 
-        // TODO bind to lifecycle
-        mPlayerController.isPlaying().subscribe(this::setPlaying,
-                throwable -> Timber.e(throwable, "Failed to set playing"));
+        mPlayerController.isPlaying()
+                .compose(fragment.bindToLifecycle())
+                .subscribe(this::setPlaying,
+                        throwable -> Timber.e(throwable, "Failed to set playing"));
 
-        // TODO bind to lifecycle
-        mPlayerController.getDuration().subscribe(this::setDuration,
-                throwable -> Timber.e(throwable, "Failed to set duration"));
+        mPlayerController.getDuration()
+                .compose(fragment.bindToLifecycle())
+                .subscribe(this::setDuration,
+                        throwable -> Timber.e(throwable, "Failed to set duration"));
     }
 
     private void setSong(@Nullable Song song) {
