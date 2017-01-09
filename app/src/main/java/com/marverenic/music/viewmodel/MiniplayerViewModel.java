@@ -19,6 +19,7 @@ import com.marverenic.music.BR;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.NowPlayingActivity;
+import com.marverenic.music.fragments.BaseFragment;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.view.ViewUtils;
@@ -45,8 +46,8 @@ public class MiniplayerViewModel extends BaseObservable {
     private final ObservableInt mProgress;
     private final ObservableInt mVerticalTranslation;
 
-    public MiniplayerViewModel(Context context) {
-        mContext = context;
+    public MiniplayerViewModel(BaseFragment fragment) {
+        mContext = fragment.getContext();
         JockeyApplication.getComponent(mContext).inject(this);
 
         mArtwork = new ObservableField<>();
@@ -59,28 +60,32 @@ public class MiniplayerViewModel extends BaseObservable {
 
         setSong(null);
 
-        // TODO bind to lifecycle
         mPlayerController.getNowPlaying()
+                .compose(fragment.bindToLifecycle())
                 .subscribe(this::setSong, throwable -> {
                     Timber.e(throwable, "Failed to set song");
                 });
 
         mPlayerController.isPlaying()
+                .compose(fragment.bindToLifecycle())
                 .subscribe(this::setPlaying, throwable -> {
                     Timber.e(throwable, "Failed to set playing state");
                 });
 
         mPlayerController.getCurrentPosition()
+                .compose(fragment.bindToLifecycle())
                 .subscribe(mProgress::set, throwable -> {
                     Timber.e(throwable, "Failed to set progress");
                 });
 
         mPlayerController.getDuration()
+                .compose(fragment.bindToLifecycle())
                 .subscribe(mDuration::set, throwable -> {
                     Timber.e(throwable, "Failed to set duration");
                 });
 
         mPlayerController.getArtwork()
+                .compose(fragment.bindToLifecycle())
                 .map(artwork -> {
                     if (artwork == null) {
                         return ViewUtils.drawableToBitmap(

@@ -36,7 +36,7 @@ public class MiniplayerFragment extends BaseFragment {
                              Bundle savedInstanceState) {
 
         mBinding = FragmentMiniplayerBinding.inflate(inflater, container, false);
-        mBinding.setViewModel(new MiniplayerViewModel(getContext()));
+        mBinding.setViewModel(new MiniplayerViewModel(this));
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             ProgressBar progressBar = mBinding.miniplayerProgress;
