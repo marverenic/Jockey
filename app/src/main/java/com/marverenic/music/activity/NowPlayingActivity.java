@@ -183,7 +183,6 @@ public class NowPlayingActivity extends BaseActivity
     }
 
     private void startIntentQueue(List<Song> queue, int position) {
-        // TODO implement request queue in PlayerController
         mPlayerController.setQueue(queue, position);
         mPlayerController.play();
     }

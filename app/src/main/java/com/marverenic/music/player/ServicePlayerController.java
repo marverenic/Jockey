@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
+import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.RemoteException;
 
@@ -15,6 +16,7 @@ import com.marverenic.music.data.store.ImmutablePreferenceStore;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.utils.ObservableQueue;
 import com.marverenic.music.utils.Util;
 
 import java.util.ArrayList;
@@ -55,9 +57,18 @@ public class ServicePlayerController implements PlayerController {
     private BehaviorSubject<Bitmap> mArtwork;
     private Subscription mCurrentPositionClock;
 
+    private HandlerThread mIpcThread;
+    private ObservableQueue<Runnable> mRequestQueue;
+    private Subscription mRequestQueueSubscription;
+
     public ServicePlayerController(Context context, PreferenceStore preferenceStore) {
         mContext = context;
         mShuffled = BehaviorSubject.create(preferenceStore.isShuffled());
+
+        mIpcThread = new HandlerThread("Service-IPC");
+        mIpcThread.start();
+        mRequestQueue = new ObservableQueue<>();
+
         startService();
 
         isPlaying().subscribe(
@@ -84,13 +95,35 @@ public class ServicePlayerController implements PlayerController {
             public void onServiceConnected(ComponentName name, IBinder service) {
                 mBinding = IPlayerService.Stub.asInterface(service);
                 initAllProperties();
+                bindRequestQueue();
             }
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
+                // TODO restart service after crash
                 mBinding = null;
+                if (mRequestQueueSubscription != null) {
+                    mRequestQueueSubscription.unsubscribe();
+                    mRequestQueueSubscription = null;
+                }
             }
         }, Context.BIND_WAIVE_PRIORITY);
+    }
+
+    private void bindRequestQueue() {
+        mRequestQueueSubscription = mRequestQueue.toObservable()
+                .subscribeOn(AndroidSchedulers.from(mIpcThread.getLooper()))
+                .observeOn(AndroidSchedulers.from(mIpcThread.getLooper()))
+                .subscribe(Runnable::run, throwable -> {
+                    Timber.e(throwable, "Failed to process request");
+                    // Make sure to restart the request queue, otherwise all future commands will
+                    // be dropped
+                    bindRequestQueue();
+                });
+    }
+
+    private void execute(Runnable command) {
+        mRequestQueue.enqueue(command);
     }
 
     private void startCurrentPositionClock() {
@@ -185,79 +218,79 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public void stop() {
-        if (mBinding != null) {
+        execute(() -> {
             try {
                 mBinding.stop();
                 mPlaying.setValue(false);
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to stop service");
             }
-        }
+        });
     }
 
     @Override
     public void skip() {
-        if (mBinding != null) {
+        execute(() -> {
             try {
                 mBinding.skip();
                 invalidateSong();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to skip current track");
             }
-        }
+        });
     }
 
     @Override
     public void previous() {
-        if (mBinding != null) {
+        execute(() -> {
             try {
                 mBinding.previous();
                 invalidateSong();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to skip backward");
             }
-        }
+        });
     }
 
     @Override
     public void togglePlay() {
-        if (mBinding != null) {
+        execute(() -> {
             try {
                 mBinding.togglePlay();
                 mPlaying.setValue(!mPlaying.getValue(false));
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to toggle playback");
             }
-        }
+        });
     }
 
     @Override
     public void play() {
-        if (mBinding != null) {
+        execute(() -> {
             try {
                 mBinding.play();
                 mPlaying.setValue(true);
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to resume playback");
             }
-        }
+        });
     }
 
     @Override
     public void pause() {
-        if (mBinding != null) {
+        execute(() -> {
             try {
                 mBinding.pause();
                 mPlaying.setValue(false);
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to pause playback");
             }
-        }
+        });
     }
 
     @Override
     public void updatePlayerPreferences(ReadOnlyPreferenceStore preferenceStore) {
-        if (mBinding != null) {
+        execute(() -> {
             try {
                 mBinding.setPreferences(new ImmutablePreferenceStore(preferenceStore));
 
@@ -269,12 +302,12 @@ public class ServicePlayerController implements PlayerController {
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to update remote player preferences");
             }
-        }
+        });
     }
 
     @Override
     public void setQueue(List<Song> newQueue, int newPosition) {
-        if (mBinding != null) {
+        execute(() -> {
             try {
                 mBinding.setQueue(newQueue, newPosition);
                 mQueue.setValue(Collections.unmodifiableList(new ArrayList<>(newQueue)));
@@ -283,7 +316,7 @@ public class ServicePlayerController implements PlayerController {
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to set queue");
             }
-        }
+        });
     }
 
     @Override
@@ -293,19 +326,19 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public void changeSong(int newPosition) {
-        if (mBinding != null) {
+        execute(() -> {
             try {
                 mBinding.changeSong(newPosition);
                 invalidateSong();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to change song");
             }
-        }
+        });
     }
 
     @Override
     public void editQueue(List<Song> queue, int newPosition) {
-        if (mBinding != null) {
+        execute(() -> {
             try {
                 mBinding.editQueue(queue, newPosition);
                 mQueue.setValue(Collections.unmodifiableList(new ArrayList<>(queue)));
@@ -313,67 +346,67 @@ public class ServicePlayerController implements PlayerController {
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to do work");
             }
-        }
+        });
     }
 
     @Override
     public void queueNext(Song song) {
-        if (mBinding != null) {
+        execute(() -> {
             try {
                 mBinding.queueNext(song);
                 mQueue.invalidate();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to do work");
             }
-        }
+        });
     }
 
     @Override
     public void queueNext(List<Song> songs) {
-        if (mBinding != null) {
+        execute(() -> {
             try {
                 mBinding.queueNextList(songs);
                 mQueue.invalidate();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to do work");
             }
-        }
+        });
     }
 
     @Override
     public void queueLast(Song song) {
-        if (mBinding != null) {
+        execute(() -> {
             try {
                 mBinding.queueLast(song);
                 mQueue.invalidate();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to do work");
             }
-        }
+        });
     }
 
     @Override
     public void queueLast(List<Song> songs) {
-        if (mBinding != null) {
+        execute(() -> {
             try {
                 mBinding.queueLastList(songs);
                 mQueue.invalidate();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to do work");
             }
-        }
+        });
     }
 
     @Override
     public void seek(int position) {
-        if (mBinding != null) {
+        execute(() -> {
             try {
                 mBinding.seekTo(position);
                 mCurrentPosition.setValue(position);
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to seek");
             }
-        }
+        });
     }
 
     @Override
@@ -419,14 +452,14 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public void setMultiRepeatCount(int count) {
-        if (mBinding != null) {
+        execute(() -> {
             try {
                 mBinding.setMultiRepeatCount(count);
                 mMultiRepeatCount.setValue(count);
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to do work");
             }
-        }
+        });
     }
 
     @Override
@@ -436,14 +469,14 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public void setSleepTimerEndTime(long timestampInMillis) {
-        if (mBinding != null) {
+        execute(() -> {
             try {
                 mBinding.setSleepTimerEndTime(timestampInMillis);
                 mSleepTimerEndTime.setValue(timestampInMillis);
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to do work");
             }
-        }
+        });
     }
 
     @Override
