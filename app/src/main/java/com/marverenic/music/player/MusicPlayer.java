@@ -460,11 +460,12 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
         switch (focusChange) {
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                mResumeOnFocusGain = isPlaying() || mResumeOnFocusGain;
             case AudioManager.AUDIOFOCUS_LOSS:
                 Timber.i("Focus lost. Pausing music.");
+                boolean resume = isPlaying() || mResumeOnFocusGain;
                 mFocused = false;
                 pause();
+                mResumeOnFocusGain = resume;
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                 Timber.i("Focus lost transiently. Ducking.");
