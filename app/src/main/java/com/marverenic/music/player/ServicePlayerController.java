@@ -176,14 +176,6 @@ public class ServicePlayerController implements PlayerController {
         mSleepTimerEndTime.invalidate();
     }
 
-    private void invalidateSong() {
-        mNowPlaying.invalidate();
-        mQueuePosition.invalidate();
-        mCurrentPosition.invalidate();
-        mDuration.invalidate();
-        if (mMultiRepeatCount.getValue(0) > 0) mMultiRepeatCount.invalidate();
-    }
-
     @Override
     public Observable<String> getError() {
         return mErrorStream.asObservable();
@@ -221,7 +213,7 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.stop();
-                mPlaying.setValue(false);
+                invalidateAll();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to stop service");
             }
@@ -233,7 +225,7 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.skip();
-                invalidateSong();
+                invalidateAll();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to skip current track");
             }
@@ -245,7 +237,7 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.previous();
-                invalidateSong();
+                invalidateAll();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to skip backward");
             }
@@ -257,7 +249,7 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.togglePlay();
-                mPlaying.setValue(!mPlaying.getValue(false));
+                invalidateAll();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to toggle playback");
             }
@@ -269,7 +261,7 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.play();
-                mPlaying.setValue(true);
+                invalidateAll();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to resume playback");
             }
@@ -281,7 +273,7 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.pause();
-                mPlaying.setValue(false);
+                invalidateAll();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to pause playback");
             }
@@ -293,12 +285,7 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.setPreferences(new ImmutablePreferenceStore(preferenceStore));
-
-                if (mShuffled.getValue() != preferenceStore.isShuffled()) {
-                    mQueue.invalidate();
-                    mQueuePosition.invalidate();
-                    mShuffled.onNext(preferenceStore.isShuffled());
-                }
+                invalidateAll();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to update remote player preferences");
             }
@@ -310,9 +297,7 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.setQueue(newQueue, newPosition);
-                mQueue.setValue(Collections.unmodifiableList(new ArrayList<>(newQueue)));
-                mQueuePosition.setValue(newPosition);
-                invalidateSong();
+                invalidateAll();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to set queue");
             }
@@ -329,7 +314,8 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.changeSong(newPosition);
-                invalidateSong();
+                mNowPlaying.invalidate();
+                mQueuePosition.invalidate();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to change song");
             }
@@ -341,8 +327,7 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.editQueue(queue, newPosition);
-                mQueue.setValue(Collections.unmodifiableList(new ArrayList<>(queue)));
-                mQueuePosition.setValue(newPosition);
+                invalidateAll();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to do work");
             }
@@ -354,7 +339,7 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.queueNext(song);
-                mQueue.invalidate();
+                invalidateAll();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to do work");
             }
@@ -366,7 +351,7 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.queueNextList(songs);
-                mQueue.invalidate();
+                invalidateAll();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to do work");
             }
@@ -378,7 +363,7 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.queueLast(song);
-                mQueue.invalidate();
+                invalidateAll();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to do work");
             }
@@ -390,7 +375,7 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.queueLastList(songs);
-                mQueue.invalidate();
+                invalidateAll();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to do work");
             }
@@ -402,7 +387,7 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.seekTo(position);
-                mCurrentPosition.setValue(position);
+                invalidateAll();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to seek");
             }
