@@ -562,6 +562,10 @@ public class ServicePlayerController implements PlayerController {
             return mSubject.hasObservers();
         }
 
+        public void setValue(T value) {
+            mSubject.onNext(Optional.ofNullable(value));
+        }
+
         protected BehaviorSubject<Optional<T>> getSubject() {
             return mSubject;
         }
