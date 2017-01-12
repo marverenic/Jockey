@@ -58,6 +58,7 @@ public class QueueSongViewModel extends SongViewModel {
             mNowPlayingSubscription.unsubscribe();
         }
 
+        mPlaying = false;
         mNowPlayingSubscription = mPlayerController.getQueuePosition()
                 .compose(bindToLifecycle())
                 .subscribe(queuePosition -> {
