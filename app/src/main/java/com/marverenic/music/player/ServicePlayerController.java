@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
-import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.RemoteException;
 
@@ -20,7 +19,6 @@ import com.marverenic.music.utils.ObservableQueue;
 import com.marverenic.music.utils.Optional;
 import com.marverenic.music.utils.Util;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -58,16 +56,12 @@ public class ServicePlayerController implements PlayerController {
     private BehaviorSubject<Bitmap> mArtwork;
     private Subscription mCurrentPositionClock;
 
-    private HandlerThread mIpcThread;
     private ObservableQueue<Runnable> mRequestQueue;
     private Subscription mRequestQueueSubscription;
 
     public ServicePlayerController(Context context, PreferenceStore preferenceStore) {
         mContext = context;
         mShuffled = BehaviorSubject.create(preferenceStore.isShuffled());
-
-        mIpcThread = new HandlerThread("Service-IPC");
-        mIpcThread.start();
         mRequestQueue = new ObservableQueue<>();
 
         startService();
@@ -113,8 +107,6 @@ public class ServicePlayerController implements PlayerController {
 
     private void bindRequestQueue() {
         mRequestQueueSubscription = mRequestQueue.toObservable()
-                .subscribeOn(AndroidSchedulers.from(mIpcThread.getLooper()))
-                .observeOn(AndroidSchedulers.from(mIpcThread.getLooper()))
                 .subscribe(Runnable::run, throwable -> {
                     Timber.e(throwable, "Failed to process request");
                     // Make sure to restart the request queue, otherwise all future commands will
