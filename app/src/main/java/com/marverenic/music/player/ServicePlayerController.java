@@ -483,7 +483,15 @@ public class ServicePlayerController implements PlayerController {
                     });
         }
 
-        return mArtwork;
+        return mNowPlaying.getSubject()
+                .map(Optional::isPresent)
+                .switchMap(current -> {
+                    if (current) {
+                        return mArtwork;
+                    } else {
+                        return Observable.empty();
+                    }
+                });
     }
 
     /**
