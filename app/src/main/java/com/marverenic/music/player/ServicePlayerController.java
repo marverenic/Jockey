@@ -17,6 +17,7 @@ import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.utils.ObservableQueue;
+import com.marverenic.music.utils.Optional;
 import com.marverenic.music.utils.Util;
 
 import java.util.ArrayList;
@@ -531,7 +532,7 @@ public class ServicePlayerController implements PlayerController {
     private static final class Prop<T> {
 
         private final String mName;
-        private final BehaviorSubject<T> mSubject;
+        private final BehaviorSubject<Optional<T>> mSubject;
 
         private Retriever<T> mRetriever;
 
@@ -545,10 +546,12 @@ public class ServicePlayerController implements PlayerController {
         }
 
         public void invalidate() {
+            mSubject.onNext(Optional.empty());
+
             if (mRetriever != null) {
                 Observable.fromCallable(mRetriever::retrieve)
-                        .subscribeOn(Schedulers.computation())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.newThread())
+                        .map(Optional::ofNullable)
                         .subscribe(mSubject::onNext, throwable -> {
                             Timber.e(throwable, "Failed to fetch " + mName + " property.");
                         });
@@ -559,22 +562,17 @@ public class ServicePlayerController implements PlayerController {
             return mSubject.hasObservers();
         }
 
-        public void setValue(T value) {
-            mSubject.onNext(value);
-        }
-
-        public T getValue(T defaultValue) {
-            T value = mSubject.getValue();
-
-            if (value == null) {
-                return defaultValue;
-            } else {
-                return value;
-            }
+        protected BehaviorSubject<Optional<T>> getSubject() {
+            return mSubject;
         }
 
         public Observable<T> getObservable() {
-            return mSubject.asObservable();
+            return mSubject.asObservable()
+                    .subscribeOn(AndroidSchedulers.mainThread())
+                    .filter(Optional::isPresent)
+                    .map(Optional::getValue)
+                    .distinctUntilChanged()
+                    .observeOn(AndroidSchedulers.mainThread());
         }
 
         interface Retriever<T> {
