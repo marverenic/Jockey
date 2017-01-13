@@ -322,7 +322,7 @@ public class ServicePlayerController implements PlayerController {
                 mBinding.editQueue(queue, newPosition);
                 invalidateAll();
             } catch (RemoteException exception) {
-                Timber.e(exception, "Failed to do work");
+                Timber.e(exception, "Failed to edit queue");
             }
         });
     }
@@ -334,7 +334,7 @@ public class ServicePlayerController implements PlayerController {
                 mBinding.queueNext(song);
                 invalidateAll();
             } catch (RemoteException exception) {
-                Timber.e(exception, "Failed to do work");
+                Timber.e(exception, "Failed to queue next song");
             }
         });
     }
@@ -346,7 +346,7 @@ public class ServicePlayerController implements PlayerController {
                 mBinding.queueNextList(songs);
                 invalidateAll();
             } catch (RemoteException exception) {
-                Timber.e(exception, "Failed to do work");
+                Timber.e(exception, "Failed to queue next songs");
             }
         });
     }
@@ -358,7 +358,7 @@ public class ServicePlayerController implements PlayerController {
                 mBinding.queueLast(song);
                 invalidateAll();
             } catch (RemoteException exception) {
-                Timber.e(exception, "Failed to do work");
+                Timber.e(exception, "Failed to queue last song");
             }
         });
     }
@@ -370,7 +370,7 @@ public class ServicePlayerController implements PlayerController {
                 mBinding.queueLastList(songs);
                 invalidateAll();
             } catch (RemoteException exception) {
-                Timber.e(exception, "Failed to do work");
+                Timber.e(exception, "Failed to queue last songs");
             }
         });
     }
@@ -435,7 +435,7 @@ public class ServicePlayerController implements PlayerController {
                 mBinding.setMultiRepeatCount(count);
                 mMultiRepeatCount.setValue(count);
             } catch (RemoteException exception) {
-                Timber.e(exception, "Failed to do work");
+                Timber.e(exception, "Failed to set multi-repeat count");
             }
         });
     }
@@ -452,7 +452,7 @@ public class ServicePlayerController implements PlayerController {
                 mBinding.setSleepTimerEndTime(timestampInMillis);
                 mSleepTimerEndTime.setValue(timestampInMillis);
             } catch (RemoteException exception) {
-                Timber.e(exception, "Failed to do work");
+                Timber.e(exception, "Failed to set sleep-timer end time");
             }
         });
     }
