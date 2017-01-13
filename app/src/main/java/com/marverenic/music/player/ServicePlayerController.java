@@ -278,6 +278,7 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.setPreferences(new ImmutablePreferenceStore(preferenceStore));
+                mShuffled.onNext(preferenceStore.isShuffled());
                 invalidateAll();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to update remote player preferences");
@@ -420,7 +421,7 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public Observable<Boolean> isShuffleEnabled() {
-        return mShuffled.asObservable();
+        return mShuffled.asObservable().distinctUntilChanged();
     }
 
     @Override
