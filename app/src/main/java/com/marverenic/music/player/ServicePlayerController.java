@@ -126,8 +126,7 @@ public class ServicePlayerController implements PlayerController {
 
         mCurrentPositionClock = Observable.interval(POSITION_TICK_MS, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.computation())
-                .flatMap(tick -> getCurrentPosition().take(1))
-                .subscribe(currentPosition -> {
+                .subscribe(tick -> {
                     if (!mCurrentPosition.isSubscribedTo()) {
                         stopCurrentPositionClock();
                     } else {
