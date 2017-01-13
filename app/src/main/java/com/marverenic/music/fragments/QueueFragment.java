@@ -125,7 +125,7 @@ public class QueueFragment extends BaseFragment {
             mPlayerController.isShuffleEnabled()
                     .skip(1)
                     .compose(bindToLifecycle())
-                    .flatMap(trigger -> mPlayerController.getQueuePosition().take(1))
+                    .flatMap(trigger -> mPlayerController.getQueuePosition().skip(1).take(1))
                     .subscribe(this::setQueuePosition, throwable -> {
                         Timber.e(throwable, "Failed to scroll to now playing after shuffling");
                     });
