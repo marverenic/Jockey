@@ -28,6 +28,7 @@ import com.marverenic.music.view.DragDividerDecoration;
 import com.marverenic.music.view.InsetDecoration;
 import com.marverenic.music.view.QueueAnimator;
 import com.marverenic.music.view.SnappingScroller;
+import com.trello.rxlifecycle.FragmentEvent;
 
 import java.util.List;
 
@@ -117,14 +118,14 @@ public class QueueFragment extends BaseFragment {
 
             mPlayerController.getQueuePosition()
                     .take(1)
-                    .compose(bindToLifecycle())
+                    .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                     .subscribe(this::setQueuePosition, throwable -> {
                         Timber.e(throwable, "Failed to scroll to queue position");
                     });
 
             mPlayerController.isShuffleEnabled()
                     .skip(1)
-                    .compose(bindToLifecycle())
+                    .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                     .flatMap(trigger -> mPlayerController.getQueuePosition().skip(1).take(1))
                     .subscribe(this::setQueuePosition, throwable -> {
                         Timber.e(throwable, "Failed to scroll to now playing after shuffling");
@@ -132,7 +133,7 @@ public class QueueFragment extends BaseFragment {
 
             mPlayerController.getQueuePosition()
                     .skip(1)
-                    .compose(bindToLifecycle())
+                    .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                     .subscribe(this::onQueuePositionChanged, throwable -> {
                         Timber.e(throwable, "Failed to scroll to queue position");
                     });

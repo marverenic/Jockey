@@ -15,6 +15,7 @@ import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.fragments.BaseFragment;
 import com.marverenic.music.model.Song;
+import com.trello.rxlifecycle.FragmentEvent;
 import com.trello.rxlifecycle.LifecycleTransformer;
 
 import java.util.List;
@@ -39,7 +40,7 @@ public class QueueSongViewModel extends SongViewModel {
     public QueueSongViewModel(BaseFragment fragment, List<Song> songs,
                               OnRemoveListener removeListener) {
         super(fragment.getContext(), fragment.getFragmentManager(), songs);
-        mLifecycleTransformer = fragment.bindToLifecycle();
+        mLifecycleTransformer = fragment.bindUntilEvent(FragmentEvent.DESTROY_VIEW);
         mContext = fragment.getContext();
         mFragmentManager = fragment.getFragmentManager();
         mRemoveListener = removeListener;
