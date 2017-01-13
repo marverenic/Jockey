@@ -555,9 +555,7 @@ public class ServicePlayerController implements PlayerController {
 
             if (mRetriever != null) {
                 Observable.fromCallable(mRetriever::retrieve)
-                        .subscribeOn(Schedulers.newThread())
                         .map(Optional::ofNullable)
-                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(mSubject::onNext, throwable -> {
                             Timber.e(throwable, "Failed to fetch " + mName + " property.");
                         });
