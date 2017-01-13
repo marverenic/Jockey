@@ -206,13 +206,11 @@ public class QueueFragment extends BaseFragment {
     }
 
     private void setQueuePosition(int currentIndex) {
-        Timber.i("setQueuePosition to %d", currentIndex);
         lastPlayIndex = currentIndex;
         scrollToNowPlaying();
     }
 
     private void onQueuePositionChanged(int currentIndex) {
-        Timber.i("onQueuePositionChanged to %d", currentIndex);
         lastPlayIndex = currentIndex;
         if (shouldScrollToCurrent()) {
             smoothScrollToNowPlaying();
