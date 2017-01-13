@@ -533,12 +533,17 @@ public class ServicePlayerController implements PlayerController {
 
         private final String mName;
         private final BehaviorSubject<Optional<T>> mSubject;
+        private final Observable<T> mObservable;
 
         private Retriever<T> mRetriever;
 
         public Prop(String propertyName) {
             mName = propertyName;
             mSubject = BehaviorSubject.create();
+
+            mObservable = mSubject.filter(Optional::isPresent)
+                    .map(Optional::getValue)
+                    .distinctUntilChanged();
         }
 
         public void setFunction(Retriever<T> retriever) {
@@ -552,6 +557,7 @@ public class ServicePlayerController implements PlayerController {
                 Observable.fromCallable(mRetriever::retrieve)
                         .subscribeOn(Schedulers.newThread())
                         .map(Optional::ofNullable)
+                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(mSubject::onNext, throwable -> {
                             Timber.e(throwable, "Failed to fetch " + mName + " property.");
                         });
@@ -571,12 +577,7 @@ public class ServicePlayerController implements PlayerController {
         }
 
         public Observable<T> getObservable() {
-            return mSubject.asObservable()
-                    .subscribeOn(AndroidSchedulers.mainThread())
-                    .filter(Optional::isPresent)
-                    .map(Optional::getValue)
-                    .distinctUntilChanged()
-                    .observeOn(AndroidSchedulers.mainThread());
+            return mObservable;
         }
 
         interface Retriever<T> {
