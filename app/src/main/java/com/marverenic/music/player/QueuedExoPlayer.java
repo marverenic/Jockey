@@ -217,6 +217,8 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
             if (nowPlayingDiff) {
                 prepare(isPlaying(), true);
+            } else if ((queueDiff && !isPlaying())) {
+                prepare(false, false);
             } else {
                 mInvalid |= queueDiff;
             }
