@@ -76,16 +76,6 @@ public class QueueFragment extends BaseFragment {
             view.setPadding(0, 0, 0, 0);
         }
 
-        mPlayerController.isShuffleEnabled()
-                .compose(bindToLifecycle())
-                .flatMap(trigger -> mPlayerController.getQueuePosition().skip(1).take(1))
-                .subscribe(queuePosition -> {
-                    lastPlayIndex = queuePosition;
-                    scrollToNowPlaying();
-                }, throwable -> {
-                    Timber.e(throwable, "Failed to scroll to now playing after shuffling");
-                });
-
         return view;
     }
 
@@ -126,6 +116,22 @@ public class QueueFragment extends BaseFragment {
             });
 
             mPlayerController.getQueuePosition()
+                    .take(1)
+                    .compose(bindToLifecycle())
+                    .subscribe(this::setQueuePosition, throwable -> {
+                        Timber.e(throwable, "Failed to scroll to queue position");
+                    });
+
+            mPlayerController.isShuffleEnabled()
+                    .skip(1)
+                    .compose(bindToLifecycle())
+                    .flatMap(trigger -> mPlayerController.getQueuePosition().take(1))
+                    .subscribe(this::setQueuePosition, throwable -> {
+                        Timber.e(throwable, "Failed to scroll to now playing after shuffling");
+                    });
+
+            mPlayerController.getQueuePosition()
+                    .skip(1)
                     .compose(bindToLifecycle())
                     .subscribe(this::onQueuePositionChanged, throwable -> {
                         Timber.e(throwable, "Failed to scroll to queue position");
@@ -199,7 +205,14 @@ public class QueueFragment extends BaseFragment {
         }
     }
 
-    public void onQueuePositionChanged(int currentIndex) {
+    private void setQueuePosition(int currentIndex) {
+        Timber.i("setQueuePosition to %d", currentIndex);
+        lastPlayIndex = currentIndex;
+        scrollToNowPlaying();
+    }
+
+    private void onQueuePositionChanged(int currentIndex) {
+        Timber.i("onQueuePositionChanged to %d", currentIndex);
         lastPlayIndex = currentIndex;
         if (shouldScrollToCurrent()) {
             smoothScrollToNowPlaying();
