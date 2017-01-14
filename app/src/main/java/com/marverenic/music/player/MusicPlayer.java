@@ -1097,6 +1097,33 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         return false;
     }
 
+    public PlayerState getState() {
+        return new PlayerState.Builder()
+                .setPlaying(isPlaying())
+                .setQueuePosition(getQueuePosition())
+                .setQueue(mQueue)
+                .setShuffledQueue(mQueueShuffled)
+                .setSeekPosition(getCurrentPosition())
+                .build();
+    }
+
+    public void restorePlayerState(PlayerState state) {
+        mQueue = state.getQueue();
+        mQueueShuffled = state.getShuffledQueue();
+
+        setBackingQueue(state.getQueuePosition());
+        seekTo(state.getSeekPosition());
+
+        if (state.isPlaying()) {
+            play();
+        } else {
+            pause();
+        }
+
+        updateNowPlaying();
+        updateUi();
+    }
+
     /**
      * A callback for receiving information about song changes -- useful for integrating
      * {@link MusicPlayer} with other components

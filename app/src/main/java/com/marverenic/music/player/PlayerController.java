@@ -8,13 +8,14 @@ import com.marverenic.music.model.Song;
 import java.util.List;
 
 import rx.Observable;
+import rx.Single;
 
 public interface PlayerController {
 
     Observable<String> getError();
     Observable<String> getInfo();
 
-    Observable<PlayerState> getPlayerState();
+    Single<PlayerState> getPlayerState();
     void restorePlayerState(PlayerState restoreState);
 
     void stop();

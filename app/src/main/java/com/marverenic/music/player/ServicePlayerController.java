@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.Single;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -179,25 +180,20 @@ public class ServicePlayerController implements PlayerController {
     }
 
     @Override
-    public Observable<PlayerState> getPlayerState() {
-        return isPlaying()
-                .map(isPlaying -> {
-                    PlayerState.Builder builder = new PlayerState.Builder();
-                    builder.setPlaying(isPlaying);
-                    return builder;
-                })
-                .concatMap(builder -> getQueue().map(builder::setQueue))
-                .concatMap(builder -> getQueuePosition().map(builder::setQueuePosition))
-                .concatMap(builder -> getCurrentPosition().map(builder::setSeekPosition))
-                .map(PlayerState.Builder::build);
+    public Single<PlayerState> getPlayerState() {
+        return Observable.fromCallable(mBinding::getPlayerState).toSingle();
     }
 
     @Override
     public void restorePlayerState(PlayerState restoreState) {
-        editQueue(restoreState.getQueue(), restoreState.getQueuePosition());
-        seek(restoreState.getSeekPosition());
-
-        if (restoreState.isPlaying()) play();
+        execute(() -> {
+            try {
+                mBinding.restorePlayerState(restoreState);
+                invalidateAll();
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to restore player state");
+            }
+        });
     }
 
     @Override

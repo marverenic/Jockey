@@ -33,6 +33,7 @@ import com.marverenic.music.dialog.NumberPickerDialogFragment;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.player.PlayerState;
 import com.marverenic.music.utils.UriUtils;
 import com.marverenic.music.view.TimeView;
 import com.marverenic.music.viewmodel.NowPlayingArtworkViewModel;
@@ -513,8 +514,7 @@ public class NowPlayingActivity extends BaseActivity
 
     private void clearQueue() {
         mPlayerController.getPlayerState()
-                .take(1)
-                .compose(bindToLifecycle())
+                .compose(this.<PlayerState>bindToLifecycle().forSingle())
                 .subscribe(playerState -> {
                     mPlayerController.clearQueue();
 
