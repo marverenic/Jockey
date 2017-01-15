@@ -26,9 +26,7 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
-public abstract class BaseActivity extends RxAppCompatActivity
-        implements PlayerController.UpdateListener, PlayerController.InfoListener,
-        PlayerController.ErrorListener {
+public abstract class BaseActivity extends RxAppCompatActivity {
 
     // Used when resuming the Activity to respond to a potential theme change
     @PrimaryTheme
@@ -36,8 +34,9 @@ public abstract class BaseActivity extends RxAppCompatActivity
     @AccentTheme
     private int mAccentColor;
 
-    @Inject PreferenceStore mPreferenceStore;
-    @Inject ThemeStore mThemeStore;
+    @Inject PreferenceStore _mPreferenceStore;
+    @Inject ThemeStore _mThemeStore;
+    @Inject PlayerController _mPlayerController;
 
     /**
      * @inheritDoc
@@ -46,16 +45,28 @@ public abstract class BaseActivity extends RxAppCompatActivity
     public void onCreate(Bundle savedInstanceState) {
         JockeyApplication.getComponent(this).injectBaseActivity(this);
 
-        mThemeStore.setTheme(this);
-        mPrimaryColor = mPreferenceStore.getPrimaryColor();
-        mAccentColor = mPreferenceStore.getAccentColor();
+        _mThemeStore.setTheme(this);
+        mPrimaryColor = _mPreferenceStore.getPrimaryColor();
+        mAccentColor = _mPreferenceStore.getAccentColor();
 
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-        if (mPreferenceStore.showFirstStart()) {
+        if (_mPreferenceStore.showFirstStart()) {
             showFirstRunDialog();
         }
+
+        _mPlayerController.getInfo()
+                .compose(bindToLifecycle())
+                .subscribe(this::showSnackbar, throwable -> {
+                    Timber.e(throwable, "Failed to show info message");
+                });
+
+        _mPlayerController.getError()
+                .compose(bindToLifecycle())
+                .subscribe(this::showSnackbar, throwable -> {
+                    Timber.e(throwable, "Failed to show error message");
+                });
     }
 
     private void showFirstRunDialog() {
@@ -74,8 +85,8 @@ public abstract class BaseActivity extends RxAppCompatActivity
                 .setView(messageView)
                 .setPositiveButton(R.string.action_agree,
                         (dialog, which) -> {
-                            mPreferenceStore.setAllowLogging(pref.isChecked());
-                            mPreferenceStore.setShowFirstStart(false);
+                            _mPreferenceStore.setAllowLogging(pref.isChecked());
+                            _mPreferenceStore.setShowFirstStart(false);
                         })
                 .setCancelable(false)
                 .show();
@@ -107,46 +118,15 @@ public abstract class BaseActivity extends RxAppCompatActivity
     public void onResume() {
         super.onResume();
 
-        /*  Start the player service. If it's already running, this does nothing.
-            This call is placed here because the service is dependent on having permission to
-            storage. Permission results will always trigger onResume (even when requested with
-            RxPermissions), so we can use this to promptly start the service.
-         */
-        PlayerController.startService(getApplicationContext());
-
         // If the theme was changed since this Activity was created, or the automatic day/night
         // theme has changed state, recreate this activity
-        mThemeStore.setTheme(this);
-        boolean primaryDiff = mPrimaryColor != mPreferenceStore.getPrimaryColor();
-        boolean accentDiff = mAccentColor != mPreferenceStore.getAccentColor();
+        _mThemeStore.setTheme(this);
+        boolean primaryDiff = mPrimaryColor != _mPreferenceStore.getPrimaryColor();
+        boolean accentDiff = mAccentColor != _mPreferenceStore.getAccentColor();
 
         if (primaryDiff || accentDiff) {
             recreate();
-        } else {
-            PlayerController.registerUpdateListener(this);
-            PlayerController.registerInfoListener(this);
-            PlayerController.registerErrorListener(this);
-            onUpdate();
         }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public void onUpdate() {
-
-    }
-
-    /**
-     * @inheritDoc
-     */
-    @Override
-    public void onPause() {
-        super.onPause();
-        PlayerController.unregisterUpdateListener(this);
-        PlayerController.unregisterInfoListener(this);
-        PlayerController.unregisterErrorListener(this);
     }
 
     /**
@@ -169,16 +149,6 @@ public abstract class BaseActivity extends RxAppCompatActivity
         Timber.v("onBackPressed");
         super.onBackPressed();
         finish();
-    }
-
-    @Override
-    public void onInfo(String message) {
-        showSnackbar(message);
-    }
-
-    @Override
-    public void onError(String message) {
-        showSnackbar(message);
     }
 
     protected void showSnackbar(String message) {

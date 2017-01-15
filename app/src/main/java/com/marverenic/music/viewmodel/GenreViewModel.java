@@ -24,6 +24,7 @@ public class GenreViewModel extends BaseObservable {
     private static final String TAG_PLAYLIST_DIALOG = "GenreViewModel.PlaylistDialog";
 
     @Inject MusicStore mMusicStore;
+    @Inject PlayerController mPlayerController;
 
     private Context mContext;
     private FragmentManager mFragmentManager;
@@ -63,7 +64,7 @@ public class GenreViewModel extends BaseObservable {
             switch (menuItem.getItemId()) {
                 case R.id.menu_item_queue_item_next:
                     mMusicStore.getSongs(mGenre).subscribe(
-                            PlayerController::queueNext,
+                            mPlayerController::queueNext,
                             throwable -> {
                                 Timber.e(throwable, "Failed to get songs");
                             });
@@ -71,7 +72,7 @@ public class GenreViewModel extends BaseObservable {
                     return true;
                 case R.id.menu_item_queue_item_last:
                     mMusicStore.getSongs(mGenre).subscribe(
-                            PlayerController::queueLast,
+                            mPlayerController::queueLast,
                             throwable -> {
                                 Timber.e(throwable, "Failed to get songs");
                             });

@@ -30,6 +30,7 @@ public class SongViewModel extends BaseObservable {
 
     @Inject MusicStore mMusicStore;
     @Inject PreferenceStore mPrefStore;
+    @Inject PlayerController mPlayerController;
 
     private Context mContext;
     private FragmentManager mFragmentManager;
@@ -81,8 +82,8 @@ public class SongViewModel extends BaseObservable {
 
     public View.OnClickListener onClickSong() {
         return v -> {
-            PlayerController.setQueue(mSongList, mIndex);
-            PlayerController.play();
+            mPlayerController.setQueue(mSongList, mIndex);
+            mPlayerController.play();
 
             if (mPrefStore.openNowPlayingOnNewQueue()) {
                 mContext.startActivity(NowPlayingActivity.newIntent(mContext));
@@ -103,10 +104,10 @@ public class SongViewModel extends BaseObservable {
         return menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.menu_item_queue_item_next:
-                    PlayerController.queueNext(mReference);
+                    mPlayerController.queueNext(mReference);
                     return true;
                 case R.id.menu_item_queue_item_last:
-                    PlayerController.queueLast(mReference);
+                    mPlayerController.queueLast(mReference);
                     return true;
                 case R.id.menu_item_navigate_to_artist:
                     mMusicStore.findArtistById(mReference.getArtistId()).subscribe(

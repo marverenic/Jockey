@@ -1060,14 +1060,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         return mArtwork;
     }
 
-    /**
-     * @return The state that the backing {@link QueuedMediaPlayer is in}
-     * @see QueuedMediaPlayer#getState()
-     */
-    public PlayerState getState() {
-        return mMediaPlayer.getState();
-    }
-
     protected MediaSessionCompat getMediaSession() {
         return mMediaSession;
     }
@@ -1109,6 +1101,33 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                     getNowPlaying().getSongName()));
         }
         return false;
+    }
+
+    public PlayerState getState() {
+        return new PlayerState.Builder()
+                .setPlaying(isPlaying())
+                .setQueuePosition(getQueuePosition())
+                .setQueue(mQueue)
+                .setShuffledQueue(mQueueShuffled)
+                .setSeekPosition(getCurrentPosition())
+                .build();
+    }
+
+    public void restorePlayerState(PlayerState state) {
+        mQueue = state.getQueue();
+        mQueueShuffled = state.getShuffledQueue();
+
+        setBackingQueue(state.getQueuePosition());
+        seekTo(state.getSeekPosition());
+
+        if (state.isPlaying()) {
+            play();
+        } else {
+            pause();
+        }
+
+        updateNowPlaying();
+        updateUi();
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.marverenic.music.data.inject;
 
+import com.marverenic.music.activity.AboutActivity;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.activity.MainActivity;
 import com.marverenic.music.activity.NowPlayingActivity;
@@ -22,11 +23,14 @@ import com.marverenic.music.fragments.GenreFragment;
 import com.marverenic.music.fragments.MiniplayerFragment;
 import com.marverenic.music.fragments.PlaylistFragment;
 import com.marverenic.music.fragments.PreferenceFragment;
+import com.marverenic.music.fragments.QueueFragment;
 import com.marverenic.music.fragments.SongFragment;
 import com.marverenic.music.player.MusicPlayer;
+import com.marverenic.music.player.ServicePlayerController;
 import com.marverenic.music.viewmodel.AlbumViewModel;
 import com.marverenic.music.viewmodel.ArtistViewModel;
 import com.marverenic.music.viewmodel.GenreViewModel;
+import com.marverenic.music.viewmodel.MiniplayerViewModel;
 import com.marverenic.music.viewmodel.NowPlayingArtworkViewModel;
 import com.marverenic.music.viewmodel.NowPlayingControllerViewModel;
 import com.marverenic.music.viewmodel.PlaylistViewModel;
@@ -40,6 +44,7 @@ public interface JockeyGraph {
 
     void inject(MainActivity activity);
     void inject(SearchActivity activity);
+    void inject(AboutActivity activity);
     void inject(NowPlayingActivity activity);
     void inject(AlbumActivity activity);
     void inject(ArtistActivity activity);
@@ -53,6 +58,7 @@ public interface JockeyGraph {
     void inject(ArtistFragment fragment);
     void inject(PlaylistFragment fragment);
     void inject(GenreFragment fragment);
+    void inject(QueueFragment fragment);
     void inject(EqualizerFragment fragment);
     void inject(PreferenceFragment fragment);
     void inject(DirectoryListFragment fragment);
@@ -62,6 +68,7 @@ public interface JockeyGraph {
     void inject(AppendPlaylistDialogFragment dialogFragment);
     void inject(PlaylistCollisionDialogFragment dialogFragment);
 
+    void inject(MiniplayerViewModel viewModel);
     void inject(NowPlayingControllerViewModel viewModel);
     void inject(NowPlayingArtworkViewModel viewModel);
     void inject(SongViewModel viewModel);
@@ -74,6 +81,7 @@ public interface JockeyGraph {
 
     void inject(LibraryEmptyState emptyState);
 
+    void inject(ServicePlayerController.Listener broadcastReceiver);
     void inject(MusicPlayer musicPlayer);
 
 }

@@ -35,6 +35,7 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
         FragmentManager.OnBackStackChangedListener {
 
     @Inject PreferenceStore mPrefStore;
+    @Inject PlayerController mPlayerController;
 
     private RemoteEqualizer equalizer;
     private EqualizerFrame[] sliders;
@@ -128,7 +129,7 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
         mPrefStore.setEqualizerSettings(equalizer.getProperties());
         mPrefStore.setEqualizerEnabled(equalizerToggle.isChecked());
 
-        PlayerController.updatePlayerPreferences(mPrefStore);
+        mPlayerController.updatePlayerPreferences(mPrefStore);
     }
 
     @Override

@@ -53,6 +53,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     private boolean mInvalid;
     private List<Song> mQueue;
     private int mQueueIndex;
+    private int mPrevDuration;
 
     static {
         AudioTrack.enablePreV21AudioSessionWorkaround = true;
@@ -217,6 +218,8 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
             if (nowPlayingDiff) {
                 prepare(isPlaying(), true);
+            } else if ((queueDiff && !isPlaying())) {
+                prepare(false, false);
             } else {
                 mInvalid |= queueDiff;
             }
@@ -352,18 +355,18 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
     @Override
     public int getCurrentPosition() {
-        return (int) Math.min(mExoPlayer.getCurrentPosition(), getDuration());
+        return (int) mExoPlayer.getCurrentPosition();
     }
 
     @Override
     public int getDuration() {
-        return (int) mExoPlayer.getDuration();
+        if (mExoPlayer.getDuration() > 0) {
+            mPrevDuration = (int) mExoPlayer.getDuration();
+        }
+
+        return mPrevDuration;
     }
 
-    @Override
-    public PlayerState getState() {
-        return mState;
-    }
 
     @Override
     public boolean isComplete() {

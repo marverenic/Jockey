@@ -6,16 +6,14 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.marverenic.music.databinding.ViewNowPlayingControlPanelBinding;
-import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.viewmodel.NowPlayingControllerViewModel;
 
-public class PlayerControllerFragment extends Fragment implements PlayerController.UpdateListener {
+public class PlayerControllerFragment extends BaseFragment {
 
     private ViewNowPlayingControlPanelBinding mBinding;
 
@@ -25,8 +23,6 @@ public class PlayerControllerFragment extends Fragment implements PlayerControll
 
         mBinding = ViewNowPlayingControlPanelBinding.inflate(inflater, container, false);
         mBinding.setViewModel(new NowPlayingControllerViewModel(this));
-
-        onUpdate();
 
         Drawable progress = mBinding.nowPlayingControllerScrubber.nowPlayingSeekBar.getProgressDrawable();
         if (progress instanceof StateListDrawable) {
@@ -39,30 +35,6 @@ public class PlayerControllerFragment extends Fragment implements PlayerControll
         }
 
         return mBinding.getRoot();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        PlayerController.unregisterUpdateListener(this);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        PlayerController.registerUpdateListener(this);
-        onUpdate();
-    }
-
-    @Override
-    public void onUpdate() {
-        if (mBinding == null || mBinding.getViewModel() == null) {
-            return;
-        }
-
-        mBinding.getViewModel().setSong(PlayerController.getNowPlaying());
-        mBinding.getViewModel().setPlaying(PlayerController.isPlaying());
-        mBinding.executePendingBindings();
     }
 
 }

@@ -4,7 +4,7 @@ import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.NinePatchDrawable;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,20 +16,31 @@ import android.view.ViewGroup;
 
 import com.marverenic.heterogeneousadapter.DragDropAdapter;
 import com.marverenic.heterogeneousadapter.DragDropDecoration;
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.adapter.LibraryEmptyState;
 import com.marverenic.music.adapter.QueueSection;
 import com.marverenic.music.adapter.SpacerSingleton;
+import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.view.DragBackgroundDecoration;
 import com.marverenic.music.view.DragDividerDecoration;
 import com.marverenic.music.view.InsetDecoration;
 import com.marverenic.music.view.QueueAnimator;
 import com.marverenic.music.view.SnappingScroller;
+import com.trello.rxlifecycle.FragmentEvent;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import timber.log.Timber;
 
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 
-public class QueueFragment extends Fragment implements PlayerController.UpdateListener {
+public class QueueFragment extends BaseFragment {
+
+    @Inject PlayerController mPlayerController;
 
     private int lastPlayIndex;
 
@@ -39,14 +50,25 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
     private SpacerSingleton[] mBottomSpacers;
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        JockeyApplication.getComponent(this).inject(this);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.list, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.list);
 
-        setupAdapter();
         setupRecyclerView();
+
+        mPlayerController.getQueue()
+                .compose(bindToLifecycle())
+                .subscribe(this::setupAdapter, throwable -> {
+                    Timber.e(throwable, "Failed to update queue");
+                });
 
         // Remove the list padding on landscape tablets
         Configuration config = getResources().getConfiguration();
@@ -55,32 +77,17 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
             view.setPadding(0, 0, 0, 0);
         }
 
-        /*
-            Because of the way that CoordinatorLayout lays out children, there isn't a way to get
-            the height of this list until it's about to be shown. Since this fragment is dependent
-            on having an accurate height of the list (in order to pad the bottom of the list so that
-            the playing song is always at the top of the list), we need to have a way to be informed
-            when the list has a valid height before it's shown to the user.
-
-            This post request will be run after the layout has been assigned a height and before
-            it's shown to the user so that we can set the bottom padding correctly.
-         */
-        view.post(() -> {
-            LinearLayoutManager manager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
-            manager.scrollToPositionWithOffset(lastPlayIndex, 0);
-        });
-
         return view;
     }
 
-    private void setupAdapter() {
+    private void setupAdapter(List<Song> queue) {
         if (mQueueSection == null) {
             mAdapter = new DragDropAdapter();
             mAdapter.setHasStableIds(true);
             mAdapter.attach(mRecyclerView);
 
             mRecyclerView.setItemAnimator(new QueueAnimator());
-            mQueueSection = new QueueSection(this, PlayerController.getQueue());
+            mQueueSection = new QueueSection(this, mPlayerController, queue);
             mAdapter.setDragSection(mQueueSection);
 
             // Wait for a layout pass before calculating bottom spacing since it is dependent on the
@@ -108,8 +115,31 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
                     return "";
                 }
             });
-        } else if (!mQueueSection.getData().equals(PlayerController.getQueue())) {
-            mQueueSection.setData(PlayerController.getQueue());
+
+            mPlayerController.getQueuePosition()
+                    .take(1)
+                    .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                    .subscribe(this::setQueuePosition, throwable -> {
+                        Timber.e(throwable, "Failed to scroll to queue position");
+                    });
+
+            mPlayerController.isShuffleEnabled()
+                    .skip(1)
+                    .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                    .flatMap(trigger -> mPlayerController.getQueuePosition().skip(1).take(1))
+                    .subscribe(this::setQueuePosition, throwable -> {
+                        Timber.e(throwable, "Failed to scroll to now playing after shuffling");
+                    });
+
+            mPlayerController.getQueuePosition()
+                    .skip(1)
+                    .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                    .subscribe(this::onQueuePositionChanged, throwable -> {
+                        Timber.e(throwable, "Failed to scroll to queue position");
+                    });
+
+        } else if (!mQueueSection.getData().equals(queue)) {
+            mQueueSection.setData(queue);
             mAdapter.notifyDataSetChanged();
         }
     }
@@ -176,37 +206,15 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        PlayerController.registerUpdateListener(this);
-        // Assume this fragment's data has gone stale since it was last in the foreground
-        onUpdate();
+    private void setQueuePosition(int currentIndex) {
+        lastPlayIndex = currentIndex;
         scrollToNowPlaying();
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        PlayerController.unregisterUpdateListener(this);
-    }
-
-    @Override
-    public void onUpdate() {
-        setupAdapter();
-
-        int currentIndex = PlayerController.getQueuePosition();
-        int previousIndex = lastPlayIndex;
-
-        if (currentIndex != lastPlayIndex) {
-            lastPlayIndex = currentIndex;
-
-            mAdapter.notifyItemChanged(previousIndex);
-            mAdapter.notifyItemChanged(currentIndex);
-
-            if (shouldScrollToCurrent()) {
-                smoothScrollToNowPlaying();
-            }
+    private void onQueuePositionChanged(int currentIndex) {
+        lastPlayIndex = currentIndex;
+        if (shouldScrollToCurrent()) {
+            smoothScrollToNowPlaying();
         }
     }
 
@@ -272,9 +280,4 @@ public class QueueFragment extends Fragment implements PlayerController.UpdateLi
                 .scrollToPositionWithOffset(lastPlayIndex, 0);
     }
 
-    public void updateShuffle() {
-        setupAdapter();
-        lastPlayIndex = PlayerController.getQueuePosition();
-        scrollToNowPlaying();
-    }
 }

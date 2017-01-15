@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
@@ -28,16 +27,12 @@ import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
+import com.marverenic.music.fragments.BaseFragment;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 
-import java.util.concurrent.TimeUnit;
-
 import javax.inject.Inject;
 
-import rx.Observable;
-import rx.Subscription;
-import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class NowPlayingControllerViewModel extends BaseObservable {
@@ -49,65 +44,29 @@ public class NowPlayingControllerViewModel extends BaseObservable {
 
     @Inject MusicStore mMusicStore;
     @Inject ThemeStore mThemeStore;
+    @Inject PlayerController mPlayerController;
 
     @Nullable
     private Song mSong;
     private boolean mPlaying;
+    private int mDuration;
     private boolean mUserTouchingProgressBar;
     private Animation mSeekBarThumbAnimation;
 
     private final ObservableInt mSeekbarPosition;
     private final ObservableInt mCurrentPositionObservable;
-    private Subscription mPositionSubscription;
 
-    public NowPlayingControllerViewModel(Fragment fragment) {
-        this(fragment.getContext(), fragment.getFragmentManager());
-    }
-
-    public NowPlayingControllerViewModel(Context context, FragmentManager fragmentManager) {
-        mContext = context;
-        mFragmentManager = fragmentManager;
+    public NowPlayingControllerViewModel(BaseFragment fragment) {
+        mContext = fragment.getContext();
+        mFragmentManager = fragment.getFragmentManager();
 
         mCurrentPositionObservable = new ObservableInt();
         mSeekbarPosition = new ObservableInt();
 
         JockeyApplication.getComponent(mContext).inject(this);
-    }
 
-    public void setSong(@Nullable Song song) {
-        mSong = song;
-        notifyPropertyChanged(BR.songTitle);
-        notifyPropertyChanged(BR.artistName);
-        notifyPropertyChanged(BR.albumName);
-        notifyPropertyChanged(BR.songDuration);
-        notifyPropertyChanged(BR.positionVisibility);
-        notifyPropertyChanged(BR.seekbarEnabled);
-    }
-
-    public void setPlaying(boolean playing) {
-        mPlaying = playing;
-        notifyPropertyChanged(BR.togglePlayIcon);
-
-        if (mPlaying) {
-            pollPosition();
-        } else {
-            stopPollingPosition();
-        }
-
-        if (!mUserTouchingProgressBar) {
-            mSeekbarPosition.set(PlayerController.getCurrentPosition());
-            mCurrentPositionObservable.set(PlayerController.getCurrentPosition());
-        }
-    }
-
-    private void pollPosition() {
-        if (mPositionSubscription != null) {
-            return;
-        }
-
-        mPositionSubscription = Observable.interval(200, TimeUnit.MILLISECONDS)
-                .observeOn(Schedulers.computation())
-                .map(tick -> PlayerController.getCurrentPosition())
+        mPlayerController.getCurrentPosition()
+                .compose(fragment.bindToLifecycle())
                 .subscribe(
                         position -> {
                             mCurrentPositionObservable.set(position);
@@ -116,16 +75,42 @@ public class NowPlayingControllerViewModel extends BaseObservable {
                             }
                         },
                         throwable -> {
-                            Timber.e("pollPositionSubscription: failed to update position");
+                            Timber.e(throwable, "failed to update position");
                         });
 
+        mPlayerController.getNowPlaying()
+                .compose(fragment.bindToLifecycle())
+                .subscribe(this::setSong,
+                        throwable -> Timber.e(throwable, "Failed to set song"));
+
+        mPlayerController.isPlaying()
+                .compose(fragment.bindToLifecycle())
+                .subscribe(this::setPlaying,
+                        throwable -> Timber.e(throwable, "Failed to set playing"));
+
+        mPlayerController.getDuration()
+                .compose(fragment.bindToLifecycle())
+                .subscribe(this::setDuration,
+                        throwable -> Timber.e(throwable, "Failed to set duration"));
     }
 
-    private void stopPollingPosition() {
-        if (mPositionSubscription != null) {
-            mPositionSubscription.unsubscribe();
-            mPositionSubscription = null;
-        }
+    private void setSong(@Nullable Song song) {
+        mSong = song;
+        notifyPropertyChanged(BR.songTitle);
+        notifyPropertyChanged(BR.artistName);
+        notifyPropertyChanged(BR.albumName);
+        notifyPropertyChanged(BR.positionVisibility);
+        notifyPropertyChanged(BR.seekbarEnabled);
+    }
+
+    private void setPlaying(boolean playing) {
+        mPlaying = playing;
+        notifyPropertyChanged(BR.togglePlayIcon);
+    }
+
+    private void setDuration(int duration) {
+        mDuration = duration;
+        notifyPropertyChanged(BR.songDuration);
     }
 
     @Bindable
@@ -157,7 +142,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
 
     @Bindable
     public int getSongDuration() {
-        return PlayerController.getDuration();
+        return mDuration;
     }
 
     @Bindable
@@ -283,24 +268,15 @@ public class NowPlayingControllerViewModel extends BaseObservable {
     }
 
     public View.OnClickListener onSkipNextClick() {
-        return v -> {
-            PlayerController.skip();
-            setSong(PlayerController.getNowPlaying());
-        };
+        return v -> mPlayerController.skip();
     }
 
     public View.OnClickListener onSkipBackClick() {
-        return v -> {
-            PlayerController.previous();
-            setSong(PlayerController.getNowPlaying());
-        };
+        return v -> mPlayerController.previous();
     }
 
     public View.OnClickListener onTogglePlayClick() {
-        return v -> {
-            PlayerController.togglePlay();
-            setPlaying(PlayerController.isPlaying());
-        };
+        return v -> mPlayerController.togglePlay();
     }
 
     public OnSeekBarChangeListener onSeek() {
@@ -322,7 +298,6 @@ public class NowPlayingControllerViewModel extends BaseObservable {
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
                 mUserTouchingProgressBar = true;
-                stopPollingPosition();
                 animateSeekBarHeadIn();
             }
 
@@ -331,12 +306,8 @@ public class NowPlayingControllerViewModel extends BaseObservable {
                 mUserTouchingProgressBar = false;
                 animateSeekBarHeadOut();
 
-                PlayerController.seek(seekBar.getProgress());
+                mPlayerController.seek(seekBar.getProgress());
                 mCurrentPositionObservable.set(seekBar.getProgress());
-
-                if (mPlaying) {
-                    pollPosition();
-                }
             }
         };
     }
