@@ -638,6 +638,35 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
+        public PlayerState getPlayerState() throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                return null;
+            }
+
+            try {
+                return mService.musicPlayer.getState();
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.getPlayerState() failed");
+                throw exception;
+            }
+        }
+
+        @Override
+        public void restorePlayerState(PlayerState state) throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                Timber.i("restorePlayerState(): Service is not ready. Dropping command");
+                return;
+            }
+
+            try {
+                mService.musicPlayer.restorePlayerState(state);
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.restorePlayerState() failed");
+                throw exception;
+            }
+        }
+
+        @Override
         public int getMultiRepeatCount() throws RemoteException {
             if (!isMusicPlayerReady()) {
                 return 0;

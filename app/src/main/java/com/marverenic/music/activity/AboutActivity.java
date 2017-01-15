@@ -9,9 +9,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.marverenic.music.BuildConfig;
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.ThemeStore;
+
+import javax.inject.Inject;
 
 public class AboutActivity extends BaseActivity implements View.OnClickListener {
+
+    @Inject ThemeStore mThemeStore;
 
     public static Intent newIntent(Context context) {
         return new Intent(context, AboutActivity.class);
@@ -21,6 +27,8 @@ public class AboutActivity extends BaseActivity implements View.OnClickListener 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
+
+        JockeyApplication.getComponent(this).inject(this);
 
         ((TextView) findViewById(R.id.aboutVersion)).setText(BuildConfig.VERSION_NAME);
 

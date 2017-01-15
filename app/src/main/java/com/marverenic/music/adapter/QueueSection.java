@@ -1,35 +1,30 @@
 package com.marverenic.music.adapter;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.marverenic.music.databinding.InstanceSongQueueBinding;
-import com.marverenic.music.model.Song;
-import com.marverenic.music.player.PlayerController;
 import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
+import com.marverenic.music.databinding.InstanceSongQueueBinding;
+import com.marverenic.music.fragments.BaseFragment;
+import com.marverenic.music.model.Song;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.viewmodel.QueueSongViewModel;
 
 import java.util.List;
 
+import timber.log.Timber;
+
 public class QueueSection extends EditableSongSection {
 
-    private FragmentManager mFragmentManager;
+    private BaseFragment mFragment;
+    private PlayerController mPlayerController;
 
-    public QueueSection(AppCompatActivity activity, List<Song> data) {
-        this(activity.getSupportFragmentManager(), data);
-    }
-
-    public QueueSection(Fragment fragment, List<Song> data) {
-        this(fragment.getFragmentManager(), data);
-    }
-
-    public QueueSection(FragmentManager fragmentManager, List<Song> data) {
+    public QueueSection(BaseFragment fragment, PlayerController playerController,
+                        List<Song> data) {
         super(data);
-        mFragmentManager = fragmentManager;
+        mFragment = fragment;
+        mPlayerController = playerController;
     }
 
     @Override
@@ -37,21 +32,24 @@ public class QueueSection extends EditableSongSection {
         if (from == to) return;
 
         // Calculate where the current song index is moving to
-        final int nowPlayingIndex = PlayerController.getQueuePosition();
-        int futureNowPlayingIndex;
+        mPlayerController.getQueuePosition().take(1).subscribe(nowPlayingIndex -> {
+            int futureNowPlayingIndex;
 
-        if (from == nowPlayingIndex) {
-            futureNowPlayingIndex = to;
-        } else if (from < nowPlayingIndex && to >= nowPlayingIndex) {
-            futureNowPlayingIndex = nowPlayingIndex - 1;
-        } else if (from > nowPlayingIndex && to <= nowPlayingIndex) {
-            futureNowPlayingIndex = nowPlayingIndex + 1;
-        } else {
-            futureNowPlayingIndex = nowPlayingIndex;
-        }
+            if (from == nowPlayingIndex) {
+                futureNowPlayingIndex = to;
+            } else if (from < nowPlayingIndex && to >= nowPlayingIndex) {
+                futureNowPlayingIndex = nowPlayingIndex - 1;
+            } else if (from > nowPlayingIndex && to <= nowPlayingIndex) {
+                futureNowPlayingIndex = nowPlayingIndex + 1;
+            } else {
+                futureNowPlayingIndex = nowPlayingIndex;
+            }
 
-        // Push the change to the service
-        PlayerController.editQueue(mData, futureNowPlayingIndex);
+            // Push the change to the service
+            mPlayerController.editQueue(mData, futureNowPlayingIndex);
+        }, throwable -> {
+            Timber.e(throwable, "Failed to drop queue item");
+        });
     }
 
     @Override
@@ -72,8 +70,8 @@ public class QueueSection extends EditableSongSection {
             super(binding.getRoot());
             mBinding = binding;
 
-            binding.setViewModel(new QueueSongViewModel(itemView.getContext(), mFragmentManager,
-                    songList, adapter::notifyDataSetChanged));
+            binding.setViewModel(new QueueSongViewModel(mFragment, songList,
+                    adapter::notifyDataSetChanged));
         }
 
         @Override

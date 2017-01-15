@@ -5,6 +5,7 @@ import android.animation.TimeInterpolator;
 import android.content.Context;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
+import android.databinding.ObservableField;
 import android.databinding.ObservableInt;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -15,22 +16,23 @@ import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.view.View;
 
 import com.marverenic.music.BR;
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.NowPlayingActivity;
+import com.marverenic.music.fragments.BaseFragment;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.view.ViewUtils;
 
-import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
 
-import rx.Observable;
-import rx.Subscription;
-import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class MiniplayerViewModel extends BaseObservable {
 
     private Context mContext;
+
+    @Inject PlayerController mPlayerController;
 
     @Nullable
     private Song mSong;
@@ -39,25 +41,68 @@ public class MiniplayerViewModel extends BaseObservable {
 
     private final int mExpandedHeight;
 
+    private final ObservableField<Bitmap> mArtwork;
+    private final ObservableInt mDuration;
     private final ObservableInt mProgress;
     private final ObservableInt mVerticalTranslation;
-    private Subscription mPositionSubscription;
 
-    public MiniplayerViewModel(Context context) {
-        mContext = context;
+    public MiniplayerViewModel(BaseFragment fragment) {
+        mContext = fragment.getContext();
+        JockeyApplication.getComponent(mContext).inject(this);
+
+        mArtwork = new ObservableField<>();
         mProgress = new ObservableInt();
+        mDuration = new ObservableInt();
         mVerticalTranslation = new ObservableInt(0);
 
         mExpandedHeight = mContext.getResources().getDimensionPixelSize(R.dimen.miniplayer_height);
         mAnimateSlideInOut = false;
+
+        setSong(null);
+
+        mPlayerController.getNowPlaying()
+                .compose(fragment.bindToLifecycle())
+                .subscribe(this::setSong, throwable -> {
+                    Timber.e(throwable, "Failed to set song");
+                });
+
+        mPlayerController.isPlaying()
+                .compose(fragment.bindToLifecycle())
+                .subscribe(this::setPlaying, throwable -> {
+                    Timber.e(throwable, "Failed to set playing state");
+                });
+
+        mPlayerController.getCurrentPosition()
+                .compose(fragment.bindToLifecycle())
+                .subscribe(mProgress::set, throwable -> {
+                    Timber.e(throwable, "Failed to set progress");
+                });
+
+        mPlayerController.getDuration()
+                .compose(fragment.bindToLifecycle())
+                .subscribe(mDuration::set, throwable -> {
+                    Timber.e(throwable, "Failed to set duration");
+                });
+
+        mPlayerController.getArtwork()
+                .compose(fragment.bindToLifecycle())
+                .map(artwork -> {
+                    if (artwork == null) {
+                        return ViewUtils.drawableToBitmap(
+                                ContextCompat.getDrawable(mContext, R.drawable.art_default));
+                    } else {
+                        return artwork;
+                    }
+                })
+                .subscribe(mArtwork::set, throwable -> {
+                    Timber.e(throwable, "Failed to set artwork");
+                });
     }
 
-    public void setSong(@Nullable Song song) {
+    private void setSong(@Nullable Song song) {
         mSong = song;
         notifyPropertyChanged(BR.songTitle);
         notifyPropertyChanged(BR.songArtist);
-        notifyPropertyChanged(BR.songDuration);
-        notifyPropertyChanged(BR.artwork);
 
         if (mAnimateSlideInOut) {
             animateTranslation();
@@ -85,20 +130,12 @@ public class MiniplayerViewModel extends BaseObservable {
         slideAnimation.start();
     }
 
-    public void setPlaying(boolean playing) {
+    private void setPlaying(boolean playing) {
         mPlaying = playing;
         notifyPropertyChanged(BR.togglePlayIcon);
-
-        if (mPlaying) {
-            pollPosition();
-        } else {
-            stopPollingPosition();
-            mProgress.set(PlayerController.getCurrentPosition());
-        }
     }
 
     public void onActivityExitForeground() {
-        stopPollingPosition();
         mAnimateSlideInOut = false;
     }
 
@@ -128,20 +165,12 @@ public class MiniplayerViewModel extends BaseObservable {
         }
     }
 
-    @Bindable
-    public int getSongDuration() {
-        return PlayerController.getDuration();
+    public ObservableInt getSongDuration() {
+        return mDuration;
     }
 
-    @Bindable
-    public Bitmap getArtwork() {
-        Bitmap art = PlayerController.getArtwork();
-        if (art == null) {
-            Drawable defaultArt = ContextCompat.getDrawable(mContext, R.drawable.art_default);
-            return ViewUtils.drawableToBitmap(defaultArt);
-        } else {
-            return art;
-        }
+    public ObservableField<Bitmap> getArtwork() {
+        return mArtwork;
     }
 
     public ObservableInt getProgress() {
@@ -157,38 +186,16 @@ public class MiniplayerViewModel extends BaseObservable {
         }
     }
 
-    private void pollPosition() {
-        if (mPositionSubscription != null) {
-            return;
-        }
-
-        mPositionSubscription = Observable.interval(200, TimeUnit.MILLISECONDS)
-                .observeOn(Schedulers.computation())
-                .map(tick -> PlayerController.getCurrentPosition())
-                .subscribe(
-                        mProgress::set,
-                        throwable -> {
-                            Timber.e(throwable, "failed to update position");
-                        });
-    }
-
-    private void stopPollingPosition() {
-        if (mPositionSubscription != null) {
-            mPositionSubscription.unsubscribe();
-            mPositionSubscription = null;
-        }
-    }
-
     public View.OnClickListener onClickMiniplayer() {
         return v -> mContext.startActivity(NowPlayingActivity.newIntent(mContext));
     }
 
     public View.OnClickListener onClickTogglePlay() {
-        return v -> PlayerController.togglePlay();
+        return v -> mPlayerController.togglePlay();
     }
 
     public View.OnClickListener onClickSkip() {
-        return v -> PlayerController.skip();
+        return v -> mPlayerController.skip();
     }
 
 }

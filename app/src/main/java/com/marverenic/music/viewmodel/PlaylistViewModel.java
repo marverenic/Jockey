@@ -29,6 +29,7 @@ import static android.view.View.VISIBLE;
 public class PlaylistViewModel extends BaseObservable {
 
     @Inject PlaylistStore mPlaylistStore;
+    @Inject PlayerController mPlayerController;
 
     private Context mContext;
     private Playlist mPlaylist;
@@ -105,7 +106,7 @@ public class PlaylistViewModel extends BaseObservable {
 
     private void queuePlaylistNext() {
         mPlaylistStore.getSongs(mPlaylist).subscribe(
-                PlayerController::queueNext,
+                mPlayerController::queueNext,
                 throwable -> {
                     Timber.e(throwable, "Failed to get songs");
                 });
@@ -113,7 +114,7 @@ public class PlaylistViewModel extends BaseObservable {
 
     private void queuePlaylistLast() {
         mPlaylistStore.getSongs(mPlaylist).subscribe(
-                PlayerController::queueLast,
+                mPlayerController::queueLast,
                 throwable -> {
                     Timber.e(throwable, "Failed to get songs");
                 });

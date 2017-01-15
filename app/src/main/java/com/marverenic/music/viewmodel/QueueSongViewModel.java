@@ -1,21 +1,26 @@
 package com.marverenic.music.viewmodel;
 
 import android.content.Context;
+import android.databinding.Bindable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.View;
 
+import com.marverenic.music.BR;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
+import com.marverenic.music.fragments.BaseFragment;
 import com.marverenic.music.model.Song;
-import com.marverenic.music.player.PlayerController;
+import com.trello.rxlifecycle.FragmentEvent;
+import com.trello.rxlifecycle.LifecycleTransformer;
 
 import java.util.List;
 
+import rx.Subscription;
 import timber.log.Timber;
 
 import static android.support.design.widget.Snackbar.LENGTH_LONG;
@@ -26,14 +31,43 @@ public class QueueSongViewModel extends SongViewModel {
 
     private Context mContext;
     private FragmentManager mFragmentManager;
+    private LifecycleTransformer<?> mLifecycleTransformer;
     private OnRemoveListener mRemoveListener;
+    private Subscription mNowPlayingSubscription;
 
-    public QueueSongViewModel(Context context, FragmentManager fragmentManager, List<Song> songs,
+    private boolean mPlaying;
+
+    public QueueSongViewModel(BaseFragment fragment, List<Song> songs,
                               OnRemoveListener removeListener) {
-        super(context, fragmentManager, songs);
-        mContext = context;
-        mFragmentManager = fragmentManager;
+        super(fragment.getContext(), fragment.getFragmentManager(), songs);
+        mLifecycleTransformer = fragment.bindUntilEvent(FragmentEvent.DESTROY_VIEW);
+        mContext = fragment.getContext();
+        mFragmentManager = fragment.getFragmentManager();
         mRemoveListener = removeListener;
+    }
+
+    private <T> LifecycleTransformer<T> bindToLifecycle() {
+        //noinspection unchecked
+        return (LifecycleTransformer<T>) mLifecycleTransformer;
+    }
+
+    @Override
+    public void setSong(List<Song> songList, int index) {
+        super.setSong(songList, index);
+
+        if (mNowPlayingSubscription != null) {
+            mNowPlayingSubscription.unsubscribe();
+        }
+
+        mPlaying = false;
+        mNowPlayingSubscription = mPlayerController.getQueuePosition()
+                .compose(bindToLifecycle())
+                .subscribe(queuePosition -> {
+                    mPlaying = (queuePosition == getIndex());
+                    notifyPropertyChanged(BR.nowPlayingIndicatorVisibility);
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to update playing indicator");
+                });
     }
 
     public interface OnRemoveListener {
@@ -42,11 +76,12 @@ public class QueueSongViewModel extends SongViewModel {
 
     @Override
     public View.OnClickListener onClickSong() {
-        return v -> PlayerController.changeSong(getIndex());
+        return v -> mPlayerController.changeSong(getIndex());
     }
 
+    @Bindable
     public int getNowPlayingIndicatorVisibility() {
-        if (PlayerController.getQueuePosition() == getIndex()) {
+        if (mPlaying) {
             return View.VISIBLE;
         } else {
             return View.GONE;
@@ -113,38 +148,43 @@ public class QueueSongViewModel extends SongViewModel {
     }
 
     private void removeFromQueue(View snackbarContainer) {
-        int oldQueuePosition = PlayerController.getQueuePosition();
-        int itemPosition = getIndex();
+        mPlayerController.getQueuePosition().take(1)
+                .subscribe(oldQueuePosition -> {
+                    int itemPosition = getIndex();
 
-        getSongs().remove(itemPosition);
+                    getSongs().remove(itemPosition);
 
-        int newQueuePosition = (oldQueuePosition > itemPosition)
-                ? oldQueuePosition - 1
-                : oldQueuePosition;
+                    int newQueuePosition = (oldQueuePosition > itemPosition)
+                            ? oldQueuePosition - 1
+                            : oldQueuePosition;
 
-        newQueuePosition = Math.min(newQueuePosition, getSongs().size() - 1);
-        newQueuePosition = Math.max(newQueuePosition, 0);
+                    newQueuePosition = Math.min(newQueuePosition, getSongs().size() - 1);
+                    newQueuePosition = Math.max(newQueuePosition, 0);
 
-        PlayerController.editQueue(getSongs(), newQueuePosition);
+                    mPlayerController.editQueue(getSongs(), newQueuePosition);
 
-        if (oldQueuePosition == itemPosition) {
-            PlayerController.play();
-        }
-
-        mRemoveListener.onRemove();
-
-        Song removed = getReference();
-        String message = mContext.getString(R.string.message_removed_song, removed.getSongName());
-
-        Snackbar.make(snackbarContainer, message, LENGTH_LONG)
-                .setAction(R.string.action_undo, v -> {
-                    getSongs().add(itemPosition, removed);
-                    PlayerController.editQueue(getSongs(), oldQueuePosition);
                     if (oldQueuePosition == itemPosition) {
-                        PlayerController.play();
+                        mPlayerController.play();
                     }
+
                     mRemoveListener.onRemove();
-                })
-                .show();
+
+                    Song removed = getReference();
+                    String message = mContext.getString(R.string.message_removed_song,
+                            removed.getSongName());
+
+                    Snackbar.make(snackbarContainer, message, LENGTH_LONG)
+                            .setAction(R.string.action_undo, v -> {
+                                getSongs().add(itemPosition, removed);
+                                mPlayerController.editQueue(getSongs(), oldQueuePosition);
+                                if (oldQueuePosition == itemPosition) {
+                                    mPlayerController.play();
+                                }
+                                mRemoveListener.onRemove();
+                            })
+                            .show();
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to remove song from queue");
+                });
     }
 }

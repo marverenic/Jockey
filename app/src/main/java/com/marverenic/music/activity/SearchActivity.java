@@ -57,6 +57,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
 
     @Inject MusicStore mMusicStore;
     @Inject PlaylistStore mPlaylistStore;
+    @Inject PlayerController mPlayerController;
 
     private SearchView searchView;
     private BehaviorSubject<String> mQueryObservable;
@@ -247,7 +248,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
     }
 
     private void navigateHome() {
-        Intent mainActivity = new Intent(this, MainActivity.class);;
+        Intent mainActivity = new Intent(this, MainActivity.class);
         mainActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         startActivity(mainActivity);
@@ -328,8 +329,8 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
 
     private void playSongResults() {
         if (!getSongResults().isEmpty()) {
-            PlayerController.setQueue(getSongResults(), 0);
-            PlayerController.play();
+            mPlayerController.setQueue(getSongResults(), 0);
+            mPlayerController.play();
         }
     }
 
@@ -350,8 +351,8 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
 
         mPlaylistStore.getSongs(playlist).subscribe(
                 songs -> {
-                    PlayerController.setQueue(songs, 0);
-                    PlayerController.play();
+                    mPlayerController.setQueue(songs, 0);
+                    mPlayerController.play();
                 }, throwable -> {
                     Timber.e(throwable, "Failed to play playlist from intent");
                 });
@@ -375,8 +376,8 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
 
         combinedSongs.subscribe(
                 songs -> {
-                    PlayerController.setQueue(songs, 0);
-                    PlayerController.play();
+                    mPlayerController.setQueue(songs, 0);
+                    mPlayerController.play();
                 },
                 throwable -> {
                     Timber.e(throwable, "Failed to play artist from intent");
@@ -400,8 +401,8 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
 
         mMusicStore.getSongs(album).subscribe(
                 songs -> {
-                    PlayerController.setQueue(songs, 0);
-                    PlayerController.play();
+                    mPlayerController.setQueue(songs, 0);
+                    mPlayerController.play();
                 }, throwable -> {
                     Timber.e(throwable, "Failed to play album from intent");
                 });
@@ -423,8 +424,8 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
 
         mMusicStore.getSongs(genre).subscribe(
                 songs -> {
-                    PlayerController.setQueue(songs, 0);
-                    PlayerController.play();
+                    mPlayerController.setQueue(songs, 0);
+                    mPlayerController.play();
                 }, throwable -> {
                     Timber.e(throwable, "Failed to play genre from intent");
                 });

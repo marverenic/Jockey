@@ -4,6 +4,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 
 import com.marverenic.music.BuildConfig;
+import com.marverenic.music.RobolectricJockeyApplication;
 import com.marverenic.music.model.Song;
 
 import org.junit.Before;
@@ -21,7 +22,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertSame;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = 23, constants = BuildConfig.class)
+@Config(sdk = 23, constants = BuildConfig.class, application = RobolectricJockeyApplication.class)
 public class SongViewModelTest {
 
     private FragmentActivity mActivity;

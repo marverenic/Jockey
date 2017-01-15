@@ -241,7 +241,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".player.PlayerController$Listener"
+        <receiver android:name=".player.ServicePlayerController$Listener"
             android:exported="false">
             <intent-filter android:priority="999">
                 <action android:name="marverenic.jockey.player.REFRESH"/>

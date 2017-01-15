@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.View;
 
 import com.marverenic.music.BuildConfig;
+import com.marverenic.music.RobolectricJockeyApplication;
 import com.marverenic.music.activity.instance.AutoPlaylistActivity;
 import com.marverenic.music.activity.instance.PlaylistActivity;
 import com.marverenic.music.model.AutoPlaylist;
@@ -24,7 +25,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = 23, constants = BuildConfig.class)
+@Config(sdk = 23, constants = BuildConfig.class, application = RobolectricJockeyApplication.class)
 public class PlaylistViewModelTest {
 
     private FragmentActivity mActivity;

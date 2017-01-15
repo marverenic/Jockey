@@ -7,7 +7,7 @@ import javax.inject.Singleton;
 import dagger.Component;
 
 @Singleton
-@Component(modules = {ContextModule.class, PlayerModule.class, DemoModule.class,
+@Component(modules = {ContextModule.class, TestPlayerModule.class, DemoModule.class,
         DemoLastFmModule.class})
-public interface DemoComponent extends JockeyGraph {
+public interface TestComponent extends JockeyGraph {
 }

@@ -3,6 +3,7 @@ package com.marverenic.music;
 import android.app.Application;
 import android.content.Context;
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -27,8 +28,13 @@ public class JockeyApplication extends Application {
         setupCrashlytics();
         setupTimber();
 
-        mComponent = JockeyComponentFactory.create(this);
+        mComponent = createDaggerComponent();
         JockeyPreferencesCompat.upgradeSharedPreferences(this);
+    }
+
+    @NonNull
+    protected JockeyGraph createDaggerComponent() {
+        return JockeyComponentFactory.create(this);
     }
 
     private void setupStrictMode() {
