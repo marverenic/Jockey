@@ -103,6 +103,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 (musicLoading, playlistLoading) -> {
                     return musicLoading || playlistLoading;
                 })
+                .compose(bindToLifecycle())
                 .subscribe(
                         refreshing -> {
                             mRefreshLayout.setEnabled(refreshing);
