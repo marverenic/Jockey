@@ -156,6 +156,10 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     }
 
     @Internal void onPositionDiscontinuity() {
+        if (mQueue.size() == 0) {
+            return;
+        }
+
         int currentQueueIndex = mExoPlayer.getCurrentWindowIndex() % mQueue.size();
         boolean invalid = mInvalid;
         if (mQueueIndex != currentQueueIndex || invalid) {

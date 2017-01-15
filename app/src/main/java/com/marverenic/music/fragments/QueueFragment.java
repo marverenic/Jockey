@@ -1,5 +1,6 @@
 package com.marverenic.music.fragments;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.NinePatchDrawable;
@@ -80,6 +81,12 @@ public class QueueFragment extends BaseFragment {
         return view;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (mQueueSection != null) mRecyclerView.post(this::setupSpacers);
+    }
+
     private void setupAdapter(List<Song> queue) {
         if (mQueueSection == null) {
             mAdapter = new DragDropAdapter();
@@ -92,7 +99,7 @@ public class QueueFragment extends BaseFragment {
 
             // Wait for a layout pass before calculating bottom spacing since it is dependent on the
             // height of the RecyclerView (which has not been computed yet)
-            mRecyclerView.post(this::setupSpacers);
+            if (isAdded()) mRecyclerView.post(this::setupSpacers);
 
             mAdapter.setEmptyState(new LibraryEmptyState(getActivity()) {
                 @Override
@@ -145,7 +152,7 @@ public class QueueFragment extends BaseFragment {
     }
 
     private void setupSpacers() {
-        if (mBottomSpacers != null) {
+        if (mBottomSpacers != null || !isAdded()) {
             return;
         }
 
