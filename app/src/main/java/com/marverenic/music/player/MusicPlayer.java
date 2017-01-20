@@ -1090,13 +1090,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         mContext = null;
     }
 
-    /**
-     * @return The album artwork embedded in the current song
-     */
-    public Bitmap getArtwork() {
-        return mArtwork;
-    }
-
     protected MediaSessionCompat getMediaSession() {
         return mMediaSession;
     }
