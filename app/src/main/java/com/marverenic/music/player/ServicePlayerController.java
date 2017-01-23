@@ -34,6 +34,15 @@ import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
+/**
+ * An implementation of {@link PlayerController} used in release builds to communicate with the
+ * media player throughout the application. This implementation uses AIDL to send commands through
+ * IPC to the remote player service, and gets information with a combination of AIDL to fetch data
+ * and BroadcastReceivers to be notified of automatic changes to the player state.
+ *
+ * This class is responsible for all communication to the remote service, including starting,
+ * binding, unbinding and restarting the service if it crashes.
+ */
 public class ServicePlayerController implements PlayerController {
 
     private static final int POSITION_TICK_MS = 200;

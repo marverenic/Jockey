@@ -10,6 +10,12 @@ import java.util.List;
 import rx.Observable;
 import rx.Single;
 
+/**
+ * A support interface for connecting the application UI to the media player. This interface defines
+ * basic commands and information sent and received from the player. Any data received from the
+ * player can be obtained through various get methods in this interface as observable streams. Any
+ * observable stream should always be kept up-to-date unless it is infeasible to do so.
+ */
 public interface PlayerController {
 
     /**
