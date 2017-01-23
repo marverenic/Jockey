@@ -402,6 +402,12 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         }
     }
 
+    /**
+     * Sets a callback for when the current song changes (no matter the source of the change)
+     * @param listener The callback to be registered. {@code null} may be passed in to remove a
+     *                 previously registered listener. Only one callback may be registered at
+     *                 a time.
+     */
     public void setPlaybackChangeListener(OnPlaybackChangeListener listener) {
         mCallback = listener;
     }
@@ -568,6 +574,11 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         }
     }
 
+    /**
+     * Called when disabling shuffle to ensure that any modifications made to the shuffled queue
+     * are applied to the unshuffled queue. Currently, the only such modification is song deletions
+     * since they are implemented on the client side.
+     */
     private void unshuffleQueue() {
         List<Song> unshuffled = new ArrayList<>(mQueue);
         List<Song> songs = new ArrayList<>(mQueueShuffled);
@@ -915,16 +926,32 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         }
     }
 
+    /**
+     * Gets the current Multi-Repeat status
+     * @return The number of times that the current song will be played back-to-back. This is
+     *         decremented when the song finishes. If Multi-Repeat is disabled, this method
+     *         will return {@code 0}.
+     */
     public int getMultiRepeatCount() {
         return mMultiRepeat;
     }
 
+    /**
+     * Enables or updates the sleep timer to pause music at a specified timestamp
+     * @param endTimestampInMillis The timestamp to pause music. This is in milliseconds since the
+     *                             Unix epoch as returned by {@link System#currentTimeMillis()}.
+     */
     public void setSleepTimer(long endTimestampInMillis) {
         Timber.i("Changing sleep timer end time to %d", endTimestampInMillis);
         startSleepTimer(endTimestampInMillis);
         mRemotePreferenceStore.setSleepTimerEndTime(endTimestampInMillis);
     }
 
+    /**
+     * Internal method for setting up the system timer to pause music.
+     * @param endTimestampInMillis The timestamp to pause music in milliseconds since the Unix epoch
+     * @see #setSleepTimer(long)
+     */
     private void startSleepTimer(long endTimestampInMillis) {
         if (endTimestampInMillis <= System.currentTimeMillis()) {
             Timber.i("Sleep timer end time (%1$d) is in the past (currently %2$d). Stopping timer",
@@ -937,6 +964,11 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         }
     }
 
+    /**
+     * Internal method called once the sleep timer is triggered.
+     * @see #setSleepTimer(long) to set the sleep timer
+     * @see #startSleepTimer(long) for the sleep timer setup
+     */
     private void onSleepTimerEnd() {
         Timber.i("Sleep timer ended.");
         pause();
@@ -945,6 +977,11 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         postInfo(mContext.getString(R.string.confirm_sleep_timer_end));
     }
 
+    /**
+     * Gets the current end time of the sleep timer.
+     * @return The current end time of the sleep timer in milliseconds since the Unix epoch. This
+     *         method returns {@code 0} if the sleep timer is disabled.
+     */
     public long getSleepTimerEndTime() {
         return mRemotePreferenceStore.getSleepTimerEndTime();
     }
@@ -1053,13 +1090,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         mContext = null;
     }
 
-    /**
-     * @return The album artwork embedded in the current song
-     */
-    public Bitmap getArtwork() {
-        return mArtwork;
-    }
-
     protected MediaSessionCompat getMediaSession() {
         return mMediaSession;
     }
@@ -1103,6 +1133,12 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         return false;
     }
 
+    /**
+     * Creates a snapshot of the current player state including the state of the queue,
+     * seek position, playing status, etc. This is useful for undoing modifications to the state.
+     * @return A {@link PlayerState} object with the current status of this MusicPlayer instance.
+     * @see #restorePlayerState(PlayerState) To restore this state
+     */
     public PlayerState getState() {
         return new PlayerState.Builder()
                 .setPlaying(isPlaying())
@@ -1113,6 +1149,11 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 .build();
     }
 
+    /**
+     * Restores a player state created from {@link #getState()}.
+     * @param state The state to be restored. All properties including seek position and playing
+     *              status will immediately be applied.
+     */
     public void restorePlayerState(PlayerState state) {
         mQueue = state.getQueue();
         mQueueShuffled = state.getShuffledQueue();
