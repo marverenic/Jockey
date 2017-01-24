@@ -44,13 +44,13 @@ public class SquareWidget extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_square);
 
-        views.setOnClickPendingIntent(R.id.widget_square_next,
+        views.setOnClickPendingIntent(R.id.widget_next,
                 MediaStyleHelper.getActionIntent(context, KEYCODE_MEDIA_NEXT));
 
-        views.setOnClickPendingIntent(R.id.widget_square_play_pause,
+        views.setOnClickPendingIntent(R.id.widget_play_pause,
                 MediaStyleHelper.getActionIntent(context, KEYCODE_MEDIA_PLAY_PAUSE));
 
-        views.setOnClickPendingIntent(R.id.widget_square_previous,
+        views.setOnClickPendingIntent(R.id.widget_previous,
                 MediaStyleHelper.getActionIntent(context, KEYCODE_MEDIA_PREVIOUS));
 
         for (int appWidgetId : appWidgetIds) {
@@ -103,7 +103,7 @@ public class SquareWidget extends AppWidgetProvider {
     }
 
     private static RemoteViews setPlaying(RemoteViews views, boolean isPlaying) {
-        views.setImageViewResource(R.id.widget_square_play_pause,
+        views.setImageViewResource(R.id.widget_play_pause,
                 (isPlaying)
                         ? R.drawable.ic_pause_36dp
                         : R.drawable.ic_play_arrow_36dp);
