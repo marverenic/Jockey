@@ -15,6 +15,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/art_default_xl"
+            android:clickable="true"
+            android:foreground="?android:selectableItemBackground"
             android:scaleType="centerCrop"/>
 
     </FrameLayout>

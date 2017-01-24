@@ -1,5 +1,6 @@
 package com.marverenic.music.widget;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
@@ -10,6 +11,7 @@ import android.widget.RemoteViews;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.PlayerController;
@@ -43,6 +45,10 @@ public class SquareWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_square);
+
+        Intent launcherIntent = NowPlayingActivity.newIntent(context);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, launcherIntent, 0);
+        views.setOnClickPendingIntent(R.id.widget_square_artwork, pendingIntent);
 
         views.setOnClickPendingIntent(R.id.widget_next,
                 MediaStyleHelper.getActionIntent(context, KEYCODE_MEDIA_NEXT));
