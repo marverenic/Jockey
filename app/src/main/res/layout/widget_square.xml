@@ -5,13 +5,19 @@
     android:theme="@style/LauncherWidgetTheme"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <ImageView
-        android:id="@+id/widget_square_artwork"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/art_default_xl"
-        android:scaleType="centerCrop"
-        android:foreground="@drawable/scrim_square_widget"/>
+        android:foreground="@drawable/scrim_square_widget">
+
+        <ImageView
+            android:id="@+id/widget_square_artwork"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/art_default_xl"
+            android:scaleType="centerCrop"/>
+
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
