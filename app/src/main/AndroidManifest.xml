@@ -174,7 +174,8 @@
         <activity
             android:name=".activity.NowPlayingActivity"
             android:label="@string/header_now_playing"
-            android:windowSoftInputMode="adjustNothing"/>
+            android:windowSoftInputMode="adjustNothing"
+            android:theme="@style/SplashTheme"/>
 
         <!-- Play with Jockey (from search) intent filter -->
         <activity-alias
