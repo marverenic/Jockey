@@ -37,7 +37,7 @@ import com.marverenic.music.viewmodel.PlaylistViewModel;
 import com.marverenic.music.viewmodel.RuleHeaderViewModel;
 import com.marverenic.music.viewmodel.RuleViewModel;
 import com.marverenic.music.viewmodel.SongViewModel;
-import com.marverenic.music.widget.SquareWidget;
+import com.marverenic.music.widget.BaseWidget;
 
 public interface JockeyGraph {
 
@@ -54,7 +54,7 @@ public interface JockeyGraph {
     void inject(AutoPlaylistActivity activity);
     void inject(AutoPlaylistEditActivity activity);
 
-    void inject(SquareWidget widget);
+    void inject(BaseWidget widget);
 
     void inject(SongFragment fragment);
     void inject(AlbumFragment fragment);

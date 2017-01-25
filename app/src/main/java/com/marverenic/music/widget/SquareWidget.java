@@ -1,24 +1,16 @@
 package com.marverenic.music.widget;
 
 import android.app.PendingIntent;
-import android.appwidget.AppWidgetManager;
-import android.appwidget.AppWidgetProvider;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 import android.widget.RemoteViews;
 
-import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.model.Song;
-import com.marverenic.music.player.MusicPlayer;
-import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.MediaStyleHelper;
-
-import javax.inject.Inject;
 
 import rx.Observable;
 import timber.log.Timber;
@@ -27,36 +19,19 @@ import static android.view.KeyEvent.KEYCODE_MEDIA_NEXT;
 import static android.view.KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE;
 import static android.view.KeyEvent.KEYCODE_MEDIA_PREVIOUS;
 
-public class SquareWidget extends AppWidgetProvider {
-
-    @Inject PlayerController mPlayerController;
+public class SquareWidget extends BaseWidget {
 
     @Override
-    public void onReceive(Context context, Intent intent) {
-        JockeyApplication.getComponent(context).inject(this);
-
-        String action = intent.getAction();
-        if (MusicPlayer.UPDATE_BROADCAST.equals(action)) {
-            updateAllInstances(context);
-        } else {
-            super.onReceive(context, intent);
-        }
-    }
-
-    @Override
-    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        updateAllInstances(context);
-    }
-
-    private ComponentName getComponentName(Context context) {
-        return new ComponentName(context.getPackageName(), SquareWidget.class.getCanonicalName());
-    }
-
-    private boolean isEnabled(Context context) {
-        AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
-        int[] ids = widgetManager.getAppWidgetIds(getComponentName(context));
-
-        return ids != null && ids.length > 0;
+    protected void onUpdate(Context context) {
+        Observable.just(createBaseView(context))
+                .flatMap(views -> mPlayerController.getNowPlaying().take(1)
+                        .map(song -> setSong(context, views, song)))
+                .flatMap(views -> mPlayerController.isPlaying().take(1)
+                        .map(isPlaying -> setPlaying(views, isPlaying)))
+                .flatMap(views -> mPlayerController.getArtwork().take(1)
+                        .map(artwork -> setArtwork(views, artwork)))
+                .subscribe(views -> updateAllInstances(context, views),
+                        throwable -> Timber.e(throwable, "Failed to update widget"));
     }
 
     private RemoteViews createBaseView(Context context) {
@@ -76,27 +51,6 @@ public class SquareWidget extends AppWidgetProvider {
                 MediaStyleHelper.getActionIntent(context, KEYCODE_MEDIA_PREVIOUS));
 
         return views;
-    }
-
-    private void updateAllInstances(Context context) {
-        if (!isEnabled(context)) {
-            return;
-        }
-
-        Observable.just(createBaseView(context))
-                .flatMap(views -> mPlayerController.getNowPlaying().take(1)
-                        .map(song -> setSong(context, views, song)))
-                .flatMap(views -> mPlayerController.isPlaying().take(1)
-                        .map(isPlaying -> setPlaying(views, isPlaying)))
-                .flatMap(views -> mPlayerController.getArtwork().take(1)
-                        .map(artwork -> setArtwork(views, artwork)))
-                .subscribe(views -> updateAllInstances(context, views),
-                        throwable -> Timber.e(throwable, "Failed to update widget"));
-    }
-
-    private void updateAllInstances(Context context, RemoteViews delta) {
-        AppWidgetManager wm = AppWidgetManager.getInstance(context);
-        wm.updateAppWidget(getComponentName(context), delta);
     }
 
     private static RemoteViews setSong(Context context, RemoteViews views, @Nullable Song song) {
