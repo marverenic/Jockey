@@ -80,6 +80,13 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public static final String UPDATE_BROADCAST = "marverenic.jockey.player.REFRESH";
 
     /**
+     * An {@link Intent} extra sent with {@link #UPDATE_BROADCAST} intents which maps to a boolean
+     * representing whether or not the update is a minor update (i.e. an update that was triggered
+     * by the user).
+     */
+    public static final String UPDATE_EXTRA_MINOR = "marverenic.jockey.player.REFRESH:minor";
+
+    /**
      * An {@link Intent} action broadcasted when a MusicPlayer has information that should be
      * presented to the user
      * @see #INFO_EXTRA_MESSAGE
@@ -458,6 +465,12 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             mMediaSession.setPlaybackState(state.build());
             mMediaSession.setActive(mFocused);
         }
+
+        Timber.i("Sending minor broadcast to update UI process");
+        Intent broadcast = new Intent(UPDATE_BROADCAST)
+                .putExtra(UPDATE_EXTRA_MINOR, true);
+
+        mContext.sendBroadcast(broadcast, null);
     }
 
     @Override
@@ -514,7 +527,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     protected void updateUi() {
         Timber.i("Sending broadcast to update UI process");
-        mContext.sendBroadcast(new Intent(UPDATE_BROADCAST), null);
+        Intent broadcast = new Intent(UPDATE_BROADCAST)
+                .putExtra(UPDATE_EXTRA_MINOR, false);
+
+        mContext.sendBroadcast(broadcast, null);
     }
 
     /**

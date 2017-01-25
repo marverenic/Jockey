@@ -512,6 +512,11 @@ public class ServicePlayerController implements PlayerController {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (intent.getBooleanExtra(MusicPlayer.UPDATE_EXTRA_MINOR, false)) {
+                // Ignore minor updates – we already handle them without being notified
+                return;
+            }
+
             if (mController == null) {
                 JockeyApplication.getComponent(context).inject(this);
             }
