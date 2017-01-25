@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.support.annotation.Nullable;
 import android.widget.RemoteViews;
 
 import com.marverenic.music.JockeyApplication;
@@ -84,7 +85,7 @@ public class SquareWidget extends AppWidgetProvider {
 
         Observable.just(new RemoteViews(context.getPackageName(), R.layout.widget_square))
                 .flatMap(views -> mPlayerController.getNowPlaying().take(1)
-                        .map(song -> setSong(views, song)))
+                        .map(song -> setSong(context, views, song)))
                 .flatMap(views -> mPlayerController.isPlaying().take(1)
                         .map(isPlaying -> setPlaying(views, isPlaying)))
                 .flatMap(views -> mPlayerController.getArtwork().take(1)
@@ -100,10 +101,18 @@ public class SquareWidget extends AppWidgetProvider {
         wm.partiallyUpdateAppWidget(widgetIds, delta);
     }
 
-    private static RemoteViews setSong(RemoteViews views, Song song) {
-        views.setTextViewText(R.id.widget_square_title, song.getSongName());
-        views.setTextViewText(R.id.widget_square_artist, song.getArtistName());
-        views.setTextViewText(R.id.widget_square_album, song.getAlbumName());
+    private static RemoteViews setSong(Context context, RemoteViews views, @Nullable Song song) {
+        if (song == null) {
+            String defaultSongName = context.getString(R.string.nothing_playing);
+
+            views.setTextViewText(R.id.widget_square_title, defaultSongName);
+            views.setTextViewText(R.id.widget_square_artist, "");
+            views.setTextViewText(R.id.widget_square_album, "");
+        } else {
+            views.setTextViewText(R.id.widget_square_title, song.getSongName());
+            views.setTextViewText(R.id.widget_square_artist, song.getArtistName());
+            views.setTextViewText(R.id.widget_square_album, song.getAlbumName());
+        }
 
         return views;
     }
@@ -117,8 +126,12 @@ public class SquareWidget extends AppWidgetProvider {
         return views;
     }
 
-    private static RemoteViews setArtwork(RemoteViews views, Bitmap artwork) {
-        views.setImageViewBitmap(R.id.widget_square_artwork, artwork);
+    private static RemoteViews setArtwork(RemoteViews views, @Nullable Bitmap artwork) {
+        if (artwork == null) {
+            views.setImageViewResource(R.id.widget_square_artwork, R.drawable.art_default_xl);
+        } else {
+            views.setImageViewBitmap(R.id.widget_square_artwork, artwork);
+        }
 
         return views;
     }
