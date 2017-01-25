@@ -45,6 +45,21 @@ public class SquareWidget extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        updateAllInstances(context);
+    }
+
+    private ComponentName getComponentName(Context context) {
+        return new ComponentName(context.getPackageName(), SquareWidget.class.getCanonicalName());
+    }
+
+    private boolean isEnabled(Context context) {
+        AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
+        int[] ids = widgetManager.getAppWidgetIds(getComponentName(context));
+
+        return ids != null && ids.length > 0;
+    }
+
+    private RemoteViews createBaseView(Context context) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_square);
 
         Intent launcherIntent = NowPlayingActivity.newIntent(context);
@@ -60,22 +75,7 @@ public class SquareWidget extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.widget_previous,
                 MediaStyleHelper.getActionIntent(context, KEYCODE_MEDIA_PREVIOUS));
 
-        for (int appWidgetId : appWidgetIds) {
-            appWidgetManager.updateAppWidget(appWidgetId, views);
-        }
-
-        updateAllInstances(context);
-    }
-
-    private ComponentName getComponentName(Context context) {
-        return new ComponentName(context.getPackageName(), SquareWidget.class.getCanonicalName());
-    }
-
-    private boolean isEnabled(Context context) {
-        AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
-        int[] ids = widgetManager.getAppWidgetIds(getComponentName(context));
-
-        return ids != null && ids.length > 0;
+        return views;
     }
 
     private void updateAllInstances(Context context) {
@@ -83,22 +83,20 @@ public class SquareWidget extends AppWidgetProvider {
             return;
         }
 
-        Observable.just(new RemoteViews(context.getPackageName(), R.layout.widget_square))
+        Observable.just(createBaseView(context))
                 .flatMap(views -> mPlayerController.getNowPlaying().take(1)
                         .map(song -> setSong(context, views, song)))
                 .flatMap(views -> mPlayerController.isPlaying().take(1)
                         .map(isPlaying -> setPlaying(views, isPlaying)))
                 .flatMap(views -> mPlayerController.getArtwork().take(1)
                         .map(artwork -> setArtwork(views, artwork)))
-                .subscribe(views -> partialUpdateAllInstances(context, views),
+                .subscribe(views -> updateAllInstances(context, views),
                         throwable -> Timber.e(throwable, "Failed to update widget"));
     }
 
-    private void partialUpdateAllInstances(Context context, RemoteViews delta) {
+    private void updateAllInstances(Context context, RemoteViews delta) {
         AppWidgetManager wm = AppWidgetManager.getInstance(context);
-
-        int[] widgetIds = wm.getAppWidgetIds(getComponentName(context));
-        wm.partiallyUpdateAppWidget(widgetIds, delta);
+        wm.updateAppWidget(getComponentName(context), delta);
     }
 
     private static RemoteViews setSong(Context context, RemoteViews views, @Nullable Song song) {
