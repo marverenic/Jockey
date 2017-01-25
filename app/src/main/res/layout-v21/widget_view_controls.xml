@@ -15,14 +15,14 @@
 
     <RelativeLayout
         android:layout_width="0dp"
-        android:layout_height="@dimen/now_playing_button_size"
+        android:layout_height="@dimen/widget_button_size"
         android:layout_gravity="bottom"
         android:layout_weight="1">
         <ImageView
             android:id="@+id/widget_previous"
             style="?android:borderlessButtonStyle"
-            android:layout_width="@dimen/now_playing_button_size"
-            android:layout_height="@dimen/now_playing_button_size"
+            android:layout_width="@dimen/widget_button_size"
+            android:layout_height="@dimen/widget_button_size"
             android:layout_alignParentStart="true"
             android:clickable="true"
             android:background="?android:selectableItemBackgroundBorderless"
@@ -32,14 +32,14 @@
 
     <RelativeLayout
         android:layout_width="0dp"
-        android:layout_height="@dimen/now_playing_button_size"
+        android:layout_height="@dimen/widget_button_size"
         android:layout_gravity="bottom"
         android:layout_weight="1">
         <ImageView
             android:id="@+id/widget_play_pause"
             style="?android:borderlessButtonStyle"
-            android:layout_width="@dimen/now_playing_button_size"
-            android:layout_height="@dimen/now_playing_button_size"
+            android:layout_width="@dimen/widget_button_size"
+            android:layout_height="@dimen/widget_button_size"
             android:layout_centerInParent="true"
             android:clickable="true"
             android:background="?android:selectableItemBackgroundBorderless"
@@ -49,14 +49,14 @@
 
     <RelativeLayout
         android:layout_width="0dp"
-        android:layout_height="@dimen/now_playing_button_size"
+        android:layout_height="@dimen/widget_button_size"
         android:layout_gravity="bottom"
         android:layout_weight="1">
         <ImageView
             android:id="@+id/widget_next"
             style="?android:borderlessButtonStyle"
-            android:layout_width="@dimen/now_playing_button_size"
-            android:layout_height="@dimen/now_playing_button_size"
+            android:layout_width="@dimen/widget_button_size"
+            android:layout_height="@dimen/widget_button_size"
             android:layout_alignParentEnd="true"
             android:clickable="true"
             android:background="?android:selectableItemBackgroundBorderless"
