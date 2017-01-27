@@ -236,7 +236,8 @@
         </service>
 
         <!-- Widgets -->
-        <receiver android:name=".widget.SquareWidget">
+        <receiver android:name=".widget.SquareWidget"
+            android:label="@string/widget_square_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
                 <action android:name="marverenic.jockey.player.REFRESH"/>
@@ -245,7 +246,8 @@
                 android:resource="@xml/square_widget_info" />
         </receiver>
 
-        <receiver android:name=".widget.WideWidget">
+        <receiver android:name=".widget.WideWidget"
+            android:label="@string/widget_wide_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
                 <action android:name="marverenic.jockey.player.REFRESH"/>
@@ -254,7 +256,8 @@
                 android:resource="@xml/wide_widget_info" />
         </receiver>
 
-        <receiver android:name=".widget.CompactWidget">
+        <receiver android:name=".widget.CompactWidget"
+            android:label="@string/widget_compact_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
                 <action android:name="marverenic.jockey.player.REFRESH"/>
