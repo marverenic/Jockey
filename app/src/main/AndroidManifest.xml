@@ -254,6 +254,15 @@
                 android:resource="@xml/wide_widget_info" />
         </receiver>
 
+        <receiver android:name=".widget.CompactWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="marverenic.jockey.player.REFRESH"/>
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/compact_widget_info" />
+        </receiver>
+
         <!-- Broadcast Receivers -->
         <receiver android:name="android.support.v4.media.session.MediaButtonReceiver" >
             <intent-filter>
