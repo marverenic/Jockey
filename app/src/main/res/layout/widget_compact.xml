@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/widget_compact_height"
         android:orientation="horizontal"
-        android:background="@color/background"
+        android:background="@color/widget_background"
         android:gravity="center_vertical"
         android:paddingLeft="@dimen/widget_padding"
         android:paddingRight="@dimen/widget_padding">

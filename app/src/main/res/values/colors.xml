@@ -25,6 +25,7 @@
     <color name="background_miniplayer">#FAFAFA</color>
     <color name="progress_empty">#08000000</color>
     <color name="divider">#D7D7D7</color>
+    <color name="widget_background">#FFFFFF</color>
 
     <!-- Accent colors -->
     <!-- Grey -->
