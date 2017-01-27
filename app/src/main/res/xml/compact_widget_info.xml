@@ -4,7 +4,7 @@
     android:minHeight="@dimen/widget_compact_height"
     android:minResizeWidth="200dp"
     android:minResizeHeight="@dimen/widget_compact_height"
-    android:previewImage="@drawable/art_default"
+    android:previewImage="@drawable/widget_preview_compact"
     android:initialLayout="@layout/widget_compact"
     android:resizeMode="horizontal|vertical">
 </appwidget-provider>
