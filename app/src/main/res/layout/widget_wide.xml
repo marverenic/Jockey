@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:background="@drawable/list_shadow">
+
+    <RelativeLayout
+        android:id="@+id/widget_wide_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/widget_wide_height"
+        android:foreground="?android:selectableItemBackground"
+        android:background="@color/background"
+        xmlns:tools="http://schemas.android.com/tools">
+
+        <ImageView
+            android:id="@+id/widget_wide_artwork"
+            android:layout_width="@dimen/widget_wide_height"
+            android:layout_height="@dimen/widget_wide_height"
+            android:src="@drawable/art_default_xl"
+            android:clickable="true"
+            android:scaleType="centerCrop"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/widget_wide_height"
+            android:layout_toRightOf="@id/widget_wide_artwork"
+            android:layout_toEndOf="@id/widget_wide_artwork"
+            android:orientation="vertical"
+            android:padding="@dimen/list_padding">
+
+            <TextView
+                android:id="@+id/widget_square_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@android:color/black"
+                style="@style/TextAppearance.AppCompat.Headline"
+                tools:text="Song Name"/>
+
+            <TextView
+                android:id="@+id/widget_wide_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@android:color/black"
+                style="@style/TextAppearance.AppCompat.Subhead"
+                tools:text="Artist – Album"/>
+
+        </LinearLayout>
+
+        <include layout="@layout/widget_view_controls"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/widget_wide_height"
+            android:layout_toRightOf="@id/widget_wide_artwork"
+            android:layout_toEndOf="@id/widget_wide_artwork"/>
+
+    </RelativeLayout>
+
+</FrameLayout>
