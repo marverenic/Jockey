@@ -39,7 +39,7 @@ public class SquareWidget extends BaseWidget {
 
         Intent launcherIntent = NowPlayingActivity.newIntent(context);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, launcherIntent, 0);
-        views.setOnClickPendingIntent(R.id.widget_square_artwork, pendingIntent);
+        views.setOnClickPendingIntent(R.id.widget_square_container, pendingIntent);
 
         views.setOnClickPendingIntent(R.id.widget_next,
                 MediaStyleHelper.getActionIntent(context, KEYCODE_MEDIA_NEXT));
