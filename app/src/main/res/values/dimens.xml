@@ -34,7 +34,7 @@
     <dimen name="inset_bevel_height">1dp</dimen>
     <dimen name="seekbar_head_width">54dp</dimen>
     <dimen name="seekbar_head_height">64dp</dimen>
-    <dimen name="widget_wide_height">136dp</dimen>
+    <dimen name="widget_wide_height">96dp</dimen>
     <dimen name="widget_compact_height">64dp</dimen>
     <dimen name="widget_button_padding">4dp</dimen>
 

@@ -36,7 +36,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="@android:color/black"
-                style="@style/TextAppearance.AppCompat.Headline"
+                style="@style/TextAppearance.AppCompat.Body2"
                 tools:text="Song Name"/>
 
             <TextView
@@ -46,7 +46,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="@android:color/black"
-                style="@style/TextAppearance.AppCompat.Subhead"
+                style="@style/TextAppearance.AppCompat.Body1"
                 tools:text="Artist – Album"/>
 
         </LinearLayout>

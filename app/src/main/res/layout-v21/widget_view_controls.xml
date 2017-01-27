@@ -5,7 +5,6 @@
     android:orientation="horizontal"
     android:baselineAligned="false"
     android:background="@android:color/transparent"
-    android:paddingBottom="@dimen/list_padding"
     xmlns:tools="http://schemas.android.com/tools">
 
     <FrameLayout android:layout_width="0dp"

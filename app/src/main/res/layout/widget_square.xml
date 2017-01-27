@@ -59,6 +59,10 @@
 
     </LinearLayout>
 
-    <include layout="@layout/widget_view_controls"/>
+    <include layout="@layout/widget_view_controls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="@dimen/widget_button_padding"/>
 
 </FrameLayout>
