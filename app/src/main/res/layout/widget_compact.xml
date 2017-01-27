@@ -40,7 +40,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/widget_primary_text"
                     style="@style/TextAppearance.AppCompat.Body1"
                     tools:text="Song Name"/>
 
@@ -50,7 +50,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/widget_secondary_text"
                     style="@style/TextAppearance.AppCompat.Caption"
                     tools:text="Artist – Album"/>
 
@@ -65,7 +65,8 @@
                 android:clickable="true"
                 android:background="?android:selectableItemBackground"
                 android:contentDescription="@string/button_previous_description"
-                android:src="@drawable/ic_skip_previous_36dp"/>
+                android:src="@drawable/ic_skip_previous_36dp"
+                android:tint="@color/widget_button"/>
 
             <ImageView
                 android:id="@+id/widget_play_pause"
@@ -76,7 +77,8 @@
                 android:clickable="true"
                 android:background="?android:selectableItemBackground"
                 android:contentDescription="@string/button_play_description"
-                android:src="@drawable/ic_play_arrow_36dp"/>
+                android:src="@drawable/ic_play_arrow_36dp"
+                android:tint="@color/widget_button"/>
 
             <ImageView
                 android:id="@+id/widget_next"
@@ -87,7 +89,8 @@
                 android:clickable="true"
                 android:background="?android:selectableItemBackground"
                 android:contentDescription="@string/button_skip_description"
-                android:src="@drawable/ic_skip_next_36dp"/>
+                android:src="@drawable/ic_skip_next_36dp"
+                android:tint="@color/widget_button"/>
 
         </LinearLayout>
 

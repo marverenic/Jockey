@@ -48,7 +48,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/widget_primary_text"
                     style="@style/TextAppearance.AppCompat.Subhead"
                     tools:text="Song Name"/>
 
@@ -58,7 +58,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/widget_secondary_text"
                     style="@style/TextAppearance.AppCompat.Body1"
                     tools:text="Artist – Album"/>
 

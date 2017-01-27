@@ -3,8 +3,9 @@ package com.marverenic.music.widget;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
+import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.widget.RemoteViews;
 
 import com.marverenic.music.R;
@@ -48,9 +49,11 @@ public class CompactWidget extends BaseWidget {
         views.setOnClickPendingIntent(R.id.widget_previous,
                 MediaStyleHelper.getActionIntent(context, KEYCODE_MEDIA_PREVIOUS));
 
-        views.setInt(R.id.widget_next, "setColorFilter", Color.BLACK);
-        views.setInt(R.id.widget_play_pause, "setColorFilter", Color.BLACK);
-        views.setInt(R.id.widget_previous, "setColorFilter", Color.BLACK);
+        @ColorInt int buttonColor = ContextCompat.getColor(context, R.color.widget_button);
+
+        views.setInt(R.id.widget_next, "setColorFilter", buttonColor);
+        views.setInt(R.id.widget_play_pause, "setColorFilter", buttonColor);
+        views.setInt(R.id.widget_previous, "setColorFilter", buttonColor);
 
         return views;
     }
