@@ -2,5 +2,8 @@
 <resources>
 
     <string name="app_name" translatable="false">Jockey Debug</string>
+    <string name="widget_square_name">Jockey Debug Artwork</string>
+    <string name="widget_wide_name">Jockey Debug Wide</string>
+    <string name="widget_compact_name">Jockey Debug Compact</string>
 
 </resources>
