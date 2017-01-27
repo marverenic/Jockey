@@ -36,6 +36,7 @@
     <dimen name="seekbar_head_height">64dp</dimen>
     <dimen name="widget_wide_height">96dp</dimen>
     <dimen name="widget_compact_height">64dp</dimen>
-    <dimen name="widget_button_padding">4dp</dimen>
+    <dimen name="widget_button_padding">8dp</dimen>
+    <dimen name="widget_padding">16dp</dimen>
 
 </resources>

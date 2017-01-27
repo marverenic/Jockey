@@ -13,7 +13,8 @@
         android:orientation="horizontal"
         android:background="@color/background"
         android:gravity="center_vertical"
-        android:padding="@dimen/list_padding">
+        android:paddingLeft="@dimen/widget_padding"
+        android:paddingRight="@dimen/widget_padding">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -46,8 +47,8 @@
         <ImageView
             android:id="@+id/widget_previous"
             style="?android:borderlessButtonStyle"
-            android:layout_width="@dimen/now_playing_button_size"
-            android:layout_height="@dimen/now_playing_button_size"
+            android:layout_width="@dimen/widget_button_size"
+            android:layout_height="@dimen/widget_button_size"
             android:layout_margin="@dimen/widget_button_padding"
             android:clickable="true"
             android:background="?android:selectableItemBackground"
@@ -57,8 +58,8 @@
         <ImageView
             android:id="@+id/widget_play_pause"
             style="?android:borderlessButtonStyle"
-            android:layout_width="@dimen/now_playing_button_size"
-            android:layout_height="@dimen/now_playing_button_size"
+            android:layout_width="@dimen/widget_button_size"
+            android:layout_height="@dimen/widget_button_size"
             android:layout_margin="@dimen/widget_button_padding"
             android:clickable="true"
             android:background="?android:selectableItemBackground"
@@ -68,8 +69,8 @@
         <ImageView
             android:id="@+id/widget_next"
             style="?android:borderlessButtonStyle"
-            android:layout_width="@dimen/now_playing_button_size"
-            android:layout_height="@dimen/now_playing_button_size"
+            android:layout_width="@dimen/widget_button_size"
+            android:layout_height="@dimen/widget_button_size"
             android:layout_margin="@dimen/widget_button_padding"
             android:clickable="true"
             android:background="?android:selectableItemBackground"
