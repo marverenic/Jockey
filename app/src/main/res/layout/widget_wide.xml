@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget_wide_container"
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"
-    android:background="@drawable/list_shadow">
+    android:background="@drawable/list_shadow"
+    android:clickable="true"
+    android:foreground="?android:selectableItemBackground">
 
     <RelativeLayout
-        android:id="@+id/widget_wide_container"
         android:layout_width="match_parent"
         android:layout_height="@dimen/widget_wide_height"
-        android:foreground="?android:selectableItemBackground"
-        android:background="@color/background"
-        xmlns:tools="http://schemas.android.com/tools">
+        android:background="@color/background">
 
         <ImageView
             android:id="@+id/widget_wide_artwork"
