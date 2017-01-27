@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget_compact_container"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
+    android:foreground="?android:selectableItemBackground"
     android:background="@drawable/list_shadow">
 
     <LinearLayout
-        android:id="@+id/widget_compact_container"
         android:layout_width="match_parent"
         android:layout_height="@dimen/widget_compact_height"
         android:orientation="horizontal"
-        android:foreground="?android:selectableItemBackground"
         android:background="@color/background"
         android:gravity="center_vertical"
         android:padding="@dimen/list_padding">
