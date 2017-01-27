@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:minWidth="320dp"
     android:minHeight="@dimen/widget_wide_height"
     android:minResizeWidth="200dp"
     android:minResizeHeight="@dimen/widget_wide_height"
     android:previewImage="@drawable/art_default"
     android:initialLayout="@layout/widget_wide"
-    android:resizeMode="horizontal|vertical"
-    android:widgetCategory="home_screen"
-    tools:targetApi="jelly_bean_mr1">
+    android:resizeMode="horizontal|vertical">
 </appwidget-provider>
