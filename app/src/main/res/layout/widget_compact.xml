@@ -1,82 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/widget_compact_container"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:foreground="?android:selectableItemBackground"
     android:background="@drawable/list_shadow">
 
-    <LinearLayout
+    <!--
+            The FrameLayout below is used to clip touch effects. This is only a useless view on
+            API 21+. On KitKat and lower, foreground drawables are not displayed correctly in
+            the widget's remote views, so we need this workaround
+     -->
+
+    <FrameLayout
+        android:id="@+id/widget_compact_container"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/widget_compact_height"
-        android:orientation="horizontal"
-        android:background="@color/widget_background"
-        android:gravity="center_vertical"
-        android:paddingLeft="@dimen/widget_padding"
-        android:paddingRight="@dimen/widget_padding">
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:foreground="?android:selectableItemBackground"
+        tools:ignore="UselessParent">
 
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/widget_compact_height"
+            android:orientation="horizontal"
+            android:background="@color/widget_background"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/widget_padding"
+            android:paddingRight="@dimen/widget_padding">
 
-            <TextView
-                android:id="@+id/widget_compact_title"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textColor="@android:color/black"
-                style="@style/TextAppearance.AppCompat.Body1"
-                tools:text="Song Name"/>
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/widget_compact_detail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textColor="@android:color/black"
-                style="@style/TextAppearance.AppCompat.Caption"
-                tools:text="Artist – Album"/>
+                <TextView
+                    android:id="@+id/widget_compact_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@android:color/black"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="Song Name"/>
+
+                <TextView
+                    android:id="@+id/widget_compact_detail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@android:color/black"
+                    style="@style/TextAppearance.AppCompat.Caption"
+                    tools:text="Artist – Album"/>
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/widget_previous"
+                style="?android:borderlessButtonStyle"
+                android:layout_width="@dimen/widget_button_size"
+                android:layout_height="@dimen/widget_button_size"
+                android:layout_margin="@dimen/widget_button_padding"
+                android:clickable="true"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@string/button_previous_description"
+                android:src="@drawable/ic_skip_previous_36dp"/>
+
+            <ImageView
+                android:id="@+id/widget_play_pause"
+                style="?android:borderlessButtonStyle"
+                android:layout_width="@dimen/widget_button_size"
+                android:layout_height="@dimen/widget_button_size"
+                android:layout_margin="@dimen/widget_button_padding"
+                android:clickable="true"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@string/button_play_description"
+                android:src="@drawable/ic_play_arrow_36dp"/>
+
+            <ImageView
+                android:id="@+id/widget_next"
+                style="?android:borderlessButtonStyle"
+                android:layout_width="@dimen/widget_button_size"
+                android:layout_height="@dimen/widget_button_size"
+                android:layout_margin="@dimen/widget_button_padding"
+                android:clickable="true"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@string/button_skip_description"
+                android:src="@drawable/ic_skip_next_36dp"/>
 
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/widget_previous"
-            style="?android:borderlessButtonStyle"
-            android:layout_width="@dimen/widget_button_size"
-            android:layout_height="@dimen/widget_button_size"
-            android:layout_margin="@dimen/widget_button_padding"
-            android:clickable="true"
-            android:background="?android:selectableItemBackground"
-            android:contentDescription="@string/button_previous_description"
-            android:src="@drawable/ic_skip_previous_36dp"/>
-
-        <ImageView
-            android:id="@+id/widget_play_pause"
-            style="?android:borderlessButtonStyle"
-            android:layout_width="@dimen/widget_button_size"
-            android:layout_height="@dimen/widget_button_size"
-            android:layout_margin="@dimen/widget_button_padding"
-            android:clickable="true"
-            android:background="?android:selectableItemBackground"
-            android:contentDescription="@string/button_play_description"
-            android:src="@drawable/ic_play_arrow_36dp"/>
-
-        <ImageView
-            android:id="@+id/widget_next"
-            style="?android:borderlessButtonStyle"
-            android:layout_width="@dimen/widget_button_size"
-            android:layout_height="@dimen/widget_button_size"
-            android:layout_margin="@dimen/widget_button_padding"
-            android:clickable="true"
-            android:background="?android:selectableItemBackground"
-            android:contentDescription="@string/button_skip_description"
-            android:src="@drawable/ic_skip_next_36dp"/>
-
-    </LinearLayout>
+    </FrameLayout>
 
 </FrameLayout>
