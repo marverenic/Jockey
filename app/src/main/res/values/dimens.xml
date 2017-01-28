@@ -16,6 +16,7 @@
     <dimen name="card_margin">8dp</dimen>
     <dimen name="miniplayer_height">56dp</dimen>
     <dimen name="now_playing_button_size">42dp</dimen>
+    <dimen name="widget_button_size">36dp</dimen>
     <item name="now_playing_control_end_weight" format="float" type="dimen">0.6</item>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="alert_padding">24dp</dimen>
@@ -33,5 +34,9 @@
     <dimen name="inset_bevel_height">1dp</dimen>
     <dimen name="seekbar_head_width">54dp</dimen>
     <dimen name="seekbar_head_height">64dp</dimen>
+    <dimen name="widget_wide_height">96dp</dimen>
+    <dimen name="widget_compact_height">64dp</dimen>
+    <dimen name="widget_button_padding">8dp</dimen>
+    <dimen name="widget_padding">16dp</dimen>
 
 </resources>

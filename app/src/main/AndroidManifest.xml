@@ -174,7 +174,8 @@
         <activity
             android:name=".activity.NowPlayingActivity"
             android:label="@string/header_now_playing"
-            android:windowSoftInputMode="adjustNothing"/>
+            android:windowSoftInputMode="adjustNothing"
+            android:theme="@style/SplashTheme"/>
 
         <!-- Play with Jockey (from search) intent filter -->
         <activity-alias
@@ -233,6 +234,37 @@
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </service>
+
+        <!-- Widgets -->
+        <receiver android:name=".widget.SquareWidget"
+            android:label="@string/widget_square_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="marverenic.jockey.player.REFRESH"/>
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/square_widget_info" />
+        </receiver>
+
+        <receiver android:name=".widget.WideWidget"
+            android:label="@string/widget_wide_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="marverenic.jockey.player.REFRESH"/>
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/wide_widget_info" />
+        </receiver>
+
+        <receiver android:name=".widget.CompactWidget"
+            android:label="@string/widget_compact_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="marverenic.jockey.player.REFRESH"/>
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/compact_widget_info" />
+        </receiver>
 
         <!-- Broadcast Receivers -->
         <receiver android:name="android.support.v4.media.session.MediaButtonReceiver" >

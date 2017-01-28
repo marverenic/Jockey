@@ -16,6 +16,9 @@
         <item name="overlapAnchor">true</item>
     </style>
 
+    <style name="LauncherWidgetTheme" parent="AppTheme">
+    </style>
+
     <style name="Primary">
         <!--item name="colorPrimary">@color/primary</item-->
         <!--item name="colorPrimaryDark">@color/dark_red</item-->

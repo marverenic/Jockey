@@ -2,6 +2,9 @@
 <resources>
 
     <string name="app_name" translatable="false">Jockey</string>
+    <string name="widget_square_name">Jockey Artwork</string>
+    <string name="widget_wide_name">Jockey Wide</string>
+    <string name="widget_compact_name">Jockey Compact</string>
 
     <!-- Activity titles -->
     <string name="header_playlists">Playlists</string>
