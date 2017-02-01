@@ -254,7 +254,20 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             startForeground(NOTIFICATION_ID, notification);
         } else if (!musicPlayer.isPlaying()) {
+            Timber.i("Removing service from foreground");
+
+            /*
+               The following call to startService is a workaround for API 21 and 22 devices. If the
+               main UI process is not running, then calling stopForeground() here will end the
+               service completely. We therefore have the service start itself. If the service does
+               then get killed, it will be restarted automatically. If the service doesn't get
+               killed (regardless of API level), then this call does nothing since Android won't
+               start a second instance of a service.
+            */
+            startService(new Intent(this, PlayerService.class));
+
             stopForeground(false);
+            Timber.i("Bringing service into background");
 
             NotificationManager mgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             mgr.notify(NOTIFICATION_ID, notification);
