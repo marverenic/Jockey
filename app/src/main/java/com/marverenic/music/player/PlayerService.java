@@ -160,7 +160,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
             Timber.e(exception, "Failed to save music player state");
         }
 
-        if (mStopped) {
+        if (mStopped || !musicPlayer.isPlaying()) {
             NotificationManager mgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             mgr.cancel(NOTIFICATION_ID);
 
