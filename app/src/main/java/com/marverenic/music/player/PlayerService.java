@@ -161,7 +161,10 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         if (mStopped) {
-            stop();
+            NotificationManager mgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            mgr.cancel(NOTIFICATION_ID);
+
+            finish();
         } else {
             notifyNowPlaying();
         }
