@@ -23,7 +23,9 @@ public abstract class BaseWidget extends AppWidgetProvider {
 
         String action = intent.getAction();
         if (MusicPlayer.UPDATE_BROADCAST.equals(action)) {
-            onUpdate(context);
+            if (isEnabled(context)) {
+                onUpdate(context);
+            }
         } else {
             super.onReceive(context, intent);
         }
