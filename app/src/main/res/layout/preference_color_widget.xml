@@ -3,5 +3,4 @@
     android:id="@+id/pref_color_preview"
     android:layout_height="42dp"
     android:layout_width="42dp"
-    android:layout_gravity="center"
-    android:src="@drawable/preference_color_preview"/>
+    android:layout_gravity="center"/>
