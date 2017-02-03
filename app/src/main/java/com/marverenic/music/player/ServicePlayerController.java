@@ -105,12 +105,14 @@ public class ServicePlayerController implements PlayerController {
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
-                // TODO restart service after crash
+                mContext.unbindService(this);
+                releaseAllProperties();
                 mBinding = null;
                 if (mRequestQueueSubscription != null) {
                     mRequestQueueSubscription.unsubscribe();
                     mRequestQueueSubscription = null;
                 }
+                startService();
             }
         }, Context.BIND_WAIVE_PRIORITY);
     }
@@ -152,6 +154,17 @@ public class ServicePlayerController implements PlayerController {
             mCurrentPositionClock.unsubscribe();
             mCurrentPositionClock = null;
         }
+    }
+
+    private void releaseAllProperties() {
+        mPlaying.setFunction(null);
+        mNowPlaying.setFunction(null);
+        mQueue.setFunction(null);
+        mQueuePosition.setFunction(null);
+        mCurrentPosition.setFunction(null);
+        mDuration.setFunction(null);
+        mMultiRepeatCount.setFunction(null);
+        mSleepTimerEndTime.setFunction(null);
     }
 
     private void initAllProperties() {
