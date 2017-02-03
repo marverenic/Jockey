@@ -366,6 +366,8 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     public int getDuration() {
         if (mExoPlayer.getDuration() > 0) {
             mPrevDuration = (int) mExoPlayer.getDuration();
+        } else if (mPrevDuration <= 0 && getNowPlaying() != null) {
+            return (int) getNowPlaying().getSongDuration();
         }
 
         return mPrevDuration;
