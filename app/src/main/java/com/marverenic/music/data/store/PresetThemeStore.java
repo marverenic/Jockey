@@ -309,7 +309,13 @@ public class PresetThemeStore implements ThemeStore {
                 new Intent(mContext, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
 
         AlarmManager mgr = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
-        mgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 100, intent);
+
+        long restartTime = SystemClock.elapsedRealtime() + 100;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            mgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, restartTime, intent);
+        } else {
+            mgr.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, restartTime, intent);
+        }
     }
 
     private void restartApplication() {
