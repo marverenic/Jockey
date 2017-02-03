@@ -105,7 +105,8 @@ public class ServicePlayerController implements PlayerController {
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
-                // TODO restart service after crash
+                mContext.unbindService(this);
+                releaseAllProperties();
                 mBinding = null;
                 if (mRequestQueueSubscription != null) {
                     mRequestQueueSubscription.unsubscribe();
@@ -113,6 +114,12 @@ public class ServicePlayerController implements PlayerController {
                 }
             }
         }, Context.BIND_WAIVE_PRIORITY);
+    }
+
+    private void ensureServiceStarted() {
+        if (mBinding == null) {
+            startService();
+        }
     }
 
     private void bindRequestQueue() {
@@ -126,6 +133,7 @@ public class ServicePlayerController implements PlayerController {
     }
 
     private void execute(Runnable command) {
+        ensureServiceStarted();
         mRequestQueue.enqueue(command);
     }
 
@@ -152,6 +160,17 @@ public class ServicePlayerController implements PlayerController {
             mCurrentPositionClock.unsubscribe();
             mCurrentPositionClock = null;
         }
+    }
+
+    private void releaseAllProperties() {
+        mPlaying.setFunction(null);
+        mNowPlaying.setFunction(null);
+        mQueue.setFunction(null);
+        mQueuePosition.setFunction(null);
+        mCurrentPosition.setFunction(null);
+        mDuration.setFunction(null);
+        mMultiRepeatCount.setFunction(null);
+        mSleepTimerEndTime.setFunction(null);
     }
 
     private void initAllProperties() {
@@ -394,42 +413,50 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public Observable<Boolean> isPlaying() {
+        ensureServiceStarted();
         return mPlaying.getObservable();
     }
 
     @Override
     public Observable<Song> getNowPlaying() {
+        ensureServiceStarted();
         return mNowPlaying.getObservable();
     }
 
     @Override
     public Observable<List<Song>> getQueue() {
+        ensureServiceStarted();
         return mQueue.getObservable();
     }
 
     @Override
     public Observable<Integer> getQueuePosition() {
+        ensureServiceStarted();
         return mQueuePosition.getObservable();
     }
 
     @Override
     public Observable<Integer> getCurrentPosition() {
+        ensureServiceStarted();
         startCurrentPositionClock();
         return mCurrentPosition.getObservable();
     }
 
     @Override
     public Observable<Integer> getDuration() {
+        ensureServiceStarted();
         return mDuration.getObservable();
     }
 
     @Override
     public Observable<Boolean> isShuffleEnabled() {
+        ensureServiceStarted();
         return mShuffled.asObservable().distinctUntilChanged();
     }
 
     @Override
     public Observable<Integer> getMultiRepeatCount() {
+        ensureServiceStarted();
         return mMultiRepeatCount.getObservable();
     }
 
@@ -447,6 +474,7 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public Observable<Long> getSleepTimerEndTime() {
+        ensureServiceStarted();
         return mSleepTimerEndTime.getObservable();
     }
 
