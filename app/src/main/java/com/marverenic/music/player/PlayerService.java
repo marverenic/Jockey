@@ -1,5 +1,6 @@
 package com.marverenic.music.player;
 
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -15,6 +16,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v7.app.NotificationCompat;
 import android.view.KeyEvent;
 
+import com.marverenic.music.BuildConfig;
 import com.marverenic.music.IPlayerService;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.ImmutablePreferenceStore;
@@ -56,10 +58,6 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
      */
     private boolean finished;
     /**
-     * Used to keep track of whether the main application window is open or not
-     */
-    private boolean mAppRunning;
-    /**
      * Used to keep track of whether the notification has been dismissed or not
      */
     private boolean mStopped;
@@ -71,7 +69,6 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         if (binder == null) {
             binder = new Stub(this);
         }
-        mAppRunning = true;
         return binder;
     }
 
@@ -134,7 +131,6 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         Timber.i("onTaskRemoved called");
-        mAppRunning = false;
 
         /*
             When the application is removed from the overview page, we make the notification
@@ -276,13 +272,30 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
     }
 
+    private boolean isUiProcessRunning() {
+        ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            List<ActivityManager.RunningAppProcessInfo> processes = am.getRunningAppProcesses();
+            for (int i = 0; i < processes.size(); i++) {
+                if (processes.get(i).processName.equals(BuildConfig.APPLICATION_ID)) {
+                    return true;
+                }
+            }
+
+            return false;
+        } else {
+            return !am.getAppTasks().isEmpty();
+        }
+    }
+
     public void stop() {
         Timber.i("stop called");
 
         mStopped = true;
 
         // If the UI process is still running, don't kill the process, only remove its notification
-        if (mAppRunning) {
+        if (isUiProcessRunning()) {
             musicPlayer.pause();
             stopForeground(true);
             return;
