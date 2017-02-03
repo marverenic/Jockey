@@ -28,6 +28,9 @@ Used to prevent Jockey from using mobile data (if this preference is enabled)
 Used to play music while the device's screen is off
 
 ### Building Jockey from Source
+
+Required  Android Studio 2.1
+
 To build a release APK of Jockey, you'll need to either setup Crashlytics using your own API key, or remove the dependency and all logging calls. You can specify your own API key by making a new file in `app/fabric.properties` and add the following lines:  
 ```
 apiSecret="yourApiSecret"
