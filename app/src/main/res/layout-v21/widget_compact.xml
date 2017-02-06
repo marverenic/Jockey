@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget_compact_container"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:background="@drawable/list_shadow"
+    android:foreground="?android:selectableItemBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/widget_compact_height"
+        android:orientation="horizontal"
+        android:background="@color/widget_background"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/widget_padding"
+        android:paddingRight="@dimen/widget_padding">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/widget_compact_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/widget_primary_text"
+                style="@style/TextAppearance.AppCompat.Body1"
+                tools:text="Song Name"/>
+
+            <TextView
+                android:id="@+id/widget_compact_detail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/widget_secondary_text"
+                style="@style/TextAppearance.AppCompat.Caption"
+                tools:text="Artist – Album"/>
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/widget_previous"
+            style="?android:borderlessButtonStyle"
+            android:layout_width="@dimen/widget_button_size"
+            android:layout_height="@dimen/widget_button_size"
+            android:layout_margin="@dimen/widget_button_padding"
+            android:clickable="true"
+            android:background="?android:selectableItemBackgroundBorderless"
+            android:contentDescription="@string/button_previous_description"
+            android:src="@drawable/ic_skip_previous_36dp"
+            android:tint="@color/widget_button"/>
+
+        <ImageView
+            android:id="@+id/widget_play_pause"
+            style="?android:borderlessButtonStyle"
+            android:layout_width="@dimen/widget_button_size"
+            android:layout_height="@dimen/widget_button_size"
+            android:layout_margin="@dimen/widget_button_padding"
+            android:clickable="true"
+            android:background="?android:selectableItemBackgroundBorderless"
+            android:contentDescription="@string/button_play_description"
+            android:src="@drawable/ic_play_arrow_36dp"
+            android:tint="@color/widget_button"/>
+
+        <ImageView
+            android:id="@+id/widget_next"
+            style="?android:borderlessButtonStyle"
+            android:layout_width="@dimen/widget_button_size"
+            android:layout_height="@dimen/widget_button_size"
+            android:layout_margin="@dimen/widget_button_padding"
+            android:clickable="true"
+            android:background="?android:selectableItemBackgroundBorderless"
+            android:contentDescription="@string/button_skip_description"
+            android:src="@drawable/ic_skip_next_36dp"
+            android:tint="@color/widget_button"/>
+
+    </LinearLayout>
+
+</FrameLayout>
