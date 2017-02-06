@@ -60,10 +60,22 @@
 
     </LinearLayout>
 
-    <include layout="@layout/widget_view_controls"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="@dimen/widget_button_padding"/>
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent">
+
+        <!--
+            Wrapping the controls in a FrameLayout with a transparent background is a hack that lets
+            borderless touch effects draw over the album artwork correctly.
+         -->
+
+        <include layout="@layout/widget_view_controls"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="@dimen/widget_button_padding"/>
+
+    </FrameLayout>
 
 </FrameLayout>

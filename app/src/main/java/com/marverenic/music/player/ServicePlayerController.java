@@ -89,7 +89,7 @@ public class ServicePlayerController implements PlayerController {
     }
 
     private void startService() {
-        Intent serviceIntent = new Intent(mContext, PlayerService.class);
+        Intent serviceIntent = PlayerService.newIntent(mContext, true);
 
         // Manually start the service to ensure that it is associated with this task and can
         // appropriately set its dismiss behavior

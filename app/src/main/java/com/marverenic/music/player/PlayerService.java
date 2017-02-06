@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
@@ -36,6 +37,8 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
     public static final String ACTION_STOP = "PlayerService.stop";
 
+    private static final String EXTRA_START_SILENT = "PlayerService.SILENT_START";
+
     public static final int NOTIFICATION_ID = 1;
 
     /**
@@ -62,6 +65,18 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
      * Used to keep track of whether the notification has been dismissed or not
      */
     private boolean mStopped;
+
+    /**
+     * When set to true, notifications will not be displayed until the service enters the foreground
+     */
+    private boolean mBeQuiet;
+
+    public static Intent newIntent(Context context, boolean silent) {
+        Intent intent = new Intent(context, PlayerService.class);
+        intent.putExtra(EXTRA_START_SILENT, silent);
+
+        return intent;
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -112,6 +127,8 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         super.onStartCommand(intent, flags, startId);
 
         if (intent != null) {
+            mBeQuiet = intent.getBooleanExtra(EXTRA_START_SILENT, false);
+
             if (intent.hasExtra(Intent.EXTRA_KEY_EVENT)) {
                 MediaButtonReceiver.handleIntent(musicPlayer.getMediaSession(), intent);
                 Timber.i(intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT).toString());
@@ -256,7 +273,12 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     }
 
     private void showNotification(Notification notification) {
+        if (mBeQuiet && !musicPlayer.isPlaying()) {
+            return;
+        }
+
         mStopped = false;
+        mBeQuiet &= !musicPlayer.isPlaying();
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             startForeground(NOTIFICATION_ID, notification);
