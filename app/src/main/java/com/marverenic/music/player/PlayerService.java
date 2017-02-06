@@ -127,10 +127,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         super.onStartCommand(intent, flags, startId);
 
         if (intent != null) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
-                    || (flags & START_FLAG_REDELIVERY) != 0) {
-                mBeQuiet |= intent.getBooleanExtra(EXTRA_START_SILENT, false);
-            }
+            mBeQuiet = intent.getBooleanExtra(EXTRA_START_SILENT, false);
 
             if (intent.hasExtra(Intent.EXTRA_KEY_EVENT)) {
                 MediaButtonReceiver.handleIntent(musicPlayer.getMediaSession(), intent);
