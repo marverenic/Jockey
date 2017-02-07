@@ -1,8 +1,11 @@
 package com.marverenic.music.viewmodel;
 
+import android.view.View;
+
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.RobolectricJockeyApplication;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.player.PlayerController;
 import com.trello.rxlifecycle.components.support.RxFragmentActivity;
 
 import org.junit.Before;
@@ -25,6 +28,7 @@ public class SongViewModelTest {
 
     private RxFragmentActivity mActivity;
     private Song mModel;
+    private Song mOtherModel;
     private List<Song> mSurroundingContents;
     private SongViewModel mSubject;
 
@@ -48,6 +52,20 @@ public class SongViewModelTest {
                 .setYear(2016)
                 .setDateAdded(System.currentTimeMillis())
                 .setTrackNumber(1)
+                .setInLibrary(true)
+                .build();
+
+        mOtherModel = new Song.Builder()
+                .setSongName("Another Song")
+                .setSongId(2)
+                .setArtistName("Another Artist")
+                .setArtistId(6)
+                .setAlbumName("Another Album")
+                .setAlbumId(11)
+                .setSongDuration(TimeUnit.MILLISECONDS.convert(3, TimeUnit.MINUTES))
+                .setYear(2017)
+                .setDateAdded(System.currentTimeMillis())
+                .setTrackNumber(6)
                 .setInLibrary(true)
                 .build();
 
@@ -86,6 +104,40 @@ public class SongViewModelTest {
         assertEquals(3, mSubject.getIndex());
         assertSame(mSurroundingContents, mSubject.getSongs());
         assertEquals(mModel, mSubject.getReference());
+    }
+
+    @Test
+    public void testNowPlayingIndicatorWithEmptyQueue() {
+        PlayerController playerController = mSubject.mPlayerController;
+        playerController.clearQueue();
+
+        mSurroundingContents.add(null);
+        mSurroundingContents.add(null);
+        mSurroundingContents.add(null);
+        mSurroundingContents.add(mModel);
+        mSurroundingContents.add(null);
+        mSubject.setIndex(3);
+
+        assertEquals(View.GONE, mSubject.getNowPlayingIndicatorVisibility());
+    }
+
+    @Test
+    public void testNowPlayingIndicatorWithGeneralQueue() {
+        PlayerController playerController = mSubject.mPlayerController;
+        playerController.clearQueue();
+
+        mSurroundingContents.add(mOtherModel);
+        mSurroundingContents.add(mOtherModel);
+        mSurroundingContents.add(mOtherModel);
+        mSurroundingContents.add(mModel);
+        mSurroundingContents.add(mOtherModel);
+        mSubject.setIndex(3);
+
+        playerController.setQueue(mSurroundingContents, 3);
+        assertEquals(View.VISIBLE, mSubject.getNowPlayingIndicatorVisibility());
+
+        playerController.changeSong(2);
+        assertEquals(View.GONE, mSubject.getNowPlayingIndicatorVisibility());
     }
 
 }
