@@ -1,45 +1,29 @@
 package com.marverenic.music.adapter;
 
-import android.content.Context;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
+import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.databinding.InstanceSongDragBinding;
 import com.marverenic.music.model.Playlist;
 import com.marverenic.music.model.Song;
-import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.viewmodel.PlaylistSongViewModel;
 
 import java.util.List;
 
 public class PlaylistSongSection extends EditableSongSection {
 
-    private Context mContext;
-    private FragmentManager mFragmentManager;
+    private BaseActivity mActivity;
     private PlaylistStore mPlaylistStore;
     private Playlist mReference;
 
-    public PlaylistSongSection(AppCompatActivity activity, PlaylistStore playlistStore,
+    public PlaylistSongSection(BaseActivity activity, PlaylistStore playlistStore,
                                List<Song> data, Playlist reference) {
-        this(activity, activity.getSupportFragmentManager(), playlistStore, data, reference);
-    }
-
-    public PlaylistSongSection(Fragment fragment, PlaylistStore playlistStore, List<Song> data,
-                               Playlist reference) {
-        this(fragment.getContext(), fragment.getFragmentManager(), playlistStore, data, reference);
-    }
-
-    public PlaylistSongSection(Context context, FragmentManager fragmentManager,
-                               PlaylistStore playlistStore, List<Song> data,
-                               Playlist reference) {
         super(data);
-        mContext = context;
-        mFragmentManager = fragmentManager;
+        mActivity = activity;
         mPlaylistStore = playlistStore;
         mReference = reference;
     }
@@ -71,7 +55,7 @@ public class PlaylistSongSection extends EditableSongSection {
             mBinding = binding;
 
             binding.setViewModel(
-                    new PlaylistSongViewModel(itemView.getContext(), mFragmentManager, songList,
+                    new PlaylistSongViewModel(mActivity, songList,
                             () -> {
                                 adapter.notifyDataSetChanged();
                                 mPlaylistStore.editPlaylist(mReference, getData());

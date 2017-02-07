@@ -18,8 +18,8 @@
             android:text="@{viewModel.title}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/song_menu"
-            android:layout_toStartOf="@+id/song_menu"
+            android:layout_toLeftOf="@+id/instancePlayingIndicator"
+            android:layout_toStartOf="@+id/instancePlayingIndicator"
             android:ellipsize="end"
             android:singleLine="true" />
 
@@ -30,10 +30,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/song_name"
-            android:layout_toLeftOf="@+id/song_menu"
-            android:layout_toStartOf="@+id/song_menu"
+            android:layout_toLeftOf="@+id/instancePlayingIndicator"
+            android:layout_toStartOf="@+id/instancePlayingIndicator"
             android:ellipsize="end"
             android:singleLine="true" />
+
+        <ImageView
+            android:id="@+id/instancePlayingIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:src="@drawable/ic_play_circle_fill_24dp"
+            android:tint="?attr/colorAccent"
+            android:visibility="@{viewModel.nowPlayingIndicatorVisibility}"
+            android:layout_toLeftOf="@+id/song_menu"
+            android:layout_toStartOf="@+id/song_menu"
+            android:layout_centerVertical="true"/>
 
         <ImageView
             android:id="@+id/song_menu"

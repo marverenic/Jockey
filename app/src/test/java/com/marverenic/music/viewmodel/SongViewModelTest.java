@@ -1,11 +1,9 @@
 package com.marverenic.music.viewmodel;
 
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.RobolectricJockeyApplication;
 import com.marverenic.music.model.Song;
+import com.trello.rxlifecycle.components.support.RxFragmentActivity;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,14 +23,14 @@ import static junit.framework.Assert.assertSame;
 @Config(sdk = 23, constants = BuildConfig.class, application = RobolectricJockeyApplication.class)
 public class SongViewModelTest {
 
-    private FragmentActivity mActivity;
+    private RxFragmentActivity mActivity;
     private Song mModel;
     private List<Song> mSurroundingContents;
     private SongViewModel mSubject;
 
     @Before
     public void setup() {
-        mActivity = Robolectric.buildActivity(FragmentActivity.class)
+        mActivity = Robolectric.buildActivity(RxFragmentActivity.class)
                 .create()
                 .start()
                 .resume()
@@ -53,8 +51,8 @@ public class SongViewModelTest {
                 .setInLibrary(true)
                 .build();
 
-        FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
-        mSubject = new SongViewModel(mActivity, fragmentManager, mSurroundingContents);
+        mSubject = new SongViewModel(mActivity, mActivity.getSupportFragmentManager(),
+                mActivity.bindToLifecycle(), mSurroundingContents);
     }
 
     @Test

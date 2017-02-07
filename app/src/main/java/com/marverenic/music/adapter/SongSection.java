@@ -1,36 +1,32 @@
 package com.marverenic.music.adapter;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.marverenic.music.databinding.InstanceSongBinding;
-import com.marverenic.music.model.Song;
 import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
+import com.marverenic.music.activity.BaseActivity;
+import com.marverenic.music.databinding.InstanceSongBinding;
+import com.marverenic.music.fragments.BaseFragment;
+import com.marverenic.music.model.Song;
 import com.marverenic.music.viewmodel.SongViewModel;
 
 import java.util.List;
 
 public class SongSection extends HeterogeneousAdapter.ListSection<Song> {
 
-    private FragmentManager mFragmentManager;
+    private BaseActivity mActivity;
+    private BaseFragment mFragment;
 
-    public SongSection(AppCompatActivity activity, @NonNull List<Song> data) {
-        this(activity.getSupportFragmentManager(), data);
-    }
-
-    public SongSection(Fragment fragment, @NonNull List<Song> data) {
-        this(fragment.getFragmentManager(), data);
-    }
-
-    public SongSection(FragmentManager fragmentManager, @NonNull List<Song> data) {
+    public SongSection(BaseActivity activity, @NonNull List<Song> data) {
         super(data);
-        mFragmentManager = fragmentManager;
+        mActivity = activity;
+    }
+
+    public SongSection(BaseFragment fragment, @NonNull List<Song> data) {
+        super(data);
+        mFragment = fragment;
     }
 
     @Override
@@ -55,8 +51,14 @@ public class SongSection extends HeterogeneousAdapter.ListSection<Song> {
             super(binding.getRoot());
             mBinding = binding;
 
-            Context context = itemView.getContext();
-            binding.setViewModel(new SongViewModel(context, mFragmentManager, songList));
+            if (mFragment != null) {
+                binding.setViewModel(new SongViewModel(mFragment, songList));
+            } else if (mActivity != null) {
+                binding.setViewModel(new SongViewModel(mActivity, songList));
+            } else {
+                throw new RuntimeException("Unable to create view model. This SongSection has not "
+                        + "been created with a valid activity or fragment");
+            }
         }
 
         @Override
