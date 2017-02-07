@@ -58,7 +58,19 @@
         </LinearLayout>
 
         <ImageView
-            android:id="@id/song_menu"
+            android:id="@+id/instancePlayingIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:src="@drawable/ic_play_circle_fill_24dp"
+            android:tint="?attr/colorAccent"
+            android:visibility="@{viewModel.nowPlayingIndicatorVisibility}"
+            android:layout_toLeftOf="@+id/song_menu"
+            android:layout_toStartOf="@+id/song_menu"
+            android:layout_centerVertical="true"/>
+
+        <ImageView
+            android:id="@+id/song_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
