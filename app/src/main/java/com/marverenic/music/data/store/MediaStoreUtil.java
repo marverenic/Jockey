@@ -122,15 +122,19 @@ public final class MediaStoreUtil {
 
     @TargetApi(Build.VERSION_CODES.M)
     public static Observable<Boolean> promptPermission(Context context) {
+        if (sPermissionObservable == null) {
+            sPermissionObservable = BehaviorSubject.create();
+        }
+
         if (hasPermission(context)) {
-            sPermissionObservable = BehaviorSubject.create(true);
+            sPermissionObservable.onNext(true);
             return sPermissionObservable;
         }
 
-        sPermissionObservable = BehaviorSubject.create();
-
         RxPermissions.getInstance(context).request(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE)
-                .subscribe(sPermissionObservable);
+                .subscribe(sPermissionObservable::onNext, throwable -> {
+                    Timber.i(throwable, "Failed to get storage permission");
+                });
 
         return sPermissionObservable.asObservable();
     }

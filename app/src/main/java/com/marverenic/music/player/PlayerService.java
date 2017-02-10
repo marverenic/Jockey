@@ -126,7 +126,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         Timber.i("onStartCommand called");
         super.onStartCommand(intent, flags, startId);
 
-        if (intent != null) {
+        if (intent != null && MediaStoreUtil.hasPermission(this)) {
             mBeQuiet = intent.getBooleanExtra(EXTRA_START_SILENT, false);
 
             if (intent.hasExtra(Intent.EXTRA_KEY_EVENT)) {

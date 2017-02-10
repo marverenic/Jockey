@@ -12,6 +12,7 @@ import android.os.RemoteException;
 import com.marverenic.music.IPlayerService;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.data.store.ImmutablePreferenceStore;
+import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.model.Song;
@@ -89,6 +90,15 @@ public class ServicePlayerController implements PlayerController {
     }
 
     private void startService() {
+        MediaStoreUtil.getPermission(mContext)
+                .subscribe(this::bindService, t -> Timber.i(t, "Failed to get Storage permission"));
+    }
+
+    private void bindService(boolean hasMediaStorePermission) {
+        if (!hasMediaStorePermission || mBinding != null) {
+            return;
+        }
+
         Intent serviceIntent = PlayerService.newIntent(mContext, true);
 
         // Manually start the service to ensure that it is associated with this task and can
