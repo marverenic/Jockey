@@ -463,7 +463,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 state.setState(PlaybackStateCompat.STATE_NONE, getCurrentPosition(), 1f);
             }
             mMediaSession.setPlaybackState(state.build());
-            mMediaSession.setActive(mFocused);
         }
 
         Timber.i("Sending minor broadcast to update UI process");
