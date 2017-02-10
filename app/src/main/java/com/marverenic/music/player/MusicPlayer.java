@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.KeyEvent;
@@ -300,6 +301,11 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                         | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
                         | PlaybackStateCompat.ACTION_STOP)
                 .setState(PlaybackStateCompat.STATE_NONE, 0, 0f);
+
+        Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
+        mediaButtonIntent.setClass(mContext, MediaButtonReceiver.class);
+        PendingIntent mbrIntent = PendingIntent.getBroadcast(mContext, 0, mediaButtonIntent, 0);
+        session.setMediaButtonReceiver(mbrIntent);
 
         session.setPlaybackState(state.build());
         session.setActive(true);
