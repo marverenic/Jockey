@@ -5,23 +5,32 @@ import android.graphics.Bitmap;
 import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.model.Song;
 
+import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
 import rx.Single;
+import rx.subjects.BehaviorSubject;
 
 public class MockPlayerController implements PlayerController {
 
     // TODO implement stubbed methods when a test requires interactions with a PlayerController
+    private BehaviorSubject<List<Song>> mQueue;
+    private BehaviorSubject<Integer> mQueueIndex;
+
+    public MockPlayerController() {
+        mQueue = BehaviorSubject.create(Collections.emptyList());
+        mQueueIndex = BehaviorSubject.create(0);
+    }
 
     @Override
     public Observable<String> getError() {
-        throw new UnsupportedOperationException("Stub!");
+        return Observable.never();
     }
 
     @Override
     public Observable<String> getInfo() {
-        throw new UnsupportedOperationException("Stub!");
+        return Observable.never();
     }
 
     @Override
@@ -41,12 +50,12 @@ public class MockPlayerController implements PlayerController {
 
     @Override
     public void skip() {
-        throw new UnsupportedOperationException("Stub!");
+        mQueueIndex.onNext(mQueueIndex.getValue() + 1);
     }
 
     @Override
     public void previous() {
-        throw new UnsupportedOperationException("Stub!");
+        mQueueIndex.onNext(mQueueIndex.getValue() - 1);
     }
 
     @Override
@@ -71,17 +80,18 @@ public class MockPlayerController implements PlayerController {
 
     @Override
     public void setQueue(List<Song> newQueue, int newPosition) {
-        throw new UnsupportedOperationException("Stub!");
+        mQueue.onNext(newQueue);
+        mQueueIndex.onNext(newPosition);
     }
 
     @Override
     public void clearQueue() {
-        throw new UnsupportedOperationException("Stub!");
+        setQueue(Collections.emptyList(), 0);
     }
 
     @Override
     public void changeSong(int newPosition) {
-        throw new UnsupportedOperationException("Stub!");
+        mQueueIndex.onNext(newPosition);
     }
 
     @Override
@@ -121,17 +131,23 @@ public class MockPlayerController implements PlayerController {
 
     @Override
     public Observable<Song> getNowPlaying() {
-        throw new UnsupportedOperationException("Stub!");
+        return Observable.combineLatest(mQueue, mQueueIndex, (queue, index) -> {
+            if (index >= queue.size()) {
+                return null;
+            } else {
+                return queue.get(index);
+            }
+        });
     }
 
     @Override
     public Observable<List<Song>> getQueue() {
-        throw new UnsupportedOperationException("Stub!");
+        return mQueue;
     }
 
     @Override
     public Observable<Integer> getQueuePosition() {
-        throw new UnsupportedOperationException("Stub!");
+        return mQueueIndex;
     }
 
     @Override
@@ -141,7 +157,7 @@ public class MockPlayerController implements PlayerController {
 
     @Override
     public Observable<Integer> getDuration() {
-        throw new UnsupportedOperationException("Stub!");
+        return getNowPlaying().map(Song::getSongDuration).cast(Integer.class);
     }
 
     @Override

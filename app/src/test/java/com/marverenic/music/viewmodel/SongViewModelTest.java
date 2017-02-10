@@ -1,11 +1,12 @@
 package com.marverenic.music.viewmodel;
 
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
+import android.view.View;
 
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.RobolectricJockeyApplication;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.player.PlayerController;
+import com.trello.rxlifecycle.components.support.RxFragmentActivity;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,14 +26,15 @@ import static junit.framework.Assert.assertSame;
 @Config(sdk = 23, constants = BuildConfig.class, application = RobolectricJockeyApplication.class)
 public class SongViewModelTest {
 
-    private FragmentActivity mActivity;
+    private RxFragmentActivity mActivity;
     private Song mModel;
+    private Song mOtherModel;
     private List<Song> mSurroundingContents;
     private SongViewModel mSubject;
 
     @Before
     public void setup() {
-        mActivity = Robolectric.buildActivity(FragmentActivity.class)
+        mActivity = Robolectric.buildActivity(RxFragmentActivity.class)
                 .create()
                 .start()
                 .resume()
@@ -53,8 +55,22 @@ public class SongViewModelTest {
                 .setInLibrary(true)
                 .build();
 
-        FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
-        mSubject = new SongViewModel(mActivity, fragmentManager, mSurroundingContents);
+        mOtherModel = new Song.Builder()
+                .setSongName("Another Song")
+                .setSongId(2)
+                .setArtistName("Another Artist")
+                .setArtistId(6)
+                .setAlbumName("Another Album")
+                .setAlbumId(11)
+                .setSongDuration(TimeUnit.MILLISECONDS.convert(3, TimeUnit.MINUTES))
+                .setYear(2017)
+                .setDateAdded(System.currentTimeMillis())
+                .setTrackNumber(6)
+                .setInLibrary(true)
+                .build();
+
+        mSubject = new SongViewModel(mActivity, mActivity.getSupportFragmentManager(),
+                mActivity.bindToLifecycle(), mSurroundingContents);
     }
 
     @Test
@@ -88,6 +104,40 @@ public class SongViewModelTest {
         assertEquals(3, mSubject.getIndex());
         assertSame(mSurroundingContents, mSubject.getSongs());
         assertEquals(mModel, mSubject.getReference());
+    }
+
+    @Test
+    public void testNowPlayingIndicatorWithEmptyQueue() {
+        PlayerController playerController = mSubject.mPlayerController;
+        playerController.clearQueue();
+
+        mSurroundingContents.add(null);
+        mSurroundingContents.add(null);
+        mSurroundingContents.add(null);
+        mSurroundingContents.add(mModel);
+        mSurroundingContents.add(null);
+        mSubject.setIndex(3);
+
+        assertEquals(View.GONE, mSubject.getNowPlayingIndicatorVisibility());
+    }
+
+    @Test
+    public void testNowPlayingIndicatorWithGeneralQueue() {
+        PlayerController playerController = mSubject.mPlayerController;
+        playerController.clearQueue();
+
+        mSurroundingContents.add(mOtherModel);
+        mSurroundingContents.add(mOtherModel);
+        mSurroundingContents.add(mOtherModel);
+        mSurroundingContents.add(mModel);
+        mSurroundingContents.add(mOtherModel);
+        mSubject.setIndex(3);
+
+        playerController.setQueue(mSurroundingContents, 3);
+        assertEquals(View.VISIBLE, mSubject.getNowPlayingIndicatorVisibility());
+
+        playerController.changeSong(2);
+        assertEquals(View.GONE, mSubject.getNowPlayingIndicatorVisibility());
     }
 
 }

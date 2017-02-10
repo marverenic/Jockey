@@ -2,12 +2,12 @@ package com.marverenic.music.viewmodel;
 
 import android.content.Context;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.View;
 
 import com.marverenic.music.R;
+import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.model.Song;
@@ -21,10 +21,10 @@ public class PlaylistSongViewModel extends SongViewModel {
     private Context mContext;
     private OnPlaylistEntriesChangeListener mRemoveListener;
 
-    public PlaylistSongViewModel(Context context, FragmentManager fragmentManager, List<Song> songs,
+    public PlaylistSongViewModel(BaseActivity activity, List<Song> songs,
                                  OnPlaylistEntriesChangeListener listener) {
-        super(context, fragmentManager, songs);
-        mContext = context;
+        super(activity, songs);
+        mContext = activity;
         mRemoveListener = listener;
     }
 

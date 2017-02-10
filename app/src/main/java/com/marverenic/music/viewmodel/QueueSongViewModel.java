@@ -1,26 +1,22 @@
 package com.marverenic.music.viewmodel;
 
 import android.content.Context;
-import android.databinding.Bindable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.View;
 
-import com.marverenic.music.BR;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.fragments.BaseFragment;
 import com.marverenic.music.model.Song;
-import com.trello.rxlifecycle.FragmentEvent;
-import com.trello.rxlifecycle.LifecycleTransformer;
 
 import java.util.List;
 
-import rx.Subscription;
+import rx.Observable;
 import timber.log.Timber;
 
 import static android.support.design.widget.Snackbar.LENGTH_LONG;
@@ -31,43 +27,14 @@ public class QueueSongViewModel extends SongViewModel {
 
     private Context mContext;
     private FragmentManager mFragmentManager;
-    private LifecycleTransformer<?> mLifecycleTransformer;
     private OnRemoveListener mRemoveListener;
-    private Subscription mNowPlayingSubscription;
-
-    private boolean mPlaying;
 
     public QueueSongViewModel(BaseFragment fragment, List<Song> songs,
                               OnRemoveListener removeListener) {
-        super(fragment.getContext(), fragment.getFragmentManager(), songs);
-        mLifecycleTransformer = fragment.bindUntilEvent(FragmentEvent.DESTROY_VIEW);
+        super(fragment, songs);
         mContext = fragment.getContext();
         mFragmentManager = fragment.getFragmentManager();
         mRemoveListener = removeListener;
-    }
-
-    private <T> LifecycleTransformer<T> bindToLifecycle() {
-        //noinspection unchecked
-        return (LifecycleTransformer<T>) mLifecycleTransformer;
-    }
-
-    @Override
-    public void setSong(List<Song> songList, int index) {
-        super.setSong(songList, index);
-
-        if (mNowPlayingSubscription != null) {
-            mNowPlayingSubscription.unsubscribe();
-        }
-
-        mPlaying = false;
-        mNowPlayingSubscription = mPlayerController.getQueuePosition()
-                .compose(bindToLifecycle())
-                .subscribe(queuePosition -> {
-                    mPlaying = (queuePosition == getIndex());
-                    notifyPropertyChanged(BR.nowPlayingIndicatorVisibility);
-                }, throwable -> {
-                    Timber.e(throwable, "Failed to update playing indicator");
-                });
     }
 
     public interface OnRemoveListener {
@@ -75,17 +42,13 @@ public class QueueSongViewModel extends SongViewModel {
     }
 
     @Override
-    public View.OnClickListener onClickSong() {
-        return v -> mPlayerController.changeSong(getIndex());
+    protected Observable<Boolean> isPlaying() {
+        return mPlayerController.getQueuePosition().map(position -> position == getIndex());
     }
 
-    @Bindable
-    public int getNowPlayingIndicatorVisibility() {
-        if (mPlaying) {
-            return View.VISIBLE;
-        } else {
-            return View.GONE;
-        }
+    @Override
+    public View.OnClickListener onClickSong() {
+        return v -> mPlayerController.changeSong(getIndex());
     }
 
     @Override

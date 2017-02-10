@@ -2,26 +2,35 @@ package com.marverenic.music.viewmodel;
 
 import android.content.Context;
 import android.databinding.BaseObservable;
+import android.databinding.Bindable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.View;
 
+import com.marverenic.music.BR;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
+import com.marverenic.music.fragments.BaseFragment;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
+import com.trello.rxlifecycle.ActivityEvent;
+import com.trello.rxlifecycle.FragmentEvent;
+import com.trello.rxlifecycle.LifecycleTransformer;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Observable;
+import rx.Subscription;
 import timber.log.Timber;
 
 public class SongViewModel extends BaseObservable {
@@ -34,14 +43,29 @@ public class SongViewModel extends BaseObservable {
 
     private Context mContext;
     private FragmentManager mFragmentManager;
+    private LifecycleTransformer<?> mLifecycleTransformer;
+    private Subscription mNowPlayingSubscription;
 
     private List<Song> mSongList;
     private int mIndex;
+    private boolean mIsPlaying;
     private Song mReference;
 
-    public SongViewModel(Context context, FragmentManager fragmentManager, List<Song> songs) {
+    public SongViewModel(BaseActivity activity, List<Song> songs) {
+        this(activity, activity.getSupportFragmentManager(),
+                activity.bindUntilEvent(ActivityEvent.DESTROY), songs);
+    }
+
+    public SongViewModel(BaseFragment fragment, List<Song> songs) {
+        this(fragment.getContext(), fragment.getFragmentManager(),
+                fragment.bindUntilEvent(FragmentEvent.DESTROY), songs);
+    }
+
+    public SongViewModel(Context context, FragmentManager fragmentManager,
+                          LifecycleTransformer<?> lifecycleTransformer, List<Song> songs) {
         mContext = context;
         mFragmentManager = fragmentManager;
+        mLifecycleTransformer = lifecycleTransformer;
         mSongList = songs;
 
         JockeyApplication.getComponent(mContext).inject(this);
@@ -63,18 +87,54 @@ public class SongViewModel extends BaseObservable {
         return mSongList;
     }
 
+    private <T> LifecycleTransformer<T> bindToLifecycle() {
+        //noinspection unchecked
+        return (LifecycleTransformer<T>) mLifecycleTransformer;
+    }
+
+    protected Observable<Boolean> isPlaying() {
+        return mPlayerController.getNowPlaying()
+                .map(playing -> playing != null && playing.equals(getReference()));
+    }
+
     public void setSong(List<Song> songList, int index) {
         mSongList = songList;
         mIndex = index;
         mReference = songList.get(index);
 
-        notifyChange();
+        if (mNowPlayingSubscription != null) {
+            mNowPlayingSubscription.unsubscribe();
+        }
+
+        mIsPlaying = false;
+        mNowPlayingSubscription = isPlaying()
+                .compose(bindToLifecycle())
+                .subscribe(isPlaying -> {
+                    mIsPlaying = isPlaying;
+                    notifyPropertyChanged(BR.nowPlayingIndicatorVisibility);
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to update playing indicator");
+                });
+
+        notifyPropertyChanged(BR.title);
+        notifyPropertyChanged(BR.detail);
     }
 
+    @Bindable
+    public int getNowPlayingIndicatorVisibility() {
+        if (mIsPlaying) {
+            return View.VISIBLE;
+        } else {
+            return View.GONE;
+        }
+    }
+
+    @Bindable
     public String getTitle() {
         return mReference.getSongName();
     }
 
+    @Bindable
     public String getDetail() {
         return mContext.getString(R.string.format_compact_song_info,
                 mReference.getArtistName(), mReference.getAlbumName());
