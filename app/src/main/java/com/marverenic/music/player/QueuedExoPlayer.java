@@ -31,6 +31,7 @@ import com.marverenic.music.BuildConfig;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.utils.Internal;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -217,7 +218,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
             boolean nowPlayingDiff = !queue.get(index).equals(getNowPlaying());
             boolean queueDiff = !queue.equals(mQueue);
 
-            mQueue = queue;
+            mQueue = Collections.unmodifiableList(new ArrayList<>(queue));
             mQueueIndex = index;
 
             if (nowPlayingDiff) {

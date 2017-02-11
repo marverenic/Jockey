@@ -585,7 +585,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     private void shuffleQueue(int currentIndex) {
         Timber.i("Shuffling queue...");
-        mQueueShuffled = new ArrayList<>(mQueue);
+        ArrayList<Song> shuffled = new ArrayList<>(mQueue);
 
         if (!mQueueShuffled.isEmpty()) {
             Song first = mQueueShuffled.remove(currentIndex);
@@ -593,6 +593,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             Collections.shuffle(mQueueShuffled);
             mQueueShuffled.add(0, first);
         }
+
+        mQueueShuffled = Collections.unmodifiableList(shuffled);
     }
 
     /**
@@ -613,7 +615,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             }
         }
 
-        mQueue = unshuffled;
+        mQueue = Collections.unmodifiableList(unshuffled);
     }
 
     /**
@@ -852,7 +854,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         // If you're using this method on the UI thread, consider replacing the first line in this
         // method with "mQueue = new ArrayList<>(queue);"
         // to prevent components from accidentally changing the backing queue
-        mQueue = queue;
+        mQueue = Collections.unmodifiableList(queue);
         if (mShuffle) {
             Timber.i("Shuffling new queue and starting from beginning");
             shuffleQueue(index);
@@ -874,9 +876,9 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public void editQueue(@NonNull List<Song> queue, int index) {
         Timber.i("editQueue called (index = %d)", index);
         if (mShuffle) {
-            mQueueShuffled = queue;
+            mQueueShuffled = Collections.unmodifiableList(queue);
         } else {
-            mQueue = queue;
+            mQueue = Collections.unmodifiableList(queue);
         }
         setBackingQueue(index);
     }
@@ -1035,12 +1037,20 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public void queueNext(Song song) {
         Timber.i("queueNext(Song) called");
         int index = mQueue.isEmpty() ? 0 : mMediaPlayer.getQueueIndex() + 1;
+
+        List<Song> shuffledQueue = new ArrayList<>(mQueueShuffled);
+        List<Song> queue = new ArrayList<>(mQueue);
+
         if (mShuffle) {
-            mQueueShuffled.add(index, song);
-            mQueue.add(song);
+            shuffledQueue.add(index, song);
+            queue.add(song);
         } else {
-            mQueue.add(index, song);
+            queue.add(index, song);
         }
+
+        mQueueShuffled = Collections.unmodifiableList(shuffledQueue);
+        mQueue = Collections.unmodifiableList(queue);
+
         setBackingQueue();
     }
 
@@ -1051,12 +1061,20 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public void queueNext(List<Song> songs) {
         Timber.i("queueNext(List<Song>) called");
         int index = mQueue.isEmpty() ? 0 : mMediaPlayer.getQueueIndex() + 1;
+
+        List<Song> shuffledQueue = new ArrayList<>(mQueueShuffled);
+        List<Song> queue = new ArrayList<>(mQueue);
+
         if (mShuffle) {
-            mQueueShuffled.addAll(index, songs);
-            mQueue.addAll(songs);
+            shuffledQueue.addAll(index, songs);
+            queue.addAll(songs);
         } else {
-            mQueue.addAll(index, songs);
+            queue.addAll(index, songs);
         }
+
+        mQueueShuffled = Collections.unmodifiableList(shuffledQueue);
+        mQueue = Collections.unmodifiableList(queue);
+
         setBackingQueue();
     }
 
@@ -1066,12 +1084,20 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     public void queueLast(Song song) {
         Timber.i("queueLast(Song) called");
+
+        List<Song> shuffledQueue = new ArrayList<>(mQueueShuffled);
+        List<Song> queue = new ArrayList<>(mQueue);
+
         if (mShuffle) {
-            mQueueShuffled.add(song);
-            mQueue.add(song);
+            shuffledQueue.add(song);
+            queue.add(song);
         } else {
-            mQueue.add(song);
+            queue.add(song);
         }
+
+        mQueueShuffled = Collections.unmodifiableList(shuffledQueue);
+        mQueue = Collections.unmodifiableList(queue);
+
         setBackingQueue();
     }
 
@@ -1081,12 +1107,20 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     public void queueLast(List<Song> songs) {
         Timber.i("queueLast(List<Song>)");
+
+        List<Song> shuffledQueue = new ArrayList<>(mQueueShuffled);
+        List<Song> queue = new ArrayList<>(mQueue);
+
         if (mShuffle) {
-            mQueueShuffled.addAll(songs);
-            mQueue.addAll(songs);
+            shuffledQueue.addAll(songs);
+            queue.addAll(songs);
         } else {
-            mQueue.addAll(songs);
+            queue.addAll(songs);
         }
+
+        mQueueShuffled = Collections.unmodifiableList(shuffledQueue);
+        mQueue = Collections.unmodifiableList(queue);
+
         setBackingQueue();
     }
 
@@ -1176,8 +1210,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      *              status will immediately be applied.
      */
     public void restorePlayerState(PlayerState state) {
-        mQueue = state.getQueue();
-        mQueueShuffled = state.getShuffledQueue();
+        mQueue = Collections.unmodifiableList(state.getQueue());
+        mQueueShuffled = Collections.unmodifiableList(state.getShuffledQueue());
 
         setBackingQueue(state.getQueuePosition());
         seekTo(state.getSeekPosition());
