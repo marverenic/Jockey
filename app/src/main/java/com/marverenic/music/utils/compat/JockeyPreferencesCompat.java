@@ -27,10 +27,21 @@ public class JockeyPreferencesCompat {
             updateFromJockey1_2(context, prefs);
             Timber.i("upgradeSharedPreferences: Finished updating from version 1.2");
         }
+
+        if (shouldUpgradeFromJockey2_0(prefs)) {
+            Timber.i("upgradeSharedPreferences: Updating from version 2.0");
+            updateFromJockey2_0(context);
+            Timber.i("upgradeSharedPreferences: Finished updating from version 2.0");
+        }
     }
 
     private static boolean shouldUpgradeFromJockey1_2(SharedPreferences prefs) {
         return prefs.contains("prefShowFirstStart");
+    }
+
+    private static boolean shouldUpgradeFromJockey2_0(SharedPreferences prefs) {
+        return prefs.contains("Theme.presetColorPrimary")
+                && !prefs.contains("Theme.presetColorAccent");
     }
 
     private static void updateFromJockey1_2(Context context, SharedPreferences prefs) {
@@ -70,6 +81,13 @@ public class JockeyPreferencesCompat {
 
         preferenceStore.setRepeatMode(repeat);
         preferenceStore.setShuffle(shuffle);
+    }
+
+    private static void updateFromJockey2_0(Context context) {
+        PreferenceStore preferenceStore = new SharedPreferenceStore(context);
+
+        //noinspection WrongConstant
+        preferenceStore.setAccentColor(preferenceStore.getPrimaryColor());
     }
 
     @StartPage
