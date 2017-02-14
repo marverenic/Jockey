@@ -587,11 +587,11 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         Timber.i("Shuffling queue...");
         ArrayList<Song> shuffled = new ArrayList<>(mQueue);
 
-        if (!mQueueShuffled.isEmpty()) {
-            Song first = mQueueShuffled.remove(currentIndex);
+        if (!shuffled.isEmpty()) {
+            Song first = shuffled.remove(currentIndex);
 
-            Collections.shuffle(mQueueShuffled);
-            mQueueShuffled.add(0, first);
+            Collections.shuffle(shuffled);
+            shuffled.add(0, first);
         }
 
         mQueueShuffled = Collections.unmodifiableList(shuffled);
