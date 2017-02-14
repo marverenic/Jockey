@@ -105,7 +105,7 @@ public class QueueSongViewModel extends SongViewModel {
         new AppendPlaylistDialogFragment.Builder(mContext, mFragmentManager)
                 .setTitle(mContext.getResources().getString(
                         R.string.header_add_song_name_to_playlist, getReference()))
-                .setSongs(getSongs())
+                .setSongs(getReference())
                 .showSnackbarIn(R.id.now_playing_artwork)
                 .show(TAG_PLAYLIST_DIALOG);
     }
