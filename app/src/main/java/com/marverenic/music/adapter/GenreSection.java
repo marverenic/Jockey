@@ -11,11 +11,14 @@ import com.marverenic.music.databinding.InstanceGenreBinding;
 import com.marverenic.music.model.Genre;
 import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
+import com.marverenic.music.model.ModelUtil;
 import com.marverenic.music.viewmodel.GenreViewModel;
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.List;
 
-public class GenreSection extends HeterogeneousAdapter.ListSection<Genre> {
+public class GenreSection extends HeterogeneousAdapter.ListSection<Genre>
+        implements FastScrollRecyclerView.SectionedAdapter {
 
     private FragmentManager mFragmentManager;
 
@@ -44,6 +47,13 @@ public class GenreSection extends HeterogeneousAdapter.ListSection<Genre> {
                 LayoutInflater.from(parent.getContext()), parent, false);
 
         return new ViewHolder(binding);
+    }
+
+    @NonNull
+    @Override
+    public String getSectionName(int position) {
+        char firstChar = ModelUtil.sortableTitle(get(position).getGenreName()).charAt(0);
+        return Character.toString(firstChar).toUpperCase();
     }
 
     private class ViewHolder extends EnhancedViewHolder<Genre> {
