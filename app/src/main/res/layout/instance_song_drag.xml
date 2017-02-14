@@ -32,8 +32,8 @@
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/handle"
             android:layout_toEndOf="@+id/handle"
-            android:layout_toStartOf="@id/song_menu"
-            android:layout_toLeftOf="@id/song_menu">
+            android:layout_toStartOf="@id/instancePlayingIndicator"
+            android:layout_toLeftOf="@id/instancePlayingIndicator">
 
             <TextView
                 android:id="@+id/song_name"
