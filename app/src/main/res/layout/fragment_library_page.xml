@@ -5,7 +5,7 @@
     android:id="@+id/library_page_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:scrollbars="vertical"
+    android:scrollbars="none"
     android:paddingLeft="@dimen/global_padding"
     android:paddingRight="@dimen/global_padding"
     app:fastScrollPopupBgColor="?attr/colorAccent"
