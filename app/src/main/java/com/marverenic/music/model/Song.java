@@ -26,12 +26,12 @@ import static android.media.MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER;
 import static android.media.MediaMetadataRetriever.METADATA_KEY_DATE;
 import static android.media.MediaMetadataRetriever.METADATA_KEY_DURATION;
 import static android.media.MediaMetadataRetriever.METADATA_KEY_TITLE;
-import static com.marverenic.music.model.Util.compareLong;
-import static com.marverenic.music.model.Util.compareTitle;
-import static com.marverenic.music.model.Util.hashLong;
-import static com.marverenic.music.model.Util.parseUnknown;
-import static com.marverenic.music.model.Util.stringToInt;
-import static com.marverenic.music.model.Util.stringToLong;
+import static com.marverenic.music.model.ModelUtil.compareLong;
+import static com.marverenic.music.model.ModelUtil.compareTitle;
+import static com.marverenic.music.model.ModelUtil.hashLong;
+import static com.marverenic.music.model.ModelUtil.parseUnknown;
+import static com.marverenic.music.model.ModelUtil.stringToInt;
+import static com.marverenic.music.model.ModelUtil.stringToLong;
 
 public class Song implements Parcelable, Comparable<Song> {
 
