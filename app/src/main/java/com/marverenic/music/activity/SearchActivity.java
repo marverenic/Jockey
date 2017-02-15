@@ -20,6 +20,7 @@ import com.marverenic.music.adapter.ArtistSection;
 import com.marverenic.music.adapter.BasicEmptyState;
 import com.marverenic.music.adapter.GenreSection;
 import com.marverenic.music.adapter.HeaderSection;
+import com.marverenic.music.adapter.HeterogeneousFastScrollAdapter;
 import com.marverenic.music.adapter.PlaylistSection;
 import com.marverenic.music.adapter.SongSection;
 import com.marverenic.music.data.store.MusicStore;
@@ -74,7 +75,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_instance);
+        setContentView(R.layout.activity_search);
         JockeyApplication.getComponent(this).inject(this);
 
         String lastQuery;
@@ -87,7 +88,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         mQueryObservable = BehaviorSubject.create(lastQuery);
 
         // Set up the RecyclerView's adapter
-        mRecyclerView = (RecyclerView) findViewById(R.id.list);
+        mRecyclerView = (RecyclerView) findViewById(R.id.search_list);
         initAdapter();
 
         mQueryObservable
@@ -166,7 +167,7 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
         mArtistSection = new ArtistSection(this, Collections.emptyList());
         mGenreSection = new GenreSection(this, Collections.emptyList());
 
-        mAdapter = new HeterogeneousAdapter()
+        mAdapter = new HeterogeneousFastScrollAdapter()
                 .addSection(new HeaderSection(getString(R.string.header_playlists)))
                 .addSection(mPlaylistSection)
                 .addSection(new HeaderSection(getString(R.string.header_songs)))
