@@ -79,6 +79,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':heterogeneousadapter')
     compile project(':seekarc')
+    compile project(':recyclerview-fastscroll')
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.robolectric:robolectric:3.1.4'
@@ -95,7 +96,6 @@ dependencies {
     compile 'com.github.bumptech.glide:glide:3.6.1'
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:0.5.2'
-    compile 'com.simplecityapps:recyclerview-fastscroll:1.0.11'
 
     compile 'com.google.dagger:dagger:2.6'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.6'
