@@ -69,6 +69,7 @@ public class GenreSection extends HeterogeneousAdapter.ListSection<Genre>
         @Override
         public void onUpdate(Genre item, int sectionPosition) {
             mBinding.getViewModel().setGenre(item);
+            mBinding.executePendingBindings();
         }
     }
 }

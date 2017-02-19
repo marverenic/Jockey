@@ -69,6 +69,7 @@ public class AlbumSection extends HeterogeneousAdapter.ListSection<Album>
         @Override
         public void onUpdate(Album item, int sectionPosition) {
             mBinding.getViewModel().setAlbum(item);
+            mBinding.executePendingBindings();
         }
     }
 }

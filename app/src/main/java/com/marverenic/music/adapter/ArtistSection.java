@@ -69,6 +69,7 @@ public class ArtistSection extends HeterogeneousAdapter.ListSection<Artist>
         @Override
         public void onUpdate(Artist item, int sectionPosition) {
             mBinding.getViewModel().setArtist(item);
+            mBinding.executePendingBindings();
         }
     }
 }
