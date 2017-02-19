@@ -203,7 +203,7 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
      * @return The number of visible data entries in all sections. This value does not necessarily
      *         correspond to the value returned by {@link #getItemCount()}
      */
-    private int getDataSize() {
+    protected int getDataSize() {
         int sum = 0;
         for (Section s : mSections) {
             sum += s.getItemCount(this);

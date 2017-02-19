@@ -17,6 +17,10 @@ public class HeterogeneousFastScrollAdapter extends HeterogeneousAdapter
     @NonNull
     @Override
     public String getSectionName(int position) {
+        if (getDataSize() == 0) {
+            return "";
+        }
+
         lookupCoordinates(position, mSectionCoordinate);
         Section<?> section = getSection(mSectionCoordinate.getSection());
 
