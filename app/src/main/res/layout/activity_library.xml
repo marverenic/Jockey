@@ -28,6 +28,7 @@
         android:layout_above="@id/miniplayer_holder">
 
         <android.support.design.widget.AppBarLayout
+            android:id="@+id/library_app_bar_layout"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary">

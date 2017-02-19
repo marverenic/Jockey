@@ -109,9 +109,9 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
      * overhead.
      *
      * @param position The position in the entire data set to lookup a coordinate of
-     * @param coordinate @ {@code Coordinate} object to put the result into
+     * @param coordinate {@code Coordinate} object to put the result into
      */
-    private void lookupCoordinates(int position, Coordinate coordinate) {
+    protected final void lookupCoordinates(int position, Coordinate coordinate) {
         int runningTotal = 0;
         for (int i = 0; i < mSections.size(); i++) {
             int sectionTotal = mSections.get(i).getItemCount(this);
@@ -203,7 +203,7 @@ public class HeterogeneousAdapter extends RecyclerView.Adapter<EnhancedViewHolde
      * @return The number of visible data entries in all sections. This value does not necessarily
      *         correspond to the value returned by {@link #getItemCount()}
      */
-    private int getDataSize() {
+    protected int getDataSize() {
         int sum = 0;
         for (Section s : mSections) {
             sum += s.getItemCount(this);

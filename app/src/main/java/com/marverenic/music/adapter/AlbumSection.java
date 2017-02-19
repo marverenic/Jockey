@@ -11,11 +11,14 @@ import com.marverenic.music.databinding.InstanceAlbumBinding;
 import com.marverenic.music.model.Album;
 import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
 import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
+import com.marverenic.music.model.ModelUtil;
 import com.marverenic.music.viewmodel.AlbumViewModel;
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.List;
 
-public class AlbumSection extends HeterogeneousAdapter.ListSection<Album> {
+public class AlbumSection extends HeterogeneousAdapter.ListSection<Album>
+        implements FastScrollRecyclerView.SectionedAdapter {
 
     private FragmentManager mFragmentManager;
 
@@ -46,6 +49,13 @@ public class AlbumSection extends HeterogeneousAdapter.ListSection<Album> {
         return new ViewHolder(binding);
     }
 
+    @NonNull
+    @Override
+    public String getSectionName(int position) {
+        char firstChar = ModelUtil.sortableTitle(get(position).getAlbumName()).charAt(0);
+        return Character.toString(firstChar).toUpperCase();
+    }
+
     private class ViewHolder extends EnhancedViewHolder<Album> {
 
         private InstanceAlbumBinding mBinding;
@@ -59,6 +69,7 @@ public class AlbumSection extends HeterogeneousAdapter.ListSection<Album> {
         @Override
         public void onUpdate(Album item, int sectionPosition) {
             mBinding.getViewModel().setAlbum(item);
+            mBinding.executePendingBindings();
         }
     }
 }

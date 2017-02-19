@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.adapter.HeterogeneousFastScrollAdapter;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.model.Playlist;
 import com.marverenic.music.adapter.LibraryEmptyState;
@@ -53,8 +54,8 @@ public class PlaylistFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.list, container, false);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.list);
+        View view = inflater.inflate(R.layout.fragment_library_page, container, false);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.library_page_list);
         mRecyclerView.addItemDecoration(new BackgroundDecoration());
         mRecyclerView.addItemDecoration(
                 new DividerDecoration(getActivity(), R.id.instance_blank, R.id.empty_layout));
@@ -92,7 +93,7 @@ public class PlaylistFragment extends BaseFragment {
             mPlaylistSection.setData(mPlaylists);
             mAdapter.notifyDataSetChanged();
         } else {
-            mAdapter = new HeterogeneousAdapter();
+            mAdapter = new HeterogeneousFastScrollAdapter();
             mAdapter.setHasStableIds(true);
             mRecyclerView.setAdapter(mAdapter);
 

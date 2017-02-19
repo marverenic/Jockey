@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 
 import java.text.Collator;
 
-class Util {
+public class ModelUtil {
 
     /**
      * Checks Strings from ContentResolvers and replaces the default unknown value of
@@ -15,7 +15,7 @@ class Util {
      * @param convertValue The value to replace unknown Strings with
      * @return A String with localized unknown values if needed, otherwise the original value
      */
-    protected static String parseUnknown(String value, String convertValue) {
+    public static String parseUnknown(String value, String convertValue) {
         if (value == null || value.equals(MediaStore.UNKNOWN_STRING)) {
             return convertValue;
         } else {
@@ -39,11 +39,11 @@ class Util {
         }
     }
 
-    protected static int compareLong(long lhs, long rhs) {
+    public static int compareLong(long lhs, long rhs) {
         return lhs < rhs ? -1 : (lhs == rhs ? 0 : 1);
     }
 
-    protected static int compareTitle(@Nullable String left, @Nullable String right) {
+    public static int compareTitle(@Nullable String left, @Nullable String right) {
         return Collator.getInstance().compare(sortableTitle(left), sortableTitle(right));
     }
 
@@ -55,7 +55,7 @@ class Util {
      *         removed to conform to English standards.
      */
     @NonNull
-    protected static String sortableTitle(@Nullable String title) {
+    public static String sortableTitle(@Nullable String title) {
         if (title == null) {
             return "";
         }
@@ -71,7 +71,7 @@ class Util {
         }
     }
 
-    protected static int hashLong(long value) {
+    public static int hashLong(long value) {
         return (int) (value ^ (value >>> 32));
     }
 }

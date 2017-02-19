@@ -232,6 +232,21 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:text="@string/uses_fastscroll_header"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/list_text_header_size" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/uses_fastscroll_detail"
+                android:textColor="@color/about_detail_text"
+                android:textSize="@dimen/list_text_detail_size" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:text="@string/uses_seek_arc_header"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/list_text_header_size" />
