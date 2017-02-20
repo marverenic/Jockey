@@ -58,9 +58,9 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
-                    android:singleLine="true"
+                    android:maxLines="1"
                     android:layout_toLeftOf="@id/album_menu"
-                    android:layout_toStartOf="@id/album_menu" />
+                    android:layout_toStartOf="@id/album_menu"/>
 
                 <TextView
                     android:id="@+id/album_detail"
@@ -72,7 +72,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
-                    android:singleLine="true"
+                    android:maxLines="1"
                     android:layout_toLeftOf="@id/album_menu"
                     android:layout_toStartOf="@+id/album_menu" />
 
