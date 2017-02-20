@@ -1,6 +1,8 @@
 package com.marverenic.music.view;
 
 import android.graphics.Rect;
+import android.os.Build;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -44,6 +46,10 @@ public class GridSpacingDecoration extends RecyclerView.ItemDecoration {
         RecyclerView.Adapter adapter = parent.getAdapter();
         int adapterPosition = parent.getChildAdapterPosition(view);
 
+        boolean isRtl = Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN
+                && view.getContext().getResources().getConfiguration()
+                .getLayoutDirection() == ViewCompat.LAYOUT_DIRECTION_RTL;
+
         if (viewType == ANY_VIEW || adapter.getItemViewType(adapterPosition) == viewType) {
             int halfSpacing = spacing / 2;
 
@@ -72,8 +78,13 @@ public class GridSpacingDecoration extends RecyclerView.ItemDecoration {
 
             outRect.top = halfSpacing;
             outRect.bottom = halfSpacing;
-            outRect.left = spacing * (numColumns - column) / numColumns;
-            outRect.right = spacing * (column + 1) / numColumns;
+            if (isRtl) {
+                outRect.right = spacing * (numColumns - column) / numColumns;
+                outRect.left = spacing * (column + 1) / numColumns;
+            } else {
+                outRect.left = spacing * (numColumns - column) / numColumns;
+                outRect.right = spacing * (column + 1) / numColumns;
+            }
 
             // Items in the first row
             if (sectionPosition < numColumns) {
