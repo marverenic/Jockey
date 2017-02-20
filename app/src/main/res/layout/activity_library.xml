@@ -44,6 +44,7 @@
                 android:id="@+id/library_tabs"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:layoutDirection="ltr"
                 app:tabIndicatorColor="?attr/colorAccent"
                 app:tabSelectedTextColor="#fff"
                 app:tabTextColor="#bfff"
