@@ -105,7 +105,11 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
 
             CoordinatorLayout.LayoutParams params =
                     (CoordinatorLayout.LayoutParams) button.getLayoutParams();
-            params.rightMargin += padding;
+            if (ViewUtils.isRtl(getContext())) {
+                params.leftMargin += padding;
+            } else {
+                params.rightMargin += padding;
+            }
             params.bottomMargin = (int) (SIZE_L_DP * dpScale + padding * (2 + children.size())
                     + SIZE_S_DP * dpScale * children.size());
 
@@ -117,7 +121,11 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
             // reason this changes in an update to one of the support libraries, just remeasure
             // these offsets and update them here.
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                params.rightMargin -= 12 * dpScale;
+                if (ViewUtils.isRtl(getContext())) {
+                    params.leftMargin -= 12 * dpScale;
+                } else {
+                    params.rightMargin -= 12 * dpScale;
+                }
                 params.bottomMargin -= 18 * dpScale;
             }
 
@@ -155,7 +163,12 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
 
             CoordinatorLayout.LayoutParams params =
                     (CoordinatorLayout.LayoutParams) label.getLayoutParams();
-            params.rightMargin += padding + 40 * dpScale;
+
+            if (ViewUtils.isRtl(getContext())) {
+                params.leftMargin += padding + 40 * dpScale;
+            } else {
+                params.rightMargin += padding + 40 * dpScale;
+            }
             params.bottomMargin = (int) (SIZE_L_DP * dpScale + 4 * dpScale
                     + padding * (2 + labels.size()) + SIZE_S_DP * dpScale * labels.size());
 
