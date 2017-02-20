@@ -43,20 +43,11 @@
             android:id="@+id/miniplayer_button_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layoutDirection="ltr"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_centerInParent="true">
-
-            <ImageButton
-                android:id="@+id/miniplayer_skip_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:src="@drawable/ic_skip_next_32dp"
-                android:tint="?textColorPrimary"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/button_skip_description"
-                android:onClick="@{viewModel.onClickSkip()}" />
 
             <ImageButton
                 android:id="@+id/miniplayer_play_button"
@@ -68,6 +59,17 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/button_play_description"
                 android:onClick="@{viewModel.onClickTogglePlay()}" />
+
+            <ImageButton
+                android:id="@+id/miniplayer_skip_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:src="@drawable/ic_skip_next_32dp"
+                android:tint="?textColorPrimary"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/button_skip_description"
+                android:onClick="@{viewModel.onClickSkip()}" />
 
         </LinearLayout>
 
