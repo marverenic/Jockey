@@ -33,6 +33,8 @@
                 android:layout_height="68dp"
                 android:paddingLeft="@dimen/grid_padding"
                 android:paddingStart="@dimen/grid_padding"
+                android:paddingRight="0dp"
+                android:paddingEnd="0dp"
                 android:layout_below="@id/album_art">
 
                 <ImageView
