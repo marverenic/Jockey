@@ -12,6 +12,7 @@
         android:layout_height="@dimen/now_playing_button_size"
         android:layout_gravity="center"
         android:orientation="horizontal"
+        android:layoutDirection="ltr"
         android:baselineAligned="false">
 
         <View android:layout_width="0dp"
