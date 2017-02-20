@@ -3,20 +3,21 @@ package com.marverenic.music.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.adapter.ArtistSection;
+import com.marverenic.music.adapter.HeterogeneousFastScrollAdapter;
+import com.marverenic.music.adapter.LibraryEmptyState;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.model.Artist;
-import com.marverenic.music.adapter.ArtistSection;
-import com.marverenic.music.adapter.LibraryEmptyState;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class ArtistFragment extends BaseFragment {
 
     @Inject MusicStore mMusicStore;
 
-    private RecyclerView mRecyclerView;
+    private FastScrollRecyclerView mRecyclerView;
     private HeterogeneousAdapter mAdapter;
     private ArtistSection mArtistSection;
     private List<Artist> mArtists;
@@ -52,8 +53,8 @@ public class ArtistFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.list, container, false);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.list);
+        View view = inflater.inflate(R.layout.fragment_library_page, container, false);
+        mRecyclerView = (FastScrollRecyclerView) view.findViewById(R.id.library_page_list);
         mRecyclerView.addItemDecoration(new BackgroundDecoration());
         mRecyclerView.addItemDecoration(new DividerDecoration(getContext(), R.id.empty_layout));
 
@@ -90,7 +91,7 @@ public class ArtistFragment extends BaseFragment {
             mArtistSection.setData(mArtists);
             mAdapter.notifyDataSetChanged();
         } else {
-            mAdapter = new HeterogeneousAdapter();
+            mAdapter = new HeterogeneousFastScrollAdapter();
             mAdapter.setHasStableIds(true);
             mRecyclerView.setAdapter(mAdapter);
 

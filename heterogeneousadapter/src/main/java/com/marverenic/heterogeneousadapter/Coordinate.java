@@ -4,9 +4,9 @@ package com.marverenic.heterogeneousadapter;
  * An ordered pair of integers used by {@link HeterogeneousAdapter} to lookup the index of data
  * items within sections.
  *
- * @see HeterogeneousAdapter#lookupPos(int)
+ * @see HeterogeneousAdapter#lookupCoordinates(int, Coordinate)
  */
-final class Coordinate {
+public final class Coordinate {
 
     public static final int UNKNOWN_POSITION = -1;
 

@@ -36,7 +36,7 @@ public class LocalPlaylistStore implements PlaylistStore {
 
     private Context mContext;
     private BehaviorSubject<List<Playlist>> mPlaylists;
-    private Map<AutoPlaylist, BehaviorSubject<List<Song>>> mAutoPlaylistSessionContents;
+    private Map<Playlist, BehaviorSubject<List<Song>>> mPlaylistContents;
 
     private BehaviorSubject<Boolean> mLoadingState;
 
@@ -45,7 +45,7 @@ public class LocalPlaylistStore implements PlaylistStore {
         mContext = context;
         mMusicStore = musicStore;
         mPlayCountStore = playCountStore;
-        mAutoPlaylistSessionContents = new ArrayMap<>();
+        mPlaylistContents = new ArrayMap<>();
         mLoadingState = BehaviorSubject.create(false);
     }
 
@@ -67,7 +67,7 @@ public class LocalPlaylistStore implements PlaylistStore {
                 .map(granted -> {
                     if (granted && mPlaylists != null) {
                         mPlaylists.onNext(getAllPlaylists());
-                        mAutoPlaylistSessionContents.clear();
+                        mPlaylistContents.clear();
                     }
                     mLoadingState.onNext(false);
                     return granted;
@@ -116,17 +116,26 @@ public class LocalPlaylistStore implements PlaylistStore {
     }
 
     private Observable<List<Song>> getPlaylistSongs(Playlist playlist) {
-        return Observable.just(MediaStoreUtil.getPlaylistSongs(mContext, playlist));
+        BehaviorSubject<List<Song>> subject;
+
+        if (mPlaylistContents.containsKey(playlist)) {
+            subject = mPlaylistContents.get(playlist);
+        } else {
+            subject = BehaviorSubject.create(MediaStoreUtil.getPlaylistSongs(mContext, playlist));
+            mPlaylistContents.put(playlist, subject);
+        }
+
+        return subject.asObservable();
     }
 
     private Observable<List<Song>> getAutoPlaylistSongs(AutoPlaylist playlist) {
         BehaviorSubject<List<Song>> subject;
 
-        if (mAutoPlaylistSessionContents.containsKey(playlist)) {
-            subject = mAutoPlaylistSessionContents.get(playlist);
+        if (mPlaylistContents.containsKey(playlist)) {
+            subject = mPlaylistContents.get(playlist);
         } else {
             subject = BehaviorSubject.create();
-            mAutoPlaylistSessionContents.put(playlist, subject);
+            mPlaylistContents.put(playlist, subject);
 
             playlist.generatePlaylist(mMusicStore, this, mPlayCountStore)
                     .subscribe(subject::onNext, subject::onError);
@@ -220,6 +229,7 @@ public class LocalPlaylistStore implements PlaylistStore {
     @Override
     public void removePlaylist(Playlist playlist) {
         MediaStoreUtil.deletePlaylist(mContext, playlist);
+        mPlaylistContents.remove(playlist);
 
         if (mPlaylists != null && mPlaylists.getValue() != null) {
             List<Playlist> updated = new ArrayList<>(mPlaylists.getValue());
@@ -232,6 +242,9 @@ public class LocalPlaylistStore implements PlaylistStore {
     @Override
     public void editPlaylist(Playlist playlist, List<Song> newSongs) {
         MediaStoreUtil.editPlaylist(mContext, playlist, newSongs);
+        if (mPlaylistContents.containsKey(playlist)) {
+            mPlaylistContents.get(playlist).onNext(new ArrayList<>(newSongs));
+        }
     }
 
     @Override
@@ -258,11 +271,11 @@ public class LocalPlaylistStore implements PlaylistStore {
 
                     // Cache this result in memory
                     BehaviorSubject<List<Song>> contentsSubject;
-                    if (mAutoPlaylistSessionContents.containsKey(playlist)) {
-                        contentsSubject = mAutoPlaylistSessionContents.get(playlist);
+                    if (mPlaylistContents.containsKey(playlist)) {
+                        contentsSubject = mPlaylistContents.get(playlist);
                     } else {
                         contentsSubject = BehaviorSubject.create();
-                        mAutoPlaylistSessionContents.put(playlist, contentsSubject);
+                        mPlaylistContents.put(playlist, contentsSubject);
                     }
                     contentsSubject.onNext(contents);
 
@@ -299,10 +312,24 @@ public class LocalPlaylistStore implements PlaylistStore {
     @Override
     public void addToPlaylist(Playlist playlist, Song song) {
         MediaStoreUtil.appendToPlaylist(mContext, playlist, song);
+
+        if (mPlaylistContents.containsKey(playlist)) {
+            BehaviorSubject<List<Song>> observableContents = mPlaylistContents.get(playlist);
+            List<Song> updatedContents = new ArrayList<>(observableContents.getValue());
+            updatedContents.add(song);
+            observableContents.onNext(updatedContents);
+        }
     }
 
     @Override
     public void addToPlaylist(Playlist playlist, List<Song> songs) {
         MediaStoreUtil.appendToPlaylist(mContext, playlist, songs);
+
+        if (mPlaylistContents.containsKey(playlist)) {
+            BehaviorSubject<List<Song>> observableContents = mPlaylistContents.get(playlist);
+            List<Song> updatedContents = new ArrayList<>(observableContents.getValue());
+            updatedContents.addAll(songs);
+            observableContents.onNext(updatedContents);
+        }
     }
 }

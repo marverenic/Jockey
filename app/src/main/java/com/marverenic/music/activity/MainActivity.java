@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -71,6 +72,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         fab.addChild(R.drawable.ic_add_24dp, this, R.string.playlist_auto);
 
         ViewPager pager = (ViewPager) findViewById(R.id.library_pager);
+
+        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.library_app_bar_layout);
+        appBarLayout.addOnOffsetChangedListener((layout, verticalOffset) ->
+                pager.setPadding(pager.getPaddingLeft(),
+                        pager.getPaddingTop(),
+                        pager.getPaddingRight(),
+                        layout.getTotalScrollRange() + verticalOffset));
 
         int page = mPrefStore.getDefaultPage();
         if (page != 0 || !hasRwPermission()) {

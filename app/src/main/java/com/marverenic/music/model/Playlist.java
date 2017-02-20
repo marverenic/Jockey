@@ -12,8 +12,8 @@ import com.marverenic.music.data.store.MediaStoreUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.marverenic.music.model.Util.compareTitle;
-import static com.marverenic.music.model.Util.hashLong;
+import static com.marverenic.music.model.ModelUtil.compareTitle;
+import static com.marverenic.music.model.ModelUtil.hashLong;
 
 public class Playlist implements Parcelable, Comparable<Playlist> {
 

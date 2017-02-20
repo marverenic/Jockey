@@ -47,7 +47,7 @@
             android:padding="8dp"
             android:src="@drawable/ic_play_circle_fill_24dp"
             android:tint="?attr/colorAccent"
-            android:visibility="@{viewModel.nowPlayingIndicatorVisibility}"
+            android:visibility="@{viewModel.nowPlayingIndicatorVisibility, default = gone}"
             android:layout_toLeftOf="@+id/song_menu"
             android:layout_toStartOf="@+id/song_menu"
             android:layout_centerVertical="true"/>
