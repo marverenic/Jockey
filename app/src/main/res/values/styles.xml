@@ -173,31 +173,34 @@
         <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
 
-    <style name="listTitleText">
+    <style name="BaseText" parent="TextAppearance.AppCompat">
+    </style>
+
+    <style name="listTitleText" parent="BaseText">
         <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="android:textSize">@dimen/list_text_header_size</item>
         <item name="android:paddingLeft">@dimen/list_padding</item>
         <item name="android:paddingRight">@dimen/list_padding</item>
     </style>
 
-    <style name="listDetailText">
+    <style name="listDetailText" parent="BaseText">
         <item name="android:textColor">?android:attr/textColorSecondary</item>
         <item name="android:textSize">@dimen/list_text_detail_size</item>
         <item name="android:paddingLeft">@dimen/list_padding</item>
         <item name="android:paddingRight">@dimen/list_padding</item>
     </style>
 
-    <style name="gridTitleText">
+    <style name="gridTitleText" parent="BaseText">
         <item name="android:textColor">@color/grid_text</item>
         <item name="android:textSize">@dimen/grid_text_header_size</item>
     </style>
 
-    <style name="gridDetailText">
+    <style name="gridDetailText" parent="BaseText">
         <item name="android:textColor">@color/grid_detail_text</item>
         <item name="android:textSize">@dimen/grid_text_detail_size</item>
     </style>
 
-    <style name="miniplayerTitleText">
+    <style name="miniplayerTitleText" parent="BaseText">
         <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="android:textSize">14sp</item>
         <item name="android:paddingLeft">16dp</item>
