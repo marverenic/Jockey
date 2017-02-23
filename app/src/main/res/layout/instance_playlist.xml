@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:ellipsize="end"
-            android:singleLine="true" />
+            android:maxLines="1"/>
 
         <ImageView
             android:id="@+id/playlist_auto_indicator"

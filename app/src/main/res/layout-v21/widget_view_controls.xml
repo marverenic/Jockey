@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
+    android:layoutDirection="ltr"
     android:baselineAligned="false"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -25,7 +26,8 @@
             android:clickable="true"
             android:background="?android:selectableItemBackgroundBorderless"
             android:contentDescription="@string/button_previous_description"
-            android:src="@drawable/ic_skip_previous_36dp"/>
+            android:src="@drawable/ic_skip_previous_36dp"
+            android:tint="@android:color/white"/>
     </RelativeLayout>
 
     <RelativeLayout
@@ -42,7 +44,8 @@
             android:clickable="true"
             android:background="?android:selectableItemBackgroundBorderless"
             android:contentDescription="@string/button_play_description"
-            android:src="@drawable/ic_play_arrow_36dp"/>
+            android:src="@drawable/ic_play_arrow_36dp"
+            android:tint="@android:color/white"/>
     </RelativeLayout>
 
     <RelativeLayout
@@ -59,7 +62,8 @@
             android:clickable="true"
             android:background="?android:selectableItemBackgroundBorderless"
             android:contentDescription="@string/button_skip_description"
-            android:src="@drawable/ic_skip_next_36dp"/>
+            android:src="@drawable/ic_skip_next_36dp"
+            android:tint="@android:color/white"/>
     </RelativeLayout>
 
     <FrameLayout android:layout_width="0dp"

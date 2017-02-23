@@ -49,6 +49,7 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:textColor="@color/widget_primary_text"
+                    android:textDirection="locale"
                     style="@style/TextAppearance.AppCompat.Subhead"
                     tools:text="Song Name"/>
 
@@ -59,6 +60,7 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:textColor="@color/widget_secondary_text"
+                    android:textDirection="locale"
                     style="@style/TextAppearance.AppCompat.Body1"
                     tools:text="Artist – Album"/>
 

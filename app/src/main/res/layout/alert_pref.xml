@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/pref_alert_content"
+        android:textDirection="locale"
         style="@style/Base.TextAppearance.AppCompat.Body1"
         android:textColorLink="?attr/colorAccent" />
 

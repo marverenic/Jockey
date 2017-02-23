@@ -13,6 +13,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layoutDirection="ltr"
         android:background="@android:color/transparent">
 
         <com.marverenic.music.view.TimeView
@@ -75,6 +76,8 @@
             android:splitTrack="false"
             android:paddingLeft="@dimen/seekbar_padding"
             android:paddingRight="@dimen/seekbar_padding"
+            android:paddingStart="@dimen/seekbar_padding"
+            android:paddingEnd="@dimen/seekbar_padding"
             android:layout_marginBottom="@dimen/seekbarMargin"
             android:enabled="@{viewModel.seekbarEnabled}"
             android:progress="@{viewModel.seekBarPosition}"

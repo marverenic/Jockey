@@ -20,8 +20,9 @@
             android:layout_height="wrap_content"
             android:layout_toStartOf="@+id/now_playing_detail_menu"
             android:layout_toLeftOf="@+id/now_playing_detail_menu"
+            android:textDirection="locale"
             android:ellipsize="end"
-            android:singleLine="true"
+            android:maxLines="1"
             android:text="@{viewModel.songTitle}"
             android:textColor="@color/player_text_main"
             style="@style/TextAppearance.AppCompat.Headline"/>
@@ -33,8 +34,9 @@
             android:layout_below="@id/now_playing_detail_title"
             android:layout_toStartOf="@+id/now_playing_detail_menu"
             android:layout_toLeftOf="@+id/now_playing_detail_menu"
+            android:textDirection="locale"
             android:ellipsize="end"
-            android:singleLine="true"
+            android:maxLines="1"
             android:text="@{viewModel.artistName}"
             android:textColor="@color/player_text_detail"
             style="@style/TextAppearance.AppCompat.Subhead"/>
@@ -46,8 +48,9 @@
             android:layout_below="@id/now_playing_detail_artist"
             android:layout_toStartOf="@+id/now_playing_detail_menu"
             android:layout_toLeftOf="@+id/now_playing_detail_menu"
+            android:textDirection="locale"
             android:ellipsize="end"
-            android:singleLine="true"
+            android:maxLines="1"
             android:text="@{viewModel.albumName}"
             android:textColor="@color/player_text_detail"
             style="@style/TextAppearance.AppCompat.Subhead"/>

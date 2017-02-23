@@ -33,6 +33,8 @@
                 android:layout_height="68dp"
                 android:paddingLeft="@dimen/grid_padding"
                 android:paddingStart="@dimen/grid_padding"
+                android:paddingRight="0dp"
+                android:paddingEnd="0dp"
                 android:layout_below="@id/album_art">
 
                 <ImageView
@@ -58,9 +60,9 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
-                    android:singleLine="true"
+                    android:maxLines="1"
                     android:layout_toLeftOf="@id/album_menu"
-                    android:layout_toStartOf="@id/album_menu" />
+                    android:layout_toStartOf="@id/album_menu"/>
 
                 <TextView
                     android:id="@+id/album_detail"
@@ -72,7 +74,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
-                    android:singleLine="true"
+                    android:maxLines="1"
                     android:layout_toLeftOf="@id/album_menu"
                     android:layout_toStartOf="@+id/album_menu" />
 

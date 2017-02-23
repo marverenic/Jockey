@@ -6,7 +6,9 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.DimenRes;
+import android.support.v4.view.ViewCompat;
 
 import com.marverenic.music.R;
 
@@ -49,5 +51,11 @@ public final class ViewUtils {
         drawable.draw(canvas);
 
         return bitmap;
+    }
+
+    public static boolean isRtl(Context context) {
+        return Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN
+                && context.getResources().getConfiguration().getLayoutDirection()
+                == ViewCompat.LAYOUT_DIRECTION_RTL;
     }
 }
