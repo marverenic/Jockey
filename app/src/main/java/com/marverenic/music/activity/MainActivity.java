@@ -35,6 +35,7 @@ import com.marverenic.music.fragments.PlaylistFragment;
 import com.marverenic.music.fragments.SongFragment;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.FABMenu;
+import com.trello.rxlifecycle.ActivityEvent;
 
 import javax.inject.Inject;
 
@@ -163,9 +164,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 musicStoreResult, playlistStoreResult, (result1, result2) -> result1 && result2);
 
         combinedResult.take(1)
+                .compose(bindUntilEvent(ActivityEvent.DESTROY))
                 .subscribe(successful -> {
                     if (successful) {
-                        View view = findViewById(R.id.list);
+                        View view = findViewById(R.id.library_pager);
                         Snackbar.make(view, R.string.confirm_refresh_library, LENGTH_SHORT).show();
                     } else {
                         showPermissionSnackbar();
@@ -176,7 +178,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void showPermissionSnackbar() {
-        View view = findViewById(R.id.list);
+        View view = findViewById(R.id.library_pager);
         Snackbar.make(view, R.string.message_refresh_library_no_permission, LENGTH_LONG)
                 .setAction(R.string.action_open_settings,
                         v -> {
