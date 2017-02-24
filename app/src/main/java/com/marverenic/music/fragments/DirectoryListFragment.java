@@ -21,15 +21,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
+import com.marverenic.adapter.EnhancedViewHolder;
+import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.adapter.BasicEmptyState;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.dialog.DirectoryDialogFragment;
-import com.marverenic.music.adapter.BasicEmptyState;
 import com.marverenic.music.view.DividerDecoration;
 import com.tbruyelle.rxpermissions.RxPermissions;
 

@@ -5,9 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.marverenic.adapter.EnhancedViewHolder;
+import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.R;
-import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 
 public class SpacerSingleton extends HeterogeneousAdapter.SingletonSection<Void> {
 
@@ -40,7 +40,7 @@ public class SpacerSingleton extends HeterogeneousAdapter.SingletonSection<Void>
 
     @Override
     public EnhancedViewHolder<Void> createViewHolder(HeterogeneousAdapter adapter,
-                                                                  ViewGroup parent) {
+                                                     ViewGroup parent) {
         View itemView = LayoutInflater
                         .from(parent.getContext())
                         .inflate(R.layout.instance_blank, parent, false);

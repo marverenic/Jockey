@@ -15,8 +15,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.marverenic.heterogeneousadapter.DragDropAdapter;
-import com.marverenic.heterogeneousadapter.DragDropDecoration;
+import com.marverenic.adapter.DragDropAdapter;
+import com.marverenic.adapter.DragDropDecoration;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.adapter.LibraryEmptyState;

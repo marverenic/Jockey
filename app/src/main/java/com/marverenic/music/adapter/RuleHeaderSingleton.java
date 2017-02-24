@@ -3,9 +3,9 @@ package com.marverenic.music.adapter;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter.SingletonSection;
+import com.marverenic.adapter.EnhancedViewHolder;
+import com.marverenic.adapter.HeterogeneousAdapter;
+import com.marverenic.adapter.HeterogeneousAdapter.SingletonSection;
 import com.marverenic.music.databinding.InstanceRulesHeaderBinding;
 import com.marverenic.music.model.AutoPlaylist;
 import com.marverenic.music.viewmodel.RuleHeaderViewModel;

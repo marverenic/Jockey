@@ -3,8 +3,8 @@ package com.marverenic.music.adapter;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
+import com.marverenic.adapter.EnhancedViewHolder;
+import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.databinding.InstanceSongQueueBinding;
 import com.marverenic.music.fragments.BaseFragment;
 import com.marverenic.music.model.Song;

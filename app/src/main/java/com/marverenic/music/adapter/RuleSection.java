@@ -5,8 +5,8 @@ import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
+import com.marverenic.adapter.EnhancedViewHolder;
+import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.R;
 import com.marverenic.music.databinding.InstanceRuleBinding;
 import com.marverenic.music.model.playlistrules.AutoPlaylistRule;

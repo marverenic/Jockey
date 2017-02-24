@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.annotation.IdRes;
 import android.view.View;
 
-import com.marverenic.heterogeneousadapter.DragDropAdapter;
+import com.marverenic.adapter.DragDropAdapter;
 
 /**
  * An extension of {@link DividerDecoration} designed for use with a

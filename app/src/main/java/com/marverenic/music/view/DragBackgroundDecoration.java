@@ -10,7 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.marverenic.heterogeneousadapter.DragDropAdapter;
+import com.marverenic.adapter.DragDropAdapter;
 import com.marverenic.music.R;
 
 import java.util.ArrayList;

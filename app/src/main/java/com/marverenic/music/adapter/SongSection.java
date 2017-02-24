@@ -4,13 +4,13 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
+import com.marverenic.adapter.EnhancedViewHolder;
+import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.databinding.InstanceSongBinding;
 import com.marverenic.music.fragments.BaseFragment;
-import com.marverenic.music.model.Song;
 import com.marverenic.music.model.ModelUtil;
+import com.marverenic.music.model.Song;
 import com.marverenic.music.viewmodel.SongViewModel;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 

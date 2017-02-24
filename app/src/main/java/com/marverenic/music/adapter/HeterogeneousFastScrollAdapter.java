@@ -2,8 +2,8 @@ package com.marverenic.music.adapter;
 
 import android.support.annotation.NonNull;
 
-import com.marverenic.heterogeneousadapter.Coordinate;
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
+import com.marverenic.adapter.Coordinate;
+import com.marverenic.adapter.HeterogeneousAdapter;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.SectionedAdapter;
 
 public class HeterogeneousFastScrollAdapter extends HeterogeneousAdapter
