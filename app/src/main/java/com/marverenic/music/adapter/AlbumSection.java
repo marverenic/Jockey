@@ -7,10 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.marverenic.adapter.EnhancedViewHolder;
+import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.databinding.InstanceAlbumBinding;
 import com.marverenic.music.model.Album;
-import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.model.ModelUtil;
 import com.marverenic.music.viewmodel.AlbumViewModel;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;

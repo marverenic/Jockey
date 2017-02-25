@@ -15,14 +15,14 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
+import com.marverenic.adapter.EnhancedViewHolder;
+import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.data.store.MusicStore;
-import com.marverenic.music.model.Artist;
 import com.marverenic.music.lastfm.model.Image;
 import com.marverenic.music.lastfm.model.LfmArtist;
+import com.marverenic.music.model.Artist;
 
 import java.util.List;
 

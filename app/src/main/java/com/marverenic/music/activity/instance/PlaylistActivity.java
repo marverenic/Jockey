@@ -13,17 +13,17 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.marverenic.heterogeneousadapter.DragDropAdapter;
-import com.marverenic.heterogeneousadapter.DragDropDecoration;
+import com.marverenic.adapter.DragDropAdapter;
+import com.marverenic.adapter.DragDropDecoration;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
+import com.marverenic.music.adapter.LibraryEmptyState;
+import com.marverenic.music.adapter.PlaylistSongSection;
 import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.model.Playlist;
 import com.marverenic.music.model.Song;
-import com.marverenic.music.adapter.LibraryEmptyState;
-import com.marverenic.music.adapter.PlaylistSongSection;
 import com.marverenic.music.view.DragBackgroundDecoration;
 import com.marverenic.music.view.DragDividerDecoration;
 

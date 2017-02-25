@@ -12,7 +12,7 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
+import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.adapter.AlbumSection;

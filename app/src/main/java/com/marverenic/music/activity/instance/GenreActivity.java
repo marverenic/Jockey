@@ -6,15 +6,15 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
+import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
+import com.marverenic.music.adapter.LibraryEmptyState;
+import com.marverenic.music.adapter.SongSection;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.model.Genre;
 import com.marverenic.music.model.Song;
-import com.marverenic.music.adapter.LibraryEmptyState;
-import com.marverenic.music.adapter.SongSection;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 

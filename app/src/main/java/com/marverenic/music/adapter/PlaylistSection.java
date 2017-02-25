@@ -4,11 +4,11 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.marverenic.adapter.EnhancedViewHolder;
+import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.databinding.InstancePlaylistBinding;
 import com.marverenic.music.model.ModelUtil;
 import com.marverenic.music.model.Playlist;
-import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 import com.marverenic.music.viewmodel.PlaylistViewModel;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 

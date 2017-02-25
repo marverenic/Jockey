@@ -8,17 +8,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.adapter.HeterogeneousFastScrollAdapter;
-import com.marverenic.music.data.store.PlaylistStore;
-import com.marverenic.music.model.Playlist;
 import com.marverenic.music.adapter.LibraryEmptyState;
 import com.marverenic.music.adapter.PlaylistSection;
 import com.marverenic.music.adapter.SpacerSingleton;
+import com.marverenic.music.data.store.PlaylistStore;
+import com.marverenic.music.model.Playlist;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 
 import java.util.List;
 

@@ -77,13 +77,14 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':heterogeneousadapter')
     compile project(':seekarc')
     compile project(':recyclerview-fastscroll')
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.robolectric:robolectric:3.1.4'
     testCompile 'org.robolectric:shadows-support-v4:3.1.4'
+
+    compile 'com.marverenic.heterogeneousadapter:heterogeneousadapter:1.0'
 
     compile 'com.android.support:appcompat-v7:25.1.1'
     compile 'com.android.support:design:25.1.1'

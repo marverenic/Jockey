@@ -1,1 +1,1 @@
-include ':app', ':heterogeneousadapter', ':seekarc', ':recyclerview-fastscroll'
+include ':app', ':seekarc', ':recyclerview-fastscroll'

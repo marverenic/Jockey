@@ -10,11 +10,11 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.marverenic.adapter.EnhancedViewHolder;
+import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.R;
 import com.marverenic.music.lastfm.model.LfmArtist;
 import com.marverenic.music.lastfm.model.Tag;
-import com.marverenic.heterogeneousadapter.EnhancedViewHolder;
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
 
 public class ArtistBioSingleton extends HeterogeneousAdapter.SingletonSection<LfmArtist> {
 
@@ -27,7 +27,7 @@ public class ArtistBioSingleton extends HeterogeneousAdapter.SingletonSection<Lf
 
     @Override
     public EnhancedViewHolder<LfmArtist> createViewHolder(HeterogeneousAdapter adapter,
-                                                        ViewGroup parent) {
+                                                          ViewGroup parent) {
         return new ViewHolder(
                 LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.instance_artist_bio, parent, false),

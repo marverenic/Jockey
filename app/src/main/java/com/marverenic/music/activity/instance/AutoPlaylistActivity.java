@@ -11,18 +11,18 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.marverenic.heterogeneousadapter.HeterogeneousAdapter;
+import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
+import com.marverenic.music.adapter.LibraryEmptyState;
+import com.marverenic.music.adapter.SongSection;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.model.AutoPlaylist;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.model.playlistrules.AutoPlaylistRule;
-import com.marverenic.music.adapter.LibraryEmptyState;
-import com.marverenic.music.adapter.SongSection;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 
