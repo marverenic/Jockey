@@ -273,7 +273,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     }
 
     private void showNotification(Notification notification) {
-        if (mBeQuiet && !musicPlayer.isPlaying()) {
+        if ((mBeQuiet || mStopped) && !musicPlayer.isPlaying()) {
             return;
         }
 
