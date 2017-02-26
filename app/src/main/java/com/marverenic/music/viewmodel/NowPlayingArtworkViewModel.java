@@ -13,9 +13,12 @@ import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.data.store.PreferenceStore;
+import com.marverenic.music.fragments.BaseFragment;
 import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.view.GestureView;
+import com.trello.rxlifecycle.FragmentEvent;
+import com.trello.rxlifecycle.LifecycleTransformer;
 
 import java.util.List;
 
@@ -34,16 +37,25 @@ public class NowPlayingArtworkViewModel extends BaseObservable {
     private boolean mPlaying;
 
     public NowPlayingArtworkViewModel(BaseActivity activity) {
-        mContext = activity;
-        JockeyApplication.getComponent(activity).inject(this);
+        this(activity, activity.bindToLifecycle());
+    }
+
+    public NowPlayingArtworkViewModel(BaseFragment fragment) {
+        this(fragment.getContext(), fragment.bindUntilEvent(FragmentEvent.DESTROY_VIEW));
+    }
+
+    @SuppressWarnings("unchecked")
+    private NowPlayingArtworkViewModel(Context context, LifecycleTransformer<?> transformer) {
+        mContext = context;
+        JockeyApplication.getComponent(context).inject(this);
 
         mPlayerController.getArtwork()
-                .compose(activity.bindToLifecycle())
+                .compose((LifecycleTransformer<Bitmap>) transformer)
                 .subscribe(this::setArtwork,
                         throwable -> Timber.e(throwable, "Failed to set artwork"));
 
         mPlayerController.isPlaying()
-                .compose(activity.bindToLifecycle())
+                .compose((LifecycleTransformer<Boolean>) transformer)
                 .subscribe(this::setPlaying,
                         throwable -> Timber.e(throwable, "Failed to update playing state"));
     }
