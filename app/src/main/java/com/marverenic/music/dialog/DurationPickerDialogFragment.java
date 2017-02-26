@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +28,7 @@ public class DurationPickerDialogFragment extends DialogFragment
     private static final String KEY_DEFAULT_VAL = "DurationPickerDialogFragment.DEFAULT_VALUE";
     private static final String KEY_DISABLE_BUTTON = "DurationPickerDialogFragment.DISABLE_BUTTON";
     private static final String KEY_SAVED_VAL = "DurationPickerDialogFragment.SAVED_VALUE";
+    private static final String KEY_RESULT_FRAGMENT = "DurationPickerDialogFragment.RESULT_FRAG";
 
     public static final int NO_VALUE = Integer.MIN_VALUE;
 
@@ -91,7 +93,12 @@ public class DurationPickerDialogFragment extends DialogFragment
     private void onValueSelected(int value) {
         Activity parent = getActivity();
 
-        if (parent instanceof OnDurationPickedListener) {
+        String resultFragmentTag = getArguments().getString(KEY_RESULT_FRAGMENT);
+        Fragment resultFragment = getFragmentManager().findFragmentByTag(resultFragmentTag);
+
+        if (resultFragmentTag != null && resultFragment instanceof OnDurationPickedListener) {
+            ((OnDurationPickedListener) resultFragment).onDurationPicked(value);
+        } else if (parent instanceof OnDurationPickedListener) {
             ((OnDurationPickedListener) parent).onDurationPicked(value);
         } else {
             Timber.w("%s does not implement OnDurationPickedListener. Ignoring chosen value.",
@@ -124,17 +131,20 @@ public class DurationPickerDialogFragment extends DialogFragment
         private FragmentManager mFragmentManager;
 
         private String mTitle;
+        private String mResultFragment;
         private int mMin;
         private int mMax;
         private int mDefault;
         private String mDisableButton;
 
         public Builder(AppCompatActivity activity) {
-            this(activity.getSupportFragmentManager());
+            mFragmentManager = activity.getSupportFragmentManager();
+            mResultFragment = null;
         }
 
-        public Builder(FragmentManager fragmentManager) {
-            mFragmentManager = fragmentManager;
+        public Builder(Fragment fragment) {
+            mFragmentManager = fragment.getFragmentManager();
+            mResultFragment = fragment.getTag();
         }
 
         public Builder setTitle(String title) {
@@ -165,6 +175,7 @@ public class DurationPickerDialogFragment extends DialogFragment
         public void show(String tag) {
             Bundle args = new Bundle();
             args.putString(KEY_TITLE, mTitle);
+            args.putString(KEY_RESULT_FRAGMENT, mResultFragment);
             args.putInt(KEY_MIN_VAL, mMin);
             args.putInt(KEY_MAX_VAL, mMax);
             args.putString(KEY_DISABLE_BUTTON, mDisableButton);

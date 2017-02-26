@@ -51,7 +51,8 @@ import static android.support.design.widget.Snackbar.LENGTH_LONG;
 import static android.support.design.widget.Snackbar.LENGTH_SHORT;
 
 public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuItemClickListener,
-        NumberPickerDialogFragment.OnNumberPickedListener {
+        NumberPickerDialogFragment.OnNumberPickedListener,
+        DurationPickerDialogFragment.OnDurationPickedListener {
 
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
     private static final String TAG_APPEND_PLAYLIST = "AppendPlaylistDialog";
@@ -300,7 +301,7 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
             defaultValue = (int) TimeUnit.MINUTES.convert(prevTimeInMillis, TimeUnit.MILLISECONDS);
         }
 
-        new DurationPickerDialogFragment.Builder(getFragmentManager())
+        new DurationPickerDialogFragment.Builder(this)
                 .setMinValue(1)
                 .setDefaultValue(defaultValue)
                 .setMaxValue(120)
@@ -309,6 +310,26 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
                         ? getString(R.string.action_disable_sleep_timer)
                         : null)
                 .show(TAG_SLEEP_TIMER_PICKER);
+    }
+
+    @Override
+    public void onDurationPicked(int durationInMinutes) {
+        // Callback for when a sleep timer value is chosen
+        if (durationInMinutes == DurationPickerDialogFragment.NO_VALUE) {
+            mPlayerController.disableSleepTimer();
+            showSnackbar(R.string.confirm_disable_sleep_timer);
+            return;
+        }
+
+        long durationInMillis = TimeUnit.MILLISECONDS.convert(durationInMinutes, TimeUnit.MINUTES);
+        long endTimestamp = System.currentTimeMillis() + durationInMillis;
+        mPlayerController.setSleepTimerEndTime(endTimestamp);
+
+        String confirmationMessage = getResources().getQuantityString(
+                R.plurals.confirm_enable_sleep_timer, durationInMinutes, durationInMinutes);
+        showSnackbar(confirmationMessage);
+
+        mPrefStore.setLastSleepTimerDuration(durationInMillis);
     }
 
     private void updateSleepTimerCounter(long endTimestamp) {
