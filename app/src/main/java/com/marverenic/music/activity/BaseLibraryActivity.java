@@ -3,6 +3,8 @@ package com.marverenic.music.activity;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
+import android.support.design.widget.BottomSheetBehavior;
+import android.view.View;
 
 import com.marverenic.music.R;
 import com.marverenic.music.databinding.ActivityLibraryBaseWrapperBinding;
@@ -39,6 +41,16 @@ public abstract class BaseLibraryActivity extends BaseActivity {
         super.onResume();
         mViewModel.onActivityEnterForeground();
         mBinding.executePendingBindings();
+    }
+
+    @Override
+    public void onBackPressed() {
+        BottomSheetBehavior<View> bottomSheet = BottomSheetBehavior.from(mBinding.miniplayerHolder);
+        if (bottomSheet.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @LayoutRes
