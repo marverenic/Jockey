@@ -13,9 +13,7 @@
         android:id="@+id/miniplayer"
         android:layout_width="fill_parent"
         android:layout_height="@dimen/miniplayer_height"
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:gravity="center"
-        android:onClick="@{viewModel.onClickMiniplayer()}"
         tools:layout_height="@dimen/miniplayer_height">
 
         <ImageView

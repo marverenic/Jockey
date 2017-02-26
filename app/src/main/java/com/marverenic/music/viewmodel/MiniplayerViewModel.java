@@ -14,7 +14,6 @@ import android.view.View;
 import com.marverenic.music.BR;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.fragments.BaseFragment;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
@@ -135,10 +134,6 @@ public class MiniplayerViewModel extends BaseObservable {
         } else {
             return ContextCompat.getDrawable(mContext, R.drawable.ic_play_arrow_32dp);
         }
-    }
-
-    public View.OnClickListener onClickMiniplayer() {
-        return v -> mContext.startActivity(NowPlayingActivity.newIntent(mContext));
     }
 
     public View.OnClickListener onClickTogglePlay() {

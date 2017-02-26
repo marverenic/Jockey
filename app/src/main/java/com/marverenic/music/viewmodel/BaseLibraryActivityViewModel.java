@@ -65,6 +65,14 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
         }
     }
 
+    public void onActivityExitForeground() {
+        mAnimateSlideInOut = false;
+    }
+
+    public void onActivityEnterForeground() {
+        mAnimateSlideInOut = true;
+    }
+
     private void animateTranslation(boolean isPlaybackOngoing) {
         int startOffset = mMiniplayerHeight.get();
         int endOffset;
@@ -100,6 +108,7 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
         return (mMiniplayerVisible) ? View.VISIBLE : View.GONE;
     }
 
+    @Bindable
     public BottomSheetBehavior.BottomSheetCallback getBottomSheetCallback() {
         return new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -116,12 +125,13 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
         };
     }
 
-    public void onActivityExitForeground() {
-        mAnimateSlideInOut = false;
-    }
-
-    public void onActivityEnterForeground() {
-        mAnimateSlideInOut = true;
+    @Bindable
+    public View.OnClickListener getMiniplayerClickListener() {
+        return v -> {
+            View bottomSheet = (View) v.getParent();
+            BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
+            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        };
     }
 
 }

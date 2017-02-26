@@ -38,9 +38,11 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
                 android:background="@color/background_miniplayer"
                 android:alpha="@{viewModel.miniplayerAlpha}"
-                android:visibility="@{viewModel.miniplayerVisibility}">
+                android:visibility="@{viewModel.miniplayerVisibility}"
+                android:onClick="@{viewModel.miniplayerClickListener}">
 
                 <fragment
                     android:id="@+id/miniplayer"
