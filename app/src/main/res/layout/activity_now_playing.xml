@@ -24,17 +24,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
-                app:contentScrim="?attr/colorPrimary"
-                android:fitsSystemWindows="true">
+                app:contentScrim="?attr/colorPrimary">
 
                 <com.marverenic.music.view.GestureView
                     android:id="@+id/now_playing_gesture_frame"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fitsSystemWindows="true"
                     app:height="@{artworkViewModel.portraitArtworkHeight}"
                     app:layout_collapseMode="parallax"
                     android:foreground="@drawable/scrim_now_playing"
-                    android:fitsSystemWindows="true"
                     app:leftIndicator="@drawable/ic_skip_next_36dp"
                     app:rightIndicator="@drawable/ic_skip_previous_36dp"
                     app:tapIndicator="@{artworkViewModel.tapIndicator}"
@@ -48,7 +47,6 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:src="@{artworkViewModel.nowPlayingArtwork}"
-                        android:fitsSystemWindows="true"
                         android:background="@android:color/black"/>
 
                     <com.marverenic.music.view.TimeView
