@@ -13,7 +13,6 @@
         android:id="@+id/miniplayer"
         android:layout_width="fill_parent"
         android:layout_height="@dimen/miniplayer_height"
-        android:layout_marginBottom="@{viewModel.verticalTranslation}"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:gravity="center"
         android:onClick="@{viewModel.onClickMiniplayer()}"

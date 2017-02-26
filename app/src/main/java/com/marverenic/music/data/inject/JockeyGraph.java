@@ -30,6 +30,7 @@ import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.ServicePlayerController;
 import com.marverenic.music.viewmodel.AlbumViewModel;
 import com.marverenic.music.viewmodel.ArtistViewModel;
+import com.marverenic.music.viewmodel.BaseLibraryActivityViewModel;
 import com.marverenic.music.viewmodel.GenreViewModel;
 import com.marverenic.music.viewmodel.MiniplayerViewModel;
 import com.marverenic.music.viewmodel.NowPlayingArtworkViewModel;
@@ -73,6 +74,7 @@ public interface JockeyGraph {
     void inject(AppendPlaylistDialogFragment dialogFragment);
     void inject(PlaylistCollisionDialogFragment dialogFragment);
 
+    void inject(BaseLibraryActivityViewModel viewModel);
     void inject(MiniplayerViewModel viewModel);
     void inject(NowPlayingControllerViewModel viewModel);
     void inject(NowPlayingArtworkViewModel viewModel);

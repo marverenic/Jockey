@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +60,12 @@ public class BindingAdapters {
 
         view.setAnimation(animation);
         animation.start();
+    }
+
+    @BindingAdapter("behavior_peekHeight")
+    public static void bindPeekHeight(View view, int peekHeight) {
+        BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(view);
+        behavior.setPeekHeight(peekHeight);
     }
 
     @BindingAdapter("textChangedListener")

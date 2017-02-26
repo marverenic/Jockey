@@ -1,7 +1,5 @@
 package com.marverenic.music.viewmodel;
 
-import android.animation.ObjectAnimator;
-import android.animation.TimeInterpolator;
 import android.content.Context;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
@@ -11,8 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.animation.FastOutLinearInInterpolator;
-import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.view.View;
 
 import com.marverenic.music.BR;
@@ -37,14 +33,10 @@ public class MiniplayerViewModel extends BaseObservable {
     @Nullable
     private Song mSong;
     private boolean mPlaying;
-    private boolean mAnimateSlideInOut;
-
-    private final int mExpandedHeight;
 
     private final ObservableField<Bitmap> mArtwork;
     private final ObservableInt mDuration;
     private final ObservableInt mProgress;
-    private final ObservableInt mVerticalTranslation;
 
     public MiniplayerViewModel(BaseFragment fragment) {
         mContext = fragment.getContext();
@@ -53,10 +45,6 @@ public class MiniplayerViewModel extends BaseObservable {
         mArtwork = new ObservableField<>();
         mProgress = new ObservableInt();
         mDuration = new ObservableInt();
-        mVerticalTranslation = new ObservableInt(0);
-
-        mExpandedHeight = mContext.getResources().getDimensionPixelSize(R.dimen.miniplayer_height);
-        mAnimateSlideInOut = false;
 
         setSong(null);
 
@@ -103,48 +91,11 @@ public class MiniplayerViewModel extends BaseObservable {
         mSong = song;
         notifyPropertyChanged(BR.songTitle);
         notifyPropertyChanged(BR.songArtist);
-
-        if (mAnimateSlideInOut) {
-            animateTranslation();
-        } else {
-            mVerticalTranslation.set((mSong == null) ? -mExpandedHeight : 0);
-        }
-    }
-
-    private void animateTranslation() {
-        int currentTranslation = mVerticalTranslation.get();
-        int nextTranslation;
-        TimeInterpolator interpolator;
-        if (mSong == null) {
-            nextTranslation = -mExpandedHeight;
-            interpolator = new FastOutLinearInInterpolator();
-        } else {
-            nextTranslation = 0;
-            interpolator = new LinearOutSlowInInterpolator();
-        }
-
-        ObjectAnimator slideAnimation = ObjectAnimator.ofInt(mVerticalTranslation, "",
-                currentTranslation, nextTranslation);
-        slideAnimation.setInterpolator(interpolator);
-        slideAnimation.setDuration(225);
-        slideAnimation.start();
     }
 
     private void setPlaying(boolean playing) {
         mPlaying = playing;
         notifyPropertyChanged(BR.togglePlayIcon);
-    }
-
-    public void onActivityExitForeground() {
-        mAnimateSlideInOut = false;
-    }
-
-    public void onActivityEnterForeground() {
-        mAnimateSlideInOut = true;
-    }
-
-    public ObservableInt getVerticalTranslation() {
-        return mVerticalTranslation;
     }
 
     @Bindable

@@ -12,22 +12,21 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:gravity="bottom">
+        android:layout_width="match_parent">
 
         <FrameLayout
             android:id="@+id/library_base_wrapper_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@{viewModel.miniplayerHeight}"/>
 
         <FrameLayout
             android:id="@+id/miniplayer_holder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clickable="true"
             app:layout_behavior="@string/bottom_sheet_behavior"
             app:behavior_hideable="false"
-            app:behavior_peekHeight="@dimen/miniplayer_height">
+            app:behavior_peekHeight="@{viewModel.miniplayerHeight}">
 
             <fragment
                 android:id="@+id/now_playing_fragment"
