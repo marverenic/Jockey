@@ -34,6 +34,7 @@ import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.player.PlayerState;
 import com.marverenic.music.view.TimeView;
 import com.marverenic.music.viewmodel.NowPlayingArtworkViewModel;
+import com.trello.rxlifecycle.FragmentEvent;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -79,12 +80,6 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
         super.onCreate(savedInstanceState);
 
         JockeyApplication.getComponent(this).inject(this);
-
-        mPlayerController.getSleepTimerEndTime()
-                .compose(bindToLifecycle())
-                .subscribe(this::updateSleepTimerCounter, throwable -> {
-                    Timber.e(throwable, "Failed to update sleep timer end timestamp");
-                });
     }
 
     @Nullable
@@ -99,6 +94,12 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
         mBinding.setArtworkViewModel(mArtworkViewModel);
 
         setupToolbar(mBinding.nowPlayingToolbar);
+
+        mPlayerController.getSleepTimerEndTime()
+                .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .subscribe(this::updateSleepTimerCounter, throwable -> {
+                    Timber.e(throwable, "Failed to update sleep timer end timestamp");
+                });
 
         return mBinding.getRoot();
     }
