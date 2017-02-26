@@ -29,6 +29,7 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
 
     @Inject PlayerController mPlayerController;
 
+    private final boolean mFitSystemWindows;
     private final int mExpandedHeight;
     private final ObservableInt mMiniplayerHeight;
     private final ObservableFloat mMiniplayerAlpha;
@@ -36,10 +37,11 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
 
     private boolean mAnimateSlideInOut;
 
-    public BaseLibraryActivityViewModel(BaseActivity activity) {
+    public BaseLibraryActivityViewModel(BaseActivity activity, boolean fitSystemWindows) {
         mContext = activity;
         JockeyApplication.getComponent(mContext).inject(this);
 
+        mFitSystemWindows = fitSystemWindows;
         mExpandedHeight = mContext.getResources().getDimensionPixelSize(R.dimen.miniplayer_height);
         mAnimateSlideInOut = false;
         mMiniplayerVisible = true;
@@ -91,6 +93,11 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
         slideAnimation.setInterpolator(interpolator);
         slideAnimation.setDuration(225);
         slideAnimation.start();
+    }
+
+    @Bindable
+    public boolean getFitSystemWindows() {
+        return mFitSystemWindows;
     }
 
     @Bindable

@@ -145,6 +145,11 @@ public class ArtistActivity extends BaseLibraryActivity {
         return R.layout.activity_instance_artwork;
     }
 
+    @Override
+    public boolean isToolbarCollapsing() {
+        return true;
+    }
+
     private int calculateHeroHeight() {
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         int screenWidth = metrics.widthPixels;

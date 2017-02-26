@@ -22,7 +22,7 @@ public abstract class BaseLibraryActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_library_base_wrapper);
-        mViewModel = new BaseLibraryActivityViewModel(this);
+        mViewModel = new BaseLibraryActivityViewModel(this, !isToolbarCollapsing());
         mBinding.setViewModel(mViewModel);
 
         getLayoutInflater().inflate(getContentLayoutResource(),
@@ -63,5 +63,9 @@ public abstract class BaseLibraryActivity extends BaseActivity {
 
     @LayoutRes
     protected abstract int getContentLayoutResource();
+
+    public boolean isToolbarCollapsing() {
+        return false;
+    }
 
 }
