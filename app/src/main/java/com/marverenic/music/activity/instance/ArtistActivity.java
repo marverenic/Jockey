@@ -2,14 +2,11 @@ package com.marverenic.music.activity.instance;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -96,12 +93,6 @@ public class ArtistActivity extends BaseLibraryActivity {
 
         ImageView artistImage = (ImageView) findViewById(R.id.activity_backdrop);
         artistImage.getLayoutParams().height = calculateHeroHeight();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
-        }
 
         mMusicStore.getSongs(mReference)
                 .compose(bindToLifecycle())
