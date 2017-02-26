@@ -1,31 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="match_parent"
-    android:layout_width="match_parent">
-
-    <FrameLayout
-        android:id="@+id/miniplayer_holder"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@color/background_miniplayer"
-        android:elevation="@dimen/miniplayer_elevation">
-
-        <fragment
-            android:id="@+id/miniplayer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:name="com.marverenic.music.fragments.MiniplayerFragment"
-            tools:layout="@layout/fragment_miniplayer"/>
-
-    </FrameLayout>
+    android:layout_width="match_parent"
+    android:gravity="bottom">
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_above="@id/miniplayer_holder">
+        android:layout_height="fill_parent">
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/library_app_bar_layout"
@@ -79,4 +63,35 @@
 
     </android.support.design.widget.CoordinatorLayout>
 
-</RelativeLayout>
+    <FrameLayout
+        android:id="@+id/miniplayer_holder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        app:layout_behavior="@string/bottom_sheet_behavior"
+        app:behavior_hideable="false"
+        app:behavior_peekHeight="@dimen/miniplayer_height">
+
+        <fragment
+            android:id="@+id/now_playing_fragment"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:name="com.marverenic.music.fragments.NowPlayingFragment"/>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/background_miniplayer">
+
+            <fragment
+                android:id="@+id/miniplayer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:name="com.marverenic.music.fragments.MiniplayerFragment"
+                tools:layout="@layout/fragment_miniplayer"/>
+
+        </FrameLayout>
+
+    </FrameLayout>
+
+</android.support.design.widget.CoordinatorLayout>
