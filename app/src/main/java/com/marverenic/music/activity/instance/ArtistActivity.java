@@ -17,7 +17,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.activity.BaseActivity;
+import com.marverenic.music.activity.BaseLibraryActivity;
 import com.marverenic.music.adapter.AlbumSection;
 import com.marverenic.music.adapter.ArtistBioSingleton;
 import com.marverenic.music.adapter.HeaderSection;
@@ -49,7 +49,7 @@ import javax.inject.Inject;
 import rx.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
 
-public class ArtistActivity extends BaseActivity {
+public class ArtistActivity extends BaseLibraryActivity {
 
     private static final String ARTIST_EXTRA = "ArtistActivity.ARTIST";
 
@@ -86,8 +86,6 @@ public class ArtistActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_instance_artwork);
-
         JockeyApplication.getComponent(this).inject(this);
 
         mReference = getIntent().getParcelableExtra(ARTIST_EXTRA);
@@ -149,6 +147,11 @@ public class ArtistActivity extends BaseActivity {
                                 hideLoadingSpinner();
                             });
         }
+    }
+
+    @Override
+    protected int getContentLayoutResource() {
+        return R.layout.activity_instance_artwork;
     }
 
     private int calculateHeroHeight() {

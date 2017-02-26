@@ -48,7 +48,7 @@ public class AutoPlaylistEditActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_instance_no_miniplayer);
+        setContentView(R.layout.activity_instance);
 
         JockeyApplication.getComponent(this).inject(this);
 

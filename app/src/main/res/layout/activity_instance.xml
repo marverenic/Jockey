@@ -1,46 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_height="match_parent"
-    android:layout_width="match_parent">
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent">
 
-    <FrameLayout
-        android:id="@+id/miniplayer_holder"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@color/background_miniplayer"
-        android:elevation="@dimen/miniplayer_elevation">
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="fill_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary">
 
-        <fragment
-            android:id="@+id/miniplayer"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:name="com.marverenic.music.fragments.MiniplayerFragment"
-            tools:layout="@layout/fragment_miniplayer"/>
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
-    </FrameLayout>
+    </android.support.design.widget.AppBarLayout>
 
-    <android.support.design.widget.CoordinatorLayout
-        android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_above="@id/miniplayer_holder">
+    <include layout="@layout/list" />
 
-        <android.support.design.widget.AppBarLayout
-            android:layout_width="fill_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary">
-
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
-
-        </android.support.design.widget.AppBarLayout>
-
-        <include layout="@layout/list" />
-
-    </android.support.design.widget.CoordinatorLayout>
-
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

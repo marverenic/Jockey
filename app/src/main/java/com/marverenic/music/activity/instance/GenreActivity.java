@@ -9,7 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.activity.BaseActivity;
+import com.marverenic.music.activity.BaseLibraryActivity;
 import com.marverenic.music.adapter.LibraryEmptyState;
 import com.marverenic.music.adapter.SongSection;
 import com.marverenic.music.data.store.MusicStore;
@@ -25,7 +25,7 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
-public class GenreActivity extends BaseActivity {
+public class GenreActivity extends BaseLibraryActivity {
 
     private static final String GENRE_EXTRA = "GenreActivity.GENRE";
 
@@ -46,7 +46,6 @@ public class GenreActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_instance);
         JockeyApplication.getComponent(this).inject(this);
 
         reference = getIntent().getParcelableExtra(GENRE_EXTRA);
@@ -104,6 +103,11 @@ public class GenreActivity extends BaseActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         list.setLayoutManager(layoutManager);
+    }
+
+    @Override
+    protected int getContentLayoutResource() {
+        return R.layout.activity_instance;
     }
 
     private void setupAdapter() {

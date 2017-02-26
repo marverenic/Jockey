@@ -15,12 +15,12 @@ import com.bumptech.glide.Glide;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.activity.BaseActivity;
+import com.marverenic.music.activity.BaseLibraryActivity;
+import com.marverenic.music.adapter.LibraryEmptyState;
+import com.marverenic.music.adapter.SongSection;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.model.Album;
 import com.marverenic.music.model.Song;
-import com.marverenic.music.adapter.LibraryEmptyState;
-import com.marverenic.music.adapter.SongSection;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 
@@ -32,7 +32,7 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
-public class AlbumActivity extends BaseActivity {
+public class AlbumActivity extends BaseLibraryActivity {
 
     private static final String ALBUM_EXTRA = "AlbumActivity.ALBUM";
 
@@ -52,7 +52,6 @@ public class AlbumActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_instance_artwork);
         JockeyApplication.getComponent(this).inject(this);
 
         Album reference = getIntent().getParcelableExtra(ALBUM_EXTRA);
@@ -124,6 +123,11 @@ public class AlbumActivity extends BaseActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         list.setLayoutManager(layoutManager);
+    }
+
+    @Override
+    protected int getContentLayoutResource() {
+        return R.layout.activity_instance_artwork;
     }
 
     private int calculateHeroHeight() {
