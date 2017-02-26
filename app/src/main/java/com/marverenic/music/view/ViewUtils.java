@@ -9,6 +9,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.DimenRes;
 import android.support.v4.view.ViewCompat;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.marverenic.music.R;
 
@@ -57,5 +59,22 @@ public final class ViewUtils {
         return Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN
                 && context.getResources().getConfiguration().getLayoutDirection()
                 == ViewCompat.LAYOUT_DIRECTION_RTL;
+    }
+
+    public static <V extends View> V findViewByClass(ViewGroup rootView, Class<V> clazz) {
+        for (int i = 0; i < rootView.getChildCount(); i++) {
+            View child = rootView.getChildAt(i);
+
+            if (child.getClass().equals(clazz)) {
+                //noinspection unchecked
+                return (V) child;
+            } else if (child instanceof ViewGroup) {
+                V found = findViewByClass((ViewGroup) child, clazz);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
     }
 }

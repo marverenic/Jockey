@@ -101,6 +101,22 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
     }
 
     @Bindable
+    public int getToolbarMarginTop() {
+        if (mFitSystemWindows) {
+            return 0;
+        } else {
+            int statusBarHeightResId = mContext.getResources().getIdentifier(
+                    "status_bar_height", "dimen", "android");
+
+            if (statusBarHeightResId < 0) {
+                return 0;
+            }
+
+            return mContext.getResources().getDimensionPixelSize(statusBarHeightResId);
+        }
+    }
+
+    @Bindable
     public ObservableInt getMiniplayerHeight() {
         return mMiniplayerHeight;
     }

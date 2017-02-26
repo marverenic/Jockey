@@ -30,11 +30,18 @@
             app:behavior_peekHeight="@{viewModel.miniplayerHeight}"
             app:behavior_bottomSheetCallback="@{viewModel.bottomSheetCallback}">
 
-            <fragment
-                android:tag="BaseLibraryActivityWrapper.now_playing_fragment"
-                android:layout_width="wrap_content"
+            <FrameLayout
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:name="com.marverenic.music.fragments.NowPlayingFragment"/>
+                app:toolbar_marginTop="@{viewModel.toolbarMarginTop}">
+
+                <fragment
+                    android:tag="BaseLibraryActivityWrapper.now_playing_fragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:name="com.marverenic.music.fragments.NowPlayingFragment"/>
+
+            </FrameLayout>
 
             <FrameLayout
                 android:layout_width="match_parent"

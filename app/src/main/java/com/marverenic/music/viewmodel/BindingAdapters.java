@@ -6,6 +6,7 @@ import android.graphics.PorterDuff;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.v7.widget.Toolbar;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,8 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.view.animation.Animation;
 import android.widget.EditText;
 import android.widget.ImageView;
+
+import com.marverenic.music.view.ViewUtils;
 
 public class BindingAdapters {
 
@@ -52,6 +55,13 @@ public class BindingAdapters {
         view.getParent().requestLayout();
     }
 
+    @BindingAdapter("android:layout_marginTop")
+    public static void bindTopMargin(View view, int margin) {
+        MarginLayoutParams params = (MarginLayoutParams) view.getLayoutParams();
+        params.topMargin = margin;
+        view.getParent().requestLayout();
+    }
+
     @BindingAdapter("animation")
     public static void bindAnimation(View view, @Nullable Animation animation) {
         if (animation == null) {
@@ -79,6 +89,12 @@ public class BindingAdapters {
     @BindingAdapter("textChangedListener")
     public static void bindTextChangedListener(EditText editText, TextWatcher watcher) {
         editText.addTextChangedListener(watcher);
+    }
+
+    @BindingAdapter("toolbar_marginTop")
+    public static void bindToolbarMarginTop(ViewGroup toolbarContainer, int marginTop) {
+        Toolbar toolbar = ViewUtils.findViewByClass(toolbarContainer, Toolbar.class);
+        bindTopMargin(toolbar, marginTop);
     }
 
 }
