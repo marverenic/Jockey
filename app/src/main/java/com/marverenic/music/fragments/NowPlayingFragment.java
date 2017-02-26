@@ -128,14 +128,14 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
         updateShuffleIcon();
 
         mPlayerController.getQueue()
-                .compose(bindToLifecycle())
+                .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .map(this::queueContainsLocalSongs)
                 .subscribe(this::updatePlaylistActionEnabled, throwable -> {
                     Timber.e(throwable, "Failed to update playlist enabled state");
                 });
 
         mPlayerController.getMultiRepeatCount()
-                .compose(bindToLifecycle())
+                .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .subscribe(this::setRepeatIcon, throwable -> {
                     Timber.e(throwable, "Failed to update repeat icon");
                 });
@@ -221,7 +221,7 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
                 return true;
             case R.id.menu_now_playing_sleep_timer:
                 mPlayerController.getSleepTimerEndTime()
-                        .compose(bindToLifecycle())
+                        .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                         .take(1)
                         .subscribe(this::showSleepTimerDialog, throwable -> {
                             Timber.e(throwable, "Failed to show sleep timer dialog");
@@ -351,7 +351,7 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
                     .subscribeOn(Schedulers.computation())
                     .map(tick -> (int) (sleepTimerValue - 500 * tick))
                     .observeOn(AndroidSchedulers.mainThread())
-                    .compose(bindToLifecycle())
+                    .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                     .subscribe(time -> {
                         sleepTimerCounter.setTime(time);
                         if (time <= 0) {
