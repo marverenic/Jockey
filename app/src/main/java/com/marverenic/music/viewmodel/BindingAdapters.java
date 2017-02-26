@@ -97,4 +97,10 @@ public class BindingAdapters {
         bindTopMargin(toolbar, marginTop);
     }
 
+    @BindingAdapter("toolbar_alpha")
+    public static void bindToolbarAlpha(ViewGroup toolbarContainer, float alpha) {
+        Toolbar toolbar = ViewUtils.findViewByClass(toolbarContainer, Toolbar.class);
+        toolbar.setAlpha(alpha);
+    }
+
 }

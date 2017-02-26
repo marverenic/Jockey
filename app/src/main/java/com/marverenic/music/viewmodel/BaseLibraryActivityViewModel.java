@@ -33,6 +33,7 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
     private final int mExpandedHeight;
     private final ObservableInt mMiniplayerHeight;
     private final ObservableFloat mMiniplayerAlpha;
+    private final ObservableFloat mNowPlayingToolbarAlpha;
     private boolean mMiniplayerVisible;
 
     private boolean mAnimateSlideInOut;
@@ -48,6 +49,7 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
 
         mMiniplayerHeight = new ObservableInt(0);
         mMiniplayerAlpha = new ObservableFloat(1.0f);
+        mNowPlayingToolbarAlpha = new ObservableFloat(0.0f);
 
         setPlaybackOngoing(false);
 
@@ -127,6 +129,11 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
     }
 
     @Bindable
+    public ObservableFloat getToolbarAlpha() {
+        return mNowPlayingToolbarAlpha;
+    }
+
+    @Bindable
     public int getMiniplayerVisibility() {
         return (mMiniplayerVisible) ? View.VISIBLE : View.GONE;
     }
@@ -143,7 +150,8 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                mMiniplayerAlpha.set(1.0f - slideOffset);
+                mMiniplayerAlpha.set(1.0f - 2 * slideOffset);
+                mNowPlayingToolbarAlpha.set(2 * slideOffset - 1.0f);
             }
         };
     }

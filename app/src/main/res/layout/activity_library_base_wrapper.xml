@@ -33,7 +33,8 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:toolbar_marginTop="@{viewModel.toolbarMarginTop}">
+                app:toolbar_marginTop="@{viewModel.toolbarMarginTop}"
+                app:toolbar_alpha="@{viewModel.toolbarAlpha}">
 
                 <fragment
                     android:tag="BaseLibraryActivityWrapper.now_playing_fragment"
