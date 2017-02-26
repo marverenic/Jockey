@@ -50,7 +50,8 @@ import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 import static android.support.design.widget.Snackbar.LENGTH_LONG;
 import static android.support.design.widget.Snackbar.LENGTH_SHORT;
 
-public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuItemClickListener {
+public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuItemClickListener,
+        NumberPickerDialogFragment.OnNumberPickedListener {
 
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
     private static final String TAG_APPEND_PLAYLIST = "AppendPlaylistDialog";
@@ -356,7 +357,7 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
 
     private void showMultiRepeatDialog() {
         mPlayerController.getMultiRepeatCount().take(1).subscribe(currentCount -> {
-            new NumberPickerDialogFragment.Builder(getFragmentManager())
+            new NumberPickerDialogFragment.Builder(this)
                     .setMinValue(2)
                     .setMaxValue(10)
                     .setDefaultValue((currentCount > 1)
@@ -369,6 +370,13 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
         }, throwable -> {
             Timber.e(throwable, "Failed to show multi repeat dialog");
         });
+    }
+
+    @Override
+    public void onNumberPicked(int chosen) {
+        // Callback for when a Multi-Repeat value is chosen
+        mPlayerController.setMultiRepeatCount(chosen);
+        showSnackbar(getString(R.string.confirm_enable_multi_repeat, chosen));
     }
 
     private void saveQueueAsPlaylist() {

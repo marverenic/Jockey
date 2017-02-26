@@ -31,6 +31,7 @@
 
             <fragment
                 android:id="@+id/now_playing_fragment"
+                android:tag="BaseLibraryActivityWrapper.now_playing_fragment"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:name="com.marverenic.music.fragments.NowPlayingFragment"/>
