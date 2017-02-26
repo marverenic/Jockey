@@ -45,7 +45,7 @@ import timber.log.Timber;
 import static android.support.design.widget.Snackbar.LENGTH_LONG;
 import static android.support.design.widget.Snackbar.LENGTH_SHORT;
 
-public class MainActivity extends BaseActivity implements View.OnClickListener {
+public class MainActivity extends BaseLibraryActivity implements View.OnClickListener {
 
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
 
@@ -59,7 +59,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_library);
 
         JockeyApplication.getComponent(this).inject(this);
 
@@ -99,6 +98,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             getSupportActionBar().setHomeButtonEnabled(false);
             getSupportActionBar().setDisplayShowHomeEnabled(false);
         }
+    }
+
+    @Override
+    protected int getContentLayoutResource() {
+        return R.layout.activity_library;
     }
 
     private void initRefreshLayout() {

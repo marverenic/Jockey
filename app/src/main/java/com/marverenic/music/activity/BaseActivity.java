@@ -98,7 +98,10 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     @Override
     public void setContentView(@LayoutRes int layoutResId) {
         super.setContentView(layoutResId);
+        setupToolbar();
+    }
 
+    protected void setupToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
