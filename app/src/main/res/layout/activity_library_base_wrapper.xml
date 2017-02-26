@@ -26,7 +26,8 @@
             android:layout_height="match_parent"
             app:layout_behavior="@string/bottom_sheet_behavior"
             app:behavior_hideable="false"
-            app:behavior_peekHeight="@{viewModel.miniplayerHeight}">
+            app:behavior_peekHeight="@{viewModel.miniplayerHeight}"
+            app:behavior_bottomSheetCallback="@{viewModel.bottomSheetCallback}">
 
             <fragment
                 android:id="@+id/now_playing_fragment"
@@ -37,7 +38,9 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/background_miniplayer">
+                android:background="@color/background_miniplayer"
+                android:alpha="@{viewModel.miniplayerAlpha}"
+                android:visibility="@{viewModel.miniplayerVisibility}">
 
                 <fragment
                     android:id="@+id/miniplayer"

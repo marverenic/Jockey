@@ -62,6 +62,14 @@ public class BindingAdapters {
         animation.start();
     }
 
+    @BindingAdapter("behavior_bottomSheetCallback")
+    public static void bindBottomSheetCallback(View view,
+                                               BottomSheetBehavior.BottomSheetCallback callback) {
+
+        BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(view);
+        behavior.setBottomSheetCallback(callback);
+    }
+
     @BindingAdapter("behavior_peekHeight")
     public static void bindPeekHeight(View view, int peekHeight) {
         BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(view);

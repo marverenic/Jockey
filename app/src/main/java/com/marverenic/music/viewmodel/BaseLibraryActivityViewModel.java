@@ -5,10 +5,15 @@ import android.animation.TimeInterpolator;
 import android.content.Context;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
+import android.databinding.ObservableFloat;
 import android.databinding.ObservableInt;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
+import android.view.View;
 
+import com.android.databinding.library.baseAdapters.BR;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
@@ -26,6 +31,8 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
 
     private final int mExpandedHeight;
     private final ObservableInt mMiniplayerHeight;
+    private final ObservableFloat mMiniplayerAlpha;
+    private boolean mMiniplayerVisible;
 
     private boolean mAnimateSlideInOut;
 
@@ -35,8 +42,10 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
 
         mExpandedHeight = mContext.getResources().getDimensionPixelSize(R.dimen.miniplayer_height);
         mAnimateSlideInOut = false;
+        mMiniplayerVisible = true;
 
         mMiniplayerHeight = new ObservableInt(0);
+        mMiniplayerAlpha = new ObservableFloat(1.0f);
 
         setPlaybackOngoing(false);
 
@@ -79,6 +88,32 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
     @Bindable
     public ObservableInt getMiniplayerHeight() {
         return mMiniplayerHeight;
+    }
+
+    @Bindable
+    public ObservableFloat getMiniplayerAlpha() {
+        return mMiniplayerAlpha;
+    }
+
+    @Bindable
+    public int getMiniplayerVisibility() {
+        return (mMiniplayerVisible) ? View.VISIBLE : View.GONE;
+    }
+
+    public BottomSheetBehavior.BottomSheetCallback getBottomSheetCallback() {
+        return new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                mMiniplayerVisible = newState != BottomSheetBehavior.STATE_EXPANDED;
+                notifyPropertyChanged(BR.miniplayerVisibility);
+                // TODO Hide content and release bindings in the playing page to avoid extra work
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                mMiniplayerAlpha.set(1.0f - slideOffset);
+            }
+        };
     }
 
     public void onActivityExitForeground() {
