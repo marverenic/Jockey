@@ -286,7 +286,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 PendingIntent.getActivity(
                         mContext, 0,
                         MainActivity.newNowPlayingIntent(mContext)
-                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                                .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
                         PendingIntent.FLAG_CANCEL_CURRENT));
 
         session.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS
