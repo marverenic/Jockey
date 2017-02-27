@@ -14,7 +14,7 @@ import android.view.MenuItem;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.activity.BaseActivity;
+import com.marverenic.music.activity.BaseLibraryActivity;
 import com.marverenic.music.adapter.LibraryEmptyState;
 import com.marverenic.music.adapter.SongSection;
 import com.marverenic.music.data.store.MediaStoreUtil;
@@ -32,7 +32,7 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
-public class AutoPlaylistActivity extends BaseActivity
+public class AutoPlaylistActivity extends BaseLibraryActivity
         implements PopupMenu.OnMenuItemClickListener {
 
     private static final String PLAYLIST_EXTRA = "AutoPlaylistActivity.PLAYLIST";
@@ -56,7 +56,6 @@ public class AutoPlaylistActivity extends BaseActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_instance);
         JockeyApplication.getComponent(this).inject(this);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.list);
@@ -73,6 +72,11 @@ public class AutoPlaylistActivity extends BaseActivity
                         });
 
         getSupportActionBar().setTitle(mReference.getPlaylistName());
+    }
+
+    @Override
+    protected int getContentLayoutResource() {
+        return R.layout.activity_instance;
     }
 
     private void setupAdapter() {

@@ -49,16 +49,4 @@ public class MiniplayerFragment extends BaseFragment {
         return mBinding.getRoot();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        mBinding.getViewModel().onActivityEnterForeground();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mBinding.getViewModel().onActivityExitForeground();
-    }
-
 }

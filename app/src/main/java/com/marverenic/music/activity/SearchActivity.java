@@ -47,7 +47,7 @@ import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
 
-public class SearchActivity extends BaseActivity implements SearchView.OnQueryTextListener {
+public class SearchActivity extends BaseLibraryActivity implements SearchView.OnQueryTextListener {
 
     private static final String KEY_SAVED_QUERY = "SearchActivity.LAST_QUERY";
 
@@ -74,7 +74,6 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_instance);
         JockeyApplication.getComponent(this).inject(this);
 
         String lastQuery;
@@ -151,6 +150,11 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
                 });
 
         handleIntent(getIntent());
+    }
+
+    @Override
+    protected int getContentLayoutResource() {
+        return R.layout.activity_instance;
     }
 
     @Override

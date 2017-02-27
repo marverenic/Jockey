@@ -17,7 +17,7 @@ import com.marverenic.adapter.DragDropAdapter;
 import com.marverenic.adapter.DragDropDecoration;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.activity.BaseActivity;
+import com.marverenic.music.activity.BaseLibraryActivity;
 import com.marverenic.music.adapter.LibraryEmptyState;
 import com.marverenic.music.adapter.PlaylistSongSection;
 import com.marverenic.music.data.store.PlayCountStore;
@@ -38,7 +38,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuItemClickListener {
+public class PlaylistActivity extends BaseLibraryActivity
+        implements PopupMenu.OnMenuItemClickListener {
 
     private static final String PLAYLIST_EXTRA = "PlaylistActivity.PLAYLIST";
 
@@ -61,7 +62,6 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_instance);
         JockeyApplication.getComponent(this).inject(this);
 
         mReference = getIntent().getParcelableExtra(PLAYLIST_EXTRA);
@@ -81,6 +81,11 @@ public class PlaylistActivity extends BaseActivity implements PopupMenu.OnMenuIt
         mRecyclerView = (RecyclerView) findViewById(R.id.list);
         setupRecyclerView();
         setupAdapter();
+    }
+
+    @Override
+    protected int getContentLayoutResource() {
+        return R.layout.activity_instance;
     }
 
     private void setupAdapter() {

@@ -2,25 +2,22 @@ package com.marverenic.music.activity.instance;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.activity.BaseActivity;
+import com.marverenic.music.activity.BaseLibraryActivity;
+import com.marverenic.music.adapter.LibraryEmptyState;
+import com.marverenic.music.adapter.SongSection;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.model.Album;
 import com.marverenic.music.model.Song;
-import com.marverenic.music.adapter.LibraryEmptyState;
-import com.marverenic.music.adapter.SongSection;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 
@@ -32,7 +29,7 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
-public class AlbumActivity extends BaseActivity {
+public class AlbumActivity extends BaseLibraryActivity {
 
     private static final String ALBUM_EXTRA = "AlbumActivity.ALBUM";
 
@@ -52,7 +49,6 @@ public class AlbumActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_instance_artwork);
         JockeyApplication.getComponent(this).inject(this);
 
         Album reference = getIntent().getParcelableExtra(ALBUM_EXTRA);
@@ -78,12 +74,6 @@ public class AlbumActivity extends BaseActivity {
                     .into((ImageView) findViewById(R.id.activity_backdrop));
         } else {
             mSongs = Collections.emptyList();
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
 
         ImageView artistImage = (ImageView) findViewById(R.id.activity_backdrop);
@@ -124,6 +114,16 @@ public class AlbumActivity extends BaseActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         list.setLayoutManager(layoutManager);
+    }
+
+    @Override
+    protected int getContentLayoutResource() {
+        return R.layout.activity_instance_artwork;
+    }
+
+    @Override
+    public boolean isToolbarCollapsing() {
+        return true;
     }
 
     private int calculateHeroHeight() {

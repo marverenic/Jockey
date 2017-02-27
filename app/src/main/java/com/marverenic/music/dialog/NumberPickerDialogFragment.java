@@ -9,6 +9,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -32,6 +33,7 @@ public class NumberPickerDialogFragment extends DialogFragment {
     private static final String KEY_DEFAULT_VAL = "NumberPickerDialogFragment.DEFAULT_VALUE";
     private static final String KEY_SAVED_VAL = "NumberPickerDialogFragment.SAVED_VALUE";
     private static final String KEY_WRAP_SELECTOR = "NumberPickerDialogFragment.WRAP_SELECTOR";
+    private static final String KEY_RESULT_FRAGMENT = "NumberPickerDialogFragment.RESULT_FRAGMENT";
 
     private NumberPicker mNumberPicker;
 
@@ -96,11 +98,20 @@ public class NumberPickerDialogFragment extends DialogFragment {
         int value = mNumberPicker.getValue();
         Activity parent = getActivity();
 
-        if (parent instanceof OnNumberPickedListener) {
+        String resultFragmentTag = getArguments().getString(KEY_RESULT_FRAGMENT);
+        Fragment resultFragment = getFragmentManager().findFragmentByTag(resultFragmentTag);
+
+        if (resultFragmentTag != null && resultFragment instanceof OnNumberPickedListener) {
+            ((OnNumberPickedListener) resultFragment).onNumberPicked(value);
+        } else if (parent instanceof OnNumberPickedListener) {
             ((OnNumberPickedListener) parent).onNumberPicked(value);
         } else {
+            String targetClassName = (resultFragmentTag == null)
+                    ? parent.getClass().getSimpleName()
+                    : resultFragmentTag.getClass().getSimpleName();
+
             Timber.w("%s does not implement OnNumberPickedListener. Ignoring chosen value.",
-                    parent.getClass().getSimpleName());
+                    targetClassName);
         }
     }
 
@@ -114,17 +125,20 @@ public class NumberPickerDialogFragment extends DialogFragment {
 
         private String mTitle;
         private String mMessage;
+        private String mResultFragment;
         private int mMin;
         private int mMax;
         private int mDefault;
         private boolean mWrapSelectorWheel;
 
         public Builder(AppCompatActivity activity) {
-            this(activity.getSupportFragmentManager());
+            mFragmentManager = activity.getSupportFragmentManager();
+            mResultFragment = null;
         }
 
-        public Builder(FragmentManager fragmentManager) {
-            mFragmentManager = fragmentManager;
+        public Builder(Fragment fragment) {
+            mFragmentManager = fragment.getFragmentManager();
+            mResultFragment = fragment.getTag();
         }
 
         public Builder setTitle(String title) {
@@ -161,6 +175,7 @@ public class NumberPickerDialogFragment extends DialogFragment {
             Bundle args = new Bundle();
             args.putString(KEY_TITlE, mTitle);
             args.putString(KEY_MESSAGE, mMessage);
+            args.putString(KEY_RESULT_FRAGMENT, mResultFragment);
             args.putInt(KEY_MIN_VAL, mMin);
             args.putInt(KEY_MAX_VAL, mMax);
             args.putInt(KEY_DEFAULT_VAL, mDefault);

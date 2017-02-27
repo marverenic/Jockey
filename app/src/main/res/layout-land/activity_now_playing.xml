@@ -13,13 +13,18 @@
         android:layout_width="match_parent"
         android:layout_height="fill_parent">
 
-        <include layout="@layout/toolbar" />
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/now_playing_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
         <FrameLayout
             android:id="@+id/artwork_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/toolbar">
+            android:layout_below="@id/now_playing_toolbar">
 
             <ImageView
                 android:id="@+id/now_playing_artwork"
@@ -52,7 +57,7 @@
             android:name="com.marverenic.music.fragments.PlayerControllerFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/toolbar"
+            android:layout_below="@id/now_playing_toolbar"
             android:layout_toRightOf="@+id/artwork_container"
             android:layout_toEndOf="@id/artwork_container"
             tools:layout="@layout/view_now_playing_control_panel" />
