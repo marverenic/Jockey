@@ -2,6 +2,7 @@ package com.marverenic.music.activity;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -64,6 +65,10 @@ public class MainActivity extends BaseLibraryActivity implements View.OnClickLis
     @Inject PreferenceStore mPrefStore;
 
     private SwipeRefreshLayout mRefreshLayout;
+
+    public static Intent newNowPlayingIntent(Context context) {
+        return new Intent(context, MainActivity.class);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
