@@ -23,7 +23,7 @@ import android.view.animation.AnimationUtils;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.PreferenceStore;
-import com.marverenic.music.databinding.ActivityNowPlayingBinding;
+import com.marverenic.music.databinding.FragmentNowPlayingBinding;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
 import com.marverenic.music.dialog.DurationPickerDialogFragment;
@@ -65,7 +65,7 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
     @Inject PreferenceStore mPrefStore;
     @Inject PlayerController mPlayerController;
 
-    private ActivityNowPlayingBinding mBinding;
+    private FragmentNowPlayingBinding mBinding;
     private NowPlayingArtworkViewModel mArtworkViewModel;
 
     private MenuItem mCreatePlaylistMenuItem;
@@ -87,7 +87,7 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        mBinding = DataBindingUtil.inflate(inflater, R.layout.activity_now_playing,
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_now_playing,
                 container, false);
 
         mArtworkViewModel = new NowPlayingArtworkViewModel(this);
