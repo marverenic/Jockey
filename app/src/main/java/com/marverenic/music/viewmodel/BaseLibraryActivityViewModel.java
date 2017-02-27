@@ -34,7 +34,8 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
     private final ObservableInt mMiniplayerHeight;
     private final ObservableFloat mMiniplayerAlpha;
     private final ObservableFloat mNowPlayingToolbarAlpha;
-    private boolean mMiniplayerVisible;
+
+    private int mBottomSheetState;
 
     private boolean mAnimateSlideInOut;
 
@@ -45,7 +46,6 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
         mFitSystemWindows = fitSystemWindows;
         mExpandedHeight = mContext.getResources().getDimensionPixelSize(R.dimen.miniplayer_height);
         mAnimateSlideInOut = false;
-        mMiniplayerVisible = true;
 
         mMiniplayerHeight = new ObservableInt(0);
         mMiniplayerAlpha = new ObservableFloat(1.0f);
@@ -135,7 +135,23 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
 
     @Bindable
     public int getMiniplayerVisibility() {
-        return (mMiniplayerVisible) ? View.VISIBLE : View.GONE;
+        return (mBottomSheetState == BottomSheetBehavior.STATE_EXPANDED)
+                ? View.GONE
+                : View.VISIBLE;
+    }
+
+    @Bindable
+    public int getMainContentVisibillity() {
+        return (mBottomSheetState == BottomSheetBehavior.STATE_EXPANDED)
+                ? View.GONE
+                : View.VISIBLE;
+    }
+
+    @Bindable
+    public int getNowPlayingContentVisibility() {
+        return (mBottomSheetState == BottomSheetBehavior.STATE_COLLAPSED)
+                ? View.INVISIBLE
+                : View.VISIBLE;
     }
 
     @Bindable
@@ -143,14 +159,15 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
         return new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                mMiniplayerVisible = newState != BottomSheetBehavior.STATE_EXPANDED;
+                mBottomSheetState = newState;
                 notifyPropertyChanged(BR.miniplayerVisibility);
+                notifyPropertyChanged(BR.mainContentVisibillity);
+                notifyPropertyChanged(BR.nowPlayingContentVisibility);
 
                 if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     mNowPlayingToolbarAlpha.set(1.0f);
                     mMiniplayerAlpha.set(0.0f);
                 }
-                // TODO Hide content and release bindings in the playing page to avoid extra work
             }
 
             @Override
