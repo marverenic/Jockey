@@ -145,6 +145,11 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 mMiniplayerVisible = newState != BottomSheetBehavior.STATE_EXPANDED;
                 notifyPropertyChanged(BR.miniplayerVisibility);
+
+                if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                    mNowPlayingToolbarAlpha.set(1.0f);
+                    mMiniplayerAlpha.set(0.0f);
+                }
                 // TODO Hide content and release bindings in the playing page to avoid extra work
             }
 
