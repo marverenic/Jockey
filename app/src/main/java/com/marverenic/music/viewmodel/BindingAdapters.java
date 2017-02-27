@@ -78,6 +78,7 @@ public class BindingAdapters {
 
         BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(view);
         behavior.setBottomSheetCallback(callback);
+        callback.onStateChanged(view, behavior.getState());
     }
 
     @BindingAdapter("behavior_peekHeight")
