@@ -57,6 +57,7 @@ import static android.support.design.widget.Snackbar.LENGTH_SHORT;
 public class MainActivity extends BaseLibraryActivity implements View.OnClickListener {
 
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
+    private static final String ACTION_SHOW_NOW_PLAYING_PAGE = "MainActivity.ShowNowPlayingPage";
 
     @Inject ThemeStore mThemeStore;
     @Inject MusicStore mMusicStore;
@@ -67,7 +68,9 @@ public class MainActivity extends BaseLibraryActivity implements View.OnClickLis
     private SwipeRefreshLayout mRefreshLayout;
 
     public static Intent newNowPlayingIntent(Context context) {
-        return new Intent(context, MainActivity.class);
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.setAction(ACTION_SHOW_NOW_PLAYING_PAGE);
+        return intent;
     }
 
     @Override
@@ -122,8 +125,23 @@ public class MainActivity extends BaseLibraryActivity implements View.OnClickLis
 
     @Override
     public void onNewIntent(Intent intent) {
+        if (intent.getAction() == null) {
+            return;
+        }
+
+        if (intent.getAction().equals(ACTION_SHOW_NOW_PLAYING_PAGE)) {
+            expandBottomSheet();
+            // Don't try to process this intent again
+            setIntent(new Intent(this, MainActivity.class));
+            return;
+        }
+
         // Handle incoming requests to play media from other applications
-        if (intent.getData() == null) return;
+        if (intent.getData() == null) {
+            return;
+        }
+
+        expandBottomSheet();
 
         // If this intent is a music intent, process it
         if (intent.getAction().equals(Intent.ACTION_VIEW)) {
@@ -151,7 +169,7 @@ public class MainActivity extends BaseLibraryActivity implements View.OnClickLis
         }
 
         // Don't try to process this intent again
-        setIntent(new Intent(this, this.getClass()));
+        setIntent(new Intent(this, MainActivity.class));
     }
 
     private List<Song> buildQueueFromFileUri(Uri fileUri) {

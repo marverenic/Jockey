@@ -18,25 +18,17 @@
         <intent
             android:action="android.intent.action.VIEW"
             android:targetPackage="com.marverenic.music"
-            android:targetClass="com.marverenic.music.activity.SearchActivity" />
+            android:targetClass="com.marverenic.music.activity.SearchActivity"/>
     </shortcut>
 
     <shortcut
         android:shortcutId="now_playing"
         android:icon="@drawable/shortcut_now_playing"
         android:shortcutShortLabel="@string/header_now_playing">
-
-        <!-- Put the Library Activity in the back stack -->
         <intent
-            android:action="android.intent.action.VIEW"
+            android:action="MainActivity.ShowNowPlayingPage"
             android:targetPackage="com.marverenic.music"
             android:targetClass="com.marverenic.music.activity.MainActivity" />
-
-        <!-- Show the Now Playing Activity in the foreground -->
-        <intent
-            android:action="android.intent.action.VIEW"
-            android:targetPackage="com.marverenic.music"
-            android:targetClass="com.marverenic.music.activity.NowPlayingActivity" />
     </shortcut>
 
 </shortcuts>

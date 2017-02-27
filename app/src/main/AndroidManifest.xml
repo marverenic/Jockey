@@ -171,12 +171,6 @@
         <activity
             android:name=".activity.instance.AutoPlaylistEditActivity" />
 
-        <!-- Now Playing Activity -->
-        <activity-alias
-            android:name=".activity.NowPlayingActivity"
-            android:label="@string/header_now_playing"
-            android:targetActivity=".activity.MainActivity"/>
-
         <!-- Play with Jockey (from search) intent filter -->
         <activity-alias
             android:name=".SearchWithJockey"
