@@ -68,4 +68,9 @@ public abstract class BaseLibraryActivity extends BaseActivity {
         return false;
     }
 
+    public void expandBottomSheet() {
+        BottomSheetBehavior<View> bottomSheet = BottomSheetBehavior.from(mBinding.miniplayerHolder);
+        bottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
+    }
+
 }
