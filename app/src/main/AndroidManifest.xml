@@ -171,13 +171,6 @@
         <activity
             android:name=".activity.instance.AutoPlaylistEditActivity" />
 
-        <!-- Now Playing Activity -->
-        <activity
-            android:name=".activity.NowPlayingActivity"
-            android:label="@string/header_now_playing"
-            android:windowSoftInputMode="adjustNothing"
-            android:theme="@style/SplashTheme"/>
-
         <!-- Play with Jockey (from search) intent filter -->
         <activity-alias
             android:name=".SearchWithJockey"
@@ -195,7 +188,7 @@
         <activity-alias
             android:name=".PlayWithJockey"
             android:label="@string/app_name"
-            android:targetActivity=".activity.NowPlayingActivity">
+            android:targetActivity=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />

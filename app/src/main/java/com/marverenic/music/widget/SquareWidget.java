@@ -8,7 +8,7 @@ import android.support.annotation.Nullable;
 import android.widget.RemoteViews;
 
 import com.marverenic.music.R;
-import com.marverenic.music.activity.NowPlayingActivity;
+import com.marverenic.music.activity.MainActivity;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.utils.MediaStyleHelper;
 
@@ -37,7 +37,7 @@ public class SquareWidget extends BaseWidget {
     private RemoteViews createBaseView(Context context) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_square);
 
-        Intent launcherIntent = NowPlayingActivity.newIntent(context);
+        Intent launcherIntent = MainActivity.newNowPlayingIntent(context);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, launcherIntent, 0);
         views.setOnClickPendingIntent(R.id.widget_square_container, pendingIntent);
 

@@ -2,6 +2,7 @@ package com.marverenic.music.activity;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -23,6 +24,7 @@ import com.marverenic.music.BuildConfig;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
+import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.data.store.PreferenceStore;
@@ -33,9 +35,16 @@ import com.marverenic.music.fragments.ArtistFragment;
 import com.marverenic.music.fragments.GenreFragment;
 import com.marverenic.music.fragments.PlaylistFragment;
 import com.marverenic.music.fragments.SongFragment;
+import com.marverenic.music.model.Song;
+import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.utils.UriUtils;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.FABMenu;
 import com.trello.rxlifecycle.ActivityEvent;
+
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -48,19 +57,28 @@ import static android.support.design.widget.Snackbar.LENGTH_SHORT;
 public class MainActivity extends BaseLibraryActivity implements View.OnClickListener {
 
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
+    private static final String ACTION_SHOW_NOW_PLAYING_PAGE = "MainActivity.ShowNowPlayingPage";
 
     @Inject ThemeStore mThemeStore;
     @Inject MusicStore mMusicStore;
+    @Inject PlayerController mPlayerController;
     @Inject PlaylistStore mPlaylistStore;
     @Inject PreferenceStore mPrefStore;
 
     private SwipeRefreshLayout mRefreshLayout;
+
+    public static Intent newNowPlayingIntent(Context context) {
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.setAction(ACTION_SHOW_NOW_PLAYING_PAGE);
+        return intent;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         JockeyApplication.getComponent(this).inject(this);
+        onNewIntent(getIntent());
 
         initRefreshLayout();
         mMusicStore.loadAll();
@@ -103,6 +121,86 @@ public class MainActivity extends BaseLibraryActivity implements View.OnClickLis
     @Override
     protected int getContentLayoutResource() {
         return R.layout.activity_library;
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        if (intent.getAction() == null) {
+            return;
+        }
+
+        if (intent.getAction().equals(ACTION_SHOW_NOW_PLAYING_PAGE)) {
+            expandBottomSheet();
+            // Don't try to process this intent again
+            setIntent(new Intent(this, MainActivity.class));
+            return;
+        }
+
+        // Handle incoming requests to play media from other applications
+        if (intent.getData() == null) {
+            return;
+        }
+
+        expandBottomSheet();
+
+        // If this intent is a music intent, process it
+        if (intent.getAction().equals(Intent.ACTION_VIEW)) {
+            Uri songUri = intent.getData();
+            String songName = UriUtils.getDisplayName(this, songUri);
+
+            List<Song> queue = buildQueueFromFileUri(songUri);
+            int position;
+
+            if (queue == null || queue.isEmpty()) {
+                queue = buildQueueFromUri(intent.getData());
+                position = findStartingPositionInQueue(songUri, queue);
+            } else {
+                String path = UriUtils.getPathFromUri(this, songUri);
+                //noinspection ConstantConditions This won't be null, because we found data from it
+                Uri fileUri = Uri.fromFile(new File(path));
+                position = findStartingPositionInQueue(fileUri, queue);
+            }
+
+            if (queue.isEmpty()) {
+                showSnackbar(getString(R.string.message_play_error_not_found, songName));
+            } else {
+                startIntentQueue(queue, position);
+            }
+        }
+
+        // Don't try to process this intent again
+        setIntent(new Intent(this, MainActivity.class));
+    }
+
+    private List<Song> buildQueueFromFileUri(Uri fileUri) {
+        // URI is not a file URI
+        String path = UriUtils.getPathFromUri(this, fileUri);
+        if (path == null || path.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        File file = new File(path);
+        String mimeType = getContentResolver().getType(fileUri);
+        return MediaStoreUtil.buildSongListFromFile(this, file, mimeType);
+    }
+
+    private List<Song> buildQueueFromUri(Uri uri) {
+        return Collections.singletonList(Song.fromUri(this, uri));
+    }
+
+    private int findStartingPositionInQueue(Uri originalUri, List<Song> queue) {
+        for (int i = 0; i < queue.size(); i++) {
+            if (queue.get(i).getLocation().equals(originalUri)) {
+                return i;
+            }
+        }
+
+        return 0;
+    }
+
+    private void startIntentQueue(List<Song> queue, int position) {
+        mPlayerController.setQueue(queue, position);
+        mPlayerController.play();
     }
 
     private void initRefreshLayout() {

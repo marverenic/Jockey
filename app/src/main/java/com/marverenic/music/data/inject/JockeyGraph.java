@@ -3,7 +3,6 @@ package com.marverenic.music.data.inject;
 import com.marverenic.music.activity.AboutActivity;
 import com.marverenic.music.activity.BaseActivity;
 import com.marverenic.music.activity.MainActivity;
-import com.marverenic.music.activity.NowPlayingActivity;
 import com.marverenic.music.activity.SearchActivity;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
@@ -48,7 +47,6 @@ public interface JockeyGraph {
     void inject(MainActivity activity);
     void inject(SearchActivity activity);
     void inject(AboutActivity activity);
-    void inject(NowPlayingActivity activity);
     void inject(AlbumActivity activity);
     void inject(ArtistActivity activity);
     void inject(GenreActivity activity);

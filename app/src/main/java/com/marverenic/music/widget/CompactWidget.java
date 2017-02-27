@@ -9,7 +9,7 @@ import android.support.v4.content.ContextCompat;
 import android.widget.RemoteViews;
 
 import com.marverenic.music.R;
-import com.marverenic.music.activity.NowPlayingActivity;
+import com.marverenic.music.activity.MainActivity;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.utils.MediaStyleHelper;
 
@@ -36,7 +36,7 @@ public class CompactWidget extends BaseWidget {
     private RemoteViews createBaseView(Context context) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_compact);
 
-        Intent launcherIntent = NowPlayingActivity.newIntent(context);
+        Intent launcherIntent = MainActivity.newNowPlayingIntent(context);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, launcherIntent, 0);
         views.setOnClickPendingIntent(R.id.widget_compact_container, pendingIntent);
 
