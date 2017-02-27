@@ -1,5 +1,6 @@
 package com.marverenic.music.viewmodel;
 
+import android.app.Activity;
 import android.content.Context;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
@@ -12,7 +13,7 @@ import com.marverenic.music.BR;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
-import com.marverenic.music.activity.NowPlayingActivity;
+import com.marverenic.music.activity.BaseLibraryActivity;
 import com.marverenic.music.activity.instance.AlbumActivity;
 import com.marverenic.music.activity.instance.ArtistActivity;
 import com.marverenic.music.data.store.MusicStore;
@@ -42,6 +43,7 @@ public class SongViewModel extends BaseObservable {
     @Inject PlayerController mPlayerController;
 
     private Context mContext;
+    private Activity mActivity;
     private FragmentManager mFragmentManager;
     private LifecycleTransformer<?> mLifecycleTransformer;
     private Subscription mNowPlayingSubscription;
@@ -57,13 +59,14 @@ public class SongViewModel extends BaseObservable {
     }
 
     public SongViewModel(BaseFragment fragment, List<Song> songs) {
-        this(fragment.getContext(), fragment.getFragmentManager(),
+        this(fragment.getActivity(), fragment.getFragmentManager(),
                 fragment.bindUntilEvent(FragmentEvent.DESTROY), songs);
     }
 
-    public SongViewModel(Context context, FragmentManager fragmentManager,
-                          LifecycleTransformer<?> lifecycleTransformer, List<Song> songs) {
-        mContext = context;
+    public SongViewModel(Activity activity, FragmentManager fragmentManager,
+                         LifecycleTransformer<?> lifecycleTransformer, List<Song> songs) {
+        mContext = activity;
+        mActivity = activity;
         mFragmentManager = fragmentManager;
         mLifecycleTransformer = lifecycleTransformer;
         mSongList = songs;
@@ -145,8 +148,8 @@ public class SongViewModel extends BaseObservable {
             mPlayerController.setQueue(mSongList, mIndex);
             mPlayerController.play();
 
-            if (mPrefStore.openNowPlayingOnNewQueue()) {
-                mContext.startActivity(NowPlayingActivity.newIntent(mContext));
+            if (mPrefStore.openNowPlayingOnNewQueue() && mActivity instanceof BaseLibraryActivity) {
+                ((BaseLibraryActivity) mActivity).expandBottomSheet();
             }
         };
     }
