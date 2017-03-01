@@ -19,7 +19,8 @@
             android:id="@+id/library_base_wrapper_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="@{viewModel.miniplayerHeight}"/>
+            android:layout_marginBottom="@{viewModel.miniplayerHeight}"
+            android:visibility="@{viewModel.mainContentVisibillity}"/>
 
         <FrameLayout
             android:id="@+id/miniplayer_holder"
@@ -34,7 +35,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:toolbar_marginTop="@{viewModel.toolbarMarginTop}"
-                app:toolbar_alpha="@{viewModel.toolbarAlpha}">
+                app:toolbar_alpha="@{viewModel.toolbarAlpha}"
+                android:visibility="@{viewModel.nowPlayingContentVisibility}">
 
                 <fragment
                     android:tag="BaseLibraryActivityWrapper.now_playing_fragment"
