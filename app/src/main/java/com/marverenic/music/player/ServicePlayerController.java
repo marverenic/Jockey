@@ -8,6 +8,7 @@ import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.os.SystemClock;
 
 import com.marverenic.music.IPlayerService;
 import com.marverenic.music.JockeyApplication;
@@ -47,9 +48,11 @@ import timber.log.Timber;
 public class ServicePlayerController implements PlayerController {
 
     private static final int POSITION_TICK_MS = 200;
+    private static final int SERVICE_RESTART_THRESHOLD_MS = 500;
 
     private Context mContext;
     private IPlayerService mBinding;
+    private long mServiceStartRequestTime;
 
     private PublishSubject<String> mErrorStream = PublishSubject.create();
     private PublishSubject<String> mInfoStream = PublishSubject.create();
@@ -95,7 +98,10 @@ public class ServicePlayerController implements PlayerController {
     }
 
     private void bindService(boolean hasMediaStorePermission) {
-        if (!hasMediaStorePermission || mBinding != null) {
+        long timeSinceLastStartRequest = SystemClock.uptimeMillis() - mServiceStartRequestTime;
+
+        if (!hasMediaStorePermission || mBinding != null
+                || timeSinceLastStartRequest < SERVICE_RESTART_THRESHOLD_MS) {
             return;
         }
 
@@ -104,6 +110,7 @@ public class ServicePlayerController implements PlayerController {
         // Manually start the service to ensure that it is associated with this task and can
         // appropriately set its dismiss behavior
         mContext.startService(serviceIntent);
+        mServiceStartRequestTime = SystemClock.uptimeMillis();
 
         mContext.bindService(serviceIntent, new ServiceConnection() {
             @Override
@@ -117,6 +124,7 @@ public class ServicePlayerController implements PlayerController {
             public void onServiceDisconnected(ComponentName name) {
                 mContext.unbindService(this);
                 releaseAllProperties();
+                mServiceStartRequestTime = 0;
                 mBinding = null;
                 if (mRequestQueueSubscription != null) {
                     mRequestQueueSubscription.unsubscribe();
