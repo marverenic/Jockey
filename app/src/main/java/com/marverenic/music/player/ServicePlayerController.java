@@ -59,7 +59,7 @@ public class ServicePlayerController implements PlayerController {
 
     private final Prop<Boolean> mPlaying = new Prop<>("playing");
     private final Prop<Song> mNowPlaying = new Prop<>("now playing");
-    private final Prop<List<Song>> mQueue = new Prop<>("queue");
+    private final Prop<List<Song>> mQueue = new Prop<>("queue", Collections.emptyList());
     private final Prop<Integer> mQueuePosition = new Prop<>("queue index");
     private final Prop<Integer> mCurrentPosition = new Prop<>("seek position");
     private final Prop<Integer> mDuration = new Prop<>("duration");
@@ -588,13 +588,19 @@ public class ServicePlayerController implements PlayerController {
     private static final class Prop<T> {
 
         private final String mName;
+        private final T mNullValue;
         private final BehaviorSubject<Optional<T>> mSubject;
         private final Observable<T> mObservable;
 
         private Retriever<T> mRetriever;
 
         public Prop(String propertyName) {
+            this(propertyName, null);
+        }
+
+        public Prop(String propertyName, T nullValue) {
             mName = propertyName;
+            mNullValue = nullValue;
             mSubject = BehaviorSubject.create();
 
             mObservable = mSubject.filter(Optional::isPresent)
@@ -611,6 +617,7 @@ public class ServicePlayerController implements PlayerController {
 
             if (mRetriever != null) {
                 Observable.fromCallable(mRetriever::retrieve)
+                        .map(data -> (data == null) ? mNullValue : data)
                         .map(Optional::ofNullable)
                         .subscribe(mSubject::onNext, throwable -> {
                             Timber.e(throwable, "Failed to fetch " + mName + " property.");
