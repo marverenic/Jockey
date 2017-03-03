@@ -103,19 +103,32 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
         return mFitSystemWindows;
     }
 
+    private int getSystemStatusBarHeight() {
+        int statusBarHeightResId = mContext.getResources().getIdentifier(
+                "status_bar_height", "dimen", "android");
+
+        if (statusBarHeightResId < 0) {
+            return 0;
+        }
+
+        return mContext.getResources().getDimensionPixelSize(statusBarHeightResId);
+    }
+
+    @Bindable
+    public int getStatusBarHeight() {
+        if (!mFitSystemWindows || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            return 0;
+        } else {
+            return getSystemStatusBarHeight();
+        }
+    }
+
     @Bindable
     public int getToolbarMarginTop() {
         if (mFitSystemWindows || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             return 0;
         } else {
-            int statusBarHeightResId = mContext.getResources().getIdentifier(
-                    "status_bar_height", "dimen", "android");
-
-            if (statusBarHeightResId < 0) {
-                return 0;
-            }
-
-            return mContext.getResources().getDimensionPixelSize(statusBarHeightResId);
+            return getSystemStatusBarHeight();
         }
     }
 

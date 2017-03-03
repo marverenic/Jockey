@@ -12,13 +12,20 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:fitsSystemWindows="@{viewModel.fitSystemWindows}">
+        android:layout_width="match_parent">
+
+        <!-- Fake status bar -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:height="@{viewModel.statusBarHeight}"
+            android:background="?attr/colorPrimaryDark"/>
 
         <FrameLayout
             android:id="@+id/library_base_wrapper_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="@{viewModel.statusBarHeight}"
             android:layout_marginBottom="@{viewModel.miniplayerHeight}"
             android:visibility="@{viewModel.mainContentVisibillity}"/>
 
