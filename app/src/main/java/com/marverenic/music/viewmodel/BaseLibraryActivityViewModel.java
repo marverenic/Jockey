@@ -103,7 +103,8 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
         return mFitSystemWindows;
     }
 
-    private int getSystemStatusBarHeight() {
+    @Bindable
+    public int getStatusBarHeight() {
         int statusBarHeightResId = mContext.getResources().getIdentifier(
                 "status_bar_height", "dimen", "android");
 
@@ -115,11 +116,11 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
     }
 
     @Bindable
-    public int getStatusBarHeight() {
+    public int getContentStatusBarHeight() {
         if (!mFitSystemWindows || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             return 0;
         } else {
-            return getSystemStatusBarHeight();
+            return getStatusBarHeight();
         }
     }
 
@@ -128,7 +129,7 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
         if (mFitSystemWindows || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             return 0;
         } else {
-            return getSystemStatusBarHeight();
+            return getStatusBarHeight();
         }
     }
 

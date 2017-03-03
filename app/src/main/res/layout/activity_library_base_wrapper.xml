@@ -18,14 +18,14 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:height="@{viewModel.statusBarHeight}"
+            app:height="@{viewModel.contentStatusBarHeight}"
             android:background="?attr/colorPrimaryDark"/>
 
         <FrameLayout
             android:id="@+id/library_base_wrapper_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="@{viewModel.statusBarHeight}"
+            android:layout_marginTop="@{viewModel.contentStatusBarHeight}"
             android:layout_marginBottom="@{viewModel.miniplayerHeight}"
             android:visibility="@{viewModel.mainContentVisibillity}"/>
 
