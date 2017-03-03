@@ -7,6 +7,7 @@ import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.ObservableFloat;
 import android.databinding.ObservableInt;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.view.animation.FastOutLinearInInterpolator;
@@ -104,7 +105,7 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
 
     @Bindable
     public int getToolbarMarginTop() {
-        if (mFitSystemWindows) {
+        if (mFitSystemWindows || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             return 0;
         } else {
             int statusBarHeightResId = mContext.getResources().getIdentifier(
