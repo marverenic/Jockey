@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.marverenic.music.viewmodel.BaseLibraryActivityViewModel"/>
+    </data>
+
+    <android.support.design.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+
+        <!-- Fake status bar -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:height="@{viewModel.statusBarHeight}"
+            android:background="?attr/colorPrimaryDark"/>
+
+        <FrameLayout
+            android:id="@+id/library_base_wrapper_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@{viewModel.statusBarHeight}"
+            android:layout_marginBottom="@{viewModel.miniplayerHeight}"
+            android:visibility="@{viewModel.mainContentVisibillity}"/>
+
+        <FrameLayout
+            android:id="@+id/miniplayer_holder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/bottom_sheet_behavior"
+            app:behavior_hideable="false"
+            app:behavior_peekHeight="@{viewModel.miniplayerHeight}"
+            app:behavior_bottomSheetCallback="@{viewModel.bottomSheetCallback}">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:toolbar_marginTop="@{viewModel.toolbarMarginTop}"
+                android:visibility="@{viewModel.nowPlayingContentVisibility}">
+
+                <fragment
+                    android:tag="BaseLibraryActivityWrapper.now_playing_fragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:name="com.marverenic.music.fragments.NowPlayingFragment"/>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:background="@color/background_miniplayer"
+                android:alpha="@{viewModel.miniplayerAlpha}"
+                android:visibility="@{viewModel.miniplayerVisibility}"
+                android:onClick="@{viewModel.miniplayerClickListener}">
+
+                <fragment
+                    android:id="@+id/miniplayer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:name="com.marverenic.music.fragments.MiniplayerFragment"
+                    tools:layout="@layout/fragment_miniplayer"/>
+
+            </FrameLayout>
+
+        </FrameLayout>
+
+    </android.support.design.widget.CoordinatorLayout>
+
+</layout>
