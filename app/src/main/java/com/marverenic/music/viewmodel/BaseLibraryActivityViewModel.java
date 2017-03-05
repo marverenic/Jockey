@@ -99,11 +99,6 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
     }
 
     @Bindable
-    public boolean getFitSystemWindows() {
-        return mFitSystemWindows;
-    }
-
-    @Bindable
     public int getStatusBarHeight() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             return 0;
@@ -122,15 +117,6 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
     @Bindable
     public int getContentStatusBarHeight() {
         if (!mFitSystemWindows) {
-            return 0;
-        } else {
-            return getStatusBarHeight();
-        }
-    }
-
-    @Bindable
-    public int getToolbarMarginTop() {
-        if (mFitSystemWindows) {
             return 0;
         } else {
             return getStatusBarHeight();
