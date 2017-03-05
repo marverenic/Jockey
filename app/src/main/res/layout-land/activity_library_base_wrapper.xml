@@ -42,7 +42,7 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:toolbar_alpha="@{viewModel.toolbarAlpha}"
+                app:toolbar_marginTop="@{viewModel.statusBarHeight}"
                 android:visibility="@{viewModel.nowPlayingContentVisibility}">
 
                 <fragment
@@ -52,6 +52,13 @@
                     android:name="com.marverenic.music.fragments.NowPlayingFragment"/>
 
             </FrameLayout>
+
+            <!-- Fake status bar -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:height="@{viewModel.statusBarHeight}"
+                android:background="?attr/colorPrimaryDark"/>
 
             <FrameLayout
                 android:layout_width="match_parent"
