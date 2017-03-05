@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import com.marverenic.music.BR;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.PreferenceStore;
@@ -102,6 +103,12 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
                 });
 
         return mBinding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        mArtworkViewModel.notifyPropertyChanged(BR.gesturesEnabled);
+        super.onResume();
     }
 
     private void setupToolbar(Toolbar toolbar) {

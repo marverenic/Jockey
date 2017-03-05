@@ -91,6 +91,7 @@ public class NowPlayingArtworkViewModel extends BaseObservable {
         }
     }
 
+    @Bindable
     public boolean getGesturesEnabled() {
         return mPrefStore.enableNowPlayingGestures();
     }
