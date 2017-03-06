@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:id="@+id/relatedCard"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:foreground="?attr/selectableItemBackground"
 	app:cardBackgroundColor="@color/background_elevated">
-	
-	<RelativeLayout
+
+	<android.support.constraint.ConstraintLayout
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:layout_margin="16dp">
@@ -16,21 +17,29 @@
 			android:id="@+id/artist_suggested_artwork"
 			android:layout_width="40dp"
 			android:layout_height="40dp"
-			android:src="@drawable/art_default"/>
+			android:src="@drawable/art_default"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
 		<TextView
 			android:id="@+id/artist_suggested_name"
-			android:layout_width="fill_parent"
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
-			android:layout_toRightOf="@id/artist_suggested_artwork"
-			android:layout_toEndOf="@id/artist_suggested_artwork"
-            android:layout_centerVertical="true"
-			android:paddingLeft="16dp"
 			android:textSize="14sp"
-            android:maxLines="2"
-            android:ellipsize="end"
-			android:textColor="?android:attr/textColorPrimary" />
-	
-	</RelativeLayout>
+			android:maxLines="2"
+			android:ellipsize="end"
+			android:textColor="?android:attr/textColorPrimary"
+            android:paddingLeft="16dp"
+            android:paddingStart="16dp"
+            android:paddingRight="0dp"
+            android:paddingEnd="0dp"
+			tools:text="Artist name"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/artist_suggested_artwork"/>
+
+	</android.support.constraint.ConstraintLayout>
 
 </android.support.v7.widget.CardView>
