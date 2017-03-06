@@ -2,6 +2,5 @@
 <resources>
 
     <dimen name="global_padding">24dp</dimen>
-    <item name="now_playing_control_end_weight" format="float" type="dimen">2</item>
 
 </resources>

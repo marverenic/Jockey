@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
         <variable
@@ -7,66 +9,91 @@
             type="com.marverenic.music.viewmodel.NowPlayingControllerViewModel"/>
     </data>
 
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
         android:id="@+id/songInfo"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/player_frame_info_height"
+        android:background="@color/player_frame_info_background"
         android:paddingLeft="16dp"
-        android:paddingRight="16dp">
+        android:paddingRight="16dp"
+        android:paddingBottom="24dp">
 
         <TextView
             android:id="@+id/now_playing_detail_title"
-            android:layout_width="match_parent"
+            style="@style/TextAppearance.AppCompat.Headline"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_toStartOf="@+id/now_playing_detail_menu"
-            android:layout_toLeftOf="@+id/now_playing_detail_menu"
-            android:textDirection="locale"
             android:ellipsize="end"
             android:maxLines="1"
             android:text="@{viewModel.songTitle}"
             android:textColor="@color/player_text_main"
-            style="@style/TextAppearance.AppCompat.Headline"/>
+            android:textDirection="locale"
+            app:layout_constraintBottom_toTopOf="@+id/now_playing_detail_artist"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1"
+            tools:text="Song Name"
+            tools:textColor="@android:color/black"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/now_playing_detail_menu"/>
 
         <TextView
             android:id="@+id/now_playing_detail_artist"
-            android:layout_width="match_parent"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/now_playing_detail_title"
-            android:layout_toStartOf="@+id/now_playing_detail_menu"
-            android:layout_toLeftOf="@+id/now_playing_detail_menu"
-            android:textDirection="locale"
             android:ellipsize="end"
             android:maxLines="1"
             android:text="@{viewModel.artistName}"
             android:textColor="@color/player_text_detail"
-            style="@style/TextAppearance.AppCompat.Subhead"/>
+            android:textDirection="locale"
+            app:layout_constraintBottom_toTopOf="@+id/now_playing_detail_album"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/now_playing_detail_title"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1"
+            tools:text="Artist Name"
+            tools:textColor="@android:color/black"
+            app:layout_constraintRight_toLeftOf="@+id/now_playing_detail_menu"/>
 
         <TextView
             android:id="@+id/now_playing_detail_album"
-            android:layout_width="match_parent"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/now_playing_detail_artist"
-            android:layout_toStartOf="@+id/now_playing_detail_menu"
-            android:layout_toLeftOf="@+id/now_playing_detail_menu"
-            android:textDirection="locale"
             android:ellipsize="end"
             android:maxLines="1"
             android:text="@{viewModel.albumName}"
             android:textColor="@color/player_text_detail"
-            style="@style/TextAppearance.AppCompat.Subhead"/>
+            android:textDirection="locale"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/now_playing_detail_artist"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1"
+            tools:text="Album Name"
+            tools:textColor="@android:color/black"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/now_playing_detail_menu"/>
 
         <ImageButton
             android:id="@+id/now_playing_detail_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_marginTop="0dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:onClick="@{viewModel.onMoreInfoClick()}"
             android:padding="10dp"
             android:scaleType="center"
             android:src="@drawable/ic_menu_24dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_centerInParent="true"
             android:tint="@color/player_text_main"
-            android:background="?selectableItemBackgroundBorderless"
-            android:onClick="@{viewModel.onMoreInfoClick()}"/>
-    </RelativeLayout>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintTop_creator="1"
+            tools:tint="@android:color/black"/>
+
+    </android.support.constraint.ConstraintLayout>
 </layout>

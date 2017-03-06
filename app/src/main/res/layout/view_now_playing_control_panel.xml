@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:bind="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     
     <data>
         <variable
@@ -8,44 +9,44 @@
             type="com.marverenic.music.viewmodel.NowPlayingControllerViewModel"/>
     </data>
 
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="@dimen/player_frame_height">
 
-        <FrameLayout
-            android:layout_width="match_parent"
+        <include
+            android:id="@+id/now_playing_controller_details"
+            android:layout_width="0dp"
             android:layout_height="@dimen/player_frame_info_height"
-            android:paddingBottom="24dp"
-            android:background="@color/player_frame_info_background">
+            layout="@layout/view_now_playing_details"
+            tools:viewModel="@{viewModel}"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
 
-            <include
-                android:id="@+id/now_playing_controller_details"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                layout="@layout/view_now_playing_details"
-                bind:viewModel="@{viewModel}"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/inset_bevel_height"
-                android:background="@color/player_frame_emboss"
-                android:layout_gravity="top"/>
-
-        </FrameLayout>
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/player_frame_emboss"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:id="@+id/view"/>
 
         <FrameLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="@dimen/player_frame_ctrl_height"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/player_frame_info_height"
-            android:background="@color/player_frame_ctrl_background">
+            android:background="@color/player_frame_ctrl_background"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/now_playing_controller_details"
+            android:id="@+id/frameLayout">
 
             <include
                 android:id="@+id/now_playing_controller_controls"
                 layout="@layout/view_now_playing_controls"
-                bind:viewModel="@{viewModel}"/>
+                tools:viewModel="@{viewModel}"/>
 
             <View
                 android:layout_width="match_parent"
@@ -55,21 +56,24 @@
 
         </FrameLayout>
 
-        <FrameLayout
-            android:layout_width="match_parent"
+        <include
+            android:id="@+id/now_playing_controller_scrubber"
+            android:layout_width="0dp"
             android:layout_height="@dimen/player_frame_info_height"
             android:layout_marginTop="@dimen/seekbarMargin"
-            android:translationY="@dimen/seekbarMargin">
+            layout="@layout/view_now_playing_scrubber"
+            tools:viewModel="@{viewModel}"
+            app:layout_constraintRight_toRightOf="@+id/now_playing_controller_details"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/now_playing_controller_scrubber_offset"/>
 
-            <include
-                android:id="@+id/now_playing_controller_scrubber"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                layout="@layout/view_now_playing_scrubber"
-                bind:viewModel="@{viewModel}"/>
+        <android.support.constraint.Guideline
+            android:id="@+id/now_playing_controller_scrubber_offset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="@dimen/seekbarMargin"/>
 
-        </FrameLayout>
+    </android.support.constraint.ConstraintLayout>
 
-    </RelativeLayout>
 </layout>
