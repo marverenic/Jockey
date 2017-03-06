@@ -60,7 +60,6 @@
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:src="@drawable/ic_menu_24dp"
-            android:layout_margin="8dp"
             android:tint="?attr/textColorPrimary"
             android:background="?selectableItemBackgroundBorderless"
             android:onClick="@{viewModel.onClickMenu()}"
