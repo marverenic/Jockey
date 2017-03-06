@@ -1,85 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
         <variable name="viewModel" type="com.marverenic.music.viewmodel.AlbumViewModel" />
     </data>
 
-    <FrameLayout
+    <android.support.constraint.ConstraintLayout
         android:id="@+id/album_view"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:foreground="?android:attr/selectableItemBackground"
         android:background="@{viewModel.backgroundColor}"
-        android:onClick="@{viewModel.onClickAlbum()}">
+        android:foreground="?android:attr/selectableItemBackground"
+        android:onClick="@{viewModel.onClickAlbum()}"
+        tools:background="@color/grid_background_default">
 
-        <RelativeLayout
-            android:layout_width="fill_parent"
+        <ImageView
+            android:id="@+id/album_art"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:contentDescription="@string/description_album_art"
+            android:background="@android:color/black"
+            android:src="@{viewModel.artistImage}"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/art_default"
+            app:layout_constraintDimensionRatio="h,1:1"/>
+
+        <TextView
+            android:id="@+id/album_title"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:text="@{viewModel.albumTitle}"
+            style="@style/gridTitleText"
+            android:textColor="@{viewModel.titleTextColor}"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:paddingTop="@dimen/grid_padding"
+            android:paddingLeft="@dimen/grid_padding"
+            android:paddingStart="@dimen/grid_padding"
+            android:paddingRight="0dp"
+            android:paddingEnd="0dp"
+            tools:text="Album Name"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/album_art"
+            app:layout_constraintRight_toLeftOf="@+id/album_menu"/>
 
-            <com.marverenic.music.view.SquareImageViewH
-                android:id="@+id/album_art"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_margin="0dp"
-                android:contentDescription="@string/description_album_art"
-                android:background="@android:color/black"
-                android:src="@{viewModel.artistImage}" />
+        <TextView
+            android:id="@+id/album_detail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            style="@style/gridDetailText"
+            android:textColor="@{viewModel.artistTextColor}"
+            android:text="@{viewModel.albumArtist}"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:paddingBottom="@dimen/grid_padding"
+            android:paddingLeft="@dimen/grid_padding"
+            android:paddingStart="@dimen/grid_padding"
+            android:paddingRight="0dp"
+            android:paddingEnd="0dp"
+            tools:text="Artist Name"
+            app:layout_constraintTop_toBottomOf="@+id/album_title"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/album_menu"/>
 
-            <RelativeLayout
-                android:layout_width="fill_parent"
-                android:layout_height="68dp"
-                android:paddingLeft="@dimen/grid_padding"
-                android:paddingStart="@dimen/grid_padding"
-                android:paddingRight="0dp"
-                android:paddingEnd="0dp"
-                android:layout_below="@id/album_art">
+        <ImageView
+            android:id="@+id/album_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_menu_24dp"
+            android:padding="@dimen/grid_padding"
+            android:background="?selectableItemBackgroundBorderless"
+            android:onClick="@{viewModel.onClickMenu()}"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/album_art"/>
 
-                <ImageView
-                    android:id="@+id/album_menu"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="@dimen/grid_padding"
-                    android:scaleType="center"
-                    android:src="@drawable/ic_menu_24dp"
-                    android:background="?selectableItemBackgroundBorderless"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:onClick="@{viewModel.onClickMenu()}" />
-
-                <TextView
-                    android:id="@+id/album_title"
-                    style="@style/gridTitleText"
-                    android:textColor="@{viewModel.titleTextColor}"
-                    android:text="@{viewModel.albumTitle}"
-                    android:layout_alignParentTop="true"
-                    android:paddingTop="@dimen/grid_padding"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:layout_toLeftOf="@id/album_menu"
-                    android:layout_toStartOf="@id/album_menu"/>
-
-                <TextView
-                    android:id="@+id/album_detail"
-                    style="@style/gridDetailText"
-                    android:textColor="@{viewModel.artistTextColor}"
-                    android:text="@{viewModel.albumArtist}"
-                    android:layout_alignParentBottom="true"
-                    android:paddingBottom="@dimen/grid_padding"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:layout_toLeftOf="@id/album_menu"
-                    android:layout_toStartOf="@+id/album_menu" />
-
-            </RelativeLayout>
-        </RelativeLayout>
-    </FrameLayout>
+    </android.support.constraint.ConstraintLayout>
 
 </layout>
