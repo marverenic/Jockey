@@ -7,9 +7,12 @@ import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.ObservableFloat;
 import android.databinding.ObservableInt;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.view.View;
@@ -35,6 +38,7 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
     private final ObservableInt mMiniplayerHeight;
     private final ObservableFloat mMiniplayerAlpha;
     private final ObservableFloat mNowPlayingToolbarAlpha;
+    private final ColorDrawable mNowPlayingBackground;
 
     private int mBottomSheetState;
 
@@ -51,6 +55,9 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
         mMiniplayerHeight = new ObservableInt(0);
         mMiniplayerAlpha = new ObservableFloat(1.0f);
         mNowPlayingToolbarAlpha = new ObservableFloat(0.0f);
+
+        int backgroundColor = ContextCompat.getColor(activity, R.color.background);
+        mNowPlayingBackground = new ColorDrawable(backgroundColor);
 
         setPlaybackOngoing(false);
 
@@ -160,6 +167,15 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
     }
 
     @Bindable
+    public Drawable getNowPlayingContentBackground() {
+        if (mBottomSheetState == BottomSheetBehavior.STATE_EXPANDED) {
+            return null;
+        } else {
+            return mNowPlayingBackground;
+        }
+    }
+
+    @Bindable
     public BottomSheetBehavior.BottomSheetCallback getBottomSheetCallback() {
         return new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -168,6 +184,7 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
                 notifyPropertyChanged(BR.miniplayerVisibility);
                 notifyPropertyChanged(BR.mainContentVisibillity);
                 notifyPropertyChanged(BR.nowPlayingContentVisibility);
+                notifyPropertyChanged(BR.nowPlayingContentBackground);
 
                 if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     mNowPlayingToolbarAlpha.set(1.0f);

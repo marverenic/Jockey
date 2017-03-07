@@ -80,7 +80,7 @@
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_below="@id/toolbar"
+            android:layout_below="@id/now_playing_toolbar"
             android:layout_above="@id/now_playing_control_fragment"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             tools:layout="@layout/list"/>

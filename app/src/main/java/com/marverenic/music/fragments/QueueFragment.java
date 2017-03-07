@@ -63,6 +63,10 @@ public class QueueFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.list, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.list);
 
+        boolean isLandscape = getContext().getResources().getConfiguration().orientation
+                == ORIENTATION_LANDSCAPE;
+        mRecyclerView.setNestedScrollingEnabled(!isLandscape);
+
         setupRecyclerView();
 
         mPlayerController.getQueue()

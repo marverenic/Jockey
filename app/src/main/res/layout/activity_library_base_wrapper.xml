@@ -34,6 +34,7 @@
             android:id="@+id/miniplayer_holder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@{viewModel.nowPlayingContentBackground}"
             app:layout_behavior="@string/bottom_sheet_behavior"
             app:behavior_hideable="false"
             app:behavior_peekHeight="@{viewModel.miniplayerHeight}"
