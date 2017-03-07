@@ -7,7 +7,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.marverenic.adapter.EnhancedViewHolder;
@@ -38,14 +38,14 @@ public class ArtistBioSingleton extends HeterogeneousAdapter.SingletonSection<Lf
             implements View.OnClickListener {
 
         private TextView bioText;
-        private FrameLayout lfmButton;
+        private Button lfmButton;
         private String artistURL;
 
         public ViewHolder(View itemView, boolean hasRelatedArtists) {
             super(itemView);
 
             bioText = (TextView) itemView.findViewById(R.id.artist_bio_content);
-            lfmButton = (FrameLayout) itemView.findViewById(R.id.artist_bio_lfm_link);
+            lfmButton = (Button) itemView.findViewById(R.id.artist_bio_lfm_link);
             lfmButton.setOnClickListener(this);
 
             if (hasRelatedArtists) {

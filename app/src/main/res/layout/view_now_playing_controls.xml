@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
         <variable
@@ -7,72 +9,58 @@
             type="com.marverenic.music.viewmodel.NowPlayingControllerViewModel"/>
     </data>
 
-    <LinearLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/now_playing_button_size"
         android:layout_gravity="center"
-        android:orientation="horizontal"
         android:layoutDirection="ltr"
-        android:baselineAligned="false">
+        android:orientation="horizontal"
+        android:maxWidth="@dimen/now_playing_max_control_width">
 
-        <View android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="@dimen/now_playing_control_end_weight"/>
-
-        <RelativeLayout
-            android:layout_width="0dp"
+        <ImageButton
+            android:id="@+id/now_playing_skip_prev"
+            android:layout_width="@dimen/now_playing_button_size"
             android:layout_height="@dimen/now_playing_button_size"
-            android:layout_gravity="center"
-            android:layout_weight="1">
-            <ImageButton
-                android:id="@+id/now_playing_previous"
-                android:layout_width="@dimen/now_playing_button_size"
-                android:layout_height="@dimen/now_playing_button_size"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true"
-                android:background="?selectableItemBackgroundBorderless"
-                android:contentDescription="@string/button_previous_description"
-                android:src="@drawable/ic_skip_previous_36dp"
-                android:onClick="@{viewModel.onSkipBackClick()}"/>
-        </RelativeLayout>
+            android:background="?selectableItemBackgroundBorderless"
+            android:contentDescription="@string/button_previous_description"
+            android:onClick="@{viewModel.onSkipBackClick()}"
+            android:src="@drawable/ic_skip_previous_36dp"
+            tools:tint="@android:color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/now_playing_play_pause"
+            app:layout_constraintTop_toTopOf="parent"/>
 
-        <RelativeLayout
-            android:layout_width="0dp"
+        <ImageButton
+            android:id="@+id/now_playing_play_pause"
+            android:layout_width="@dimen/now_playing_button_size"
             android:layout_height="@dimen/now_playing_button_size"
-            android:layout_gravity="center"
-            android:layout_weight="1">
-            <ImageButton
-                android:id="@+id/now_playing_play"
-                android:layout_width="@dimen/now_playing_button_size"
-                android:layout_height="@dimen/now_playing_button_size"
-                android:layout_centerInParent="true"
-                android:background="?selectableItemBackgroundBorderless"
-                android:contentDescription="@string/button_play_description"
-                android:src="@{viewModel.togglePlayIcon}"
-                android:onClick="@{viewModel.onTogglePlayClick()}"/>
-        </RelativeLayout>
+            android:background="?selectableItemBackgroundBorderless"
+            android:contentDescription="@string/button_play_description"
+            android:onClick="@{viewModel.onTogglePlayClick()}"
+            android:src="@{viewModel.togglePlayIcon}"
+            tools:src="@drawable/ic_play_arrow_36dp"
+            tools:tint="@android:color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/now_playing_skip_prev"
+            app:layout_constraintRight_toLeftOf="@+id/now_playing_skip_next"
+            app:layout_constraintTop_toTopOf="parent"/>
 
-        <RelativeLayout
-            android:layout_width="0dp"
+        <ImageButton
+            android:id="@+id/now_playing_skip_next"
+            android:layout_width="@dimen/now_playing_button_size"
             android:layout_height="@dimen/now_playing_button_size"
-            android:layout_gravity="center"
-            android:layout_weight="1">
-            <ImageButton
-                android:id="@+id/now_playing_next"
-                android:layout_width="@dimen/now_playing_button_size"
-                android:layout_height="@dimen/now_playing_button_size"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:background="?selectableItemBackgroundBorderless"
-                android:contentDescription="@string/button_skip_description"
-                android:src="@drawable/ic_skip_next_36dp"
-                android:onClick="@{viewModel.onSkipNextClick()}"/>
-        </RelativeLayout>
+            android:background="?selectableItemBackgroundBorderless"
+            android:contentDescription="@string/button_skip_description"
+            android:onClick="@{viewModel.onSkipNextClick()}"
+            android:src="@drawable/ic_skip_next_36dp"
+            tools:tint="@android:color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/now_playing_play_pause"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
-        <View android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="@dimen/now_playing_control_end_weight"/>
-
-    </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
 
 </layout>

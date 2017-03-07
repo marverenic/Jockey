@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <variable name="viewModel" type="com.marverenic.music.viewmodel.QueueSongViewModel" />
     </data>
 
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/list_height"
         android:background="?selectableItemBackground"
@@ -16,45 +18,47 @@
             android:id="@+id/handle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="8dp"
             android:src="@drawable/ic_reorder_24dp"
-            android:tint="?textColorSecondary"
+            android:padding="8dp"
             android:alpha="0.5"
-            android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:tint="?textColorSecondary"
+            tools:tint="@android:color/darker_gray"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/song_name"
+            style="@style/listTitleText"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/handle"
-            android:layout_toEndOf="@+id/handle"
-            android:layout_toStartOf="@+id/instancePlayingIndicator"
-            android:layout_toLeftOf="@+id/instancePlayingIndicator">
+            android:text="@{viewModel.title}"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            tools:text="Song Name"
+            app:layout_constraintRight_toLeftOf="@+id/instancePlayingIndicator"
+            app:layout_constraintBottom_toTopOf="@+id/song_detail"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintLeft_toRightOf="@+id/handle"/>
 
-            <TextView
-                android:id="@+id/song_name"
-                style="@style/listTitleText"
-                android:text="@{viewModel.title}"
-                android:paddingLeft="0dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"/>
-
-            <TextView
-                android:id="@+id/song_detail"
-                style="@style/listDetailText"
-                android:text="@{viewModel.detail}"
-                android:paddingLeft="0dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"/>
-
-        </LinearLayout>
+        <TextView
+            android:id="@+id/song_detail"
+            style="@style/listDetailText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.detail}"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            tools:text="Album – Artist"
+            app:layout_constraintRight_toLeftOf="@+id/instancePlayingIndicator"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/song_name"
+            app:layout_constraintLeft_toRightOf="@+id/handle"/>
 
         <ImageView
             android:id="@+id/instancePlayingIndicator"
@@ -64,23 +68,26 @@
             android:src="@drawable/ic_play_circle_fill_24dp"
             android:tint="?attr/colorAccent"
             android:visibility="@{viewModel.nowPlayingIndicatorVisibility, default = gone}"
-            android:layout_toLeftOf="@id/song_menu"
-            android:layout_toStartOf="@id/song_menu"
-            android:layout_centerVertical="true"/>
+            tools:tint="@color/accent"
+            tools:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/song_menu"
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <ImageView
             android:id="@+id/song_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:scaleType="center"
             android:src="@drawable/ic_menu_24dp"
-            android:tint="?textColorPrimary"
+            android:tint="?attr/textColorPrimary"
             android:background="?selectableItemBackgroundBorderless"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:onClick="@{viewModel.onClickMenu()}" />
+            android:onClick="@{viewModel.onClickMenu()}"
+            tools:tint="@android:color/black"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
-    </RelativeLayout>
+    </android.support.constraint.ConstraintLayout>
+
 </layout>

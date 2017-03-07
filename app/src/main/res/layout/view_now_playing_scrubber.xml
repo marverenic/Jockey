@@ -9,7 +9,7 @@
             type="com.marverenic.music.viewmodel.NowPlayingControllerViewModel"/>
     </data>
 
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -28,9 +28,12 @@
             android:paddingBottom="@dimen/now_playing_time_padding_bottom"
             android:translationY="@dimen/seekbarMargin"
             android:visibility="@{viewModel.positionVisibility}"
-            android:layout_above="@+id/now_playing_seek_bar"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"/>
+            tools:text="0:00"
+            tools:textColor="@android:color/black"
+            tools:layout_constraintBottom_creator="1"
+            tools:layout_constraintLeft_creator="1"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/now_playing_seek_bar"/>
 
         <com.marverenic.music.view.TimeView
             android:id="@+id/now_playing_duration"
@@ -43,35 +46,47 @@
             android:paddingBottom="@dimen/now_playing_time_padding_bottom"
             android:translationY="@dimen/seekbarMargin"
             android:visibility="@{viewModel.positionVisibility}"
-            android:layout_above="@+id/now_playing_seek_bar"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            app:time="@{viewModel.songDuration}"/>
+            app:time="@{viewModel.songDuration}"
+            tools:text="3:45"
+            tools:textColor="@android:color/black"
+            tools:layout_constraintRight_creator="1"
+            tools:layout_constraintBottom_creator="1"
+            app:layout_constraintBottom_toTopOf="@+id/now_playing_seek_bar"
+            app:layout_constraintRight_toRightOf="@+id/now_playing_seek_bar"/>
 
         <com.marverenic.music.view.TimeView
             android:id="@+id/now_playing_seek_thumb"
-            android:layout_width="@dimen/seekbar_head_width"
-            android:layout_height="@dimen/seekbar_head_height"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             style="@style/Base.TextAppearance.AppCompat.Small"
             android:textColor="@android:color/white"
             android:paddingBottom="@dimen/now_playing_thumb_margin"
             android:paddingLeft="@dimen/now_playing_time_padding"
             android:paddingRight="@dimen/now_playing_time_padding"
             android:layout_marginBottom="@dimen/now_playing_thumb_margin"
-            android:singleLine="true"
+            android:maxLines="1"
             android:gravity="center"
             android:background="@drawable/ic_thumb"
             android:visibility="@{viewModel.seekBarHeadVisibility}"
             app:marginLeft_percent="@{viewModel.seekBarHeadMarginLeft}"
             app:animation="@{viewModel.seekBarHeadAnimation}"
             app:time="@{viewModel.seekBarPosition}"
-            app:backgroundTint="@{viewModel.seekBarHeadTint}" />
+            app:backgroundTint="@{viewModel.seekBarHeadTint}"
+            tools:text="1:20"
+            tools:backgroundTint="@color/accent"
+            tools:layout_marginLeft="215dp"
+            tools:layout_marginStart="215dp"
+            tools:layout_constraintTop_creator="1"
+            tools:layout_constraintBottom_creator="1"
+            tools:layout_constraintLeft_creator="1"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/now_playing_seek_bar"/>
 
         <SeekBar
             android:id="@+id/now_playing_seek_bar"
-            android:layout_width="fill_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/now_playing_seek_thumb"
             android:progressBackgroundTint="@android:color/transparent"
             android:splitTrack="false"
             android:paddingLeft="@dimen/seekbar_padding"
@@ -83,7 +98,10 @@
             android:progress="@{viewModel.seekBarPosition}"
             android:max="@{viewModel.songDuration}"
             app:onSeekListener="@{viewModel.onSeek()}"
-            tools:ignore="UnusedAttribute"/>
+            tools:ignore="UnusedAttribute"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
-    </RelativeLayout>
+    </android.support.constraint.ConstraintLayout>
 </layout>
