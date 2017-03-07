@@ -4,6 +4,7 @@
     <dimen name="grid_width">170dp</dimen>
     <dimen name="large_grid_width">200dp</dimen>
     <dimen name="now_playing_control_min_width">480dp</dimen>
+    <item name="now_playing_control_end_weight" format="float" type="dimen">1.5</item>
     <dimen name="now_playing_button_size">36dp</dimen>
     <dimen name="player_frame_height">176dp</dimen>
     <dimen name="player_frame_peek">192dp</dimen>
