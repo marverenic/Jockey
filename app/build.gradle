@@ -41,7 +41,7 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         versionCode 40317
         versionName "2.2 beta 4"
-        resConfigs "en"
+        resConfigs "en", "es"
     }
 
     buildTypes {
