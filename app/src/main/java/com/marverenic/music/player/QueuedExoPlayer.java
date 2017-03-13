@@ -277,6 +277,12 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     private MediaSource buildRepeatOneMediaSource(DataSource.Factory srcFactory,
                                                   ExtractorsFactory extFactory) {
 
+        if (mQueue.isEmpty()) {
+            // We need to return an empty MediaSource (can't be null), so return a
+            // ConcatenatingMediaSource with nothing to concatenate
+            return new ConcatenatingMediaSource();
+        }
+
         Uri uri = mQueue.get(mQueueIndex).getLocation();
         MediaSource source = new ExtractorMediaSource(uri, srcFactory, extFactory, null, null);
         return new LoopingMediaSource(source);
