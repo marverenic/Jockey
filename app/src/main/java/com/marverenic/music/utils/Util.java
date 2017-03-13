@@ -131,7 +131,7 @@ public final class Util {
             if (stream != null) {
                 return BitmapFactory.decodeByteArray(stream, 0, stream.length);
             }
-        } catch (IllegalArgumentException e) {
+        } catch (RuntimeException e) {
             Timber.e(e, "Failed to load full song artwork");
         } catch (OutOfMemoryError e) {
             Timber.e(e, "Unable to allocate space on the heap for full song artwork");
