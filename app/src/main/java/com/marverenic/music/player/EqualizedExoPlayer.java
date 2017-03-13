@@ -55,7 +55,7 @@ public class EqualizedExoPlayer implements ExoPlayer {
         }
 
         if (useCustom) {
-            if (wasSystem) {
+            if (wasSystem || mEqualizer == null) {
                 // System -> custom
                 unbindSystemEqualizer(audioSessionId);
                 bindCustomEqualizer(audioSessionId);
@@ -114,9 +114,11 @@ public class EqualizedExoPlayer implements ExoPlayer {
     }
 
     private void unbindCustomEqualizer() {
-        mEqualizer.setEnabled(false);
-        mEqualizer.release();
-        mEqualizer = null;
+        if (mEqualizer != null) {
+            mEqualizer.setEnabled(false);
+            mEqualizer.release();
+            mEqualizer = null;
+        }
     }
 
     private class EqualizerEventListener implements AudioRendererEventListener {
