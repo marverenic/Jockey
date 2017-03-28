@@ -77,7 +77,9 @@ public class LocalPlaylistStore implements PlaylistStore {
 
         mLoadingState.onNext(true);
 
-        return MediaStoreUtil.promptPermission(mContext)
+        BehaviorSubject<Boolean> result = BehaviorSubject.create();
+
+        MediaStoreUtil.promptPermission(mContext)
                 .observeOn(Schedulers.io())
                 .map(granted -> {
                     if (granted && mPlaylists != null) {
@@ -87,7 +89,10 @@ public class LocalPlaylistStore implements PlaylistStore {
                     mLoadingState.onNext(false);
                     return granted;
                 })
-                .observeOn(AndroidSchedulers.mainThread());
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result);
+
+        return result;
     }
 
     @Override

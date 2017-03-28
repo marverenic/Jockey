@@ -74,7 +74,9 @@ public class LocalMusicStore implements MusicStore {
         mAlbumLoadingState.onNext(true);
         mGenreLoadingState.onNext(true);
 
-        return MediaStoreUtil.promptPermission(mContext)
+        BehaviorSubject<Boolean> result = BehaviorSubject.create();
+
+        MediaStoreUtil.promptPermission(mContext)
                 .observeOn(Schedulers.io())
                 .map(granted -> {
                     if (granted) {
@@ -97,7 +99,10 @@ public class LocalMusicStore implements MusicStore {
                     mGenreLoadingState.onNext(false);
                     return granted;
                 })
-                .observeOn(AndroidSchedulers.mainThread());
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result);
+
+        return result.asObservable();
     }
 
     @Override
