@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -145,6 +146,11 @@ public final class MediaStoreUtil {
                 });
 
         return sPermissionObservable.asObservable();
+    }
+
+    public static void registerUpdateListener(Context context, ContentObserver observer) {
+        context.getContentResolver()
+                .registerContentObserver(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, true, observer);
     }
 
     public static List<Song> getSongs(Context context, Uri uri, @Nullable String selection,

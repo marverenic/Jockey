@@ -1,6 +1,7 @@
 package com.marverenic.music.data.store;
 
 import android.content.Context;
+import android.database.ContentObserver;
 import android.provider.MediaStore;
 
 import com.marverenic.music.model.Album;
@@ -42,6 +43,20 @@ public class LocalMusicStore implements MusicStore {
         mAlbumLoadingState = BehaviorSubject.create(false);
         mArtistLoadingState = BehaviorSubject.create(false);
         mGenreLoadingState = BehaviorSubject.create(false);
+
+        MediaStoreUtil.waitForPermission()
+                .subscribe(permission -> bindRefreshListener(), throwable -> {
+                    Timber.e(throwable, "Failed to bind refresh listener");
+                });
+    }
+
+    private void bindRefreshListener() {
+        MediaStoreUtil.registerUpdateListener(mContext, new ContentObserver(null) {
+            @Override
+            public void onChange(boolean selfChange) {
+                refresh();
+            }
+        });
     }
 
     @Override
