@@ -10,7 +10,6 @@ import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.audio.AudioRendererEventListener;
-import com.google.android.exoplayer2.audio.AudioTrack;
 import com.google.android.exoplayer2.decoder.DecoderCounters;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
@@ -18,7 +17,7 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 
 public class EqualizedExoPlayer implements ExoPlayer {
 
-    private static final int NO_AUDIO_SESSION_ID = AudioTrack.SESSION_ID_NOT_SET;
+    private static final int NO_AUDIO_SESSION_ID = 0;
 
     private Context mContext;
 
@@ -301,6 +300,16 @@ public class EqualizedExoPlayer implements ExoPlayer {
     @Override
     public int getBufferedPercentage() {
         return mExoPlayer.getBufferedPercentage();
+    }
+
+    @Override
+    public boolean isCurrentWindowDynamic() {
+        return mExoPlayer.isCurrentWindowDynamic();
+    }
+
+    @Override
+    public boolean isCurrentWindowSeekable() {
+        return mExoPlayer.isCurrentWindowSeekable();
     }
     // endregion DELEGATED METHODS
 }

@@ -37,3 +37,7 @@ proguard/
 
 # Log Files
 *.log
+
+# C/C++/NDK output files
+*.o
+*.d
