@@ -112,8 +112,16 @@ public final class MediaStoreUtil {
                 READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE);
     }
 
+    public static Observable<Boolean> waitForPermission() {
+        if (sPermissionObservable == null) {
+            sPermissionObservable = BehaviorSubject.create();
+        }
+
+        return sPermissionObservable.filter(hasPermission -> hasPermission).take(1);
+    }
+
     public static Observable<Boolean> getPermission(Context context) {
-        if (sPermissionObservable != null) {
+        if (sPermissionObservable != null && sPermissionObservable.hasValue()) {
             return sPermissionObservable.asObservable();
         } else {
             return promptPermission(context);
