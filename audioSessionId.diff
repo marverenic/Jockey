@@ -1,0 +1,211 @@
+diff --git a/app/src/main/aidl/com/marverenic/music/IPlayerService.aidl b/app/src/main/aidl/com/marverenic/music/IPlayerService.aidl
+index 64edc61..4469db1 100644
+--- a/app/src/main/aidl/com/marverenic/music/IPlayerService.aidl
++++ b/app/src/main/aidl/com/marverenic/music/IPlayerService.aidl
+@@ -31,6 +31,7 @@ interface IPlayerService {
+     int getQueueSize();
+     int getCurrentPosition();
+     int getDuration();
++    int getAudioSessionId();
+ 
+     PlayerState getPlayerState();
+     void restorePlayerState(in PlayerState state);
+diff --git a/app/src/main/java/com/marverenic/music/fragments/NowPlayingFragment.java b/app/src/main/java/com/marverenic/music/fragments/NowPlayingFragment.java
+index 9a47dae..f1b2f47 100644
+--- a/app/src/main/java/com/marverenic/music/fragments/NowPlayingFragment.java
++++ b/app/src/main/java/com/marverenic/music/fragments/NowPlayingFragment.java
+@@ -102,6 +102,14 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
+                     Timber.e(throwable, "Failed to update sleep timer end timestamp");
+                 });
+ 
++        mPlayerController.getAudioSessionId()
++                .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
++                .subscribe(audioSessionId -> {
++                    // TODO do whatever with audioSessionId
++                }, throwable -> {
++                    Timber.e(throwable, "Failed to get audioSessionId");
++                });
++
+         return mBinding.getRoot();
+     }
+ 
+diff --git a/app/src/main/java/com/marverenic/music/player/EqualizedExoPlayer.java b/app/src/main/java/com/marverenic/music/player/EqualizedExoPlayer.java
+index 7d2bb07..9c8ec45 100644
+--- a/app/src/main/java/com/marverenic/music/player/EqualizedExoPlayer.java
++++ b/app/src/main/java/com/marverenic/music/player/EqualizedExoPlayer.java
+@@ -25,6 +25,7 @@ public class EqualizedExoPlayer implements ExoPlayer {
+     private SimpleExoPlayer mExoPlayer;
+     private Equalizer mEqualizer;
+ 
++    private int lastAudioSessionId = NO_AUDIO_SESSION_ID;
+     private boolean mEqualizerEnabled;
+     private Equalizer.Settings mEqualizerSettings;
+ 
+@@ -121,15 +122,18 @@ public class EqualizedExoPlayer implements ExoPlayer {
+         }
+     }
+ 
+-    private class EqualizerEventListener implements AudioRendererEventListener {
++    public int getAudioSessionId() {
++        return lastAudioSessionId;
++    }
+ 
+-        private int lastAudioSessionId = NO_AUDIO_SESSION_ID;
++    private class EqualizerEventListener implements AudioRendererEventListener {
+ 
+         @Override
+         public void onAudioSessionId(int audioSessionId) {
+             if (audioSessionId != NO_AUDIO_SESSION_ID) {
+                 onBindEqualizer(audioSessionId);
+                 lastAudioSessionId = audioSessionId;
++                mContext.sendBroadcast(new Intent(MusicPlayer.UPDATE_BROADCAST));
+             }
+         }
+ 
+diff --git a/app/src/main/java/com/marverenic/music/player/MockPlayerController.java b/app/src/main/java/com/marverenic/music/player/MockPlayerController.java
+index 424bcc3..64b7809 100644
+--- a/app/src/main/java/com/marverenic/music/player/MockPlayerController.java
++++ b/app/src/main/java/com/marverenic/music/player/MockPlayerController.java
+@@ -171,6 +171,11 @@ public class MockPlayerController implements PlayerController {
+     }
+ 
+     @Override
++    public Observable<Integer> getAudioSessionId() {
++        throw new UnsupportedOperationException("Stub!");
++    }
++
++    @Override
+     public void setMultiRepeatCount(int count) {
+         throw new UnsupportedOperationException("Stub!");
+     }
+diff --git a/app/src/main/java/com/marverenic/music/player/MusicPlayer.java b/app/src/main/java/com/marverenic/music/player/MusicPlayer.java
+index bb7d9dd..9e22127 100644
+--- a/app/src/main/java/com/marverenic/music/player/MusicPlayer.java
++++ b/app/src/main/java/com/marverenic/music/player/MusicPlayer.java
+@@ -821,6 +821,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
+         return mMediaPlayer.getDuration();
+     }
+ 
++    public int getAudioSessionId() {
++        return mMediaPlayer.getAudioSessionId();
++    }
++
+     /**
+      * Changes the current index of the queue and starts playback from this new position
+      * @param position The index in the queue to skip to
+diff --git a/app/src/main/java/com/marverenic/music/player/PlayerController.java b/app/src/main/java/com/marverenic/music/player/PlayerController.java
+index f20dd08..c288773 100644
+--- a/app/src/main/java/com/marverenic/music/player/PlayerController.java
++++ b/app/src/main/java/com/marverenic/music/player/PlayerController.java
+@@ -234,6 +234,8 @@ public interface PlayerController {
+      */
+     Observable<Integer> getMultiRepeatCount();
+ 
++    Observable<Integer> getAudioSessionId();
++
+     /**
+      * Enables Multi-Repeat. With Multi-Repeat enabled, the current song will be played back-to-back
+      * {@code count} times. When the next song starts (either because the song was skipped or
+diff --git a/app/src/main/java/com/marverenic/music/player/PlayerService.java b/app/src/main/java/com/marverenic/music/player/PlayerService.java
+index dd4ead4..b8ae048 100644
+--- a/app/src/main/java/com/marverenic/music/player/PlayerService.java
++++ b/app/src/main/java/com/marverenic/music/player/PlayerService.java
+@@ -700,6 +700,20 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
+         }
+ 
+         @Override
++        public int getAudioSessionId() throws RemoteException {
++            if (!isMusicPlayerReady()) {
++                return 0;
++            }
++
++            try {
++                return mService.musicPlayer.getDuration();
++            } catch (RuntimeException exception) {
++                Timber.e(exception, "Remote call to PlayerService.getAudioSessionId() failed");
++                throw exception;
++            }
++        }
++
++        @Override
+         public PlayerState getPlayerState() throws RemoteException {
+             if (!isMusicPlayerReady()) {
+                 return null;
+diff --git a/app/src/main/java/com/marverenic/music/player/QueuedExoPlayer.java b/app/src/main/java/com/marverenic/music/player/QueuedExoPlayer.java
+index 6234bcb..1fb9996 100644
+--- a/app/src/main/java/com/marverenic/music/player/QueuedExoPlayer.java
++++ b/app/src/main/java/com/marverenic/music/player/QueuedExoPlayer.java
+@@ -451,4 +451,9 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
+         mExoPlayer = null;
+         mContext = null;
+     }
++
++    @Override
++    public int getAudioSessionId() {
++        return mExoPlayer.getAudioSessionId();
++    }
+ }
+diff --git a/app/src/main/java/com/marverenic/music/player/QueuedMediaPlayer.java b/app/src/main/java/com/marverenic/music/player/QueuedMediaPlayer.java
+index 231eeb5..3c3c9e5 100644
+--- a/app/src/main/java/com/marverenic/music/player/QueuedMediaPlayer.java
++++ b/app/src/main/java/com/marverenic/music/player/QueuedMediaPlayer.java
+@@ -185,6 +185,8 @@ public interface QueuedMediaPlayer {
+      */
+     void release();
+ 
++    int getAudioSessionId();
++
+     /**
+      * Interface definition to act as a callback when important lifecycle events occur within a
+      * QueuedMediaPlayer. This allows higher-level behaviors to be defined more
+diff --git a/app/src/main/java/com/marverenic/music/player/ServicePlayerController.java b/app/src/main/java/com/marverenic/music/player/ServicePlayerController.java
+index a4674c1..273e352 100644
+--- a/app/src/main/java/com/marverenic/music/player/ServicePlayerController.java
++++ b/app/src/main/java/com/marverenic/music/player/ServicePlayerController.java
+@@ -10,6 +10,7 @@ import android.os.IBinder;
+ import android.os.RemoteException;
+ import android.os.SystemClock;
+ 
++import com.google.android.exoplayer2.audio.AudioTrack;
+ import com.marverenic.music.IPlayerService;
+ import com.marverenic.music.JockeyApplication;
+ import com.marverenic.music.data.store.ImmutablePreferenceStore;
+@@ -65,6 +66,7 @@ public class ServicePlayerController implements PlayerController {
+     private final Prop<Integer> mDuration = new Prop<>("duration");
+     private final Prop<Integer> mMultiRepeatCount = new Prop<>("multi-repeat");
+     private final Prop<Long> mSleepTimerEndTime = new Prop<>("sleep timer");
++    private final Prop<Integer> mAudioSessionId = new Prop<>("audioSessionId");
+ 
+     private BehaviorSubject<Boolean> mShuffled;
+     private BehaviorSubject<Bitmap> mArtwork;
+@@ -200,6 +202,7 @@ public class ServicePlayerController implements PlayerController {
+         mDuration.setFunction(mBinding::getDuration);
+         mMultiRepeatCount.setFunction(mBinding::getMultiRepeatCount);
+         mSleepTimerEndTime.setFunction(mBinding::getSleepTimerEndTime);
++        mAudioSessionId.setFunction(mBinding::getAudioSessionId);
+ 
+         invalidateAll();
+     }
+@@ -213,6 +216,7 @@ public class ServicePlayerController implements PlayerController {
+         mDuration.invalidate();
+         mMultiRepeatCount.invalidate();
+         mSleepTimerEndTime.invalidate();
++        mAudioSessionId.invalidate();
+     }
+ 
+     @Override
+@@ -479,6 +483,14 @@ public class ServicePlayerController implements PlayerController {
+     }
+ 
+     @Override
++    public Observable<Integer> getAudioSessionId() {
++        ensureServiceStarted();
++        return mAudioSessionId.getObservable()
++                .filter(audioSessionId -> audioSessionId != AudioTrack.SESSION_ID_NOT_SET)
++                .distinctUntilChanged();
++    }
++
++    @Override
+     public void setMultiRepeatCount(int count) {
+         execute(() -> {
+             try {

@@ -1,1 +1,1 @@
-include ':app', ':seekarc'
+include ':app', ':seekarc', ':exoplayer-flac'
