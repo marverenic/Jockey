@@ -42,6 +42,93 @@ public class LocalMusicStore implements MusicStore {
         mAlbumLoadingState = BehaviorSubject.create(false);
         mArtistLoadingState = BehaviorSubject.create(false);
         mGenreLoadingState = BehaviorSubject.create(false);
+
+        MediaStoreUtil.waitForPermission()
+                .subscribe(permission -> bindRefreshListener(), throwable -> {
+                    Timber.e(throwable, "Failed to bind refresh listener");
+                });
+    }
+
+    private void bindRefreshListener() {
+        MediaStoreUtil.getContentObserver(mContext, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
+                .subscribe(selfChange -> refreshSongs(), throwable -> {
+                    Timber.e(throwable, "Failed to automatically refresh songs");
+                });
+
+        MediaStoreUtil.getContentObserver(mContext, MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI)
+                .subscribe(selfChange -> refreshArtists(), throwable -> {
+                    Timber.e(throwable, "Failed to automatically refresh artists");
+                });
+
+        MediaStoreUtil.getContentObserver(mContext, MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI)
+                .subscribe(selfChange -> refreshAlbums(), throwable -> {
+                    Timber.e(throwable, "Failed to automatically refresh albums");
+                });
+
+        MediaStoreUtil.getContentObserver(mContext, MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI)
+                .subscribe(selfChange -> refreshGenres(), throwable -> {
+                    Timber.e(throwable, "Failed to automatically refresh genres");
+                });
+    }
+
+    private void refreshSongs() {
+        mSongLoadingState.onNext(true);
+
+        MediaStoreUtil.promptPermission(mContext)
+                .observeOn(Schedulers.io())
+                .subscribe(granted -> {
+                    if (granted && mSongs != null) {
+                        mSongs.onNext(getAllSongs());
+                    }
+                    mSongLoadingState.onNext(false);
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to refresh songs");
+                });
+    }
+
+    private void refreshArtists() {
+        mArtistLoadingState.onNext(true);
+
+        MediaStoreUtil.promptPermission(mContext)
+                .observeOn(Schedulers.io())
+                .subscribe(granted -> {
+                    if (granted && mArtists != null) {
+                        mArtists.onNext(getAllArtists());
+                    }
+                    mArtistLoadingState.onNext(false);
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to refresh artists");
+                });
+    }
+
+    private void refreshAlbums() {
+        mAlbumLoadingState.onNext(true);
+
+        MediaStoreUtil.promptPermission(mContext)
+                .observeOn(Schedulers.io())
+                .subscribe(granted -> {
+                    if (granted && mAlbums != null) {
+                        mAlbums.onNext(getAllAlbums());
+                    }
+                    mAlbumLoadingState.onNext(false);
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to refresh albums");
+                });
+    }
+
+    private void refreshGenres() {
+        mGenreLoadingState.onNext(true);
+
+        MediaStoreUtil.promptPermission(mContext)
+                .observeOn(Schedulers.io())
+                .subscribe(granted -> {
+                    if (granted && mGenres != null) {
+                        mGenres.onNext(getAllGenres());
+                    }
+                    mGenreLoadingState.onNext(false);
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to refresh genres");
+                });
     }
 
     @Override
@@ -59,7 +146,9 @@ public class LocalMusicStore implements MusicStore {
         mAlbumLoadingState.onNext(true);
         mGenreLoadingState.onNext(true);
 
-        return MediaStoreUtil.promptPermission(mContext)
+        BehaviorSubject<Boolean> result = BehaviorSubject.create();
+
+        MediaStoreUtil.promptPermission(mContext)
                 .observeOn(Schedulers.io())
                 .map(granted -> {
                     if (granted) {
@@ -82,7 +171,10 @@ public class LocalMusicStore implements MusicStore {
                     mGenreLoadingState.onNext(false);
                     return granted;
                 })
-                .observeOn(AndroidSchedulers.mainThread());
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result);
+
+        return result.asObservable();
     }
 
     @Override

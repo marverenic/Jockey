@@ -8,10 +8,6 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/menu_library_refresh"
-        android:title="@string/action_refresh" />
-
-    <item
         android:id="@+id/menu_library_settings"
         android:title="@string/action_settings" />
 

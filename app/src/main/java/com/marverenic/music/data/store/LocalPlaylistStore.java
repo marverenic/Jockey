@@ -1,6 +1,7 @@
 package com.marverenic.music.data.store;
 
 import android.content.Context;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
 
@@ -47,6 +48,18 @@ public class LocalPlaylistStore implements PlaylistStore {
         mPlayCountStore = playCountStore;
         mPlaylistContents = new ArrayMap<>();
         mLoadingState = BehaviorSubject.create(false);
+
+        MediaStoreUtil.waitForPermission()
+                .subscribe(permission -> bindRefreshListener(), throwable -> {
+                    Timber.e(throwable, "Failed to bind refresh listener");
+                });
+    }
+
+    private void bindRefreshListener() {
+        MediaStoreUtil.getContentObserver(mContext, MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI)
+                .subscribe(selfChange -> refresh(), throwable -> {
+                    Timber.e(throwable, "Failed to automatically refresh playlists");
+                });
     }
 
     @Override
@@ -62,7 +75,9 @@ public class LocalPlaylistStore implements PlaylistStore {
 
         mLoadingState.onNext(true);
 
-        return MediaStoreUtil.promptPermission(mContext)
+        BehaviorSubject<Boolean> result = BehaviorSubject.create();
+
+        MediaStoreUtil.promptPermission(mContext)
                 .observeOn(Schedulers.io())
                 .map(granted -> {
                     if (granted && mPlaylists != null) {
@@ -72,7 +87,10 @@ public class LocalPlaylistStore implements PlaylistStore {
                     mLoadingState.onNext(false);
                     return granted;
                 })
-                .observeOn(AndroidSchedulers.mainThread());
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result);
+
+        return result;
     }
 
     @Override

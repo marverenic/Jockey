@@ -7,9 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -20,7 +18,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.marverenic.music.BuildConfig;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
@@ -40,7 +37,6 @@ import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.UriUtils;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.FABMenu;
-import com.trello.rxlifecycle.ActivityEvent;
 
 import java.io.File;
 import java.util.Collections;
@@ -50,9 +46,6 @@ import javax.inject.Inject;
 
 import rx.Observable;
 import timber.log.Timber;
-
-import static android.support.design.widget.Snackbar.LENGTH_LONG;
-import static android.support.design.widget.Snackbar.LENGTH_SHORT;
 
 public class MainActivity extends BaseLibraryActivity implements View.OnClickListener {
 
@@ -244,9 +237,6 @@ public class MainActivity extends BaseLibraryActivity implements View.OnClickLis
             case R.id.menu_library_settings:
                 startActivity(SettingsActivity.newIntent(this));
                 return true;
-            case R.id.menu_library_refresh:
-                refreshLibrary();
-                return true;
             case R.id.menu_library_search:
                 startActivity(SearchActivity.newIntent(this));
                 return true;
@@ -256,42 +246,6 @@ public class MainActivity extends BaseLibraryActivity implements View.OnClickLis
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    private void refreshLibrary() {
-        Observable<Boolean> musicStoreResult = mMusicStore.refresh();
-        Observable<Boolean> playlistStoreResult = mPlaylistStore.refresh();
-
-        Observable<Boolean> combinedResult = Observable.combineLatest(
-                musicStoreResult, playlistStoreResult, (result1, result2) -> result1 && result2);
-
-        combinedResult.take(1)
-                .compose(bindUntilEvent(ActivityEvent.DESTROY))
-                .subscribe(successful -> {
-                    if (successful) {
-                        View view = findViewById(R.id.library_pager);
-                        Snackbar.make(view, R.string.confirm_refresh_library, LENGTH_SHORT).show();
-                    } else {
-                        showPermissionSnackbar();
-                    }
-                }, throwable -> {
-                    Timber.e(throwable, "Failed to refresh library");
-                });
-    }
-
-    private void showPermissionSnackbar() {
-        View view = findViewById(R.id.library_pager);
-        Snackbar.make(view, R.string.message_refresh_library_no_permission, LENGTH_LONG)
-                .setAction(R.string.action_open_settings,
-                        v -> {
-                            Intent intent = new Intent();
-                            Uri uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
-
-                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                            intent.setData(uri);
-                            startActivity(intent);
-                        })
-                .show();
     }
 
     @Override
