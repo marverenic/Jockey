@@ -52,11 +52,15 @@ public class LocalMusicStore implements MusicStore {
 
     private void bindRefreshListener() {
         MediaStoreUtil.registerUpdateListener(mContext, new ContentObserver(null) {
-            @Override
-            public void onChange(boolean selfChange) {
-                refresh();
-            }
-        });
+                    @Override
+                    public void onChange(boolean selfChange) {
+                        refresh();
+                    }
+                },
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI);
     }
 
     @Override

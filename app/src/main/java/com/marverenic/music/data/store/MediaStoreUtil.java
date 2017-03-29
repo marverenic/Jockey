@@ -148,9 +148,11 @@ public final class MediaStoreUtil {
         return sPermissionObservable.asObservable();
     }
 
-    public static void registerUpdateListener(Context context, ContentObserver observer) {
-        context.getContentResolver()
-                .registerContentObserver(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, true, observer);
+    public static void registerUpdateListener(Context context, ContentObserver observer,
+                                              Uri... uris) {
+        for (Uri uri : uris) {
+            context.getContentResolver().registerContentObserver(uri, true, observer);
+        }
     }
 
     public static List<Song> getSongs(Context context, Uri uri, @Nullable String selection,

@@ -2,6 +2,7 @@ package com.marverenic.music.data.store;
 
 import android.content.Context;
 import android.database.ContentObserver;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
 
@@ -57,11 +58,12 @@ public class LocalPlaylistStore implements PlaylistStore {
 
     private void bindRefreshListener() {
         MediaStoreUtil.registerUpdateListener(mContext, new ContentObserver(null) {
-            @Override
-            public void onChange(boolean selfChange) {
-                refresh();
-            }
-        });
+                    @Override
+                    public void onChange(boolean selfChange) {
+                        refresh();
+                    }
+                },
+                MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI);
     }
 
     @Override
