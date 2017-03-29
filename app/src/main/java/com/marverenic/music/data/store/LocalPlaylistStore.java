@@ -57,13 +57,13 @@ public class LocalPlaylistStore implements PlaylistStore {
     }
 
     private void bindRefreshListener() {
-        MediaStoreUtil.registerUpdateListener(mContext, new ContentObserver(null) {
+        mContext.getContentResolver().registerContentObserver(
+                MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, true, new ContentObserver(null) {
                     @Override
                     public void onChange(boolean selfChange) {
                         refresh();
                     }
-                },
-                MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI);
+                });
     }
 
     @Override

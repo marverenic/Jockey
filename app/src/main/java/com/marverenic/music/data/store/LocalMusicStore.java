@@ -51,16 +51,97 @@ public class LocalMusicStore implements MusicStore {
     }
 
     private void bindRefreshListener() {
-        MediaStoreUtil.registerUpdateListener(mContext, new ContentObserver(null) {
+        mContext.getContentResolver().registerContentObserver(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, true, new ContentObserver(null) {
                     @Override
                     public void onChange(boolean selfChange) {
-                        refresh();
+                        refreshSongs();
                     }
-                },
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
-                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI);
+                });
+
+        mContext.getContentResolver().registerContentObserver(
+                MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, true, new ContentObserver(null) {
+                    @Override
+                    public void onChange(boolean selfChange) {
+                        refreshArtists();
+                    }
+                });
+
+        mContext.getContentResolver().registerContentObserver(
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, true, new ContentObserver(null) {
+                    @Override
+                    public void onChange(boolean selfChange) {
+                        refreshAlbums();
+                    }
+                });
+
+        mContext.getContentResolver().registerContentObserver(
+                MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI, true, new ContentObserver(null) {
+                    @Override
+                    public void onChange(boolean selfChange) {
+                        refreshGenres();
+                    }
+                });
+    }
+
+    private void refreshSongs() {
+        mSongLoadingState.onNext(true);
+
+        MediaStoreUtil.promptPermission(mContext)
+                .observeOn(Schedulers.io())
+                .subscribe(granted -> {
+                    if (granted && mSongs != null) {
+                        mSongs.onNext(getAllSongs());
+                    }
+                    mSongLoadingState.onNext(false);
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to refresh songs");
+                });
+    }
+
+    private void refreshArtists() {
+        mArtistLoadingState.onNext(true);
+
+        MediaStoreUtil.promptPermission(mContext)
+                .observeOn(Schedulers.io())
+                .subscribe(granted -> {
+                    if (granted && mArtists != null) {
+                        mArtists.onNext(getAllArtists());
+                    }
+                    mArtistLoadingState.onNext(false);
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to refresh artists");
+                });
+    }
+
+    private void refreshAlbums() {
+        mAlbumLoadingState.onNext(true);
+
+        MediaStoreUtil.promptPermission(mContext)
+                .observeOn(Schedulers.io())
+                .subscribe(granted -> {
+                    if (granted && mAlbums != null) {
+                        mAlbums.onNext(getAllAlbums());
+                    }
+                    mAlbumLoadingState.onNext(false);
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to refresh albums");
+                });
+    }
+
+    private void refreshGenres() {
+        mGenreLoadingState.onNext(true);
+
+        MediaStoreUtil.promptPermission(mContext)
+                .observeOn(Schedulers.io())
+                .subscribe(granted -> {
+                    if (granted && mGenres != null) {
+                        mGenres.onNext(getAllGenres());
+                    }
+                    mGenreLoadingState.onNext(false);
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to refresh genres");
+                });
     }
 
     @Override
