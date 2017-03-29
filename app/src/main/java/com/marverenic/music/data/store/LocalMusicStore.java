@@ -1,7 +1,6 @@
 package com.marverenic.music.data.store;
 
 import android.content.Context;
-import android.database.ContentObserver;
 import android.provider.MediaStore;
 
 import com.marverenic.music.model.Album;
@@ -51,36 +50,24 @@ public class LocalMusicStore implements MusicStore {
     }
 
     private void bindRefreshListener() {
-        mContext.getContentResolver().registerContentObserver(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, true, new ContentObserver(null) {
-                    @Override
-                    public void onChange(boolean selfChange) {
-                        refreshSongs();
-                    }
+        MediaStoreUtil.getContentObserver(mContext, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
+                .subscribe(selfChange -> refreshSongs(), throwable -> {
+                    Timber.e(throwable, "Failed to automatically refresh songs");
                 });
 
-        mContext.getContentResolver().registerContentObserver(
-                MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, true, new ContentObserver(null) {
-                    @Override
-                    public void onChange(boolean selfChange) {
-                        refreshArtists();
-                    }
+        MediaStoreUtil.getContentObserver(mContext, MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI)
+                .subscribe(selfChange -> refreshArtists(), throwable -> {
+                    Timber.e(throwable, "Failed to automatically refresh artists");
                 });
 
-        mContext.getContentResolver().registerContentObserver(
-                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, true, new ContentObserver(null) {
-                    @Override
-                    public void onChange(boolean selfChange) {
-                        refreshAlbums();
-                    }
+        MediaStoreUtil.getContentObserver(mContext, MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI)
+                .subscribe(selfChange -> refreshAlbums(), throwable -> {
+                    Timber.e(throwable, "Failed to automatically refresh albums");
                 });
 
-        mContext.getContentResolver().registerContentObserver(
-                MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI, true, new ContentObserver(null) {
-                    @Override
-                    public void onChange(boolean selfChange) {
-                        refreshGenres();
-                    }
+        MediaStoreUtil.getContentObserver(mContext, MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI)
+                .subscribe(selfChange -> refreshGenres(), throwable -> {
+                    Timber.e(throwable, "Failed to automatically refresh genres");
                 });
     }
 

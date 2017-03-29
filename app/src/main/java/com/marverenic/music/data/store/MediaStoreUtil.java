@@ -4,11 +4,13 @@ import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.util.ArrayMap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -28,6 +30,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
@@ -100,6 +103,14 @@ public final class MediaStoreUtil {
 
     private static BehaviorSubject<Boolean> sPermissionObservable;
 
+    private static Map<Uri, BehaviorSubject<Boolean>> sContentObservers;
+    private static Map<Uri, Integer> sSelfPendingUpdates;
+
+    static {
+        sContentObservers = new ArrayMap<>();
+        sSelfPendingUpdates = new ArrayMap<>();
+    }
+
     /**
      * This class is never instantiated
      */
@@ -145,6 +156,44 @@ public final class MediaStoreUtil {
                 });
 
         return sPermissionObservable.asObservable();
+    }
+
+    public static Observable<Boolean> getContentObserver(Context context, Uri uri) {
+        BehaviorSubject<Boolean> observer;
+
+        if (!sContentObservers.containsKey(uri)) {
+            observer = BehaviorSubject.create();
+            sContentObservers.put(uri, observer);
+            sSelfPendingUpdates.put(uri, 0);
+
+            context.getContentResolver().registerContentObserver(uri, true,
+                    new ContentObserver(null) {
+                        @Override
+                        public void onChange(boolean selfChange) {
+                            observer.onNext(selfChange);
+                        }
+                    });
+        } else {
+            observer = sContentObservers.get(uri);
+        }
+
+        return observer.filter(selfChange -> {
+            int pendingUpdates = sSelfPendingUpdates.get(uri);
+
+            if (pendingUpdates > 0) {
+                pendingUpdates--;
+                sSelfPendingUpdates.put(uri, pendingUpdates);
+                return false;
+            } else {
+                return true;
+            }
+        });
+    }
+
+    private static void ignoreSingleContentUpdate() {
+        for (Map.Entry<Uri, Integer> count : sSelfPendingUpdates.entrySet()) {
+            count.setValue(count.getValue() + 1);
+        }
     }
 
     public static List<Song> getSongs(Context context, Uri uri, @Nullable String selection,
@@ -414,6 +463,7 @@ public final class MediaStoreUtil {
     public static Playlist createPlaylist(Context context, String playlistName,
                                           @Nullable List<Song> songs) {
 
+        ignoreSingleContentUpdate();
         String name = playlistName.trim();
 
         // Add the playlist to the MediaStore
@@ -467,6 +517,8 @@ public final class MediaStoreUtil {
     }
 
     public static void deletePlaylist(Context context, Playlist playlist) {
+        ignoreSingleContentUpdate();
+
         // Remove the playlist from the MediaStore
         context.getContentResolver().delete(
                 MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
@@ -476,6 +528,8 @@ public final class MediaStoreUtil {
 
     public static void editPlaylist(Context context, Playlist playlist,
                                     @Nullable List<Song> songs) {
+        ignoreSingleContentUpdate();
+
         // Clear the playlist...
         Uri uri = MediaStore.Audio.Playlists.Members
                 .getContentUri("external", playlist.getPlaylistId());
@@ -514,6 +568,8 @@ public final class MediaStoreUtil {
     }
 
     public static void appendToPlaylist(Context context, Playlist playlist, Song song) {
+        ignoreSingleContentUpdate();
+
         Uri uri = MediaStore.Audio.Playlists.Members
                 .getContentUri("external", playlist.getPlaylistId());
         ContentResolver resolver = context.getContentResolver();
@@ -528,6 +584,8 @@ public final class MediaStoreUtil {
     }
 
     public static void appendToPlaylist(Context context, Playlist playlist, List<Song> songs) {
+        ignoreSingleContentUpdate();
+
         Uri uri = MediaStore.Audio.Playlists.Members
                 .getContentUri("external", playlist.getPlaylistId());
         ContentResolver resolver = context.getContentResolver();
