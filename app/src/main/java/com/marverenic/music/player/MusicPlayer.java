@@ -667,7 +667,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     public void skip() {
         Timber.i("Skipping song");
-        if (!mMediaPlayer.isComplete()) {
+        if (!mMediaPlayer.isComplete() && !mMediaPlayer.hasError()) {
             logPlay();
         }
 

@@ -51,6 +51,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     @Nullable
     private PlaybackEventListener mEventListener;
 
+    private boolean mHasError;
     private boolean mInvalid;
     private List<Song> mQueue;
     private int mQueueIndex;
@@ -112,6 +113,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     @Internal void onPlayerStateChanged(int playbackState) {
         boolean stateDiff = mState != ExoPlayerState.fromInt(playbackState);
         mState = ExoPlayerState.fromInt(playbackState);
+        mHasError = mHasError && (mState == ExoPlayerState.IDLE);
 
         if (stateDiff && playbackState == ExoPlayer.STATE_ENDED) {
             onCompletion();
@@ -173,6 +175,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     }
 
     @Internal void onPlayerError(ExoPlaybackException error) {
+        mHasError = true;
         mInvalid = true;
 
         if (mEventListener != null) {
@@ -396,6 +399,11 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     @Override
     public boolean isStopped() {
         return mState == ExoPlayerState.IDLE;
+    }
+
+    @Override
+    public boolean hasError() {
+        return mHasError;
     }
 
     @Override
