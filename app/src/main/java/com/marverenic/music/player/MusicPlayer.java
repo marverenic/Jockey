@@ -1185,7 +1185,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                     R.string.message_play_error_io_exception,
                     getNowPlaying().getSongName()));
         }
-        return false;
+        skip();
+        return true;
     }
 
     /**
