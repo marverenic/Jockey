@@ -176,7 +176,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         mInvalid = true;
 
         if (mEventListener != null) {
-            mEventListener.onError(error);
+            mEventListener.onError(error.getCause());
         }
     }
 
