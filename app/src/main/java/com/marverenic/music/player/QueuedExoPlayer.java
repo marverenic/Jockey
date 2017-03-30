@@ -173,6 +173,8 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     }
 
     @Internal void onPlayerError(ExoPlaybackException error) {
+        mInvalid = true;
+
         if (mEventListener != null) {
             mEventListener.onError(error);
         }
