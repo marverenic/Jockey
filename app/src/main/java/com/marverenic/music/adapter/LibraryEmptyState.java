@@ -96,7 +96,7 @@ public class LibraryEmptyState extends BasicEmptyState {
         combinedResult.take(1)
                 .subscribe(successful -> {
                     if (successful) {
-                        View container = mActivity.findViewById(R.id.list);
+                        View container = mActivity.findViewById(R.id.library_page_list);
                         Snackbar.make(container, R.string.confirm_refresh_library, LENGTH_SHORT)
                                 .show();
                     }
