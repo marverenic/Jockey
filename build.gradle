@@ -20,6 +20,12 @@ allprojects {
     }
 }
 
+ext {
+    targetSdkVersion = 25
+    buildToolsVersion = '25.0.2'
+    supportLibVersion = '25.3.1'
+}
+
 project.ext.preDexLibs = !project.hasProperty('disablePreDex')
 
 subprojects {
