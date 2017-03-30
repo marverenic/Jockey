@@ -17,7 +17,7 @@ import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.view.View;
 
-import com.android.databinding.library.baseAdapters.BR;
+import com.marverenic.music.BR;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseActivity;
@@ -146,6 +146,11 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
     }
 
     @Bindable
+    public boolean isToolbarExpanded() {
+        return mBottomSheetState == BottomSheetBehavior.STATE_COLLAPSED;
+    }
+
+    @Bindable
     public int getMiniplayerVisibility() {
         return (mBottomSheetState == BottomSheetBehavior.STATE_EXPANDED)
                 ? View.GONE
@@ -185,6 +190,7 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
                 notifyPropertyChanged(BR.mainContentVisibillity);
                 notifyPropertyChanged(BR.nowPlayingContentVisibility);
                 notifyPropertyChanged(BR.nowPlayingContentBackground);
+                notifyPropertyChanged(BR.toolbarExpanded);
 
                 if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     mNowPlayingToolbarAlpha.set(1.0f);
