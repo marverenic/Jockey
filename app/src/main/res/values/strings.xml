@@ -220,7 +220,7 @@
     <string name="uses_gson_detail">Version 2.4; distributed by Google, Inc. under an Apache
         License, Version 2.0</string>
     <string name="uses_glide_header">Glide</string>
-    <string name="uses_glide_detail">Version 3.6.1; distributed by Google, Inc. under a BSD License</string>
+    <string name="uses_glide_detail">Version 3.7.0; distributed by Google, Inc. under a BSD License</string>
     <string name="uses_vert_slider_header">VerticalSeekBar</string>
     <string name="uses_vert_slider_detail">Version 0.5.2; distributed by Haruki Hasegawa
         under an Apache License, Version 2.0</string>
