@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.widget.Toolbar;
 import android.text.TextWatcher;
@@ -102,6 +103,14 @@ public class BindingAdapters {
     public static void bindToolbarAlpha(ViewGroup toolbarContainer, float alpha) {
         Toolbar toolbar = ViewUtils.findViewByClass(toolbarContainer, Toolbar.class);
         toolbar.setAlpha(alpha);
+    }
+
+    @BindingAdapter("toolbar_expanded")
+    public static void bindToolbarExpanded(ViewGroup container, boolean expanded) {
+        if (expanded) {
+            AppBarLayout appBarLayout = ViewUtils.findViewByClass(container, AppBarLayout.class);
+            appBarLayout.setExpanded(true);
+        }
     }
 
 }

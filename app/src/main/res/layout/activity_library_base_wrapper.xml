@@ -44,6 +44,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:toolbar_alpha="@{viewModel.toolbarAlpha}"
+                app:toolbar_expanded="@{viewModel.toolbarExpanded}"
                 android:visibility="@{viewModel.nowPlayingContentVisibility}">
 
                 <fragment
