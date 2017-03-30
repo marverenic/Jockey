@@ -217,7 +217,7 @@
     <string name="uses_retrofit_detail">Version 2.0.2; distributed by Square, Inc. under an Apache
         License, Version 2.0</string>
     <string name="uses_gson_header">Gson</string>
-    <string name="uses_gson_detail">Version 2.4; distributed by Google, Inc. under an Apache
+    <string name="uses_gson_detail">Version 2.7; distributed by Google, Inc. under an Apache
         License, Version 2.0</string>
     <string name="uses_glide_header">Glide</string>
     <string name="uses_glide_detail">Version 3.7.0; distributed by Google, Inc. under a BSD License</string>

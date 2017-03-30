@@ -96,7 +96,7 @@ dependencies {
     compile 'com.google.android.exoplayer:exoplayer:r2.3.1'
 
     compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'com.google.code.gson:gson:2.4'
+    compile 'com.google.code.gson:gson:2.7'
 
     compile 'com.simplecityapps:recyclerview-fastscroll:1.0.14'
     compile 'com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:0.5.2'
