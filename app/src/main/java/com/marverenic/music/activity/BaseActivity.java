@@ -2,6 +2,7 @@ package com.marverenic.music.activity;
 
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -154,8 +155,13 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         finish();
     }
 
+    @IdRes
+    protected int getSnackbarContainerViewId() {
+        return R.id.list;
+    }
+
     protected void showSnackbar(String message) {
-        View content = findViewById(R.id.list);
+        View content = findViewById(getSnackbarContainerViewId());
         if (content == null) {
             content = findViewById(android.R.id.content);
         }

@@ -468,6 +468,8 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
     }
 
     private void showSnackbar(String message) {
-        Snackbar.make(mBinding.getRoot(), message, LENGTH_SHORT).show();
+        if (((View) mBinding.getRoot().getParent()).getVisibility() == View.VISIBLE) {
+            Snackbar.make(mBinding.getRoot(), message, LENGTH_SHORT).show();
+        }
     }
 }
