@@ -2,6 +2,7 @@ package com.marverenic.music.adapter;
 
 import android.app.Activity;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +15,14 @@ import com.marverenic.music.activity.BaseLibraryActivity;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.MeasurableAdapter;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-public class ShuffleAllSection extends HeterogeneousAdapter.SingletonSection<List<Song>> {
+public class ShuffleAllSection extends HeterogeneousAdapter.SingletonSection<List<Song>>
+        implements MeasurableAdapter {
 
     @Inject PlayerController mPlayerController;
     @Inject PreferenceStore mPrefStore;
@@ -49,6 +52,12 @@ public class ShuffleAllSection extends HeterogeneousAdapter.SingletonSection<Lis
     @Override
     public boolean showSection(HeterogeneousAdapter adapter) {
         return !get(0).isEmpty();
+    }
+
+    @Override
+    public int getViewTypeHeight(RecyclerView recyclerView, int viewType) {
+        return recyclerView.getResources().getDimensionPixelSize(R.dimen.list_height_small)
+                + recyclerView.getResources().getDimensionPixelSize(R.dimen.divider_height);
     }
 
     private class ViewHolder extends EnhancedViewHolder<List<Song>> {

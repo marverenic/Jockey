@@ -1,13 +1,15 @@
 package com.marverenic.music.adapter;
 
 import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 
 import com.marverenic.adapter.Coordinate;
 import com.marverenic.adapter.HeterogeneousAdapter;
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.MeasurableAdapter;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.SectionedAdapter;
 
 public class HeterogeneousFastScrollAdapter extends HeterogeneousAdapter
-        implements SectionedAdapter {
+        implements SectionedAdapter, MeasurableAdapter {
 
     private static final int LAST_SECTION_INDEX = -1;
     private static final int FIRST_SECTION_INDEX = -2;
@@ -74,5 +76,20 @@ public class HeterogeneousFastScrollAdapter extends HeterogeneousAdapter
         } else {
             return "";
         }
+    }
+
+    @Override
+    public int getViewTypeHeight(RecyclerView recyclerView, int viewType) {
+        for (int i = 0; i < getSectionCount(); i++) {
+            Section section = getSection(i);
+            if (section.getTypeId() == viewType) {
+                if (!(section instanceof MeasurableAdapter)) {
+                    return 0;
+                }
+
+                return ((MeasurableAdapter) section).getViewTypeHeight(recyclerView, 0);
+            }
+        }
+        return 0;
     }
 }
