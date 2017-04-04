@@ -574,11 +574,11 @@ public class ServicePlayerController implements PlayerController {
                     playerController.invalidateAll();
                 } else if (intent.getAction().equals(MusicPlayer.INFO_BROADCAST)) {
                     String error = intent.getExtras().getString(MusicPlayer.INFO_EXTRA_MESSAGE);
-                    playerController.mErrorStream.onNext(error);
+                    playerController.mInfoStream.onNext(error);
 
                 } else if (intent.getAction().equals(MusicPlayer.ERROR_BROADCAST)) {
                     String info = intent.getExtras().getString(MusicPlayer.ERROR_EXTRA_MSG);
-                    playerController.mInfoStream.onNext(info);
+                    playerController.mErrorStream.onNext(info);
                 }
             }
         }
