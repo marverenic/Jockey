@@ -11,6 +11,7 @@ import com.marverenic.music.activity.instance.AutoPlaylistEditActivity;
 import com.marverenic.music.activity.instance.GenreActivity;
 import com.marverenic.music.activity.instance.PlaylistActivity;
 import com.marverenic.music.adapter.LibraryEmptyState;
+import com.marverenic.music.adapter.ShuffleAllSection;
 import com.marverenic.music.dialog.AppendPlaylistDialogFragment;
 import com.marverenic.music.dialog.CreatePlaylistDialogFragment;
 import com.marverenic.music.dialog.PlaylistCollisionDialogFragment;
@@ -83,6 +84,8 @@ public interface JockeyGraph {
     void inject(PlaylistViewModel viewModel);
     void inject(RuleHeaderViewModel viewModel);
     void inject(RuleViewModel viewModel);
+
+    void inject(ShuffleAllSection section);
 
     void inject(LibraryEmptyState emptyState);
 

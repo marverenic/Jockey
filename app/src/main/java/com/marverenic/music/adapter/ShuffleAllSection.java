@@ -1,20 +1,40 @@
 package com.marverenic.music.adapter;
 
+import android.app.Activity;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.marverenic.adapter.EnhancedViewHolder;
 import com.marverenic.adapter.HeterogeneousAdapter;
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.activity.BaseLibraryActivity;
+import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.player.PlayerController;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class ShuffleAllSection extends HeterogeneousAdapter.SingletonSection<List<Song>> {
 
-    public ShuffleAllSection(List<Song> data) {
+    @Inject PlayerController mPlayerController;
+    @Inject PreferenceStore mPrefStore;
+
+    private Activity mActivity;
+
+    public ShuffleAllSection(Fragment fragment, List<Song> data) {
+        this(fragment.getActivity(), data);
+    }
+
+    private ShuffleAllSection(Activity activity, List<Song> data) {
         super(data);
+        mActivity = activity;
+
+        JockeyApplication.getComponent(activity).inject(this);
     }
 
     @Override
@@ -41,8 +61,19 @@ public class ShuffleAllSection extends HeterogeneousAdapter.SingletonSection<Lis
         }
 
         @Override
-        public void onUpdate(List<Song> item, int position) {
+        public void onUpdate(List<Song> songs, int position) {
+            itemView.setOnClickListener(v -> {
+                int firstSong = (int) (Math.random() * songs.size());
+                mPrefStore.setShuffle(true);
+                mPlayerController.updatePlayerPreferences(mPrefStore);
+                mPlayerController.setQueue(songs, firstSong);
+                mPlayerController.play();
 
+                if (mPrefStore.openNowPlayingOnNewQueue()
+                        && mActivity instanceof BaseLibraryActivity) {
+                    ((BaseLibraryActivity) mActivity).expandBottomSheet();
+                }
+            });
         }
     }
 }

@@ -98,7 +98,7 @@ public class SongFragment extends BaseFragment {
             mRecyclerView.setAdapter(mAdapter);
 
             mSongSection = new SongSection(this, mSongs);
-            mShuffleAllSection = new ShuffleAllSection(mSongs);
+            mShuffleAllSection = new ShuffleAllSection(this, mSongs);
             mAdapter.addSection(mShuffleAllSection);
             mAdapter.addSection(mSongSection);
             mAdapter.setEmptyState(new LibraryEmptyState(getActivity()));
