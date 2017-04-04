@@ -30,7 +30,7 @@ public class ShuffleAllSection extends HeterogeneousAdapter.SingletonSection<Lis
         this(fragment.getActivity(), data);
     }
 
-    private ShuffleAllSection(Activity activity, List<Song> data) {
+    public ShuffleAllSection(Activity activity, List<Song> data) {
         super(data);
         mActivity = activity;
 

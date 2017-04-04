@@ -21,6 +21,7 @@ import com.marverenic.music.adapter.HeaderSection;
 import com.marverenic.music.adapter.LibraryEmptyState;
 import com.marverenic.music.adapter.LoadingSingleton;
 import com.marverenic.music.adapter.RelatedArtistSection;
+import com.marverenic.music.adapter.ShuffleAllSection;
 import com.marverenic.music.adapter.SongSection;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PreferenceStore;
@@ -65,6 +66,7 @@ public class ArtistActivity extends BaseLibraryActivity {
     private ArtistBioSingleton mBioSection;
     private RelatedArtistSection mRelatedArtistSection;
     private AlbumSection mAlbumSection;
+    private ShuffleAllSection mShuffleAllSection;
     private SongSection mSongSection;
 
     private Artist mReference;
@@ -335,14 +337,17 @@ public class ArtistActivity extends BaseLibraryActivity {
             mSongs = Collections.emptyList();
         }
 
-        if (mSongSection == null) {
+        if (mSongSection == null || mShuffleAllSection == null) {
             mSongSection = new SongSection(this, mSongs);
+            mShuffleAllSection = new ShuffleAllSection(this, mSongs);
 
             mAdapter
                     .addSection(new HeaderSection(getString(R.string.header_songs)))
+                    .addSection(mShuffleAllSection)
                     .addSection(mSongSection);
         } else {
             mSongSection.setData(mSongs);
+            mShuffleAllSection.setData(mSongs);
         }
     }
 

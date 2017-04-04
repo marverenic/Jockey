@@ -11,6 +11,7 @@ import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseLibraryActivity;
 import com.marverenic.music.adapter.LibraryEmptyState;
+import com.marverenic.music.adapter.ShuffleAllSection;
 import com.marverenic.music.adapter.SongSection;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.model.Genre;
@@ -34,6 +35,7 @@ public class GenreActivity extends BaseLibraryActivity {
     private Genre reference;
     private List<Song> mSongs;
     private HeterogeneousAdapter mAdapter;
+    private ShuffleAllSection mShuffleAllSection;
     private SongSection mSongSection;
 
     public static Intent newIntent(Context context, Genre genre) {
@@ -115,11 +117,14 @@ public class GenreActivity extends BaseLibraryActivity {
             return;
         }
 
-        if (mSongSection != null) {
+        if (mSongSection != null && mShuffleAllSection != null) {
             mSongSection.setData(mSongs);
+            mShuffleAllSection.setData(mSongs);
             mAdapter.notifyDataSetChanged();
         } else {
             mSongSection = new SongSection(this, mSongs);
+            mShuffleAllSection = new ShuffleAllSection(this, mSongs);
+            mAdapter.addSection(mShuffleAllSection);
             mAdapter.addSection(mSongSection);
         }
     }
