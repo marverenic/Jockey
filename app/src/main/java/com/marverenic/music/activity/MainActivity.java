@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -253,12 +254,21 @@ public class MainActivity extends BaseLibraryActivity implements View.OnClickLis
         if (v.getTag() != null) {
             if (v.getTag().equals("fab-" + getString(R.string.playlist))) {
                 new CreatePlaylistDialogFragment.Builder(getSupportFragmentManager())
-                        .showSnackbarIn(R.id.list)
+                        .showSnackbarIn(R.id.library_pager)
                         .show(TAG_MAKE_PLAYLIST);
             } else if (v.getTag().equals("fab-" + getString(R.string.playlist_auto))) {
                 startActivity(AutoPlaylistEditActivity.newIntent(this));
             }
         }
+    }
+
+    @Override
+    protected void showSnackbar(String message) {
+        View content = findViewById(R.id.library_pager);
+        if (content == null) {
+            content = findViewById(android.R.id.content);
+        }
+        Snackbar.make(content, message, Snackbar.LENGTH_LONG).show();
     }
 
     public class PagerAdapter extends FragmentPagerAdapter
