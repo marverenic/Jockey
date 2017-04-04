@@ -102,6 +102,18 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
                     Timber.e(throwable, "Failed to update sleep timer end timestamp");
                 });
 
+        mPlayerController.getInfo()
+                .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .subscribe(this::showSnackbar, throwable -> {
+                    Timber.e(throwable, "Failed to display info message");
+                });
+
+        mPlayerController.getError()
+                .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .subscribe(this::showSnackbar, throwable -> {
+                    Timber.e(throwable, "Failed to display error message");
+                });
+
         return mBinding.getRoot();
     }
 
