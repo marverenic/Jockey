@@ -323,7 +323,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         mQueueIndex++;
         mQueueIndex %= mQueue.size();
 
-        if (mRepeatAll) {
+        if (mRepeatAll || mInvalid) {
             prepare(true, true);
         } else {
             mExoPlayer.seekTo(mQueueIndex, 0);
@@ -339,7 +339,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
             mQueueIndex += mQueue.size();
         }
 
-        if (mRepeatAll) {
+        if (mRepeatAll || mInvalid) {
             prepare(true, true);
         } else {
             mExoPlayer.seekTo(mQueueIndex, 0);
