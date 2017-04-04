@@ -95,6 +95,7 @@
     <string name="action_discard_changes">Discard changes</string>
     <string name="action_edit_playlist_rules">Edit filters</string>
     <string name="action_open_in_last_fm">Last.fm</string>
+    <string name="action_shuffle_all">Shuffle all</string>
 
     <!-- Confirmation messages -->
     <string name="confirm_disable_shuffle">Disabled shuffle</string>

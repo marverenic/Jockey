@@ -12,6 +12,7 @@ import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.adapter.HeterogeneousFastScrollAdapter;
 import com.marverenic.music.adapter.LibraryEmptyState;
+import com.marverenic.music.adapter.ShuffleAllSection;
 import com.marverenic.music.adapter.SongSection;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.model.Song;
@@ -31,6 +32,7 @@ public class SongFragment extends BaseFragment {
 
     private FastScrollRecyclerView mRecyclerView;
     private HeterogeneousAdapter mAdapter;
+    private ShuffleAllSection mShuffleAllSection;
     private SongSection mSongSection;
     private List<Song> mSongs;
 
@@ -86,8 +88,9 @@ public class SongFragment extends BaseFragment {
             return;
         }
 
-        if (mSongSection != null) {
+        if (mSongSection != null && mShuffleAllSection != null) {
             mSongSection.setData(mSongs);
+            mShuffleAllSection.setData(mSongs);
             mAdapter.notifyDataSetChanged();
         } else {
             mAdapter = new HeterogeneousFastScrollAdapter();
@@ -95,6 +98,8 @@ public class SongFragment extends BaseFragment {
             mRecyclerView.setAdapter(mAdapter);
 
             mSongSection = new SongSection(this, mSongs);
+            mShuffleAllSection = new ShuffleAllSection(mSongs);
+            mAdapter.addSection(mShuffleAllSection);
             mAdapter.addSection(mSongSection);
             mAdapter.setEmptyState(new LibraryEmptyState(getActivity()));
         }
