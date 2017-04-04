@@ -84,7 +84,7 @@ dependencies {
     testCompile 'org.robolectric:robolectric:3.1.4'
     testCompile 'org.robolectric:shadows-support-v4:3.1.4'
 
-    compile 'com.marverenic.heterogeneousadapter:heterogeneousadapter:1.0'
+    compile 'com.marverenic.heterogeneousadapter:heterogeneousadapter:1.1'
 
     compile "com.android.support:appcompat-v7:$rootProject.supportLibVersion"
     compile "com.android.support:design:$rootProject.supportLibVersion"
