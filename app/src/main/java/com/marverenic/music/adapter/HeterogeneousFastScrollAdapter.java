@@ -30,16 +30,33 @@ public class HeterogeneousFastScrollAdapter extends HeterogeneousAdapter
             use the adjacent section name instead
          */
         int walk = -1;
-        while (!(section instanceof SectionedAdapter) && mSectionCoordinate.getSection() + walk >= 0
+        while (!(section instanceof SectionedAdapter)
+                && mSectionCoordinate.getSection() + walk >= 0
                 && mSectionCoordinate.getSection() + walk < getSectionCount()) {
 
             section = getSection(mSectionCoordinate.getSection() + walk);
             if (walk > 0) {
-                mSectionCoordinate.setItemIndex(FIRST_SECTION_INDEX);
+                mSectionCoordinate.setItemIndex(LAST_SECTION_INDEX);
                 walk = -(walk + 1);
             } else {
-                mSectionCoordinate.setItemIndex(LAST_SECTION_INDEX);
+                mSectionCoordinate.setItemIndex(FIRST_SECTION_INDEX);
                 walk = -(walk - 1);
+            }
+        }
+
+        if (mSectionCoordinate.getSection() + walk >= 0) {
+            while (!(section instanceof SectionedAdapter)
+                    && mSectionCoordinate.getSection() + walk >= 0) {
+                mSectionCoordinate.setItemIndex(LAST_SECTION_INDEX);
+                walk--;
+                section = getSection(mSectionCoordinate.getSection() + walk);
+            }
+        } else if (mSectionCoordinate.getSection() + walk < getSectionCount()) {
+            while (!(section instanceof SectionedAdapter)
+                    && mSectionCoordinate.getSection() + walk < getSectionCount()) {
+                mSectionCoordinate.setItemIndex(FIRST_SECTION_INDEX);
+                walk++;
+                section = getSection(mSectionCoordinate.getSection() + walk);
             }
         }
 
