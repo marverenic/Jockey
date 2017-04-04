@@ -178,6 +178,11 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         mHasError = true;
         mInvalid = true;
 
+        if (mExoPlayer.getCurrentPosition() >= mExoPlayer.getDuration()
+                && mExoPlayer.getDuration() > 0) {
+            mQueueIndex = (mQueueIndex + 1) % mQueue.size();
+        }
+
         if (mEventListener != null) {
             mEventListener.onError(error.getCause());
         }
