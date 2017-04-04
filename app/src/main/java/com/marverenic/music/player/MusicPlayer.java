@@ -28,6 +28,7 @@ import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.data.store.RemotePreferenceStore;
 import com.marverenic.music.data.store.SharedPreferenceStore;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.utils.Internal;
 import com.marverenic.music.utils.Util;
 
 import java.io.File;
@@ -189,6 +190,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     private boolean mResumeOnFocusGain = false;
 
+    private boolean mResumeOnHeadphonesConnect;
+
     /**
      * The album artwork of the current song
      */
@@ -258,6 +261,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
         initEqualizer(preferenceStore);
         startSleepTimer(mRemotePreferenceStore.getSleepTimerEndTime());
+
+        mResumeOnHeadphonesConnect = preferenceStore.resumeOnHeadphonesConnect();
     }
 
     /**
@@ -270,6 +275,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             setShuffle(preferencesStore.isShuffled());
         }
 
+        mResumeOnHeadphonesConnect = preferencesStore.resumeOnHeadphonesConnect();
         setRepeat(preferencesStore.getRepeatMode());
         initEqualizer(preferencesStore);
     }
@@ -512,6 +518,11 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         }
         updateNowPlaying();
         updateUi();
+    }
+
+    @Internal boolean shouldResumeOnHeadphonesConnect() {
+        AudioManager manager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+        return mResumeOnHeadphonesConnect && (mFocused || !manager.isMusicActive());
     }
 
     /**
@@ -1352,17 +1363,24 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (!mInstance.isPlaying()) {
-                return;
-            }
+            Timber.i("onReceive: %s", intent);
 
-            boolean unplugged = ACTION_HEADSET_PLUG.equals(intent.getAction())
-                    && intent.getIntExtra("state", -1) == 0;
+            boolean plugged, unplugged;
+
+            if (ACTION_HEADSET_PLUG.equals(intent.getAction())) {
+                unplugged = intent.getIntExtra("state", -1) == 0;
+                plugged = intent.getIntExtra("state", -1) == 1;
+            } else {
+                unplugged = plugged = false;
+            }
 
             boolean becomingNoisy = ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction());
 
             if (unplugged || becomingNoisy) {
                 mInstance.pause();
+                mInstance.updateUi();
+            } else if (plugged && mInstance.shouldResumeOnHeadphonesConnect()) {
+                mInstance.play();
                 mInstance.updateUi();
             }
         }

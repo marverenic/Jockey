@@ -141,6 +141,11 @@ public class SharedPreferenceStore implements PreferenceStore {
     }
 
     @Override
+    public boolean resumeOnHeadphonesConnect() {
+        return true;
+    }
+
+    @Override
     public boolean isShuffled() {
         return getBoolean(R.string.pref_key_shuffle, false);
     }

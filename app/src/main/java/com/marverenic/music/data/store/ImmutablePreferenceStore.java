@@ -159,6 +159,11 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcel
     }
 
     @Override
+    public boolean resumeOnHeadphonesConnect() {
+        return true;
+    }
+
+    @Override
     public boolean isShuffled() {
         return mShuffled;
     }
