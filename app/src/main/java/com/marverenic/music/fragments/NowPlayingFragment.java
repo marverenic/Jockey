@@ -102,6 +102,18 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
                     Timber.e(throwable, "Failed to update sleep timer end timestamp");
                 });
 
+        mPlayerController.getInfo()
+                .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .subscribe(this::showSnackbar, throwable -> {
+                    Timber.e(throwable, "Failed to display info message");
+                });
+
+        mPlayerController.getError()
+                .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .subscribe(this::showSnackbar, throwable -> {
+                    Timber.e(throwable, "Failed to display error message");
+                });
+
         return mBinding.getRoot();
     }
 
@@ -456,6 +468,8 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
     }
 
     private void showSnackbar(String message) {
-        Snackbar.make(mBinding.getRoot(), message, LENGTH_SHORT).show();
+        if (((View) mBinding.getRoot().getParent()).getVisibility() == View.VISIBLE) {
+            Snackbar.make(mBinding.getRoot(), message, LENGTH_SHORT).show();
+        }
     }
 }

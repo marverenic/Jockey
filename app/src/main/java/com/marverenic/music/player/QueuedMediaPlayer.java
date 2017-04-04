@@ -131,6 +131,12 @@ public interface QueuedMediaPlayer {
     boolean isStopped();
 
     /**
+     * Returns whether or not the player is currently in an error state
+     * @return {@code true} if the player currently has an error, {@code false} otherwise
+     */
+    boolean hasError();
+
+    /**
      * Sets the output volume of music playback
      * @param volume The new volume as a decimal number between {@code 0.0f} (silent)
      *               and {@code 1.0f} (loudest – default)

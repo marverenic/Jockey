@@ -77,6 +77,13 @@ public abstract class BaseLibraryActivity extends BaseActivity {
         }
     }
 
+    @Override
+    protected void showSnackbar(String message) {
+        if (mBinding.libraryBaseWrapperContainer.getVisibility() == View.VISIBLE) {
+            super.showSnackbar(message);
+        }
+    }
+
     @LayoutRes
     protected abstract int getContentLayoutResource();
 

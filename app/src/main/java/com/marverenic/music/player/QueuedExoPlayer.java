@@ -51,6 +51,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     @Nullable
     private PlaybackEventListener mEventListener;
 
+    private boolean mHasError;
     private boolean mInvalid;
     private List<Song> mQueue;
     private int mQueueIndex;
@@ -112,6 +113,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     @Internal void onPlayerStateChanged(int playbackState) {
         boolean stateDiff = mState != ExoPlayerState.fromInt(playbackState);
         mState = ExoPlayerState.fromInt(playbackState);
+        mHasError = mHasError && (mState == ExoPlayerState.IDLE);
 
         if (stateDiff && playbackState == ExoPlayer.STATE_ENDED) {
             onCompletion();
@@ -173,8 +175,16 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     }
 
     @Internal void onPlayerError(ExoPlaybackException error) {
+        mHasError = true;
+        mInvalid = true;
+
+        if (mExoPlayer.getCurrentPosition() >= mExoPlayer.getDuration()
+                && mExoPlayer.getDuration() > 0) {
+            mQueueIndex = (mQueueIndex + 1) % mQueue.size();
+        }
+
         if (mEventListener != null) {
-            mEventListener.onError(error);
+            mEventListener.onError(error.getCause());
         }
     }
 
@@ -313,7 +323,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         mQueueIndex++;
         mQueueIndex %= mQueue.size();
 
-        if (mRepeatAll) {
+        if (mRepeatAll || mInvalid) {
             prepare(true, true);
         } else {
             mExoPlayer.seekTo(mQueueIndex, 0);
@@ -329,7 +339,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
             mQueueIndex += mQueue.size();
         }
 
-        if (mRepeatAll) {
+        if (mRepeatAll || mInvalid) {
             prepare(true, true);
         } else {
             mExoPlayer.seekTo(mQueueIndex, 0);
@@ -394,6 +404,11 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     @Override
     public boolean isStopped() {
         return mState == ExoPlayerState.IDLE;
+    }
+
+    @Override
+    public boolean hasError() {
+        return mHasError;
     }
 
     @Override

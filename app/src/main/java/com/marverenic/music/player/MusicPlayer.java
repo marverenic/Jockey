@@ -667,7 +667,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     public void skip() {
         Timber.i("Skipping song");
-        if (!mMediaPlayer.isComplete()) {
+        if (!mMediaPlayer.isComplete() && !mMediaPlayer.hasError()) {
             logPlay();
         }
 
@@ -1176,16 +1176,15 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     @Override
     public boolean onError(Throwable error) {
         Timber.i(error, "Sending error message to UI...");
-        if (error instanceof FileNotFoundException) {
-            postError(mContext.getString(
-                    R.string.message_play_error_not_found,
-                    getNowPlaying().getSongName()));
+        postError(mContext.getString(
+                R.string.message_play_error_io_exception,
+                getNowPlaying().getSongName()));
+        if (mQueue.size() > 1) {
+            skip();
         } else {
-            postError(mContext.getString(
-                    R.string.message_play_error_io_exception,
-                    getNowPlaying().getSongName()));
+            stop();
         }
-        return false;
+        return true;
     }
 
     /**

@@ -253,12 +253,17 @@ public class MainActivity extends BaseLibraryActivity implements View.OnClickLis
         if (v.getTag() != null) {
             if (v.getTag().equals("fab-" + getString(R.string.playlist))) {
                 new CreatePlaylistDialogFragment.Builder(getSupportFragmentManager())
-                        .showSnackbarIn(R.id.list)
+                        .showSnackbarIn(R.id.library_pager)
                         .show(TAG_MAKE_PLAYLIST);
             } else if (v.getTag().equals("fab-" + getString(R.string.playlist_auto))) {
                 startActivity(AutoPlaylistEditActivity.newIntent(this));
             }
         }
+    }
+
+    @Override
+    protected int getSnackbarContainerViewId() {
+        return R.id.library_pager;
     }
 
     public class PagerAdapter extends FragmentPagerAdapter
