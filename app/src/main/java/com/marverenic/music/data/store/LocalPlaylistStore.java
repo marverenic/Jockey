@@ -261,7 +261,8 @@ public class LocalPlaylistStore implements PlaylistStore {
     public void editPlaylist(Playlist playlist, List<Song> newSongs) {
         MediaStoreUtil.editPlaylist(mContext, playlist, newSongs);
         if (mPlaylistContents.containsKey(playlist)) {
-            mPlaylistContents.get(playlist).onNext(new ArrayList<>(newSongs));
+            mPlaylistContents.get(playlist).onNext(
+                    Collections.unmodifiableList(new ArrayList<>(newSongs)));
         }
     }
 
