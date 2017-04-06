@@ -295,7 +295,7 @@ public final class MediaStoreUtil {
         return Collections.unmodifiableList(playlists);
     }
 
-    public static List<Playlist> getPlaylists(Context context, @Nullable String selection,
+    private static List<Playlist> getPlaylists(Context context, @Nullable String selection,
                                               @Nullable String[] selectionArgs) {
 
         Cursor cur = context.getContentResolver().query(
@@ -310,10 +310,10 @@ public final class MediaStoreUtil {
         Collections.sort(playlists);
         cur.close();
 
-        return Collections.unmodifiableList(playlists);
+        return playlists;
     }
 
-    public static List<AutoPlaylist> getAutoPlaylists(Context context) {
+    private static List<AutoPlaylist> getAutoPlaylists(Context context) {
         List<AutoPlaylist> autoPlaylists = new ArrayList<>();
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(AutoPlaylistRule.class, new AutoPlaylistRule.RuleTypeAdapter())
@@ -336,7 +336,7 @@ public final class MediaStoreUtil {
         }
 
         Collections.sort(autoPlaylists);
-        return Collections.unmodifiableList(autoPlaylists);
+        return autoPlaylists;
     }
 
     private static AutoPlaylist readAutoPlaylist(Gson gson, String path) throws IOException {
