@@ -495,6 +495,7 @@ public final class MediaStoreUtil {
 
         // If we have a list of songs, associate it with the playlist
         if (songs != null) {
+            ignoreSingleContentUpdate();
             ContentValues[] values = new ContentValues[songs.size()];
 
             for (int i = 0; i < songs.size(); i++) {
