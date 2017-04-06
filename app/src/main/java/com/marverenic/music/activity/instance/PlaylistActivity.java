@@ -208,7 +208,7 @@ public class PlaylistActivity extends BaseLibraryActivity
         }
 
         mPlayCountStore.refresh()
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
                 .map(ignoredValue -> {
                     if (sortComparator == null) {
                         Collections.sort(mSongs);
