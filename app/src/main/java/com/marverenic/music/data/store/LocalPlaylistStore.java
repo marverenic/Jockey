@@ -143,7 +143,7 @@ public class LocalPlaylistStore implements PlaylistStore {
             mPlaylistContents.put(playlist, subject);
         }
 
-        return subject.asObservable();
+        return subject.asObservable().observeOn(AndroidSchedulers.mainThread());
     }
 
     private Observable<List<Song>> getAutoPlaylistSongs(AutoPlaylist playlist) {
