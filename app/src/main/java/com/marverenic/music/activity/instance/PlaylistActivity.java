@@ -68,6 +68,7 @@ public class PlaylistActivity extends BaseLibraryActivity
 
         mPlaylistStore.getSongs(mReference)
                 .compose(bindToLifecycle())
+                .map(ArrayList::new)
                 .subscribe(
                         songs -> {
                             mSongs = songs;
