@@ -538,6 +538,8 @@ public final class MediaStoreUtil {
         resolver.delete(uri, null, null);
 
         if (songs != null) {
+            ignoreSingleContentUpdate();
+
             // ... Then add all of the songs to it
             ContentValues[] values = new ContentValues[songs.size()];
             for (int i = 0; i < songs.size(); i++) {
