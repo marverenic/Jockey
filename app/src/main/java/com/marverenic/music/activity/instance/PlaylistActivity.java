@@ -222,7 +222,6 @@ public class PlaylistActivity extends BaseLibraryActivity
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         ignoredValue -> {
-                            mAdapter.notifyDataSetChanged();
                             showUndoSortSnackbar(result, unsortedData);
                         }, throwable -> {
                             Timber.e(throwable, "onMenuItemClick: Failed to sort playlist");
