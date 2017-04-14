@@ -176,7 +176,7 @@ public class PlaylistActivity extends BaseLibraryActivity
                 result = getResources().getString(R.string.message_sorted_playlist_random);
                 break;
             case R.id.menu_sort_name:
-                sortComparator = null;
+                sortComparator = Song::compareTo;
                 result = getResources().getString(R.string.message_sorted_playlist_name);
                 break;
             case R.id.menu_sort_artist:
@@ -211,7 +211,7 @@ public class PlaylistActivity extends BaseLibraryActivity
                 .subscribeOn(Schedulers.io())
                 .map(ignoredValue -> {
                     if (sortComparator == null) {
-                        Collections.sort(mSongs);
+                        Collections.shuffle(mSongs);
                     } else {
                         Collections.sort(mSongs, sortComparator);
                     }
