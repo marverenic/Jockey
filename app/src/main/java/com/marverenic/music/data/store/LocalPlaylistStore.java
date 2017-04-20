@@ -139,11 +139,14 @@ public class LocalPlaylistStore implements PlaylistStore {
         if (mPlaylistContents.containsKey(playlist)) {
             subject = mPlaylistContents.get(playlist);
         } else {
-            subject = BehaviorSubject.create(MediaStoreUtil.getPlaylistSongs(mContext, playlist));
+            subject = BehaviorSubject.create();
             mPlaylistContents.put(playlist, subject);
+
+            Observable.fromCallable(() -> MediaStoreUtil.getPlaylistSongs(mContext, playlist))
+                    .subscribe(subject::onNext, subject::onError);
         }
 
-        return subject.asObservable().observeOn(AndroidSchedulers.mainThread());
+        return subject.asObservable();
     }
 
     private Observable<List<Song>> getAutoPlaylistSongs(AutoPlaylist playlist) {
@@ -156,17 +159,18 @@ public class LocalPlaylistStore implements PlaylistStore {
             mPlaylistContents.put(playlist, subject);
 
             playlist.generatePlaylist(mMusicStore, this, mPlayCountStore)
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(subject::onNext, subject::onError);
 
             subject.observeOn(Schedulers.io())
                     .subscribe(contents -> {
-                        editPlaylist(playlist, contents);
+                        MediaStoreUtil.editPlaylist(mContext, playlist, contents);
                     }, throwable -> {
                         Timber.e(throwable, "Failed to save playlist contents");
                     });
         }
 
-        return subject.asObservable().observeOn(AndroidSchedulers.mainThread());
+        return subject.asObservable();
     }
 
     @Override

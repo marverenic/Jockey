@@ -64,8 +64,10 @@ public class PlaylistActivity extends BaseLibraryActivity
         super.onCreate(savedInstanceState);
         JockeyApplication.getComponent(this).inject(this);
 
-        mReference = getIntent().getParcelableExtra(PLAYLIST_EXTRA);
+        mRecyclerView = (RecyclerView) findViewById(R.id.list);
+        setupRecyclerView();
 
+        mReference = getIntent().getParcelableExtra(PLAYLIST_EXTRA);
         mPlaylistStore.getSongs(mReference)
                 .compose(bindToLifecycle())
                 .map(ArrayList::new)
@@ -78,10 +80,6 @@ public class PlaylistActivity extends BaseLibraryActivity
                         });
 
         getSupportActionBar().setTitle(mReference.getPlaylistName());
-
-        mRecyclerView = (RecyclerView) findViewById(R.id.list);
-        setupRecyclerView();
-        setupAdapter();
     }
 
     @Override
