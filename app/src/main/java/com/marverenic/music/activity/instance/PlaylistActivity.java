@@ -207,6 +207,7 @@ public class PlaylistActivity extends BaseLibraryActivity
 
         mPlayCountStore.refresh()
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .map(ignoredValue -> {
                     if (sortComparator == null) {
                         Collections.shuffle(mSongs);
@@ -217,7 +218,6 @@ public class PlaylistActivity extends BaseLibraryActivity
                     mPlaylistStore.editPlaylist(mReference, mSongs);
                     return ignoredValue;
                 })
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         ignoredValue -> {
                             mAdapter.notifyDataSetChanged();
