@@ -497,7 +497,6 @@ public final class MediaStoreUtil {
 
         // If we have a list of songs, associate it with the playlist
         if (songs != null) {
-            ignoreSingleContentUpdate();
             ContentValues[] values = new ContentValues[songs.size()];
 
             for (int i = 0; i < songs.size(); i++) {
@@ -512,7 +511,10 @@ public final class MediaStoreUtil {
                     .getContentUri("external", playlist.getPlaylistId());
             ContentResolver resolver = context.getContentResolver();
 
+            ignoreSingleContentUpdate();
             resolver.bulkInsert(uri, values);
+
+            ignoreSingleContentUpdate();
             resolver.notifyChange(Uri.parse("content://media"), null);
         }
 
@@ -540,8 +542,6 @@ public final class MediaStoreUtil {
         resolver.delete(uri, null, null);
 
         if (songs != null) {
-            ignoreSingleContentUpdate();
-
             // ... Then add all of the songs to it
             ContentValues[] values = new ContentValues[songs.size()];
             for (int i = 0; i < songs.size(); i++) {
@@ -551,7 +551,11 @@ public final class MediaStoreUtil {
                         MediaStore.Audio.Playlists.Members.AUDIO_ID,
                         songs.get(i).getSongId());
             }
+
+            ignoreSingleContentUpdate();
             resolver.bulkInsert(uri, values);
+
+            ignoreSingleContentUpdate();
             resolver.notifyChange(Uri.parse("content://media"), null);
         }
     }
@@ -573,8 +577,6 @@ public final class MediaStoreUtil {
     }
 
     public static void appendToPlaylist(Context context, Playlist playlist, Song song) {
-        ignoreSingleContentUpdate();
-
         Uri uri = MediaStore.Audio.Playlists.Members
                 .getContentUri("external", playlist.getPlaylistId());
         ContentResolver resolver = context.getContentResolver();
@@ -584,13 +586,14 @@ public final class MediaStoreUtil {
                 getPlaylistSize(context, playlist.getPlaylistId()));
         values.put(MediaStore.Audio.Playlists.Members.AUDIO_ID, song.getSongId());
 
+        ignoreSingleContentUpdate();
         resolver.insert(uri, values);
+
+        ignoreSingleContentUpdate();
         resolver.notifyChange(Uri.parse("content://media"), null);
     }
 
     public static void appendToPlaylist(Context context, Playlist playlist, List<Song> songs) {
-        ignoreSingleContentUpdate();
-
         Uri uri = MediaStore.Audio.Playlists.Members
                 .getContentUri("external", playlist.getPlaylistId());
         ContentResolver resolver = context.getContentResolver();
@@ -606,7 +609,10 @@ public final class MediaStoreUtil {
                     songs.get(i).getSongId());
         }
 
+        ignoreSingleContentUpdate();
         resolver.bulkInsert(uri, values);
+
+        ignoreSingleContentUpdate();
         resolver.notifyChange(Uri.parse("content://media"), null);
     }
 
