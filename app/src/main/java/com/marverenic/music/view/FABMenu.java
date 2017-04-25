@@ -201,17 +201,22 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
         Animation fabAnim = AnimationUtils.loadAnimation(getContext(), R.anim.fab_out);
         fabAnim.setDuration(300);
         fabAnim.setInterpolator(getContext(), android.R.interpolator.accelerate_quint);
-
-        startAnimation(fabAnim);
-
-        // Make sure to hide the FAB after the animation finishes and reset its rotation
-        postDelayed(new Runnable() {
+        fabAnim.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void run() {
+            public void onAnimationStart(Animation animation) {}
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                // Make sure to hide the FAB after the animation finishes and reset its rotation
                 setVisibility(View.GONE);
                 setRotation(0f);
             }
-        }, 300);
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+        });
+
+        startAnimation(fabAnim);
     }
 
     public void showChildren() {
