@@ -73,8 +73,10 @@ public class PlaylistActivity extends BaseLibraryActivity
                 .map(ArrayList::new)
                 .subscribe(
                         songs -> {
-                            mSongs = songs;
-                            setupAdapter();
+                            if (mSongs == null || !mSongs.equals(songs)) {
+                                mSongs = songs;
+                                setupAdapter();
+                            }
                         }, throwable -> {
                             Timber.e(throwable, "Failed to get playlist contents");
                         });
