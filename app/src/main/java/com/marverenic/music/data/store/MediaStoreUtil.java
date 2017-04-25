@@ -146,7 +146,9 @@ public final class MediaStoreUtil {
         }
 
         if (hasPermission(context)) {
-            sPermissionObservable.onNext(true);
+            if (!sPermissionObservable.hasValue() || !sPermissionObservable.getValue()) {
+                sPermissionObservable.onNext(true);
+            }
             return sPermissionObservable;
         }
 
