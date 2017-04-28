@@ -36,6 +36,7 @@ import java.util.List;
  */
 public class GestureView extends FrameLayout {
 
+    private static final int MIN_RELEASE_THRESHOLD_DP = 16;
     private static final int ACTIVATION_THRESHOLD_DP = 96;
     private static final int INDICATOR_SIZE_DP = 36;
     private static final int DEFAULT_COLOR = Color.BLACK;
@@ -55,6 +56,7 @@ public class GestureView extends FrameLayout {
     private List<GestureOverlay> mAnimatingOverlays;
     private List<GestureOverlay> mOverlayPool;
 
+    private int mMinReleaseThreshold;
     private int mIndicatorSize;
     private int mActivationThreshold;
 
@@ -73,6 +75,7 @@ public class GestureView extends FrameLayout {
         mOverlayPool = new ArrayList<>();
 
         float densityMultiplier = getResources().getDisplayMetrics().density;
+        mMinReleaseThreshold = (int) (MIN_RELEASE_THRESHOLD_DP * densityMultiplier);
         mIndicatorSize = (int) (INDICATOR_SIZE_DP * densityMultiplier);
         mActivationThreshold = (int) (ACTIVATION_THRESHOLD_DP * densityMultiplier);
 
@@ -150,21 +153,35 @@ public class GestureView extends FrameLayout {
                 return true;
             }
         } else if (event.getAction() == MotionEvent.ACTION_UP) {
-            mActiveOverlay.completeGesture();
-            mAnimatingOverlays.add(mActiveOverlay);
-            mActiveOverlay = null;
-            invalidate();
+            if (mActiveOverlay != null) {
+                mActiveOverlay.completeGesture();
+                mAnimatingOverlays.add(mActiveOverlay);
+                mActiveOverlay = null;
+                invalidate();
+            }
             return true;
         } else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
-            mActiveOverlay.cancelGesture();
-            mAnimatingOverlays.add(mActiveOverlay);
-            mActiveOverlay = null;
-            invalidate();
+            if (mActiveOverlay != null) {
+                mActiveOverlay.cancelGesture();
+                mAnimatingOverlays.add(mActiveOverlay);
+                mActiveOverlay = null;
+                invalidate();
+            }
             return false;
         } else if (mActiveOverlay != null) {
             mActiveOverlay.updateGesturePosition((int) event.getX(), (int) event.getY());
-            invalidate();
-            return true;
+            if (mActiveOverlay.isGestureVertical()) {
+                // Abort gesture and stop intercepting touch events from parent
+                mActiveOverlay.cancelGesture();
+                mAnimatingOverlays.add(mActiveOverlay);
+                mActiveOverlay = null;
+                invalidate();
+                requestDisallowInterceptTouchEvent(false);
+                return false;
+            } else {
+                invalidate();
+                return true;
+            }
         }
 
         return false;
@@ -205,6 +222,7 @@ public class GestureView extends FrameLayout {
         private long mGestureStartTime;
         private boolean mPreformingTap;
         private boolean mAbortedTap;
+        private boolean mConfirmedGesture;
         private int mAlpha;
 
         public GestureOverlay() {
@@ -222,6 +240,7 @@ public class GestureView extends FrameLayout {
             mOverlayEdge.set(mOverlayOrigin.x, mOverlayOrigin.y);
 
             mGestureStartTime = System.currentTimeMillis();
+            mConfirmedGesture = false;
             mPreformingTap = false;
             mAbortedTap = false;
             mAlpha = 255;
@@ -237,6 +256,21 @@ public class GestureView extends FrameLayout {
 
         public boolean isVisible() {
             return mAlpha > 0;
+        }
+
+        public boolean isGestureVertical() {
+            int dY = Math.abs(mOverlayEdge.y - mOverlayOrigin.y);
+            int dX = Math.abs(mOverlayEdge.x - mOverlayOrigin.x);
+
+            if (dY < mMinReleaseThreshold && dX < mMinReleaseThreshold) {
+                mConfirmedGesture = false;
+                return false;
+            } else if (mConfirmedGesture) {
+                return false;
+            } else {
+                mConfirmedGesture = (dY > 2 * dX);
+                return mConfirmedGesture;
+            }
         }
 
         /**
