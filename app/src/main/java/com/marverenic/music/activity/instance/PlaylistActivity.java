@@ -64,23 +64,24 @@ public class PlaylistActivity extends BaseLibraryActivity
         super.onCreate(savedInstanceState);
         JockeyApplication.getComponent(this).inject(this);
 
-        mReference = getIntent().getParcelableExtra(PLAYLIST_EXTRA);
+        mRecyclerView = (RecyclerView) findViewById(R.id.list);
+        setupRecyclerView();
 
+        mReference = getIntent().getParcelableExtra(PLAYLIST_EXTRA);
         mPlaylistStore.getSongs(mReference)
                 .compose(bindToLifecycle())
+                .map(ArrayList::new)
                 .subscribe(
                         songs -> {
-                            mSongs = songs;
-                            setupAdapter();
+                            if (mSongs == null || !mSongs.equals(songs)) {
+                                mSongs = songs;
+                                setupAdapter();
+                            }
                         }, throwable -> {
                             Timber.e(throwable, "Failed to get playlist contents");
                         });
 
         getSupportActionBar().setTitle(mReference.getPlaylistName());
-
-        mRecyclerView = (RecyclerView) findViewById(R.id.list);
-        setupRecyclerView();
-        setupAdapter();
     }
 
     @Override
@@ -175,7 +176,7 @@ public class PlaylistActivity extends BaseLibraryActivity
                 result = getResources().getString(R.string.message_sorted_playlist_random);
                 break;
             case R.id.menu_sort_name:
-                sortComparator = null;
+                sortComparator = Song::compareTo;
                 result = getResources().getString(R.string.message_sorted_playlist_name);
                 break;
             case R.id.menu_sort_artist:
@@ -207,10 +208,11 @@ public class PlaylistActivity extends BaseLibraryActivity
         }
 
         mPlayCountStore.refresh()
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .map(ignoredValue -> {
                     if (sortComparator == null) {
-                        Collections.sort(mSongs);
+                        Collections.shuffle(mSongs);
                     } else {
                         Collections.sort(mSongs, sortComparator);
                     }
@@ -218,7 +220,6 @@ public class PlaylistActivity extends BaseLibraryActivity
                     mPlaylistStore.editPlaylist(mReference, mSongs);
                     return ignoredValue;
                 })
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         ignoredValue -> {
                             mAdapter.notifyDataSetChanged();

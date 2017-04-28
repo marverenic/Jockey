@@ -146,7 +146,9 @@ public final class MediaStoreUtil {
         }
 
         if (hasPermission(context)) {
-            sPermissionObservable.onNext(true);
+            if (!sPermissionObservable.hasValue() || !sPermissionObservable.getValue()) {
+                sPermissionObservable.onNext(true);
+            }
             return sPermissionObservable;
         }
 
@@ -214,7 +216,7 @@ public final class MediaStoreUtil {
         Collections.sort(songs);
         cur.close();
 
-        return songs;
+        return Collections.unmodifiableList(songs);
     }
 
     public static List<Song> getSongs(Context context, @Nullable String selection,
@@ -237,7 +239,7 @@ public final class MediaStoreUtil {
         Collections.sort(albums);
         cur.close();
 
-        return albums;
+        return Collections.unmodifiableList(albums);
     }
 
     public static List<Artist> getArtists(Context context, @Nullable String selection,
@@ -255,7 +257,7 @@ public final class MediaStoreUtil {
         Collections.sort(artists);
         cur.close();
 
-        return artists;
+        return Collections.unmodifiableList(artists);
     }
 
     public static List<Genre> getGenres(Context context, @Nullable String selection,
@@ -273,7 +275,7 @@ public final class MediaStoreUtil {
         Collections.sort(genres);
         cur.close();
 
-        return genres;
+        return Collections.unmodifiableList(genres);
     }
 
     public static List<Playlist> getAllPlaylists(Context context) {
@@ -292,10 +294,10 @@ public final class MediaStoreUtil {
         }
 
         Collections.sort(playlists);
-        return playlists;
+        return Collections.unmodifiableList(playlists);
     }
 
-    public static List<Playlist> getPlaylists(Context context, @Nullable String selection,
+    private static List<Playlist> getPlaylists(Context context, @Nullable String selection,
                                               @Nullable String[] selectionArgs) {
 
         Cursor cur = context.getContentResolver().query(
@@ -313,7 +315,7 @@ public final class MediaStoreUtil {
         return playlists;
     }
 
-    public static List<AutoPlaylist> getAutoPlaylists(Context context) {
+    private static List<AutoPlaylist> getAutoPlaylists(Context context) {
         List<AutoPlaylist> autoPlaylists = new ArrayList<>();
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(AutoPlaylistRule.class, new AutoPlaylistRule.RuleTypeAdapter())
@@ -377,7 +379,7 @@ public final class MediaStoreUtil {
         List<Song> songs = Song.buildSongList(cur, context.getResources());
         cur.close();
 
-        return songs;
+        return Collections.unmodifiableList(songs);
     }
 
     public static List<Song> getGenreSongs(Context context, Genre genre, @Nullable String selection,
@@ -509,7 +511,10 @@ public final class MediaStoreUtil {
                     .getContentUri("external", playlist.getPlaylistId());
             ContentResolver resolver = context.getContentResolver();
 
+            ignoreSingleContentUpdate();
             resolver.bulkInsert(uri, values);
+
+            ignoreSingleContentUpdate();
             resolver.notifyChange(Uri.parse("content://media"), null);
         }
 
@@ -546,7 +551,11 @@ public final class MediaStoreUtil {
                         MediaStore.Audio.Playlists.Members.AUDIO_ID,
                         songs.get(i).getSongId());
             }
+
+            ignoreSingleContentUpdate();
             resolver.bulkInsert(uri, values);
+
+            ignoreSingleContentUpdate();
             resolver.notifyChange(Uri.parse("content://media"), null);
         }
     }
@@ -568,8 +577,6 @@ public final class MediaStoreUtil {
     }
 
     public static void appendToPlaylist(Context context, Playlist playlist, Song song) {
-        ignoreSingleContentUpdate();
-
         Uri uri = MediaStore.Audio.Playlists.Members
                 .getContentUri("external", playlist.getPlaylistId());
         ContentResolver resolver = context.getContentResolver();
@@ -579,13 +586,14 @@ public final class MediaStoreUtil {
                 getPlaylistSize(context, playlist.getPlaylistId()));
         values.put(MediaStore.Audio.Playlists.Members.AUDIO_ID, song.getSongId());
 
+        ignoreSingleContentUpdate();
         resolver.insert(uri, values);
+
+        ignoreSingleContentUpdate();
         resolver.notifyChange(Uri.parse("content://media"), null);
     }
 
     public static void appendToPlaylist(Context context, Playlist playlist, List<Song> songs) {
-        ignoreSingleContentUpdate();
-
         Uri uri = MediaStore.Audio.Playlists.Members
                 .getContentUri("external", playlist.getPlaylistId());
         ContentResolver resolver = context.getContentResolver();
@@ -601,7 +609,10 @@ public final class MediaStoreUtil {
                     songs.get(i).getSongId());
         }
 
+        ignoreSingleContentUpdate();
         resolver.bulkInsert(uri, values);
+
+        ignoreSingleContentUpdate();
         resolver.notifyChange(Uri.parse("content://media"), null);
     }
 
