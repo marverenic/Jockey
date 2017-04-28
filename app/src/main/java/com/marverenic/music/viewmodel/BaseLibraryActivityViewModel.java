@@ -200,6 +200,10 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                if (mBottomSheetState == BottomSheetBehavior.STATE_EXPANDED
+                        || mBottomSheetState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    onStateChanged(bottomSheet, BottomSheetBehavior.STATE_DRAGGING);
+                }
                 mMiniplayerAlpha.set(1.0f - 2 * slideOffset);
                 mNowPlayingToolbarAlpha.set(2 * slideOffset - 1.0f);
             }
