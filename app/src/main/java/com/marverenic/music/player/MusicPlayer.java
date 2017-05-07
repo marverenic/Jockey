@@ -1363,6 +1363,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (isInitialStickyBroadcast()) {
+                return;
+            }
+
             Timber.i("onReceive: %s", intent);
 
             boolean plugged, unplugged;
