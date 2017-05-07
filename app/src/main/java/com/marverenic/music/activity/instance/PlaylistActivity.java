@@ -135,8 +135,9 @@ public class PlaylistActivity extends BaseLibraryActivity
     }
 
     private void setupRecyclerView() {
-        mRecyclerView.addItemDecoration(new DragBackgroundDecoration());
-        mRecyclerView.addItemDecoration(new DragDividerDecoration(this, R.id.empty_layout));
+        mRecyclerView.addItemDecoration(new DragBackgroundDecoration(R.id.song_drag_root));
+        mRecyclerView.addItemDecoration(new DragDividerDecoration(
+                R.id.song_drag_root, this, R.id.empty_layout));
         mRecyclerView.addItemDecoration(new DragDropDecoration(
                 (NinePatchDrawable) ContextCompat.getDrawable(this, R.drawable.list_drag_shadow)));
 
