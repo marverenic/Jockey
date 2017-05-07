@@ -16,6 +16,7 @@ import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseLibraryActivity;
 import com.marverenic.music.adapter.LibraryEmptyState;
+import com.marverenic.music.adapter.ShuffleAllSection;
 import com.marverenic.music.adapter.SongSection;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PlayCountStore;
@@ -44,6 +45,7 @@ public class AutoPlaylistActivity extends BaseLibraryActivity
     private AutoPlaylist mReference;
     private RecyclerView mRecyclerView;
     private HeterogeneousAdapter mAdapter;
+    private ShuffleAllSection mShuffleAllSection;
     private SongSection mSongSection;
 
     public static Intent newIntent(Context context, AutoPlaylist playlist) {
@@ -119,10 +121,14 @@ public class AutoPlaylistActivity extends BaseLibraryActivity
             mRecyclerView.setAdapter(mAdapter);
         }
 
-        if (mSongSection == null) {
+        if (mSongSection == null || mShuffleAllSection == null) {
+            mShuffleAllSection = new ShuffleAllSection(this, mSongs);
             mSongSection = new SongSection(this, mSongs);
+
+            mAdapter.addSection(mShuffleAllSection);
             mAdapter.addSection(mSongSection);
         } else {
+            mShuffleAllSection.setData(mSongs);
             mSongSection.setData(mSongs);
             mAdapter.notifyDataSetChanged();
         }
