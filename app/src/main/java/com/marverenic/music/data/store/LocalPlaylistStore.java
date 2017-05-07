@@ -23,6 +23,7 @@ import java.util.Map;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.exceptions.Exceptions;
 import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
@@ -139,8 +140,11 @@ public class LocalPlaylistStore implements PlaylistStore {
         if (mPlaylistContents.containsKey(playlist)) {
             subject = mPlaylistContents.get(playlist);
         } else {
-            subject = BehaviorSubject.create(MediaStoreUtil.getPlaylistSongs(mContext, playlist));
+            subject = BehaviorSubject.create();
             mPlaylistContents.put(playlist, subject);
+
+            Observable.fromCallable(() -> MediaStoreUtil.getPlaylistSongs(mContext, playlist))
+                    .subscribe(subject::onNext, subject::onError);
         }
 
         return subject.asObservable();
@@ -156,17 +160,18 @@ public class LocalPlaylistStore implements PlaylistStore {
             mPlaylistContents.put(playlist, subject);
 
             playlist.generatePlaylist(mMusicStore, this, mPlayCountStore)
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(subject::onNext, subject::onError);
 
             subject.observeOn(Schedulers.io())
                     .subscribe(contents -> {
-                        editPlaylist(playlist, contents);
+                        MediaStoreUtil.editPlaylist(mContext, playlist, contents);
                     }, throwable -> {
                         Timber.e(throwable, "Failed to save playlist contents");
                     });
         }
 
-        return subject.asObservable().observeOn(AndroidSchedulers.mainThread());
+        return subject.asObservable();
     }
 
     @Override
@@ -261,7 +266,8 @@ public class LocalPlaylistStore implements PlaylistStore {
     public void editPlaylist(Playlist playlist, List<Song> newSongs) {
         MediaStoreUtil.editPlaylist(mContext, playlist, newSongs);
         if (mPlaylistContents.containsKey(playlist)) {
-            mPlaylistContents.get(playlist).onNext(new ArrayList<>(newSongs));
+            mPlaylistContents.get(playlist).onNext(
+                    Collections.unmodifiableList(new ArrayList<>(newSongs)));
         }
     }
 
@@ -280,30 +286,27 @@ public class LocalPlaylistStore implements PlaylistStore {
     }
 
     private void saveAutoPlaylistConfiguration(AutoPlaylist playlist) {
+        Observable.just(playlist)
+                .observeOn(Schedulers.io())
+                .subscribe(p -> {
+                    try {
+                        writeAutoPlaylistConfiguration(p);
+                    } catch (IOException e) {
+                        throw Exceptions.propagate(e);
+                    }
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to write AutoPlaylist configuration");
+                });
+
         // Write an initial set of values to the MediaStore so other apps can see this playlist
         playlist.generatePlaylist(mMusicStore, this, mPlayCountStore)
                 .take(1)
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(contents -> {
                     editPlaylist(playlist, contents);
-
-                    // Cache this result in memory
-                    BehaviorSubject<List<Song>> contentsSubject;
-                    if (mPlaylistContents.containsKey(playlist)) {
-                        contentsSubject = mPlaylistContents.get(playlist);
-                    } else {
-                        contentsSubject = BehaviorSubject.create();
-                        mPlaylistContents.put(playlist, contentsSubject);
-                    }
-                    contentsSubject.onNext(contents);
-
-                    try {
-                        writeAutoPlaylistConfiguration(playlist);
-                    } catch (IOException e) {
-                        Timber.e(e, "Failed to write autoPlaylist configuration");
-                    }
                 }, throwable -> {
-                    Timber.e(throwable, "makePlaylist: Failed to initialize contents");
+                    Timber.e(throwable, "Failed to write AutoPlaylist contents");
                 });
     }
 

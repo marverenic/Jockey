@@ -100,8 +100,8 @@ public class NowPlayingArtworkViewModel extends BaseObservable {
     public Drawable getTapIndicator() {
         return ContextCompat.getDrawable(mContext,
                 mPlaying
-                        ? R.drawable.ic_play_arrow_36dp
-                        : R.drawable.ic_pause_36dp);
+                        ? R.drawable.ic_pause_36dp
+                        : R.drawable.ic_play_arrow_36dp);
     }
 
     public GestureView.OnGestureListener getGestureListener() {

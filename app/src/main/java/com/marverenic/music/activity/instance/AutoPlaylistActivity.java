@@ -31,6 +31,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
 
 public class AutoPlaylistActivity extends BaseLibraryActivity
@@ -217,6 +218,7 @@ public class AutoPlaylistActivity extends BaseLibraryActivity
         mPlaylistStore.getSongs(mReference)
                 .skip(alreadyLoaded ? 1 : 0)
                 .take(1)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(ignoredValue -> {
                     String message = String.format(result, mReference);
                     Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG)

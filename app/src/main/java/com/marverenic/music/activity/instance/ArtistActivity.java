@@ -108,6 +108,7 @@ public class ArtistActivity extends BaseLibraryActivity {
 
         mMusicStore.getAlbums(mReference)
                 .compose(bindToLifecycle())
+                .map(ArrayList::new)
                 .subscribe(
                         albums -> {
                             mAlbums = albums;
