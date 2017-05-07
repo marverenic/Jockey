@@ -24,6 +24,7 @@ public interface ReadOnlyPreferenceStore {
     @BaseTheme int getBaseColor();
     @PrimaryTheme int getIconColor();
 
+    boolean resumeOnHeadphonesConnect();
     boolean isShuffled();
     int getRepeatMode();
 
