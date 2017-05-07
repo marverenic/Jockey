@@ -1,13 +1,15 @@
 package com.marverenic.music.adapter;
 
 import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 
 import com.marverenic.adapter.Coordinate;
 import com.marverenic.adapter.HeterogeneousAdapter;
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.MeasurableAdapter;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.SectionedAdapter;
 
 public class HeterogeneousFastScrollAdapter extends HeterogeneousAdapter
-        implements SectionedAdapter {
+        implements SectionedAdapter, MeasurableAdapter {
 
     private static final int LAST_SECTION_INDEX = -1;
     private static final int FIRST_SECTION_INDEX = -2;
@@ -30,16 +32,33 @@ public class HeterogeneousFastScrollAdapter extends HeterogeneousAdapter
             use the adjacent section name instead
          */
         int walk = -1;
-        while (!(section instanceof SectionedAdapter) && mSectionCoordinate.getSection() + walk >= 0
+        while (!(section instanceof SectionedAdapter)
+                && mSectionCoordinate.getSection() + walk >= 0
                 && mSectionCoordinate.getSection() + walk < getSectionCount()) {
 
             section = getSection(mSectionCoordinate.getSection() + walk);
             if (walk > 0) {
-                mSectionCoordinate.setItemIndex(FIRST_SECTION_INDEX);
+                mSectionCoordinate.setItemIndex(LAST_SECTION_INDEX);
                 walk = -(walk + 1);
             } else {
-                mSectionCoordinate.setItemIndex(LAST_SECTION_INDEX);
+                mSectionCoordinate.setItemIndex(FIRST_SECTION_INDEX);
                 walk = -(walk - 1);
+            }
+        }
+
+        if (mSectionCoordinate.getSection() + walk >= 0) {
+            while (!(section instanceof SectionedAdapter)
+                    && mSectionCoordinate.getSection() + walk >= 0) {
+                mSectionCoordinate.setItemIndex(LAST_SECTION_INDEX);
+                walk--;
+                section = getSection(mSectionCoordinate.getSection() + walk);
+            }
+        } else if (mSectionCoordinate.getSection() + walk < getSectionCount()) {
+            while (!(section instanceof SectionedAdapter)
+                    && mSectionCoordinate.getSection() + walk < getSectionCount()) {
+                mSectionCoordinate.setItemIndex(FIRST_SECTION_INDEX);
+                walk++;
+                section = getSection(mSectionCoordinate.getSection() + walk);
             }
         }
 
@@ -57,5 +76,20 @@ public class HeterogeneousFastScrollAdapter extends HeterogeneousAdapter
         } else {
             return "";
         }
+    }
+
+    @Override
+    public int getViewTypeHeight(RecyclerView recyclerView, int viewType) {
+        for (int i = 0; i < getSectionCount(); i++) {
+            Section section = getSection(i);
+            if (section.getTypeId() == viewType) {
+                if (!(section instanceof MeasurableAdapter)) {
+                    return 0;
+                }
+
+                return ((MeasurableAdapter) section).getViewTypeHeight(recyclerView, 0);
+            }
+        }
+        return 0;
     }
 }

@@ -14,14 +14,19 @@ import com.marverenic.adapter.DragDropAdapter;
  */
 public class DragDividerDecoration extends DividerDecoration {
 
+    @IdRes
+    private int mDragViewId;
+
     /**
      * Create an ItemDecorator for use with a RecyclerView
      *
      * @param context           A context held temporarily to get colors and display metrics
      * @param excludedLayoutIDs A list of layoutIDs to exclude adding a divider to
      */
-    public DragDividerDecoration(Context context, @IdRes int... excludedLayoutIDs) {
+    public DragDividerDecoration(@IdRes int dragViewId, Context context,
+                                 @IdRes int... excludedLayoutIDs) {
         super(context, excludedLayoutIDs);
+        mDragViewId = dragViewId;
     }
 
     /**
@@ -38,6 +43,6 @@ public class DragDividerDecoration extends DividerDecoration {
 
     @Override
     protected boolean includeView(View view) {
-        return view.getTag() == null && super.includeView(view);
+        return (mDragViewId != view.getId() || view.getTag() == null) && super.includeView(view);
     }
 }

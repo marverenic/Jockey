@@ -7,8 +7,10 @@
     <dimen name="header_elevation">4dp</dimen>
     <dimen name="miniplayer_elevation">8dp</dimen>
     <dimen name="global_padding">0dp</dimen>
+    <dimen name="list_height_small">60dp</dimen>
     <dimen name="list_height">72dp</dimen>
     <dimen name="list_padding">16dp</dimen>
+    <dimen name="divider_height">1dp</dimen>
     <dimen name="grid_width">120dp</dimen>
     <dimen name="large_grid_width">140dp</dimen>
     <dimen name="grid_margin">4dp</dimen>

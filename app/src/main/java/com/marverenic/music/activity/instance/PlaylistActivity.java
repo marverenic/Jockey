@@ -20,6 +20,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.activity.BaseLibraryActivity;
 import com.marverenic.music.adapter.LibraryEmptyState;
 import com.marverenic.music.adapter.PlaylistSongSection;
+import com.marverenic.music.adapter.ShuffleAllSection;
 import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.model.Playlist;
@@ -50,6 +51,7 @@ public class PlaylistActivity extends BaseLibraryActivity
     private Playlist mReference;
     private RecyclerView mRecyclerView;
     private DragDropAdapter mAdapter;
+    private ShuffleAllSection mShuffleAllSection;
     private PlaylistSongSection mSongSection;
 
     public static Intent newIntent(Context context, Playlist playlist) {
@@ -121,18 +123,22 @@ public class PlaylistActivity extends BaseLibraryActivity
             mSongs = Collections.emptyList();
         }
 
-        if (mSongSection == null) {
+        if (mSongSection == null || mShuffleAllSection == null) {
             mSongSection = new PlaylistSongSection(this, mPlaylistStore, mSongs, mReference);
+            mShuffleAllSection = new ShuffleAllSection(this, mSongs);
+            mAdapter.addSection(mShuffleAllSection);
             mAdapter.setDragSection(mSongSection);
         } else {
+            mShuffleAllSection.setData(mSongs);
             mSongSection.setData(mSongs);
             mAdapter.notifyDataSetChanged();
         }
     }
 
     private void setupRecyclerView() {
-        mRecyclerView.addItemDecoration(new DragBackgroundDecoration());
-        mRecyclerView.addItemDecoration(new DragDividerDecoration(this, R.id.empty_layout));
+        mRecyclerView.addItemDecoration(new DragBackgroundDecoration(R.id.song_drag_root));
+        mRecyclerView.addItemDecoration(new DragDividerDecoration(
+                R.id.song_drag_root, this, R.id.empty_layout));
         mRecyclerView.addItemDecoration(new DragDropDecoration(
                 (NinePatchDrawable) ContextCompat.getDrawable(this, R.drawable.list_drag_shadow)));
 

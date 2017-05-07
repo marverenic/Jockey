@@ -6,6 +6,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.NinePatchDrawable;
+import android.support.annotation.IdRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -22,6 +23,8 @@ import java.util.List;
  */
 public class DragBackgroundDecoration extends RecyclerView.ItemDecoration {
 
+    @IdRes
+    protected int mDragViewId;
     protected Drawable mBackground;
     protected NinePatchDrawable mShadow;
     private List<Rect> mRectPool;
@@ -29,7 +32,8 @@ public class DragBackgroundDecoration extends RecyclerView.ItemDecoration {
     /**
      * Create an ItemDecorator for use with a RecyclerView
      */
-    public DragBackgroundDecoration() {
+    public DragBackgroundDecoration(@IdRes int dragViewId) {
+        mDragViewId = dragViewId;
         mRectPool = new ArrayList<>();
     }
 
@@ -165,7 +169,7 @@ public class DragBackgroundDecoration extends RecyclerView.ItemDecoration {
     }
 
     private boolean includeView(View view) {
-        return view.getTag() == null;
+        return view.getId() != mDragViewId || view.getTag() == null;
     }
 
     private boolean areViewsConnected(View previous, View check) {

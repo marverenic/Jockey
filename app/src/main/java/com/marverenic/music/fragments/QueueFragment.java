@@ -190,7 +190,7 @@ public class QueueFragment extends BaseFragment {
     private void setupRecyclerView() {
         Drawable shadow = ContextCompat.getDrawable(getContext(), R.drawable.list_drag_shadow);
 
-        ItemDecoration background = new DragBackgroundDecoration();
+        ItemDecoration background = new DragBackgroundDecoration(R.id.song_drag_root);
         ItemDecoration divider = new DragDividerDecoration(getContext(), true, R.id.instance_blank);
         ItemDecoration dragShadow = new DragDropDecoration((NinePatchDrawable) shadow);
 

@@ -95,6 +95,7 @@
     <string name="action_discard_changes">Discard changes</string>
     <string name="action_edit_playlist_rules">Edit filters</string>
     <string name="action_open_in_last_fm">Last.fm</string>
+    <string name="action_shuffle_all">Shuffle all</string>
 
     <!-- Confirmation messages -->
     <string name="confirm_disable_shuffle">Disabled shuffle</string>
@@ -225,7 +226,7 @@
     <string name="uses_vert_slider_detail">Version 0.5.2; distributed by Haruki Hasegawa
         under an Apache License, Version 2.0</string>
     <string name="uses_fastscroll_header">RecyclerView FastScroll</string>
-    <string name="uses_fastscroll_detail">Version 1.0.14; distributed by Tim Malseed under an
+    <string name="uses_fastscroll_detail">Version 1.0.16; distributed by Tim Malseed under an
         Apache License, Version 2.0</string>
     <string name="uses_seek_arc_header">SeekArc</string>
     <string name="uses_seek_arc_detail">Version 1.1; distributed by Triggertrap Ltd (Neil Davies)
