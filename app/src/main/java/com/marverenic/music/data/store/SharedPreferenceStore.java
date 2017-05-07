@@ -142,7 +142,7 @@ public class SharedPreferenceStore implements PreferenceStore {
 
     @Override
     public boolean resumeOnHeadphonesConnect() {
-        return true;
+        return getBoolean(R.string.pref_key_resume_with_headphones, false);
     }
 
     @Override

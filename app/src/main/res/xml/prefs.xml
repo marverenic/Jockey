@@ -66,6 +66,12 @@
         <Preference
             android:title="@string/pref_equalizer"
             android:fragment="com.marverenic.music.fragments.EqualizerFragment"/>
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="@string/pref_key_resume_with_headphones"
+            android:title="@string/pref_resume_on_connect"
+            android:summaryOn="@string/pref_resume_on_connect_detail_on"
+            android:summaryOff="@string/pref_resume_on_connect_detail_off"/>
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/pref_key_switch_to_playing"

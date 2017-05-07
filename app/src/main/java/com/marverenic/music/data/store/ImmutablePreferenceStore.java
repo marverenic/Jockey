@@ -20,6 +20,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcel
     private final int mAccentColor;
     private final int mBaseColor;
     private final int mIconColor;
+    private final boolean mResumeOnHeadphonesConnect;
     private final boolean mShuffled;
     private final int mRepeatMode;
     private final long mPreviousSleepTimerDurationMillis;
@@ -38,6 +39,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcel
         mAccentColor = preferencesStore.getAccentColor();
         mBaseColor = preferencesStore.getBaseColor();
         mIconColor = preferencesStore.getIconColor();
+        mResumeOnHeadphonesConnect = preferencesStore.resumeOnHeadphonesConnect();
         mShuffled = preferencesStore.isShuffled();
         mPreviousSleepTimerDurationMillis = preferencesStore.getLastSleepTimerDuration();
         mRepeatMode = preferencesStore.getRepeatMode();
@@ -63,6 +65,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcel
         mAccentColor = in.readInt();
         mBaseColor = in.readInt();
         mIconColor = in.readInt();
+        mResumeOnHeadphonesConnect = in.readByte() != 0;
         mShuffled = in.readByte() != 0;
         mPreviousSleepTimerDurationMillis = in.readLong();
         mRepeatMode = in.readInt();
@@ -83,6 +86,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcel
         dest.writeInt(mAccentColor);
         dest.writeInt(mBaseColor);
         dest.writeInt(mIconColor);
+        dest.writeByte((byte) (mResumeOnHeadphonesConnect ? 1 : 0));
         dest.writeByte((byte) (mShuffled ? 1 : 0));
         dest.writeLong(mPreviousSleepTimerDurationMillis);
         dest.writeInt(mRepeatMode);
@@ -160,7 +164,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcel
 
     @Override
     public boolean resumeOnHeadphonesConnect() {
-        return true;
+        return mResumeOnHeadphonesConnect;
     }
 
     @Override

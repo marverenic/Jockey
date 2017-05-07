@@ -25,6 +25,7 @@ import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ThemeStore;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
@@ -39,10 +40,9 @@ public class PreferenceFragment extends PreferenceFragmentCompat
     private static final String EQUALIZER_FRAGMENT =
             "com.marverenic.music.fragments.EqualizerFragment";
 
-    @Inject
-    PreferenceStore mPrefStore;
-    @Inject
-    ThemeStore mThemeStore;
+    @Inject PreferenceStore mPrefStore;
+    @Inject ThemeStore mThemeStore;
+    @Inject PlayerController mPlayerController;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -175,6 +175,8 @@ public class PreferenceFragment extends PreferenceFragmentCompat
                         .show();
             }
             return true;
+        } else if (getString(R.string.pref_key_resume_with_headphones).equals(preference.getKey())) {
+            mPlayerController.updatePlayerPreferences(mPrefStore);
         }
         return super.onPreferenceTreeClick(preference);
     }

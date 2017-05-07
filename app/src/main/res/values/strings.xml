@@ -261,6 +261,9 @@
     <string name="pref_directory_include">Include folders</string>
     <string name="pref_directory_exclude">Exclude folders</string>
     <string name="pref_equalizer">Equalizer</string>
+    <string name="pref_resume_on_connect">Play when plugging in headphones</string>
+    <string name="pref_resume_on_connect_detail_on">Plugging in headphones will resume playback if Jockey is running</string>
+    <string name="pref_resume_on_connect_detail_off">Plugging in headphones will never resume playback</string>
     <string name="gesture_description">Enable now playing gestures</string>
     <string name="gesture_detail">Swipe across the album art to skip songs,
         or tap to play/pause music</string>
@@ -292,6 +295,7 @@
     <string name="pref_key_eq_id" translatable="false">Equalizer.presetId</string>
     <string name="pref_key_eq_enabled" translatable="false">Equalizer.enabled</string>
     <string name="pref_key_eq_settings" translatable="false">Equalizer.equalizerSettings</string>
+    <string name="pref_key_resume_with_headphones" translatable="false">Playback.resumeOnHeadphoneConnect</string>
     <string name="pref_key_create_launcher_icon" translatable="false">Action.newShortcut</string>
     <string name="pref_key_shuffle" translatable="false">Player.shuffle</string>
     <string name="pref_key_repeat" translatable="false">Player.repeat</string>
