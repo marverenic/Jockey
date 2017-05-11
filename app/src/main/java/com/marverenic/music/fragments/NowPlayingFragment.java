@@ -144,8 +144,6 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
         mShuffleMenuItem = toolbar.getMenu().findItem(R.id.menu_now_playing_shuffle);
         mRepeatMenuItem = toolbar.getMenu().findItem(R.id.menu_now_playing_repeat);
 
-        updateShuffleIcon();
-
         mPlayerController.getQueue()
                 .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .map(this::queueContainsLocalSongs)
@@ -153,9 +151,15 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
                     Timber.e(throwable, "Failed to update playlist enabled state");
                 });
 
-        mPlayerController.getMultiRepeatCount()
+        mPlayerController.isShuffleEnabled()
                 .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
-                .subscribe(this::setRepeatIcon, throwable -> {
+                .subscribe(this::updateShuffleIcon, throwable -> {
+                    Timber.e(throwable, "Failed to update shuffle icon");
+                });
+
+        mPlayerController.getRepeatMode()
+                .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .subscribe(this::updateRepeatIcon, throwable -> {
                     Timber.e(throwable, "Failed to update repeat icon");
                 });
     }
@@ -174,8 +178,8 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
         mAppendToPlaylistMenuItem.setEnabled(canCreatePlaylist);
     }
 
-    private void updateShuffleIcon() {
-        if (mPrefStore.isShuffled()) {
+    private void updateShuffleIcon(boolean shuffled) {
+        if (shuffled) {
             mShuffleMenuItem.getIcon().setAlpha(255);
             mShuffleMenuItem.setTitle(getResources().getString(R.string.action_disable_shuffle));
         } else {
@@ -184,12 +188,12 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
         }
     }
 
-    private void setRepeatIcon(int multiRepeatCount) {
+    private void updateRepeatIcon(int repeatMode) {
         @DrawableRes int icon;
         boolean active = true;
 
-        if (multiRepeatCount > 1) {
-            switch (multiRepeatCount) {
+        if (repeatMode > 1) {
+            switch (repeatMode) {
                 case 2:
                     icon = R.drawable.ic_repeat_two_24dp;
                     break;
@@ -268,8 +272,6 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
         } else {
             showSnackbar(R.string.confirm_disable_shuffle);
         }
-
-        updateShuffleIcon();
     }
 
     private void showRepeatMenu() {
@@ -397,7 +399,7 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
     }
 
     private void showMultiRepeatDialog() {
-        mPlayerController.getMultiRepeatCount().take(1).subscribe(currentCount -> {
+        mPlayerController.getRepeatMode().take(1).subscribe(currentCount -> {
             new NumberPickerDialogFragment.Builder(this)
                     .setMinValue(2)
                     .setMaxValue(10)

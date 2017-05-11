@@ -226,13 +226,16 @@ public interface PlayerController {
     Observable<Boolean> isShuffleEnabled();
 
     /**
-     * Gets the current multi-repeat count. While this is greater than one, playback behaves like
-     * repeat one is enabled. When this value reaches zero, the regular repeat mode will be applied.
-     * @return The number of remaining times the currently playing song will be played back-to-back
-     *         as an observable stream.
-     * @see #setMultiRepeatCount(int) For more information on Multi-Repeat and to set this value.
+     * Gets the current repeat mode. This will be a number greater than 1 if Multi-Repeat is enabled
+     * (with the value representing the number of times the song will be played back-to back), or
+     * one of either {@link MusicPlayer#REPEAT_NONE}, {@link MusicPlayer#REPEAT_ONE},
+     * or {@link MusicPlayer#REPEAT_ALL}
+     * @return The current repeat mode
+     * @see #updatePlayerPreferences(ReadOnlyPreferenceStore) To set the repeat mode to one of
+     *      the standard repeat modes
+     * @see #setMultiRepeatCount(int) To set the multi-repeat count
      */
-    Observable<Integer> getMultiRepeatCount();
+    Observable<Integer> getRepeatMode();
 
     /**
      * Enables Multi-Repeat. With Multi-Repeat enabled, the current song will be played back-to-back

@@ -166,7 +166,7 @@ public class MockPlayerController implements PlayerController {
     }
 
     @Override
-    public Observable<Integer> getMultiRepeatCount() {
+    public Observable<Integer> getRepeatMode() {
         throw new UnsupportedOperationException("Stub!");
     }
 
