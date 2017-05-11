@@ -164,9 +164,11 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         }
 
         int currentQueueIndex = mExoPlayer.getCurrentWindowIndex() % mQueue.size();
+        boolean isRepeatOne = mRepeatOne;
+
         if (mQueueIndex != currentQueueIndex || mInvalid) {
             onCompletion();
-            if (!mRepeatOne && !mInvalid) {
+            if (!isRepeatOne && !mInvalid) {
                 mQueueIndex = currentQueueIndex;
                 onStart();
             }
