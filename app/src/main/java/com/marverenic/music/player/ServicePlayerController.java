@@ -67,6 +67,7 @@ public class ServicePlayerController implements PlayerController {
     private final Prop<Long> mSleepTimerEndTime = new Prop<>("sleep timer");
 
     private BehaviorSubject<Boolean> mShuffled;
+    private BehaviorSubject<Integer> mRepeatMode;
     private BehaviorSubject<Bitmap> mArtwork;
     private Subscription mCurrentPositionClock;
 
@@ -76,6 +77,7 @@ public class ServicePlayerController implements PlayerController {
     public ServicePlayerController(Context context, PreferenceStore preferenceStore) {
         mContext = context;
         mShuffled = BehaviorSubject.create(preferenceStore.isShuffled());
+        mRepeatMode = BehaviorSubject.create(preferenceStore.getRepeatMode());
         mRequestQueue = new ObservableQueue<>();
 
         startService();
@@ -320,6 +322,7 @@ public class ServicePlayerController implements PlayerController {
             try {
                 mBinding.setPreferences(new ImmutablePreferenceStore(preferenceStore));
                 mShuffled.onNext(preferenceStore.isShuffled());
+                mRepeatMode.onNext(preferenceStore.getRepeatMode());
                 invalidateAll();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to update remote player preferences");
@@ -473,9 +476,17 @@ public class ServicePlayerController implements PlayerController {
     }
 
     @Override
-    public Observable<Integer> getMultiRepeatCount() {
+    public Observable<Integer> getRepeatMode() {
         ensureServiceStarted();
-        return mMultiRepeatCount.getObservable();
+        return mMultiRepeatCount.getObservable()
+                .flatMap(multiRepeatCount -> {
+                    if (multiRepeatCount > 1) {
+                        return Observable.just(multiRepeatCount);
+                    } else {
+                        return mRepeatMode.asObservable();
+                    }
+                })
+                .distinctUntilChanged();
     }
 
     @Override
