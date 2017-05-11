@@ -134,14 +134,6 @@ public class QueueFragment extends BaseFragment {
                         Timber.e(throwable, "Failed to scroll to queue position");
                     });
 
-            mPlayerController.isShuffleEnabled()
-                    .skip(1)
-                    .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
-                    .flatMap(trigger -> mPlayerController.getQueuePosition().skip(1).take(1))
-                    .subscribe(this::setQueuePosition, throwable -> {
-                        Timber.e(throwable, "Failed to scroll to now playing after shuffling");
-                    });
-
             mPlayerController.getQueuePosition()
                     .skip(1)
                     .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
@@ -152,6 +144,14 @@ public class QueueFragment extends BaseFragment {
         } else if (!mQueueSection.getData().equals(queue)) {
             mQueueSection.setData(queue);
             mAdapter.notifyDataSetChanged();
+
+            mPlayerController.getQueuePosition()
+                    .skip(1)
+                    .take(1)
+                    .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                    .subscribe(this::setQueuePosition, throwable -> {
+                        Timber.e(throwable, "Failed to scroll to queue position");
+                    });
         }
     }
 
