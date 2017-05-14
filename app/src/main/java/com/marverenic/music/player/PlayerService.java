@@ -161,6 +161,11 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     public void onTaskRemoved(Intent rootIntent) {
         Timber.i("onTaskRemoved called");
 
+        if (musicPlayer == null) {
+            finish();
+            return;
+        }
+
         /*
             When the application is removed from the overview page, we make the notification
             dismissible on Lollipop and higher devices if music is paused. To do this, we have to
