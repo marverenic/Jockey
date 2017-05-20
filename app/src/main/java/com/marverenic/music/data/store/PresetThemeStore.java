@@ -130,7 +130,7 @@ public class PresetThemeStore implements ThemeStore {
     }
 
     @NightMode
-    private int getNightMode() {
+    public int getNightMode() {
         switch (mPreferenceStore.getBaseColor()) {
             case AUTO:
                 return AppCompatDelegate.MODE_NIGHT_AUTO;
