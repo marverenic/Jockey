@@ -132,6 +132,10 @@
     <string name="message_sorted_playlist_date_played">Sorted &#8220;%1$s&#8221; by date played</string>
     <string name="header_add_song_name_to_playlist">Add &#8220;%1$s&#8221; to playlist</string>
     <string name="confirm_add_songs">Added %1$d songs to playlist &#8220;%2$s&#8221;</string>
+    <string name="playlist_confirm_duplicate">&#8220;%1$s&#8221; already contains &#8220;%2$s&#8221;.
+        Do you want to add it again?</string>
+    <string name="playlist_confirm_all_duplicates">This playlist already contains all of these
+        songs. Adding them again will result in %d duplicated entries.</string>
     <string name="confirm_dir_include_excluded">
         &#8220;%1$s&#8221; is already being excluded.
         Do you want to move it to your included folders?
