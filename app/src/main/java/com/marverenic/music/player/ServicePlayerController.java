@@ -21,6 +21,7 @@ import com.marverenic.music.utils.ObservableQueue;
 import com.marverenic.music.utils.Optional;
 import com.marverenic.music.utils.Util;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -196,7 +197,7 @@ public class ServicePlayerController implements PlayerController {
     private void initAllProperties() {
         mPlaying.setFunction(mBinding::isPlaying);
         mNowPlaying.setFunction(mBinding::getNowPlaying);
-        mQueue.setFunction(mBinding::getQueue);
+        mQueue.setFunction(this::getBigQueue);
         mQueuePosition.setFunction(mBinding::getQueuePosition);
         mCurrentPosition.setFunction(mBinding::getCurrentPosition);
         mDuration.setFunction(mBinding::getDuration);
@@ -332,6 +333,10 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public void setQueue(List<Song> newQueue, int newPosition) {
+        if (newQueue.size() > MINIMUM_SONG_PER_CHUNK) {
+            sendBigQueue(newQueue, newPosition, FLAG_SET_QUEUE);
+            return;
+        }
         execute(() -> {
             try {
                 mBinding.setQueue(newQueue, newPosition);
@@ -340,6 +345,60 @@ public class ServicePlayerController implements PlayerController {
                 Timber.e(exception, "Failed to set queue");
             }
         });
+    }
+
+    /**
+     * This function works like {@link #setQueue(List, int)}, except it will split queue to chunks
+     * and send one by one (keep order) to remote service. if newQueue size is
+     * less than {@link #MINIMUM_SONG_PER_CHUNK}, use {@link #setQueue(List, int)} instead.
+     * Needn't expose this method.
+     *
+     * @param newQueue New queue which contains large number of songs.
+     * @param newPosition The index in the queue to start playback from
+     */
+    private void sendBigQueue(List<Song> newQueue, int newPosition, int flag) {
+        execute(() -> {
+            try {
+                mBinding.beginBigQueue();
+                int i;
+                for (i = 0; i + MINIMUM_SONG_PER_CHUNK <= newQueue.size(); i += MINIMUM_SONG_PER_CHUNK) {
+                    mBinding.sendQueueChunk(newQueue.subList(i, i + MINIMUM_SONG_PER_CHUNK));
+                }
+                if (i < newQueue.size())
+                    mBinding.sendQueueChunk(newQueue.subList(i, newQueue.size()));
+                mBinding.endBigQueue(flag, newPosition);
+                invalidateAll();
+            } catch (RemoteException exception) {
+                Timber.e(exception, "Failed to set queue");
+            }
+        });
+    }
+
+    /**
+     * This method allow read queue from remote service by chunks, but if the queue size is less
+     * than {@link #MINIMUM_SONG_PER_CHUNK}, this method will return {@link IPlayerService#getQueue()}
+     * directly.
+     *
+     * @return Now playing queue.
+     */
+    private List<Song> getBigQueue() throws RemoteException {
+        int queueSize = mBinding.getQueueSize();
+        if (queueSize <= MINIMUM_SONG_PER_CHUNK) {
+            return mBinding.getQueue();
+        } else {
+            List<Song> queue = new ArrayList<>();
+            try {
+                int offset;
+                for (offset = 0; offset + MINIMUM_SONG_PER_CHUNK <= queueSize; offset += MINIMUM_SONG_PER_CHUNK) {
+                    queue.addAll(mBinding.getQueueChunk(offset, MINIMUM_SONG_PER_CHUNK));
+                }
+                if (offset < queueSize) queue.addAll(mBinding.getQueueChunk(offset, queueSize - offset));
+            } catch (IllegalArgumentException ex) {
+                // maybe queue is modified --> just return what was read
+                Timber.d(ex, "Can't get queue chunk, return current queue with size: %d", queue.size());
+            }
+            return queue;
+        }
     }
 
     @Override
@@ -362,6 +421,10 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public void editQueue(List<Song> queue, int newPosition) {
+        if (queue.size() > MINIMUM_SONG_PER_CHUNK) {
+            sendBigQueue(queue, newPosition, FLAG_EDIT_QUEUE);
+            return;
+        }
         execute(() -> {
             try {
                 mBinding.editQueue(queue, newPosition);

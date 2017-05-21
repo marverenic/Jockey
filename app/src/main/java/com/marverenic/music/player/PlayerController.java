@@ -18,6 +18,10 @@ import rx.Single;
  */
 public interface PlayerController {
 
+    int MINIMUM_SONG_PER_CHUNK = 500;
+    int FLAG_SET_QUEUE = 0x0;
+    int FLAG_EDIT_QUEUE = 0x1;
+
     /**
      * Gets error messages from the service that can be displayed on the UI
      * @return An observable stream of user-presentable error messages
