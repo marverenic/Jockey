@@ -313,8 +313,9 @@
     <string name="rule_played_on">Fue jugado por última vez en</string>
     <string name="rule_played_after">Se ha jugado desde</string>
 
-    <string name="enable_multi_repeat_title">Enable Multi-Repeat</string>
-    <string name="multi_repeat_description">Multi-Repeat will play the current song back-to-back a certain number of times. When the next song starts, Multi-Repeat will be disabled.</string>
+    <string name="enable_multi_repeat_title">Activar Multi-Repetir</string>
+    <string name="multi_repeat_description">Multi-Repetir reproducirá la canción actual una tras otra
+        varias veces. Cuando se inicia la siguiente canción, Multi-Repetir se desactivará.</string>
     <string name="enable_sleep_timer">Temporizador de Apagado</string>
     <string name="confirm_sleep_timer_end">Temporizador de Apagado ha terminado</string>
     <string name="time_in_min_format">%1$d min</string>
