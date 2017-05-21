@@ -269,6 +269,23 @@
     <string name="equalizerPresetPrefix">Preajustado:</string>
     <string name="equalizerUnsupported">Su dispositivo no admite ecualizadores</string>
 
+    <!-- Color Names -->
+    <string name="color_grey">Gris</string>
+    <string name="color_red">Rojo</string>
+    <string name="color_orange">Nraranja</string>
+    <string name="color_yellow">Amarillo</string>
+    <string name="color_green">Verde</string>
+    <string name="color_cyan">Ciánico</string>
+    <string name="color_blue">Azul</string>
+    <string name="color_purple">Púrpura</string>
+    <string name="color_black">Negro</string>
+    <string name="color_teal">Turquesa</string>
+
+    <!-- Theme Names -->
+    <string name="theme_dark">Dark</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_auto">Automatic</string>
+
     <!-- Auto playlist Strings -->
     <string name="playlist_maximum_prefix">No permita más de</string>
     <string name="playlist_maximum_suffix">canciones</string>

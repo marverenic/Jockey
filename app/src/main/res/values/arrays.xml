@@ -3,11 +3,11 @@
 
     <!-- Settings Arrays -->
     <string-array name="pages">
-        <item>Playlists</item>
-        <item>Songs</item>
-        <item>Artists</item>
-        <item>Albums</item>
-        <item>Genres</item>
+        <item>@string/header_playlists</item>
+        <item>@string/header_songs</item>
+        <item>@string/header_artists</item>
+        <item>@string/header_albums</item>
+        <item>@string/header_genres</item>
     </string-array>
     <string-array name="page_values">
         <item>0</item>
@@ -17,15 +17,15 @@
         <item>4</item>
     </string-array>
     <string-array name="colors">
-        <item>Grey</item>
-        <item>Red</item>
-        <item>Orange</item>
-        <item>Yellow</item>
-        <item>Green</item>
-        <item>Cyan</item>
-        <item>Blue</item>
-        <item>Purple</item>
-        <item>Black</item>
+        <item>@string/color_grey</item>
+        <item>@string/color_red</item>
+        <item>@string/color_orange</item>
+        <item>@string/color_yellow</item>
+        <item>@string/color_green</item>
+        <item>@string/color_cyan</item>
+        <item>@string/color_blue</item>
+        <item>@string/color_purple</item>
+        <item>@string/color_black</item>
     </string-array>
     <string-array name="color_values">
         <item>0</item>
@@ -50,15 +50,15 @@
         <item>@color/primary_black</item>
     </integer-array>
     <string-array name="accents">
-        <item>Grey</item>
-        <item>Red</item>
-        <item>Orange</item>
-        <item>Yellow</item>
-        <item>Green</item>
-        <item>Cyan</item>
-        <item>Blue</item>
-        <item>Purple</item>
-        <item>Teal</item>
+        <item>@string/color_grey</item>
+        <item>@string/color_red</item>
+        <item>@string/color_orange</item>
+        <item>@string/color_yellow</item>
+        <item>@string/color_green</item>
+        <item>@string/color_cyan</item>
+        <item>@string/color_blue</item>
+        <item>@string/color_purple</item>
+        <item>@string/color_teal</item>
     </string-array>
     <string-array name="accent_values">
         <item>0</item>
@@ -83,9 +83,9 @@
         <item>@color/accent_black</item>
     </integer-array>
     <string-array name="themes">
-        <item name="0">Dark</item>
-        <item name="1">Light</item>
-        <item name="2">Automatic</item>
+        <item name="0">@string/theme_dark</item>
+        <item name="1">@string/theme_light</item>
+        <item name="2">@string/theme_auto</item>
     </string-array>
     <string-array name="theme_values">
         <item name="0">0</item>
