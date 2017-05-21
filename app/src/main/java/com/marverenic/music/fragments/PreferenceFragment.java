@@ -108,7 +108,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat
 
                     } else if (hasSystemEq && !Util.hasEqualizer()) {
                         // If we don't have any equalizers
-                        detail.setText(R.string.equalizerUnsupported);
+                        detail.setText(R.string.equalizer_unsupported);
                         detail.setVisibility(View.VISIBLE);
                         itemView.setEnabled(false);
                         title.setEnabled(false);
@@ -156,7 +156,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat
                 // equalizer, navigate to the built-in implementation
                 showEqualizerFragment();
             } else {
-                Toast.makeText(getActivity(), R.string.equalizerUnsupported, Toast.LENGTH_LONG)
+                Toast.makeText(getActivity(), R.string.equalizer_unsupported, Toast.LENGTH_LONG)
                         .show();
             }
             return true;
@@ -218,7 +218,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat
             Toast
                     .makeText(
                             getActivity(),
-                            R.string.equalizerUnsupported,
+                            R.string.equalizer_unsupported,
                             Toast.LENGTH_LONG)
                     .show();
         }

@@ -258,7 +258,7 @@
     <!-- Equalizer Strings -->
     <string name="header_equalizer">Ecualizador</string>
     <string name="equalizer_more_options_detail">Toque y mantenga presionado para obtener más opciones</string>
-    <string name="equalizerNoteSystem">Parece que tienes otra aplicación que gestiona los efectos
+    <string name="equalizer_conflict_note">Parece que tienes otra aplicación que gestiona los efectos
         de audio. Esto puede causar problemas con el ecualizador de Jockey, así que prepárate para
         apagarlo si observas un comportamiento inesperado.
         \n\nPara utilizar el ecualizador global, deshabilite el ecualizador de Jockey y toque
@@ -266,8 +266,8 @@
         \nPara volver a esta página, pulse y mantenga presionado el botón Ecualizador en la págin
         a de configuración.
     </string>
-    <string name="equalizerPresetPrefix">Preajustado:</string>
-    <string name="equalizerUnsupported">Su dispositivo no admite ecualizadores</string>
+    <string name="equalizer_preset_prefix">Preajustado:</string>
+    <string name="equalizer_unsupported">Su dispositivo no admite ecualizadores</string>
 
     <!-- Color Names -->
     <string name="color_grey">Gris</string>

@@ -23,7 +23,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:text="@string/equalizerPresetPrefix"/>
+                android:text="@string/equalizer_preset_prefix"/>
 
             <Spinner
                 android:id="@+id/eq_preset_spinner"

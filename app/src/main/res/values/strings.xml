@@ -275,15 +275,15 @@
     <!-- Equalizer Strings -->
     <string name="header_equalizer">Equalizer</string>
     <string name="equalizer_more_options_detail">Tap and hold for more options</string>
-    <string name="equalizerNoteSystem">It looks like you have another app that manages audio
+    <string name="equalizer_conflict_note">It looks like you have another app that manages audio
         effects. This may cause problems with Jockey\'s equalizer, so be prepared to
         turn this off if you notice unexpected behavior.
         \n\nTo use the global equalizer, disable Jockey\'s equalizer and tap Equalizer in the
         settings page.
         \nTo return to this page, tap and hold Equalizer in the settings page.
     </string>
-    <string name="equalizerPresetPrefix">Preset:</string>
-    <string name="equalizerUnsupported">Your device doesn\'t support equalizers</string>
+    <string name="equalizer_preset_prefix">Preset:</string>
+    <string name="equalizer_unsupported">Your device doesn\'t support equalizers</string>
 
     <!-- Preference keys -->
     <string name="pref_key_show_first_start" translatable="false">showFirstStart</string>
