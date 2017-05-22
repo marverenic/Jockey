@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-    <string name="app_name" translatable="false">Jockey</string>
+    <string name="app_name" translatable="false" tools:ignore="MissingTranslation">Jockey</string>
+
     <string name="widget_square_name">Jockey Artwork</string>
     <string name="widget_wide_name">Jockey Wide</string>
     <string name="widget_compact_name">Jockey Compact</string>
