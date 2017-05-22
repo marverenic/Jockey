@@ -18,7 +18,7 @@ interface IPlayerService {
     void setQueue(in List<Song> newQueue, int newPosition);
     void beginBigQueue();
     void sendQueueChunk(in List<Song> chunk);
-    void endBigQueue(int flag, int newPosition);
+    void endBigQueue(boolean editQueue, int newPosition);
     void changeSong(int position);
     void editQueue(in List<Song> newQueue, int newPosition);
     void queueNext(in Song song);

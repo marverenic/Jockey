@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import dagger.internal.Preconditions;
 import timber.log.Timber;
 
 public class PlayerService extends Service implements MusicPlayer.OnPlaybackChangeListener {
@@ -506,17 +505,25 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public void sendQueueChunk(List<Song> chunk) throws RemoteException {
-            Preconditions.checkNotNull(mQueueTemp).addAll(chunk);
+            List<Song> queue = mQueueTemp;
+            if (queue == null) {
+                throw new IllegalStateException("Must call beginBigQueue() to start a transaction");
+            }
+            queue.addAll(chunk);
         }
 
         @Override
-        public void endBigQueue(int flag, int newPosition) throws RemoteException {
-            List<Song> queue = Preconditions.checkNotNull(mQueueTemp);
+        public void endBigQueue(boolean editQueue, int newPosition) throws RemoteException {
+            List<Song> queue = mQueueTemp;
             mQueueTemp = null;
-            if (flag == PlayerController.FLAG_SET_QUEUE)
-                setQueue(queue, newPosition);
-            else if (flag == PlayerController.FLAG_EDIT_QUEUE)
+            if (queue == null) {
+                throw new IllegalStateException("Must call beginBigQueue() to start a transaction");
+            }
+            if (editQueue) {
                 editQueue(queue, newPosition);
+            } else {
+                setQueue(queue, newPosition);
+            }
         }
 
         @Override
