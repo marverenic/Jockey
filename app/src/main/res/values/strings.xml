@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-    <string name="app_name" translatable="false">Jockey</string>
+    <string name="app_name" translatable="false" tools:ignore="MissingTranslation">Jockey</string>
+
     <string name="widget_square_name">Jockey Artwork</string>
     <string name="widget_wide_name">Jockey Wide</string>
     <string name="widget_compact_name">Jockey Compact</string>
@@ -38,9 +39,9 @@
     </string>
 
     <!-- Formatted Strings -->
-    <string name="format_time">%1$s:%2$s</string>
-    <string name="format_time_hours">%1$s:%2$s:%3$s</string>
-    <string name="format_compact_song_info">%1$s - %2$s</string>
+    <string name="format_time" translatable="false">%1$s:%2$s</string>
+    <string name="format_time_hours" translatable="false">%1$s:%2$s:%3$s</string>
+    <string name="format_compact_song_info" translatable="false">%1$s – %2$s</string>
 
     <!-- Menu actions -->
     <string name="action_refresh">Refresh Library</string>
@@ -94,7 +95,7 @@
     <string name="action_add_rule">Add rule</string>
     <string name="action_discard_changes">Discard changes</string>
     <string name="action_edit_playlist_rules">Edit filters</string>
-    <string name="action_open_in_last_fm">Last.fm</string>
+    <string name="action_open_in_last_fm" translatable="false">Last.fm</string>
     <string name="action_shuffle_all">Shuffle all</string>
 
     <!-- Confirmation messages -->
@@ -132,6 +133,10 @@
     <string name="message_sorted_playlist_date_played">Sorted &#8220;%1$s&#8221; by date played</string>
     <string name="header_add_song_name_to_playlist">Add &#8220;%1$s&#8221; to playlist</string>
     <string name="confirm_add_songs">Added %1$d songs to playlist &#8220;%2$s&#8221;</string>
+    <string name="playlist_confirm_duplicate">&#8220;%1$s&#8221; already contains &#8220;%2$s&#8221;.
+        Do you want to add it again?</string>
+    <string name="playlist_confirm_all_duplicates">This playlist already contains all of these
+        songs. Adding them again will result in %d duplicated entries.</string>
     <string name="confirm_dir_include_excluded">
         &#8220;%1$s&#8221; is already being excluded.
         Do you want to move it to your included folders?
@@ -190,48 +195,48 @@
     <string name="about_description">Jockey is a music player for Android 4.1 and higher focused on
         simplicity, performance, and design distributed under an Apache 2.0 license.</string>
     <string name="lastfm_header">Artist information is provided by</string>
-    <string name="lastfm_description">Last.fm</string>
+    <string name="lastfm_description" translatable="false">Last.fm</string>
     <string name="uses_header">Jockey also uses the following open-source libraries:</string>
     <string name="uses_aosp_header">Android Support Libraries</string>
     <string name="uses_aosp_detail">Support-v4 25.3.1, Appcompat-v7 25.3.1, RecyclerView 25.3.1,
         CardView 25.3.1, Design 25.3.1, Palette 25.3.1, Preference-v14 25.3.1; distributed by the
         Android Open Source Project under an Apache License, Version 2.0</string>
-    <string name="uses_exoplayer_header">ExoPlayer</string>
+    <string name="uses_exoplayer_header" translatable="false">ExoPlayer</string>
     <string name="uses_exoplayer_detail">Version 2.3.1; distributed by Google Inc. under an Apache
         License, Version 2.0</string>
-    <string name="uses_libflac_header">libFLAC</string>
+    <string name="uses_libflac_header" translatable="false">libFLAC</string>
     <string name="uses_libflac_detail">Version 1.3.1; distributed by the Xiph.Org Foundation under
         a BSD License</string>
-    <string name="uses_dagger_header">Dagger</string>
+    <string name="uses_dagger_header" translatable="false">Dagger</string>
     <string name="uses_dagger_detail">Version 2.6; distributed by Google Inc. and Square Inc. under
         an Apache License, Version 2.0</string>
-    <string name="uses_rx_java_header">RxJava</string>
+    <string name="uses_rx_java_header" translatable="false">RxJava</string>
     <string name="uses_rx_java_detail">Version 1.6.1; distributed by Netflix, Inc. under an Apache
         License, Version 2.0</string>
-    <string name="uses_rx_android_header">RxAndroid</string>
+    <string name="uses_rx_android_header" translatable="false">RxAndroid</string>
     <string name="uses_rx_android_detail">Version 1.2.1; distributed by RxAndroid under an Apache
         License, Version 2.0</string>
-    <string name="uses_rx_permissions_header">RxPermissions</string>
+    <string name="uses_rx_permissions_header" translatable="false">RxPermissions</string>
     <string name="uses_rx_permissions_detail">Version 0.7.0; distributed by Thomas Bruyelle
         (tbruyelle) under an Apache License, Version 2.0</string>
-    <string name="uses_retrofit_header">Retrofit</string>
+    <string name="uses_retrofit_header" translatable="false">Retrofit</string>
     <string name="uses_retrofit_detail">Version 2.0.2; distributed by Square, Inc. under an Apache
         License, Version 2.0</string>
-    <string name="uses_gson_header">Gson</string>
+    <string name="uses_gson_header" translatable="false">Gson</string>
     <string name="uses_gson_detail">Version 2.7; distributed by Google, Inc. under an Apache
         License, Version 2.0</string>
-    <string name="uses_glide_header">Glide</string>
+    <string name="uses_glide_header" translatable="false">Glide</string>
     <string name="uses_glide_detail">Version 3.7.0; distributed by Google, Inc. under a BSD License</string>
-    <string name="uses_vert_slider_header">VerticalSeekBar</string>
+    <string name="uses_vert_slider_header" translatable="false">VerticalSeekBar</string>
     <string name="uses_vert_slider_detail">Version 0.5.2; distributed by Haruki Hasegawa
         under an Apache License, Version 2.0</string>
-    <string name="uses_fastscroll_header">RecyclerView FastScroll</string>
+    <string name="uses_fastscroll_header" translatable="false">RecyclerView FastScroll</string>
     <string name="uses_fastscroll_detail">Version 1.0.16; distributed by Tim Malseed under an
         Apache License, Version 2.0</string>
-    <string name="uses_seek_arc_header">SeekArc</string>
+    <string name="uses_seek_arc_header" translatable="false">SeekArc</string>
     <string name="uses_seek_arc_detail">Version 1.1; distributed by Triggertrap Ltd (Neil Davies)
         under an MIT License</string>
-    <string name="uses_timber_header">Timber</string>
+    <string name="uses_timber_header" translatable="false">Timber</string>
     <string name="uses_timber_detail">Version 4.1.2; distributed by Jake Wharton under an Apache
         License, Version 2.0</string>
 
@@ -271,15 +276,15 @@
     <!-- Equalizer Strings -->
     <string name="header_equalizer">Equalizer</string>
     <string name="equalizer_more_options_detail">Tap and hold for more options</string>
-    <string name="equalizerNoteSystem">It looks like you have another app that manages audio
+    <string name="equalizer_conflict_note">It looks like you have another app that manages audio
         effects. This may cause problems with Jockey\'s equalizer, so be prepared to
         turn this off if you notice unexpected behavior.
         \n\nTo use the global equalizer, disable Jockey\'s equalizer and tap Equalizer in the
         settings page.
         \nTo return to this page, tap and hold Equalizer in the settings page.
     </string>
-    <string name="equalizerPresetPrefix">Preset:</string>
-    <string name="equalizerUnsupported">Your device doesn\'t support equalizers</string>
+    <string name="equalizer_preset_prefix">Preset:</string>
+    <string name="equalizer_unsupported">Your device doesn\'t support equalizers</string>
 
     <!-- Preference keys -->
     <string name="pref_key_show_first_start" translatable="false">showFirstStart</string>
@@ -304,6 +309,23 @@
     <string name="pref_key_last_sleep_timer" translatable="false">Player.defaultSleepTimer</string>
     <string name="pref_key_included_dirs" translatable="false">Library.includedDirs</string>
     <string name="pref_key_excluded_dirs" translatable="false">Library.excludedDirs</string>
+
+    <!-- Color Names -->
+    <string name="color_grey">Grey</string>
+    <string name="color_red">Red</string>
+    <string name="color_orange">Orange</string>
+    <string name="color_yellow">Yellow</string>
+    <string name="color_green">Green</string>
+    <string name="color_cyan">Cyan</string>
+    <string name="color_blue">Blue</string>
+    <string name="color_purple">Purple</string>
+    <string name="color_black">Black</string>
+    <string name="color_teal">Teal</string>
+
+    <!-- Theme Names -->
+    <string name="theme_dark">Dark</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_auto">Automatic</string>
 
     <!-- Auto playlist Strings -->
     <string name="playlist_maximum_prefix">Allow no more than</string>

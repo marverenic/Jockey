@@ -6,6 +6,8 @@ import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.app.NightMode;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -34,6 +36,10 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     private int mPrimaryColor;
     @AccentTheme
     private int mAccentColor;
+    @NightMode
+    private int mBackgroundColor;
+
+    private boolean mNightMode;
 
     @Inject PreferenceStore _mPreferenceStore;
     @Inject ThemeStore _mThemeStore;
@@ -49,6 +55,9 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         _mThemeStore.setTheme(this);
         mPrimaryColor = _mPreferenceStore.getPrimaryColor();
         mAccentColor = _mPreferenceStore.getAccentColor();
+        mBackgroundColor = _mThemeStore.getNightMode();
+
+        mNightMode = getResources().getBoolean(R.bool.is_night);
 
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -127,8 +136,12 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         _mThemeStore.setTheme(this);
         boolean primaryDiff = mPrimaryColor != _mPreferenceStore.getPrimaryColor();
         boolean accentDiff = mAccentColor != _mPreferenceStore.getAccentColor();
+        boolean backgroundDiff = mBackgroundColor != _mThemeStore.getNightMode();
 
-        if (primaryDiff || accentDiff) {
+        boolean nightDiff = mNightMode != getResources().getBoolean(R.bool.is_night);
+
+        if (primaryDiff || accentDiff || backgroundDiff
+                || (mBackgroundColor == AppCompatDelegate.MODE_NIGHT_AUTO && nightDiff)) {
             recreate();
         }
     }

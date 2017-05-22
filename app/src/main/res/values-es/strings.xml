@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Widget names -->
+    <string name="widget_square_name">Jockey Illustraciones</string>
+    <string name="widget_wide_name">Jockey Amplio</string>
+    <string name="widget_compact_name">Jockey Compacto</string>
+
+    <!-- Activity titles -->
+    <string name="header_playlists">Listas reproducción</string>
+    <string name="header_songs">Canciones</string>
+    <string name="header_artists">Artistas</string>
+    <string name="header_albums">Álbumes</string>
+    <string name="header_genres">Géneros</string>
+    <string name="header_now_playing">Jugando Ahora</string>
+    <string name="header_about">Sobre</string>
+    <string name="action_settings">Preferencias</string>
+    <string name="header_settings">Preferencias</string>
+    <string name="header_search">Buscar</string>
+
+    <!-- Data types -->
+    <string name="playlist">Listas reproducción</string>
+    <string name="playlist_auto">Lista Reproducción Inteligente</string>
+
+    <!-- Other headers -->
+    <string name="header_create_playlist">Crear lista reproducción</string>
+    <string name="header_add_queue_to_playlist">Añadir cola a lista reproducción</string>
+    <string name="playlist_auto_new">Crear Lista Inteligente</string>
+    <string name="playlist_auto_choose_by">Elija canciones por</string>
+
+    <!-- First start Strings -->
+    <string name="first_launch_title">Bienvenido a Jockey</string>
+    <string name="first_launch_detail"><![CDATA[Al utilizar esta aplicación, acepta enviar informes
+        de error anónimos.
+
+        <br /><br />Todos los datos recopilados son puramente anónimos y ayudan en gran medida a
+        mejorar Jockey. Esta información se mantendrá confidencial con Marverenic y está sujeta a la
+        <a href="http://try.crashlytics.com/terms/">política de privacidad de Crashlytics</a>]]>.
+    </string>
+
+    <!-- Menu actions -->
+    <string name="action_refresh">Refrescar Biblioteca</string>
+    <string name="action_export_playlist">Guardar cola como lista reproducción&#8230;</string>
+    <string name="action_set_sleep_timer">Temporizador de Apagado&#8230;</string>
+    <string name="action_sort">Ordenar&#8230;</string>
+    <string name="action_sort_random">Aleatorizar</string>
+    <string name="action_sort_name">Ordenar por nombre</string>
+    <string name="action_sort_artist">Ordenar por artista</string>
+    <string name="action_sort_album">Ordenar por álbum</string>
+    <string name="action_sort_play">Ordenar por número de juegos</string>
+    <string name="action_sort_skip">Ordenar por número de saltos</string>
+    <string name="action_sort_date_added">Ordenar por fecha añadida</string>
+    <string name="action_sort_date_played">Ordenar por fecha jugada</string>
+    <string name="action_disable_shuffle">Desactivar aleatorio</string>
+    <string name="action_enable_shuffle">Encender aleatorio</string>
+    <string name="action_enable_repeat">Encender repetición</string>
+    <string name="action_disable_sleep_timer">Desactivar el Temporizador de Apagado</string>
+    <string name="action_add_queue_to_playlist">Añadir cola a la lista reproducción&#8230;</string>
+    <string name="action_clear_queue">Vaciar cola</string>
+    <string name="action_done">Hecho</string>
+    <string name="action_select">Seleccionar</string>
+    <string name="action_navigate_up">Subir</string>
+    <string name="action_include">Incluir carpeta</string>
+    <string name="action_exclude">Excluir carpeta</string>
+    <string name="action_remove">Eliminar</string>
+
+    <!-- Item menu actions -->
+    <string name="action_queue_next">Reproducir siguiente</string>
+    <string name="action_queue_last">Reproducir último</string>
+    <string name="action_navigate_to_artist">Ir al artista</string>
+    <string name="action_navigate_to_album">Ir al álbum</string>
+    <string name="action_add_to_playlist">Agregar a la lista&#8230;</string>
+    <string name="action_delete">Borrar</string>
+    <string name="action_edit_smart_playlist">Editar&#8230;</string>
+
+    <!-- Other Actions -->
+    <string name="action_skip">Saltarse</string>
+    <string name="action_play">Reproducir</string>
+    <string name="action_pause">Pausar</string>
+    <string name="action_previous">Anterior</string>
+    <string name="action_undo">Deshacer</string>
+    <string name="action_create">Crear</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_add">Añadir</string>
+    <string name="action_add_new">Añadir nuevo</string>
+    <string name="action_agree">Acordar</string>
+    <string name="action_try_again">Inténtalo de nuevo</string>
+    <string name="action_open_settings">Abrir Configuración</string>
+    <string name="action_make_new_playlist">Crear nueva lista reproducción&#8230;</string>
+    <string name="action_add_rule">Agregar regla</string>
+    <string name="action_discard_changes">descartar los cambios</string>
+    <string name="action_edit_playlist_rules">Editar filtros</string>
+    <string name="action_shuffle_all">Baraja todos</string>
+
+    <!-- Confirmation messages -->
+    <string name="confirm_disable_shuffle">Aleatorio desactivado</string>
+    <string name="confirm_enable_shuffle">Aleatorio activado</string>
+    <string name="confirm_disable_repeat">Repetir desactivado</string>
+    <string name="confirm_enable_repeat">Repetir activado</string>
+    <string name="confirm_enable_multi_repeat">Repetición múltiple (%d) activada</string>
+    <string name="confirm_enable_repeat_one">Repetir uno activado</string>
+    <string name="confirm_disable_sleep_timer">Desactivado el Temporizador de Apagado</string>
+    <string name="confirm_refresh_library">Biblioteca actualizada</string>
+    <string name="confirm_clear_queue">Cola borrada</string>
+    <string name="confirm_removed_rule">Regla eliminada</string>
+
+    <!-- Error messages -->
+    <string name="message_refresh_library_no_permission">Jockey no tiene permiso para leer
+        tu música</string>
+    <string name="message_play_error_not_found">Jockey no pudo encontrar &#8220;%1$s&#8221;</string>
+    <string name="message_play_error_io_exception">&#8220;%1$s&#8221; no se pudo reproducir</string>
+    <string name="error_hint_duplicate_playlist">Escriba un nombre de lista reproducción único</string>
+    <string name="error_hint_empty_playlist">Escriba un nombre de lista reproducción</string>
+
+    <!-- Formatted Messages -->
+    <string name="message_added_song">Añadió &#8220;%1$s&#8221; a &#8220;%2$s&#8221;</string>
+    <string name="message_created_playlist">Creado lista reproducción &#8220;%1$s&#8221;</string>
+    <string name="message_removed_playlist">Eliminado lista reproducción &#8220;%1$s&#8221;</string>
+    <string name="message_removed_song">Quitó canción &#8220;%1$s&#8221;</string>
+    <string name="message_sorted_playlist_random">Asignó #8220;%1$s&#8221;</string>
+    <string name="message_sorted_playlist_name">Ordenó &#8220;%1$s&#8221; por nombre</string>
+    <string name="message_sorted_playlist_artist">Ordenó &#8220;%1$s&#8221; por nombre del artista</string>
+    <string name="message_sorted_playlist_album">Ordenó &#8220;%1$s&#8221; por nombre del álbum</string>
+    <string name="message_sorted_playlist_play">Ordenó &#8220;%1$s&#8221; por número de juegos</string>
+    <string name="message_sorted_playlist_skip">Ordenó &#8220;%1$s&#8221; por número de saltos</string>
+    <string name="message_sorted_playlist_date_added">Ordenó &#8220;%1$s&#8221; por fecha agregada</string>
+    <string name="message_sorted_playlist_date_played">Ordenó &#8220;%1$s&#8221; por fecha jugada</string>
+    <string name="header_add_song_name_to_playlist">Agregar &#8220;%1$s&#8221; a una lista reproducción</string>
+    <string name="confirm_add_songs">Se agregaron %1$d canciones a la lista de reproducción &#8220;%2$s&#8221;</string>
+    <string name="playlist_confirm_duplicate">&#8220;%1$s&#8221; ya contiene &#8220;%2$s&#8221;.
+         ¿Quieres añadirlo de nuevo?
+    </string>
+    <string name="playlist_confirm_all_duplicates">Esta lista de reproducción ya contiene todas
+        estas canciones. Si se añaden de nuevo, se obtendrán% d entradas duplicadas.</string>
+    <string name="confirm_dir_include_excluded">
+        &#8220;%1$s&#8221; ya está siendo excluida.
+        ¿Desea moverlo a las carpetas incluidas?
+    </string>
+    <string name="confirm_dir_exclude_included">
+        &#8220;%1$s&#8221; ya está incluida.
+         ¿Desea moverlo a sus carpetas excluidas?
+    </string>
+    <string name="confirm_dir_already_excluded">
+        &#8220;%1$s&#8221; ya está siendo excluida.
+    </string>
+    <string name="confirm_dir_already_included">
+        &#8220;%1$s&#8221; ya está incluida.
+    </string>
+    <string name="message_removed_directory">Retirada la carpeta &#8220;%1$s&#8221;</string>
+
+    <!-- Empty state & unknown strings -->
+    <string name="nothing_playing">Nada está jugando</string>
+    <string name="unknown_artist">Artista desconocido</string>
+    <string name="unknown_album">Álbum desconocido</string>
+    <string name="unknown">Desconocido</string>
+    <string name="empty_no_permission">Jockey necesita permiso para leer su biblioteca de música</string>
+    <string name="empty_no_permission_detail">To show your music, grant Jockey access to storage</string>
+    <string name="error_no_permission_dirs">Para mostrar su música, conceda a Jockey acceso a almacenamiento</string>
+    <string name="empty">No podría encontrar ninguna música aquí</string>
+    <string name="empty_detail">Puede sincronizar canciones desde su computadora o descargarlas desde Internet</string>
+    <string name="empty_genres">No podría encontrar ningún género</string>
+    <string name="empty_genres_detail">Asegúrate de que tu música esté correctamente etiquetada</string>
+    <string name="empty_playlists">No tienes listas de reproducción</string>
+    <string name="empty_playlists_detail">Puede crear uno nuevo presionando el botón &#8220;+&#8221;</string>
+    <string name="empty_playlist">Esta lista de reproducción está vacía</string>
+    <string name="empty_playlist_detail">Puede agregar canciones desde la página de la biblioteca</string>
+    <string name="empty_auto_playlist">Esta lista de reproducción está vacía</string>
+    <string name="empty_auto_playlist_detail">No hay canciones que coincidan con tus filtros</string>
+    <string name="empty_search">No se han encontrado resultados</string>
+    <string name="empty_queue">Nada está jugando</string>
+    <string name="empty_queue_detail">Puede reproducir música desde la página de la biblioteca</string>
+    <string name="empty_error_album">No se pudo cargar el álbum</string>
+    <string name="empty_error_artist">No se pudo cargar al artista</string>
+    <string name="empty_error_genre">No se puede cargar el género</string>
+    <string name="empty_excluded_dirs">No se excluyen carpetas</string>
+    <string name="empty_excluded_dirs_detail">
+        Para restringir Jockey a no buscar música en ciertas carpetas, presione el botón
+        &#8220;+&#8221; para agregar una carpeta excluida
+    </string>
+    <string name="empty_included_dirs">Se incluyen todas las carpetas</string>
+    <string name="empty_included_dirs_detail">
+        Para restringir Jockey a buscar solo música en ciertas carpetas, presione el botón
+        &#8220;+&#8221; para agregar una carpeta incluida\n\n
+        Si no especificas ninguna carpeta incluida, toda tu música aparecerá en Jockey
+    </string>
+    <string name="empty_directory">Esta carpeta no tiene ninguna carpeta</string>
+
+    <!-- About Activity Strings -->
+    <string name="about_version">Versión</string>
+    <string name="about_description">Jockey es un reproductor de música para Android 4.1 y superior
+        centrado en la simplicidad, el rendimiento y el diseño distribuido bajo una licencia
+        de Apache 2.0.</string>
+    <string name="lastfm_header">La información del artista es proporcionada por</string>
+    <string name="uses_header">Jockey también utiliza las siguientes bibliotecas de código abierto:</string>
+    <string name="uses_aosp_header">Bibliotecas de Soporte de Android</string>
+    <string name="uses_aosp_detail">Support-v4 25.3.1, Appcompat-v7 25.3.1, RecyclerView 25.3.1,
+        CardView 25.3.1, Design 25.3.1, Palette 25.3.1, Preference-v14 25.3.1; distribuido por
+        Android Open Source Project bajo una Licencia Apache, Versión 2.0</string>
+    <string name="uses_exoplayer_detail">Versión 2.3.1; distribuido por Google Inc. bajo una
+        Licencia Apache, Versión 2.0</string>
+    <string name="uses_libflac_detail">Versión 1.3.1; distribuido por la Fundación Xiph.Org bajo una
+        Licencia BSD</string>
+    <string name="uses_dagger_detail">Versión 2.6; distribuido por Google Inc. y Square Inc. bajo
+        una Licencia Apache, Versión 2.0</string>
+    <string name="uses_rx_java_detail">Versión 1.6.1; distribuido por Netflix, Inc. bajo una
+        Licencia Apache, Versión 2.0</string>
+    <string name="uses_rx_android_detail">Versión 1.2.1;distribuido por RxAndroid bajo una
+        Licencia Apache, Versión 2.0</string>
+    <string name="uses_rx_permissions_detail">Versión 0.7.0; distribuido por Thomas Bruyelle
+        (tbruyelle) bajo una Licencia Apache, Versión 2.0</string>
+    <string name="uses_retrofit_detail">Versión 2.0.2; distribuido por Square, Inc. bajo una
+        Licencia Apache, Versión 2.0</string>
+    <string name="uses_gson_detail">Versión 2.7; distribuido por Google, Inc. bajo una
+        Licencia Apache, Versión 2.0</string>
+    <string name="uses_glide_detail">Versión 3.7.0; distribuido por Google, Inc. bajo una Licencia BSD</string>
+    <string name="uses_vert_slider_detail">Versión 0.5.2; distribuido por Haruki Hasegawa bajo una
+        Licencia Apache, Versión 2.0</string>
+    <string name="uses_fastscroll_detail">Versión 1.0.16; Distribuido por Tim Malseed bajo una
+        Licencia Apache, Versión 2.0</string>
+    <string name="uses_seek_arc_detail">Versión 1.1; distribuido por Triggertrap Ltd
+        (Neil Davies) bajo una licencia MIT</string>
+    <string name="uses_timber_detail">Versión 4.1.2; distribuido por Jake Wharton bajo una Licencia
+        Apache, Versión 2.0</string>
+
+    <!-- Preference Strings -->
+    <string name="settings_category_general">General</string>
+    <string name="appearance_header">Apariencia</string>
+    <string name="pref_category_library">Biblioteca</string>
+    <string name="playback_header">Reproducción</string>
+    <string name="default_page_pref">Página por Defecto</string>
+    <string name="theme_primary">Color Primario</string>
+    <string name="theme_accent">Color del Acento</string>
+    <string name="theme_base">Color de Fondo</string>
+    <string name="add_shortcut">Actualizar icono del lanzador</string>
+    <string name="add_shortcut_already_matched">Su ícono de lanzador ya coincide con su tema actual</string>
+    <string name="add_shortcut_description">¿Quieres cambiar el color del icono del lanzador de Jockey para que coincida con tu tema actual?
+        \n\nEsto hará que Jockey se reinicie y eliminará cualquier acceso directo existente a Jockey desde su pantalla de inicio.</string>
+    <string name="switch_to_now_playing">Abrir Reproducción</string>
+    <string name="switch_to_now_playing_detail_on">Cuando se elige una canción nueva, se abrirá la página Reproducción en curso</string>
+    <string name="switch_to_now_playing_detail_off">Cambiar canciones no se desplazará a otra página</string>
+    <string name="use_mobile">Utilizar datos móviles</string>
+    <string name="use_mobile_description_on">Las ilustraciones del álbum y otros datos siempre se descargarán</string>
+    <string name="use_mobile_description_off">Las ilustraciones del álbum y otros datos sólo se descargarán en Wi-Fi</string>
+    <string name="enable_additional_logging_detailed">Ayuda a mejorar Jockey enviando datos de uso anónimos</string>
+    <string name="logging_on">Los datos de uso e información de error anónimos se enviarán a Marverenic</string>
+    <string name="logging_off">Sólo se enviará información de error anónima a Marverenic</string>
+    <string name="logging_description">Ayuda a mejorar Jockey</string>
+    <string name="pref_directory_include">Incluir carpetas</string>
+    <string name="pref_directory_exclude">Excluir carpetas</string>
+    <string name="pref_equalizer">Ecualizador</string>
+    <string name="pref_resume_on_connect">Reproducir al conectar auriculares</string>
+    <string name="pref_resume_on_connect_detail_on">Al conectar los auriculares se reanudará la reproducción si se está ejecutando Jockey</string>
+    <string name="pref_resume_on_connect_detail_off">Al conectar los auriculares no se reanudará la reproducción</string>
+    <string name="gesture_description">Activar gestos de reproducción</string>
+    <string name="gesture_detail">Desliza la imagen del álbum para saltar canciones,
+        o toca para reproducir / pausar música</string>
+
+    <!-- Equalizer Strings -->
+    <string name="header_equalizer">Ecualizador</string>
+    <string name="equalizer_more_options_detail">Toque y mantenga presionado para obtener más opciones</string>
+    <string name="equalizer_conflict_note">Parece que tienes otra aplicación que gestiona los efectos
+        de audio. Esto puede causar problemas con el ecualizador de Jockey, así que prepárate para
+        apagarlo si observas un comportamiento inesperado.
+        \n\nPara utilizar el ecualizador global, deshabilite el ecualizador de Jockey y toque
+        Ecualizador en la página de configuración.
+        \nPara volver a esta página, pulse y mantenga presionado el botón Ecualizador en la págin
+        a de configuración.
+    </string>
+    <string name="equalizer_preset_prefix">Preajustado:</string>
+    <string name="equalizer_unsupported">Su dispositivo no admite ecualizadores</string>
+
+    <!-- Color Names -->
+    <string name="color_grey">Gris</string>
+    <string name="color_red">Rojo</string>
+    <string name="color_orange">Nraranja</string>
+    <string name="color_yellow">Amarillo</string>
+    <string name="color_green">Verde</string>
+    <string name="color_cyan">Ciánico</string>
+    <string name="color_blue">Azul</string>
+    <string name="color_purple">Púrpura</string>
+    <string name="color_black">Negro</string>
+    <string name="color_teal">Turquesa</string>
+
+    <!-- Theme Names -->
+    <string name="theme_dark">Dark</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_auto">Automatic</string>
+
+    <!-- Auto playlist Strings -->
+    <string name="playlist_maximum_prefix">No permita más de</string>
+    <string name="playlist_maximum_suffix">canciones</string>
+    <string name="playlist_chosen_by_prefix">elegidas por</string>
+    <string name="match_all_rules">Match all rules</string>
+    <string-array name="auto_plist_choose_by">
+        <item>Random</item>
+        <item>Nombre</item>
+        <item>Más jugado</item>
+        <item>Menos jugado</item>
+        <item>Más saltado</item>
+        <item>Menos saltado</item>
+        <item>Recientemente agregado</item>
+        <item>Lo menos recientemente agregado</item>
+        <item>Reproducida más recientemente</item>
+        <item>Lo menos recientemente jugado</item>
+    </string-array>
+    <string-array name="auto_plist_types">
+        <item>Lista de reproducción</item>
+        <item>Canción</item>
+        <item>Artista</item>
+        <item>Álbum</item>
+        <item>Género</item>
+    </string-array>
+
+    <string name="rule_is">Es</string>
+    <string name="rule_isnt">No es</string>
+    <string name="rule_name_is">Nombre es</string>
+    <string name="rule_name_isnt">Nombre no es</string>
+    <string name="rule_name_contains">Nombre contiene</string>
+    <string name="rule_name_doesnt_contain">Nombre no contiene</string>
+    <string name="rule_play_count_lt">Tiene conteo de juego inferior a</string>
+    <string name="rule_play_count_eq">Tiene conteo de juego igual a</string>
+    <string name="rule_play_count_gt">Tiene conteo de juego mayor que</string>
+    <string name="rule_skip_count_lt">Tiene conteo de salto inferior a</string>
+    <string name="rule_skip_count_eq">Tiene conteo de salto igual a</string>
+    <string name="rule_skip_count_gt">Tiene conteo de salto mayor que</string>
+    <string name="rule_added_before">Fue añadido antes</string>
+    <string name="rule_added_on">Fue añadido en</string>
+    <string name="rule_added_after">Fue añadido después de</string>
+    <string name="rule_played_before">Fue jugado por última vez antes</string>
+    <string name="rule_played_on">Fue jugado por última vez en</string>
+    <string name="rule_played_after">Se ha jugado desde</string>
+
+    <string name="enable_multi_repeat_title">Activar Multi-Repetir</string>
+    <string name="multi_repeat_description">Multi-Repetir reproducirá la canción actual una tras otra
+        varias veces. Cuando se inicia la siguiente canción, Multi-Repetir se desactivará.</string>
+    <string name="enable_sleep_timer">Temporizador de Apagado</string>
+    <string name="confirm_sleep_timer_end">Temporizador de Apagado ha terminado</string>
+    <string name="time_in_min_format">%1$d min</string>
+
+    <!-- Hints -->
+    <string name="hint_playlist_name">Nombre de la lista</string>
+
+    <!-- Accessibility Content Descriptions -->
+    <string name="button_play_description">Botón de play</string>
+    <string name="button_previous_description">Botón de canción anterior</string>
+    <string name="button_skip_description">Botón de la siguiente canción</string>
+    <string name="description_album_art">Portada del álbum</string>
+
+</resources>

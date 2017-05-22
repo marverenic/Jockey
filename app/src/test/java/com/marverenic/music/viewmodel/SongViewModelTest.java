@@ -79,7 +79,7 @@ public class SongViewModelTest {
         mSubject.setIndex(0);
 
         assertEquals("Song", mSubject.getTitle());
-        assertEquals("Artist - Album", mSubject.getDetail());
+        assertEquals("Artist – Album", mSubject.getDetail());
     }
 
     @Test
