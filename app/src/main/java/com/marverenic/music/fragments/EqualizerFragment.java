@@ -102,7 +102,7 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
         // the user of possible issues by using Jockey's built-in equalizer
         if (Util.getSystemEqIntent(getActivity()) != null) {
             ((TextView) layout.findViewById(R.id.equalizer_notes))
-                    .setText(R.string.equalizerNoteSystem);
+                    .setText(R.string.equalizer_conflict_note);
         }
 
         return layout;

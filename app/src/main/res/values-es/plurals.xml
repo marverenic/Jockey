@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <plurals name="alert_confirm_duplicates">
+        <item quantity="one">¿Añadir canción duplicada?</item>
+        <item quantity="other">¿Añadir canciones duplicadas?</item>
+    </plurals>
+    <plurals name="playlist_confirm_some_duplicates">
+        <item quantity="one">Esta lista de reproducción ya contiene una de estas canciones. Si lo
+            agrega de nuevo, esta lista de reproducción tendrá una entrada duplicada.</item>
+        <item quantity="other">Esta lista de reproducción ya contiene algunas de estas canciones. Si
+            los agrega de nuevo, esta lista de reproducción tendrá %d entradas duplicadas.</item>
+    </plurals>
+    <plurals name="playlist_positive_add_duplicates">
+        <item quantity="one">Añadir duplicada</item>
+        <item quantity="other">Añadir duplicadas</item>
+    </plurals>
+    <plurals name="confirm_enable_sleep_timer">
+        <item quantity="one">Habilitado Temporizador de Apagado durante 1 minuto</item>
+        <item quantity="other">Habilitado temporizador de apagado durante %1$d minutos</item>
+    </plurals>
+
+</resources>
