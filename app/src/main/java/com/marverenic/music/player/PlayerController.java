@@ -18,6 +18,8 @@ import rx.Single;
  */
 public interface PlayerController {
 
+    int MAXIMUM_CHUNK_ENTRIES = 500;
+
     /**
      * Gets error messages from the service that can be displayed on the UI
      * @return An observable stream of user-presentable error messages

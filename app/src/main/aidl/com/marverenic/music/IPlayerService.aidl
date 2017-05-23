@@ -16,6 +16,9 @@ interface IPlayerService {
     void pause();
     void setPreferences(in ImmutablePreferenceStore preferences);
     void setQueue(in List<Song> newQueue, int newPosition);
+    void beginBigQueue();
+    void sendQueueChunk(in List<Song> chunk);
+    void endBigQueue(boolean editQueue, int newPosition);
     void changeSong(int position);
     void editQueue(in List<Song> newQueue, int newPosition);
     void queueNext(in Song song);
@@ -29,6 +32,7 @@ interface IPlayerService {
     List<Song> getQueue();
     int getQueuePosition();
     int getQueueSize();
+    List<Song> getQueueChunk(int offset, int length);
     int getCurrentPosition();
     int getDuration();
 

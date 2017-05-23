@@ -28,6 +28,7 @@ import com.marverenic.music.utils.Internal;
 import com.marverenic.music.utils.MediaStyleHelper;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -369,6 +370,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     public static class Stub extends IPlayerService.Stub {
 
         private PlayerService mService;
+        private List<Song> mQueueTemp;
 
         public Stub(PlayerService service) {
             mService = service;
@@ -493,6 +495,34 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.setQueue(...) failed");
                 throw exception;
+            }
+        }
+
+        @Override
+        public void beginBigQueue() throws RemoteException {
+            mQueueTemp = new ArrayList<>();
+        }
+
+        @Override
+        public void sendQueueChunk(List<Song> chunk) throws RemoteException {
+            List<Song> queue = mQueueTemp;
+            if (queue == null) {
+                throw new IllegalStateException("Must call beginBigQueue() to start a transaction");
+            }
+            queue.addAll(chunk);
+        }
+
+        @Override
+        public void endBigQueue(boolean editQueue, int newPosition) throws RemoteException {
+            List<Song> queue = mQueueTemp;
+            mQueueTemp = null;
+            if (queue == null) {
+                throw new IllegalStateException("Must call beginBigQueue() to start a transaction");
+            }
+            if (editQueue) {
+                editQueue(queue, newPosition);
+            } else {
+                setQueue(queue, newPosition);
             }
         }
 
@@ -668,6 +698,26 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.getQueueSize() failed");
                 throw exception;
+            }
+        }
+
+        @Override
+        public List<Song> getQueueChunk(int offset, int length) throws RemoteException {
+            List<Song> currentQueue = getQueue();
+            try {
+                return currentQueue.subList(offset, offset + length);
+            } catch (IndexOutOfBoundsException ex) {
+                // https://blog.classycode.com/dealing-with-exceptions-in-aidl-9ba904c6d63
+                // propagate exception to client to handle, maybe queue is changed while client side
+                // try to read it
+                Timber.e(ex, "getQueueChunk ERROR: offset: %d; length: %d; queue size: %d",
+                        offset, length, currentQueue.size());
+                throw new IllegalArgumentException("Invalid offset:" + offset
+                        + "and length:" + length
+                        + "; queue size: " + currentQueue.size());
+            } catch (RuntimeException ex) {
+                Timber.e(ex, "Remote call to PlayerService.getQueueChunk() failed");
+                throw ex;
             }
         }
 
