@@ -8,8 +8,10 @@ import android.view.ViewGroup;
 import com.marverenic.adapter.EnhancedViewHolder;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.R;
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.MeasurableAdapter;
 
-public class SpacerSingleton extends HeterogeneousAdapter.SingletonSection<Void> {
+public class SpacerSingleton extends HeterogeneousAdapter.SingletonSection<Void>
+        implements MeasurableAdapter {
 
     private final int mHeight;
     private boolean mVisible;
@@ -42,11 +44,16 @@ public class SpacerSingleton extends HeterogeneousAdapter.SingletonSection<Void>
     public EnhancedViewHolder<Void> createViewHolder(HeterogeneousAdapter adapter,
                                                      ViewGroup parent) {
         View itemView = LayoutInflater
-                        .from(parent.getContext())
-                        .inflate(R.layout.instance_blank, parent, false);
+                .from(parent.getContext())
+                .inflate(R.layout.instance_blank, parent, false);
 
 
         return new ViewHolder(itemView, (RecyclerView) parent);
+    }
+
+    @Override
+    public int getViewTypeHeight(RecyclerView recyclerView, int viewType) {
+        return mHeight;
     }
 
     public class ViewHolder extends EnhancedViewHolder<Void> {
