@@ -12,7 +12,7 @@ import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.adapter.AlbumSection;
-import com.marverenic.music.adapter.HeterogeneousFastScrollAdapter;
+import com.marverenic.music.adapter.HomogeneousFastScrollAdapter;
 import com.marverenic.music.adapter.LibraryEmptyState;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.model.Album;
@@ -103,7 +103,7 @@ public class AlbumFragment extends BaseFragment {
             mAlbumSection.setData(mAlbums);
             mAdapter.notifyDataSetChanged();
         } else {
-            mAdapter = new HeterogeneousFastScrollAdapter();
+            mAdapter = new HomogeneousFastScrollAdapter();
             mAdapter.setHasStableIds(true);
             mRecyclerView.setAdapter(mAdapter);
 
