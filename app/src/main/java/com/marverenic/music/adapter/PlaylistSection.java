@@ -1,21 +1,24 @@
 package com.marverenic.music.adapter;
 
 import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.marverenic.adapter.EnhancedViewHolder;
 import com.marverenic.adapter.HeterogeneousAdapter;
+import com.marverenic.music.R;
 import com.marverenic.music.databinding.InstancePlaylistBinding;
 import com.marverenic.music.model.ModelUtil;
 import com.marverenic.music.model.Playlist;
 import com.marverenic.music.viewmodel.PlaylistViewModel;
-import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.MeasurableAdapter;
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.SectionedAdapter;
 
 import java.util.List;
 
 public class PlaylistSection extends HeterogeneousAdapter.ListSection<Playlist>
-        implements FastScrollRecyclerView.SectionedAdapter {
+        implements SectionedAdapter, MeasurableAdapter {
 
     public PlaylistSection(@NonNull List<Playlist> data) {
         super(data);
@@ -37,6 +40,12 @@ public class PlaylistSection extends HeterogeneousAdapter.ListSection<Playlist>
     public String getSectionName(int position) {
         char firstChar = ModelUtil.sortableTitle(get(position).getPlaylistName()).charAt(0);
         return Character.toString(firstChar).toUpperCase();
+    }
+
+    @Override
+    public int getViewTypeHeight(RecyclerView recyclerView, int viewType) {
+        return recyclerView.getResources().getDimensionPixelSize(R.dimen.list_height)
+                + recyclerView.getResources().getDimensionPixelSize(R.dimen.divider_height);
     }
 
     public static class ViewHolder extends EnhancedViewHolder<Playlist> {
