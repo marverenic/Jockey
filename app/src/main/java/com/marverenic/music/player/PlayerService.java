@@ -340,9 +340,6 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
             return;
         }
 
-        // If the service is being completely stopped by the user, turn off the sleep timer
-        musicPlayer.setSleepTimer(0);
-
         // If the UI process has already ended, kill the service and close the player
         finish();
     }
@@ -356,6 +353,9 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
                 } catch (IOException exception) {
                     Timber.e(exception, "Failed to save player state");
                 }
+
+                // If the service is being completely stopped by the user, turn off the sleep timer
+                musicPlayer.setSleepTimer(0);
 
                 musicPlayer.release();
                 musicPlayer = null;
