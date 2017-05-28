@@ -134,35 +134,46 @@ public class MainActivity extends BaseLibraryActivity implements View.OnClickLis
             return;
         }
 
-        expandBottomSheet();
-
         // If this intent is a music intent, process it
         if (intent.getAction().equals(Intent.ACTION_VIEW)) {
-            Uri songUri = intent.getData();
-            String songName = UriUtils.getDisplayName(this, songUri);
-
-            List<Song> queue = buildQueueFromFileUri(songUri);
-            int position;
-
-            if (queue == null || queue.isEmpty()) {
-                queue = buildQueueFromUri(intent.getData());
-                position = findStartingPositionInQueue(songUri, queue);
-            } else {
-                String path = UriUtils.getPathFromUri(this, songUri);
-                //noinspection ConstantConditions This won't be null, because we found data from it
-                Uri fileUri = Uri.fromFile(new File(path));
-                position = findStartingPositionInQueue(fileUri, queue);
-            }
-
-            if (queue.isEmpty()) {
-                showSnackbar(getString(R.string.message_play_error_not_found, songName));
-            } else {
-                startIntentQueue(queue, position);
-            }
+            MediaStoreUtil.promptPermission(this)
+                    .subscribe(hasPermission -> {
+                        if (hasPermission) {
+                            startPlaybackFromUri(intent.getData());
+                        }
+                    }, throwable -> {
+                        Timber.e(throwable, "Failed to start playback from URI %s",
+                                intent.getData());
+                    });
         }
 
         // Don't try to process this intent again
         setIntent(new Intent(this, MainActivity.class));
+    }
+
+    private void startPlaybackFromUri(Uri songUri) {
+        String songName = UriUtils.getDisplayName(this, songUri);
+
+        List<Song> queue = buildQueueFromFileUri(songUri);
+        int position;
+
+        if (queue == null || queue.isEmpty()) {
+            queue = buildQueueFromUri(songUri);
+            position = findStartingPositionInQueue(songUri, queue);
+        } else {
+            String path = UriUtils.getPathFromUri(this, songUri);
+            //noinspection ConstantConditions This won't be null, because we found data from it
+            Uri fileUri = Uri.fromFile(new File(path));
+            position = findStartingPositionInQueue(fileUri, queue);
+        }
+
+        if (queue.isEmpty()) {
+            showSnackbar(getString(R.string.message_play_error_not_found, songName));
+        } else {
+            startIntentQueue(queue, position);
+        }
+
+        expandBottomSheet();
     }
 
     private List<Song> buildQueueFromFileUri(Uri fileUri) {
