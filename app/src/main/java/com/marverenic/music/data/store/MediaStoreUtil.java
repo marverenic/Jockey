@@ -123,17 +123,21 @@ public final class MediaStoreUtil {
                 READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE);
     }
 
+    private static Observable<Boolean> getPermissionObservable() {
+        return sPermissionObservable.asObservable().distinctUntilChanged();
+    }
+
     public static Observable<Boolean> waitForPermission() {
         if (sPermissionObservable == null) {
             sPermissionObservable = BehaviorSubject.create();
         }
 
-        return sPermissionObservable.filter(hasPermission -> hasPermission).take(1);
+        return getPermissionObservable().filter(hasPermission -> hasPermission).take(1);
     }
 
     public static Observable<Boolean> getPermission(Context context) {
         if (sPermissionObservable != null && sPermissionObservable.hasValue()) {
-            return sPermissionObservable.asObservable();
+            return getPermissionObservable();
         } else {
             return promptPermission(context);
         }
@@ -149,7 +153,7 @@ public final class MediaStoreUtil {
             if (!sPermissionObservable.hasValue() || !sPermissionObservable.getValue()) {
                 sPermissionObservable.onNext(true);
             }
-            return sPermissionObservable;
+            return getPermissionObservable();
         }
 
         RxPermissions.getInstance(context).request(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE)
@@ -157,7 +161,7 @@ public final class MediaStoreUtil {
                     Timber.i(throwable, "Failed to get storage permission");
                 });
 
-        return sPermissionObservable.asObservable();
+        return getPermissionObservable();
     }
 
     public static Observable<Boolean> getContentObserver(Context context, Uri uri) {
