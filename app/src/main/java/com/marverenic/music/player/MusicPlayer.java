@@ -2,6 +2,7 @@ package com.marverenic.music.player;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -285,7 +286,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     private void initMediaSession() {
         Timber.i("Initializing MediaSession");
-        MediaSessionCompat session = new MediaSessionCompat(mContext, TAG, null, null);
+        ComponentName mbrComponent = new ComponentName(mContext, MediaButtonReceiver.class.getName());
+        MediaSessionCompat session = new MediaSessionCompat(mContext, TAG, mbrComponent, null);
 
         session.setCallback(new MediaSessionCallback(this));
         session.setSessionActivity(
