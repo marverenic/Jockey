@@ -127,13 +127,16 @@ public class UriUtils {
         String[] projection = {MediaStore.MediaColumns.DATA};
         Cursor cur = context.getContentResolver().query(uri, projection, null, null, null);
 
-        if (cur != null) {
-            cur.moveToFirst();
-            String result = cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA));
-            cur.close();
-            return result;
-        } else {
-            return null;
+        try {
+            if (cur != null && cur.moveToFirst()) {
+                return cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA));
+            } else {
+                return null;
+            }
+        } finally {
+            if (cur != null) {
+                cur.close();
+            }
         }
     }
 }

@@ -64,6 +64,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     public QueuedExoPlayer(Context context) {
         mContext = context;
         mState = ExoPlayerState.IDLE;
+        mQueue = Collections.emptyList();
 
         TrackSelector trackSelector = new DefaultTrackSelector(new FixedTrackSelection.Factory());
         LoadControl loadControl = new DefaultLoadControl();
