@@ -44,7 +44,7 @@ public class MediaStyleHelper {
                 .setWhen(0)
                 .setShowWhen(false);
 
-        if (description.getIconBitmap() == null) {
+        if (description.getIconBitmap() == null || description.getIconBitmap().isRecycled()) {
             builder.setLargeIcon(
                     BitmapFactory.decodeResource(context.getResources(), R.drawable.art_default));
         } else {
