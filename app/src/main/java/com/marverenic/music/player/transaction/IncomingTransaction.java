@@ -11,7 +11,6 @@ public final class IncomingTransaction<T> {
     private int mSize;
     private T mAggregate;
 
-    @SuppressWarnings("unchecked")
     IncomingTransaction(TransactionToken token, T emptyAggregate, Aggregator<T> aggregator) {
         if (token == null) {
             throw new IllegalArgumentException("Token cannot be null");
