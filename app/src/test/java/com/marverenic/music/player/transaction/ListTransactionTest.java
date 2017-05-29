@@ -73,4 +73,21 @@ public class ListTransactionTest {
         assertCorrectTransmission(data);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testTransactionFails_receiveFromDifferentTransaction() {
+        // Setup incomingTransaction to read from a garbage Transaction
+        ListTransaction.send(Collections.emptyList()).send(
+                token -> incomingTransaction = ListTransaction.receive(token),
+                chunk -> {},
+                () -> {});
+
+        List<String> data = Collections.unmodifiableList(Arrays.asList("Orange", "Apple", "Pear"));
+        outgoingTransaction = ListTransaction.send(data);
+
+        outgoingTransaction.send(
+                token -> {},
+                chunk -> incomingTransaction.receive(chunk),
+                () -> incomingTransaction.getData());
+    }
+
 }

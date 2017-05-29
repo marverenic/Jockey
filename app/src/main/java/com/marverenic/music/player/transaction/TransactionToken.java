@@ -5,19 +5,27 @@ import android.os.Parcelable;
 
 public final class TransactionToken implements Parcelable {
 
+    private final String mId;
     private final int mSize;
 
-    public TransactionToken(int count) {
+    public TransactionToken(String transactionId, int count) {
+        mId = transactionId;
         mSize = count;
     }
 
     protected TransactionToken(Parcel in) {
+        mId = in.readString();
         mSize = in.readInt();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mId);
         dest.writeInt(mSize);
+    }
+
+    String getTransactionId() {
+        return mId;
     }
 
     int getSize() {

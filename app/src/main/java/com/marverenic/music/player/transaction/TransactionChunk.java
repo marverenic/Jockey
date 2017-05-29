@@ -4,14 +4,20 @@ public final class TransactionChunk<T> {
 
     static final int MAX_ENTRIES = 500;
 
+    private final String mTransactionId;
     private final int mOffset;
     private final int mSize;
     private final T mData;
 
-    TransactionChunk(int offset, int size, T data) {
+    TransactionChunk(String transactionId, int offset, int size, T data) {
+        mTransactionId = transactionId;
         mOffset = offset;
         mSize = size;
         mData = data;
+    }
+
+    String getTransactionId() {
+        return mTransactionId;
     }
 
     int getOffset() {

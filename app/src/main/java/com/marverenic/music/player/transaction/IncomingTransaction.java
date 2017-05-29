@@ -3,24 +3,31 @@ package com.marverenic.music.player.transaction;
 public final class IncomingTransaction<T> {
 
     private Aggregator<T> mAggregator;
+
+    private String mTransactionId;
     private int mOffset;
     private int mSize;
     private T mAggregate;
 
     @SuppressWarnings("unchecked")
     IncomingTransaction(TransactionToken token, T emptyAggregate, Aggregator<T> aggregator) {
+        mTransactionId = token.getTransactionId();
         mSize = token.getSize();
         mAggregator = aggregator;
         mAggregate = emptyAggregate;
     }
 
     public void receive(TransactionChunk<T> chunk) {
+        if (!mTransactionId.equals(chunk.getTransactionId())) {
+            throw new IllegalArgumentException("Chunk contains data from a different transaction");
+        }
+
         if (chunk.getOffset() > mOffset) {
             throw new IllegalArgumentException("Chunk arrived early");
         } else if (chunk.getOffset() < mOffset) {
             throw new IllegalArgumentException("Duplicate chunk arrived");
         } else if (mOffset + chunk.getSize() > mSize) {
-            throw new IllegalArgumentException("Chunk has too many entries");
+            throw new IllegalArgumentException("Chunk has too much data");
         }
 
         mAggregate = mAggregator.aggregate(mAggregate, chunk.getData(), chunk.getOffset());
