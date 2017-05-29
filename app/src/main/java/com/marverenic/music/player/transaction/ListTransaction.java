@@ -5,7 +5,7 @@ import java.util.List;
 
 public final class ListTransaction {
 
-    public static <T> OutgoingTransaction<List<T>> send(List<T> data) {
+    public static <T, E extends Throwable> OutgoingTransaction<List<T>, E> send(List<T> data) {
         return new OutgoingTransaction<>(data, data.size(), List::subList);
     }
 

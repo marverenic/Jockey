@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ListTransactionTest {
 
-    OutgoingTransaction<List<String>> outgoingTransaction;
+    OutgoingTransaction<List<String>, RuntimeException> outgoingTransaction;
     IncomingTransaction<List<String>> incomingTransaction;
 
     private void assertCorrectTransmission(List<String> expected) {
@@ -76,7 +76,7 @@ public class ListTransactionTest {
     @Test(expected = IllegalArgumentException.class)
     public void testTransactionFails_receiveFromDifferentTransaction() {
         // Setup incomingTransaction to read from a garbage Transaction
-        ListTransaction.send(Collections.emptyList()).send(
+        ListTransaction.<Void, RuntimeException>send(Collections.emptyList()).send(
                 token -> incomingTransaction = ListTransaction.receive(token),
                 chunk -> {},
                 () -> {});

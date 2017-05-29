@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import static com.marverenic.music.player.transaction.TransactionChunk.MAX_ENTRIES;
 
-public final class OutgoingTransaction<T> {
+public final class OutgoingTransaction<T, E extends Throwable> {
 
     private final String mTransactionId;
     private final SplitFunction<T> mSplitFunction;
@@ -19,20 +19,20 @@ public final class OutgoingTransaction<T> {
         mData = data;
     }
 
-    public void send(StartFunction startFunction, SendFunction<T> sendFunction,
-                     FinishFunction finishFunction) {
+    public void send(StartFunction<E> startFunction, SendFunction<T, E> sendFunction,
+                     FinishFunction<E> finishFunction) throws E {
 
         begin(startFunction);
         send(sendFunction);
         finish(finishFunction);
     }
 
-    private void begin(StartFunction startFunction) {
+    private void begin(StartFunction<E> startFunction) throws E {
         TransactionToken token = new TransactionToken(mTransactionId, mSize);
         startFunction.start(token);
     }
 
-    private void send(SendFunction<T> sendFunction) {
+    private void send(SendFunction<T, E> sendFunction) throws E {
         int offset;
         for (offset = 0; offset + MAX_ENTRIES < mSize; offset += MAX_ENTRIES) {
             T subData = mSplitFunction.split(mData, offset, offset + MAX_ENTRIES);
@@ -51,7 +51,7 @@ public final class OutgoingTransaction<T> {
         }
     }
 
-    private void finish(FinishFunction finishFunction) {
+    private void finish(FinishFunction<E> finishFunction) throws E {
         finishFunction.finish();
     }
 
@@ -59,16 +59,16 @@ public final class OutgoingTransaction<T> {
         T split(T data, int startPos, int endPos);
     }
 
-    public interface StartFunction {
-        void start(TransactionToken token);
+    public interface StartFunction<E extends Throwable> {
+        void start(TransactionToken token) throws E;
     }
 
-    public interface SendFunction<T> {
-        void send(TransactionChunk<T> chunk);
+    public interface SendFunction<T, E extends Throwable> {
+        void send(TransactionChunk<T> chunk) throws E;
     }
 
-    public interface FinishFunction {
-        void finish();
+    public interface FinishFunction<E extends Throwable> {
+        void finish() throws E;
     }
 
 }
