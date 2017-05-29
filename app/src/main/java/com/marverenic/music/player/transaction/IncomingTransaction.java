@@ -1,5 +1,7 @@
 package com.marverenic.music.player.transaction;
 
+import android.support.annotation.NonNull;
+
 public final class IncomingTransaction<T> {
 
     private Aggregator<T> mAggregator;
@@ -11,13 +13,19 @@ public final class IncomingTransaction<T> {
 
     @SuppressWarnings("unchecked")
     IncomingTransaction(TransactionToken token, T emptyAggregate, Aggregator<T> aggregator) {
+        if (token == null) {
+            throw new IllegalArgumentException("Token cannot be null");
+        } else if (aggregator == null) {
+            throw new IllegalArgumentException("Aggregator cannot be null");
+        }
+
         mTransactionId = token.getTransactionId();
         mSize = token.getSize();
         mAggregator = aggregator;
         mAggregate = emptyAggregate;
     }
 
-    public void receive(TransactionChunk<T> chunk) {
+    public void receive(@NonNull TransactionChunk<T> chunk) {
         if (!mTransactionId.equals(chunk.getTransactionId())) {
             throw new IllegalArgumentException("Chunk contains data from a different transaction");
         }

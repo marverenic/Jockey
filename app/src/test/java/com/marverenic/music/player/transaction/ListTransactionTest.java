@@ -90,4 +90,18 @@ public class ListTransactionTest {
                 () -> incomingTransaction.getData());
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void testTransactionFails_prematureRead() {
+        List<String> data = Collections.unmodifiableList(Arrays.asList("Orange", "Apple", "Pear"));
+        outgoingTransaction = ListTransaction.send(data);
+
+        outgoingTransaction.send(
+                token -> incomingTransaction = ListTransaction.receive(token),
+                chunk -> {
+                    incomingTransaction.getData();
+                    incomingTransaction.receive(chunk);
+                },
+                () -> {});
+    }
+
 }
