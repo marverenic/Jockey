@@ -17,7 +17,7 @@ public class ListTransactionTest {
     private void assertCorrectTransmission(List<String> expected) {
         outgoingTransaction.send(
                 token -> incomingTransaction = ListTransaction.receive(token),
-                chunk -> incomingTransaction.receive(chunk),
+                (header, chunk) -> incomingTransaction.receive(header, chunk),
                 () -> {
                     List<String> received = incomingTransaction.getData();
                     Assert.assertEquals("Data was not received correctly", expected, received);
@@ -51,7 +51,7 @@ public class ListTransactionTest {
 
     @Test
     public void testTransactionSuccessful_oneChunk() {
-        List<String> data = generateLongList(TransactionChunk.MAX_ENTRIES);
+        List<String> data = generateLongList(ChunkHeader.MAX_ENTRIES);
         outgoingTransaction = ListTransaction.send(data);
 
         assertCorrectTransmission(data);
@@ -59,7 +59,7 @@ public class ListTransactionTest {
 
     @Test
     public void testTransactionSuccessful_oneAndAHalfChunks() {
-        List<String> data = generateLongList(TransactionChunk.MAX_ENTRIES * 3 / 2);
+        List<String> data = generateLongList(ChunkHeader.MAX_ENTRIES * 3 / 2);
         outgoingTransaction = ListTransaction.send(data);
 
         assertCorrectTransmission(data);
@@ -67,7 +67,7 @@ public class ListTransactionTest {
 
     @Test
     public void testTransactionSuccessful_manyChunks() {
-        List<String> data = generateLongList(TransactionChunk.MAX_ENTRIES * 12);
+        List<String> data = generateLongList(ChunkHeader.MAX_ENTRIES * 12);
         outgoingTransaction = ListTransaction.send(data);
 
         assertCorrectTransmission(data);
@@ -78,7 +78,7 @@ public class ListTransactionTest {
         // Setup incomingTransaction to read from a garbage Transaction
         ListTransaction.<Void, RuntimeException>send(Collections.emptyList()).send(
                 token -> incomingTransaction = ListTransaction.receive(token),
-                chunk -> {},
+                (header, chunk) -> {},
                 () -> {});
 
         List<String> data = Collections.unmodifiableList(Arrays.asList("Orange", "Apple", "Pear"));
@@ -86,7 +86,7 @@ public class ListTransactionTest {
 
         outgoingTransaction.send(
                 token -> {},
-                chunk -> incomingTransaction.receive(chunk),
+                (header, chunk) -> incomingTransaction.receive(header, chunk),
                 () -> incomingTransaction.getData());
     }
 
@@ -97,9 +97,9 @@ public class ListTransactionTest {
 
         outgoingTransaction.send(
                 token -> incomingTransaction = ListTransaction.receive(token),
-                chunk -> {
+                (header, chunk) -> {
                     incomingTransaction.getData();
-                    incomingTransaction.receive(chunk);
+                    incomingTransaction.receive(header, chunk);
                 },
                 () -> {});
     }

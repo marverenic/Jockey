@@ -2,7 +2,7 @@ package com.marverenic.music.player.transaction;
 
 import java.util.UUID;
 
-import static com.marverenic.music.player.transaction.TransactionChunk.MAX_ENTRIES;
+import static com.marverenic.music.player.transaction.ChunkHeader.MAX_ENTRIES;
 
 public final class OutgoingTransaction<T, E extends Throwable> {
 
@@ -35,19 +35,17 @@ public final class OutgoingTransaction<T, E extends Throwable> {
     private void send(SendFunction<T, E> sendFunction) throws E {
         int offset;
         for (offset = 0; offset + MAX_ENTRIES < mSize; offset += MAX_ENTRIES) {
-            T subData = mSplitFunction.split(mData, offset, offset + MAX_ENTRIES);
-            TransactionChunk<T> chunk = new TransactionChunk<>(
-                    mTransactionId, offset, MAX_ENTRIES, subData);
+            T chunk = mSplitFunction.split(mData, offset, offset + MAX_ENTRIES);
+            ChunkHeader header = new ChunkHeader(mTransactionId, offset, MAX_ENTRIES);
 
-            sendFunction.send(chunk);
+            sendFunction.send(header, chunk);
         }
 
         if (offset < mSize) {
-            T subData = mSplitFunction.split(mData, offset, mSize);
-            TransactionChunk<T> chunk = new TransactionChunk<>(
-                    mTransactionId, offset, mSize - offset, subData);
+            T chunk = mSplitFunction.split(mData, offset, mSize);
+            ChunkHeader header = new ChunkHeader(mTransactionId, offset, mSize - offset);
 
-            sendFunction.send(chunk);
+            sendFunction.send(header, chunk);
         }
     }
 
@@ -64,7 +62,7 @@ public final class OutgoingTransaction<T, E extends Throwable> {
     }
 
     public interface SendFunction<T, E extends Throwable> {
-        void send(TransactionChunk<T> chunk) throws E;
+        void send(ChunkHeader header, T chunk) throws E;
     }
 
     public interface FinishFunction<E extends Throwable> {

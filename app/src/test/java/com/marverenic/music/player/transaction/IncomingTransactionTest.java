@@ -31,21 +31,21 @@ public class IncomingTransactionTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testReceiveFails_earlyChunk() {
-        TransactionChunk<Object> chunk = new TransactionChunk<>(TRANS_ID, 10, 1, null);
-        mSubject.receive(chunk);
+        ChunkHeader header = new ChunkHeader(TRANS_ID, 10, 1);
+        mSubject.receive(header, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testReceiveFails_duplicateChunk() {
-        TransactionChunk<Object> chunk = new TransactionChunk<>(TRANS_ID, 0, 1, null);
-        mSubject.receive(chunk);
-        mSubject.receive(chunk);
+        ChunkHeader chunk = new ChunkHeader(TRANS_ID, 0, 1);
+        mSubject.receive(chunk, null);
+        mSubject.receive(chunk, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testReceiveFails_largeChunk() {
-        TransactionChunk<Object> chunk = new TransactionChunk<>(TRANS_ID, 0, TRANS_SIZE + 1, null);
-        mSubject.receive(chunk);
+        ChunkHeader chunk = new ChunkHeader(TRANS_ID, 0, TRANS_SIZE + 1);
+        mSubject.receive(chunk, null);
     }
 
 }

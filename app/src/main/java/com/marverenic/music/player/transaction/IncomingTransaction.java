@@ -24,21 +24,21 @@ public final class IncomingTransaction<T> {
         mAggregate = emptyAggregate;
     }
 
-    public void receive(@NonNull TransactionChunk<T> chunk) {
-        if (!mTransactionId.equals(chunk.getTransactionId())) {
+    public void receive(@NonNull ChunkHeader<T> header, T data) {
+        if (!mTransactionId.equals(header.getTransactionId())) {
             throw new IllegalArgumentException("Chunk contains data from a different transaction");
         }
 
-        if (chunk.getOffset() > mOffset) {
+        if (header.getOffset() > mOffset) {
             throw new IllegalArgumentException("Chunk arrived early");
-        } else if (chunk.getOffset() < mOffset) {
+        } else if (header.getOffset() < mOffset) {
             throw new IllegalArgumentException("Duplicate chunk arrived");
-        } else if (mOffset + chunk.getSize() > mSize) {
+        } else if (mOffset + header.getSize() > mSize) {
             throw new IllegalArgumentException("Chunk has too much data");
         }
 
-        mAggregate = mAggregator.aggregate(mAggregate, chunk.getData(), chunk.getOffset());
-        mOffset += chunk.getSize();
+        mAggregate = mAggregator.aggregate(mAggregate, data, header.getOffset());
+        mOffset += header.getSize();
     }
 
     public T getData() {
