@@ -64,7 +64,7 @@ public class PlaylistSongSection extends EditableSongSection {
 
         @Override
         public void onUpdate(Song s, int sectionPosition) {
-            mBinding.getViewModel().setIndex(sectionPosition);
+            mBinding.getViewModel().setSong(getData(), sectionPosition);
         }
     }
 }
