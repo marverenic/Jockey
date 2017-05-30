@@ -1,10 +1,12 @@
 // IPlayerService.aidl
 package com.marverenic.music;
 
-import com.marverenic.music.model.Song;
 import com.marverenic.music.data.store.ImmutablePreferenceStore;
+import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerState;
 import com.marverenic.music.player.RemoteEqualizer;
+import com.marverenic.music.player.transaction.ChunkHeader;
+import com.marverenic.music.player.transaction.TransactionToken;
 
 interface IPlayerService {
 
@@ -16,9 +18,9 @@ interface IPlayerService {
     void pause();
     void setPreferences(in ImmutablePreferenceStore preferences);
     void setQueue(in List<Song> newQueue, int newPosition);
-    void beginBigQueue();
-    void sendQueueChunk(in List<Song> chunk);
-    void endBigQueue(boolean editQueue, int newPosition);
+    void beginLargeQueueTransaction(in TransactionToken token);
+    void sendQueueChunk(in ChunkHeader header, in List<Song> chunk);
+    void endLargeQueueTransaction(boolean editQueue, int newPosition);
     void changeSong(int position);
     void editQueue(in List<Song> newQueue, int newPosition);
     void queueNext(in Song song);
