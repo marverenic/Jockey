@@ -39,8 +39,8 @@ android {
         applicationId "com.marverenic.music"
         minSdkVersion 16
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 40317
-        versionName "2.2 beta 4"
+        versionCode 40318
+        versionName "2.2"
         resConfigs "en", "es"
     }
 
