@@ -19,8 +19,8 @@ public final class OutgoingTransaction<T, E extends Throwable> {
         mData = data;
     }
 
-    public void send(StartFunction<E> startFunction, SendFunction<T, E> sendFunction,
-                     FinishFunction<E> finishFunction) throws E {
+    public void transmit(StartFunction<E> startFunction, SendFunction<T, E> sendFunction,
+                         FinishFunction<E> finishFunction) throws E {
 
         begin(startFunction);
         send(sendFunction);

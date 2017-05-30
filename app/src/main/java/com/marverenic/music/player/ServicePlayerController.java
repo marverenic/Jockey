@@ -337,7 +337,7 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 if (newQueue.size() > MAXIMUM_CHUNK_ENTRIES) {
-                    ListTransaction.<Song, RemoteException>send(newQueue).send(
+                    ListTransaction.<Song, RemoteException>send(newQueue).transmit(
                             token -> mBinding.beginLargeQueueTransaction(token),
                             (header, data) -> mBinding.sendQueueChunk(header, data),
                             () -> {
@@ -404,7 +404,7 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 if (queue.size() > MAXIMUM_CHUNK_ENTRIES) {
-                    ListTransaction.<Song, RemoteException>send(queue).send(
+                    ListTransaction.<Song, RemoteException>send(queue).transmit(
                             token -> mBinding.beginLargeQueueTransaction(token),
                             (header, data) -> mBinding.sendQueueChunk(header, data),
                             () -> {

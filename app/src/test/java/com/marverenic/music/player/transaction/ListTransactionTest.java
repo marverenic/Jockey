@@ -18,7 +18,7 @@ public class ListTransactionTest {
     IncomingTransaction<List<String>> incomingTransaction;
 
     private void assertCorrectTransmission(List<String> expected) {
-        outgoingTransaction.send(
+        outgoingTransaction.transmit(
                 token -> incomingTransaction = ListTransaction.receive(token),
                 (header, chunk) -> incomingTransaction.receive(header, chunk),
                 () -> {
@@ -80,7 +80,7 @@ public class ListTransactionTest {
     @Test(expected = IllegalArgumentException.class)
     public void testTransactionFails_receiveFromDifferentTransaction() {
         // Setup incomingTransaction to read from a garbage Transaction
-        ListTransaction.<Void, RuntimeException>send(Collections.emptyList()).send(
+        ListTransaction.<Void, RuntimeException>send(Collections.emptyList()).transmit(
                 token -> incomingTransaction = ListTransaction.receive(token),
                 (header, chunk) -> {},
                 () -> {});
@@ -88,7 +88,7 @@ public class ListTransactionTest {
         List<String> data = Collections.unmodifiableList(Arrays.asList("Orange", "Apple", "Pear"));
         outgoingTransaction = ListTransaction.send(data);
 
-        outgoingTransaction.send(
+        outgoingTransaction.transmit(
                 token -> {},
                 (header, chunk) -> incomingTransaction.receive(header, chunk),
                 () -> fail("Finish event should never occur"));
@@ -99,7 +99,7 @@ public class ListTransactionTest {
         List<String> data = Collections.unmodifiableList(Arrays.asList("Orange", "Apple", "Pear"));
         outgoingTransaction = ListTransaction.send(data);
 
-        outgoingTransaction.send(
+        outgoingTransaction.transmit(
                 token -> incomingTransaction = ListTransaction.receive(token),
                 (header, chunk) -> {
                     incomingTransaction.getData();
