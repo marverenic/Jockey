@@ -521,6 +521,12 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public void endLargeQueueTransaction(boolean editQueue, int newPosition) throws RemoteException {
+            if (mQueueTransaction == null) {
+                throw new IllegalStateException("Transaction has not started");
+            } else if (!mQueueTransaction.isTransmissionComplete()) {
+                throw new IllegalStateException("Transaction has not completed");
+            }
+
             if (editQueue) {
                 editQueue(mQueueTransaction.getData(), newPosition);
             } else {

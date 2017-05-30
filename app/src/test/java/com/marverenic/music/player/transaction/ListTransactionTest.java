@@ -1,13 +1,16 @@
 package com.marverenic.music.player.transaction;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.fail;
 
 public class ListTransactionTest {
 
@@ -20,7 +23,8 @@ public class ListTransactionTest {
                 (header, chunk) -> incomingTransaction.receive(header, chunk),
                 () -> {
                     List<String> received = incomingTransaction.getData();
-                    Assert.assertEquals("Data was not received correctly", expected, received);
+                    assertTrue(incomingTransaction.isTransmissionComplete());
+                    assertEquals("Data was not received correctly", expected, received);
                 });
     }
 
@@ -87,7 +91,7 @@ public class ListTransactionTest {
         outgoingTransaction.send(
                 token -> {},
                 (header, chunk) -> incomingTransaction.receive(header, chunk),
-                () -> incomingTransaction.getData());
+                () -> fail("Finish event should never occur"));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -99,9 +103,10 @@ public class ListTransactionTest {
                 token -> incomingTransaction = ListTransaction.receive(token),
                 (header, chunk) -> {
                     incomingTransaction.getData();
+                    assertFalse(incomingTransaction.isTransmissionComplete());
                     incomingTransaction.receive(header, chunk);
                 },
-                () -> {});
+                () -> fail("Finish event should never occur"));
     }
 
 }

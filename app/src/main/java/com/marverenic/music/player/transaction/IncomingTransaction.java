@@ -24,7 +24,7 @@ public final class IncomingTransaction<T> {
         mAggregate = emptyAggregate;
     }
 
-    public void receive(@NonNull ChunkHeader<T> header, T data) {
+    public void receive(@NonNull ChunkHeader header, T data) {
         if (!mTransactionId.equals(header.getTransactionId())) {
             throw new IllegalArgumentException("Chunk contains data from a different transaction");
         }
@@ -41,8 +41,12 @@ public final class IncomingTransaction<T> {
         mOffset += header.getSize();
     }
 
+    public boolean isTransmissionComplete() {
+        return mOffset >= mSize;
+    }
+
     public T getData() {
-        if (mOffset < mSize) {
+        if (!isTransmissionComplete()) {
             throw new IllegalStateException("Not all data has been received");
         }
         return mAggregate;
