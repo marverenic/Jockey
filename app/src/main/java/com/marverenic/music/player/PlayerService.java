@@ -24,11 +24,14 @@ import com.marverenic.music.R;
 import com.marverenic.music.data.store.ImmutablePreferenceStore;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.player.transaction.ChunkHeader;
+import com.marverenic.music.player.transaction.IncomingTransaction;
+import com.marverenic.music.player.transaction.ListTransaction;
+import com.marverenic.music.player.transaction.TransactionToken;
 import com.marverenic.music.utils.Internal;
 import com.marverenic.music.utils.MediaStyleHelper;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -375,7 +378,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     public static class Stub extends IPlayerService.Stub {
 
         private PlayerService mService;
-        private List<Song> mQueueTemp;
+        private IncomingTransaction<List<Song>> mQueueTransaction;
 
         public Stub(PlayerService service) {
             mService = service;
@@ -504,31 +507,26 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void beginBigQueue() throws RemoteException {
-            mQueueTemp = new ArrayList<>();
+        public void beginLargeQueueTransaction(TransactionToken token) throws RemoteException {
+            if (mQueueTransaction != null) {
+                Timber.i("LargeQueueTransaction is already open. Dropping previous transaction.");
+            }
+            mQueueTransaction = ListTransaction.receive(token);
         }
 
         @Override
-        public void sendQueueChunk(List<Song> chunk) throws RemoteException {
-            List<Song> queue = mQueueTemp;
-            if (queue == null) {
-                throw new IllegalStateException("Must call beginBigQueue() to start a transaction");
-            }
-            queue.addAll(chunk);
+        public void sendQueueChunk(ChunkHeader header, List<Song> chunk) throws RemoteException {
+            mQueueTransaction.receive(header, chunk);
         }
 
         @Override
-        public void endBigQueue(boolean editQueue, int newPosition) throws RemoteException {
-            List<Song> queue = mQueueTemp;
-            mQueueTemp = null;
-            if (queue == null) {
-                throw new IllegalStateException("Must call beginBigQueue() to start a transaction");
-            }
+        public void endLargeQueueTransaction(boolean editQueue, int newPosition) throws RemoteException {
             if (editQueue) {
-                editQueue(queue, newPosition);
+                editQueue(mQueueTransaction.getData(), newPosition);
             } else {
-                setQueue(queue, newPosition);
+                setQueue(mQueueTransaction.getData(), newPosition);
             }
+            mQueueTransaction = null;
         }
 
         @Override

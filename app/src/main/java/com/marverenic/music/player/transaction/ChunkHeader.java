@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 public final class ChunkHeader implements Parcelable {
 
-    static final int MAX_ENTRIES = 500;
+    public static final int MAX_ENTRIES = 500;
 
     private final String mTransactionId;
     private final int mOffset;

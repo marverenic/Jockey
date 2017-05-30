@@ -17,6 +17,7 @@ import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.player.transaction.ListTransaction;
 import com.marverenic.music.utils.ObservableQueue;
 import com.marverenic.music.utils.Optional;
 import com.marverenic.music.utils.Util;
@@ -333,41 +334,20 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public void setQueue(List<Song> newQueue, int newPosition) {
-        if (newQueue.size() > MAXIMUM_CHUNK_ENTRIES) {
-            sendBigQueue(newQueue, newPosition, false);
-            return;
-        }
         execute(() -> {
             try {
-                mBinding.setQueue(newQueue, newPosition);
-                invalidateAll();
-            } catch (RemoteException exception) {
-                Timber.e(exception, "Failed to set queue");
-            }
-        });
-    }
-
-    /**
-     * This function works like {@link #setQueue(List, int)}, except it will split queue to chunks
-     * and send one by one (keep order) to remote service. if newQueue size is
-     * less than {@link #MAXIMUM_CHUNK_ENTRIES}, use {@link #setQueue(List, int)} instead.
-     * Needn't expose this method.
-     *
-     * @param newQueue New queue which contains large number of songs.
-     * @param newPosition The index in the queue to start playback from
-     */
-    private void sendBigQueue(List<Song> newQueue, int newPosition, boolean editQueue) {
-        execute(() -> {
-            try {
-                mBinding.beginBigQueue();
-                int offset;
-                for (offset = 0; offset + MAXIMUM_CHUNK_ENTRIES <= newQueue.size(); offset += MAXIMUM_CHUNK_ENTRIES) {
-                    mBinding.sendQueueChunk(newQueue.subList(offset, offset + MAXIMUM_CHUNK_ENTRIES));
+                if (newQueue.size() > MAXIMUM_CHUNK_ENTRIES) {
+                    ListTransaction.<Song, RemoteException>send(newQueue).send(
+                            token -> mBinding.beginLargeQueueTransaction(token),
+                            (header, data) -> mBinding.sendQueueChunk(header, data),
+                            () -> {
+                                mBinding.endLargeQueueTransaction(false, newPosition);
+                                invalidateAll();
+                            });
+                } else {
+                    mBinding.setQueue(newQueue, newPosition);
+                    invalidateAll();
                 }
-                if (offset < newQueue.size())
-                    mBinding.sendQueueChunk(newQueue.subList(offset, newQueue.size()));
-                mBinding.endBigQueue(editQueue, newPosition);
-                invalidateAll();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to set queue");
             }
@@ -421,14 +401,20 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public void editQueue(List<Song> queue, int newPosition) {
-        if (queue.size() > MAXIMUM_CHUNK_ENTRIES) {
-            sendBigQueue(queue, newPosition, true);
-            return;
-        }
         execute(() -> {
             try {
-                mBinding.editQueue(queue, newPosition);
-                invalidateAll();
+                if (queue.size() > MAXIMUM_CHUNK_ENTRIES) {
+                    ListTransaction.<Song, RemoteException>send(queue).send(
+                            token -> mBinding.beginLargeQueueTransaction(token),
+                            (header, data) -> mBinding.sendQueueChunk(header, data),
+                            () -> {
+                                mBinding.endLargeQueueTransaction(true, newPosition);
+                                invalidateAll();
+                            });
+                } else {
+                    mBinding.editQueue(queue, newPosition);
+                    invalidateAll();
+                }
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to edit queue");
             }

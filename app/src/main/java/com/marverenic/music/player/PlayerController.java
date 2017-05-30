@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 
 import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.player.transaction.ChunkHeader;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ import rx.Single;
  */
 public interface PlayerController {
 
-    int MAXIMUM_CHUNK_ENTRIES = 500;
+    int MAXIMUM_CHUNK_ENTRIES = ChunkHeader.MAX_ENTRIES;
 
     /**
      * Gets error messages from the service that can be displayed on the UI
