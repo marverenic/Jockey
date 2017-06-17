@@ -225,10 +225,10 @@ public class LocalMusicStore implements MusicStore {
         } else if (excludeSelection != null) {
             selection = excludeSelection;
         } else {
-            selection = null;
+            return null;
         }
 
-        return selection;
+        return "(" + selection + ")";
     }
 
     private String getDirectoryInclusionSelection() {
