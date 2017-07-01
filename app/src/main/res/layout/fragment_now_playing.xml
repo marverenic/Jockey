@@ -41,7 +41,7 @@
                     app:gesturesEnabled="@{artworkViewModel.gesturesEnabled}"
                     app:gestureListener="@{artworkViewModel.gestureListener}">
 
-                    <com.marverenic.music.view.SquareImageViewH
+                    <com.marverenic.music.view.SquareImageView
                         android:id="@+id/now_playing_artwork"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
