@@ -4,7 +4,7 @@
     <data>
         <variable
             name="artworkViewModel"
-            type="com.marverenic.music.viewmodel.NowPlayingArtworkViewModel"/>
+            type="com.marverenic.music.ui.nowplaying.NowPlayingArtworkViewModel"/>
     </data>
 
     <RelativeLayout
@@ -54,7 +54,7 @@
 
         <fragment
             android:id="@+id/now_playing_control_fragment"
-            android:name="com.marverenic.music.fragments.PlayerControllerFragment"
+            android:name="com.marverenic.music.ui.nowplaying.PlayerControllerFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/now_playing_toolbar"
@@ -64,7 +64,7 @@
 
         <fragment
             android:id="@+id/now_playing_queue_fragment"
-            android:name="com.marverenic.music.fragments.QueueFragment"
+            android:name="com.marverenic.music.ui.nowplaying.QueueFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/now_playing_control_fragment"

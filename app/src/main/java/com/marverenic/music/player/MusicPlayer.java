@@ -21,7 +21,7 @@ import android.view.KeyEvent;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.activity.MainActivity;
+import com.marverenic.music.ui.library.LibraryActivity;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.data.store.PreferenceStore;
@@ -293,7 +293,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         session.setSessionActivity(
                 PendingIntent.getActivity(
                         mContext, 0,
-                        MainActivity.newNowPlayingIntent(mContext)
+                        LibraryActivity.newNowPlayingIntent(mContext)
                                 .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
                         PendingIntent.FLAG_CANCEL_CURRENT));
 

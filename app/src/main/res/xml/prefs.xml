@@ -42,11 +42,11 @@
         <Preference
             android:title="@string/pref_directory_include"
             android:key="@string/pref_key_included_dirs"
-            android:fragment="com.marverenic.music.fragments.DirectoryListFragment"/>
+            android:fragment="com.marverenic.music.ui.settings.DirectoryListFragment"/>
         <Preference
             android:title="@string/pref_directory_exclude"
             android:key="@string/pref_key_excluded_dirs"
-            android:fragment="com.marverenic.music.fragments.DirectoryListFragment"/>
+            android:fragment="com.marverenic.music.ui.settings.DirectoryListFragment"/>
     </PreferenceCategoryCompat>
     <PreferenceCategoryCompat android:title="@string/settings_category_general">
         <SwitchPreferenceCompat
@@ -65,7 +65,7 @@
     <PreferenceCategoryCompat android:title="@string/playback_header">
         <Preference
             android:title="@string/pref_equalizer"
-            android:fragment="com.marverenic.music.fragments.EqualizerFragment"/>
+            android:fragment="com.marverenic.music.ui.settings.EqualizerFragment"/>
         <SwitchPreferenceCompat
             android:defaultValue="false"
             android:key="@string/pref_key_resume_with_headphones"

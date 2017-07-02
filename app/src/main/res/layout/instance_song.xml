@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable name="viewModel" type="com.marverenic.music.viewmodel.SongViewModel"/>
+        <variable name="viewModel" type="com.marverenic.music.ui.library.SongViewModel"/>
     </data>
 
     <android.support.constraint.ConstraintLayout

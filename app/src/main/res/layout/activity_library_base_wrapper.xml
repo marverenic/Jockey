@@ -4,7 +4,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.marverenic.music.viewmodel.BaseLibraryActivityViewModel"/>
+            type="com.marverenic.music.ui.BaseLibraryActivityViewModel"/>
     </data>
 
     <com.marverenic.music.view.NestedCoordinatorLayout
@@ -51,7 +51,7 @@
                     android:tag="BaseLibraryActivityWrapper.now_playing_fragment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:name="com.marverenic.music.fragments.NowPlayingFragment"/>
+                    android:name="com.marverenic.music.ui.nowplaying.NowPlayingFragment"/>
 
             </FrameLayout>
 
@@ -68,7 +68,7 @@
                     android:id="@+id/miniplayer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:name="com.marverenic.music.fragments.MiniplayerFragment"
+                    android:name="com.marverenic.music.ui.nowplaying.MiniplayerFragment"
                     tools:layout="@layout/fragment_miniplayer"/>
 
             </FrameLayout>

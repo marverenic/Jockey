@@ -4,7 +4,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <variable name="viewModel" type="com.marverenic.music.viewmodel.PlaylistSongViewModel" />
+        <variable
+            name="viewModel"
+            type="com.marverenic.music.ui.library.playlist.PlaylistSongViewModel"/>
     </data>
 
     <android.support.constraint.ConstraintLayout

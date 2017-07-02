@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.marverenic.music.viewmodel.MiniplayerViewModel"/>
+            type="com.marverenic.music.ui.nowplaying.MiniplayerViewModel"/>
     </data>
 
     <RelativeLayout

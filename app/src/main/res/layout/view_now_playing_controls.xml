@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.marverenic.music.viewmodel.NowPlayingControllerViewModel"/>
+            type="com.marverenic.music.ui.nowplaying.NowPlayingControllerViewModel"/>
     </data>
 
     <android.support.constraint.ConstraintLayout

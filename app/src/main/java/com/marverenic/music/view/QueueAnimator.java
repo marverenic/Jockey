@@ -3,8 +3,8 @@ package com.marverenic.music.view;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 
-import com.marverenic.music.adapter.QueueSection;
-import com.marverenic.music.adapter.SpacerSingleton;
+import com.marverenic.music.ui.nowplaying.QueueSection;
+import com.marverenic.music.ui.common.SpacerSingleton;
 
 public class QueueAnimator extends DefaultItemAnimator {
 
