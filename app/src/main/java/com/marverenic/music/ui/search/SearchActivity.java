@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -72,6 +73,12 @@ public class SearchActivity extends BaseLibraryActivity implements SearchView.On
     private AlbumSection mAlbumSection;
     private ArtistSection mArtistSection;
     private GenreSection mGenreSection;
+
+    @Override
+    protected Fragment onCreateFragment(Bundle savedInstanceState) {
+        // TODO
+        return null;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -152,11 +159,6 @@ public class SearchActivity extends BaseLibraryActivity implements SearchView.On
                 });
 
         handleIntent(getIntent());
-    }
-
-    @Override
-    protected int getContentLayoutResource() {
-        return R.layout.activity_instance;
     }
 
     @Override

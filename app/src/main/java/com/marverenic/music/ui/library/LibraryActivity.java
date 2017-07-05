@@ -7,12 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,23 +15,21 @@ import android.view.View;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.ui.about.AboutActivity;
-import com.marverenic.music.ui.search.SearchActivity;
-import com.marverenic.music.ui.settings.SettingsActivity;
-import com.marverenic.music.ui.library.playlist.edit.AutoPlaylistEditActivity;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ThemeStore;
-import com.marverenic.music.ui.common.playlist.CreatePlaylistDialogFragment;
-import com.marverenic.music.ui.nowplaying.GenreFragment;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseLibraryActivity;
+import com.marverenic.music.ui.about.AboutActivity;
+import com.marverenic.music.ui.common.playlist.CreatePlaylistDialogFragment;
+import com.marverenic.music.ui.library.playlist.edit.AutoPlaylistEditActivity;
+import com.marverenic.music.ui.search.SearchActivity;
+import com.marverenic.music.ui.settings.SettingsActivity;
 import com.marverenic.music.utils.UriUtils;
 import com.marverenic.music.utils.Util;
-import com.marverenic.music.view.FABMenu;
 
 import java.io.File;
 import java.util.Collections;
@@ -67,12 +60,18 @@ public class LibraryActivity extends BaseLibraryActivity implements View.OnClick
     }
 
     @Override
+    protected Fragment onCreateFragment(Bundle savedInstanceState) {
+        return LibraryFragment.newInstance();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         JockeyApplication.getComponent(this).inject(this);
         onNewIntent(getIntent());
 
+        /*
         initRefreshLayout();
         mMusicStore.loadAll();
         mPlaylistStore.loadPlaylists();
@@ -96,7 +95,7 @@ public class LibraryActivity extends BaseLibraryActivity implements View.OnClick
             fab.setVisibility(View.GONE);
         }
 
-        PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager());
+        LibraryPagerAdapter adapter = new LibraryPagerAdapter(this, getSupportFragmentManager());
         adapter.setFloatingActionButton(fab);
         pager.setAdapter(adapter);
         pager.addOnPageChangeListener(adapter);
@@ -108,12 +107,7 @@ public class LibraryActivity extends BaseLibraryActivity implements View.OnClick
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             getSupportActionBar().setHomeButtonEnabled(false);
             getSupportActionBar().setDisplayShowHomeEnabled(false);
-        }
-    }
-
-    @Override
-    protected int getContentLayoutResource() {
-        return R.layout.activity_library;
+        }*/
     }
 
     @Override
@@ -277,105 +271,4 @@ public class LibraryActivity extends BaseLibraryActivity implements View.OnClick
         return R.id.library_pager;
     }
 
-    public class PagerAdapter extends FragmentPagerAdapter
-            implements ViewPager.OnPageChangeListener {
-
-        private PlaylistFragment playlistFragment;
-        private SongFragment songFragment;
-        private ArtistFragment artistFragment;
-        private AlbumFragment albumFragment;
-        private GenreFragment genreFragment;
-
-        private FABMenu fab;
-
-        public PagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        public void setFloatingActionButton(FABMenu view) {
-            fab = view;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            switch (position) {
-                case 0:
-                    if (playlistFragment == null) {
-                        playlistFragment = new PlaylistFragment();
-                    }
-                    return playlistFragment;
-                case 1:
-                    if (songFragment == null) {
-                        songFragment = new SongFragment();
-                    }
-                    return songFragment;
-                case 2:
-                    if (artistFragment == null) {
-                        artistFragment = new ArtistFragment();
-                    }
-                    return artistFragment;
-                case 3:
-                    if (albumFragment == null) {
-                        albumFragment = new AlbumFragment();
-                    }
-                    return albumFragment;
-                case 4:
-                    if (genreFragment == null) {
-                        genreFragment = new GenreFragment();
-                    }
-                    return genreFragment;
-            }
-            return new Fragment();
-        }
-
-        @Override
-        public int getCount() {
-            return 5;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return getResources().getString(R.string.header_playlists);
-                case 1:
-                    return getResources().getString(R.string.header_songs);
-                case 2:
-                    return getResources().getString(R.string.header_artists);
-                case 3:
-                    return getResources().getString(R.string.header_albums);
-                case 4:
-                    return getResources().getString(R.string.header_genres);
-                default:
-                    return "Page " + position;
-            }
-        }
-
-        @Override
-        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-        }
-
-        @Override
-        public void onPageSelected(int position) {
-            // Hide the fab when outside of the Playlist fragment
-
-            // Don't show the FAB if we can't write to the library
-            if (!hasRwPermission()) return;
-
-            // If the fab isn't supposed to change states, don't animate anything
-            if (position != 0 && fab.getVisibility() == View.GONE) return;
-
-            if (position == 0) {
-                fab.show();
-            } else {
-                fab.hide();
-            }
-        }
-
-        @Override
-        public void onPageScrollStateChanged(int state) {
-
-        }
-    }
 }

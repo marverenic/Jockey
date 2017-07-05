@@ -3,6 +3,7 @@ package com.marverenic.music.ui.library.genre;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -43,6 +44,12 @@ public class GenreActivity extends BaseLibraryActivity {
         intent.putExtra(GENRE_EXTRA, genre);
 
         return intent;
+    }
+
+    @Override
+    protected Fragment onCreateFragment(Bundle savedInstanceState) {
+        // TODO
+        return null;
     }
 
     @Override
@@ -105,11 +112,6 @@ public class GenreActivity extends BaseLibraryActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         list.setLayoutManager(layoutManager);
-    }
-
-    @Override
-    protected int getContentLayoutResource() {
-        return R.layout.activity_instance;
     }
 
     private void setupAdapter() {

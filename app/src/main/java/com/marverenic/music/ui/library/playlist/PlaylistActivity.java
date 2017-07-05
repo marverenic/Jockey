@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.drawable.NinePatchDrawable;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -61,6 +62,12 @@ public class PlaylistActivity extends BaseLibraryActivity
     }
 
     @Override
+    protected Fragment onCreateFragment(Bundle savedInstanceState) {
+        // TODO
+        return null;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         JockeyApplication.getComponent(this).inject(this);
@@ -83,11 +90,6 @@ public class PlaylistActivity extends BaseLibraryActivity
                         });
 
         getSupportActionBar().setTitle(mReference.getPlaylistName());
-    }
-
-    @Override
-    protected int getContentLayoutResource() {
-        return R.layout.activity_instance;
     }
 
     private void setupAdapter() {

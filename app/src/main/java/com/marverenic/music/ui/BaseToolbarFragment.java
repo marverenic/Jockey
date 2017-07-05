@@ -3,6 +3,7 @@ package com.marverenic.music.ui;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -43,8 +44,20 @@ public abstract class BaseToolbarFragment extends BaseFragment {
         if (parentActivity instanceof AppCompatActivity) {
             AppCompatActivity activity = (AppCompatActivity) parentActivity;
             activity.setSupportActionBar(toolbar);
+
+            ActionBar actionBar = activity.getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setDisplayHomeAsUpEnabled(true);
+                actionBar.setHomeButtonEnabled(true);
+                actionBar.setDisplayShowHomeEnabled(true);
+            }
+
         } else {
             Timber.w("Hosting activity is not an AppCompatActivity. Toolbar will not be bound.");
         }
+    }
+
+    protected boolean canNavigateUp() {
+        return false;
     }
 }

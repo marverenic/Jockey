@@ -3,6 +3,7 @@ package com.marverenic.music.ui.library.album;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -46,6 +47,12 @@ public class AlbumActivity extends BaseLibraryActivity {
         intent.putExtra(ALBUM_EXTRA, album);
 
         return intent;
+    }
+
+    @Override
+    protected Fragment onCreateFragment(Bundle savedInstanceState) {
+        // TODO
+        return null;
     }
 
     @Override
@@ -116,11 +123,6 @@ public class AlbumActivity extends BaseLibraryActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         list.setLayoutManager(layoutManager);
-    }
-
-    @Override
-    protected int getContentLayoutResource() {
-        return R.layout.activity_instance_artwork;
     }
 
     @Override

@@ -3,16 +3,13 @@ package com.marverenic.music.ui;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
-import android.support.annotation.LayoutRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.app.NightMode;
-import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -107,28 +104,6 @@ public abstract class BaseActivity extends RxAppCompatActivity {
      * @inheritDoc
      */
     @Override
-    public void setContentView(@LayoutRes int layoutResId) {
-        super.setContentView(layoutResId);
-        setupToolbar();
-    }
-
-    protected void setupToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
-
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                getSupportActionBar().setHomeButtonEnabled(true);
-                getSupportActionBar().setDisplayShowHomeEnabled(true);
-            }
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    @Override
     public void onResume() {
         super.onResume();
 
@@ -147,16 +122,10 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    public boolean onNavigateUp() {
+        finish();
+        return true;
     }
 
     /**

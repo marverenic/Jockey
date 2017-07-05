@@ -3,6 +3,7 @@ package com.marverenic.music.data.inject;
 import com.marverenic.music.ui.about.AboutActivity;
 import com.marverenic.music.ui.BaseActivity;
 import com.marverenic.music.ui.library.LibraryActivity;
+import com.marverenic.music.ui.library.LibraryFragment;
 import com.marverenic.music.ui.search.SearchActivity;
 import com.marverenic.music.ui.library.album.AlbumActivity;
 import com.marverenic.music.ui.library.artist.ArtistActivity;
@@ -57,6 +58,7 @@ public interface JockeyGraph {
 
     void inject(BaseWidget widget);
 
+    void inject(LibraryFragment fragment);
     void inject(SongFragment fragment);
     void inject(AlbumFragment fragment);
     void inject(ArtistFragment fragment);
