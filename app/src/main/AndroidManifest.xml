@@ -23,16 +23,16 @@
         android:name=".JockeyApplication"
         android:resizeableActivity="true"
         android:supportsRtl="true"
-        tools:ignore="UnusedAttribute">
+        tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
 
         <!-- Library Activity -->
-        <activity android:name=".activity.MainActivity"
+        <activity android:name=".ui.library.LibraryActivity"
             android:windowSoftInputMode="adjustPan|adjustNothing"
             android:theme="@style/SplashTheme"/>
 
         <activity-alias
             android:name=".activity.LibraryActivity"
-            android:targetActivity=".activity.MainActivity"
+            android:targetActivity=".ui.library.LibraryActivity"
             android:icon="@mipmap/ic_launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,7 +44,7 @@
 
         <activity-alias
             android:name=".activity.LibraryActivity$Red"
-            android:targetActivity=".activity.MainActivity"
+            android:targetActivity=".ui.library.LibraryActivity"
             android:icon="@mipmap/ic_launcher_red"
             android:enabled="false">
             <intent-filter>
@@ -57,7 +57,7 @@
 
         <activity-alias
             android:name=".activity.LibraryActivity$Orange"
-            android:targetActivity=".activity.MainActivity"
+            android:targetActivity=".ui.library.LibraryActivity"
             android:icon="@mipmap/ic_launcher_orange"
             android:enabled="false">
             <intent-filter>
@@ -70,7 +70,7 @@
 
         <activity-alias
             android:name=".activity.LibraryActivity$Yellow"
-            android:targetActivity=".activity.MainActivity"
+            android:targetActivity=".ui.library.LibraryActivity"
             android:icon="@mipmap/ic_launcher_yellow"
             android:enabled="false">
             <intent-filter>
@@ -83,7 +83,7 @@
 
         <activity-alias
             android:name=".activity.LibraryActivity$Green"
-            android:targetActivity=".activity.MainActivity"
+            android:targetActivity=".ui.library.LibraryActivity"
             android:icon="@mipmap/ic_launcher_green"
             android:enabled="false">
             <intent-filter>
@@ -96,7 +96,7 @@
 
         <activity-alias
             android:name=".activity.LibraryActivity$Blue"
-            android:targetActivity=".activity.MainActivity"
+            android:targetActivity=".ui.library.LibraryActivity"
             android:icon="@mipmap/ic_launcher_blue"
             android:enabled="false">
             <intent-filter>
@@ -109,7 +109,7 @@
 
         <activity-alias
             android:name=".activity.LibraryActivity$Purple"
-            android:targetActivity=".activity.MainActivity"
+            android:targetActivity=".ui.library.LibraryActivity"
             android:icon="@mipmap/ic_launcher_purple"
             android:enabled="false">
             <intent-filter>
@@ -122,7 +122,7 @@
 
         <activity-alias
             android:name=".activity.LibraryActivity$Grey"
-            android:targetActivity=".activity.MainActivity"
+            android:targetActivity=".ui.library.LibraryActivity"
             android:icon="@mipmap/ic_launcher_grey"
             android:enabled="false">
             <intent-filter>
@@ -135,7 +135,7 @@
 
         <activity-alias
             android:name=".activity.LibraryActivity$Black"
-            android:targetActivity=".activity.MainActivity"
+            android:targetActivity=".ui.library.LibraryActivity"
             android:icon="@mipmap/ic_launcher_black"
             android:enabled="false">
             <intent-filter>
@@ -148,34 +148,34 @@
 
         <!-- Search Activity -->
         <activity
-            android:name=".activity.SearchActivity"
+            android:name=".ui.search.SearchActivity"
             android:label="@string/header_search"
             android:windowSoftInputMode="adjustPan|adjustNothing"/>
 
         <!-- Instance Activities -->
         <activity
-            android:name=".activity.instance.PlaylistActivity"
+            android:name=".ui.library.playlist.PlaylistActivity"
             android:windowSoftInputMode="adjustPan|adjustNothing"/>
         <activity
-            android:name=".activity.instance.AutoPlaylistActivity"
+            android:name=".ui.library.playlist.AutoPlaylistActivity"
             android:windowSoftInputMode="adjustPan|adjustNothing"/>
         <activity
-            android:name=".activity.instance.AlbumActivity"
+            android:name=".ui.library.album.AlbumActivity"
             android:windowSoftInputMode="adjustPan|adjustNothing"/>
         <activity
-            android:name=".activity.instance.ArtistActivity"
+            android:name=".ui.library.artist.ArtistActivity"
             android:windowSoftInputMode="adjustPan|adjustNothing"/>
         <activity
-            android:name=".activity.instance.GenreActivity"
+            android:name=".ui.library.genre.GenreActivity"
             android:windowSoftInputMode="adjustPan|adjustNothing"/>
         <activity
-            android:name=".activity.instance.AutoPlaylistEditActivity" />
+            android:name=".ui.library.playlist.edit.AutoPlaylistEditActivity" />
 
         <!-- Play with Jockey (from search) intent filter -->
         <activity-alias
             android:name=".SearchWithJockey"
             android:label="@string/app_name"
-            android:targetActivity=".activity.SearchActivity">
+            android:targetActivity=".ui.search.SearchActivity">
             <intent-filter>
                 <action android:name="android.media.action.MEDIA_PLAY_FROM_SEARCH" />
                 <action android:name="android.intent.action.MEDIA_SEARCH" />
@@ -188,7 +188,7 @@
         <activity-alias
             android:name=".PlayWithJockey"
             android:label="@string/app_name"
-            android:targetActivity=".activity.MainActivity">
+            android:targetActivity=".ui.library.LibraryActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -206,11 +206,11 @@
         </activity-alias>
 
         <!-- About Activity -->
-        <activity android:name=".activity.AboutActivity" />
+        <activity android:name=".ui.about.AboutActivity" />
 
         <!-- Settings Activity -->
         <activity
-            android:name=".activity.SettingsActivity"
+            android:name=".ui.settings.SettingsActivity"
             android:label="@string/header_settings"
             android:screenOrientation="fullUser">
             <intent-filter>

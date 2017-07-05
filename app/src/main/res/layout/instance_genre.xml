@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <variable name="viewModel" type="com.marverenic.music.viewmodel.GenreViewModel" />
+        <variable name="viewModel" type="com.marverenic.music.ui.library.GenreViewModel" />
     </data>
 
     <android.support.constraint.ConstraintLayout

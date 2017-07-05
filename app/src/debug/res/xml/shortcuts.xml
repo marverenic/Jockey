@@ -18,7 +18,7 @@
         <intent
             android:action="android.intent.action.VIEW"
             android:targetPackage="com.marverenic.music.debug"
-            android:targetClass="com.marverenic.music.activity.SearchActivity" />
+            android:targetClass="com.marverenic.music.ui.search.SearchActivity" />
     </shortcut>
 
     <shortcut
@@ -28,7 +28,7 @@
         <intent
             android:action="MainActivity.ShowNowPlayingPage"
             android:targetPackage="com.marverenic.music.debug"
-            android:targetClass="com.marverenic.music.activity.MainActivity" />
+            android:targetClass="com.marverenic.music.ui.library.LibraryActivity" />
     </shortcut>
 
 </shortcuts>

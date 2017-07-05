@@ -4,7 +4,7 @@
     <data>
         <variable
             name="artworkViewModel"
-            type="com.marverenic.music.viewmodel.NowPlayingArtworkViewModel"/>
+            type="com.marverenic.music.ui.nowplaying.NowPlayingArtworkViewModel"/>
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -41,7 +41,7 @@
                     app:gesturesEnabled="@{artworkViewModel.gesturesEnabled}"
                     app:gestureListener="@{artworkViewModel.gestureListener}">
 
-                    <com.marverenic.music.view.SquareImageViewH
+                    <com.marverenic.music.view.SquareImageView
                         android:id="@+id/now_playing_artwork"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -95,7 +95,7 @@
                 android:id="@+id/now_playing_control_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:name="com.marverenic.music.fragments.PlayerControllerFragment"
+                android:name="com.marverenic.music.ui.nowplaying.PlayerControllerFragment"
                 tools:layout="@layout/view_now_playing_control_panel" />
 
         </android.support.v4.widget.NestedScrollView>
@@ -105,7 +105,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="@dimen/player_frame_height"
-            android:name="com.marverenic.music.fragments.QueueFragment"
+            android:name="com.marverenic.music.ui.nowplaying.QueueFragment"
             tools:layout="@layout/list"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 

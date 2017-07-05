@@ -25,7 +25,7 @@ import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.app.NightMode;
 
 import com.marverenic.music.R;
-import com.marverenic.music.activity.MainActivity;
+import com.marverenic.music.ui.library.LibraryActivity;
 import com.marverenic.music.data.annotations.AccentTheme;
 import com.marverenic.music.data.annotations.PrimaryTheme;
 import com.marverenic.music.player.PlayerService;
@@ -306,7 +306,7 @@ public class PresetThemeStore implements ThemeStore {
 
     private void scheduleRestart() {
         PendingIntent intent = PendingIntent.getActivity(mContext, 0,
-                new Intent(mContext, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+                new Intent(mContext, LibraryActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
 
         AlarmManager mgr = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
 
@@ -321,7 +321,7 @@ public class PresetThemeStore implements ThemeStore {
     private void restartApplication() {
         mContext.stopService(new Intent(mContext, PlayerService.class));
 
-        Intent restartIntent = new Intent(mContext, MainActivity.class);
+        Intent restartIntent = new Intent(mContext, LibraryActivity.class);
         restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(restartIntent);
     }
