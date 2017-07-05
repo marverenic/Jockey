@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.app.NightMode;
@@ -164,6 +165,16 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     @Override
     public void onBackPressed() {
         Timber.v("onBackPressed");
+
+        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+            if (fragment instanceof BaseFragment) {
+                BaseFragment baseFragment = (BaseFragment) fragment;
+                if (baseFragment.onBackPressed()) {
+                    return;
+                }
+            }
+        }
+
         super.onBackPressed();
         finish();
     }
