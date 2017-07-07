@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.data.store.PreferenceStore;
@@ -60,7 +59,7 @@ public class LibraryFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
 
         mBinding = FragmentLibraryBinding.inflate(inflater, container, false);
-        mViewModel = new LibraryViewModel(mPrefStore);
+        mViewModel = new LibraryViewModel(getContext(), getFragmentManager(), mPrefStore);
         mBinding.setViewModel(mViewModel);
 
         initRefreshLayout();
@@ -87,16 +86,7 @@ public class LibraryFragment extends BaseFragment {
                         pager.getPaddingRight(),
                         layout.getTotalScrollRange() + verticalOffset));
 
-        int page = mPrefStore.getDefaultPage();
-        if (page != 0 || !MediaStoreUtil.hasPermission(getContext())) {
-            mBinding.fab.setVisibility(View.GONE);
-        }
-
-        LibraryPagerAdapter adapter = new LibraryPagerAdapter(getContext(), getFragmentManager());
-        adapter.setFloatingActionButton(mBinding.fab);
-        pager.setAdapter(adapter);
-        pager.addOnPageChangeListener(adapter);
-        mBinding.libraryTabs.setupWithViewPager(pager);
+        mBinding.libraryTabs.setupWithViewPager(mBinding.libraryPager);
 
         setHasOptionsMenu(true);
 

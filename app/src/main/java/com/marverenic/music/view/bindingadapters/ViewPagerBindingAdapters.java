@@ -22,7 +22,7 @@ public class ViewPagerBindingAdapters {
 
     @BindingAdapter("page")
     public static void setPage(ViewPager pager, int page) {
-        pager.setCurrentItem(page);
+        pager.setCurrentItem(page, false);
     }
 
     @InverseBindingAdapter(attribute = "page")

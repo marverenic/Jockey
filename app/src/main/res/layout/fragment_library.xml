@@ -49,7 +49,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:saveEnabled="true"
-                app:page="@={viewModel.page}"/>
+                app:page="@={viewModel.page}"
+                app:adapter="@{viewModel.pagerAdapter}"/>
 
         </android.support.v4.widget.SwipeRefreshLayout>
 

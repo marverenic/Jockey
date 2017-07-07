@@ -1,17 +1,28 @@
 package com.marverenic.music.ui.library;
 
+import android.content.Context;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 
 import com.marverenic.music.BR;
 import com.marverenic.music.data.store.PreferenceStore;
 
 public class LibraryViewModel extends BaseObservable {
 
+    private Context mContext;
+
+    private FragmentPagerAdapter mPagerAdapter;
     private int mPage;
 
-    LibraryViewModel(PreferenceStore preferenceStore) {
+    LibraryViewModel(Context context, FragmentManager fragmentManager,
+                     PreferenceStore preferenceStore) {
+
+        mContext = context;
+
         setPage(preferenceStore.getDefaultPage());
+        mPagerAdapter = new LibraryPagerAdapter(context, fragmentManager);
     }
 
     @Bindable
@@ -24,6 +35,12 @@ public class LibraryViewModel extends BaseObservable {
             mPage = page;
             notifyPropertyChanged(BR.page);
         }
+    }
+
+    @Bindable
+    public FragmentPagerAdapter getPagerAdapter() {
+        notifyPropertyChanged(BR.page);
+        return mPagerAdapter;
     }
 
 }
