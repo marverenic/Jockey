@@ -42,6 +42,7 @@ public class LibraryFragment extends BaseFragment {
     @Inject PreferenceStore mPrefStore;
 
     private FragmentLibraryBinding mBinding;
+    private LibraryViewModel mViewModel;
 
     public static LibraryFragment newInstance() {
         return new LibraryFragment();
@@ -59,6 +60,8 @@ public class LibraryFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
 
         mBinding = FragmentLibraryBinding.inflate(inflater, container, false);
+        mViewModel = new LibraryViewModel(mPrefStore);
+        mBinding.setViewModel(mViewModel);
 
         initRefreshLayout();
         mMusicStore.loadAll();
@@ -97,7 +100,6 @@ public class LibraryFragment extends BaseFragment {
 
         setHasOptionsMenu(true);
 
-        pager.setCurrentItem(page);
         return mBinding.getRoot();
     }
 
