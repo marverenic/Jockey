@@ -4,15 +4,11 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.view.View;
 
 import com.marverenic.music.R;
-import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.ui.nowplaying.GenreFragment;
-import com.marverenic.music.view.FABMenu;
 
-class LibraryPagerAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener {
+class LibraryPagerAdapter extends FragmentPagerAdapter {
 
     private Context mContext;
 
@@ -22,15 +18,9 @@ class LibraryPagerAdapter extends FragmentPagerAdapter implements ViewPager.OnPa
     private AlbumFragment albumFragment;
     private GenreFragment genreFragment;
 
-    private FABMenu fab;
-
     public LibraryPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
         mContext = context;
-    }
-
-    public void setFloatingActionButton(FABMenu view) {
-        fab = view;
     }
 
     @Override
@@ -88,30 +78,4 @@ class LibraryPagerAdapter extends FragmentPagerAdapter implements ViewPager.OnPa
         }
     }
 
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-    }
-
-    @Override
-    public void onPageSelected(int position) {
-        // Hide the fab when outside of the Playlist fragment
-
-        // Don't show the FAB if we can't write to the library
-        if (!MediaStoreUtil.hasPermission(mContext)) return;
-
-        // If the fab isn't supposed to change states, don't animate anything
-        if (position != 0 && fab.getVisibility() == View.GONE) return;
-
-        if (position == 0) {
-            fab.show();
-        } else {
-            fab.hide();
-        }
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state) {
-
-    }
 }

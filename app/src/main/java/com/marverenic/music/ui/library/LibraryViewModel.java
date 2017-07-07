@@ -34,6 +34,7 @@ public class LibraryViewModel extends BaseObservable {
         if (page != mPage) {
             mPage = page;
             notifyPropertyChanged(BR.page);
+            notifyPropertyChanged(BR.fabVisible);
         }
     }
 
@@ -41,6 +42,11 @@ public class LibraryViewModel extends BaseObservable {
     public FragmentPagerAdapter getPagerAdapter() {
         notifyPropertyChanged(BR.page);
         return mPagerAdapter;
+    }
+
+    @Bindable
+    public boolean isFabVisible() {
+        return mPage == 0;
     }
 
 }

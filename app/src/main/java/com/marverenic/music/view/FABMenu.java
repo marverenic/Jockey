@@ -181,6 +181,18 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
         return label;
     }
 
+    public void setShown(boolean visible) {
+        if ((visible ? View.VISIBLE : View.GONE) == getVisibility()) {
+            return;
+        }
+
+        if (visible) {
+            show();
+        } else {
+            hide();
+        }
+    }
+
     public void show() {
         Animation fabAnim = AnimationUtils.loadAnimation(getContext(), R.anim.fab_in);
         fabAnim.setDuration(300);
@@ -193,6 +205,11 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
     }
 
     public void hide() {
+        if (!ViewCompat.isLaidOut(this)) {
+            setVisibility(GONE);
+            return;
+        }
+
         if (childrenVisible) {
             hideChildren();
             childrenVisible = false;
