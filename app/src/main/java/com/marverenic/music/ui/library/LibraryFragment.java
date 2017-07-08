@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -73,9 +75,17 @@ public class LibraryFragment extends BaseFragment {
 
         mBinding.libraryTabs.setupWithViewPager(mBinding.libraryPager);
 
+        setupToolbar(mBinding.toolbar);
         setHasOptionsMenu(true);
 
         return mBinding.getRoot();
+    }
+
+    private void setupToolbar(Toolbar toolbar) {
+        if (getActivity() instanceof AppCompatActivity) {
+            AppCompatActivity activity = (AppCompatActivity) getActivity();
+            activity.setSupportActionBar(toolbar);
+        }
     }
 
     @Override
