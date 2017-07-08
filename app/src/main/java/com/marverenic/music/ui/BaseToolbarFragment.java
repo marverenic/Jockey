@@ -47,11 +47,11 @@ public abstract class BaseToolbarFragment extends BaseFragment {
 
             ActionBar actionBar = activity.getSupportActionBar();
             if (actionBar != null) {
-                actionBar.setDisplayHomeAsUpEnabled(true);
-                actionBar.setHomeButtonEnabled(true);
-                actionBar.setDisplayShowHomeEnabled(true);
+                boolean showUpButton = canNavigateUp();
+                actionBar.setDisplayHomeAsUpEnabled(showUpButton);
+                actionBar.setHomeButtonEnabled(showUpButton);
+                actionBar.setDisplayShowHomeEnabled(showUpButton);
             }
-
         } else {
             Timber.w("Hosting activity is not an AppCompatActivity. Toolbar will not be bound.");
         }
