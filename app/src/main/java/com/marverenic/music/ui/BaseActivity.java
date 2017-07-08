@@ -23,6 +23,9 @@ import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.player.PlayerController;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import timber.log.Timber;
@@ -135,7 +138,12 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     public void onBackPressed() {
         Timber.v("onBackPressed");
 
-        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        if (fragments == null) {
+            fragments = Collections.emptyList();
+        }
+
+        for (Fragment fragment : fragments) {
             if (fragment instanceof BaseFragment) {
                 BaseFragment baseFragment = (BaseFragment) fragment;
                 if (baseFragment.onBackPressed()) {
