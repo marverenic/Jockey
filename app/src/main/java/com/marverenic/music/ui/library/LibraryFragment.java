@@ -21,8 +21,6 @@ import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.databinding.FragmentLibraryBinding;
 import com.marverenic.music.ui.BaseFragment;
 import com.marverenic.music.ui.about.AboutActivity;
-import com.marverenic.music.ui.common.playlist.CreatePlaylistDialogFragment;
-import com.marverenic.music.ui.library.playlist.edit.AutoPlaylistEditActivity;
 import com.marverenic.music.ui.search.SearchActivity;
 import com.marverenic.music.ui.settings.SettingsActivity;
 
@@ -32,8 +30,6 @@ import rx.Observable;
 import timber.log.Timber;
 
 public class LibraryFragment extends BaseFragment {
-
-    private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
 
     @Inject MusicStore mMusicStore;
     @Inject PlaylistStore mPlaylistStore;
@@ -65,17 +61,6 @@ public class LibraryFragment extends BaseFragment {
         initRefreshLayout();
         mMusicStore.loadAll();
         mPlaylistStore.loadPlaylists();
-
-        // Setup the FAB
-        mBinding.fab.addChild(R.drawable.ic_add_24dp, v -> {
-            new CreatePlaylistDialogFragment.Builder(getFragmentManager())
-                    .showSnackbarIn(R.id.library_pager)
-                    .show(TAG_MAKE_PLAYLIST);
-        }, R.string.playlist);
-
-        mBinding.fab.addChild(R.drawable.ic_add_24dp, v -> {
-            startActivity(AutoPlaylistEditActivity.newIntent(getContext()));
-        }, R.string.playlist_auto);
 
         ViewPager pager = mBinding.libraryPager;
         AppBarLayout appBarLayout = mBinding.libraryAppBarLayout;

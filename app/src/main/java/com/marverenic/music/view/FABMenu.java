@@ -69,6 +69,27 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
         screen.setOnClickListener(this);
     }
 
+    public void setChildren(MenuItem... menuItems) {
+        for (FloatingActionButton child : children) {
+            ViewGroup childParent = (ViewGroup) child.getParent();
+            childParent.removeView(child);
+        }
+
+        children.clear();
+
+        for (MenuItem item : menuItems) {
+            addChild(item);
+        }
+    }
+
+    public void addChild(MenuItem menuItem) {
+        if (menuItem.labelRes == 0) {
+            addChild(menuItem.iconRes, menuItem.onClickListener, menuItem.label);
+        } else {
+            addChild(menuItem.iconRes, menuItem.onClickListener, menuItem.labelRes);
+        }
+    }
+
     public void addChild(@DrawableRes int icon, OnClickListener onClickListener, String label) {
         children.add(buildChild(icon, onClickListener, label));
         labels.add(buildChildLabel(label));
@@ -76,9 +97,7 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
 
     public void addChild(@DrawableRes int icon, OnClickListener onClickListener,
                          @StringRes int label) {
-        final String name = getResources().getString(label);
-        children.add(buildChild(icon, onClickListener, name));
-        labels.add(buildChildLabel(name));
+        addChild(icon, onClickListener, getResources().getString(label));
     }
 
     private FloatingActionButton buildChild(@DrawableRes int icon,
@@ -379,6 +398,31 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
         } else if (v == screen) {
             hideChildren();
         }
+    }
+
+    public static class MenuItem {
+
+        @DrawableRes final int iconRes;
+        @StringRes final int labelRes;
+        final String label;
+        final OnClickListener onClickListener;
+
+        public MenuItem(@DrawableRes int iconRes, OnClickListener onClickListener,
+                        @StringRes int labelRes) {
+            this.iconRes = iconRes;
+            this.labelRes = labelRes;
+            this.onClickListener = onClickListener;
+            label = null;
+        }
+
+        public MenuItem(@DrawableRes int iconRes, OnClickListener onClickListener,
+                        String label) {
+            this.iconRes = iconRes;
+            this.label = label;
+            this.onClickListener = onClickListener;
+            labelRes = 0;
+        }
+
     }
 
     // A lot of code here is copied from FloatingActionButton.Behavior because I can't override the
