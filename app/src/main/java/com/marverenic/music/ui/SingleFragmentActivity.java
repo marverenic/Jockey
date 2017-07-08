@@ -9,6 +9,8 @@ import com.marverenic.music.R;
 
 public abstract class SingleFragmentActivity extends BaseActivity {
 
+    private static final String CONTENT_FRAGMENT_TAG = "content_fragment";
+
     protected abstract Fragment onCreateFragment(Bundle savedInstanceState);
 
     @Override
@@ -16,14 +18,16 @@ public abstract class SingleFragmentActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         onCreateLayout(savedInstanceState);
 
-        Fragment fragment = onCreateFragment(savedInstanceState);
-        getSupportFragmentManager().beginTransaction()
-                .add(getFragmentContainerId(), fragment)
-                .commit();
+        if (getSupportFragmentManager().findFragmentByTag(CONTENT_FRAGMENT_TAG) == null) {
+            Fragment fragment = onCreateFragment(savedInstanceState);
+            getSupportFragmentManager().beginTransaction()
+                    .add(getFragmentContainerId(), fragment, CONTENT_FRAGMENT_TAG)
+                    .commit();
+        }
     }
 
     /**
-     * Creates tha layout for this activity. The default implementation is an empty activity where
+     * Creates the layout for this activity. The default implementation is an empty activity where
      * the fragment consumes the entire window.
      * @see #getFragmentContainerId() To specify the view that your fragment should be attached in.
      */
