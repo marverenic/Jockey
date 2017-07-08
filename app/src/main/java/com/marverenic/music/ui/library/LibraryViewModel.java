@@ -1,6 +1,5 @@
 package com.marverenic.music.ui.library;
 
-import android.content.Context;
 import android.databinding.Bindable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -24,7 +23,6 @@ public class LibraryViewModel extends RxViewModel {
 
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
 
-    private Context mContext;
     private FragmentManager mFragmentManager;
     private ThemeStore mThemeStore;
 
@@ -37,12 +35,11 @@ public class LibraryViewModel extends RxViewModel {
 
         super(fragment);
 
-        mContext = fragment.getContext();
         mFragmentManager = fragment.getFragmentManager();
         mThemeStore = themeStore;
 
         setPage(preferenceStore.getDefaultPage());
-        mPagerAdapter = new LibraryPagerAdapter(mContext, mFragmentManager);
+        mPagerAdapter = new LibraryPagerAdapter(getContext(), mFragmentManager);
 
         Observable.combineLatest(musicStore.isLoading(), playlistStore.isLoading(),
                 (musicLoading, playlistLoading) -> {
@@ -113,7 +110,7 @@ public class LibraryViewModel extends RxViewModel {
     }
 
     private void createAutoPlaylist() {
-        mContext.startActivity(AutoPlaylistEditActivity.newIntent(mContext));
+        getContext().startActivity(AutoPlaylistEditActivity.newIntent(getContext()));
     }
 
 }

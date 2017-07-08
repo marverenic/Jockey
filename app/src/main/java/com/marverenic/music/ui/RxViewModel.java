@@ -1,5 +1,6 @@
 package com.marverenic.music.ui;
 
+import android.content.Context;
 import android.databinding.BaseObservable;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
@@ -13,16 +14,22 @@ import rx.Observable;
 
 public abstract class RxViewModel extends BaseObservable {
 
-    private Observable<FragmentEvent> fragmentLifecycle;
+    private Observable<FragmentEvent> mFragmentLifecycle;
+    private Context mContext;
 
     public RxViewModel(RxFragment fragment) {
-        fragmentLifecycle = fragment.lifecycle();
+        mFragmentLifecycle = fragment.lifecycle();
+        mContext = fragment.getContext();
     }
 
     @NonNull
     @CheckResult
     protected final <T> LifecycleTransformer<T> bindToLifecycle() {
-        return RxLifecycle.bindUntilEvent(fragmentLifecycle, FragmentEvent.DESTROY_VIEW);
+        return RxLifecycle.bindUntilEvent(mFragmentLifecycle, FragmentEvent.DESTROY_VIEW);
+    }
+
+    protected Context getContext() {
+        return mContext;
     }
 
 }
