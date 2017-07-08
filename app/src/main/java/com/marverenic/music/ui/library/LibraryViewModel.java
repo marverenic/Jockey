@@ -1,36 +1,57 @@
 package com.marverenic.music.ui.library;
 
 import android.content.Context;
-import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.marverenic.music.BR;
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.data.store.PreferenceStore;
+import com.marverenic.music.data.store.ThemeStore;
+import com.marverenic.music.ui.RxViewModel;
 import com.marverenic.music.ui.common.playlist.CreatePlaylistDialogFragment;
 import com.marverenic.music.ui.library.playlist.edit.AutoPlaylistEditActivity;
 import com.marverenic.music.view.FABMenu;
+import com.trello.rxlifecycle.components.support.RxFragment;
 
-public class LibraryViewModel extends BaseObservable {
+import rx.Observable;
+import timber.log.Timber;
+
+public class LibraryViewModel extends RxViewModel {
 
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
 
     private Context mContext;
     private FragmentManager mFragmentManager;
+    private ThemeStore mThemeStore;
 
     private FragmentPagerAdapter mPagerAdapter;
+    private boolean mRefreshing;
     private int mPage;
 
-    LibraryViewModel(Context context, FragmentManager fragmentManager,
-                     PreferenceStore preferenceStore) {
+    LibraryViewModel(RxFragment fragment, PreferenceStore preferenceStore,
+                     ThemeStore themeStore, MusicStore musicStore, PlaylistStore playlistStore) {
 
-        mContext = context;
-        mFragmentManager = fragmentManager;
+        super(fragment);
+
+        mContext = fragment.getContext();
+        mFragmentManager = fragment.getFragmentManager();
+        mThemeStore = themeStore;
 
         setPage(preferenceStore.getDefaultPage());
-        mPagerAdapter = new LibraryPagerAdapter(context, fragmentManager);
+        mPagerAdapter = new LibraryPagerAdapter(mContext, mFragmentManager);
+
+        Observable.combineLatest(musicStore.isLoading(), playlistStore.isLoading(),
+                (musicLoading, playlistLoading) -> {
+                    return musicLoading || playlistLoading;
+                })
+                .compose(bindToLifecycle())
+                .subscribe(this::setLibraryRefreshing, throwable -> {
+                            Timber.e(throwable, "Failed to update refresh indicator");
+                        });
     }
 
     @Bindable
@@ -64,6 +85,24 @@ public class LibraryViewModel extends BaseObservable {
                         R.string.playlist),
                 new FABMenu.MenuItem(R.drawable.ic_add_24dp, v -> createAutoPlaylist(),
                         R.string.playlist_auto)
+        };
+    }
+
+    private void setLibraryRefreshing(boolean refreshing) {
+        mRefreshing = refreshing;
+        notifyPropertyChanged(BR.libraryRefreshing);
+    }
+
+    @Bindable
+    public boolean isLibraryRefreshing() {
+        return mRefreshing;
+    }
+
+    @Bindable
+    public int[] getRefreshIndicatorColors() {
+        return new int[] {
+                mThemeStore.getPrimaryColor(),
+                mThemeStore.getAccentColor()
         };
     }
 

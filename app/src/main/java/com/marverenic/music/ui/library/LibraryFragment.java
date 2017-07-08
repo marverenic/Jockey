@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -27,9 +26,6 @@ import com.marverenic.music.ui.search.SearchActivity;
 import com.marverenic.music.ui.settings.SettingsActivity;
 
 import javax.inject.Inject;
-
-import rx.Observable;
-import timber.log.Timber;
 
 public class LibraryFragment extends BaseFragment {
 
@@ -57,10 +53,9 @@ public class LibraryFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
 
         mBinding = FragmentLibraryBinding.inflate(inflater, container, false);
-        mViewModel = new LibraryViewModel(getContext(), getFragmentManager(), mPrefStore);
+        mViewModel = new LibraryViewModel(this, mPrefStore, mThemeStore, mMusicStore, mPlaylistStore);
         mBinding.setViewModel(mViewModel);
 
-        initRefreshLayout();
         mMusicStore.loadAll();
         mPlaylistStore.loadPlaylists();
 
@@ -110,24 +105,4 @@ public class LibraryFragment extends BaseFragment {
         }
     }
 
-    private void initRefreshLayout() {
-        SwipeRefreshLayout swipeRefreshLayout = mBinding.libraryRefreshLayout;
-        swipeRefreshLayout.setSize(SwipeRefreshLayout.DEFAULT);
-        swipeRefreshLayout.setColorSchemeColors(mThemeStore.getPrimaryColor(),
-                mThemeStore.getAccentColor());
-        swipeRefreshLayout.setEnabled(false);
-
-        Observable.combineLatest(mMusicStore.isLoading(), mPlaylistStore.isLoading(),
-                (musicLoading, playlistLoading) -> {
-                    return musicLoading || playlistLoading;
-                })
-                .compose(bindToLifecycle())
-                .subscribe(
-                        refreshing -> {
-                            swipeRefreshLayout.setEnabled(refreshing);
-                            swipeRefreshLayout.setRefreshing(refreshing);
-                        }, throwable -> {
-                            Timber.e(throwable, "Failed to update refresh indicator");
-                        });
-    }
 }

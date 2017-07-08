@@ -42,6 +42,9 @@
             android:id="@+id/library_refresh_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:enabled="@{viewModel.libraryRefreshing}"
+            app:refreshing="@{viewModel.libraryRefreshing}"
+            app:colorSchemeColors="@{viewModel.refreshIndicatorColors}"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <android.support.v4.view.ViewPager
