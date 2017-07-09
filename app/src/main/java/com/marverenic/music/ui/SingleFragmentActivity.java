@@ -27,6 +27,14 @@ public abstract class SingleFragmentActivity extends BaseActivity {
     }
 
     /**
+     * @return The fragment created in {@link #onCreateFragment(Bundle)}, if it is still attached
+     * to this activity.
+     */
+    protected Fragment getContentFragment() {
+        return getSupportFragmentManager().findFragmentByTag(CONTENT_FRAGMENT_TAG);
+    }
+
+    /**
      * Creates the layout for this activity. The default implementation is an empty activity where
      * the fragment consumes the entire window.
      * @see #getFragmentContainerId() To specify the view that your fragment should be attached in.

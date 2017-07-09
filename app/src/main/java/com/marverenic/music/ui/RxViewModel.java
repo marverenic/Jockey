@@ -3,7 +3,9 @@ package com.marverenic.music.ui;
 import android.content.Context;
 import android.databinding.BaseObservable;
 import android.support.annotation.CheckResult;
+import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 
 import com.trello.rxlifecycle.FragmentEvent;
 import com.trello.rxlifecycle.LifecycleTransformer;
@@ -30,6 +32,18 @@ public abstract class RxViewModel extends BaseObservable {
 
     protected Context getContext() {
         return mContext;
+    }
+
+    protected String getString(@StringRes int stringRes) {
+        return mContext.getString(stringRes);
+    }
+
+    protected float getDimension(@DimenRes int dimenRes) {
+        return mContext.getResources().getDimension(dimenRes);
+    }
+
+    protected int getDimensionPixelSize(@DimenRes int dimenRes) {
+        return mContext.getResources().getDimensionPixelSize(dimenRes);
     }
 
 }

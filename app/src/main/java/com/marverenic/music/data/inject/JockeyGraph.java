@@ -18,6 +18,7 @@ import com.marverenic.music.ui.common.playlist.CreatePlaylistDialogFragment;
 import com.marverenic.music.ui.common.playlist.PlaylistCollisionDialogFragment;
 import com.marverenic.music.ui.library.AlbumFragment;
 import com.marverenic.music.ui.library.ArtistFragment;
+import com.marverenic.music.ui.search.SearchFragment;
 import com.marverenic.music.ui.settings.DirectoryListFragment;
 import com.marverenic.music.ui.settings.EqualizerFragment;
 import com.marverenic.music.ui.nowplaying.GenreFragment;
@@ -59,6 +60,7 @@ public interface JockeyGraph {
     void inject(BaseWidget widget);
 
     void inject(LibraryFragment fragment);
+    void inject(SearchFragment fragment);
     void inject(SongFragment fragment);
     void inject(AlbumFragment fragment);
     void inject(ArtistFragment fragment);

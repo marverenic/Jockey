@@ -1,58 +1,24 @@
 package com.marverenic.music.ui.search;
 
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.view.Menu;
 import android.view.MenuItem;
 
-import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.ui.library.AlbumSection;
-import com.marverenic.music.ui.library.ArtistSection;
-import com.marverenic.music.ui.common.BasicEmptyState;
-import com.marverenic.music.ui.library.GenreSection;
-import com.marverenic.music.ui.common.HeaderSection;
-import com.marverenic.music.ui.library.LibraryActivity;
-import com.marverenic.music.ui.library.PlaylistSection;
-import com.marverenic.music.ui.library.SongSection;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
-import com.marverenic.music.model.Album;
-import com.marverenic.music.model.Artist;
-import com.marverenic.music.model.Genre;
-import com.marverenic.music.model.Playlist;
-import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseLibraryActivity;
-import com.marverenic.music.view.BackgroundDecoration;
-import com.marverenic.music.view.DividerDecoration;
-import com.marverenic.music.view.GridSpacingDecoration;
-import com.marverenic.music.view.ViewUtils;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import com.marverenic.music.ui.library.LibraryActivity;
 
 import javax.inject.Inject;
 
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import rx.subjects.BehaviorSubject;
-import timber.log.Timber;
+public class SearchActivity extends BaseLibraryActivity {
 
-public class SearchActivity extends BaseLibraryActivity implements SearchView.OnQueryTextListener {
-
-    private static final String KEY_SAVED_QUERY = "SearchActivity.LAST_QUERY";
 
     public static Intent newIntent(Context context) {
         return new Intent(context, SearchActivity.class);
@@ -62,22 +28,9 @@ public class SearchActivity extends BaseLibraryActivity implements SearchView.On
     @Inject PlaylistStore mPlaylistStore;
     @Inject PlayerController mPlayerController;
 
-    private SearchView searchView;
-    private BehaviorSubject<String> mQueryObservable;
-
-    private RecyclerView mRecyclerView;
-    private HeterogeneousAdapter mAdapter;
-
-    private PlaylistSection mPlaylistSection;
-    private SongSection mSongSection;
-    private AlbumSection mAlbumSection;
-    private ArtistSection mArtistSection;
-    private GenreSection mGenreSection;
-
     @Override
     protected Fragment onCreateFragment(Bundle savedInstanceState) {
-        // TODO
-        return null;
+        return SearchFragment.newInstance();
     }
 
     @Override
@@ -85,168 +38,14 @@ public class SearchActivity extends BaseLibraryActivity implements SearchView.On
         super.onCreate(savedInstanceState);
         JockeyApplication.getComponent(this).inject(this);
 
-        String lastQuery;
-        if (savedInstanceState != null) {
-            lastQuery = savedInstanceState.getString(KEY_SAVED_QUERY);
-        } else {
-            lastQuery = "";
-        }
-
-        mQueryObservable = BehaviorSubject.create(lastQuery);
-
-        // Set up the RecyclerView's adapter
-        mRecyclerView = (RecyclerView) findViewById(R.id.list);
-        initAdapter();
-
-        mQueryObservable
-                .subscribeOn(Schedulers.io())
-                .flatMap(query -> mPlaylistStore.searchForPlaylists(query))
-                .compose(bindToLifecycle())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(playlists -> {
-                    mPlaylistSection.setData(playlists);
-                    mAdapter.notifyDataSetChanged();
-                }, throwable -> {
-                    Timber.e(throwable, "Failed to search for playlists");
-                });
-
-        mQueryObservable
-                .subscribeOn(Schedulers.io())
-                .flatMap(query -> mMusicStore.searchForSongs(query))
-                .compose(bindToLifecycle())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(songs -> {
-                    mSongSection.setData(songs);
-                    mAdapter.notifyDataSetChanged();
-                }, throwable -> {
-                    Timber.e(throwable, "Failed to search for songs");
-                });
-
-        mQueryObservable
-                .subscribeOn(Schedulers.io())
-                .flatMap(query -> mMusicStore.searchForAlbums(query))
-                .compose(bindToLifecycle())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(albums -> {
-                    mAlbumSection.setData(albums);
-                    mAdapter.notifyDataSetChanged();
-                }, throwable -> {
-                    Timber.e(throwable, "Failed to search for albums");
-                });
-
-        mQueryObservable
-                .subscribeOn(Schedulers.io())
-                .flatMap(query -> mMusicStore.searchForArtists(query))
-                .compose(bindToLifecycle())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(artists -> {
-                    mArtistSection.setData(artists);
-                    mAdapter.notifyDataSetChanged();
-                }, throwable -> {
-                    Timber.e(throwable, "Failed to search for artists");
-                });
-
-        mQueryObservable
-                .subscribeOn(Schedulers.io())
-                .flatMap(query -> mMusicStore.searchForGenres(query))
-                .compose(bindToLifecycle())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(genres -> {
-                    mGenreSection.setData(genres);
-                    mAdapter.notifyDataSetChanged();
-                }, throwable -> {
-                    Timber.e(throwable, "Failed to search for genres");
-                });
-
+/*
         handleIntent(getIntent());
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(KEY_SAVED_QUERY, mQueryObservable.getValue());
-    }
-
-    private void initAdapter() {
-        mPlaylistSection = new PlaylistSection(Collections.emptyList());
-        mSongSection = new SongSection(this, Collections.emptyList());
-        mAlbumSection = new AlbumSection(this, Collections.emptyList());
-        mArtistSection = new ArtistSection(this, Collections.emptyList());
-        mGenreSection = new GenreSection(this, Collections.emptyList());
-
-        mAdapter = new HeterogeneousAdapter()
-                .addSection(new HeaderSection(getString(R.string.header_playlists)))
-                .addSection(mPlaylistSection)
-                .addSection(new HeaderSection(getString(R.string.header_songs)))
-                .addSection(mSongSection)
-                .addSection(new HeaderSection(getString(R.string.header_albums)))
-                .addSection(mAlbumSection)
-                .addSection(new HeaderSection(getString(R.string.header_artists)))
-                .addSection(mArtistSection)
-                .addSection(new HeaderSection(getString(R.string.header_genres)))
-                .addSection(mGenreSection);
-
-        mAdapter.setEmptyState(new BasicEmptyState() {
-            @Override
-            public String getMessage() {
-                String query = mQueryObservable.getValue();
-                return (query == null || query.isEmpty())
-                        ? ""
-                        : getString(R.string.empty_search);
-            }
-        });
-
-        mRecyclerView.setAdapter(mAdapter);
-
-        final int numColumns = ViewUtils.getNumberOfGridColumns(this, R.dimen.grid_width);
-
-        GridLayoutManager layoutManager = new GridLayoutManager(this, numColumns);
-        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                if (mAdapter.getItemViewType(position) == mAlbumSection.getTypeId()) {
-                    return 1;
-                }
-                return numColumns;
-            }
-        });
-        mRecyclerView.setLayoutManager(layoutManager);
-
-        // Add item decorations
-        mRecyclerView.addItemDecoration(new GridSpacingDecoration(
-                (int) getResources().getDimension(R.dimen.grid_margin),
-                numColumns, mAlbumSection.getTypeId()));
-        mRecyclerView.addItemDecoration(
-                new BackgroundDecoration(R.id.subheader_frame));
-        mRecyclerView.addItemDecoration(
-                new DividerDecoration(this,
-                        R.id.album_view, R.id.subheader_frame, R.id.empty_layout));
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_search, menu);
-
-        MenuItem searchItem = menu.findItem(R.id.menu_library_search);
-        searchView = (SearchView) searchItem.getActionView();
-        searchView.setOnQueryTextListener(this);
-        searchView.setIconified(false);
-
-        String query = mQueryObservable.getValue();
-        if (query != null && !query.isEmpty()) {
-            searchView.setQuery(query, true);
-        } else {
-            searchView.requestFocus();
-        }
-        return true;
+*/
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                navigateHome();
-                return true;
             case R.id.menu_library_search:
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) onSearchRequested();
                 return true;
@@ -255,56 +54,19 @@ public class SearchActivity extends BaseLibraryActivity implements SearchView.On
         }
     }
 
-    private void navigateHome() {
+    @Override
+    public boolean onSupportNavigateUp() {
         Intent mainActivity = new Intent(this, LibraryActivity.class);
         mainActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         startActivity(mainActivity);
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        search(query);
-        searchView.clearFocus();
         return true;
     }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        search(newText);
-        return true;
-    }
-
-    private void search(String query) {
-        if (!mQueryObservable.getValue().equals(query)) {
-            mQueryObservable.onNext(query);
-        }
-    }
-
+/*
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         handleIntent(intent);
-    }
-
-    private List<Playlist> getPlaylistResults() {
-        return mPlaylistSection.getData();
-    }
-
-    private List<Song> getSongResults() {
-        return mSongSection.getData();
-    }
-
-    private List<Artist> getArtistResults() {
-        return mArtistSection.getData();
-    }
-
-    private List<Album> getAlbumResults() {
-        return mAlbumSection.getData();
-    }
-
-    private List<Genre> getGenreResults() {
-        return mGenreSection.getData();
     }
 
     private void handleIntent(Intent intent) {
@@ -312,13 +74,14 @@ public class SearchActivity extends BaseLibraryActivity implements SearchView.On
             // Handle standard searches
             if (Intent.ACTION_SEARCH.equals(intent.getAction())
                     || MediaStore.INTENT_ACTION_MEDIA_SEARCH.equals(intent.getAction())) {
-                search(intent.getStringExtra(SearchManager.QUERY));
+                setSearchQuery(intent.getStringExtra(SearchManager.QUERY));
 
             } else if (MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH.equals(intent.getAction())) {
                 // Handle play from search actions
-                search(intent.getStringExtra(SearchManager.QUERY));
+                String query = intent.getStringExtra(SearchManager.QUERY);
                 String focus = intent.getStringExtra(MediaStore.EXTRA_MEDIA_FOCUS);
-                String query = mQueryObservable.getValue();
+
+                setSearchQuery(query);
 
                 if (MediaStore.Audio.Playlists.ENTRY_CONTENT_TYPE.equals(focus)) {
                     playPlaylistResults(query);
@@ -332,6 +95,14 @@ public class SearchActivity extends BaseLibraryActivity implements SearchView.On
                     playSongResults();
                 }
             }
+        }
+    }
+
+    private void setSearchQuery(String query) {
+        Fragment fragment = getContentFragment();
+        if (fragment instanceof SearchFragment) {
+            SearchFragment searchFragment = (SearchFragment) fragment;
+            searchFragment.setSearchQuery(query);
         }
     }
 
@@ -438,6 +209,5 @@ public class SearchActivity extends BaseLibraryActivity implements SearchView.On
                     Timber.e(throwable, "Failed to play genre from intent");
                 });
     }
-
-
+*/
 }
