@@ -1,6 +1,7 @@
 package com.marverenic.music.ui;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.databinding.BaseObservable;
 import android.support.annotation.CheckResult;
 import android.support.annotation.DimenRes;
@@ -32,6 +33,10 @@ public abstract class RxViewModel extends BaseObservable {
 
     protected Context getContext() {
         return mContext;
+    }
+
+    protected Resources getResources() {
+        return mContext.getResources();
     }
 
     protected String getString(@StringRes int stringRes) {
