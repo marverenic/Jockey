@@ -1,18 +1,14 @@
 package com.marverenic.music.ui;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.marverenic.music.databinding.FragmentBaseToolbarBinding;
-
-import timber.log.Timber;
 
 public abstract class BaseToolbarFragment extends BaseFragment {
 
@@ -40,20 +36,14 @@ public abstract class BaseToolbarFragment extends BaseFragment {
     protected void setUpToolbar(Toolbar toolbar) {
         toolbar.setTitle(getFragmentTitle());
 
-        Activity parentActivity = getActivity();
-        if (parentActivity instanceof AppCompatActivity) {
-            AppCompatActivity activity = (AppCompatActivity) parentActivity;
-            activity.setSupportActionBar(toolbar);
+        setActivitySupportActionBar(toolbar);
+        ActionBar actionBar = getActivitySupportActionBar();
 
-            ActionBar actionBar = activity.getSupportActionBar();
-            if (actionBar != null) {
-                boolean showUpButton = canNavigateUp();
-                actionBar.setDisplayHomeAsUpEnabled(showUpButton);
-                actionBar.setHomeButtonEnabled(showUpButton);
-                actionBar.setDisplayShowHomeEnabled(showUpButton);
-            }
-        } else {
-            Timber.w("Hosting activity is not an AppCompatActivity. Toolbar will not be bound.");
+        if (actionBar != null) {
+            boolean showUpButton = canNavigateUp();
+            actionBar.setDisplayHomeAsUpEnabled(showUpButton);
+            actionBar.setHomeButtonEnabled(showUpButton);
+            actionBar.setDisplayShowHomeEnabled(showUpButton);
         }
     }
 
