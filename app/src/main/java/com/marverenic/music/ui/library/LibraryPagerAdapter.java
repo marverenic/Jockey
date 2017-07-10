@@ -15,7 +15,7 @@ class LibraryPagerAdapter extends FragmentPagerAdapter {
     private PlaylistFragment playlistFragment;
     private SongFragment songFragment;
     private ArtistFragment artistFragment;
-    private AlbumFragment albumFragment;
+    private AlbumListFragment albumFragment;
     private GenreFragment genreFragment;
 
     public LibraryPagerAdapter(Context context, FragmentManager fm) {
@@ -43,7 +43,7 @@ class LibraryPagerAdapter extends FragmentPagerAdapter {
                 return artistFragment;
             case 3:
                 if (albumFragment == null) {
-                    albumFragment = new AlbumFragment();
+                    albumFragment = new AlbumListFragment();
                 }
                 return albumFragment;
             case 4:
