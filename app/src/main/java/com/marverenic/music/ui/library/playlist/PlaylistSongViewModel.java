@@ -7,11 +7,11 @@ import android.view.Gravity;
 import android.view.View;
 
 import com.marverenic.music.R;
-import com.marverenic.music.ui.BaseActivity;
+import com.marverenic.music.model.Song;
+import com.marverenic.music.ui.BaseFragment;
 import com.marverenic.music.ui.library.SongViewModel;
 import com.marverenic.music.ui.library.album.AlbumActivity;
 import com.marverenic.music.ui.library.artist.ArtistActivity;
-import com.marverenic.music.model.Song;
 
 import java.util.List;
 
@@ -22,10 +22,10 @@ public class PlaylistSongViewModel extends SongViewModel {
     private Context mContext;
     private OnPlaylistEntriesChangeListener mRemoveListener;
 
-    public PlaylistSongViewModel(BaseActivity activity, List<Song> songs,
+    public PlaylistSongViewModel(BaseFragment fragment, List<Song> songs,
                                  OnPlaylistEntriesChangeListener listener) {
-        super(activity, songs);
-        mContext = activity;
+        super(fragment, songs);
+        mContext = fragment.getContext();
         mRemoveListener = listener;
     }
 

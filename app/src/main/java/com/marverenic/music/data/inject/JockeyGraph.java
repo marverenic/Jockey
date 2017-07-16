@@ -73,6 +73,8 @@ public interface JockeyGraph {
     void inject(EqualizerFragment fragment);
     void inject(PreferenceFragment fragment);
     void inject(DirectoryListFragment fragment);
+    void inject(com.marverenic.music.ui.library.playlist.PlaylistFragment playlistFragment);
+
     void inject(MiniplayerFragment fragment);
 
     void inject(CreatePlaylistDialogFragment dialogFragment);
