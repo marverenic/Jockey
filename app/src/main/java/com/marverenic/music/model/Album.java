@@ -12,6 +12,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.data.store.MediaStoreUtil;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static com.marverenic.music.model.ModelUtil.compareTitle;
@@ -164,6 +165,8 @@ public final class Album implements Parcelable, Comparable<Album> {
     public int compareTo(@NonNull Album another) {
         return compareTitle(getAlbumName(), another.getAlbumName());
     }
+
+    public static final Comparator<Album> YEAR_COMPARATOR = (a1, a2) -> a1.getYear() - a2.getYear();
 
     public static class Builder {
 
