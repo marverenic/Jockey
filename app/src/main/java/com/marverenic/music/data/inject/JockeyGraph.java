@@ -21,11 +21,8 @@ import com.marverenic.music.ui.library.PlaylistFragment;
 import com.marverenic.music.ui.library.PlaylistViewModel;
 import com.marverenic.music.ui.library.SongFragment;
 import com.marverenic.music.ui.library.SongViewModel;
-import com.marverenic.music.ui.library.album.AlbumActivity;
 import com.marverenic.music.ui.library.album.AlbumFragment;
-import com.marverenic.music.ui.library.artist.ArtistActivity;
 import com.marverenic.music.ui.library.playlist.AutoPlaylistActivity;
-import com.marverenic.music.ui.library.playlist.PlaylistActivity;
 import com.marverenic.music.ui.library.playlist.edit.AutoPlaylistEditActivity;
 import com.marverenic.music.ui.library.playlist.edit.RuleHeaderViewModel;
 import com.marverenic.music.ui.library.playlist.edit.RuleViewModel;
@@ -50,9 +47,6 @@ public interface JockeyGraph {
     void inject(LibraryActivity activity);
     void inject(SearchActivity activity);
     void inject(AboutActivity activity);
-    void inject(AlbumActivity activity);
-    void inject(ArtistActivity activity);
-    void inject(PlaylistActivity activity);
     void inject(AutoPlaylistActivity activity);
     void inject(AutoPlaylistEditActivity activity);
 
@@ -71,6 +65,7 @@ public interface JockeyGraph {
     void inject(EqualizerFragment fragment);
     void inject(PreferenceFragment fragment);
     void inject(DirectoryListFragment fragment);
+    void inject(com.marverenic.music.ui.library.artist.ArtistFragment fragment);
     void inject(com.marverenic.music.ui.library.playlist.PlaylistFragment playlistFragment);
     void inject(com.marverenic.music.ui.library.genre.GenreFragment fragment);
 

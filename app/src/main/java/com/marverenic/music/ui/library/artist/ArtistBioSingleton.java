@@ -34,6 +34,15 @@ public class ArtistBioSingleton extends HeterogeneousAdapter.SingletonSection<Lf
                 mHasRelatedArtists);
     }
 
+    @Override
+    public boolean showSection(HeterogeneousAdapter adapter) {
+        return get(0) != null;
+    }
+
+    public void setHasRelatedArtists(boolean hasRelatedArtists) {
+        mHasRelatedArtists = hasRelatedArtists;
+    }
+
     public static class ViewHolder extends EnhancedViewHolder<LfmArtist>
             implements View.OnClickListener {
 

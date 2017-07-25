@@ -9,7 +9,9 @@ public class GlideBindingAdapters {
 
     @BindingAdapter("android:src")
     public static void bindImage(ImageView imageView, GenericRequestBuilder request) {
-        request.into(imageView);
+        if (request != null) {
+            request.into(imageView);
+        }
     }
 
 }
