@@ -1,10 +1,12 @@
 package com.marverenic.music.ui;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -13,8 +15,6 @@ import com.marverenic.music.databinding.FragmentBaseToolbarBinding;
 public abstract class BaseToolbarFragment extends BaseFragment {
 
     private FragmentBaseToolbarBinding mBinding;
-
-    protected abstract String getFragmentTitle();
 
     @Override
     public final View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -29,9 +29,28 @@ public abstract class BaseToolbarFragment extends BaseFragment {
         return mBinding.getRoot();
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onNavigateUp();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     protected abstract View onCreateContentView(LayoutInflater inflater,
                                                 @Nullable ViewGroup container,
                                                 @Nullable Bundle savedInstanceState);
+
+    protected abstract String getFragmentTitle();
+
+    protected void updateFragmentTitle() {
+        mBinding.toolbarContainer.toolbar.setTitle(getFragmentTitle());
+    }
+
+    protected Drawable getUpButtonDrawable() {
+        return null;
+    }
 
     protected void setUpToolbar(Toolbar toolbar) {
         toolbar.setTitle(getFragmentTitle());
@@ -44,10 +63,16 @@ public abstract class BaseToolbarFragment extends BaseFragment {
             actionBar.setDisplayHomeAsUpEnabled(showUpButton);
             actionBar.setHomeButtonEnabled(showUpButton);
             actionBar.setDisplayShowHomeEnabled(showUpButton);
+
+            actionBar.setHomeAsUpIndicator(getUpButtonDrawable());
         }
     }
 
     protected boolean canNavigateUp() {
         return false;
+    }
+
+    protected void onNavigateUp() {
+        getActivity().finish();
     }
 }

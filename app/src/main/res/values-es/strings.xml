@@ -88,7 +88,9 @@
     <string name="action_open_settings">Abrir Configuración</string>
     <string name="action_make_new_playlist">Crear nueva lista reproducción&#8230;</string>
     <string name="action_add_rule">Agregar regla</string>
-    <string name="action_discard_changes">descartar los cambios</string>
+    <string name="action_save">Guardar</string>
+    <string name="action_discard">Descartar</string>
+    <string name="action_discard_changes">Descartar los cambios</string>
     <string name="action_edit_playlist_rules">Editar filtros</string>
     <string name="action_shuffle_all">Baraja todos</string>
 
@@ -103,6 +105,10 @@
     <string name="confirm_refresh_library">Biblioteca actualizada</string>
     <string name="confirm_clear_queue">Cola borrada</string>
     <string name="confirm_removed_rule">Regla eliminada</string>
+
+    <!-- Dialog messages -->
+    <string name="prompt_save_changes">¿Guardar cambios?</string>
+    <string name="prompt_discard_changes">¿Descartar los cambios?</string>
 
     <!-- Error messages -->
     <string name="message_refresh_library_no_permission">Jockey no tiene permiso para leer

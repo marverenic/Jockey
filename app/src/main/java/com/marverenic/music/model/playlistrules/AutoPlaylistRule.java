@@ -71,6 +71,15 @@ public abstract class AutoPlaylistRule implements Parcelable {
 
     private final long mNumericValue;
 
+    public static AutoPlaylistRule emptyRule() {
+        return new AutoPlaylistRule.Factory()
+                .setType(AutoPlaylistRule.SONG)
+                .setField(AutoPlaylistRule.NAME)
+                .setMatch(AutoPlaylistRule.CONTAINS)
+                .setValue("")
+                .build();
+    }
+
     protected AutoPlaylistRule(@Type int type, @Field int field, @Match int match, String value) {
         mType = type;
         mField = field;

@@ -23,7 +23,7 @@ import com.marverenic.music.ui.library.SongFragment;
 import com.marverenic.music.ui.library.SongViewModel;
 import com.marverenic.music.ui.library.album.AlbumFragment;
 import com.marverenic.music.ui.library.playlist.AutoPlaylistActivity;
-import com.marverenic.music.ui.library.playlist.edit.AutoPlaylistEditActivity;
+import com.marverenic.music.ui.library.playlist.edit.AutoPlaylistEditFragment;
 import com.marverenic.music.ui.library.playlist.edit.RuleHeaderViewModel;
 import com.marverenic.music.ui.library.playlist.edit.RuleViewModel;
 import com.marverenic.music.ui.nowplaying.GenreFragment;
@@ -48,7 +48,6 @@ public interface JockeyGraph {
     void inject(SearchActivity activity);
     void inject(AboutActivity activity);
     void inject(AutoPlaylistActivity activity);
-    void inject(AutoPlaylistEditActivity activity);
 
     void inject(BaseWidget widget);
 
@@ -68,6 +67,7 @@ public interface JockeyGraph {
     void inject(com.marverenic.music.ui.library.artist.ArtistFragment fragment);
     void inject(com.marverenic.music.ui.library.playlist.PlaylistFragment playlistFragment);
     void inject(com.marverenic.music.ui.library.genre.GenreFragment fragment);
+    void inject(AutoPlaylistEditFragment fragment);
 
     void inject(MiniplayerFragment fragment);
 

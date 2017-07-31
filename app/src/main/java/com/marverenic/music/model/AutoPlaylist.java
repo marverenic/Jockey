@@ -75,6 +75,19 @@ public class AutoPlaylist extends Playlist implements Parcelable {
     @SerializedName("sortAscending")
     private final boolean mSortAscending;
 
+    public static AutoPlaylist emptyPlaylist() {
+        return new AutoPlaylist.Builder()
+                .setName("")
+                .setId(AutoPlaylist.Builder.NO_ID)
+                .setMatchAllRules(true)
+                .setMaximumEntries(-25)
+                .setSortMethod(AutoPlaylistRule.ID)
+                .setTruncateMethod(AutoPlaylistRule.ID)
+                .setTruncateAscending(true)
+                .setRules(AutoPlaylistRule.emptyRule())
+                .build();
+    }
+
     /**
      * AutoPlaylist Creator
      * @param playlistId A unique ID for the Auto Playlist. Must be unique and not conflict with the
