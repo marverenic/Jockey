@@ -1,5 +1,6 @@
 package com.marverenic.music.ui.library.playlist;
 
+import android.content.Intent;
 import android.databinding.Bindable;
 import android.graphics.drawable.NinePatchDrawable;
 import android.support.v4.content.ContextCompat;
@@ -11,12 +12,14 @@ import com.marverenic.adapter.DragDropAdapter;
 import com.marverenic.adapter.DragDropDecoration;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.PlaylistStore;
+import com.marverenic.music.model.AutoPlaylist;
 import com.marverenic.music.model.Playlist;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.ui.BaseFragment;
 import com.marverenic.music.ui.RxViewModel;
 import com.marverenic.music.ui.common.LibraryEmptyState;
 import com.marverenic.music.ui.common.ShuffleAllSection;
+import com.marverenic.music.ui.library.playlist.edit.AutoPlaylistEditActivity;
 import com.marverenic.music.view.DragBackgroundDecoration;
 import com.marverenic.music.view.DragDividerDecoration;
 
@@ -53,17 +56,39 @@ public class PlaylistViewModel extends RxViewModel {
         mAdapter.setEmptyState(new LibraryEmptyState(mFragment.getActivity()) {
             @Override
             public String getEmptyMessage() {
-                return getString(R.string.empty_playlist);
+                if (mPlaylist instanceof AutoPlaylist) {
+                    return getString(R.string.empty_auto_playlist);
+                } else {
+                    return getString(R.string.empty_playlist);
+                }
             }
 
             @Override
             public String getEmptyMessageDetail() {
-                return getString(R.string.empty_playlist_detail);
+                if (mPlaylist instanceof AutoPlaylist) {
+                    return getString(R.string.empty_auto_playlist_detail);
+                } else {
+                    return getString(R.string.empty_playlist_detail);
+                }
             }
 
             @Override
             public String getEmptyAction1Label() {
-                return "";
+                if (mPlaylist instanceof AutoPlaylist) {
+                    return getString(R.string.action_edit_playlist_rules);
+                } else {
+                    return null;
+                }
+            }
+
+            @Override
+            public void onAction1() {
+                if (mPlaylist instanceof AutoPlaylist) {
+                    AutoPlaylist playlist = (AutoPlaylist) mPlaylist;
+                    Intent intent = AutoPlaylistEditActivity.newIntent(getContext(), playlist);
+
+                    getContext().startActivity(intent);
+                }
             }
         });
 

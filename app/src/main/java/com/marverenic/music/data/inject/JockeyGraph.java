@@ -47,7 +47,6 @@ public interface JockeyGraph {
     void inject(LibraryActivity activity);
     void inject(SearchActivity activity);
     void inject(AboutActivity activity);
-    void inject(AutoPlaylistActivity activity);
 
     void inject(BaseWidget widget);
 

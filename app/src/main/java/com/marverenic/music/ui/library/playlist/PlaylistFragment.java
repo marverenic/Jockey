@@ -17,8 +17,10 @@ import com.marverenic.music.R;
 import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.databinding.FragmentPlaylistBinding;
+import com.marverenic.music.model.AutoPlaylist;
 import com.marverenic.music.model.Playlist;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.model.playlistrules.AutoPlaylistRule;
 import com.marverenic.music.ui.BaseToolbarFragment;
 
 import java.util.ArrayList;
@@ -85,10 +87,16 @@ public class PlaylistFragment extends BaseToolbarFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_playlist_sort && getView() != null) {
             View anchor = getView().findViewById(R.id.menu_playlist_sort);
-
             PopupMenu sortMenu = new PopupMenu(getContext(), anchor, Gravity.END);
-            sortMenu.inflate(R.menu.sort_options);
-            sortMenu.setOnMenuItemClickListener(this::onSortOptionSelected);
+
+            if (mPlaylist instanceof AutoPlaylist) {
+                sortMenu.inflate(R.menu.sort_options_auto_playlist);
+                sortMenu.setOnMenuItemClickListener(this::onAutoPlaylistSortOptionSelected);
+            } else {
+                sortMenu.inflate(R.menu.sort_options);
+                sortMenu.setOnMenuItemClickListener(this::onSortOptionSelected);
+            }
+
             sortMenu.show();
             return true;
         }
@@ -169,21 +177,96 @@ public class PlaylistFragment extends BaseToolbarFragment {
                 })
                 .subscribe(
                         ignoredValue -> {
-                            showUndoSortSnackbar(confirmation, unsorted);
+                            showUndoSortSnackbar(confirmation, v -> {
+                                mPlaylistStore.editPlaylist(mPlaylist, unsorted);
+                            });
                         }, throwable -> {
                             Timber.e(throwable, "onMenuItemClick: Failed to sort playlist");
                         });
     }
 
-    private void showUndoSortSnackbar(String unformattedMessage, List<Song> unsortedData) {
+    private boolean onAutoPlaylistSortOptionSelected(MenuItem item) {
+        int sortFlag;
+        String result;
+        boolean ascending;
+
+        switch (item.getItemId()) {
+            case R.id.menu_sort_random:
+                result = getString(R.string.message_sorted_playlist_random);
+                sortFlag = AutoPlaylistRule.ID;
+                ascending = false;
+                break;
+            case R.id.menu_sort_name:
+                result = getString(R.string.message_sorted_playlist_name);
+                sortFlag = AutoPlaylistRule.NAME;
+                ascending = true;
+                break;
+            case R.id.menu_sort_play:
+                result = getString(R.string.message_sorted_playlist_play);
+                sortFlag = AutoPlaylistRule.PLAY_COUNT;
+                ascending = false;
+                break;
+            case R.id.menu_sort_skip:
+                result = getString(R.string.message_sorted_playlist_skip);
+                sortFlag = AutoPlaylistRule.SKIP_COUNT;
+                ascending = false;
+                break;
+            case R.id.menu_sort_date_added:
+                result = getString(R.string.message_sorted_playlist_date_added);
+                sortFlag = AutoPlaylistRule.DATE_ADDED;
+                ascending = false;
+                break;
+            case R.id.menu_sort_date_played:
+                result = getString(R.string.message_sorted_playlist_date_played);
+                sortFlag = AutoPlaylistRule.DATE_PLAYED;
+                ascending = false;
+                break;
+            default:
+                return false;
+        }
+
+        AutoPlaylist playlist = (AutoPlaylist) mPlaylist;
+
+        int oldSortFlag = playlist.getSortMethod();
+        if (oldSortFlag == playlist.getSortMethod()) {
+            ascending = !playlist.isSortAscending();
+        }
+
+        applyAutoPlaylistSort(sortFlag, ascending, result);
+        return true;
+    }
+
+    private void applyAutoPlaylistSort(int sortFlag, boolean ascending, String confirmation) {
+        int oldSortFlag = ((AutoPlaylist) mPlaylist).getSortMethod();
+        boolean wasAscending = ((AutoPlaylist) mPlaylist).isSortAscending();
+
+        mPlaylistStore.getSongs(mPlaylist)
+                .take(1)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(ignoredValue -> {
+                    showUndoSortSnackbar(confirmation, v -> {
+                        setAutoPlaylistSortMethod(oldSortFlag, wasAscending);
+                    });
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to set sort method");
+                });
+
+        setAutoPlaylistSortMethod(sortFlag, ascending);
+    }
+
+    private void setAutoPlaylistSortMethod(int sortMethod, boolean ascending) {
+        mPlaylist = new AutoPlaylist.Builder((AutoPlaylist) mPlaylist)
+                .setSortMethod(sortMethod)
+                .setSortAscending(ascending)
+                .build();
+        mPlaylistStore.editPlaylist((AutoPlaylist) mPlaylist);
+    }
+
+    private void showUndoSortSnackbar(String unformattedMessage, View.OnClickListener undoAction) {
         String message = String.format(unformattedMessage, mPlaylist);
 
-        Snackbar.make(getView(), message, Snackbar.LENGTH_LONG)
-                .setAction(
-                        getResources().getString(R.string.action_undo),
-                        v -> {
-                            mPlaylistStore.editPlaylist(mPlaylist, unsortedData);
-                        })
+        Snackbar.make(mBinding.getRoot(), message, Snackbar.LENGTH_LONG)
+                .setAction(getResources().getString(R.string.action_undo), undoAction)
                 .show();
     }
 }
