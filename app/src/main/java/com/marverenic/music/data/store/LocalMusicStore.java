@@ -462,7 +462,29 @@ public class LocalMusicStore implements MusicStore {
 
     @Override
     public Observable<List<Album>> getAlbums(Artist artist) {
-        return Observable.just(filterAlbums(MediaStoreUtil.getArtistAlbums(mContext, artist)));
+        return getAlbums()
+                .flatMap(allAlbums -> {
+                    return Observable.from(allAlbums)
+                            .filter(album -> album.getArtistName().equals(artist.getArtistName()))
+                            .toList()
+                            .map(albums -> {
+                                if (allAlbumsHaveYears(albums)) {
+                                    Collections.sort(albums, Album.YEAR_COMPARATOR);
+                                } else {
+                                    Collections.sort(albums);
+                                }
+                                return albums;
+                            });
+                });
+    }
+
+    private boolean allAlbumsHaveYears(List<Album> albums) {
+        for (int i = 0; i < albums.size(); i++) {
+            if (albums.get(i).getYear() == 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

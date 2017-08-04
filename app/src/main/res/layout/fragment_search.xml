@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.marverenic.music.ui.search.SearchViewModel"/>
+    </data>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        android:paddingLeft="@dimen/global_padding"
+        android:paddingRight="@dimen/global_padding"
+        app:adapter="@{viewModel.adapter}"
+        app:layoutManager="@{viewModel.layoutManager}"
+        app:itemDecorations="@{viewModel.itemDecorations}"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+</layout>

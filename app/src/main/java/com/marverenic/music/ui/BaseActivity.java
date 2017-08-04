@@ -3,15 +3,13 @@ package com.marverenic.music.ui;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
-import android.support.annotation.LayoutRes;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.app.NightMode;
-import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -24,6 +22,9 @@ import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.player.PlayerController;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
+
+import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -106,28 +107,6 @@ public abstract class BaseActivity extends RxAppCompatActivity {
      * @inheritDoc
      */
     @Override
-    public void setContentView(@LayoutRes int layoutResId) {
-        super.setContentView(layoutResId);
-        setupToolbar();
-    }
-
-    protected void setupToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
-
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                getSupportActionBar().setHomeButtonEnabled(true);
-                getSupportActionBar().setDisplayShowHomeEnabled(true);
-            }
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    @Override
     public void onResume() {
         super.onResume();
 
@@ -146,16 +125,10 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 
     /**
@@ -164,6 +137,21 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     @Override
     public void onBackPressed() {
         Timber.v("onBackPressed");
+
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        if (fragments == null) {
+            fragments = Collections.emptyList();
+        }
+
+        for (Fragment fragment : fragments) {
+            if (fragment instanceof BaseFragment) {
+                BaseFragment baseFragment = (BaseFragment) fragment;
+                if (baseFragment.onBackPressed()) {
+                    return;
+                }
+            }
+        }
+
         super.onBackPressed();
         finish();
     }

@@ -27,7 +27,7 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
-public class AlbumFragment extends BaseFragment {
+public class AlbumListFragment extends BaseFragment {
 
     @Inject MusicStore mMusicStore;
 

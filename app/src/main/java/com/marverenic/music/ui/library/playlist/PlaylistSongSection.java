@@ -5,26 +5,25 @@ import android.view.ViewGroup;
 
 import com.marverenic.adapter.EnhancedViewHolder;
 import com.marverenic.adapter.HeterogeneousAdapter;
-import com.marverenic.music.ui.BaseActivity;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.databinding.InstanceSongDragBinding;
 import com.marverenic.music.model.Playlist;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.ui.BaseFragment;
 import com.marverenic.music.ui.common.EditableSongSection;
-import com.marverenic.music.ui.library.playlist.PlaylistSongViewModel;
 
 import java.util.List;
 
 public class PlaylistSongSection extends EditableSongSection {
 
-    private BaseActivity mActivity;
+    private BaseFragment mFragment;
     private PlaylistStore mPlaylistStore;
     private Playlist mReference;
 
-    public PlaylistSongSection(BaseActivity activity, PlaylistStore playlistStore,
+    public PlaylistSongSection(BaseFragment fragment, PlaylistStore playlistStore,
                                List<Song> data, Playlist reference) {
         super(data);
-        mActivity = activity;
+        mFragment = fragment;
         mPlaylistStore = playlistStore;
         mReference = reference;
     }
@@ -56,7 +55,7 @@ public class PlaylistSongSection extends EditableSongSection {
             mBinding = binding;
 
             binding.setViewModel(
-                    new PlaylistSongViewModel(mActivity, songList,
+                    new PlaylistSongViewModel(mFragment, songList,
                             () -> {
                                 adapter.notifyDataSetChanged();
                                 mPlaylistStore.editPlaylist(mReference, getData());

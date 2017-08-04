@@ -93,6 +93,8 @@
     <string name="action_open_settings">Open settings</string>
     <string name="action_make_new_playlist">Make new playlist&#8230;</string>
     <string name="action_add_rule">Add rule</string>
+    <string name="action_save">Save</string>
+    <string name="action_discard">Discard</string>
     <string name="action_discard_changes">Discard changes</string>
     <string name="action_edit_playlist_rules">Edit filters</string>
     <string name="action_open_in_last_fm" translatable="false">Last.fm</string>
@@ -109,6 +111,10 @@
     <string name="confirm_refresh_library">Library refreshed</string>
     <string name="confirm_clear_queue">Cleared queue</string>
     <string name="confirm_removed_rule">Removed rule</string>
+
+    <!-- Dialog messages -->
+    <string name="prompt_save_changes">Save changes?</string>
+    <string name="prompt_discard_changes">Discard changes?</string>
 
     <!-- Error messages -->
     <string name="message_refresh_library_no_permission">Jockey doesn\'t have permission to read
