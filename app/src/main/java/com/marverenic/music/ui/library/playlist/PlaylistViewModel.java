@@ -77,7 +77,7 @@ public class PlaylistViewModel extends BaseViewModel {
                 if (mPlaylist instanceof AutoPlaylist) {
                     return getString(R.string.action_edit_playlist_rules);
                 } else {
-                    return null;
+                    return "";
                 }
             }
 
