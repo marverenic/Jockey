@@ -85,7 +85,7 @@ public class SearchFragment extends BaseToolbarFragment {
 
         searchView.setIconified(false);
         if (!StringUtils.isEmpty(mViewModel.getSearchQuery())) {
-            searchView.requestFocus();
+            searchView.setQuery(mViewModel.getSearchQuery(), true);
         }
     }
 
