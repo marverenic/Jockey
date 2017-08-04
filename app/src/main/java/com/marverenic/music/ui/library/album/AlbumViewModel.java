@@ -12,7 +12,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.model.Album;
 import com.marverenic.music.ui.BaseFragment;
-import com.marverenic.music.ui.RxViewModel;
+import com.marverenic.music.ui.BaseViewModel;
 import com.marverenic.music.ui.common.BasicEmptyState;
 import com.marverenic.music.ui.common.ShuffleAllSection;
 import com.marverenic.music.ui.library.SongSection;
@@ -23,7 +23,7 @@ import java.util.Collections;
 
 import timber.log.Timber;
 
-public class AlbumViewModel extends RxViewModel {
+public class AlbumViewModel extends BaseViewModel {
 
     // TODO refactor the list view models so we don't need to hold on to a fragment
     private BaseFragment mFragment;

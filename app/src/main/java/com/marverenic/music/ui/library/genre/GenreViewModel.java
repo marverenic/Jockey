@@ -12,7 +12,7 @@ import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.model.Genre;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.ui.BaseFragment;
-import com.marverenic.music.ui.RxViewModel;
+import com.marverenic.music.ui.BaseViewModel;
 import com.marverenic.music.ui.common.LibraryEmptyState;
 import com.marverenic.music.ui.common.ShuffleAllSection;
 import com.marverenic.music.ui.library.SongSection;
@@ -23,7 +23,7 @@ import java.util.List;
 
 import timber.log.Timber;
 
-public class GenreViewModel extends RxViewModel {
+public class GenreViewModel extends BaseViewModel {
 
     // TODO remove this field after refactoring LibraryEmptyState
     private BaseFragment mFragment;

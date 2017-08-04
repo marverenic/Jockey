@@ -16,7 +16,7 @@ import com.marverenic.music.model.AutoPlaylist;
 import com.marverenic.music.model.Playlist;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.ui.BaseFragment;
-import com.marverenic.music.ui.RxViewModel;
+import com.marverenic.music.ui.BaseViewModel;
 import com.marverenic.music.ui.common.LibraryEmptyState;
 import com.marverenic.music.ui.common.ShuffleAllSection;
 import com.marverenic.music.ui.library.playlist.edit.AutoPlaylistEditActivity;
@@ -28,7 +28,7 @@ import java.util.List;
 
 import timber.log.Timber;
 
-public class PlaylistViewModel extends RxViewModel {
+public class PlaylistViewModel extends BaseViewModel {
 
     // TODO Refactor list view models and remove this field
     private BaseFragment mFragment;

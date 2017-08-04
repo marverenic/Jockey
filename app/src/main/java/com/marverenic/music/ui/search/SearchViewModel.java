@@ -9,7 +9,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.ui.BaseFragment;
-import com.marverenic.music.ui.RxViewModel;
+import com.marverenic.music.ui.BaseViewModel;
 import com.marverenic.music.ui.common.BasicEmptyState;
 import com.marverenic.music.ui.common.HeaderSection;
 import com.marverenic.music.ui.library.AlbumSection;
@@ -33,7 +33,7 @@ import timber.log.Timber;
 
 import static android.R.attr.numColumns;
 
-public class SearchViewModel extends RxViewModel {
+public class SearchViewModel extends BaseViewModel {
 
     private MusicStore mMusicStore;
     private PlaylistStore mPlaylistStore;

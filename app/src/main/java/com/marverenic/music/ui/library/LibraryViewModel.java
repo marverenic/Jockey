@@ -10,7 +10,7 @@ import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ThemeStore;
-import com.marverenic.music.ui.RxViewModel;
+import com.marverenic.music.ui.BaseViewModel;
 import com.marverenic.music.ui.common.playlist.CreatePlaylistDialogFragment;
 import com.marverenic.music.ui.library.playlist.edit.AutoPlaylistEditActivity;
 import com.marverenic.music.view.FABMenu;
@@ -19,7 +19,7 @@ import com.trello.rxlifecycle.components.support.RxFragment;
 import rx.Observable;
 import timber.log.Timber;
 
-public class LibraryViewModel extends RxViewModel {
+public class LibraryViewModel extends BaseViewModel {
 
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
 

@@ -8,12 +8,12 @@ import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.BR;
 import com.marverenic.music.model.AutoPlaylist;
 import com.marverenic.music.model.playlistrules.AutoPlaylistRule;
-import com.marverenic.music.ui.RxViewModel;
+import com.marverenic.music.ui.BaseViewModel;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 import com.trello.rxlifecycle.components.support.RxFragment;
 
-public class AutoPlaylistEditViewModel extends RxViewModel {
+public class AutoPlaylistEditViewModel extends BaseViewModel {
 
     private AutoPlaylist mOriginalPlaylist;
     private AutoPlaylist.Builder mEditedPlaylist;

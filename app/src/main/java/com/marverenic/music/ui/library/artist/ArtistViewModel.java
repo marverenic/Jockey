@@ -21,7 +21,7 @@ import com.marverenic.music.lastfm.model.Image;
 import com.marverenic.music.lastfm.model.LfmArtist;
 import com.marverenic.music.model.Artist;
 import com.marverenic.music.ui.BaseFragment;
-import com.marverenic.music.ui.RxViewModel;
+import com.marverenic.music.ui.BaseViewModel;
 import com.marverenic.music.ui.common.HeaderSection;
 import com.marverenic.music.ui.common.LibraryEmptyState;
 import com.marverenic.music.ui.common.ShuffleAllSection;
@@ -39,7 +39,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
 
-public class ArtistViewModel extends RxViewModel {
+public class ArtistViewModel extends BaseViewModel {
 
     // TODO remove this after refactoring the empty state
     private BaseFragment mFragment;
