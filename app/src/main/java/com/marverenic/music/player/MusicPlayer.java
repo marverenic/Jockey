@@ -78,6 +78,11 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     private static final String QUEUE_FILE = ".queue";
 
     /**
+     * Package permission that is required to receive broadcasts
+     */
+    private static final String BROADCAST_PERMISSION = "com.marverenic.music.player.BROADCAST_PERMISSION";
+
+    /**
      * An {@link Intent} action broadcasted when a MusicPlayer has changed its state automatically
      */
     public static final String UPDATE_BROADCAST = "marverenic.jockey.player.REFRESH";
@@ -483,7 +488,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         Intent broadcast = new Intent(UPDATE_BROADCAST)
                 .putExtra(UPDATE_EXTRA_MINOR, true);
 
-        mContext.sendBroadcast(broadcast, null);
+        mContext.sendBroadcast(broadcast, BROADCAST_PERMISSION);
     }
 
     @Override
@@ -548,7 +553,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         Intent broadcast = new Intent(UPDATE_BROADCAST)
                 .putExtra(UPDATE_EXTRA_MINOR, false);
 
-        mContext.sendBroadcast(broadcast, null);
+        mContext.sendBroadcast(broadcast, BROADCAST_PERMISSION);
     }
 
     /**
@@ -558,8 +563,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     protected void postError(String message) {
         Timber.i("Posting error to UI process: %s", message);
-        mContext.sendBroadcast(
-                new Intent(ERROR_BROADCAST).putExtra(ERROR_EXTRA_MSG, message), null);
+        mContext.sendBroadcast(new Intent(ERROR_BROADCAST).putExtra(ERROR_EXTRA_MSG, message),
+                BROADCAST_PERMISSION);
     }
 
     /**
@@ -569,8 +574,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     protected void postInfo(String message) {
         Timber.i("Posting info to UI process: %s", message);
-        mContext.sendBroadcast(
-                new Intent(INFO_BROADCAST).putExtra(INFO_EXTRA_MESSAGE, message), null);
+        mContext.sendBroadcast(new Intent(INFO_BROADCAST).putExtra(INFO_EXTRA_MESSAGE, message),
+                BROADCAST_PERMISSION);
     }
 
     /**
