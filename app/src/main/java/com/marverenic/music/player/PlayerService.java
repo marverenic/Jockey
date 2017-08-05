@@ -45,10 +45,6 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
     public static final int NOTIFICATION_ID = 1;
 
-    /**
-     * The service instance in use (singleton)
-     */
-    private static PlayerService instance;
 
     /**
      * Used in binding and unbinding this service to the UI process
@@ -106,21 +102,8 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
             return;
         }
 
-        if (instance == null) {
-            instance = this;
-        } else {
-            Timber.w("Attempted to create a second PlayerService");
-            stopSelf();
-            return;
-        }
 
-        if (musicPlayer == null) {
-            musicPlayer = new MusicPlayer(this);
-        }
-
-        mStopped = false;
-        finished = false;
-
+        musicPlayer = new MusicPlayer(this);
         musicPlayer.setPlaybackChangeListener(this);
         musicPlayer.loadState();
     }
@@ -203,9 +186,6 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
     }
 
-    public static PlayerService getInstance() {
-        return instance;
-    }
 
     /**
      * Generate and post a notification for the current player status
@@ -364,7 +344,6 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
                 musicPlayer = null;
             }
             stopForeground(true);
-            instance = null;
             stopSelf();
             finished = true;
         }
