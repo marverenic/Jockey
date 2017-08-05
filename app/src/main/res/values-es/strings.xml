@@ -352,4 +352,7 @@
     <string name="button_skip_description">Botón de la siguiente canción</string>
     <string name="description_album_art">Portada del álbum</string>
 
+    <!-- Notification Channels -->
+    <string name="player_notification_channel_name">Reproducción de música</string>
+
 </resources>

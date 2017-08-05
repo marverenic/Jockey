@@ -1,7 +1,9 @@
 package com.marverenic.music.player;
 
+import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -13,9 +15,10 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.media.app.NotificationCompat.MediaStyle;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.support.v7.app.NotificationCompat;
 import android.view.KeyEvent;
 
 import com.marverenic.music.BuildConfig;
@@ -43,8 +46,8 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
     private static final String EXTRA_START_SILENT = "PlayerService.SILENT_START";
 
-    public static final int NOTIFICATION_ID = 1;
-
+    private static final String NOTIFICATION_CHANNEL_ID = "music-service";
+    private static final int NOTIFICATION_ID = 1;
 
     /**
      * Used in binding and unbinding this service to the UI process
@@ -102,6 +105,9 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
             return;
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel();
+        }
 
         musicPlayer = new MusicPlayer(this);
         musicPlayer.setPlaybackChangeListener(this);
@@ -186,12 +192,22 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.O)
+    private void createNotificationChannel() {
+        NotificationChannel channel = new NotificationChannel(
+                NOTIFICATION_CHANNEL_ID,
+                getString(R.string.player_notification_channel_name),
+                NotificationManager.IMPORTANCE_LOW);
+
+        NotificationManager mgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        mgr.createNotificationChannel(channel);
+    }
 
     /**
      * Generate and post a notification for the current player status
      * Posts the notification by starting the service in the foreground
      */
-    public void notifyNowPlaying() {
+    private void notifyNowPlaying() {
         Timber.i("notifyNowPlaying called");
 
         if (musicPlayer.getNowPlaying() == null) {
@@ -210,9 +226,10 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         setupNotificationActions(builder);
 
         builder.setSmallIcon(getNotificationIcon())
+                .setChannelId(NOTIFICATION_CHANNEL_ID)
                 .setDeleteIntent(getStopIntent())
                 .setStyle(
-                        new NotificationCompat.MediaStyle()
+                        new MediaStyle()
                                 .setShowActionsInCompactView(0, 1, 2)
                                 .setShowCancelButton(true)
                                 .setCancelButtonIntent(getStopIntent())

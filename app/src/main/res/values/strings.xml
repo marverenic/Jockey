@@ -392,4 +392,7 @@
     <string name="button_skip_description">Next Song Button</string>
     <string name="description_album_art">Album Art</string>
 
+    <!-- Notification Channels -->
+    <string name="player_notification_channel_name">Music Playback</string>
+
 </resources>
