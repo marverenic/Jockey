@@ -199,8 +199,8 @@
     <string name="lastfm_header">La información del artista es proporcionada por</string>
     <string name="uses_header">Jockey también utiliza las siguientes bibliotecas de código abierto:</string>
     <string name="uses_aosp_header">Bibliotecas de Soporte de Android</string>
-    <string name="uses_aosp_detail">Support-v4 25.3.1, Appcompat-v7 25.3.1, RecyclerView 25.3.1,
-        CardView 25.3.1, Design 25.3.1, Palette 25.3.1, Preference-v14 25.3.1; distribuido por
+    <string name="uses_aosp_detail">Support-v4 26.0.0, Appcompat-v7 26.0.0, RecyclerView 26.0.0,
+        CardView 26.0.0, Design 26.0.0, Palette 26.0.0, Preference-v14 26.0.0; distribuido por
         Android Open Source Project bajo una Licencia Apache, Versión 2.0</string>
     <string name="uses_exoplayer_detail">Versión 2.3.1; distribuido por Google Inc. bajo una
         Licencia Apache, Versión 2.0</string>
