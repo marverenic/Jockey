@@ -8,7 +8,7 @@ import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.support.v7.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat;
 import android.view.KeyEvent;
 
 import com.marverenic.music.R;
@@ -27,13 +27,14 @@ public class MediaStyleHelper {
      * @return A pre-built notification with information from the given media session.
      */
     public static NotificationCompat.Builder from(Context context,
-                                                  MediaSessionCompat mediaSession) {
+                                                  MediaSessionCompat mediaSession,
+                                                  String channel) {
 
         MediaControllerCompat controller = mediaSession.getController();
         MediaMetadataCompat mediaMetadata = controller.getMetadata();
         MediaDescriptionCompat description = mediaMetadata.getDescription();
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channel);
 
         builder
                 .setContentTitle(description.getTitle())

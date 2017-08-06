@@ -453,14 +453,14 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
         private void updateFabTranslationForSnackbar(CoordinatorLayout parent,
                                                      FloatingActionButton fab, View snackbar) {
             float translationY = this.getFabTranslationYForSnackbar(parent, fab);
-            ViewCompat.setTranslationY(fab, translationY);
+            fab.setTranslationY(translationY);
 
             for (FloatingActionButton child : ((FABMenu) fab).children) {
-                ViewCompat.setTranslationY(child, translationY);
+                child.setTranslationY(translationY);
             }
 
             for (TextView label : ((FABMenu) fab).labels) {
-                ViewCompat.setTranslationY(label, translationY);
+                label.setTranslationY(translationY);
             }
         }
 
@@ -474,7 +474,7 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
                 View view = (View) dependencies.get(i);
                 if (view instanceof Snackbar.SnackbarLayout && parent.doViewsOverlap(fab, view)) {
                     minOffset = Math.min(
-                            minOffset, ViewCompat.getTranslationY(view) - (float) view.getHeight());
+                            minOffset, view.getTranslationY() - (float) view.getHeight());
                 }
             }
 

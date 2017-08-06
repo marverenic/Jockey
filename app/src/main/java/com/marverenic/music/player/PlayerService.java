@@ -221,12 +221,12 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
             return;
         }
 
-        NotificationCompat.Builder builder = MediaStyleHelper.from(this, mediaSession);
+        NotificationCompat.Builder builder =
+                MediaStyleHelper.from(this, mediaSession, NOTIFICATION_CHANNEL_ID);
 
         setupNotificationActions(builder);
 
         builder.setSmallIcon(getNotificationIcon())
-                .setChannelId(NOTIFICATION_CHANNEL_ID)
                 .setDeleteIntent(getStopIntent())
                 .setStyle(
                         new MediaStyle()
