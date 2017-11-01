@@ -65,11 +65,11 @@ android {
 
     flavorDimensions "implementation"
     productFlavors {
-        standard {
+        hathor {
             dimension "implementation"
         }
 
-        demo {
+        marketing {
             dimension "implementation"
             applicationIdSuffix ".demo"
             versionNameSuffix ".demo"

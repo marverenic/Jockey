@@ -19,8 +19,8 @@ dependencies:
 
 compile:
   override:
-    - ./gradlew clean assembleStandardRelease -PdisablePreDex
+    - ./gradlew clean assembleHathorRelease -PdisablePreDex
 
 test:
   override:
-    - ./gradlew testStandardRelease -PdisablePreDex
+    - ./gradlew testHathorRelease -PdisablePreDex
