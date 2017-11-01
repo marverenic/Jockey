@@ -84,8 +84,8 @@ dependencies {
     implementation project(':exoplayer-flac')
 
     testImplementation 'junit:junit:4.12'
-    testImplementation 'org.robolectric:robolectric:3.1.4'
-    testImplementation 'org.robolectric:shadows-support-v4:3.1.4'
+    testImplementation 'org.robolectric:robolectric:3.5.1'
+    testImplementation 'org.robolectric:shadows-support-v4:3.3.2'
 
     implementation 'com.marverenic.heterogeneousadapter:heterogeneousadapter:1.1'
 
