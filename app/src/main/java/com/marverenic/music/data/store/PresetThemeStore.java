@@ -11,7 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.SystemClock;
@@ -25,10 +25,10 @@ import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.app.NightMode;
 
 import com.marverenic.music.R;
-import com.marverenic.music.ui.library.LibraryActivity;
 import com.marverenic.music.data.annotations.AccentTheme;
 import com.marverenic.music.data.annotations.PrimaryTheme;
 import com.marverenic.music.player.PlayerService;
+import com.marverenic.music.ui.library.LibraryActivity;
 
 import static android.util.DisplayMetrics.DENSITY_HIGH;
 import static android.util.DisplayMetrics.DENSITY_LOW;
@@ -209,14 +209,14 @@ public class PresetThemeStore implements ThemeStore {
     }
 
     @Override
-    public Bitmap getLargeAppIcon() {
+    public Drawable getLargeAppIcon() {
         Drawable icon = ResourcesCompat.getDrawableForDensity(mContext.getResources(), getIconId(),
                 getLargerDisplayDensity(), mContext.getTheme());
 
-        if (icon instanceof BitmapDrawable) {
-            return ((BitmapDrawable) icon).getBitmap();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && icon instanceof AdaptiveIconDrawable) {
+            return ((AdaptiveIconDrawable) icon).getForeground();
         } else {
-            return null;
+            return icon;
         }
     }
 
@@ -228,8 +228,6 @@ public class PresetThemeStore implements ThemeStore {
         } else if (screenDensity == DENSITY_MEDIUM) {
             return DENSITY_HIGH;
         } else if (screenDensity == DENSITY_HIGH) {
-            return DENSITY_XHIGH;
-        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             return DENSITY_XHIGH;
         } else if (screenDensity == DENSITY_XHIGH) {
             return DENSITY_XXHIGH;

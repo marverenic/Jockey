@@ -1,6 +1,6 @@
 package com.marverenic.music.data.store;
 
-import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NightMode;
@@ -14,7 +14,7 @@ public interface ThemeStore {
 
     void setTheme(AppCompatActivity activity);
 
-    Bitmap getLargeAppIcon();
+    Drawable getLargeAppIcon();
     void createThemedLauncherIcon();
 
 }
