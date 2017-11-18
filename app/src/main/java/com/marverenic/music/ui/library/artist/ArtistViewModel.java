@@ -1,6 +1,8 @@
 package com.marverenic.music.ui.library.artist;
 
+import android.content.Context;
 import android.databinding.Bindable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ItemDecoration;
@@ -43,6 +45,7 @@ public class ArtistViewModel extends BaseViewModel {
 
     // TODO remove this after refactoring the empty state
     private BaseFragment mFragment;
+    private Context mContext;
 
     private MusicStore mMusicStore;
     private LastFmStore mLfmStore;
@@ -67,6 +70,7 @@ public class ArtistViewModel extends BaseViewModel {
     public ArtistViewModel(BaseFragment fragment, Artist artist, MusicStore musicStore,
                            LastFmStore lfmStore, PreferenceStore prefStore, ThemeStore themeStore) {
         super(fragment);
+        mContext = fragment.getContext();
         mFragment = fragment;
         mReference = artist;
 
@@ -187,7 +191,10 @@ public class ArtistViewModel extends BaseViewModel {
 
     private void showLoadingSpinner() {
         if (mLoadingSection == null) {
-            int[] colors = {mThemeStore.getPrimaryColor(), mThemeStore.getAccentColor()};
+            int[] colors = {
+                    ContextCompat.getColor(mContext, mThemeStore.getPrimaryColor().getPrimaryColorRes()),
+                    ContextCompat.getColor(mContext, mThemeStore.getAccentColor().getAccentColorRes())
+            };
             mLoadingSection = new LoadingSingleton(colors);
             mAdapter.addSection(mLoadingSection, 0);
         }

@@ -9,7 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
@@ -119,12 +119,14 @@ public class CreatePlaylistDialogFragment extends DialogFragment implements Text
         Button button = mDialog.getButton(AlertDialog.BUTTON_POSITIVE);
         button.setEnabled(!error);
 
+        int buttonColorRes;
         if (error) {
-            button.setTextColor(ResourcesCompat.getColor(getResources(),
-                    R.color.secondary_text_disabled, getActivity().getTheme()));
+            buttonColorRes = R.color.secondary_text_disabled;
         } else {
-            button.setTextColor(mThemeStore.getAccentColor());
+            buttonColorRes = mThemeStore.getAccentColor().getAccentColorRes();
         }
+
+        button.setTextColor(ContextCompat.getColor(getContext(), buttonColorRes));
     }
 
     @Override

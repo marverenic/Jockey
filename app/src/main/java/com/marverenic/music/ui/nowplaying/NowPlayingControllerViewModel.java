@@ -179,7 +179,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
 
     @ColorInt
     public int getSeekBarHeadTint() {
-        return mThemeStore.getAccentColor();
+        return ContextCompat.getColor(mContext, mThemeStore.getAccentColor().getAccentColorRes());
     }
 
     @Bindable

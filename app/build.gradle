@@ -94,6 +94,7 @@ dependencies {
     testImplementation 'org.robolectric:shadows-support-v4:3.3.2'
 
     implementation 'com.marverenic.heterogeneousadapter:heterogeneousadapter:1.1'
+    implementation 'com.marverenic.colors:colors:1.1'
 
     implementation "com.android.support:appcompat-v7:$rootProject.supportLibVersion"
     implementation "com.android.support:design:$rootProject.supportLibVersion"

@@ -6,18 +6,16 @@ import android.support.annotation.IdRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatDelegate;
-import android.support.v7.app.NightMode;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import com.marverenic.colors.Colors;
+import com.marverenic.colors.activity.ColorsActivityDelegate;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.data.annotations.AccentTheme;
-import com.marverenic.music.data.annotations.PrimaryTheme;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.player.PlayerController;
@@ -32,33 +30,18 @@ import timber.log.Timber;
 
 public abstract class BaseActivity extends RxAppCompatActivity {
 
-    // Used when resuming the Activity to respond to a potential theme change
-    @PrimaryTheme
-    private int mPrimaryColor;
-    @AccentTheme
-    private int mAccentColor;
-    @NightMode
-    private int mBackgroundColor;
-
-    private boolean mNightMode;
+    private ColorsActivityDelegate mColorsDelegate = new ColorsActivityDelegate(this);
 
     @Inject PreferenceStore _mPreferenceStore;
     @Inject ThemeStore _mThemeStore;
     @Inject PlayerController _mPlayerController;
 
-    /**
-     * @inheritDoc
-     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         JockeyApplication.getComponent(this).injectBaseActivity(this);
-
+        Colors.setTheme(_mThemeStore.getPrimaryColor(), _mThemeStore.getAccentColor());
         _mThemeStore.setTheme(this);
-        mPrimaryColor = _mPreferenceStore.getPrimaryColor();
-        mAccentColor = _mPreferenceStore.getAccentColor();
-        mBackgroundColor = _mThemeStore.getNightMode();
-
-        mNightMode = getResources().getBoolean(R.bool.is_night);
+        mColorsDelegate.onCreate();
 
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -103,26 +86,10 @@ public abstract class BaseActivity extends RxAppCompatActivity {
                 .show();
     }
 
-    /**
-     * @inheritDoc
-     */
     @Override
     public void onResume() {
         super.onResume();
-
-        // If the theme was changed since this Activity was created, or the automatic day/night
-        // theme has changed state, recreate this activity
-        _mThemeStore.setTheme(this);
-        boolean primaryDiff = mPrimaryColor != _mPreferenceStore.getPrimaryColor();
-        boolean accentDiff = mAccentColor != _mPreferenceStore.getAccentColor();
-        boolean backgroundDiff = mBackgroundColor != _mThemeStore.getNightMode();
-
-        boolean nightDiff = mNightMode != getResources().getBoolean(R.bool.is_night);
-
-        if (primaryDiff || accentDiff || backgroundDiff
-                || (mBackgroundColor == AppCompatDelegate.MODE_NIGHT_AUTO && nightDiff)) {
-            recreate();
-        }
+        mColorsDelegate.onResume();
     }
 
     @Override
@@ -131,9 +98,6 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         return true;
     }
 
-    /**
-     * @inheritDoc
-     */
     @Override
     public void onBackPressed() {
         Timber.v("onBackPressed");

@@ -1,8 +1,10 @@
 package com.marverenic.music.ui.library;
 
+import android.content.Context;
 import android.databinding.Bindable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 
 import com.marverenic.music.BR;
 import com.marverenic.music.R;
@@ -23,6 +25,7 @@ public class LibraryViewModel extends BaseViewModel {
 
     private static final String TAG_MAKE_PLAYLIST = "CreatePlaylistDialog";
 
+    private Context mContext;
     private FragmentManager mFragmentManager;
     private ThemeStore mThemeStore;
 
@@ -35,6 +38,7 @@ public class LibraryViewModel extends BaseViewModel {
 
         super(fragment);
 
+        mContext = fragment.getContext();
         mFragmentManager = fragment.getFragmentManager();
         mThemeStore = themeStore;
 
@@ -98,8 +102,8 @@ public class LibraryViewModel extends BaseViewModel {
     @Bindable
     public int[] getRefreshIndicatorColors() {
         return new int[] {
-                mThemeStore.getPrimaryColor(),
-                mThemeStore.getAccentColor()
+                ContextCompat.getColor(mContext, mThemeStore.getPrimaryColor().getPrimaryColorRes()),
+                ContextCompat.getColor(mContext, mThemeStore.getAccentColor().getAccentColorRes())
         };
     }
 

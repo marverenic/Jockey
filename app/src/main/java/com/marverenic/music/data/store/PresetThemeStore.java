@@ -15,15 +15,15 @@ import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.SystemClock;
-import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.StyleRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.app.NightMode;
 
+import com.marverenic.colors.AccentColor;
+import com.marverenic.colors.PrimaryColor;
 import com.marverenic.music.R;
 import com.marverenic.music.data.annotations.AccentTheme;
 import com.marverenic.music.data.annotations.PrimaryTheme;
@@ -51,74 +51,59 @@ public class PresetThemeStore implements ThemeStore {
     }
 
     @Override
-    public int getPrimaryColor() {
-        return ContextCompat.getColor(mContext, getPrimaryColorRes());
-    }
-
-    @ColorRes
-    private int getPrimaryColorRes() {
+    public PrimaryColor getPrimaryColor() {
         switch (mPreferenceStore.getPrimaryColor()) {
             case PrimaryTheme.GRAY:
-                return R.color.primary_grey;
+                return null;
             case PrimaryTheme.RED:
-                return R.color.primary_red;
+                return PrimaryColor.RED_700;
             case PrimaryTheme.ORANGE:
-                return R.color.primary_orange;
+                return PrimaryColor.ORANGE_700;
             case PrimaryTheme.YELLOW:
-                return R.color.primary_yellow;
+                return PrimaryColor.YELLOW_700;
             case PrimaryTheme.GREEN:
-                return R.color.primary_green;
-            case PrimaryTheme.CYAN:
-                return R.color.primary;
+                return PrimaryColor.GREEN_700;
             case PrimaryTheme.BLUE:
-                return R.color.primary_blue;
+                return PrimaryColor.BLUE_700;
             case PrimaryTheme.PURPLE:
-                return R.color.primary_purple;
+                return PrimaryColor.PURPLE_700;
             case PrimaryTheme.BLACK:
-                return R.color.primary_black;
+                return null;
+            case PrimaryTheme.CYAN:
             default:
-                return R.color.primary;
+                return PrimaryColor.CYAN_700;
         }
     }
 
     @Override
-    public int getAccentColor() {
-        return ContextCompat.getColor(mContext, getAccentColorRes());
-    }
-
-    @ColorRes
-    private int getAccentColorRes() {
+    public AccentColor getAccentColor() {
         switch (mPreferenceStore.getAccentColor()) {
             case AccentTheme.GRAY:
-                return R.color.accent_grey;
+                return null;
             case AccentTheme.RED:
-                return R.color.accent_red;
+                return AccentColor.RED_A400;
             case AccentTheme.ORANGE:
-                return R.color.accent_orange;
+                return AccentColor.ORANGE_A400;
             case AccentTheme.YELLOW:
-                return R.color.accent_yellow;
+                return AccentColor.YELLOW_A400;
             case AccentTheme.GREEN:
-                return R.color.accent_green;
-            case AccentTheme.CYAN:
-                return R.color.accent;
+                return AccentColor.GREEN_A400;
             case AccentTheme.BLUE:
-                return R.color.accent_blue;
+                return AccentColor.BLUE_A400;
             case AccentTheme.PURPLE:
-                return R.color.accent_purple;
+                return AccentColor.PURPLE_A400;
             case AccentTheme.TEAL:
-                return R.color.accent_black;
+                return AccentColor.TEAL_A400;
+            case AccentTheme.CYAN:
             default:
-                return R.color.accent;
+                return AccentColor.CYAN_A400;
         }
     }
 
     @Override
     public void setTheme(AppCompatActivity activity) {
-        applyNightMode(activity);
         activity.setTheme(R.style.AppTheme);
-        activity.getTheme().applyStyle(getPrimaryThemeId(), true);
-        activity.getTheme().applyStyle(getAccentThemeId(), true);
-
+        applyNightMode(activity);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             applyTaskDescription(activity);
         }
@@ -142,62 +127,11 @@ public class PresetThemeStore implements ThemeStore {
         }
     }
 
-    @StyleRes
-    private int getPrimaryThemeId() {
-        switch (mPreferenceStore.getPrimaryColor()) {
-            case PrimaryTheme.GRAY:
-                return R.style.Primary_Grey;
-            case PrimaryTheme.RED:
-                return R.style.Primary_Red;
-            case PrimaryTheme.ORANGE:
-                return R.style.Primary_Orange;
-            case PrimaryTheme.YELLOW:
-                return R.style.Primary_Yellow;
-            case PrimaryTheme.GREEN:
-                return R.style.Primary_Green;
-            case PrimaryTheme.CYAN:
-                return R.style.Primary_Cyan;
-            case PrimaryTheme.BLUE:
-                return R.style.Primary_Blue;
-            case PrimaryTheme.PURPLE:
-                return R.style.Primary_Purple;
-            case PrimaryTheme.BLACK:
-                return R.style.Primary_Black;
-            default:
-                return R.style.Primary_Cyan;
-        }
-    }
-
-    @StyleRes
-    private int getAccentThemeId() {
-        switch (mPreferenceStore.getAccentColor()) {
-            case AccentTheme.GRAY:
-                return R.style.Accent_Grey;
-            case AccentTheme.RED:
-                return R.style.Accent_Red;
-            case AccentTheme.ORANGE:
-                return R.style.Accent_Orange;
-            case AccentTheme.YELLOW:
-                return R.style.Accent_Yellow;
-            case AccentTheme.GREEN:
-                return R.style.Accent_Green;
-            case AccentTheme.CYAN:
-                return R.style.Accent_Cyan;
-            case AccentTheme.BLUE:
-                return R.style.Accent_Blue;
-            case AccentTheme.PURPLE:
-                return R.style.Accent_Purple;
-            case AccentTheme.TEAL:
-                return R.style.Accent_Black;
-            default:
-                return R.style.Accent_Cyan;
-        }
-    }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void applyTaskDescription(Activity activity) {
         String taskName = mContext.getString(R.string.app_name);
-        int taskColor = getPrimaryColor();
+        int taskColor = ContextCompat.getColor(activity, getPrimaryColor().getPrimaryColorRes());
         Bitmap taskIcon = getAppIcon();
 
         TaskDescription taskDescription = new TaskDescription(taskName, taskIcon, taskColor);

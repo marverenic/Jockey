@@ -1,6 +1,5 @@
 package com.marverenic.music.ui.nowplaying;
 
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
@@ -43,7 +42,9 @@ public class MiniplayerFragment extends BaseFragment {
             LayerDrawable progressBarDrawable = (LayerDrawable) progressBar.getProgressDrawable();
 
             Drawable progress = progressBarDrawable.findDrawableByLayerId(android.R.id.progress);
-            progress.setColorFilter(mThemeStore.getAccentColor(), PorterDuff.Mode.SRC_ATOP);
+            // TODO
+            //int accentColor = ContextCompat.getColor(getContext(), mThemeStore.getAccentColor().)
+            //progress.setColorFilter(mThemeStore.getAccentColor(), PorterDuff.Mode.SRC_ATOP);
         }
 
         return mBinding.getRoot();
