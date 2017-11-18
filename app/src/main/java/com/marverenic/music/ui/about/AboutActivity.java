@@ -32,8 +32,7 @@ public class AboutActivity extends BaseActivity implements View.OnClickListener 
         JockeyApplication.getComponent(this).inject(this);
 
         ((TextView) findViewById(R.id.aboutVersion)).setText(BuildConfig.VERSION_NAME);
-
-        ((ImageView) findViewById(R.id.aboutAppIcon)).setImageBitmap(mThemeStore.getLargeAppIcon());
+        ((ImageView) findViewById(R.id.aboutAppIcon)).setImageDrawable(mThemeStore.getLargeAppIcon());
         findViewById(R.id.aboutMarverenicLogo).setOnClickListener(this);
     }
 

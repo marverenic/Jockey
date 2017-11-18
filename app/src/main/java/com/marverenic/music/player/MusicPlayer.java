@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.support.annotation.NonNull;
@@ -21,7 +22,6 @@ import android.view.KeyEvent;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.ui.library.LibraryActivity;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.data.store.PreferenceStore;
@@ -29,8 +29,10 @@ import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.data.store.RemotePreferenceStore;
 import com.marverenic.music.data.store.SharedPreferenceStore;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.ui.library.LibraryActivity;
 import com.marverenic.music.utils.Internal;
 import com.marverenic.music.utils.Util;
+import com.marverenic.music.utils.compat.AudioManagerCompat;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -76,6 +78,11 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * {@link Context#getExternalFilesDir(String)}
      */
     private static final String QUEUE_FILE = ".queue";
+
+    /**
+     * Package permission that is required to receive broadcasts
+     */
+    private static final String BROADCAST_PERMISSION = "com.marverenic.music.player.BROADCAST_PERMISSION";
 
     /**
      * An {@link Intent} action broadcasted when a MusicPlayer has changed its state automatically
@@ -483,7 +490,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         Intent broadcast = new Intent(UPDATE_BROADCAST)
                 .putExtra(UPDATE_EXTRA_MINOR, true);
 
-        mContext.sendBroadcast(broadcast, null);
+        mContext.sendBroadcast(broadcast, BROADCAST_PERMISSION);
     }
 
     @Override
@@ -505,8 +512,12 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 mResumeOnFocusGain = resume;
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                Timber.i("Focus lost transiently. Ducking.");
-                mMediaPlayer.setVolume(DUCK_VOLUME);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    Timber.i("Focus lost transiently. Letting system duck.");
+                } else {
+                    Timber.i("Focus lost transiently. Ducking.");
+                    mMediaPlayer.setVolume(DUCK_VOLUME);
+                }
                 break;
             case AudioManager.AUDIOFOCUS_GAIN:
                 Timber.i("Regained AudioFocus");
@@ -548,7 +559,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         Intent broadcast = new Intent(UPDATE_BROADCAST)
                 .putExtra(UPDATE_EXTRA_MINOR, false);
 
-        mContext.sendBroadcast(broadcast, null);
+        mContext.sendBroadcast(broadcast, BROADCAST_PERMISSION);
     }
 
     /**
@@ -558,8 +569,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     protected void postError(String message) {
         Timber.i("Posting error to UI process: %s", message);
-        mContext.sendBroadcast(
-                new Intent(ERROR_BROADCAST).putExtra(ERROR_EXTRA_MSG, message), null);
+        mContext.sendBroadcast(new Intent(ERROR_BROADCAST).putExtra(ERROR_EXTRA_MSG, message),
+                BROADCAST_PERMISSION);
     }
 
     /**
@@ -569,8 +580,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     protected void postInfo(String message) {
         Timber.i("Posting info to UI process: %s", message);
-        mContext.sendBroadcast(
-                new Intent(INFO_BROADCAST).putExtra(INFO_EXTRA_MESSAGE, message), null);
+        mContext.sendBroadcast(new Intent(INFO_BROADCAST).putExtra(INFO_EXTRA_MESSAGE, message),
+                BROADCAST_PERMISSION);
     }
 
     /**
@@ -580,12 +591,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     private boolean getFocus() {
         if (!mFocused) {
             Timber.i("Requesting AudioFocus...");
-            AudioManager audioManager =
-                    (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-
-            int response = audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC,
-                    AudioManager.AUDIOFOCUS_GAIN);
-            mFocused = response == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
+            AudioManagerCompat audioManager = AudioManagerCompat.getInstance(mContext);
+            mFocused = audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
         }
         return mFocused;
     }
@@ -1143,7 +1150,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     public void release() {
         Timber.i("release() called");
-        ((AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE)).abandonAudioFocus(this);
+        AudioManagerCompat.getInstance(mContext).abandonAudioFocus(this);
         mContext.unregisterReceiver(mHeadphoneListener);
 
         // Make sure to disable the sleep timer to purge any delayed runnables in the message queue

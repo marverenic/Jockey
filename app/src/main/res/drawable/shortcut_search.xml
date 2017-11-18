@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:paddingTop="2dp"
     android:paddingBottom="2dp"
     android:paddingStart="2dp"
-    android:paddingEnd="2dp">
+    android:paddingEnd="2dp"
+    tools:targetApi="n_mr1">
 
     <item
         android:width="44dp"
         android:height="44dp">
-        <shape android:shape="oval" android:tint="#f5f5f5"/>
+        <shape android:shape="oval" android:tint="@color/app_shortcut_background"/>
     </item>
 
     <item

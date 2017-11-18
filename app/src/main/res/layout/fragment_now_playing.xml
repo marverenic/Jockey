@@ -17,9 +17,10 @@
         <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:layout_behavior="android.support.design.widget.FixedSnappingAppBarLayoutBehavior"
             android:fitsSystemWindows="true">
 
-            <android.support.design.widget.CollapsingToolbarLayout
+            <com.marverenic.music.view.FixedCollapsingToolbarLayout
                 android:id="@+id/collapsing_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -82,7 +83,7 @@
                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                     app:layout_collapseMode="pin"/>
 
-            </android.support.design.widget.CollapsingToolbarLayout>
+            </com.marverenic.music.view.FixedCollapsingToolbarLayout>
 
         </android.support.design.widget.AppBarLayout>
 

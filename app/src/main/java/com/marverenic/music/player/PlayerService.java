@@ -1,7 +1,9 @@
 package com.marverenic.music.player;
 
+import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -13,9 +15,10 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.media.app.NotificationCompat.MediaStyle;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.support.v7.app.NotificationCompat;
 import android.view.KeyEvent;
 
 import com.marverenic.music.BuildConfig;
@@ -43,12 +46,8 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
     private static final String EXTRA_START_SILENT = "PlayerService.SILENT_START";
 
-    public static final int NOTIFICATION_ID = 1;
-
-    /**
-     * The service instance in use (singleton)
-     */
-    private static PlayerService instance;
+    private static final String NOTIFICATION_CHANNEL_ID = "music-service";
+    private static final int NOTIFICATION_ID = 1;
 
     /**
      * Used in binding and unbinding this service to the UI process
@@ -106,21 +105,11 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
             return;
         }
 
-        if (instance == null) {
-            instance = this;
-        } else {
-            Timber.w("Attempted to create a second PlayerService");
-            stopSelf();
-            return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel();
         }
 
-        if (musicPlayer == null) {
-            musicPlayer = new MusicPlayer(this);
-        }
-
-        mStopped = false;
-        finished = false;
-
+        musicPlayer = new MusicPlayer(this);
         musicPlayer.setPlaybackChangeListener(this);
         musicPlayer.loadState();
     }
@@ -203,15 +192,22 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
     }
 
-    public static PlayerService getInstance() {
-        return instance;
+    @TargetApi(Build.VERSION_CODES.O)
+    private void createNotificationChannel() {
+        NotificationChannel channel = new NotificationChannel(
+                NOTIFICATION_CHANNEL_ID,
+                getString(R.string.player_notification_channel_name),
+                NotificationManager.IMPORTANCE_LOW);
+
+        NotificationManager mgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        mgr.createNotificationChannel(channel);
     }
 
     /**
      * Generate and post a notification for the current player status
      * Posts the notification by starting the service in the foreground
      */
-    public void notifyNowPlaying() {
+    private void notifyNowPlaying() {
         Timber.i("notifyNowPlaying called");
 
         if (musicPlayer.getNowPlaying() == null) {
@@ -225,14 +221,15 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
             return;
         }
 
-        NotificationCompat.Builder builder = MediaStyleHelper.from(this, mediaSession);
+        NotificationCompat.Builder builder =
+                MediaStyleHelper.from(this, mediaSession, NOTIFICATION_CHANNEL_ID);
 
         setupNotificationActions(builder);
 
         builder.setSmallIcon(getNotificationIcon())
                 .setDeleteIntent(getStopIntent())
                 .setStyle(
-                        new NotificationCompat.MediaStyle()
+                        new MediaStyle()
                                 .setShowActionsInCompactView(0, 1, 2)
                                 .setShowCancelButton(true)
                                 .setCancelButtonIntent(getStopIntent())
@@ -364,7 +361,6 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
                 musicPlayer = null;
             }
             stopForeground(true);
-            instance = null;
             stopSelf();
             finished = true;
         }

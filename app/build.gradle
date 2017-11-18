@@ -10,7 +10,6 @@ buildscript {
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'io.fabric'
 
 repositories {
@@ -33,6 +32,12 @@ android {
 
     dataBinding {
         enabled = true
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
     }
 
     defaultConfig {
@@ -64,10 +69,14 @@ android {
         }
     }
 
+    flavorDimensions "implementation"
     productFlavors {
-        standard {}
+        hathor {
+            dimension "implementation"
+        }
 
-        demo {
+        marketing {
+            dimension "implementation"
             applicationIdSuffix ".demo"
             versionNameSuffix ".demo"
             ext.enableCrashlytics = false
@@ -76,48 +85,48 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':seekarc')
-    compile project(':exoplayer-flac')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation project(':seekarc')
+    implementation project(':exoplayer-flac')
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.robolectric:robolectric:3.1.4'
-    testCompile 'org.robolectric:shadows-support-v4:3.1.4'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.robolectric:robolectric:3.5.1'
+    testImplementation 'org.robolectric:shadows-support-v4:3.3.2'
 
-    compile 'com.marverenic.heterogeneousadapter:heterogeneousadapter:1.1'
+    implementation 'com.marverenic.heterogeneousadapter:heterogeneousadapter:1.1'
 
-    compile "com.android.support:appcompat-v7:$rootProject.supportLibVersion"
-    compile "com.android.support:design:$rootProject.supportLibVersion"
-    compile "com.android.support:palette-v7:$rootProject.supportLibVersion"
-    compile "com.android.support:recyclerview-v7:$rootProject.supportLibVersion"
-    compile "com.android.support:cardview-v7:$rootProject.supportLibVersion"
-    compile "com.android.support:preference-v14:$rootProject.supportLibVersion"
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.google.android.exoplayer:exoplayer:r2.3.1'
+    implementation "com.android.support:appcompat-v7:$rootProject.supportLibVersion"
+    implementation "com.android.support:design:$rootProject.supportLibVersion"
+    implementation "com.android.support:palette-v7:$rootProject.supportLibVersion"
+    implementation "com.android.support:recyclerview-v7:$rootProject.supportLibVersion"
+    implementation "com.android.support:cardview-v7:$rootProject.supportLibVersion"
+    implementation "com.android.support:preference-v14:$rootProject.supportLibVersion"
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.google.android.exoplayer:exoplayer:r2.3.1'
 
-    compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'com.google.code.gson:gson:2.7'
+    implementation 'com.github.bumptech.glide:glide:3.7.0'
+    implementation 'com.google.code.gson:gson:2.7'
 
-    compile 'com.simplecityapps:recyclerview-fastscroll:1.0.16'
-    compile 'com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:0.5.2'
+    implementation 'com.simplecityapps:recyclerview-fastscroll:1.0.16'
+    implementation 'com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:0.5.2'
 
-    compile 'com.google.dagger:dagger:2.6'
+    implementation 'com.google.dagger:dagger:2.6'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.6'
 
-    compile 'io.reactivex:rxjava:1.1.6'
-    compile 'io.reactivex:rxandroid:1.2.1'
-    compile 'com.trello:rxlifecycle:0.6.1'
-    compile 'com.trello:rxlifecycle-components:0.6.1'
-    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.7.0@aar'
-    compile 'nl.littlerobots.rxlint:rxlint:1.0'
+    implementation 'io.reactivex:rxjava:1.1.6'
+    implementation 'io.reactivex:rxandroid:1.2.1'
+    implementation 'com.trello:rxlifecycle:0.6.1'
+    implementation 'com.trello:rxlifecycle-components:0.6.1'
+    implementation 'com.tbruyelle.rxpermissions:rxpermissions:0.7.0@aar'
+    implementation 'nl.littlerobots.rxlint:rxlint:1.0'
 
-    compile 'com.squareup.retrofit2:retrofit:2.0.2'
-    compile 'com.squareup.retrofit2:converter-gson:2.0.2'
-    compile 'com.squareup.retrofit2:adapter-rxjava:2.0.2'
+    implementation 'com.squareup.retrofit2:retrofit:2.0.2'
+    implementation 'com.squareup.retrofit2:converter-gson:2.0.2'
+    implementation 'com.squareup.retrofit2:adapter-rxjava:2.0.2'
 
-    compile 'com.jakewharton.timber:timber:4.1.2'
+    implementation 'com.jakewharton.timber:timber:4.1.2'
 
-    compile('com.crashlytics.sdk.android:crashlytics:2.6.0@aar') {
-        transitive = true;
+    implementation('com.crashlytics.sdk.android:crashlytics:2.6.0@aar') {
+        transitive = true
     }
 }

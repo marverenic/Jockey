@@ -5,22 +5,14 @@ machine:
 dependencies:
   pre:
     - echo y | android -s update sdk -u -a -t "tools"
-    - mkdir -p $ANDROID_HOME/licenses
-    - echo -e "8933bad161af4178b1185d1a37fbf41ea5269c55" > $ANDROID_HOME/licenses/android-sdk-license
-    - echo -e "84831b9409646a918e30573bab4c9c91346d8abd" > $ANDROID_HOME/licenses/android-sdk-preview-license
-    - $ANDROID_HOME/tools/bin/sdkmanager "platform-tools"
-    - $ANDROID_HOME/tools/bin/sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2"
-    - $ANDROID_HOME/tools/bin/sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2"
-  cache_directories:
-    - /usr/local/android-sdk-linux/build-tools/25.0.3
-    - /usr/local/android-sdk-linux/tools/
+    - echo y | $ANDROID_HOME/tools/bin/sdkmanager "platform-tools"
   override:
     - ./gradlew app:dependencies
 
 compile:
   override:
-    - ./gradlew clean assembleStandardRelease -PdisablePreDex
+    - ./gradlew clean assembleHathorRelease -PdisablePreDex
 
 test:
   override:
-    - ./gradlew testStandardRelease -PdisablePreDex
+    - ./gradlew testHathorRelease -PdisablePreDex

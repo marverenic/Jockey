@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/app_shortcut_background"/>
+
+    <foreground>
+        <layer-list>
+            <item android:width="48dp" android:height="48dp">
+                <color android:color="@android:color/transparent"/>
+            </item>
+
+            <item android:width="24dp" android:height="24dp" android:gravity="center">
+                <inset android:drawable="@drawable/ic_shortcut_now_playing"/>
+            </item>
+        </layer-list>
+    </foreground>
+</adaptive-icon>

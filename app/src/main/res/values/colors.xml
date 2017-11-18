@@ -14,6 +14,8 @@
     <color name="player_text_main">#ffffff</color>
     <color name="player_text_detail">#ffffff</color>
 
+    <color name="app_shortcut_background">#f5f5f5</color>
+
     <!-- Base colors -->
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#757575</color>

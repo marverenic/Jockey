@@ -3,11 +3,11 @@
 buildscript {
     repositories {
         jcenter()
+        google()
     }
     //noinspection GroovyAssignabilityCheck
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
-        classpath 'me.tatarka:gradle-retrolambda:3.2.5'
+        classpath 'com.android.tools.build:gradle:3.0.0'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -17,16 +17,14 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
-        maven {
-            url 'https://maven.google.com'
-        }
+        google()
     }
 }
 
 ext {
-    targetSdkVersion = 25
-    buildToolsVersion = '25.0.3'
-    supportLibVersion = '25.3.1'
+    targetSdkVersion = 27
+    buildToolsVersion = '26.0.2'
+    supportLibVersion = '27.0.0'
 }
 
 project.ext.preDexLibs = !project.hasProperty('disablePreDex')
