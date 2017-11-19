@@ -19,6 +19,8 @@ import com.marverenic.adapter.DragDropAdapter;
 import com.marverenic.adapter.DragDropDecoration;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.ui.common.LibraryEmptyState;
 import com.marverenic.music.ui.common.SpacerSingleton;
 import com.marverenic.music.model.Song;
@@ -42,6 +44,8 @@ import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 public class QueueFragment extends BaseFragment {
 
     @Inject PlayerController mPlayerController;
+    @Inject MusicStore mMusicStore;
+    @Inject PlaylistStore mPlaylistStore;
 
     private int lastPlayIndex;
 
@@ -98,14 +102,14 @@ public class QueueFragment extends BaseFragment {
             mAdapter.attach(mRecyclerView);
 
             mRecyclerView.setItemAnimator(new QueueAnimator());
-            mQueueSection = new QueueSection(this, mPlayerController, queue);
+            mQueueSection = new QueueSection(queue, getFragmentManager(), mMusicStore, mPlayerController);
             mAdapter.setDragSection(mQueueSection);
 
             // Wait for a layout pass before calculating bottom spacing since it is dependent on the
             // height of the RecyclerView (which has not been computed yet)
             if (isAdded()) mRecyclerView.post(this::setupSpacers);
 
-            mAdapter.setEmptyState(new LibraryEmptyState(getActivity()) {
+            mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), mMusicStore, mPlaylistStore) {
                 @Override
                 public String getEmptyMessage() {
                     return getString(R.string.empty_queue);

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.ui.library.GenreSection;
 import com.marverenic.music.view.HeterogeneousFastScrollAdapter;
 import com.marverenic.music.ui.common.LibraryEmptyState;
@@ -29,6 +30,7 @@ import timber.log.Timber;
 public class GenreFragment extends BaseFragment {
 
     @Inject MusicStore mMusicStore;
+    @Inject PlaylistStore mPlaylistStore;
 
     private FastScrollRecyclerView mRecyclerView;
     private HeterogeneousAdapter mAdapter;
@@ -110,10 +112,10 @@ public class GenreFragment extends BaseFragment {
             mAdapter.setHasStableIds(true);
             mRecyclerView.setAdapter(mAdapter);
 
-            mGenreSection = new GenreSection(this, mGenres);
+            mGenreSection = new GenreSection(mGenres, getFragmentManager());
             mAdapter.addSection(mGenreSection);
 
-            mAdapter.setEmptyState(new LibraryEmptyState(getActivity()) {
+            mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), mMusicStore, mPlaylistStore) {
                 @Override
                 public String getEmptyMessage() {
                     if (mLibraryHasSongs) {

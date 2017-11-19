@@ -1,8 +1,6 @@
 package com.marverenic.music.ui.library;
 
-import android.app.Activity;
 import android.content.Context;
-import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
@@ -10,68 +8,39 @@ import android.view.Gravity;
 import android.view.View;
 
 import com.marverenic.music.BR;
-import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
-import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
-import com.marverenic.music.ui.BaseActivity;
-import com.marverenic.music.ui.BaseFragment;
-import com.marverenic.music.ui.BaseLibraryActivity;
+import com.marverenic.music.ui.BaseViewModel;
 import com.marverenic.music.ui.common.playlist.AppendPlaylistDialogFragment;
 import com.marverenic.music.ui.library.album.AlbumActivity;
 import com.marverenic.music.ui.library.artist.ArtistActivity;
-import com.trello.rxlifecycle.ActivityEvent;
-import com.trello.rxlifecycle.FragmentEvent;
-import com.trello.rxlifecycle.LifecycleTransformer;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
-import rx.Observable;
-import rx.Subscription;
 import timber.log.Timber;
 
-public class SongViewModel extends BaseObservable {
+public class SongViewModel extends BaseViewModel {
 
     private static final String TAG_PLAYLIST_DIALOG = "SongViewModel.PlaylistDialog";
 
-    @Inject protected MusicStore mMusicStore;
-    @Inject protected PreferenceStore mPrefStore;
-    @Inject protected PlayerController mPlayerController;
+    private MusicStore mMusicStore;
+    private PlayerController mPlayerController;
 
-    private Context mContext;
-    private Activity mActivity;
     private FragmentManager mFragmentManager;
-    private LifecycleTransformer<?> mLifecycleTransformer;
-    private Subscription mNowPlayingSubscription;
 
     private List<Song> mSongList;
     private int mIndex;
-    private boolean mIsPlaying;
     private Song mReference;
+    private Song mCurrentlyPlayingSong;
 
-    public SongViewModel(BaseActivity activity, List<Song> songs) {
-        this(activity, activity.getSupportFragmentManager(),
-                activity.bindUntilEvent(ActivityEvent.DESTROY), songs);
-    }
-
-    public SongViewModel(BaseFragment fragment, List<Song> songs) {
-        this(fragment.getActivity(), fragment.getFragmentManager(),
-                fragment.bindUntilEvent(FragmentEvent.DESTROY), songs);
-    }
-
-    public SongViewModel(Activity activity, FragmentManager fragmentManager,
-                         LifecycleTransformer<?> lifecycleTransformer, List<Song> songs) {
-        mContext = activity;
-        mActivity = activity;
+    public SongViewModel(Context context, FragmentManager fragmentManager,
+                         MusicStore musicStore, PlayerController playerController) {
+        super(context);
         mFragmentManager = fragmentManager;
-        mLifecycleTransformer = lifecycleTransformer;
-        mSongList = songs;
-
-        JockeyApplication.getComponent(mContext).inject(this);
+        mMusicStore = musicStore;
+        mPlayerController = playerController;
     }
 
     public void setIndex(int index) {
@@ -90,42 +59,28 @@ public class SongViewModel extends BaseObservable {
         return mSongList;
     }
 
-    private <T> LifecycleTransformer<T> bindToLifecycle() {
-        //noinspection unchecked
-        return (LifecycleTransformer<T>) mLifecycleTransformer;
-    }
-
-    protected Observable<Boolean> isPlaying() {
-        return mPlayerController.getNowPlaying()
-                .map(playing -> playing != null && playing.equals(getReference()));
-    }
-
     public void setSong(List<Song> songList, int index) {
         mSongList = songList;
         mIndex = index;
         mReference = songList.get(index);
 
-        if (mNowPlayingSubscription != null) {
-            mNowPlayingSubscription.unsubscribe();
-        }
-
-        mIsPlaying = false;
-        mNowPlayingSubscription = isPlaying()
-                .compose(bindToLifecycle())
-                .subscribe(isPlaying -> {
-                    mIsPlaying = isPlaying;
-                    notifyPropertyChanged(BR.nowPlayingIndicatorVisibility);
-                }, throwable -> {
-                    Timber.e(throwable, "Failed to update playing indicator");
-                });
-
+        notifyPropertyChanged(BR.nowPlayingIndicatorVisibility);
         notifyPropertyChanged(BR.title);
         notifyPropertyChanged(BR.detail);
     }
 
+    public void setCurrentlyPlayingSong(Song song) {
+        mCurrentlyPlayingSong = song;
+        notifyPropertyChanged(BR.nowPlayingIndicatorVisibility);
+    }
+
+    protected boolean isPlaying() {
+        return mCurrentlyPlayingSong != null && mCurrentlyPlayingSong.equals(getReference());
+    }
+
     @Bindable
     public int getNowPlayingIndicatorVisibility() {
-        if (mIsPlaying) {
+        if (isPlaying()) {
             return View.VISIBLE;
         } else {
             return View.GONE;
@@ -139,7 +94,7 @@ public class SongViewModel extends BaseObservable {
 
     @Bindable
     public String getDetail() {
-        return mContext.getString(R.string.format_compact_song_info,
+        return getString(R.string.format_compact_song_info,
                 mReference.getArtistName(), mReference.getAlbumName());
     }
 
@@ -147,16 +102,13 @@ public class SongViewModel extends BaseObservable {
         return v -> {
             mPlayerController.setQueue(mSongList, mIndex);
             mPlayerController.play();
-
-            if (mPrefStore.openNowPlayingOnNewQueue() && mActivity instanceof BaseLibraryActivity) {
-                ((BaseLibraryActivity) mActivity).expandBottomSheet();
-            }
+            // TODO expand now playing page
         };
     }
 
     public View.OnClickListener onClickMenu() {
         return v -> {
-            final PopupMenu menu = new PopupMenu(mContext, v, Gravity.END);
+            final PopupMenu menu = new PopupMenu(getContext(), v, Gravity.END);
             menu.inflate(R.menu.instance_song);
             menu.setOnMenuItemClickListener(onMenuItemClick());
             menu.show();
@@ -175,7 +127,7 @@ public class SongViewModel extends BaseObservable {
                 case R.id.menu_item_navigate_to_artist:
                     mMusicStore.findArtistById(mReference.getArtistId()).subscribe(
                             artist -> {
-                                mContext.startActivity(ArtistActivity.newIntent(mContext, artist));
+                                startActivity(ArtistActivity.newIntent(getContext(), artist));
                             }, throwable -> {
                                 Timber.e(throwable, "Failed to find artist");
                             });
@@ -184,13 +136,13 @@ public class SongViewModel extends BaseObservable {
                 case R.id.menu_item_navigate_to_album:
                     mMusicStore.findAlbumById(mReference.getAlbumId()).subscribe(
                             album -> {
-                                mContext.startActivity(AlbumActivity.newIntent(mContext, album));
+                                startActivity(AlbumActivity.newIntent(getContext(), album));
                             }, throwable -> {
                                 Timber.e(throwable, "Failed to find album", throwable);
                             });
                     return true;
                 case R.id.menu_item_add_to_playlist:
-                    new AppendPlaylistDialogFragment.Builder(mContext, mFragmentManager)
+                    new AppendPlaylistDialogFragment.Builder(getContext(), mFragmentManager)
                             .setSongs(mReference)
                             .showSnackbarIn(R.id.list)
                             .show(TAG_PLAYLIST_DIALOG);

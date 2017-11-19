@@ -14,13 +14,16 @@ import android.view.ViewGroup;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.data.store.PlaylistStore;
+import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.databinding.FragmentPlaylistBinding;
 import com.marverenic.music.model.AutoPlaylist;
 import com.marverenic.music.model.Playlist;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.model.playlistrules.AutoPlaylistRule;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseToolbarFragment;
 
 import java.util.ArrayList;
@@ -38,8 +41,11 @@ public class PlaylistFragment extends BaseToolbarFragment {
 
     private static final String ARG_PLAYLIST = "PlaylistFragment.PLAYLIST";
 
+    @Inject PlayerController mPlayerController;
+    @Inject MusicStore mMusicStore;
     @Inject PlaylistStore mPlaylistStore;
     @Inject PlayCountStore mPlayCountStore;
+    @Inject PreferenceStore mPreferenceStore;
 
     private Playlist mPlaylist;
     private FragmentPlaylistBinding mBinding;
@@ -72,7 +78,18 @@ public class PlaylistFragment extends BaseToolbarFragment {
                                        @Nullable Bundle savedInstanceState) {
 
         mBinding = FragmentPlaylistBinding.inflate(inflater, container, false);
-        mBinding.setViewModel(new PlaylistViewModel(this, mPlaylistStore, mPlaylist));
+        PlaylistViewModel viewModel = new PlaylistViewModel(getContext(), getFragmentManager(),
+                mPlayerController, mMusicStore, mPlaylistStore, mPreferenceStore, mPlaylist);
+
+        mBinding.setViewModel(viewModel);
+
+        mPlaylistStore.getSongs(mPlaylist)
+                .compose(bindToLifecycle())
+                .distinctUntilChanged()
+                .map(ArrayList::new)
+                .subscribe(viewModel::setSongs, throwable -> {
+                    Timber.e(throwable, "Failed to get playlist contents");
+                });
 
         setHasOptionsMenu(true);
         return mBinding.getRoot();

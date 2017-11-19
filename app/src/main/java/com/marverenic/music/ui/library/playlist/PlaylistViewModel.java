@@ -1,21 +1,26 @@
 package com.marverenic.music.ui.library.playlist;
 
+import android.content.Context;
 import android.content.Intent;
 import android.databinding.Bindable;
 import android.graphics.drawable.NinePatchDrawable;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView.ItemDecoration;
 import android.support.v7.widget.RecyclerView.LayoutManager;
+import android.view.View;
 
 import com.marverenic.adapter.DragDropAdapter;
 import com.marverenic.adapter.DragDropDecoration;
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
+import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.model.AutoPlaylist;
 import com.marverenic.music.model.Playlist;
 import com.marverenic.music.model.Song;
-import com.marverenic.music.ui.BaseFragment;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseViewModel;
 import com.marverenic.music.ui.common.LibraryEmptyState;
 import com.marverenic.music.ui.common.ShuffleAllSection;
@@ -23,27 +28,33 @@ import com.marverenic.music.ui.library.playlist.edit.AutoPlaylistEditActivity;
 import com.marverenic.music.view.DragBackgroundDecoration;
 import com.marverenic.music.view.DragDividerDecoration;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import timber.log.Timber;
 
 public class PlaylistViewModel extends BaseViewModel {
 
-    // TODO Refactor list view models and remove this field
-    private BaseFragment mFragment;
+    private FragmentManager mFragmentManager;
 
+    private PlayerController mPlayerController;
+    private MusicStore mMusicStore;
     private PlaylistStore mPlaylistStore;
+    private PreferenceStore mPreferenceStore;
+
     private Playlist mPlaylist;
 
     private DragDropAdapter mAdapter;
     private PlaylistSongSection mSongSection;
     private ShuffleAllSection mShuffleAllSection;
 
-    public PlaylistViewModel(BaseFragment fragment, PlaylistStore playlistStore, Playlist playlist) {
-        super(fragment);
-        mFragment = fragment;
+    public PlaylistViewModel(Context context, FragmentManager fragmentManager,
+                             PlayerController playerController, MusicStore musicStore,
+                             PlaylistStore playlistStore, PreferenceStore preferenceStore,
+                             Playlist playlist) {
+        super(context);
+        mFragmentManager = fragmentManager;
+        mPlayerController = playerController;
+        mMusicStore = musicStore;
         mPlaylistStore = playlistStore;
+        mPreferenceStore = preferenceStore;
         mPlaylist = playlist;
 
         createAdapter();
@@ -53,7 +64,7 @@ public class PlaylistViewModel extends BaseViewModel {
         mAdapter = new DragDropAdapter();
         mAdapter.setHasStableIds(true);
 
-        mAdapter.setEmptyState(new LibraryEmptyState(mFragment.getActivity()) {
+        mAdapter.setEmptyState(new LibraryEmptyState(getContext(), mMusicStore, mPlaylistStore) {
             @Override
             public String getEmptyMessage() {
                 if (mPlaylist instanceof AutoPlaylist) {
@@ -82,7 +93,7 @@ public class PlaylistViewModel extends BaseViewModel {
             }
 
             @Override
-            public void onAction1() {
+            public void onAction1(View button) {
                 if (mPlaylist instanceof AutoPlaylist) {
                     AutoPlaylist playlist = (AutoPlaylist) mPlaylist;
                     Intent intent = AutoPlaylistEditActivity.newIntent(getContext(), playlist);
@@ -91,20 +102,13 @@ public class PlaylistViewModel extends BaseViewModel {
                 }
             }
         });
-
-        mPlaylistStore.getSongs(mPlaylist)
-                .compose(bindToLifecycle())
-                .distinctUntilChanged()
-                .map(ArrayList::new)
-                .subscribe(this::setupAdapter, throwable -> {
-                    Timber.e(throwable, "Failed to get playlist contents");
-                });
     }
 
-    private void setupAdapter(List<Song> playlistSongs) {
+    public void setSongs(List<Song> playlistSongs) {
         if (mSongSection == null || mShuffleAllSection == null) {
-            mSongSection = new PlaylistSongSection(mFragment, mPlaylistStore, playlistSongs, mPlaylist);
-            mShuffleAllSection = new ShuffleAllSection(mFragment, playlistSongs);
+            mSongSection = new PlaylistSongSection(playlistSongs, mPlaylist, mFragmentManager,
+                    mMusicStore, mPlaylistStore, mPlayerController);
+            mShuffleAllSection = new ShuffleAllSection(playlistSongs, mPreferenceStore, mPlayerController);
             mAdapter.addSection(mShuffleAllSection);
             mAdapter.setDragSection(mSongSection);
         } else {

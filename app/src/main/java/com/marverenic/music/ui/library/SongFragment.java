@@ -10,6 +10,9 @@ import android.view.ViewGroup;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.PlaylistStore;
+import com.marverenic.music.data.store.PreferenceStore;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.common.LibraryEmptyState;
 import com.marverenic.music.view.HeterogeneousFastScrollAdapter;
 import com.marverenic.music.ui.common.ShuffleAllSection;
@@ -28,7 +31,10 @@ import timber.log.Timber;
 
 public class SongFragment extends BaseFragment {
 
+    @Inject PlayerController mPlayerController;
     @Inject MusicStore mMusicStore;
+    @Inject PlaylistStore mPlaylistStore;
+    @Inject PreferenceStore mPreferenceStore;
 
     private FastScrollRecyclerView mRecyclerView;
     private HeterogeneousAdapter mAdapter;
@@ -55,7 +61,7 @@ public class SongFragment extends BaseFragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_library_page, container, false);
-        mRecyclerView = (FastScrollRecyclerView) view.findViewById(R.id.library_page_list);
+        mRecyclerView = view.findViewById(R.id.library_page_list);
         mRecyclerView.addItemDecoration(new BackgroundDecoration());
         mRecyclerView.addItemDecoration(new DividerDecoration(getContext(), R.id.empty_layout));
 
@@ -97,11 +103,11 @@ public class SongFragment extends BaseFragment {
             mAdapter.setHasStableIds(true);
             mRecyclerView.setAdapter(mAdapter);
 
-            mSongSection = new SongSection(this, mSongs);
-            mShuffleAllSection = new ShuffleAllSection(this, mSongs);
+            mSongSection = new SongSection(mSongs, mPlayerController, mMusicStore, getFragmentManager());
+            mShuffleAllSection = new ShuffleAllSection(mSongs, mPreferenceStore, mPlayerController);
             mAdapter.addSection(mShuffleAllSection);
             mAdapter.addSection(mSongSection);
-            mAdapter.setEmptyState(new LibraryEmptyState(getActivity()));
+            mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), mMusicStore, mPlaylistStore));
         }
     }
 }

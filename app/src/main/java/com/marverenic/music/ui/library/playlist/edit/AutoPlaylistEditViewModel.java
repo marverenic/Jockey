@@ -1,5 +1,6 @@
 package com.marverenic.music.ui.library.playlist.edit;
 
+import android.content.Context;
 import android.databinding.Bindable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,7 +12,6 @@ import com.marverenic.music.model.playlistrules.AutoPlaylistRule;
 import com.marverenic.music.ui.BaseViewModel;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
-import com.trello.rxlifecycle.components.support.RxFragment;
 
 public class AutoPlaylistEditViewModel extends BaseViewModel {
 
@@ -21,9 +21,9 @@ public class AutoPlaylistEditViewModel extends BaseViewModel {
 
     private HeterogeneousAdapter mAdapter;
 
-    public AutoPlaylistEditViewModel(RxFragment fragment, AutoPlaylist originalPlaylist,
+    public AutoPlaylistEditViewModel(Context context, AutoPlaylist originalPlaylist,
                                      AutoPlaylist.Builder editedPlaylist) {
-        super(fragment);
+        super(context);
         mOriginalPlaylist = originalPlaylist;
         mEditedPlaylist = editedPlaylist;
 

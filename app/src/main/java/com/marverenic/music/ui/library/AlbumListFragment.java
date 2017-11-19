@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.ui.common.LibraryEmptyState;
 import com.marverenic.music.view.HomogeneousFastScrollAdapter;
 import com.marverenic.music.data.store.MusicStore;
@@ -30,6 +31,7 @@ import timber.log.Timber;
 public class AlbumListFragment extends BaseFragment {
 
     @Inject MusicStore mMusicStore;
+    @Inject PlaylistStore mPlaylistStore;
 
     private FastScrollRecyclerView mRecyclerView;
     private HeterogeneousAdapter mAdapter;
@@ -107,9 +109,9 @@ public class AlbumListFragment extends BaseFragment {
             mAdapter.setHasStableIds(true);
             mRecyclerView.setAdapter(mAdapter);
 
-            mAlbumSection = new AlbumSection(this, mAlbums);
+            mAlbumSection = new AlbumSection(mAlbums, getFragmentManager());
             mAdapter.addSection(mAlbumSection);
-            mAdapter.setEmptyState(new LibraryEmptyState(getActivity()));
+            mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), mMusicStore, mPlaylistStore));
         }
     }
 }

@@ -1,9 +1,7 @@
 package com.marverenic.music.ui.library;
 
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -14,7 +12,6 @@ import com.marverenic.music.R;
 import com.marverenic.music.databinding.InstanceArtistBinding;
 import com.marverenic.music.model.Artist;
 import com.marverenic.music.model.ModelUtil;
-import com.marverenic.music.ui.library.ArtistViewModel;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.MeasurableAdapter;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.SectionedAdapter;
 
@@ -25,15 +22,7 @@ public class ArtistSection extends HeterogeneousAdapter.ListSection<Artist>
 
     private FragmentManager mFragmentManager;
 
-    public ArtistSection(AppCompatActivity activity, @NonNull List<Artist> data) {
-        this(activity.getSupportFragmentManager(), data);
-    }
-
-    public ArtistSection(Fragment fragment, @NonNull List<Artist> data) {
-        this(fragment.getFragmentManager(), data);
-    }
-
-    public ArtistSection(FragmentManager fragmentManager, @NonNull List<Artist> data) {
+    public ArtistSection(@NonNull List<Artist> data, FragmentManager fragmentManager) {
         super(data);
         mFragmentManager = fragmentManager;
     }

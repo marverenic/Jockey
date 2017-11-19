@@ -1,6 +1,8 @@
 package com.marverenic.music.ui.search;
 
+import android.content.Context;
 import android.databinding.Bindable;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -8,7 +10,7 @@ import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
-import com.marverenic.music.ui.BaseFragment;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseViewModel;
 import com.marverenic.music.ui.common.BasicEmptyState;
 import com.marverenic.music.ui.common.HeaderSection;
@@ -35,6 +37,9 @@ import static android.R.attr.numColumns;
 
 public class SearchViewModel extends BaseViewModel {
 
+    private FragmentManager mFragmentManager;
+
+    private PlayerController mPlayerController;
     private MusicStore mMusicStore;
     private PlaylistStore mPlaylistStore;
 
@@ -49,25 +54,28 @@ public class SearchViewModel extends BaseViewModel {
     private ArtistSection mArtistSection;
     private GenreSection mGenreSection;
 
-    public SearchViewModel(BaseFragment fragment, MusicStore musicStore,
+    public SearchViewModel(Context context, FragmentManager fragmentManager,
+                           PlayerController playerController, MusicStore musicStore,
                            PlaylistStore playlistStore) {
 
-        super(fragment);
+        super(context);
+        mFragmentManager = fragmentManager;
+        mPlayerController = playerController;
         mMusicStore = musicStore;
         mPlaylistStore = playlistStore;
 
         mQuerySubject = BehaviorSubject.create("");
 
-        createAdapter(fragment);
+        createAdapter();
         observeSearchQuery();
     }
 
-    private void createAdapter(BaseFragment fragment) {
+    private void createAdapter() {
         mPlaylistSection = new PlaylistSection(Collections.emptyList());
-        mSongSection = new SongSection(fragment, Collections.emptyList());
-        mAlbumSection = new AlbumSection(fragment, Collections.emptyList());
-        mArtistSection = new ArtistSection(fragment, Collections.emptyList());
-        mGenreSection = new GenreSection(fragment, Collections.emptyList());
+        mSongSection = new SongSection(Collections.emptyList(), mPlayerController, mMusicStore, mFragmentManager);
+        mAlbumSection = new AlbumSection(Collections.emptyList(), mFragmentManager);
+        mArtistSection = new ArtistSection(Collections.emptyList(), mFragmentManager);
+        mGenreSection = new GenreSection(Collections.emptyList(), mFragmentManager);
 
         mAdapter = new HeterogeneousAdapter()
                 .addSection(new HeaderSection(getString(R.string.header_playlists)))
@@ -94,14 +102,13 @@ public class SearchViewModel extends BaseViewModel {
     }
 
     private Observable<String> getQueryObservable() {
-        return mQuerySubject.distinctUntilChanged().compose(bindToLifecycle());
+        return mQuerySubject.distinctUntilChanged();
     }
 
     private void observeSearchQuery() {
         getQueryObservable()
                 .subscribeOn(Schedulers.io())
                 .flatMap(query -> mPlaylistStore.searchForPlaylists(query))
-                .compose(bindToLifecycle())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(playlists -> {
                     mPlaylistSection.setData(playlists);
@@ -113,7 +120,6 @@ public class SearchViewModel extends BaseViewModel {
         getQueryObservable()
                 .subscribeOn(Schedulers.io())
                 .flatMap(query -> mMusicStore.searchForSongs(query))
-                .compose(bindToLifecycle())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(songs -> {
                     mSongSection.setData(songs);
@@ -125,7 +131,6 @@ public class SearchViewModel extends BaseViewModel {
         getQueryObservable()
                 .subscribeOn(Schedulers.io())
                 .flatMap(query -> mMusicStore.searchForAlbums(query))
-                .compose(bindToLifecycle())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(albums -> {
                     mAlbumSection.setData(albums);
@@ -137,7 +142,6 @@ public class SearchViewModel extends BaseViewModel {
         getQueryObservable()
                 .subscribeOn(Schedulers.io())
                 .flatMap(query -> mMusicStore.searchForArtists(query))
-                .compose(bindToLifecycle())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(artists -> {
                     mArtistSection.setData(artists);
@@ -149,7 +153,6 @@ public class SearchViewModel extends BaseViewModel {
         getQueryObservable()
                 .subscribeOn(Schedulers.io())
                 .flatMap(query -> mMusicStore.searchForGenres(query))
-                .compose(bindToLifecycle())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(genres -> {
                     mGenreSection.setData(genres);

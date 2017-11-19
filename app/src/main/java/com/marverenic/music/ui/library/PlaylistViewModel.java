@@ -8,17 +8,14 @@ import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.View;
 
-import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.ui.library.playlist.AutoPlaylistActivity;
-import com.marverenic.music.ui.library.playlist.edit.AutoPlaylistEditActivity;
-import com.marverenic.music.ui.library.playlist.PlaylistActivity;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.model.AutoPlaylist;
 import com.marverenic.music.model.Playlist;
 import com.marverenic.music.player.PlayerController;
-
-import javax.inject.Inject;
+import com.marverenic.music.ui.library.playlist.AutoPlaylistActivity;
+import com.marverenic.music.ui.library.playlist.PlaylistActivity;
+import com.marverenic.music.ui.library.playlist.edit.AutoPlaylistEditActivity;
 
 import timber.log.Timber;
 
@@ -28,15 +25,14 @@ import static android.view.View.VISIBLE;
 
 public class PlaylistViewModel extends BaseObservable {
 
-    @Inject PlaylistStore mPlaylistStore;
-    @Inject PlayerController mPlayerController;
+    private PlaylistStore mPlaylistStore;
+    private PlayerController mPlayerController;
 
     private Context mContext;
     private Playlist mPlaylist;
 
     public PlaylistViewModel(Context context) {
         mContext = context;
-        JockeyApplication.getComponent(mContext).inject(this);
     }
 
     public void setPlaylist(Playlist playlist) {

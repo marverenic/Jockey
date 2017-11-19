@@ -22,7 +22,6 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import com.android.databinding.library.baseAdapters.BR;
-import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
@@ -38,8 +37,6 @@ import java.util.Calendar;
 import java.util.Formatter;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import rx.Subscription;
 import timber.log.Timber;
 
@@ -49,8 +46,8 @@ public class RuleViewModel extends BaseObservable {
 
     private Context mContext;
 
-    @Inject MusicStore mMusicStore;
-    @Inject PlaylistStore mPlaylistStore;
+    private MusicStore mMusicStore;
+    private PlaylistStore mPlaylistStore;
 
     private AutoPlaylistRule.Factory mFactory;
     private RuleEnumeration mEnumeratedRule;
@@ -65,7 +62,6 @@ public class RuleViewModel extends BaseObservable {
 
     public RuleViewModel(Context context) {
         mContext = context;
-        JockeyApplication.getComponent(context).inject(this);
         mEnumeratedRule = RuleEnumeration.IS;
     }
 

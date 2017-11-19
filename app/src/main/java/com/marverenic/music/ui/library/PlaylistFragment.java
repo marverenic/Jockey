@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.ui.common.LibraryEmptyState;
 import com.marverenic.music.view.HeterogeneousFastScrollAdapter;
 import com.marverenic.music.ui.common.SpacerSingleton;
@@ -28,6 +29,7 @@ import timber.log.Timber;
 
 public class PlaylistFragment extends BaseFragment {
 
+    @Inject MusicStore mMusicStore;
     @Inject PlaylistStore mPlaylistStore;
 
     private RecyclerView mRecyclerView;
@@ -101,7 +103,7 @@ public class PlaylistFragment extends BaseFragment {
             mAdapter.addSection(mPlaylistSection);
             mAdapter.addSection(new SpacerSingleton(
                     (int) getResources().getDimension(R.dimen.list_height)));
-            mAdapter.setEmptyState(new LibraryEmptyState(getActivity()) {
+            mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), mMusicStore, mPlaylistStore) {
                 @Override
                 public String getEmptyMessage() {
                     return getString(R.string.empty_playlists);

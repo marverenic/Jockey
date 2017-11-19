@@ -7,7 +7,6 @@ import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.View;
 
-import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.model.Genre;
@@ -15,16 +14,14 @@ import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.common.playlist.AppendPlaylistDialogFragment;
 import com.marverenic.music.ui.library.genre.GenreActivity;
 
-import javax.inject.Inject;
-
 import timber.log.Timber;
 
 public class GenreViewModel extends BaseObservable {
 
     private static final String TAG_PLAYLIST_DIALOG = "GenreViewModel.PlaylistDialog";
 
-    @Inject MusicStore mMusicStore;
-    @Inject PlayerController mPlayerController;
+    private MusicStore mMusicStore;
+    private PlayerController mPlayerController;
 
     private Context mContext;
     private FragmentManager mFragmentManager;
@@ -33,8 +30,6 @@ public class GenreViewModel extends BaseObservable {
     public GenreViewModel(Context context, FragmentManager fragmentManager) {
         mContext = context;
         mFragmentManager = fragmentManager;
-
-        JockeyApplication.getComponent(mContext).inject(this);
     }
 
     public void setGenre(Genre genre) {

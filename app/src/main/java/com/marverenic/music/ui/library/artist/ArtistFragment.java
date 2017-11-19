@@ -10,20 +10,28 @@ import android.view.ViewGroup;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.databinding.FragmentArtistBinding;
 import com.marverenic.music.lastfm.data.store.LastFmStore;
 import com.marverenic.music.model.Artist;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseFragment;
+import com.marverenic.music.utils.Util;
 
 import javax.inject.Inject;
+
+import rx.android.schedulers.AndroidSchedulers;
+import timber.log.Timber;
 
 public class ArtistFragment extends BaseFragment {
 
     private static final String ARTIST_ARG = "ArtistFragment.ARTIST";
 
+    @Inject PlayerController mPlayerController;
     @Inject MusicStore mMusicStore;
+    @Inject PlaylistStore mPlaylistStore;
     @Inject LastFmStore mLfmStore;
     @Inject PreferenceStore mPrefStore;
     @Inject ThemeStore mThemeStore;
@@ -53,8 +61,33 @@ public class ArtistFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
 
         FragmentArtistBinding binding = FragmentArtistBinding.inflate(inflater, container, false);
-        ArtistViewModel viewModel = new ArtistViewModel(this, mArtist, mMusicStore, mLfmStore,
-                mPrefStore, mThemeStore);
+        ArtistViewModel viewModel = new ArtistViewModel(getContext(), getFragmentManager(), mArtist,
+                mPlayerController, mMusicStore, mPlaylistStore, mPrefStore, mThemeStore);
+
+        mMusicStore.getSongs(mArtist)
+                .compose(bindToLifecycle())
+                .subscribe(viewModel::setArtistSongs, throwable -> {
+                    Timber.e(throwable, "Failed to get song contents");
+                });
+
+        mMusicStore.getAlbums(mArtist)
+                .compose(bindToLifecycle())
+                .subscribe(viewModel::setArtistAlbums, throwable -> {
+                    Timber.e(throwable, "Failed to get album contents");
+                });
+
+        if (Util.canAccessInternet(getContext(), mPrefStore.useMobileNetwork())) {
+            viewModel.setLoadingLastFmData(true);
+
+            mLfmStore.getArtistInfo(mArtist.getArtistName())
+                    .compose(bindToLifecycle())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(viewModel::setLastFmData,
+                            throwable -> {
+                                Timber.e(throwable, "Failed to get Last.fm artist info");
+                                viewModel.setLoadingLastFmData(false);
+                            });
+        }
 
         setUpToolbar(binding.toolbar);
 

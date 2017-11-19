@@ -23,21 +23,18 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
-import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.ui.library.album.AlbumActivity;
-import com.marverenic.music.ui.library.artist.ArtistActivity;
 import com.marverenic.music.data.store.MusicStore;
-import com.marverenic.music.ui.common.playlist.AppendPlaylistDialogFragment;
 import com.marverenic.music.model.Album;
 import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.ui.common.playlist.AppendPlaylistDialogFragment;
+import com.marverenic.music.ui.library.album.AlbumActivity;
+import com.marverenic.music.ui.library.artist.ArtistActivity;
 import com.marverenic.music.view.ViewUtils;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 import timber.log.Timber;
 
@@ -45,8 +42,8 @@ public class AlbumViewModel extends BaseObservable {
 
     private static final String TAG_PLAYLIST_DIALOG = "SongViewModel.PlaylistDialog";
 
-    @Inject MusicStore mMusicStore;
-    @Inject PlayerController mPlayerController;
+    private MusicStore mMusicStore;
+    private PlayerController mPlayerController;
 
     private Context mContext;
     private FragmentManager mFragmentManager;
@@ -60,8 +57,6 @@ public class AlbumViewModel extends BaseObservable {
     public AlbumViewModel(Context context, FragmentManager fragmentManager) {
         mContext = context;
         mFragmentManager = fragmentManager;
-
-        JockeyApplication.getComponent(mContext).inject(this);
     }
 
     public void setAlbum(Album album) {

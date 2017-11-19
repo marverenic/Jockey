@@ -1,6 +1,7 @@
 package com.marverenic.music.ui.library;
 
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -8,31 +9,41 @@ import android.view.ViewGroup;
 import com.marverenic.adapter.EnhancedViewHolder;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.R;
-import com.marverenic.music.ui.BaseActivity;
+import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.databinding.InstanceSongBinding;
-import com.marverenic.music.ui.BaseFragment;
 import com.marverenic.music.model.ModelUtil;
 import com.marverenic.music.model.Song;
-import com.marverenic.music.ui.library.SongViewModel;
+import com.marverenic.music.player.PlayerController;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.MeasurableAdapter;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.SectionedAdapter;
 
 import java.util.List;
 
+import rx.subjects.BehaviorSubject;
+import timber.log.Timber;
+
 public class SongSection extends HeterogeneousAdapter.ListSection<Song>
         implements SectionedAdapter, MeasurableAdapter {
 
-    private BaseActivity mActivity;
-    private BaseFragment mFragment;
+    private PlayerController mPlayerController;
+    private MusicStore mMusicStore;
+    private FragmentManager mFragmentManager;
 
-    public SongSection(BaseActivity activity, @NonNull List<Song> data) {
+    private BehaviorSubject<Song> mCurrentSong;
+
+    public SongSection(@NonNull List<Song> data, PlayerController playerController,
+                       MusicStore musicStore, FragmentManager fragmentManager) {
         super(data);
-        mActivity = activity;
+        mMusicStore = musicStore;
+        mPlayerController = playerController;
+        mFragmentManager = fragmentManager;
+
+        mCurrentSong = BehaviorSubject.create();
     }
 
-    public SongSection(BaseFragment fragment, @NonNull List<Song> data) {
-        super(data);
-        mFragment = fragment;
+    public void setCurrentSong(Song next) {
+        // TODO make sure everything calls this
+        mCurrentSong.onNext(next);
     }
 
     @Override
@@ -46,7 +57,7 @@ public class SongSection extends HeterogeneousAdapter.ListSection<Song>
         InstanceSongBinding binding = InstanceSongBinding.inflate(
                 LayoutInflater.from(parent.getContext()), parent, false);
 
-        return new ViewHolder(binding, getData());
+        return new ViewHolder(binding);
     }
 
     @NonNull
@@ -66,18 +77,16 @@ public class SongSection extends HeterogeneousAdapter.ListSection<Song>
 
         private InstanceSongBinding mBinding;
 
-        public ViewHolder(InstanceSongBinding binding, List<Song> songList) {
+        public ViewHolder(InstanceSongBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
+            SongViewModel viewModel = new SongViewModel(binding.getRoot().getContext(),
+                    mFragmentManager, mMusicStore, mPlayerController);
+            binding.setViewModel(viewModel);
 
-            if (mFragment != null) {
-                binding.setViewModel(new SongViewModel(mFragment, songList));
-            } else if (mActivity != null) {
-                binding.setViewModel(new SongViewModel(mActivity, songList));
-            } else {
-                throw new RuntimeException("Unable to create view model. This SongSection has not "
-                        + "been created with a valid activity or fragment");
-            }
+            mCurrentSong.subscribe(viewModel::setCurrentlyPlayingSong, throwable -> {
+                Timber.e("Failed to set current song", throwable);
+            });
         }
 
         @Override

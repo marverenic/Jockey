@@ -7,17 +7,16 @@ import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.View;
 
+import com.marverenic.music.BR;
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.model.Song;
+import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.ui.common.playlist.AppendPlaylistDialogFragment;
+import com.marverenic.music.ui.library.SongViewModel;
 import com.marverenic.music.ui.library.album.AlbumActivity;
 import com.marverenic.music.ui.library.artist.ArtistActivity;
-import com.marverenic.music.ui.common.playlist.AppendPlaylistDialogFragment;
-import com.marverenic.music.ui.BaseFragment;
-import com.marverenic.music.model.Song;
-import com.marverenic.music.ui.library.SongViewModel;
 
-import java.util.List;
-
-import rx.Observable;
 import timber.log.Timber;
 
 import static android.support.design.widget.Snackbar.LENGTH_LONG;
@@ -26,15 +25,23 @@ public class QueueSongViewModel extends SongViewModel {
 
     private static final String TAG_PLAYLIST_DIALOG = "QueueSongViewModel.PlaylistDialog";
 
-    private Context mContext;
+    private MusicStore mMusicStore;
+    private PlayerController mPlayerController;
+
     private FragmentManager mFragmentManager;
     private OnRemoveListener mRemoveListener;
 
-    public QueueSongViewModel(BaseFragment fragment, List<Song> songs,
+    private int mCurrentSongIndex;
+
+    public QueueSongViewModel(Context context, FragmentManager fragmentManager,
+                              MusicStore musicStore, PlayerController playerController,
                               OnRemoveListener removeListener) {
-        super(fragment, songs);
-        mContext = fragment.getContext();
-        mFragmentManager = fragment.getFragmentManager();
+
+        super(context, fragmentManager, musicStore, playerController);
+        mFragmentManager = fragmentManager;
+        mMusicStore = musicStore;
+        mPlayerController = playerController;
+
         mRemoveListener = removeListener;
     }
 
@@ -42,9 +49,14 @@ public class QueueSongViewModel extends SongViewModel {
         void onRemove();
     }
 
+    public void setCurrentlyPlayingSongIndex(int queueIndex) {
+        mCurrentSongIndex = queueIndex;
+        notifyPropertyChanged(BR.nowPlayingIndicatorVisibility);
+    }
+
     @Override
-    protected Observable<Boolean> isPlaying() {
-        return mPlayerController.getQueuePosition().map(position -> position == getIndex());
+    protected boolean isPlaying() {
+        return mCurrentSongIndex == getIndex();
     }
 
     @Override
@@ -55,7 +67,7 @@ public class QueueSongViewModel extends SongViewModel {
     @Override
     public View.OnClickListener onClickMenu() {
         return v -> {
-            PopupMenu menu = new PopupMenu(mContext, v, Gravity.END);
+            PopupMenu menu = new PopupMenu(getContext(), v, Gravity.END);
             menu.inflate(getReference().isInLibrary()
                     ? R.menu.instance_song_queue
                     : R.menu.instance_song_queue_remote);
@@ -87,7 +99,7 @@ public class QueueSongViewModel extends SongViewModel {
     private void navigateToArtist() {
         mMusicStore.findArtistById(getReference().getArtistId()).subscribe(
                 artist -> {
-                    mContext.startActivity(ArtistActivity.newIntent(mContext, artist));
+                    startActivity(ArtistActivity.newIntent(getContext(), artist));
                 }, throwable -> {
                     Timber.e(throwable, "Failed to find artist");
                 });
@@ -96,16 +108,15 @@ public class QueueSongViewModel extends SongViewModel {
     private void navigateToAlbum() {
         mMusicStore.findAlbumById(getReference().getAlbumId()).subscribe(
                 album -> {
-                    mContext.startActivity(AlbumActivity.newIntent(mContext, album));
+                    startActivity(AlbumActivity.newIntent(getContext(), album));
                 }, throwable -> {
                     Timber.e(throwable, "Failed to find album");
                 });
     }
 
     private void addToPlaylist() {
-        new AppendPlaylistDialogFragment.Builder(mContext, mFragmentManager)
-                .setTitle(mContext.getResources().getString(
-                        R.string.header_add_song_name_to_playlist, getReference()))
+        new AppendPlaylistDialogFragment.Builder(getContext(), mFragmentManager)
+                .setTitle(getString(R.string.header_add_song_name_to_playlist, getReference()))
                 .setSongs(getReference())
                 .showSnackbarIn(R.id.now_playing_artwork)
                 .show(TAG_PLAYLIST_DIALOG);
@@ -134,8 +145,7 @@ public class QueueSongViewModel extends SongViewModel {
                     mRemoveListener.onRemove();
 
                     Song removed = getReference();
-                    String message = mContext.getString(R.string.message_removed_song,
-                            removed.getSongName());
+                    String message = getString(R.string.message_removed_song, removed.getSongName());
 
                     Snackbar.make(snackbarContainer, message, LENGTH_LONG)
                             .setAction(R.string.action_undo, v -> {

@@ -1,9 +1,7 @@
 package com.marverenic.music.ui.library;
 
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -14,7 +12,6 @@ import com.marverenic.music.R;
 import com.marverenic.music.databinding.InstanceGenreBinding;
 import com.marverenic.music.model.Genre;
 import com.marverenic.music.model.ModelUtil;
-import com.marverenic.music.ui.library.GenreViewModel;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.MeasurableAdapter;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.SectionedAdapter;
 
@@ -25,15 +22,7 @@ public class GenreSection extends HeterogeneousAdapter.ListSection<Genre>
 
     private FragmentManager mFragmentManager;
 
-    public GenreSection(AppCompatActivity activity, @NonNull List<Genre> data) {
-        this(activity.getSupportFragmentManager(), data);
-    }
-
-    public GenreSection(Fragment fragment, @NonNull List<Genre> data) {
-        this(fragment.getFragmentManager(), data);
-    }
-
-    public GenreSection(FragmentManager fragmentManager, @NonNull List<Genre> data) {
+    public GenreSection(@NonNull List<Genre> data, FragmentManager fragmentManager) {
         super(data);
         mFragmentManager = fragmentManager;
     }

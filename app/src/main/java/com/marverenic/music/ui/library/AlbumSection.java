@@ -1,9 +1,7 @@
 package com.marverenic.music.ui.library;
 
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -12,7 +10,6 @@ import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.databinding.InstanceAlbumBinding;
 import com.marverenic.music.model.Album;
 import com.marverenic.music.model.ModelUtil;
-import com.marverenic.music.ui.library.AlbumViewModel;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.List;
@@ -22,15 +19,7 @@ public class AlbumSection extends HeterogeneousAdapter.ListSection<Album>
 
     private FragmentManager mFragmentManager;
 
-    public AlbumSection(AppCompatActivity activity, @NonNull List<Album> data) {
-        this(activity.getSupportFragmentManager(), data);
-    }
-
-    public AlbumSection(Fragment fragment, @NonNull List<Album> data) {
-        this(fragment.getFragmentManager(), data);
-    }
-
-    public AlbumSection(FragmentManager fragmentManager, @NonNull List<Album> data) {
+    public AlbumSection(@NonNull List<Album> data, FragmentManager fragmentManager) {
         super(data);
         mFragmentManager = fragmentManager;
     }

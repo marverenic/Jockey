@@ -10,17 +10,23 @@ import android.view.ViewGroup;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.databinding.FragmentAlbumBinding;
 import com.marverenic.music.model.Album;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseFragment;
 
 import javax.inject.Inject;
+
+import timber.log.Timber;
 
 public class AlbumFragment extends BaseFragment {
 
     private static final String ARG_ALBUM = "AlbumListFragment.AlBUM";
 
+    @Inject PlayerController mPlayerController;
     @Inject MusicStore mMusicStore;
+    @Inject PreferenceStore mPreferenceStore;
 
     private Album mAlbum;
 
@@ -47,7 +53,15 @@ public class AlbumFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
 
         FragmentAlbumBinding binding = FragmentAlbumBinding.inflate(inflater, container, false);
-        binding.setViewModel(new AlbumViewModel(this, mAlbum, mMusicStore));
+        AlbumViewModel viewModel = new AlbumViewModel(getContext(), mAlbum, mPlayerController,
+                mMusicStore, mPreferenceStore, getFragmentManager());
+        binding.setViewModel(viewModel);
+
+        mMusicStore.getSongs(mAlbum)
+                .compose(bindToLifecycle())
+                .subscribe(viewModel::setAlbumSongs, throwable -> {
+                    Timber.e(throwable, "Failed to get songs in album");
+                });
 
         setupToolbar(binding.toolbar);
         return binding.getRoot();

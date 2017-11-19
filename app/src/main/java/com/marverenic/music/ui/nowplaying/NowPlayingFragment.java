@@ -25,13 +25,13 @@ import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.databinding.FragmentNowPlayingBinding;
-import com.marverenic.music.ui.common.playlist.AppendPlaylistDialogFragment;
-import com.marverenic.music.ui.common.playlist.CreatePlaylistDialogFragment;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.player.PlayerState;
 import com.marverenic.music.ui.BaseFragment;
+import com.marverenic.music.ui.common.playlist.AppendPlaylistDialogFragment;
+import com.marverenic.music.ui.common.playlist.CreatePlaylistDialogFragment;
 import com.marverenic.music.view.TimeView;
 import com.trello.rxlifecycle.FragmentEvent;
 
@@ -89,10 +89,20 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_now_playing,
                 container, false);
 
-        mArtworkViewModel = new NowPlayingArtworkViewModel(this);
+        mArtworkViewModel = new NowPlayingArtworkViewModel(getContext(), mPlayerController, mPrefStore);
         mBinding.setArtworkViewModel(mArtworkViewModel);
 
         setupToolbar(mBinding.nowPlayingToolbar);
+
+        mPlayerController.getArtwork()
+                .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .subscribe(mArtworkViewModel::setArtwork,
+                        throwable -> Timber.e(throwable, "Failed to set artwork"));
+
+        mPlayerController.isPlaying()
+                .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .subscribe(mArtworkViewModel::setPlaying,
+                        throwable -> Timber.e(throwable, "Failed to update playing state"));
 
         mPlayerController.getSleepTimerEndTime()
                 .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))

@@ -1,30 +1,39 @@
 package com.marverenic.music.ui.library.playlist;
 
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.marverenic.adapter.EnhancedViewHolder;
 import com.marverenic.adapter.HeterogeneousAdapter;
+import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.databinding.InstanceSongDragBinding;
 import com.marverenic.music.model.Playlist;
 import com.marverenic.music.model.Song;
-import com.marverenic.music.ui.BaseFragment;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.common.EditableSongSection;
 
 import java.util.List;
 
 public class PlaylistSongSection extends EditableSongSection {
 
-    private BaseFragment mFragment;
+    private FragmentManager mFragmentManager;
+    private MusicStore mMusicStore;
     private PlaylistStore mPlaylistStore;
+    private PlayerController mPlayerController;
+
     private Playlist mReference;
 
-    public PlaylistSongSection(BaseFragment fragment, PlaylistStore playlistStore,
-                               List<Song> data, Playlist reference) {
+    public PlaylistSongSection(List<Song> data, Playlist reference, FragmentManager fragmentManager,
+                               MusicStore musicStore, PlaylistStore playlistStore,
+                               PlayerController playerController) {
         super(data);
-        mFragment = fragment;
+        mFragmentManager = fragmentManager;
+        mMusicStore = musicStore;
         mPlaylistStore = playlistStore;
+        mPlayerController = playerController;
+
         mReference = reference;
     }
 
@@ -42,21 +51,20 @@ public class PlaylistSongSection extends EditableSongSection {
         InstanceSongDragBinding binding = InstanceSongDragBinding.inflate(
                 LayoutInflater.from(parent.getContext()), parent, false);
 
-        return new ViewHolder(binding, getData(), adapter);
+        return new ViewHolder(binding, adapter);
     }
 
     private class ViewHolder extends EnhancedViewHolder<Song> {
 
         private InstanceSongDragBinding mBinding;
 
-        public ViewHolder(InstanceSongDragBinding binding, List<Song> songList,
-                          HeterogeneousAdapter adapter) {
+        public ViewHolder(InstanceSongDragBinding binding, HeterogeneousAdapter adapter) {
             super(binding.getRoot());
             mBinding = binding;
 
             binding.setViewModel(
-                    new PlaylistSongViewModel(mFragment, songList,
-                            () -> {
+                    new PlaylistSongViewModel(mBinding.getRoot().getContext(), mFragmentManager,
+                            mMusicStore, mPlayerController, () -> {
                                 adapter.notifyDataSetChanged();
                                 mPlaylistStore.editPlaylist(mReference, getData());
                             }));

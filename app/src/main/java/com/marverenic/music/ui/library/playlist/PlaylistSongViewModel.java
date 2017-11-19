@@ -2,30 +2,36 @@ package com.marverenic.music.ui.library.playlist;
 
 import android.content.Context;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.View;
 
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.model.Song;
-import com.marverenic.music.ui.BaseFragment;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.library.SongViewModel;
 import com.marverenic.music.ui.library.album.AlbumActivity;
 import com.marverenic.music.ui.library.artist.ArtistActivity;
-
-import java.util.List;
 
 import timber.log.Timber;
 
 public class PlaylistSongViewModel extends SongViewModel {
 
-    private Context mContext;
+    private MusicStore mMusicStore;
+    private PlayerController mPlayerController;
+
     private OnPlaylistEntriesChangeListener mRemoveListener;
 
-    public PlaylistSongViewModel(BaseFragment fragment, List<Song> songs,
+    public PlaylistSongViewModel(Context context, FragmentManager fragmentManager,
+                                 MusicStore musicStore, PlayerController playerController,
                                  OnPlaylistEntriesChangeListener listener) {
-        super(fragment, songs);
-        mContext = fragment.getContext();
+
+        super(context, fragmentManager, musicStore, playerController);
+        mMusicStore = musicStore;
+        mPlayerController = playerController;
+
         mRemoveListener = listener;
     }
 
@@ -36,7 +42,7 @@ public class PlaylistSongViewModel extends SongViewModel {
     @Override
     public View.OnClickListener onClickMenu() {
         return v -> {
-            final PopupMenu menu = new PopupMenu(mContext, v, Gravity.END);
+            final PopupMenu menu = new PopupMenu(getContext(), v, Gravity.END);
             menu.inflate(R.menu.instance_song_playlist);
             menu.setOnMenuItemClickListener(onMenuItemClick(v));
             menu.show();
@@ -55,7 +61,7 @@ public class PlaylistSongViewModel extends SongViewModel {
                 case R.id.menu_item_navigate_to_artist:
                     mMusicStore.findArtistById(getReference().getArtistId()).subscribe(
                             artist -> {
-                                mContext.startActivity(ArtistActivity.newIntent(mContext, artist));
+                                startActivity(ArtistActivity.newIntent(getContext(), artist));
                             }, throwable -> {
                                 Timber.e(throwable, "Failed to find artist");
                             });
@@ -64,7 +70,7 @@ public class PlaylistSongViewModel extends SongViewModel {
                 case R.id.menu_item_navigate_to_album:
                     mMusicStore.findAlbumById(getReference().getAlbumId()).subscribe(
                             album -> {
-                                mContext.startActivity(AlbumActivity.newIntent(mContext, album));
+                                startActivity(AlbumActivity.newIntent(getContext(), album));
                             }, throwable -> {
                                 Timber.e(throwable, "Failed to find album");
                             });
@@ -86,7 +92,7 @@ public class PlaylistSongViewModel extends SongViewModel {
         mRemoveListener.onPlaylistEntriesChange();
 
         String songName = removed.getSongName();
-        String message = mContext.getString(R.string.message_removed_song, songName);
+        String message = getString(R.string.message_removed_song, songName);
 
         Snackbar.make(snackbarContainer, message, Snackbar.LENGTH_LONG)
                 .setAction(R.string.action_undo, view -> {

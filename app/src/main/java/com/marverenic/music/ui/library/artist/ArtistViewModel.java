@@ -1,6 +1,8 @@
 package com.marverenic.music.ui.library.artist;
 
+import android.content.Context;
 import android.databinding.Bindable;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ItemDecoration;
@@ -14,38 +16,39 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ThemeStore;
-import com.marverenic.music.lastfm.data.store.LastFmStore;
 import com.marverenic.music.lastfm.model.Image;
 import com.marverenic.music.lastfm.model.LfmArtist;
+import com.marverenic.music.model.Album;
 import com.marverenic.music.model.Artist;
-import com.marverenic.music.ui.BaseFragment;
+import com.marverenic.music.model.Song;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseViewModel;
 import com.marverenic.music.ui.common.HeaderSection;
 import com.marverenic.music.ui.common.LibraryEmptyState;
 import com.marverenic.music.ui.common.ShuffleAllSection;
 import com.marverenic.music.ui.library.AlbumSection;
 import com.marverenic.music.ui.library.SongSection;
-import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 import com.marverenic.music.view.GridSpacingDecoration;
 import com.marverenic.music.view.ViewUtils;
 
 import java.util.Collections;
+import java.util.List;
 
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
 
 public class ArtistViewModel extends BaseViewModel {
 
-    // TODO remove this after refactoring the empty state
-    private BaseFragment mFragment;
+    private FragmentManager mFragmentManager;
 
+    private PlayerController mPlayerController;
     private MusicStore mMusicStore;
-    private LastFmStore mLfmStore;
+    private PlaylistStore mPlaylistStore;
     private PreferenceStore mPrefStore;
     private ThemeStore mThemeStore;
 
@@ -64,55 +67,26 @@ public class ArtistViewModel extends BaseViewModel {
     private Artist mReference;
     private LfmArtist mLfmReference;
 
-    public ArtistViewModel(BaseFragment fragment, Artist artist, MusicStore musicStore,
-                           LastFmStore lfmStore, PreferenceStore prefStore, ThemeStore themeStore) {
-        super(fragment);
-        mFragment = fragment;
+    public ArtistViewModel(Context context, FragmentManager fragmentManager, Artist artist,
+                           PlayerController playerController, MusicStore musicStore,
+                           PlaylistStore playlistStore, PreferenceStore prefStore,
+                           ThemeStore themeStore) {
+        super(context);
+        mFragmentManager = fragmentManager;
         mReference = artist;
 
+        mPlayerController = playerController;
         mMusicStore = musicStore;
-        mLfmStore = lfmStore;
+        mPlaylistStore = playlistStore;
         mPrefStore = prefStore;
         mThemeStore = themeStore;
 
         createAdapter();
-
-        mMusicStore.getSongs(mReference)
-                .compose(bindToLifecycle())
-                .subscribe(songs -> {
-                    mSongSection.setData(songs);
-                    mShuffleAllSection.setData(songs);
-                    mAdapter.notifyDataSetChanged();
-                }, throwable -> {
-                    Timber.e(throwable, "Failed to get song contents");
-                });
-
-        mMusicStore.getAlbums(mReference)
-                .compose(bindToLifecycle())
-                .subscribe(albums -> {
-                    mAlbumSection.setData(albums);
-                    mAdapter.notifyDataSetChanged();
-                }, throwable -> {
-                    Timber.e(throwable, "Failed to get album contents");
-                });
-
-        if (Util.canAccessInternet(getContext(), mPrefStore.useMobileNetwork())) {
-            showLoadingSpinner();
-
-            mLfmStore.getArtistInfo(mReference.getArtistName())
-                    .compose(bindToLifecycle())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(this::onLastFmDataLoaded,
-                            throwable -> {
-                                Timber.e(throwable, "Failed to get Last.fm artist info");
-                                hideLoadingSpinner();
-                            });
-        }
     }
 
     private void createAdapter() {
         mAdapter = new HeterogeneousAdapter();
-        mAdapter.setEmptyState(new LibraryEmptyState(mFragment.getActivity()) {
+        mAdapter.setEmptyState(new LibraryEmptyState(getContext(), mMusicStore, mPlaylistStore) {
             @Override
             public String getEmptyMessage() {
                 if (mReference == null) {
@@ -139,9 +113,9 @@ public class ArtistViewModel extends BaseViewModel {
 
         mBioSection = new ArtistBioSingleton(null, false);
         mRelatedArtistSection = new RelatedArtistSection(mMusicStore, Collections.emptyList());
-        mAlbumSection = new AlbumSection(mFragment, Collections.emptyList());
-        mShuffleAllSection = new ShuffleAllSection(mFragment, Collections.emptyList());
-        mSongSection = new SongSection(mFragment, Collections.emptyList());
+        mAlbumSection = new AlbumSection(Collections.emptyList(), mFragmentManager);
+        mShuffleAllSection = new ShuffleAllSection(Collections.emptyList(), mPrefStore, mPlayerController);
+        mSongSection = new SongSection(Collections.emptyList(), mPlayerController, mMusicStore, mFragmentManager);
 
         mAdapter.addSection(mBioSection)
                 .addSection(mRelatedArtistSection)
@@ -152,7 +126,18 @@ public class ArtistViewModel extends BaseViewModel {
                 .addSection(mSongSection);
     }
 
-    private void onLastFmDataLoaded(LfmArtist lfmArtist) {
+    public void setArtistSongs(List<Song> songs) {
+        mSongSection.setData(songs);
+        mShuffleAllSection.setData(songs);
+        mAdapter.notifyDataSetChanged();
+    }
+
+    public void setArtistAlbums(List<Album> albums) {
+        mAlbumSection.setData(albums);
+        mAdapter.notifyDataSetChanged();
+    }
+
+    public void setLastFmData(LfmArtist lfmArtist) {
         hideLoadingSpinner();
         mLfmReference = lfmArtist;
         mBioSection.setData(lfmArtist);
@@ -183,6 +168,14 @@ public class ArtistViewModel extends BaseViewModel {
                 }, throwable -> {
                     Timber.e("Failed to update similar artists");
                 });
+    }
+
+    public void setLoadingLastFmData(boolean loading) {
+        if (loading) {
+            showLoadingSpinner();
+        } else {
+            hideLoadingSpinner();
+        }
     }
 
     private void showLoadingSpinner() {

@@ -1,7 +1,5 @@
 package com.marverenic.music.ui.common;
 
-import android.app.Activity;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,9 +7,7 @@ import android.view.ViewGroup;
 
 import com.marverenic.adapter.EnhancedViewHolder;
 import com.marverenic.adapter.HeterogeneousAdapter;
-import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.ui.BaseLibraryActivity;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
@@ -19,25 +15,20 @@ import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.M
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 public class ShuffleAllSection extends HeterogeneousAdapter.SingletonSection<List<Song>>
         implements MeasurableAdapter {
 
-    @Inject PlayerController mPlayerController;
-    @Inject PreferenceStore mPrefStore;
+    private PlayerController mPlayerController;
+    private PreferenceStore mPrefStore;
 
-    private Activity mActivity;
-
-    public ShuffleAllSection(Fragment fragment, List<Song> data) {
-        this(fragment.getActivity(), data);
-    }
-
-    public ShuffleAllSection(Activity activity, List<Song> data) {
+    /**
+     * @param data The item to show in this Section
+     */
+    public ShuffleAllSection(List<Song> data, PreferenceStore preferenceStore,
+                             PlayerController playerController) {
         super(data);
-        mActivity = activity;
-
-        JockeyApplication.getComponent(activity).inject(this);
+        mPlayerController = playerController;
+        mPrefStore = preferenceStore;
     }
 
     @Override
@@ -78,10 +69,7 @@ public class ShuffleAllSection extends HeterogeneousAdapter.SingletonSection<Lis
                 mPlayerController.setQueue(songs, firstSong);
                 mPlayerController.play();
 
-                if (mPrefStore.openNowPlayingOnNewQueue()
-                        && mActivity instanceof BaseLibraryActivity) {
-                    ((BaseLibraryActivity) mActivity).expandBottomSheet();
-                }
+                // TODO expand the now playing page
             });
         }
     }

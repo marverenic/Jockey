@@ -1,16 +1,16 @@
 package com.marverenic.music.ui.nowplaying;
 
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.marverenic.adapter.EnhancedViewHolder;
 import com.marverenic.adapter.HeterogeneousAdapter;
+import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.databinding.InstanceSongQueueBinding;
-import com.marverenic.music.ui.BaseFragment;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.common.EditableSongSection;
-import com.marverenic.music.ui.nowplaying.QueueSongViewModel;
 
 import java.util.List;
 
@@ -18,13 +18,17 @@ import timber.log.Timber;
 
 public class QueueSection extends EditableSongSection {
 
-    private BaseFragment mFragment;
+    private FragmentManager mFragmentManager;
+
+    private MusicStore mMusicStore;
     private PlayerController mPlayerController;
 
-    public QueueSection(BaseFragment fragment, PlayerController playerController,
-                        List<Song> data) {
+    public QueueSection(List<Song> data, FragmentManager fragmentManager,
+                        MusicStore musicStore, PlayerController playerController) {
         super(data);
-        mFragment = fragment;
+        mFragmentManager = fragmentManager;
+
+        mMusicStore = musicStore;
         mPlayerController = playerController;
     }
 
@@ -59,20 +63,19 @@ public class QueueSection extends EditableSongSection {
         InstanceSongQueueBinding binding = InstanceSongQueueBinding.inflate(
                 LayoutInflater.from(parent.getContext()), parent, false);
 
-        return new ViewHolder(binding, getData(), adapter);
+        return new ViewHolder(binding, adapter);
     }
 
     public class ViewHolder extends EnhancedViewHolder<Song> {
 
         private InstanceSongQueueBinding mBinding;
 
-        public ViewHolder(InstanceSongQueueBinding binding, List<Song> songList,
-                          HeterogeneousAdapter adapter) {
+        public ViewHolder(InstanceSongQueueBinding binding, HeterogeneousAdapter adapter) {
             super(binding.getRoot());
             mBinding = binding;
 
-            binding.setViewModel(new QueueSongViewModel(mFragment, songList,
-                    adapter::notifyDataSetChanged));
+            binding.setViewModel(new QueueSongViewModel(mBinding.getRoot().getContext(),
+                    mFragmentManager, mMusicStore, mPlayerController, adapter::notifyDataSetChanged));
         }
 
         @Override

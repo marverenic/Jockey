@@ -62,7 +62,7 @@ public class AutoPlaylistEditFragment extends BaseToolbarFragment {
                                        @Nullable Bundle savedInstanceState) {
 
         mBinding = FragmentAutoPlaylistEditBinding.inflate(inflater, container, false);
-        mViewModel = new AutoPlaylistEditViewModel(this, mOriginalPlaylist, mBuilder);
+        mViewModel = new AutoPlaylistEditViewModel(getContext(), mOriginalPlaylist, mBuilder);
         mBinding.setViewModel(mViewModel);
 
         setHasOptionsMenu(true);

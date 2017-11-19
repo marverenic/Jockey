@@ -1,6 +1,8 @@
 package com.marverenic.music.ui.library.album;
 
+import android.content.Context;
 import android.databinding.Bindable;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -10,8 +12,10 @@ import com.bumptech.glide.Glide;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.model.Album;
-import com.marverenic.music.ui.BaseFragment;
+import com.marverenic.music.model.Song;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseViewModel;
 import com.marverenic.music.ui.common.BasicEmptyState;
 import com.marverenic.music.ui.common.ShuffleAllSection;
@@ -20,38 +24,24 @@ import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 
 import java.util.Collections;
-
-import timber.log.Timber;
+import java.util.List;
 
 public class AlbumViewModel extends BaseViewModel {
 
-    // TODO refactor the list view models so we don't need to hold on to a fragment
-    private BaseFragment mFragment;
     private Album mAlbum;
 
     private HeterogeneousAdapter mAdapter;
     private SongSection mSongSection;
     private ShuffleAllSection mShuffleAllSection;
 
-    public AlbumViewModel(BaseFragment fragment, Album album, MusicStore musicStore) {
-        super(fragment);
-        mFragment = fragment;
+    public AlbumViewModel(Context context, Album album, PlayerController playerController,
+                          MusicStore musicStore, PreferenceStore preferenceStore,
+                          FragmentManager fragmentManager) {
+        super(context);
         mAlbum = album;
 
-        createAdapter();
-        musicStore.getSongs(album)
-                .compose(bindToLifecycle())
-                .subscribe(songs -> {
-                    mSongSection.setData(songs);
-                    mShuffleAllSection.setData(songs);
-                }, throwable -> {
-                    Timber.e(throwable, "Failed to get songs in album");
-                });
-    }
-
-    private void createAdapter() {
-        mSongSection = new SongSection(mFragment, Collections.emptyList());
-        mShuffleAllSection = new ShuffleAllSection(mFragment, Collections.emptyList());
+        mSongSection = new SongSection(Collections.emptyList(), playerController, musicStore, fragmentManager);
+        mShuffleAllSection = new ShuffleAllSection(Collections.emptyList(), preferenceStore, playerController);
 
         mAdapter = new HeterogeneousAdapter();
         mAdapter.addSection(mShuffleAllSection);
@@ -63,6 +53,11 @@ public class AlbumViewModel extends BaseViewModel {
                 return getString(R.string.empty);
             }
         });
+    }
+
+    public void setAlbumSongs(List<Song> songs) {
+        mSongSection.setData(songs);
+        mShuffleAllSection.setData(songs);
     }
 
     @Bindable

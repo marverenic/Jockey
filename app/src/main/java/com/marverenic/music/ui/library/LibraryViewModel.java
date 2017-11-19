@@ -1,23 +1,18 @@
 package com.marverenic.music.ui.library;
 
+import android.content.Context;
 import android.databinding.Bindable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.marverenic.music.BR;
 import com.marverenic.music.R;
-import com.marverenic.music.data.store.MusicStore;
-import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.ui.BaseViewModel;
 import com.marverenic.music.ui.common.playlist.CreatePlaylistDialogFragment;
 import com.marverenic.music.ui.library.playlist.edit.AutoPlaylistEditActivity;
 import com.marverenic.music.view.FABMenu;
-import com.trello.rxlifecycle.components.support.RxFragment;
-
-import rx.Observable;
-import timber.log.Timber;
 
 public class LibraryViewModel extends BaseViewModel {
 
@@ -30,25 +25,16 @@ public class LibraryViewModel extends BaseViewModel {
     private boolean mRefreshing;
     private int mPage;
 
-    LibraryViewModel(RxFragment fragment, PreferenceStore preferenceStore,
-                     ThemeStore themeStore, MusicStore musicStore, PlaylistStore playlistStore) {
+    LibraryViewModel(Context context, FragmentManager fragmentManager,
+                     PreferenceStore preferenceStore, ThemeStore themeStore) {
 
-        super(fragment);
+        super(context);
 
-        mFragmentManager = fragment.getFragmentManager();
+        mFragmentManager = fragmentManager;
         mThemeStore = themeStore;
 
         setPage(preferenceStore.getDefaultPage());
-        mPagerAdapter = new LibraryPagerAdapter(getContext(), mFragmentManager);
-
-        Observable.combineLatest(musicStore.isLoading(), playlistStore.isLoading(),
-                (musicLoading, playlistLoading) -> {
-                    return musicLoading || playlistLoading;
-                })
-                .compose(bindToLifecycle())
-                .subscribe(this::setLibraryRefreshing, throwable -> {
-                            Timber.e(throwable, "Failed to update refresh indicator");
-                        });
+        mPagerAdapter = new LibraryPagerAdapter(getContext(), fragmentManager);
     }
 
     @Bindable
@@ -85,7 +71,7 @@ public class LibraryViewModel extends BaseViewModel {
         };
     }
 
-    private void setLibraryRefreshing(boolean refreshing) {
+    public void setLibraryRefreshing(boolean refreshing) {
         mRefreshing = refreshing;
         notifyPropertyChanged(BR.libraryRefreshing);
     }

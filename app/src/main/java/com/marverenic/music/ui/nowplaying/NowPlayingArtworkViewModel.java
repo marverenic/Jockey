@@ -9,58 +9,34 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 
 import com.marverenic.music.BR;
-import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.ui.BaseActivity;
 import com.marverenic.music.data.store.PreferenceStore;
-import com.marverenic.music.ui.BaseFragment;
 import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.view.GestureView;
-import com.trello.rxlifecycle.FragmentEvent;
-import com.trello.rxlifecycle.LifecycleTransformer;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 import rx.Observable;
 import timber.log.Timber;
 
 public class NowPlayingArtworkViewModel extends BaseObservable {
 
-    @Inject PreferenceStore mPrefStore;
-    @Inject PlayerController mPlayerController;
+    private PlayerController mPlayerController;
+    private PreferenceStore mPrefStore;
 
     private Context mContext;
     private Bitmap mArtwork;
     private boolean mPlaying;
 
-    public NowPlayingArtworkViewModel(BaseActivity activity) {
-        this(activity, activity.bindToLifecycle());
-    }
-
-    public NowPlayingArtworkViewModel(BaseFragment fragment) {
-        this(fragment.getContext(), fragment.bindUntilEvent(FragmentEvent.DESTROY_VIEW));
-    }
-
-    @SuppressWarnings("unchecked")
-    private NowPlayingArtworkViewModel(Context context, LifecycleTransformer<?> transformer) {
+    public NowPlayingArtworkViewModel(Context context, PlayerController playerController,
+                                       PreferenceStore prefStore) {
         mContext = context;
-        JockeyApplication.getComponent(context).inject(this);
-
-        mPlayerController.getArtwork()
-                .compose((LifecycleTransformer<Bitmap>) transformer)
-                .subscribe(this::setArtwork,
-                        throwable -> Timber.e(throwable, "Failed to set artwork"));
-
-        mPlayerController.isPlaying()
-                .compose((LifecycleTransformer<Boolean>) transformer)
-                .subscribe(this::setPlaying,
-                        throwable -> Timber.e(throwable, "Failed to update playing state"));
+        mPrefStore = prefStore;
+        mPlayerController = playerController;
     }
 
-    private void setPlaying(boolean playing) {
+    public void setPlaying(boolean playing) {
         mPlaying = playing;
         notifyPropertyChanged(BR.tapIndicator);
     }
@@ -77,7 +53,7 @@ public class NowPlayingArtworkViewModel extends BaseObservable {
         return Math.min(preferredHeight, maxHeight);
     }
 
-    private void setArtwork(Bitmap artwork) {
+    public void setArtwork(Bitmap artwork) {
         mArtwork = artwork;
         notifyPropertyChanged(BR.nowPlayingArtwork);
     }

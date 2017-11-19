@@ -8,17 +8,25 @@ import android.view.ViewGroup;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
+import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.databinding.FragmentGenreBinding;
 import com.marverenic.music.model.Genre;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseToolbarFragment;
 
 import javax.inject.Inject;
+
+import timber.log.Timber;
 
 public class GenreFragment extends BaseToolbarFragment {
 
     private static final String GENRE_ARG = "GenreFragment.GENRE";
 
+    @Inject PlayerController mPlayerController;
     @Inject MusicStore mMusicStore;
+    @Inject PlaylistStore mPlaylistStore;
+    @Inject PreferenceStore mPreferenceStore;
 
     private Genre mGenre;
 
@@ -50,7 +58,16 @@ public class GenreFragment extends BaseToolbarFragment {
                                        @Nullable Bundle savedInstanceState) {
 
         FragmentGenreBinding binding = FragmentGenreBinding.inflate(inflater, container, false);
-        binding.setViewModel(new GenreViewModel(this, mMusicStore, mGenre));
+        GenreViewModel viewModel = new GenreViewModel(getContext(), getFragmentManager(),
+                mPlayerController, mMusicStore, mPlaylistStore, mPreferenceStore);
+
+        binding.setViewModel(viewModel);
+
+        mMusicStore.getSongs(mGenre)
+                .compose(bindToLifecycle())
+                .subscribe(viewModel::setSongs, throwable -> {
+                    Timber.e(throwable, "Failed to get song contents");
+                });
 
         return binding.getRoot();
     }

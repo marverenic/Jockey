@@ -10,7 +10,6 @@ import android.widget.AdapterView;
 import android.widget.CompoundButton;
 
 import com.marverenic.music.BR;
-import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.model.AutoPlaylist;
 import com.marverenic.music.model.playlistrules.AutoPlaylistRule;
@@ -53,7 +52,6 @@ public class RuleHeaderViewModel extends BaseObservable {
     private boolean mIgnoreFirstNameError;
 
     public RuleHeaderViewModel(Context context) {
-        JockeyApplication.getComponent(context).inject(this);
     }
 
     public void setOriginalReference(AutoPlaylist playlist) {

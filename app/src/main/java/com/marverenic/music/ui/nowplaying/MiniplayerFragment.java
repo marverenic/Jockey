@@ -6,22 +6,27 @@ import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.marverenic.music.JockeyApplication;
+import com.marverenic.music.R;
 import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.databinding.FragmentMiniplayerBinding;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseFragment;
+import com.marverenic.music.view.ViewUtils;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 public class MiniplayerFragment extends BaseFragment {
 
-    private FragmentMiniplayerBinding mBinding;
-
+    @Inject PlayerController mPlayerController;
     @Inject ThemeStore mThemeStore;
 
     @Override
@@ -35,8 +40,48 @@ public class MiniplayerFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        mBinding = FragmentMiniplayerBinding.inflate(inflater, container, false);
-        mBinding.setViewModel(new MiniplayerViewModel(this));
+        FragmentMiniplayerBinding mBinding = FragmentMiniplayerBinding.inflate(inflater, container, false);
+        MiniplayerViewModel viewModel = new MiniplayerViewModel(getContext(), mPlayerController);
+
+        mPlayerController.getNowPlaying()
+                .compose(bindToLifecycle())
+                .subscribe(viewModel::setSong, throwable -> {
+                    Timber.e(throwable, "Failed to set song");
+                });
+
+        mPlayerController.isPlaying()
+                .compose(bindToLifecycle())
+                .subscribe(viewModel::setPlaying, throwable -> {
+                    Timber.e(throwable, "Failed to set playing state");
+                });
+
+        mPlayerController.getCurrentPosition()
+                .compose(bindToLifecycle())
+                .subscribe(viewModel::setCurrentPosition, throwable -> {
+                    Timber.e(throwable, "Failed to set progress");
+                });
+
+        mPlayerController.getDuration()
+                .compose(bindToLifecycle())
+                .subscribe(viewModel::setDuration, throwable -> {
+                    Timber.e(throwable, "Failed to set duration");
+                });
+
+        mPlayerController.getArtwork()
+                .compose(bindToLifecycle())
+                .map(artwork -> {
+                    if (artwork == null) {
+                        return ViewUtils.drawableToBitmap(
+                                ContextCompat.getDrawable(getContext(), R.drawable.art_default));
+                    } else {
+                        return artwork;
+                    }
+                })
+                .subscribe(viewModel::setArtwork, throwable -> {
+                    Timber.e(throwable, "Failed to set artwork");
+                });
+
+        mBinding.setViewModel(viewModel);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             ProgressBar progressBar = mBinding.miniplayerProgress;

@@ -1,7 +1,6 @@
 package com.marverenic.music.ui.nowplaying;
 
 import android.content.Context;
-import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.BindingAdapter;
 import android.databinding.ObservableInt;
@@ -10,7 +9,6 @@ import android.os.Handler;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.View;
@@ -20,32 +18,28 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import com.marverenic.music.BR;
-import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.ui.library.album.AlbumActivity;
-import com.marverenic.music.ui.library.artist.ArtistActivity;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.ThemeStore;
-import com.marverenic.music.ui.common.playlist.AppendPlaylistDialogFragment;
-import com.marverenic.music.ui.BaseFragment;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.ui.BaseViewModel;
+import com.marverenic.music.ui.common.playlist.AppendPlaylistDialogFragment;
+import com.marverenic.music.ui.library.album.AlbumActivity;
+import com.marverenic.music.ui.library.artist.ArtistActivity;
 import com.marverenic.music.utils.BindingAdapters;
-
-import javax.inject.Inject;
 
 import timber.log.Timber;
 
-public class NowPlayingControllerViewModel extends BaseObservable {
+public class NowPlayingControllerViewModel extends BaseViewModel {
 
     private static final String TAG_PLAYLIST_DIALOG = "AppendPlaylistDialog";
 
-    private Context mContext;
     private FragmentManager mFragmentManager;
 
-    @Inject MusicStore mMusicStore;
-    @Inject ThemeStore mThemeStore;
-    @Inject PlayerController mPlayerController;
+    private PlayerController mPlayerController;
+    private MusicStore mMusicStore;
+    private ThemeStore mThemeStore;
 
     @Nullable
     private Song mSong;
@@ -57,45 +51,21 @@ public class NowPlayingControllerViewModel extends BaseObservable {
     private final ObservableInt mSeekbarPosition;
     private final ObservableInt mCurrentPositionObservable;
 
-    public NowPlayingControllerViewModel(BaseFragment fragment) {
-        mContext = fragment.getContext();
-        mFragmentManager = fragment.getFragmentManager();
+    public NowPlayingControllerViewModel(Context context, FragmentManager fragmentManager,
+                                         PlayerController playerController, MusicStore musicStore,
+                                         ThemeStore themeStore) {
+        super(context);
+        mFragmentManager = fragmentManager;
+
+        mPlayerController = playerController;
+        mMusicStore = musicStore;
+        mThemeStore = themeStore;
 
         mCurrentPositionObservable = new ObservableInt();
         mSeekbarPosition = new ObservableInt();
-
-        JockeyApplication.getComponent(mContext).inject(this);
-
-        mPlayerController.getCurrentPosition()
-                .compose(fragment.bindToLifecycle())
-                .subscribe(
-                        position -> {
-                            mCurrentPositionObservable.set(position);
-                            if (!mUserTouchingProgressBar) {
-                                mSeekbarPosition.set(position);
-                            }
-                        },
-                        throwable -> {
-                            Timber.e(throwable, "failed to update position");
-                        });
-
-        mPlayerController.getNowPlaying()
-                .compose(fragment.bindToLifecycle())
-                .subscribe(this::setSong,
-                        throwable -> Timber.e(throwable, "Failed to set song"));
-
-        mPlayerController.isPlaying()
-                .compose(fragment.bindToLifecycle())
-                .subscribe(this::setPlaying,
-                        throwable -> Timber.e(throwable, "Failed to set playing"));
-
-        mPlayerController.getDuration()
-                .compose(fragment.bindToLifecycle())
-                .subscribe(this::setDuration,
-                        throwable -> Timber.e(throwable, "Failed to set duration"));
     }
 
-    private void setSong(@Nullable Song song) {
+    public void setSong(@Nullable Song song) {
         mSong = song;
         notifyPropertyChanged(BR.songTitle);
         notifyPropertyChanged(BR.artistName);
@@ -104,12 +74,19 @@ public class NowPlayingControllerViewModel extends BaseObservable {
         notifyPropertyChanged(BR.seekbarEnabled);
     }
 
-    private void setPlaying(boolean playing) {
+    public void setPlaying(boolean playing) {
         mPlaying = playing;
         notifyPropertyChanged(BR.togglePlayIcon);
     }
 
-    private void setDuration(int duration) {
+    public void setCurrentPosition(int position) {
+        mCurrentPositionObservable.set(position);
+        if (!mUserTouchingProgressBar) {
+            mSeekbarPosition.set(position);
+        }
+    }
+
+    public void setDuration(int duration) {
         mDuration = duration;
         notifyPropertyChanged(BR.songDuration);
     }
@@ -117,7 +94,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
     @Bindable
     public String getSongTitle() {
         if (mSong == null) {
-            return mContext.getResources().getString(R.string.nothing_playing);
+            return getString(R.string.nothing_playing);
         } else {
             return mSong.getSongName();
         }
@@ -126,7 +103,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
     @Bindable
     public String getArtistName() {
         if (mSong == null) {
-            return mContext.getResources().getString(R.string.unknown_artist);
+            return getString(R.string.unknown_artist);
         } else {
             return mSong.getArtistName();
         }
@@ -135,7 +112,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
     @Bindable
     public String getAlbumName() {
         if (mSong == null) {
-            return mContext.getString(R.string.unknown_album);
+            return getString(R.string.unknown_album);
         } else {
             return mSong.getAlbumName();
         }
@@ -154,9 +131,9 @@ public class NowPlayingControllerViewModel extends BaseObservable {
     @Bindable
     public Drawable getTogglePlayIcon() {
         if (mPlaying) {
-            return ContextCompat.getDrawable(mContext, R.drawable.ic_pause_36dp);
+            return getDrawable(R.drawable.ic_pause_36dp);
         } else {
-            return ContextCompat.getDrawable(mContext, R.drawable.ic_play_arrow_36dp);
+            return getDrawable(R.drawable.ic_play_arrow_36dp);
         }
     }
 
@@ -199,8 +176,8 @@ public class NowPlayingControllerViewModel extends BaseObservable {
     }
 
     private void animateSeekBarHeadOut() {
-        mSeekBarThumbAnimation = AnimationUtils.loadAnimation(mContext, R.anim.slider_thumb_out);
-        mSeekBarThumbAnimation.setInterpolator(mContext, android.R.interpolator.accelerate_quint);
+        mSeekBarThumbAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.slider_thumb_out);
+        mSeekBarThumbAnimation.setInterpolator(getContext(), android.R.interpolator.accelerate_quint);
         notifyPropertyChanged(BR.seekBarHeadAnimation);
 
         long duration = mSeekBarThumbAnimation.getDuration();
@@ -208,8 +185,8 @@ public class NowPlayingControllerViewModel extends BaseObservable {
     }
 
     private void animateSeekBarHeadIn() {
-        mSeekBarThumbAnimation = AnimationUtils.loadAnimation(mContext, R.anim.slider_thumb_in);
-        mSeekBarThumbAnimation.setInterpolator(mContext, android.R.interpolator.decelerate_quint);
+        mSeekBarThumbAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.slider_thumb_in);
+        mSeekBarThumbAnimation.setInterpolator(getContext(), android.R.interpolator.decelerate_quint);
         notifyPropertyChanged(BR.seekBarHeadAnimation);
         notifyPropertyChanged(BR.seekBarHeadVisibility);
     }
@@ -225,7 +202,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
                 return;
             }
 
-            PopupMenu menu = new PopupMenu(mContext, v, Gravity.END);
+            PopupMenu menu = new PopupMenu(getContext(), v, Gravity.END);
             menu.inflate(mSong.isInLibrary()
                     ? R.menu.instance_song_now_playing
                     : R.menu.instance_song_now_playing_remote);
@@ -240,7 +217,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
                 case R.id.menu_item_navigate_to_artist:
                     mMusicStore.findArtistById(song.getArtistId()).take(1).subscribe(
                             artist -> {
-                                mContext.startActivity(ArtistActivity.newIntent(mContext, artist));
+                                startActivity(ArtistActivity.newIntent(getContext(), artist));
                             },
                             throwable -> {
                                 Timber.e(throwable, "Failed to find artist");
@@ -250,7 +227,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
                 case R.id.menu_item_navigate_to_album:
                     mMusicStore.findAlbumById(song.getAlbumId()).take(1).subscribe(
                             album -> {
-                                mContext.startActivity(AlbumActivity.newIntent(mContext, album));
+                                startActivity(AlbumActivity.newIntent(getContext(), album));
                             },
                             throwable -> {
                                 Timber.e(throwable, "Failed to find album");
@@ -258,7 +235,7 @@ public class NowPlayingControllerViewModel extends BaseObservable {
 
                     return true;
                 case R.id.menu_item_add_to_playlist:
-                    new AppendPlaylistDialogFragment.Builder(mContext, mFragmentManager)
+                    new AppendPlaylistDialogFragment.Builder(getContext(), mFragmentManager)
                             .setSongs(song)
                             .showSnackbarIn(R.id.now_playing_artwork)
                             .show(TAG_PLAYLIST_DIALOG);

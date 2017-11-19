@@ -1,6 +1,6 @@
 package com.marverenic.music.ui.common;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.Settings;
@@ -8,14 +8,10 @@ import android.support.design.widget.Snackbar;
 import android.view.View;
 
 import com.marverenic.music.BuildConfig;
-import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
-import com.marverenic.music.ui.common.BasicEmptyState;
-
-import javax.inject.Inject;
 
 import rx.Observable;
 import timber.log.Timber;
@@ -24,14 +20,14 @@ import static android.support.design.widget.Snackbar.LENGTH_SHORT;
 
 public class LibraryEmptyState extends BasicEmptyState {
 
-    private Activity mActivity;
+    private Context mActivity;
+    private MusicStore mMusicStore;
+    private PlaylistStore mPlaylistStore;
 
-    @Inject MusicStore mMusicStore;
-    @Inject PlaylistStore mPlaylistStore;
-
-    public LibraryEmptyState(Activity activity) {
+    public LibraryEmptyState(Context activity, MusicStore musicStore, PlaylistStore playlistStore) {
         mActivity = activity;
-        JockeyApplication.getComponent(activity).inject(this);
+        mMusicStore = musicStore;
+        mPlaylistStore = playlistStore;
     }
 
     public String getEmptyMessage() {
@@ -87,7 +83,7 @@ public class LibraryEmptyState extends BasicEmptyState {
     }
 
     @Override
-    public void onAction1() {
+    public void onAction1(View button) {
         Observable<Boolean> musicStoreResult = mMusicStore.refresh();
         Observable<Boolean> playlistStoreResult = mPlaylistStore.refresh();
 
@@ -97,8 +93,7 @@ public class LibraryEmptyState extends BasicEmptyState {
         combinedResult.take(1)
                 .subscribe(successful -> {
                     if (successful) {
-                        View container = mActivity.findViewById(R.id.library_page_list);
-                        Snackbar.make(container, R.string.confirm_refresh_library, LENGTH_SHORT)
+                        Snackbar.make(button, R.string.confirm_refresh_library, LENGTH_SHORT)
                                 .show();
                     }
                 }, throwable -> {
@@ -107,7 +102,7 @@ public class LibraryEmptyState extends BasicEmptyState {
     }
 
     @Override
-    public void onAction2() {
+    public void onAction2(View button) {
         if (!MediaStoreUtil.hasPermission(mActivity)) {
             Intent intent = new Intent();
             intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
