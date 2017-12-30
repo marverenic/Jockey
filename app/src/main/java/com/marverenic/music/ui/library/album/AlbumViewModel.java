@@ -60,6 +60,10 @@ public class AlbumViewModel extends BaseViewModel {
         mShuffleAllSection.setData(songs);
     }
 
+    public void setCurrentSong(Song nowPlaying) {
+        mSongSection.setCurrentSong(nowPlaying);
+    }
+
     @Bindable
     public int getHeroImageHeight() {
         DisplayMetrics metrics = getResources().getDisplayMetrics();

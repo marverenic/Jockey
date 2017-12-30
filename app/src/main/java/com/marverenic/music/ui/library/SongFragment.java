@@ -22,6 +22,7 @@ import com.marverenic.music.ui.BaseFragment;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
+import com.trello.rxlifecycle.FragmentEvent;
 
 import java.util.List;
 
@@ -104,6 +105,12 @@ public class SongFragment extends BaseFragment {
             mRecyclerView.setAdapter(mAdapter);
 
             mSongSection = new SongSection(mSongs, mPlayerController, mMusicStore, getFragmentManager());
+            mPlayerController.getNowPlaying()
+                    .compose(bindUntilEvent(FragmentEvent.DESTROY))
+                    .subscribe(mSongSection::setCurrentSong, throwable -> {
+                        Timber.e(throwable, "Failed to update now playing");
+                    });
+
             mShuffleAllSection = new ShuffleAllSection(mSongs, mPreferenceStore, mPlayerController);
             mAdapter.addSection(mShuffleAllSection);
             mAdapter.addSection(mSongSection);

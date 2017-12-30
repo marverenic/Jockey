@@ -21,6 +21,8 @@ import com.marverenic.music.utils.StringUtils;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 public class SearchFragment extends BaseToolbarFragment {
 
     private static final String KEY_SAVED_QUERY = "SearchActivity.LAST_QUERY";
@@ -54,6 +56,12 @@ public class SearchFragment extends BaseToolbarFragment {
         mBinding = FragmentSearchBinding.inflate(inflater, container, false);
         mViewModel = new SearchViewModel(getContext(), getFragmentManager(), mPlayerController,
                 mMusicStore, mPlaylistStore);
+
+        mPlayerController.getNowPlaying()
+                .compose(bindToLifecycle())
+                .subscribe(mViewModel::setCurrentSong, throwable -> {
+                    Timber.e(throwable, "Failed to update current song");
+                });
 
         if (savedInstanceState != null) {
             String lastQuery = savedInstanceState.getString(KEY_SAVED_QUERY, "");

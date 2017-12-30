@@ -16,6 +16,9 @@ import com.marverenic.music.ui.common.EditableSongSection;
 
 import java.util.List;
 
+import rx.subjects.BehaviorSubject;
+import timber.log.Timber;
+
 public class PlaylistSongSection extends EditableSongSection {
 
     private FragmentManager mFragmentManager;
@@ -23,6 +26,7 @@ public class PlaylistSongSection extends EditableSongSection {
     private PlaylistStore mPlaylistStore;
     private PlayerController mPlayerController;
 
+    private BehaviorSubject<Song> mCurrentSong;
     private Playlist mReference;
 
     public PlaylistSongSection(List<Song> data, Playlist reference, FragmentManager fragmentManager,
@@ -35,6 +39,11 @@ public class PlaylistSongSection extends EditableSongSection {
         mPlayerController = playerController;
 
         mReference = reference;
+        mCurrentSong = BehaviorSubject.create();
+    }
+
+    public void setCurrentSong(Song nowPlaying) {
+        mCurrentSong.onNext(nowPlaying);
     }
 
     @Override
@@ -61,18 +70,22 @@ public class PlaylistSongSection extends EditableSongSection {
         public ViewHolder(InstanceSongDragBinding binding, HeterogeneousAdapter adapter) {
             super(binding.getRoot());
             mBinding = binding;
+            PlaylistSongViewModel viewModel = new PlaylistSongViewModel(mBinding.getRoot().getContext(),
+                    mFragmentManager, mMusicStore, mPlayerController, () -> {
+                adapter.notifyDataSetChanged();
+                mPlaylistStore.editPlaylist(mReference, getData());
+            });
 
-            binding.setViewModel(
-                    new PlaylistSongViewModel(mBinding.getRoot().getContext(), mFragmentManager,
-                            mMusicStore, mPlayerController, () -> {
-                                adapter.notifyDataSetChanged();
-                                mPlaylistStore.editPlaylist(mReference, getData());
-                            }));
+            mCurrentSong.subscribe(viewModel::setCurrentlyPlayingSong, throwable -> {
+                Timber.e(throwable, "Failed to update current song in view model");
+            });
+            binding.setViewModel(viewModel);
         }
 
         @Override
         public void onUpdate(Song s, int sectionPosition) {
             mBinding.getViewModel().setSong(getData(), sectionPosition);
+            mBinding.executePendingBindings();
         }
     }
 }

@@ -69,6 +69,12 @@ public class GenreFragment extends BaseToolbarFragment {
                     Timber.e(throwable, "Failed to get song contents");
                 });
 
+        mPlayerController.getNowPlaying()
+                .compose(bindToLifecycle())
+                .subscribe(viewModel::setCurrentSong, throwable -> {
+                    Timber.e(throwable, "Failed to update now playing");
+                });
+
         return binding.getRoot();
     }
 

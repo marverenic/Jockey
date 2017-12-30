@@ -44,12 +44,8 @@ import timber.log.Timber;
 
 public class ArtistViewModel extends BaseViewModel {
 
-    private FragmentManager mFragmentManager;
-
-    private PlayerController mPlayerController;
     private MusicStore mMusicStore;
     private PlaylistStore mPlaylistStore;
-    private PreferenceStore mPrefStore;
     private ThemeStore mThemeStore;
 
     private HeterogeneousAdapter mAdapter;
@@ -72,19 +68,16 @@ public class ArtistViewModel extends BaseViewModel {
                            PlaylistStore playlistStore, PreferenceStore prefStore,
                            ThemeStore themeStore) {
         super(context);
-        mFragmentManager = fragmentManager;
         mReference = artist;
-
-        mPlayerController = playerController;
         mMusicStore = musicStore;
         mPlaylistStore = playlistStore;
-        mPrefStore = prefStore;
         mThemeStore = themeStore;
 
-        createAdapter();
+        createAdapter(fragmentManager, playerController, prefStore);
     }
 
-    private void createAdapter() {
+    private void createAdapter(FragmentManager fragmentManager, PlayerController playerController,
+                               PreferenceStore prefStore) {
         mAdapter = new HeterogeneousAdapter();
         mAdapter.setEmptyState(new LibraryEmptyState(getContext(), mMusicStore, mPlaylistStore) {
             @Override
@@ -113,9 +106,9 @@ public class ArtistViewModel extends BaseViewModel {
 
         mBioSection = new ArtistBioSingleton(null, false);
         mRelatedArtistSection = new RelatedArtistSection(mMusicStore, Collections.emptyList());
-        mAlbumSection = new AlbumSection(Collections.emptyList(), mFragmentManager);
-        mShuffleAllSection = new ShuffleAllSection(Collections.emptyList(), mPrefStore, mPlayerController);
-        mSongSection = new SongSection(Collections.emptyList(), mPlayerController, mMusicStore, mFragmentManager);
+        mAlbumSection = new AlbumSection(Collections.emptyList(), fragmentManager);
+        mShuffleAllSection = new ShuffleAllSection(Collections.emptyList(), prefStore, playerController);
+        mSongSection = new SongSection(Collections.emptyList(), playerController, mMusicStore, fragmentManager);
 
         mAdapter.addSection(mBioSection)
                 .addSection(mRelatedArtistSection)
@@ -124,6 +117,10 @@ public class ArtistViewModel extends BaseViewModel {
                 .addSection(new HeaderSection(getString(R.string.header_songs)))
                 .addSection(mShuffleAllSection)
                 .addSection(mSongSection);
+    }
+
+    public void setCurrentSong(Song nowPlaying) {
+        mSongSection.setCurrentSong(nowPlaying);
     }
 
     public void setArtistSongs(List<Song> songs) {

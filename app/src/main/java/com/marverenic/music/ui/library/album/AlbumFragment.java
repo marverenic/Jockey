@@ -57,6 +57,12 @@ public class AlbumFragment extends BaseFragment {
                 mMusicStore, mPreferenceStore, getFragmentManager());
         binding.setViewModel(viewModel);
 
+        mPlayerController.getNowPlaying()
+                .compose(bindToLifecycle())
+                .subscribe(viewModel::setCurrentSong, throwable -> {
+                    Timber.e(throwable, "Failed to set current song");
+                });
+
         mMusicStore.getSongs(mAlbum)
                 .compose(bindToLifecycle())
                 .subscribe(viewModel::setAlbumSongs, throwable -> {

@@ -28,6 +28,7 @@ import com.marverenic.music.ui.library.playlist.edit.AutoPlaylistEditActivity;
 import com.marverenic.music.view.DragBackgroundDecoration;
 import com.marverenic.music.view.DragDividerDecoration;
 
+import java.util.Collections;
 import java.util.List;
 
 public class PlaylistViewModel extends BaseViewModel {
@@ -63,6 +64,12 @@ public class PlaylistViewModel extends BaseViewModel {
     private void createAdapter() {
         mAdapter = new DragDropAdapter();
         mAdapter.setHasStableIds(true);
+
+        mSongSection = new PlaylistSongSection(Collections.emptyList(), mPlaylist, mFragmentManager,
+                mMusicStore, mPlaylistStore, mPlayerController);
+        mShuffleAllSection = new ShuffleAllSection(Collections.emptyList(), mPreferenceStore, mPlayerController);
+        mAdapter.addSection(mShuffleAllSection);
+        mAdapter.setDragSection(mSongSection);
 
         mAdapter.setEmptyState(new LibraryEmptyState(getContext(), mMusicStore, mPlaylistStore) {
             @Override
@@ -104,18 +111,14 @@ public class PlaylistViewModel extends BaseViewModel {
         });
     }
 
+    public void setCurrentSong(Song nowPlaying) {
+        mSongSection.setCurrentSong(nowPlaying);
+    }
+
     public void setSongs(List<Song> playlistSongs) {
-        if (mSongSection == null || mShuffleAllSection == null) {
-            mSongSection = new PlaylistSongSection(playlistSongs, mPlaylist, mFragmentManager,
-                    mMusicStore, mPlaylistStore, mPlayerController);
-            mShuffleAllSection = new ShuffleAllSection(playlistSongs, mPreferenceStore, mPlayerController);
-            mAdapter.addSection(mShuffleAllSection);
-            mAdapter.setDragSection(mSongSection);
-        } else {
-            mShuffleAllSection.setData(playlistSongs);
-            mSongSection.setData(playlistSongs);
-            mAdapter.notifyDataSetChanged();
-        }
+        mShuffleAllSection.setData(playlistSongs);
+        mSongSection.setData(playlistSongs);
+        mAdapter.notifyDataSetChanged();
     }
 
     @Bindable

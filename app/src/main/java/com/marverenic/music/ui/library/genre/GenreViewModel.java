@@ -22,6 +22,7 @@ import com.marverenic.music.ui.library.SongSection;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
 
+import java.util.Collections;
 import java.util.List;
 
 public class GenreViewModel extends BaseViewModel {
@@ -51,6 +52,11 @@ public class GenreViewModel extends BaseViewModel {
 
     private void createAdapter() {
         mAdapter = new HeterogeneousAdapter();
+        mSongSection = new SongSection(Collections.emptyList(), mPlayerController, mMusicStore, mFragmentManager);
+        mShuffleAllSection = new ShuffleAllSection(Collections.emptyList(), mPreferenceStore, mPlayerController);
+        mAdapter.addSection(mShuffleAllSection);
+        mAdapter.addSection(mSongSection);
+
         mAdapter.setEmptyState(new LibraryEmptyState(getContext(), mMusicStore, mPlaylistStore) {
             @Override
             public String getEmptyAction1Label() {
@@ -59,17 +65,14 @@ public class GenreViewModel extends BaseViewModel {
         });
     }
 
+    public void setCurrentSong(Song nowPlaying) {
+        mSongSection.setCurrentSong(nowPlaying);
+    }
+
     public void setSongs(List<Song> genreContents) {
-        if (mSongSection != null && mShuffleAllSection != null) {
-            mSongSection.setData(genreContents);
-            mShuffleAllSection.setData(genreContents);
-            mAdapter.notifyDataSetChanged();
-        } else {
-            mSongSection = new SongSection(genreContents, mPlayerController, mMusicStore, mFragmentManager);
-            mShuffleAllSection = new ShuffleAllSection(genreContents, mPreferenceStore, mPlayerController);
-            mAdapter.addSection(mShuffleAllSection);
-            mAdapter.addSection(mSongSection);
-        }
+        mSongSection.setData(genreContents);
+        mShuffleAllSection.setData(genreContents);
+        mAdapter.notifyDataSetChanged();
     }
 
     @Bindable

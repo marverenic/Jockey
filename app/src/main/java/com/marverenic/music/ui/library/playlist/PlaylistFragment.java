@@ -81,6 +81,12 @@ public class PlaylistFragment extends BaseToolbarFragment {
         PlaylistViewModel viewModel = new PlaylistViewModel(getContext(), getFragmentManager(),
                 mPlayerController, mMusicStore, mPlaylistStore, mPreferenceStore, mPlaylist);
 
+        mPlayerController.getNowPlaying()
+                .compose(bindToLifecycle())
+                .subscribe(viewModel::setCurrentSong, throwable -> {
+                    Timber.e(throwable, "Failed to update current song");
+                });
+
         mBinding.setViewModel(viewModel);
 
         mPlaylistStore.getSongs(mPlaylist)

@@ -14,6 +14,7 @@ import com.marverenic.music.ui.common.EditableSongSection;
 
 import java.util.List;
 
+import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
 
 public class QueueSection extends EditableSongSection {
@@ -23,6 +24,8 @@ public class QueueSection extends EditableSongSection {
     private MusicStore mMusicStore;
     private PlayerController mPlayerController;
 
+    private BehaviorSubject<Integer> mCurrentIndex;
+
     public QueueSection(List<Song> data, FragmentManager fragmentManager,
                         MusicStore musicStore, PlayerController playerController) {
         super(data);
@@ -30,6 +33,11 @@ public class QueueSection extends EditableSongSection {
 
         mMusicStore = musicStore;
         mPlayerController = playerController;
+        mCurrentIndex = BehaviorSubject.create();
+    }
+
+    public void setCurrentSongIndex(int nowPlayingIndex) {
+        mCurrentIndex.onNext(nowPlayingIndex);
     }
 
     @Override
@@ -73,14 +81,19 @@ public class QueueSection extends EditableSongSection {
         public ViewHolder(InstanceSongQueueBinding binding, HeterogeneousAdapter adapter) {
             super(binding.getRoot());
             mBinding = binding;
+            QueueSongViewModel viewModel = new QueueSongViewModel(mBinding.getRoot().getContext(),
+                    mFragmentManager, mMusicStore, mPlayerController, adapter::notifyDataSetChanged);
 
-            binding.setViewModel(new QueueSongViewModel(mBinding.getRoot().getContext(),
-                    mFragmentManager, mMusicStore, mPlayerController, adapter::notifyDataSetChanged));
+            mCurrentIndex.subscribe(viewModel::setCurrentlyPlayingSongIndex, throwable -> {
+                Timber.e(throwable, "Failed to update current song index in view model");
+            });
+            binding.setViewModel(viewModel);
         }
 
         @Override
         public void onUpdate(Song s, int sectionPosition) {
             mBinding.getViewModel().setSong(getData(), sectionPosition);
+            mBinding.executePendingBindings();
         }
     }
 }

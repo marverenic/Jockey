@@ -41,9 +41,8 @@ public class SongSection extends HeterogeneousAdapter.ListSection<Song>
         mCurrentSong = BehaviorSubject.create();
     }
 
-    public void setCurrentSong(Song next) {
-        // TODO make sure everything calls this
-        mCurrentSong.onNext(next);
+    public void setCurrentSong(Song nowPlaying) {
+        mCurrentSong.onNext(nowPlaying);
     }
 
     @Override

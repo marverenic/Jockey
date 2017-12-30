@@ -145,6 +145,12 @@ public class QueueFragment extends BaseFragment {
                         Timber.e(throwable, "Failed to scroll to queue position");
                     });
 
+            mPlayerController.getQueuePosition()
+                    .compose(bindToLifecycle())
+                    .subscribe(mQueueSection::setCurrentSongIndex, throwable -> {
+                        Timber.e(throwable, "Failed to update current song");
+                    });
+
         } else if (!mQueueSection.getData().equals(queue)) {
             mQueueSection.setData(queue);
             mAdapter.notifyDataSetChanged();

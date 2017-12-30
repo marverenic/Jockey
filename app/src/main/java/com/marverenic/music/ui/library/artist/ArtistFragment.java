@@ -76,6 +76,12 @@ public class ArtistFragment extends BaseFragment {
                     Timber.e(throwable, "Failed to get album contents");
                 });
 
+        mPlayerController.getNowPlaying()
+                .compose(bindToLifecycle())
+                .subscribe(viewModel::setCurrentSong, throwable -> {
+                    Timber.e(throwable, "Failed to set now playing song");
+                });
+
         if (Util.canAccessInternet(getContext(), mPrefStore.useMobileNetwork())) {
             viewModel.setLoadingLastFmData(true);
 

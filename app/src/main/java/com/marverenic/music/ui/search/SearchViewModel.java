@@ -10,6 +10,7 @@ import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
+import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseViewModel;
 import com.marverenic.music.ui.common.BasicEmptyState;
@@ -160,6 +161,10 @@ public class SearchViewModel extends BaseViewModel {
                 }, throwable -> {
                     Timber.e(throwable, "Failed to search for genres");
                 });
+    }
+
+    public void setCurrentSong(Song nowPlaying) {
+        mSongSection.setCurrentSong(nowPlaying);
     }
 
     public void setSearchQuery(String query) {
