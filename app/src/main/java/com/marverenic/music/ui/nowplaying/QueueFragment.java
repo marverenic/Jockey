@@ -147,7 +147,7 @@ public class QueueFragment extends BaseFragment {
                     });
 
             mPlayerController.getQueuePosition()
-                    .compose(bindToLifecycle())
+                    .compose(bindUntilEvent(FragmentEvent.DESTROY))
                     .subscribe(mQueueSection::setCurrentSongIndex, throwable -> {
                         Timber.e(throwable, "Failed to update current song");
                     });
