@@ -7,9 +7,11 @@ import android.view.ViewGroup;
 
 import com.marverenic.adapter.EnhancedViewHolder;
 import com.marverenic.adapter.HeterogeneousAdapter;
+import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.databinding.InstanceAlbumBinding;
 import com.marverenic.music.model.Album;
 import com.marverenic.music.model.ModelUtil;
+import com.marverenic.music.player.PlayerController;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.List;
@@ -18,10 +20,15 @@ public class AlbumSection extends HeterogeneousAdapter.ListSection<Album>
         implements FastScrollRecyclerView.SectionedAdapter {
 
     private FragmentManager mFragmentManager;
+    private MusicStore mMusicStore;
+    private PlayerController mPlayerController;
 
-    public AlbumSection(@NonNull List<Album> data, FragmentManager fragmentManager) {
+    public AlbumSection(@NonNull List<Album> data, MusicStore musicStore,
+                        PlayerController playerController, FragmentManager fragmentManager) {
         super(data);
         mFragmentManager = fragmentManager;
+        mMusicStore = musicStore;
+        mPlayerController = playerController;
     }
 
     @Override
@@ -52,7 +59,8 @@ public class AlbumSection extends HeterogeneousAdapter.ListSection<Album>
         public ViewHolder(InstanceAlbumBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
-            mBinding.setViewModel(new AlbumViewModel(itemView.getContext(), mFragmentManager));
+            mBinding.setViewModel(new AlbumViewModel(itemView.getContext(), mFragmentManager,
+                    mMusicStore, mPlayerController));
         }
 
         @Override

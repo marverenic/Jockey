@@ -46,6 +46,7 @@ public class ArtistViewModel extends BaseViewModel {
 
     private MusicStore mMusicStore;
     private PlaylistStore mPlaylistStore;
+    private PlayerController mPlayerController;
     private ThemeStore mThemeStore;
 
     private HeterogeneousAdapter mAdapter;
@@ -71,13 +72,13 @@ public class ArtistViewModel extends BaseViewModel {
         mReference = artist;
         mMusicStore = musicStore;
         mPlaylistStore = playlistStore;
+        mPlayerController = playerController;
         mThemeStore = themeStore;
 
-        createAdapter(fragmentManager, playerController, prefStore);
+        createAdapter(fragmentManager, prefStore);
     }
 
-    private void createAdapter(FragmentManager fragmentManager, PlayerController playerController,
-                               PreferenceStore prefStore) {
+    private void createAdapter(FragmentManager fragmentManager, PreferenceStore prefStore) {
         mAdapter = new HeterogeneousAdapter();
         mAdapter.setEmptyState(new LibraryEmptyState(getContext(), mMusicStore, mPlaylistStore) {
             @Override
@@ -106,9 +107,9 @@ public class ArtistViewModel extends BaseViewModel {
 
         mBioSection = new ArtistBioSingleton(null, false);
         mRelatedArtistSection = new RelatedArtistSection(mMusicStore, Collections.emptyList());
-        mAlbumSection = new AlbumSection(Collections.emptyList(), fragmentManager);
-        mShuffleAllSection = new ShuffleAllSection(Collections.emptyList(), prefStore, playerController);
-        mSongSection = new SongSection(Collections.emptyList(), playerController, mMusicStore, fragmentManager);
+        mAlbumSection = new AlbumSection(Collections.emptyList(), mMusicStore, mPlayerController, fragmentManager);
+        mShuffleAllSection = new ShuffleAllSection(Collections.emptyList(), prefStore, mPlayerController);
+        mSongSection = new SongSection(Collections.emptyList(), mPlayerController, mMusicStore, fragmentManager);
 
         mAdapter.addSection(mBioSection)
                 .addSection(mRelatedArtistSection)

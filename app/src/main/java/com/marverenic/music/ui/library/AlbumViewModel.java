@@ -54,9 +54,12 @@ public class AlbumViewModel extends BaseObservable {
     private ObservableInt mArtistTextColor;
     private ObservableInt mBackgroundColor;
 
-    public AlbumViewModel(Context context, FragmentManager fragmentManager) {
+    public AlbumViewModel(Context context, FragmentManager fragmentManager, MusicStore musicStore,
+                          PlayerController playerController) {
         mContext = context;
         mFragmentManager = fragmentManager;
+        mMusicStore = musicStore;
+        mPlayerController = playerController;
     }
 
     public void setAlbum(Album album) {

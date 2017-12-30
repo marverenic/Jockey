@@ -74,7 +74,7 @@ public class SearchViewModel extends BaseViewModel {
     private void createAdapter() {
         mPlaylistSection = new PlaylistSection(Collections.emptyList());
         mSongSection = new SongSection(Collections.emptyList(), mPlayerController, mMusicStore, mFragmentManager);
-        mAlbumSection = new AlbumSection(Collections.emptyList(), mFragmentManager);
+        mAlbumSection = new AlbumSection(Collections.emptyList(), mMusicStore, mPlayerController, mFragmentManager);
         mArtistSection = new ArtistSection(Collections.emptyList(), mFragmentManager);
         mGenreSection = new GenreSection(Collections.emptyList(), mFragmentManager);
 
