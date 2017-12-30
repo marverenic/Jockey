@@ -14,6 +14,7 @@ import com.marverenic.music.databinding.FragmentGenreBinding;
 import com.marverenic.music.model.Genre;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseToolbarFragment;
+import com.marverenic.music.ui.common.OnSongSelectedListener;
 
 import javax.inject.Inject;
 
@@ -59,7 +60,8 @@ public class GenreFragment extends BaseToolbarFragment {
 
         FragmentGenreBinding binding = FragmentGenreBinding.inflate(inflater, container, false);
         GenreViewModel viewModel = new GenreViewModel(getContext(), getFragmentManager(),
-                mPlayerController, mMusicStore, mPlaylistStore, mPreferenceStore);
+                mPlayerController, mMusicStore, mPlaylistStore, mPreferenceStore,
+                OnSongSelectedListener.defaultImplementation(getActivity(), mPreferenceStore));
 
         binding.setViewModel(viewModel);
 

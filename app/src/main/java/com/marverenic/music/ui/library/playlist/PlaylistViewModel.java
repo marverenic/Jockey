@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.databinding.Bindable;
 import android.graphics.drawable.NinePatchDrawable;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,6 +24,7 @@ import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseViewModel;
 import com.marverenic.music.ui.common.LibraryEmptyState;
+import com.marverenic.music.ui.common.OnSongSelectedListener;
 import com.marverenic.music.ui.common.ShuffleAllSection;
 import com.marverenic.music.ui.library.playlist.edit.AutoPlaylistEditActivity;
 import com.marverenic.music.view.DragBackgroundDecoration;
@@ -49,7 +51,7 @@ public class PlaylistViewModel extends BaseViewModel {
     public PlaylistViewModel(Context context, FragmentManager fragmentManager,
                              PlayerController playerController, MusicStore musicStore,
                              PlaylistStore playlistStore, PreferenceStore preferenceStore,
-                             Playlist playlist) {
+                             Playlist playlist, @Nullable OnSongSelectedListener songSelectedListener) {
         super(context);
         mFragmentManager = fragmentManager;
         mPlayerController = playerController;
@@ -58,16 +60,17 @@ public class PlaylistViewModel extends BaseViewModel {
         mPreferenceStore = preferenceStore;
         mPlaylist = playlist;
 
-        createAdapter();
+        createAdapter(songSelectedListener);
     }
 
-    private void createAdapter() {
+    private void createAdapter(@Nullable OnSongSelectedListener songSelectedListener) {
         mAdapter = new DragDropAdapter();
         mAdapter.setHasStableIds(true);
 
         mSongSection = new PlaylistSongSection(Collections.emptyList(), mPlaylist, mFragmentManager,
-                mMusicStore, mPlaylistStore, mPlayerController);
-        mShuffleAllSection = new ShuffleAllSection(Collections.emptyList(), mPreferenceStore, mPlayerController);
+                mMusicStore, mPlaylistStore, mPlayerController, songSelectedListener);
+        mShuffleAllSection = new ShuffleAllSection(Collections.emptyList(), mPreferenceStore,
+                mPlayerController, songSelectedListener);
         mAdapter.addSection(mShuffleAllSection);
         mAdapter.setDragSection(mSongSection);
 

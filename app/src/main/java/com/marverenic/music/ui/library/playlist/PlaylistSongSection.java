@@ -1,5 +1,6 @@
 package com.marverenic.music.ui.library.playlist;
 
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import com.marverenic.music.model.Playlist;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.common.EditableSongSection;
+import com.marverenic.music.ui.common.OnSongSelectedListener;
 
 import java.util.List;
 
@@ -25,18 +27,21 @@ public class PlaylistSongSection extends EditableSongSection {
     private MusicStore mMusicStore;
     private PlaylistStore mPlaylistStore;
     private PlayerController mPlayerController;
+    @Nullable private OnSongSelectedListener mSongListener;
 
     private BehaviorSubject<Song> mCurrentSong;
     private Playlist mReference;
 
     public PlaylistSongSection(List<Song> data, Playlist reference, FragmentManager fragmentManager,
                                MusicStore musicStore, PlaylistStore playlistStore,
-                               PlayerController playerController) {
+                               PlayerController playerController,
+                               @Nullable OnSongSelectedListener songSelectedListener) {
         super(data);
         mFragmentManager = fragmentManager;
         mMusicStore = musicStore;
         mPlaylistStore = playlistStore;
         mPlayerController = playerController;
+        mSongListener = songSelectedListener;
 
         mReference = reference;
         mCurrentSong = BehaviorSubject.create();
@@ -74,7 +79,7 @@ public class PlaylistSongSection extends EditableSongSection {
                     mFragmentManager, mMusicStore, mPlayerController, () -> {
                 adapter.notifyDataSetChanged();
                 mPlaylistStore.editPlaylist(mReference, getData());
-            });
+            }, mSongListener);
 
             mCurrentSong.subscribe(viewModel::setCurrentlyPlayingSong, throwable -> {
                 Timber.e(throwable, "Failed to update current song in view model");

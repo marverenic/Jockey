@@ -25,6 +25,7 @@ import com.marverenic.music.model.Song;
 import com.marverenic.music.model.playlistrules.AutoPlaylistRule;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseToolbarFragment;
+import com.marverenic.music.ui.common.OnSongSelectedListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -79,7 +80,8 @@ public class PlaylistFragment extends BaseToolbarFragment {
 
         mBinding = FragmentPlaylistBinding.inflate(inflater, container, false);
         PlaylistViewModel viewModel = new PlaylistViewModel(getContext(), getFragmentManager(),
-                mPlayerController, mMusicStore, mPlaylistStore, mPreferenceStore, mPlaylist);
+                mPlayerController, mMusicStore, mPlaylistStore, mPreferenceStore, mPlaylist,
+                OnSongSelectedListener.defaultImplementation(getActivity(), mPreferenceStore));
 
         mPlayerController.getNowPlaying()
                 .compose(bindToLifecycle())

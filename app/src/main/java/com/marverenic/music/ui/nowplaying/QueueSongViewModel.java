@@ -1,6 +1,7 @@
 package com.marverenic.music.ui.nowplaying;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
@@ -12,6 +13,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.ui.common.OnSongSelectedListener;
 import com.marverenic.music.ui.common.playlist.AppendPlaylistDialogFragment;
 import com.marverenic.music.ui.library.SongViewModel;
 import com.marverenic.music.ui.library.album.AlbumActivity;
@@ -35,9 +37,10 @@ public class QueueSongViewModel extends SongViewModel {
 
     public QueueSongViewModel(Context context, FragmentManager fragmentManager,
                               MusicStore musicStore, PlayerController playerController,
-                              OnRemoveListener removeListener) {
+                              OnRemoveListener removeListener,
+                              @Nullable OnSongSelectedListener songSelectedListener) {
 
-        super(context, fragmentManager, musicStore, playerController);
+        super(context, fragmentManager, musicStore, playerController, songSelectedListener);
         mFragmentManager = fragmentManager;
         mMusicStore = musicStore;
         mPlayerController = playerController;

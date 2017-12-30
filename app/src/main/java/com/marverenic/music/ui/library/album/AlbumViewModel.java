@@ -2,6 +2,7 @@ package com.marverenic.music.ui.library.album;
 
 import android.content.Context;
 import android.databinding.Bindable;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +19,7 @@ import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseViewModel;
 import com.marverenic.music.ui.common.BasicEmptyState;
+import com.marverenic.music.ui.common.OnSongSelectedListener;
 import com.marverenic.music.ui.common.ShuffleAllSection;
 import com.marverenic.music.ui.library.SongSection;
 import com.marverenic.music.view.BackgroundDecoration;
@@ -36,12 +38,14 @@ public class AlbumViewModel extends BaseViewModel {
 
     public AlbumViewModel(Context context, Album album, PlayerController playerController,
                           MusicStore musicStore, PreferenceStore preferenceStore,
-                          FragmentManager fragmentManager) {
+                          FragmentManager fragmentManager, @Nullable OnSongSelectedListener songSelectedListener) {
         super(context);
         mAlbum = album;
 
-        mSongSection = new SongSection(Collections.emptyList(), playerController, musicStore, fragmentManager);
-        mShuffleAllSection = new ShuffleAllSection(Collections.emptyList(), preferenceStore, playerController);
+        mSongSection = new SongSection(Collections.emptyList(), playerController, musicStore,
+                fragmentManager, songSelectedListener);
+        mShuffleAllSection = new ShuffleAllSection(Collections.emptyList(), preferenceStore,
+                playerController, songSelectedListener);
 
         mAdapter = new HeterogeneousAdapter();
         mAdapter.addSection(mShuffleAllSection);

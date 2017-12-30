@@ -14,9 +14,11 @@ import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
+import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.databinding.FragmentSearchBinding;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseToolbarFragment;
+import com.marverenic.music.ui.common.OnSongSelectedListener;
 import com.marverenic.music.utils.StringUtils;
 
 import javax.inject.Inject;
@@ -30,6 +32,7 @@ public class SearchFragment extends BaseToolbarFragment {
     @Inject PlayerController mPlayerController;
     @Inject MusicStore mMusicStore;
     @Inject PlaylistStore mPlaylistStore;
+    @Inject PreferenceStore mPreferenceStore;
 
     private FragmentSearchBinding mBinding;
     private SearchViewModel mViewModel;
@@ -55,7 +58,8 @@ public class SearchFragment extends BaseToolbarFragment {
 
         mBinding = FragmentSearchBinding.inflate(inflater, container, false);
         mViewModel = new SearchViewModel(getContext(), getFragmentManager(), mPlayerController,
-                mMusicStore, mPlaylistStore);
+                mMusicStore, mPlaylistStore,
+                OnSongSelectedListener.defaultImplementation(getActivity(), mPreferenceStore));
 
         mPlayerController.getNowPlaying()
                 .compose(bindToLifecycle())

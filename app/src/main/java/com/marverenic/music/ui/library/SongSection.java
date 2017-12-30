@@ -1,6 +1,7 @@
 package com.marverenic.music.ui.library;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import com.marverenic.music.databinding.InstanceSongBinding;
 import com.marverenic.music.model.ModelUtil;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.ui.common.OnSongSelectedListener;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.MeasurableAdapter;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.SectionedAdapter;
 
@@ -28,15 +30,18 @@ public class SongSection extends HeterogeneousAdapter.ListSection<Song>
     private PlayerController mPlayerController;
     private MusicStore mMusicStore;
     private FragmentManager mFragmentManager;
+    @Nullable private OnSongSelectedListener mSongListener;
 
     private BehaviorSubject<Song> mCurrentSong;
 
     public SongSection(@NonNull List<Song> data, PlayerController playerController,
-                       MusicStore musicStore, FragmentManager fragmentManager) {
+                       MusicStore musicStore, FragmentManager fragmentManager,
+                       @Nullable OnSongSelectedListener songSelectedListener) {
         super(data);
         mMusicStore = musicStore;
         mPlayerController = playerController;
         mFragmentManager = fragmentManager;
+        mSongListener = songSelectedListener;
 
         mCurrentSong = BehaviorSubject.create();
     }
@@ -80,7 +85,7 @@ public class SongSection extends HeterogeneousAdapter.ListSection<Song>
             super(binding.getRoot());
             mBinding = binding;
             SongViewModel viewModel = new SongViewModel(binding.getRoot().getContext(),
-                    mFragmentManager, mMusicStore, mPlayerController);
+                    mFragmentManager, mMusicStore, mPlayerController, mSongListener);
             binding.setViewModel(viewModel);
 
             mCurrentSong.subscribe(viewModel::setCurrentlyPlayingSong, throwable -> {

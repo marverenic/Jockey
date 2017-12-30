@@ -2,6 +2,7 @@ package com.marverenic.music.ui.search;
 
 import android.content.Context;
 import android.databinding.Bindable;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +16,7 @@ import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseViewModel;
 import com.marverenic.music.ui.common.BasicEmptyState;
 import com.marverenic.music.ui.common.HeaderSection;
+import com.marverenic.music.ui.common.OnSongSelectedListener;
 import com.marverenic.music.ui.library.AlbumSection;
 import com.marverenic.music.ui.library.ArtistSection;
 import com.marverenic.music.ui.library.GenreSection;
@@ -57,7 +59,8 @@ public class SearchViewModel extends BaseViewModel {
 
     public SearchViewModel(Context context, FragmentManager fragmentManager,
                            PlayerController playerController, MusicStore musicStore,
-                           PlaylistStore playlistStore) {
+                           PlaylistStore playlistStore,
+                           @Nullable OnSongSelectedListener songSelectedListener) {
 
         super(context);
         mFragmentManager = fragmentManager;
@@ -67,13 +70,14 @@ public class SearchViewModel extends BaseViewModel {
 
         mQuerySubject = BehaviorSubject.create("");
 
-        createAdapter();
+        createAdapter(songSelectedListener);
         observeSearchQuery();
     }
 
-    private void createAdapter() {
+    private void createAdapter(@Nullable OnSongSelectedListener songSelectedListener) {
         mPlaylistSection = new PlaylistSection(Collections.emptyList());
-        mSongSection = new SongSection(Collections.emptyList(), mPlayerController, mMusicStore, mFragmentManager);
+        mSongSection = new SongSection(Collections.emptyList(), mPlayerController, mMusicStore,
+                mFragmentManager, songSelectedListener);
         mAlbumSection = new AlbumSection(Collections.emptyList(), mMusicStore, mPlayerController, mFragmentManager);
         mArtistSection = new ArtistSection(Collections.emptyList(), mFragmentManager);
         mGenreSection = new GenreSection(Collections.emptyList(), mFragmentManager);

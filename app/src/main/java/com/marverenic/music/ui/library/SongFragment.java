@@ -10,17 +10,18 @@ import android.view.ViewGroup;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.data.store.PreferenceStore;
-import com.marverenic.music.player.PlayerController;
-import com.marverenic.music.ui.common.LibraryEmptyState;
-import com.marverenic.music.view.HeterogeneousFastScrollAdapter;
-import com.marverenic.music.ui.common.ShuffleAllSection;
-import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseFragment;
+import com.marverenic.music.ui.common.LibraryEmptyState;
+import com.marverenic.music.ui.common.OnSongSelectedListener;
+import com.marverenic.music.ui.common.ShuffleAllSection;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
+import com.marverenic.music.view.HeterogeneousFastScrollAdapter;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 import com.trello.rxlifecycle.FragmentEvent;
 
@@ -104,14 +105,16 @@ public class SongFragment extends BaseFragment {
             mAdapter.setHasStableIds(true);
             mRecyclerView.setAdapter(mAdapter);
 
-            mSongSection = new SongSection(mSongs, mPlayerController, mMusicStore, getFragmentManager());
+            mSongSection = new SongSection(mSongs, mPlayerController, mMusicStore, getFragmentManager(),
+                    OnSongSelectedListener.defaultImplementation(getActivity(), mPreferenceStore));
             mPlayerController.getNowPlaying()
                     .compose(bindUntilEvent(FragmentEvent.DESTROY))
                     .subscribe(mSongSection::setCurrentSong, throwable -> {
                         Timber.e(throwable, "Failed to update now playing");
                     });
 
-            mShuffleAllSection = new ShuffleAllSection(mSongs, mPreferenceStore, mPlayerController);
+            mShuffleAllSection = new ShuffleAllSection(mSongs, mPreferenceStore, mPlayerController,
+                    OnSongSelectedListener.defaultImplementation(getActivity(), mPreferenceStore));
             mAdapter.addSection(mShuffleAllSection);
             mAdapter.addSection(mSongSection);
             mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), mMusicStore, mPlaylistStore));

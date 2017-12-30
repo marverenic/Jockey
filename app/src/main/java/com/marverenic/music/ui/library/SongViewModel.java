@@ -2,6 +2,7 @@ package com.marverenic.music.ui.library;
 
 import android.content.Context;
 import android.databinding.Bindable;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
@@ -13,6 +14,7 @@ import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseViewModel;
+import com.marverenic.music.ui.common.OnSongSelectedListener;
 import com.marverenic.music.ui.common.playlist.AppendPlaylistDialogFragment;
 import com.marverenic.music.ui.library.album.AlbumActivity;
 import com.marverenic.music.ui.library.artist.ArtistActivity;
@@ -35,12 +37,17 @@ public class SongViewModel extends BaseViewModel {
     private Song mReference;
     private Song mCurrentlyPlayingSong;
 
+    @Nullable
+    private OnSongSelectedListener mSongListener;
+
     public SongViewModel(Context context, FragmentManager fragmentManager,
-                         MusicStore musicStore, PlayerController playerController) {
+                         MusicStore musicStore, PlayerController playerController,
+                         @Nullable OnSongSelectedListener songSelectedListener) {
         super(context);
         mFragmentManager = fragmentManager;
         mMusicStore = musicStore;
         mPlayerController = playerController;
+        mSongListener = songSelectedListener;
     }
 
     public void setIndex(int index) {
@@ -102,7 +109,10 @@ public class SongViewModel extends BaseViewModel {
         return v -> {
             mPlayerController.setQueue(mSongList, mIndex);
             mPlayerController.play();
-            // TODO expand now playing page
+
+            if (mSongListener != null) {
+                mSongListener.onSongSelected();
+            }
         };
     }
 

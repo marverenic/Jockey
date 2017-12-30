@@ -1,5 +1,6 @@
 package com.marverenic.music.ui.nowplaying;
 
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import com.marverenic.music.databinding.InstanceSongQueueBinding;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.common.EditableSongSection;
+import com.marverenic.music.ui.common.OnSongSelectedListener;
 
 import java.util.List;
 
@@ -23,16 +25,19 @@ public class QueueSection extends EditableSongSection {
 
     private MusicStore mMusicStore;
     private PlayerController mPlayerController;
+    @Nullable private OnSongSelectedListener mSongListener;
 
     private BehaviorSubject<Integer> mCurrentIndex;
 
     public QueueSection(List<Song> data, FragmentManager fragmentManager,
-                        MusicStore musicStore, PlayerController playerController) {
+                        MusicStore musicStore, PlayerController playerController,
+                        @Nullable OnSongSelectedListener songSelectedListener) {
         super(data);
         mFragmentManager = fragmentManager;
 
         mMusicStore = musicStore;
         mPlayerController = playerController;
+        mSongListener = songSelectedListener;
         mCurrentIndex = BehaviorSubject.create();
     }
 
@@ -82,7 +87,8 @@ public class QueueSection extends EditableSongSection {
             super(binding.getRoot());
             mBinding = binding;
             QueueSongViewModel viewModel = new QueueSongViewModel(mBinding.getRoot().getContext(),
-                    mFragmentManager, mMusicStore, mPlayerController, adapter::notifyDataSetChanged);
+                    mFragmentManager, mMusicStore, mPlayerController, adapter::notifyDataSetChanged,
+                    mSongListener);
 
             mCurrentIndex.subscribe(viewModel::setCurrentlyPlayingSongIndex, throwable -> {
                 Timber.e(throwable, "Failed to update current song index in view model");

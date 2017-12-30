@@ -15,6 +15,7 @@ import com.marverenic.music.databinding.FragmentAlbumBinding;
 import com.marverenic.music.model.Album;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseFragment;
+import com.marverenic.music.ui.common.OnSongSelectedListener;
 
 import javax.inject.Inject;
 
@@ -54,7 +55,8 @@ public class AlbumFragment extends BaseFragment {
 
         FragmentAlbumBinding binding = FragmentAlbumBinding.inflate(inflater, container, false);
         AlbumViewModel viewModel = new AlbumViewModel(getContext(), mAlbum, mPlayerController,
-                mMusicStore, mPreferenceStore, getFragmentManager());
+                mMusicStore, mPreferenceStore, getFragmentManager(),
+                OnSongSelectedListener.defaultImplementation(getActivity(), mPreferenceStore));
         binding.setViewModel(viewModel);
 
         mPlayerController.getNowPlaying()

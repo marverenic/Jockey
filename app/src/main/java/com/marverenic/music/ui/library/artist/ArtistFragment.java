@@ -18,6 +18,7 @@ import com.marverenic.music.lastfm.data.store.LastFmStore;
 import com.marverenic.music.model.Artist;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseFragment;
+import com.marverenic.music.ui.common.OnSongSelectedListener;
 import com.marverenic.music.utils.Util;
 
 import javax.inject.Inject;
@@ -62,7 +63,8 @@ public class ArtistFragment extends BaseFragment {
 
         FragmentArtistBinding binding = FragmentArtistBinding.inflate(inflater, container, false);
         ArtistViewModel viewModel = new ArtistViewModel(getContext(), getFragmentManager(), mArtist,
-                mPlayerController, mMusicStore, mPlaylistStore, mPrefStore, mThemeStore);
+                mPlayerController, mMusicStore, mPlaylistStore, mPrefStore, mThemeStore,
+                OnSongSelectedListener.defaultImplementation(getActivity(), mPrefStore));
 
         mMusicStore.getSongs(mArtist)
                 .compose(bindToLifecycle())

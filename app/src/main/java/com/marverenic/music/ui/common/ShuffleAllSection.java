@@ -1,5 +1,6 @@
 package com.marverenic.music.ui.common;
 
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,14 +22,19 @@ public class ShuffleAllSection extends HeterogeneousAdapter.SingletonSection<Lis
     private PlayerController mPlayerController;
     private PreferenceStore mPrefStore;
 
+    @Nullable
+    private OnSongSelectedListener mSongListener;
+
     /**
      * @param data The item to show in this Section
      */
     public ShuffleAllSection(List<Song> data, PreferenceStore preferenceStore,
-                             PlayerController playerController) {
+                             PlayerController playerController,
+                             @Nullable OnSongSelectedListener songSelectedListener) {
         super(data);
         mPlayerController = playerController;
         mPrefStore = preferenceStore;
+        mSongListener = songSelectedListener;
     }
 
     @Override
@@ -69,7 +75,9 @@ public class ShuffleAllSection extends HeterogeneousAdapter.SingletonSection<Lis
                 mPlayerController.setQueue(songs, firstSong);
                 mPlayerController.play();
 
-                // TODO expand the now playing page
+                if (mSongListener != null) {
+                    mSongListener.onSongSelected();
+                }
             });
         }
     }

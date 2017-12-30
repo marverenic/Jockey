@@ -2,6 +2,7 @@ package com.marverenic.music.ui.library.artist;
 
 import android.content.Context;
 import android.databinding.Bindable;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,6 +29,7 @@ import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseViewModel;
 import com.marverenic.music.ui.common.HeaderSection;
 import com.marverenic.music.ui.common.LibraryEmptyState;
+import com.marverenic.music.ui.common.OnSongSelectedListener;
 import com.marverenic.music.ui.common.ShuffleAllSection;
 import com.marverenic.music.ui.library.AlbumSection;
 import com.marverenic.music.ui.library.SongSection;
@@ -67,7 +69,7 @@ public class ArtistViewModel extends BaseViewModel {
     public ArtistViewModel(Context context, FragmentManager fragmentManager, Artist artist,
                            PlayerController playerController, MusicStore musicStore,
                            PlaylistStore playlistStore, PreferenceStore prefStore,
-                           ThemeStore themeStore) {
+                           ThemeStore themeStore, @Nullable OnSongSelectedListener songSelectedListener) {
         super(context);
         mReference = artist;
         mMusicStore = musicStore;
@@ -75,10 +77,11 @@ public class ArtistViewModel extends BaseViewModel {
         mPlayerController = playerController;
         mThemeStore = themeStore;
 
-        createAdapter(fragmentManager, prefStore);
+        createAdapter(fragmentManager, prefStore, songSelectedListener);
     }
 
-    private void createAdapter(FragmentManager fragmentManager, PreferenceStore prefStore) {
+    private void createAdapter(FragmentManager fragmentManager, PreferenceStore prefStore,
+                               @Nullable OnSongSelectedListener songSelectedListener) {
         mAdapter = new HeterogeneousAdapter();
         mAdapter.setEmptyState(new LibraryEmptyState(getContext(), mMusicStore, mPlaylistStore) {
             @Override
@@ -108,8 +111,10 @@ public class ArtistViewModel extends BaseViewModel {
         mBioSection = new ArtistBioSingleton(null, false);
         mRelatedArtistSection = new RelatedArtistSection(mMusicStore, Collections.emptyList());
         mAlbumSection = new AlbumSection(Collections.emptyList(), mMusicStore, mPlayerController, fragmentManager);
-        mShuffleAllSection = new ShuffleAllSection(Collections.emptyList(), prefStore, mPlayerController);
-        mSongSection = new SongSection(Collections.emptyList(), mPlayerController, mMusicStore, fragmentManager);
+        mShuffleAllSection = new ShuffleAllSection(Collections.emptyList(), prefStore,
+                mPlayerController, songSelectedListener);
+        mSongSection = new SongSection(Collections.emptyList(), mPlayerController, mMusicStore,
+                fragmentManager, songSelectedListener);
 
         mAdapter.addSection(mBioSection)
                 .addSection(mRelatedArtistSection)
