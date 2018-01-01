@@ -12,6 +12,7 @@ import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.common.LibraryEmptyState;
 import com.marverenic.music.view.HeterogeneousFastScrollAdapter;
 import com.marverenic.music.ui.common.SpacerSingleton;
@@ -31,6 +32,7 @@ public class PlaylistListFragment extends BaseFragment {
 
     @Inject MusicStore mMusicStore;
     @Inject PlaylistStore mPlaylistStore;
+    @Inject PlayerController mPlayerController;
 
     private RecyclerView mRecyclerView;
     private HeterogeneousAdapter mAdapter;
@@ -99,7 +101,7 @@ public class PlaylistListFragment extends BaseFragment {
             mAdapter.setHasStableIds(true);
             mRecyclerView.setAdapter(mAdapter);
 
-            mPlaylistSection = new PlaylistSection(mPlaylists);
+            mPlaylistSection = new PlaylistSection(mPlaylists, mPlaylistStore, mPlayerController);
             mAdapter.addSection(mPlaylistSection);
             mAdapter.addSection(new SpacerSingleton(
                     (int) getResources().getDimension(R.dimen.list_height)));

@@ -27,9 +27,12 @@ public class ArtistItemViewModel extends BaseObservable {
     private FragmentManager mFragmentManager;
     private Artist mArtist;
 
-    public ArtistItemViewModel(Context context, FragmentManager fragmentManager) {
+    public ArtistItemViewModel(Context context, FragmentManager fragmentManager,
+                               MusicStore musicStore, PlayerController playerController) {
         mContext = context;
         mFragmentManager = fragmentManager;
+        mMusicStore = musicStore;
+        mPlayerController = playerController;
     }
 
     public void setArtist(Artist artist) {

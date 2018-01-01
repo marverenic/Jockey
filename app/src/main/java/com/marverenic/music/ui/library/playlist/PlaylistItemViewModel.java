@@ -31,8 +31,11 @@ public class PlaylistItemViewModel extends BaseObservable {
     private Context mContext;
     private Playlist mPlaylist;
 
-    public PlaylistItemViewModel(Context context) {
+    public PlaylistItemViewModel(Context context, PlaylistStore playlistStore,
+                                 PlayerController playerController) {
         mContext = context;
+        mPlaylistStore = playlistStore;
+        mPlayerController = playerController;
     }
 
     public void setPlaylist(Playlist playlist) {

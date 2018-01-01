@@ -9,9 +9,11 @@ import android.view.ViewGroup;
 import com.marverenic.adapter.EnhancedViewHolder;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.databinding.InstanceGenreBinding;
 import com.marverenic.music.model.Genre;
 import com.marverenic.music.model.ModelUtil;
+import com.marverenic.music.player.PlayerController;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.MeasurableAdapter;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.SectionedAdapter;
 
@@ -21,10 +23,15 @@ public class GenreSection extends HeterogeneousAdapter.ListSection<Genre>
         implements SectionedAdapter, MeasurableAdapter {
 
     private FragmentManager mFragmentManager;
+    private MusicStore mMusicStore;
+    private PlayerController mPlayerController;
 
-    public GenreSection(@NonNull List<Genre> data, FragmentManager fragmentManager) {
+    public GenreSection(@NonNull List<Genre> data, FragmentManager fragmentManager,
+                        MusicStore musicStore, PlayerController playerController) {
         super(data);
         mFragmentManager = fragmentManager;
+        mMusicStore = musicStore;
+        mPlayerController = playerController;
     }
 
     @Override
@@ -61,7 +68,8 @@ public class GenreSection extends HeterogeneousAdapter.ListSection<Genre>
         public ViewHolder(InstanceGenreBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
-            mBinding.setViewModel(new GenreItemViewModel(itemView.getContext(), mFragmentManager));
+            mBinding.setViewModel(new GenreItemViewModel(itemView.getContext(), mFragmentManager,
+                    mMusicStore, mPlayerController));
         }
 
         @Override

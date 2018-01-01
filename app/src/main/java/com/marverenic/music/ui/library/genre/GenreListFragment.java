@@ -13,6 +13,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.model.Genre;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseFragment;
 import com.marverenic.music.ui.common.LibraryEmptyState;
 import com.marverenic.music.view.BackgroundDecoration;
@@ -30,6 +31,7 @@ public class GenreListFragment extends BaseFragment {
 
     @Inject MusicStore mMusicStore;
     @Inject PlaylistStore mPlaylistStore;
+    @Inject PlayerController mPlayerController;
 
     private FastScrollRecyclerView mRecyclerView;
     private HeterogeneousAdapter mAdapter;
@@ -111,7 +113,7 @@ public class GenreListFragment extends BaseFragment {
             mAdapter.setHasStableIds(true);
             mRecyclerView.setAdapter(mAdapter);
 
-            mGenreSection = new GenreSection(mGenres, getFragmentManager());
+            mGenreSection = new GenreSection(mGenres, getFragmentManager(), mMusicStore, mPlayerController);
             mAdapter.addSection(mGenreSection);
 
             mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), mMusicStore, mPlaylistStore) {

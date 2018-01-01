@@ -27,9 +27,12 @@ public class GenreItemViewModel extends BaseObservable {
     private FragmentManager mFragmentManager;
     private Genre mGenre;
 
-    public GenreItemViewModel(Context context, FragmentManager fragmentManager) {
+    public GenreItemViewModel(Context context, FragmentManager fragmentManager,
+                              MusicStore musicStore, PlayerController playerController) {
         mContext = context;
         mFragmentManager = fragmentManager;
+        mMusicStore = musicStore;
+        mPlayerController = playerController;
     }
 
     public void setGenre(Genre genre) {
