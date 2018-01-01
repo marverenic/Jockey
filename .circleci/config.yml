@@ -1,0 +1,28 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: circleci/android:api-27-alpha
+
+    steps:
+        - checkout
+        - restore_cache:
+            key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+
+        - run:
+            name: Resolve dependencies
+            command: ./gradlew app:dependencies
+
+        - save_cache:
+            paths:
+              - ~/.gradle
+            key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+
+        - run:
+            name: Assemble
+            command: ./gradlew clean assembleHathorRelease -PdisablePreDex
+
+        - run:
+            name: Test
+            command: ./gradlew testHathorRelease -PdisablePreDex
