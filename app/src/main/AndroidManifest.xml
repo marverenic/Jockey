@@ -159,22 +159,22 @@
 
         <!-- Instance Activities -->
         <activity
-            android:name=".ui.library.playlist.PlaylistActivity"
+            android:name=".ui.library.playlist.contents.PlaylistActivity"
             android:windowSoftInputMode="adjustPan|adjustNothing"/>
         <activity
-            android:name=".ui.library.playlist.AutoPlaylistActivity"
+            android:name=".ui.library.playlist.contents.AutoPlaylistActivity"
             android:windowSoftInputMode="adjustPan|adjustNothing"/>
         <activity
-            android:name=".ui.library.album.AlbumActivity"
+            android:name=".ui.library.album.contents.AlbumActivity"
             android:windowSoftInputMode="adjustPan|adjustNothing"/>
         <activity
-            android:name=".ui.library.artist.ArtistActivity"
+            android:name=".ui.library.artist.contents.ArtistActivity"
             android:windowSoftInputMode="adjustPan|adjustNothing"/>
         <activity
-            android:name=".ui.library.genre.GenreActivity"
+            android:name=".ui.library.genre.contents.GenreActivity"
             android:windowSoftInputMode="adjustPan|adjustNothing"/>
         <activity
-            android:name=".ui.library.playlist.edit.AutoPlaylistEditActivity" />
+            android:name=".ui.library.playlist.contents.edit.AutoPlaylistEditActivity" />
 
         <!-- Play with Jockey (from search) intent filter -->
         <activity-alias

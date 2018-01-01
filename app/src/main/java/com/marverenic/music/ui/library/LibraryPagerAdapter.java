@@ -6,6 +6,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.marverenic.music.R;
+import com.marverenic.music.ui.library.album.AlbumListFragment;
+import com.marverenic.music.ui.library.artist.ArtistListFragment;
+import com.marverenic.music.ui.library.genre.GenreListFragment;
+import com.marverenic.music.ui.library.playlist.PlaylistListFragment;
+import com.marverenic.music.ui.library.song.SongFragment;
 
 class LibraryPagerAdapter extends FragmentPagerAdapter {
 

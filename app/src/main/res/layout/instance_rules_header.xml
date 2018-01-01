@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.marverenic.music.ui.library.playlist.edit.RuleHeaderViewModel"/>
+            type="com.marverenic.music.ui.library.playlist.contents.edit.RuleHeaderViewModel"/>
     </data>
 
     <RelativeLayout

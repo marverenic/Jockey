@@ -11,7 +11,7 @@ import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.ui.BaseViewModel;
 import com.marverenic.music.ui.common.playlist.CreatePlaylistDialogFragment;
-import com.marverenic.music.ui.library.playlist.edit.AutoPlaylistEditActivity;
+import com.marverenic.music.ui.library.playlist.contents.edit.AutoPlaylistEditActivity;
 import com.marverenic.music.view.FABMenu;
 
 public class LibraryViewModel extends BaseViewModel {

@@ -25,8 +25,8 @@ import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseViewModel;
 import com.marverenic.music.ui.common.playlist.AppendPlaylistDialogFragment;
-import com.marverenic.music.ui.library.album.AlbumActivity;
-import com.marverenic.music.ui.library.artist.ArtistActivity;
+import com.marverenic.music.ui.library.album.contents.AlbumActivity;
+import com.marverenic.music.ui.library.artist.contents.ArtistActivity;
 import com.marverenic.music.utils.BindingAdapters;
 
 import timber.log.Timber;
