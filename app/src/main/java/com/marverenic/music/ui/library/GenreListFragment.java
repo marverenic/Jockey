@@ -1,4 +1,4 @@
-package com.marverenic.music.ui.nowplaying;
+package com.marverenic.music.ui.library;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,15 +10,14 @@ import android.view.ViewGroup;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.data.store.PlaylistStore;
-import com.marverenic.music.ui.library.GenreSection;
-import com.marverenic.music.view.HeterogeneousFastScrollAdapter;
-import com.marverenic.music.ui.common.LibraryEmptyState;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.model.Genre;
 import com.marverenic.music.ui.BaseFragment;
+import com.marverenic.music.ui.common.LibraryEmptyState;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
+import com.marverenic.music.view.HeterogeneousFastScrollAdapter;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.List;
@@ -27,7 +26,7 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
-public class GenreFragment extends BaseFragment {
+public class GenreListFragment extends BaseFragment {
 
     @Inject MusicStore mMusicStore;
     @Inject PlaylistStore mPlaylistStore;

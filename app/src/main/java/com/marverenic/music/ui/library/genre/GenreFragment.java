@@ -22,7 +22,7 @@ import timber.log.Timber;
 
 public class GenreFragment extends BaseToolbarFragment {
 
-    private static final String GENRE_ARG = "GenreFragment.GENRE";
+    private static final String GENRE_ARG = "GenreListFragment.GENRE";
 
     @Inject PlayerController mPlayerController;
     @Inject MusicStore mMusicStore;

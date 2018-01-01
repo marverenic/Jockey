@@ -28,7 +28,7 @@ import timber.log.Timber;
 
 public class ArtistFragment extends BaseFragment {
 
-    private static final String ARTIST_ARG = "ArtistFragment.ARTIST";
+    private static final String ARTIST_ARG = "ArtistListFragment.ARTIST";
 
     @Inject PlayerController mPlayerController;
     @Inject MusicStore mMusicStore;

@@ -6,17 +6,16 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.marverenic.music.R;
-import com.marverenic.music.ui.nowplaying.GenreFragment;
 
 class LibraryPagerAdapter extends FragmentPagerAdapter {
 
     private Context mContext;
 
-    private PlaylistFragment playlistFragment;
+    private PlaylistListFragment playlistFragment;
     private SongFragment songFragment;
-    private ArtistFragment artistFragment;
+    private ArtistListFragment artistFragment;
     private AlbumListFragment albumFragment;
-    private GenreFragment genreFragment;
+    private GenreListFragment genreFragment;
 
     public LibraryPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
@@ -28,7 +27,7 @@ class LibraryPagerAdapter extends FragmentPagerAdapter {
         switch (position) {
             case 0:
                 if (playlistFragment == null) {
-                    playlistFragment = new PlaylistFragment();
+                    playlistFragment = new PlaylistListFragment();
                 }
                 return playlistFragment;
             case 1:
@@ -38,7 +37,7 @@ class LibraryPagerAdapter extends FragmentPagerAdapter {
                 return songFragment;
             case 2:
                 if (artistFragment == null) {
-                    artistFragment = new ArtistFragment();
+                    artistFragment = new ArtistListFragment();
                 }
                 return artistFragment;
             case 3:
@@ -48,7 +47,7 @@ class LibraryPagerAdapter extends FragmentPagerAdapter {
                 return albumFragment;
             case 4:
                 if (genreFragment == null) {
-                    genreFragment = new GenreFragment();
+                    genreFragment = new GenreListFragment();
                 }
                 return genreFragment;
         }
