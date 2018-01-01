@@ -32,10 +32,10 @@ public abstract class BasicEmptyState extends EmptyState
 
     @Override
     public final void onUpdate(View emptyStateView) {
-        TextView message = ((TextView) emptyStateView.findViewById(R.id.empty_message));
-        TextView detail = ((TextView) emptyStateView.findViewById(R.id.empty_message_detail));
-        TextView button1Label = ((TextView) emptyStateView.findViewById(R.id.empty_button_label));
-        TextView button2Label = ((TextView) emptyStateView.findViewById(R.id.empty_button2_label));
+        TextView message = emptyStateView.findViewById(R.id.empty_message);
+        TextView detail = emptyStateView.findViewById(R.id.empty_message_detail);
+        TextView button1Label = emptyStateView.findViewById(R.id.empty_button_label);
+        TextView button2Label = emptyStateView.findViewById(R.id.empty_button2_label);
         View button1 = emptyStateView.findViewById(R.id.empty_button);
         View button2 = emptyStateView.findViewById(R.id.empty_button2);
 
@@ -76,20 +76,20 @@ public abstract class BasicEmptyState extends EmptyState
         return "";
     }
 
-    public void onAction1() {
+    public void onAction1(View button) {
 
     }
 
-    public void onAction2() {
+    public void onAction2(View button) {
 
     }
 
     @Override
     public final void onClick(View v) {
         if (v.getId() == R.id.empty_button) {
-            onAction1();
+            onAction1(v);
         } else if (v.getId() == R.id.empty_button2) {
-            onAction2();
+            onAction2(v);
         }
     }
 }

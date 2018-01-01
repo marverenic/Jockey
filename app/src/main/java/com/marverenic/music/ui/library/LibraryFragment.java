@@ -27,6 +27,9 @@ import com.marverenic.music.ui.settings.SettingsActivity;
 
 import javax.inject.Inject;
 
+import rx.Observable;
+import timber.log.Timber;
+
 public class LibraryFragment extends BaseFragment {
 
     @Inject MusicStore mMusicStore;
@@ -53,8 +56,17 @@ public class LibraryFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
 
         mBinding = FragmentLibraryBinding.inflate(inflater, container, false);
-        mViewModel = new LibraryViewModel(this, mPrefStore, mThemeStore, mMusicStore, mPlaylistStore);
+        mViewModel = new LibraryViewModel(getContext(), getFragmentManager(), mPrefStore, mThemeStore);
         mBinding.setViewModel(mViewModel);
+
+        Observable.combineLatest(mMusicStore.isLoading(), mPlaylistStore.isLoading(),
+                (musicLoading, playlistLoading) -> {
+                    return musicLoading || playlistLoading;
+                })
+                .compose(bindToLifecycle())
+                .subscribe(mViewModel::setLibraryRefreshing, throwable -> {
+                    Timber.e(throwable, "Failed to update refresh indicator");
+                });
 
         mMusicStore.loadAll();
         mPlaylistStore.loadPlaylists();

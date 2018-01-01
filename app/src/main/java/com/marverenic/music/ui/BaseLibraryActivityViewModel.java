@@ -3,7 +3,6 @@ package com.marverenic.music.ui;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.content.Context;
-import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.ObservableFloat;
 import android.databinding.ObservableInt;
@@ -12,25 +11,14 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.view.View;
 
 import com.marverenic.music.BR;
-import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.player.PlayerController;
 
-import javax.inject.Inject;
-
-import timber.log.Timber;
-
-public class BaseLibraryActivityViewModel extends BaseObservable {
-
-    private Context mContext;
-
-    @Inject PlayerController mPlayerController;
+public class BaseLibraryActivityViewModel extends BaseViewModel {
 
     private final boolean mFitSystemWindows;
     private final int mExpandedHeight;
@@ -43,32 +31,24 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
 
     private boolean mAnimateSlideInOut;
 
-    public BaseLibraryActivityViewModel(BaseActivity activity, boolean fitSystemWindows) {
-        mContext = activity;
-        JockeyApplication.getComponent(mContext).inject(this);
+    public BaseLibraryActivityViewModel(Context context, boolean fitSystemWindows) {
+        super(context);
 
         mFitSystemWindows = fitSystemWindows;
-        mExpandedHeight = mContext.getResources().getDimensionPixelSize(R.dimen.miniplayer_height);
+        mExpandedHeight = getDimensionPixelSize(R.dimen.miniplayer_height);
         mAnimateSlideInOut = false;
 
         mMiniplayerHeight = new ObservableInt(0);
         mMiniplayerAlpha = new ObservableFloat(1.0f);
         mNowPlayingToolbarAlpha = new ObservableFloat(0.0f);
 
-        int backgroundColor = ContextCompat.getColor(activity, R.color.background);
+        int backgroundColor = getColor(R.color.background);
         mNowPlayingBackground = new ColorDrawable(backgroundColor);
 
         setPlaybackOngoing(false);
-
-        mPlayerController.getNowPlaying()
-                .compose(activity.bindToLifecycle())
-                .map(nowPlaying -> nowPlaying != null)
-                .subscribe(this::setPlaybackOngoing, throwable -> {
-                    Timber.e(throwable, "Failed to set playback state");
-                });
     }
 
-    private void setPlaybackOngoing(boolean isPlaybackOngoing) {
+    public void setPlaybackOngoing(boolean isPlaybackOngoing) {
         if (mAnimateSlideInOut) {
             animateTranslation(isPlaybackOngoing);
         } else {
@@ -110,14 +90,13 @@ public class BaseLibraryActivityViewModel extends BaseObservable {
             return 0;
         }
 
-        int statusBarHeightResId = mContext.getResources().getIdentifier(
-                "status_bar_height", "dimen", "android");
+        int statusBarHeightResId = getResources().getIdentifier("status_bar_height", "dimen", "android");
 
         if (statusBarHeightResId < 0) {
             return 0;
         }
 
-        return mContext.getResources().getDimensionPixelSize(statusBarHeightResId);
+        return getDimensionPixelSize(statusBarHeightResId);
     }
 
     @Bindable

@@ -8,18 +8,27 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.view.View;
 
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.databinding.ActivityLibraryBaseWrapperBinding;
+import com.marverenic.music.player.PlayerController;
+
+import javax.inject.Inject;
+
+import timber.log.Timber;
 
 public abstract class BaseLibraryActivity extends SingleFragmentActivity {
 
     private static final String KEY_WAS_NOW_PLAYING_EXPANDED = "NowPlayingPageExpanded";
+
+    @Inject PlayerController _mPlayerController;
 
     private ActivityLibraryBaseWrapperBinding mBinding;
     private BaseLibraryActivityViewModel mViewModel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        JockeyApplication.getComponent(this).injectBaseLibraryActivity(this);
         super.onCreate(savedInstanceState);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -34,6 +43,13 @@ public abstract class BaseLibraryActivity extends SingleFragmentActivity {
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_library_base_wrapper);
         mViewModel = new BaseLibraryActivityViewModel(this, !isToolbarCollapsing());
         mBinding.setViewModel(mViewModel);
+
+        _mPlayerController.getNowPlaying()
+                .compose(bindToLifecycle())
+                .map(nowPlaying -> nowPlaying != null)
+                .subscribe(mViewModel::setPlaybackOngoing, throwable -> {
+                    Timber.e(throwable, "Failed to set playback state");
+                });
 
         if (savedInstanceState != null) {
             boolean expanded = savedInstanceState.getBoolean(KEY_WAS_NOW_PLAYING_EXPANDED, false);

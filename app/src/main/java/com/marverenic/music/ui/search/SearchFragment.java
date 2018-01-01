@@ -14,18 +14,25 @@ import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
+import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.databinding.FragmentSearchBinding;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseToolbarFragment;
+import com.marverenic.music.ui.common.OnSongSelectedListener;
 import com.marverenic.music.utils.StringUtils;
 
 import javax.inject.Inject;
+
+import timber.log.Timber;
 
 public class SearchFragment extends BaseToolbarFragment {
 
     private static final String KEY_SAVED_QUERY = "SearchActivity.LAST_QUERY";
 
+    @Inject PlayerController mPlayerController;
     @Inject MusicStore mMusicStore;
     @Inject PlaylistStore mPlaylistStore;
+    @Inject PreferenceStore mPreferenceStore;
 
     private FragmentSearchBinding mBinding;
     private SearchViewModel mViewModel;
@@ -50,7 +57,15 @@ public class SearchFragment extends BaseToolbarFragment {
                                        @Nullable Bundle savedInstanceState) {
 
         mBinding = FragmentSearchBinding.inflate(inflater, container, false);
-        mViewModel = new SearchViewModel(this, mMusicStore, mPlaylistStore);
+        mViewModel = new SearchViewModel(getContext(), getFragmentManager(), mPlayerController,
+                mMusicStore, mPlaylistStore,
+                OnSongSelectedListener.defaultImplementation(getActivity(), mPreferenceStore));
+
+        mPlayerController.getNowPlaying()
+                .compose(bindToLifecycle())
+                .subscribe(mViewModel::setCurrentSong, throwable -> {
+                    Timber.e(throwable, "Failed to update current song");
+                });
 
         if (savedInstanceState != null) {
             String lastQuery = savedInstanceState.getString(KEY_SAVED_QUERY, "");

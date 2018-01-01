@@ -5,7 +5,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.marverenic.music.ui.library.album.AlbumViewModel"/>
+            type="com.marverenic.music.ui.library.album.contents.AlbumViewModel"/>
     </data>
 
     <android.support.design.widget.CoordinatorLayout

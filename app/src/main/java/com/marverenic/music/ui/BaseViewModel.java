@@ -1,19 +1,23 @@
 package com.marverenic.music.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.databinding.BaseObservable;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
+import android.support.v4.content.ContextCompat;
 
-import com.trello.rxlifecycle.components.support.RxFragment;
-
-public abstract class BaseViewModel extends RxViewModel {
+public abstract class BaseViewModel extends BaseObservable {
 
     private Context mContext;
 
-    public BaseViewModel(RxFragment fragment) {
-        super(fragment);
-        mContext = fragment.getContext();
+    public BaseViewModel(Context context) {
+        mContext = context;
     }
 
     protected Context getContext() {
@@ -24,8 +28,21 @@ public abstract class BaseViewModel extends RxViewModel {
         return mContext.getResources();
     }
 
+    @ColorInt
+    protected int getColor(@ColorRes int colorRes) {
+        return ContextCompat.getColor(mContext, colorRes);
+    }
+
+    protected Drawable getDrawable(@DrawableRes int drawableRes) {
+        return ContextCompat.getDrawable(mContext, drawableRes);
+    }
+
     protected String getString(@StringRes int stringRes) {
         return mContext.getString(stringRes);
+    }
+
+    protected String getString(@StringRes int stringRes, Object... formatArgs) {
+        return mContext.getString(stringRes, formatArgs);
     }
 
     protected float getDimension(@DimenRes int dimenRes) {
@@ -34,6 +51,10 @@ public abstract class BaseViewModel extends RxViewModel {
 
     protected int getDimensionPixelSize(@DimenRes int dimenRes) {
         return mContext.getResources().getDimensionPixelSize(dimenRes);
+    }
+
+    protected void startActivity(Intent intent) {
+        mContext.startActivity(intent);
     }
 
 }
