@@ -18,7 +18,7 @@ import timber.log.Timber;
 
 public class ArtistItemViewModel extends BaseObservable {
 
-    private static final String TAG_PLAYLIST_DIALOG = "SongItemViewModel.PlaylistDialog";
+    private static final String TAG_PLAYLIST_DIALOG = "AlbumItemViewModel.PlaylistDialog";
 
     private MusicStore mMusicStore;
     private PlayerController mPlayerController;
