@@ -61,7 +61,7 @@ public class ArtistSection extends HeterogeneousAdapter.ListSection<Artist>
         public ViewHolder(InstanceArtistBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
-            mBinding.setViewModel(new ArtistViewModel(itemView.getContext(), mFragmentManager));
+            mBinding.setViewModel(new ArtistItemViewModel(itemView.getContext(), mFragmentManager));
         }
 
         @Override

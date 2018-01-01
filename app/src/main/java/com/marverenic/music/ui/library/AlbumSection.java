@@ -59,7 +59,7 @@ public class AlbumSection extends HeterogeneousAdapter.ListSection<Album>
         public ViewHolder(InstanceAlbumBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
-            mBinding.setViewModel(new AlbumViewModel(itemView.getContext(), mFragmentManager,
+            mBinding.setViewModel(new AlbumItemViewModel(itemView.getContext(), mFragmentManager,
                     mMusicStore, mPlayerController));
         }
 

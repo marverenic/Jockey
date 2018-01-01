@@ -23,9 +23,9 @@ import java.util.List;
 
 import timber.log.Timber;
 
-public class SongViewModel extends BaseViewModel {
+public class SongItemViewModel extends BaseViewModel {
 
-    private static final String TAG_PLAYLIST_DIALOG = "SongViewModel.PlaylistDialog";
+    private static final String TAG_PLAYLIST_DIALOG = "SongItemViewModel.PlaylistDialog";
 
     private MusicStore mMusicStore;
     private PlayerController mPlayerController;
@@ -40,9 +40,9 @@ public class SongViewModel extends BaseViewModel {
     @Nullable
     private OnSongSelectedListener mSongListener;
 
-    public SongViewModel(Context context, FragmentManager fragmentManager,
-                         MusicStore musicStore, PlayerController playerController,
-                         @Nullable OnSongSelectedListener songSelectedListener) {
+    public SongItemViewModel(Context context, FragmentManager fragmentManager,
+                             MusicStore musicStore, PlayerController playerController,
+                             @Nullable OnSongSelectedListener songSelectedListener) {
         super(context);
         mFragmentManager = fragmentManager;
         mMusicStore = musicStore;

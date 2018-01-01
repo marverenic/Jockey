@@ -23,7 +23,7 @@ import static android.support.design.widget.Snackbar.LENGTH_LONG;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class PlaylistViewModel extends BaseObservable {
+public class PlaylistItemViewModel extends BaseObservable {
 
     private PlaylistStore mPlaylistStore;
     private PlayerController mPlayerController;
@@ -31,7 +31,7 @@ public class PlaylistViewModel extends BaseObservable {
     private Context mContext;
     private Playlist mPlaylist;
 
-    public PlaylistViewModel(Context context) {
+    public PlaylistItemViewModel(Context context) {
         mContext = context;
     }
 

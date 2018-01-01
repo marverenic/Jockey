@@ -38,9 +38,9 @@ import java.util.Map;
 
 import timber.log.Timber;
 
-public class AlbumViewModel extends BaseObservable {
+public class AlbumItemViewModel extends BaseObservable {
 
-    private static final String TAG_PLAYLIST_DIALOG = "SongViewModel.PlaylistDialog";
+    private static final String TAG_PLAYLIST_DIALOG = "SongItemViewModel.PlaylistDialog";
 
     private MusicStore mMusicStore;
     private PlayerController mPlayerController;
@@ -54,8 +54,8 @@ public class AlbumViewModel extends BaseObservable {
     private ObservableInt mArtistTextColor;
     private ObservableInt mBackgroundColor;
 
-    public AlbumViewModel(Context context, FragmentManager fragmentManager, MusicStore musicStore,
-                          PlayerController playerController) {
+    public AlbumItemViewModel(Context context, FragmentManager fragmentManager, MusicStore musicStore,
+                              PlayerController playerController) {
         mContext = context;
         mFragmentManager = fragmentManager;
         mMusicStore = musicStore;

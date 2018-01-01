@@ -13,23 +13,23 @@ import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.common.OnSongSelectedListener;
-import com.marverenic.music.ui.library.SongViewModel;
+import com.marverenic.music.ui.library.SongItemViewModel;
 import com.marverenic.music.ui.library.album.AlbumActivity;
 import com.marverenic.music.ui.library.artist.ArtistActivity;
 
 import timber.log.Timber;
 
-public class PlaylistSongViewModel extends SongViewModel {
+public class PlaylistSongItemViewModel extends SongItemViewModel {
 
     private MusicStore mMusicStore;
     private PlayerController mPlayerController;
 
     private OnPlaylistEntriesChangeListener mRemoveListener;
 
-    public PlaylistSongViewModel(Context context, FragmentManager fragmentManager,
-                                 MusicStore musicStore, PlayerController playerController,
-                                 OnPlaylistEntriesChangeListener listener,
-                                 @Nullable OnSongSelectedListener songSelectedListener) {
+    public PlaylistSongItemViewModel(Context context, FragmentManager fragmentManager,
+                                     MusicStore musicStore, PlayerController playerController,
+                                     OnPlaylistEntriesChangeListener listener,
+                                     @Nullable OnSongSelectedListener songSelectedListener) {
 
         super(context, fragmentManager, musicStore, playerController, songSelectedListener);
         mMusicStore = musicStore;

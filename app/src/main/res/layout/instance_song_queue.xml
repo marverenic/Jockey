@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <variable name="viewModel" type="com.marverenic.music.ui.nowplaying.QueueSongViewModel"/>
+        <variable name="viewModel" type="com.marverenic.music.ui.nowplaying.QueueSongItemViewModel"/>
     </data>
 
     <android.support.constraint.ConstraintLayout

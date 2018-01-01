@@ -9,46 +9,46 @@ import android.view.View;
 
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
-import com.marverenic.music.model.Artist;
+import com.marverenic.music.model.Genre;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.common.playlist.AppendPlaylistDialogFragment;
-import com.marverenic.music.ui.library.artist.ArtistActivity;
+import com.marverenic.music.ui.library.genre.GenreActivity;
 
 import timber.log.Timber;
 
-public class ArtistViewModel extends BaseObservable {
+public class GenreItemViewModel extends BaseObservable {
 
-    private static final String TAG_PLAYLIST_DIALOG = "SongViewModel.PlaylistDialog";
+    private static final String TAG_PLAYLIST_DIALOG = "GenreItemViewModel.PlaylistDialog";
 
     private MusicStore mMusicStore;
     private PlayerController mPlayerController;
 
     private Context mContext;
     private FragmentManager mFragmentManager;
-    private Artist mArtist;
+    private Genre mGenre;
 
-    public ArtistViewModel(Context context, FragmentManager fragmentManager) {
+    public GenreItemViewModel(Context context, FragmentManager fragmentManager) {
         mContext = context;
         mFragmentManager = fragmentManager;
     }
 
-    public void setArtist(Artist artist) {
-        mArtist = artist;
+    public void setGenre(Genre genre) {
+        mGenre = genre;
         notifyChange();
     }
 
     public String getName() {
-        return mArtist.getArtistName();
+        return mGenre.getGenreName();
     }
 
-    public View.OnClickListener onClickArtist() {
-        return v -> mContext.startActivity(ArtistActivity.newIntent(mContext, mArtist));
+    public View.OnClickListener onClickGenre() {
+        return v -> mContext.startActivity(GenreActivity.newIntent(mContext, mGenre));
     }
 
     public View.OnClickListener onClickMenu() {
         return v -> {
-            PopupMenu menu = new PopupMenu(mContext, v, Gravity.END);
-            menu.inflate(R.menu.instance_artist);
+            final PopupMenu menu = new PopupMenu(mContext, v, Gravity.END);
+            menu.inflate(R.menu.instance_genre);
             menu.setOnMenuItemClickListener(onMenuItemClick());
             menu.show();
         };
@@ -58,7 +58,7 @@ public class ArtistViewModel extends BaseObservable {
         return menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.menu_item_queue_item_next:
-                    mMusicStore.getSongs(mArtist).subscribe(
+                    mMusicStore.getSongs(mGenre).subscribe(
                             mPlayerController::queueNext,
                             throwable -> {
                                 Timber.e(throwable, "Failed to get songs");
@@ -66,7 +66,7 @@ public class ArtistViewModel extends BaseObservable {
 
                     return true;
                 case R.id.menu_item_queue_item_last:
-                    mMusicStore.getSongs(mArtist).subscribe(
+                    mMusicStore.getSongs(mGenre).subscribe(
                             mPlayerController::queueLast,
                             throwable -> {
                                 Timber.e(throwable, "Failed to get songs");
@@ -74,10 +74,10 @@ public class ArtistViewModel extends BaseObservable {
 
                     return true;
                 case R.id.menu_item_add_to_playlist:
-                    mMusicStore.getSongs(mArtist).subscribe(
+                    mMusicStore.getSongs(mGenre).subscribe(
                             songs -> {
                                 new AppendPlaylistDialogFragment.Builder(mContext, mFragmentManager)
-                                        .setSongs(songs, mArtist.getArtistName())
+                                        .setSongs(songs, mGenre.getGenreName())
                                         .showSnackbarIn(R.id.list)
                                         .show(TAG_PLAYLIST_DIALOG);
                             }, throwable -> {

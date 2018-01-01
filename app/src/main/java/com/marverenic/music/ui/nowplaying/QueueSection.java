@@ -86,7 +86,7 @@ public class QueueSection extends EditableSongSection {
         public ViewHolder(InstanceSongQueueBinding binding, HeterogeneousAdapter adapter) {
             super(binding.getRoot());
             mBinding = binding;
-            QueueSongViewModel viewModel = new QueueSongViewModel(mBinding.getRoot().getContext(),
+            QueueSongItemViewModel viewModel = new QueueSongItemViewModel(mBinding.getRoot().getContext(),
                     mFragmentManager, mMusicStore, mPlayerController, adapter::notifyDataSetChanged,
                     mSongListener);
 

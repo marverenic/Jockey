@@ -84,7 +84,7 @@ public class SongSection extends HeterogeneousAdapter.ListSection<Song>
         public ViewHolder(InstanceSongBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
-            SongViewModel viewModel = new SongViewModel(binding.getRoot().getContext(),
+            SongItemViewModel viewModel = new SongItemViewModel(binding.getRoot().getContext(),
                     mFragmentManager, mMusicStore, mPlayerController, mSongListener);
             binding.setViewModel(viewModel);
 

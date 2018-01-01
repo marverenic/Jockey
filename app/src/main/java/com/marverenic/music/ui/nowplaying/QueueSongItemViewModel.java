@@ -15,7 +15,7 @@ import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.common.OnSongSelectedListener;
 import com.marverenic.music.ui.common.playlist.AppendPlaylistDialogFragment;
-import com.marverenic.music.ui.library.SongViewModel;
+import com.marverenic.music.ui.library.SongItemViewModel;
 import com.marverenic.music.ui.library.album.AlbumActivity;
 import com.marverenic.music.ui.library.artist.ArtistActivity;
 
@@ -23,9 +23,9 @@ import timber.log.Timber;
 
 import static android.support.design.widget.Snackbar.LENGTH_LONG;
 
-public class QueueSongViewModel extends SongViewModel {
+public class QueueSongItemViewModel extends SongItemViewModel {
 
-    private static final String TAG_PLAYLIST_DIALOG = "QueueSongViewModel.PlaylistDialog";
+    private static final String TAG_PLAYLIST_DIALOG = "QueueSongItemViewModel.PlaylistDialog";
 
     private MusicStore mMusicStore;
     private PlayerController mPlayerController;
@@ -35,10 +35,10 @@ public class QueueSongViewModel extends SongViewModel {
 
     private int mCurrentSongIndex;
 
-    public QueueSongViewModel(Context context, FragmentManager fragmentManager,
-                              MusicStore musicStore, PlayerController playerController,
-                              OnRemoveListener removeListener,
-                              @Nullable OnSongSelectedListener songSelectedListener) {
+    public QueueSongItemViewModel(Context context, FragmentManager fragmentManager,
+                                  MusicStore musicStore, PlayerController playerController,
+                                  OnRemoveListener removeListener,
+                                  @Nullable OnSongSelectedListener songSelectedListener) {
 
         super(context, fragmentManager, musicStore, playerController, songSelectedListener);
         mFragmentManager = fragmentManager;

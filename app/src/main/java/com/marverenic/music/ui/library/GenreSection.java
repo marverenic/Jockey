@@ -61,7 +61,7 @@ public class GenreSection extends HeterogeneousAdapter.ListSection<Genre>
         public ViewHolder(InstanceGenreBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
-            mBinding.setViewModel(new GenreViewModel(itemView.getContext(), mFragmentManager));
+            mBinding.setViewModel(new GenreItemViewModel(itemView.getContext(), mFragmentManager));
         }
 
         @Override

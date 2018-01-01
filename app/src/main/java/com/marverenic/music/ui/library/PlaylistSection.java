@@ -11,7 +11,6 @@ import com.marverenic.music.R;
 import com.marverenic.music.databinding.InstancePlaylistBinding;
 import com.marverenic.music.model.ModelUtil;
 import com.marverenic.music.model.Playlist;
-import com.marverenic.music.ui.library.PlaylistViewModel;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.MeasurableAdapter;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.SectionedAdapter;
 
@@ -62,7 +61,7 @@ public class PlaylistSection extends HeterogeneousAdapter.ListSection<Playlist>
         public ViewHolder(InstancePlaylistBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
-            mBinding.setViewModel(new PlaylistViewModel(itemView.getContext()));
+            mBinding.setViewModel(new PlaylistItemViewModel(itemView.getContext()));
         }
 
         @Override
