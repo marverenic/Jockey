@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,11 +32,16 @@ public class AboutActivity extends BaseActivity implements View.OnClickListener 
 
         JockeyApplication.getComponent(this).inject(this);
 
+        setSupportActionBar(findViewById(R.id.toolbar));
+        ActionBar toolbar = getSupportActionBar();
+        toolbar.setDisplayShowHomeEnabled(true);
+        toolbar.setDisplayHomeAsUpEnabled(true);
+        toolbar.setHomeButtonEnabled(true);
+
         ((TextView) findViewById(R.id.aboutVersion)).setText(BuildConfig.VERSION_NAME);
         ((ImageView) findViewById(R.id.aboutAppIcon)).setImageDrawable(mThemeStore.getLargeAppIcon());
         findViewById(R.id.aboutMarverenicLogo).setOnClickListener(this);
     }
-
 
     @Override
     public void onClick(View v) {
