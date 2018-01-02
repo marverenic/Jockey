@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.support.v7.app.ActionBar;
 
 import com.marverenic.music.R;
 import com.marverenic.music.ui.BaseActivity;
@@ -20,10 +20,14 @@ public class SettingsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        if (getSupportActionBar() != null
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getSupportActionBar()
-                    .setElevation(getResources().getDimension(R.dimen.header_elevation));
+        setSupportActionBar(findViewById(R.id.toolbar));
+        ActionBar toolbar = getSupportActionBar();
+        toolbar.setDisplayShowHomeEnabled(true);
+        toolbar.setDisplayHomeAsUpEnabled(true);
+        toolbar.setHomeButtonEnabled(true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            toolbar.setElevation(getResources().getDimension(R.dimen.header_elevation));
         }
 
         if (savedInstanceState == null) {
@@ -34,16 +38,11 @@ public class SettingsActivity extends BaseActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                if (!getSupportFragmentManager().popBackStackImmediate()) {
-                    super.onOptionsItemSelected(item);
-                }
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+    public boolean onSupportNavigateUp() {
+        if (!getSupportFragmentManager().popBackStackImmediate()) {
+            finish();
         }
+        return true;
     }
 
     @Override
