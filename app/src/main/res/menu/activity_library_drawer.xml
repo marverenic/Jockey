@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:id="@+id/library_drawer_browse">
+
+        <item android:id="@+id/menu_library_home"
+            android:title="@string/header_all_music"/>
+
+    </group>
+
+    <group android:id="@+id/menu_library_misc">
+
+        <item
+            android:id="@+id/menu_library_settings"
+            android:title="@string/action_settings" />
+
+        <item
+            android:id="@+id/menu_library_about"
+            android:title="@string/header_about" />
+
+    </group>
+
+</menu>

@@ -82,6 +82,13 @@ public class LibraryActivity extends BaseLibraryActivity {
         setIntent(new Intent(this, LibraryActivity.class));
     }
 
+    @Override
+    public boolean isToolbarCollapsing() {
+        // The toolbar isn't actually collapsing here. This is just to ensure that the drawer menu
+        // correctly handles drawing the window insets.
+        return true;
+    }
+
     private void startPlaybackFromUri(Uri songUri) {
         String songName = UriUtils.getDisplayName(this, songUri);
 

@@ -9,66 +9,83 @@
             type="com.marverenic.music.ui.library.LibraryViewModel"/>
     </data>
 
-    <android.support.design.widget.CoordinatorLayout
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/home_drawer_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
 
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/library_app_bar_layout"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary">
+        <android.support.design.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:layout_scrollFlags="scroll|enterAlways|snap"/>
-
-            <android.support.design.widget.TabLayout
-                android:id="@+id/library_tabs"
+            <android.support.design.widget.AppBarLayout
+                android:id="@+id/library_app_bar_layout"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layoutDirection="ltr"
-                app:tabIndicatorColor="?attr/colorAccent"
-                app:tabSelectedTextColor="#fff"
-                app:tabTextColor="#bfff"
-                app:tabMode="scrollable" />
+                android:background="?attr/colorPrimary">
 
-        </android.support.design.widget.AppBarLayout>
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                    app:layout_scrollFlags="scroll|enterAlways|snap"/>
 
-        <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/library_refresh_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:enabled="@{viewModel.libraryRefreshing}"
-            app:refreshing="@{viewModel.libraryRefreshing}"
-            app:colorSchemeColors="@{viewModel.refreshIndicatorColors}"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                <android.support.design.widget.TabLayout
+                    android:id="@+id/library_tabs"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layoutDirection="ltr"
+                    app:tabIndicatorColor="?attr/colorAccent"
+                    app:tabSelectedTextColor="#fff"
+                    app:tabTextColor="#bfff"
+                    app:tabMode="scrollable" />
 
-            <android.support.v4.view.ViewPager
-                android:id="@+id/library_pager"
+            </android.support.design.widget.AppBarLayout>
+
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/library_refresh_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:saveEnabled="true"
-                app:page="@={viewModel.page}"
-                app:adapter="@{viewModel.pagerAdapter}"/>
+                app:enabled="@{viewModel.libraryRefreshing}"
+                app:refreshing="@{viewModel.libraryRefreshing}"
+                app:colorSchemeColors="@{viewModel.refreshIndicatorColors}"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        </android.support.v4.widget.SwipeRefreshLayout>
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/library_pager"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:saveEnabled="true"
+                    app:page="@={viewModel.page}"
+                    app:adapter="@{viewModel.pagerAdapter}"/>
 
-        <com.marverenic.music.view.FABMenu
-            android:id="@+id/fab"
+            </android.support.v4.widget.SwipeRefreshLayout>
+
+            <com.marverenic.music.view.FABMenu
+                android:id="@+id/fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:layout_margin="@dimen/fab_margin"
+                android:src="@drawable/ic_add_24dp"
+                app:children="@{viewModel.fabMenuItems}"
+                app:shown="@{viewModel.fabVisible}"
+                app:rippleColor="#8fff"
+                app:fabSize="normal"
+                app:layout_behavior="com.marverenic.music.view.FABMenu$Behavior"/>
+
+        </android.support.design.widget.CoordinatorLayout>
+
+        <android.support.design.widget.NavigationView
+            android:id="@+id/home_drawer_navigation_view"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_margin="@dimen/fab_margin"
-            android:src="@drawable/ic_add_24dp"
-            app:children="@{viewModel.fabMenuItems}"
-            app:shown="@{viewModel.fabVisible}"
-            app:rippleColor="#8fff"
-            app:fabSize="normal"
-            app:layout_behavior="com.marverenic.music.view.FABMenu$Behavior"/>
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            app:headerLayout="@layout/view_drawer_header"
+            app:menu="@menu/activity_library_drawer"/>
 
-    </android.support.design.widget.CoordinatorLayout>
+    </android.support.v4.widget.DrawerLayout>
+
 </layout>

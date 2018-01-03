@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,9 +23,7 @@ import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.databinding.FragmentLibraryBinding;
 import com.marverenic.music.ui.BaseFragment;
-import com.marverenic.music.ui.about.AboutActivity;
 import com.marverenic.music.ui.search.SearchActivity;
-import com.marverenic.music.ui.settings.SettingsActivity;
 
 import javax.inject.Inject;
 
@@ -92,6 +92,11 @@ public class LibraryFragment extends BaseFragment {
         if (getActivity() instanceof AppCompatActivity) {
             AppCompatActivity activity = (AppCompatActivity) getActivity();
             activity.setSupportActionBar(toolbar);
+            ActionBar actionBar = activity.getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setHomeAsUpIndicator(R.drawable.ic_nav_menu_24dp);
+                actionBar.setDisplayHomeAsUpEnabled(true);
+            }
         }
     }
 
@@ -103,18 +108,23 @@ public class LibraryFragment extends BaseFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_library_settings:
-                startActivity(SettingsActivity.newIntent(getContext()));
+            case android.R.id.home:
+                mBinding.homeDrawerLayout.openDrawer(Gravity.START);
                 return true;
             case R.id.menu_library_search:
                 startActivity(SearchActivity.newIntent(getContext()));
-                return true;
-            case R.id.menu_library_about:
-                startActivity(AboutActivity.newIntent(getContext()));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    @Override
+    protected boolean onBackPressed() {
+        if (mBinding.homeDrawerLayout.isDrawerOpen(Gravity.START)) {
+            mBinding.homeDrawerLayout.closeDrawers();
+            return true;
+        }
+        return super.onBackPressed();
+    }
 }
