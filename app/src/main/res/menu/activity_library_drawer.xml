@@ -4,7 +4,8 @@
     <group android:id="@+id/library_drawer_browse">
 
         <item android:id="@+id/menu_library_home"
-            android:title="@string/header_all_music"/>
+            android:title="@string/header_all_music"
+            android:icon="@drawable/ic_library_music_24dp"/>
 
     </group>
 
@@ -12,11 +13,13 @@
 
         <item
             android:id="@+id/menu_library_settings"
-            android:title="@string/action_settings" />
+            android:title="@string/action_settings"
+            android:icon="@drawable/ic_settings_24dp"/>
 
         <item
             android:id="@+id/menu_library_about"
-            android:title="@string/header_about" />
+            android:title="@string/header_about"
+            android:icon="@drawable/ic_info_24dp"/>
 
     </group>
 
