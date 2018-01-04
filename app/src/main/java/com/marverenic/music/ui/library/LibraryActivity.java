@@ -2,13 +2,21 @@ package com.marverenic.music.ui.library;
 
 import android.content.Context;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MediaStoreUtil;
+import com.marverenic.music.databinding.ActivityLibraryBinding;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseLibraryActivity;
@@ -25,6 +33,8 @@ import timber.log.Timber;
 public class LibraryActivity extends BaseLibraryActivity {
 
     private static final String ACTION_SHOW_NOW_PLAYING_PAGE = "LibraryActivity.ShowNowPlayingPage";
+
+    private ActivityLibraryBinding mBinding;
 
     @Inject PlayerController mPlayerController;
 
@@ -48,6 +58,18 @@ public class LibraryActivity extends BaseLibraryActivity {
     }
 
     @Override
+    protected void onCreateLayout(@Nullable Bundle savedInstanceState) {
+        super.onCreateLayout(savedInstanceState);
+        ViewGroup contentViewContainer = findViewById(android.R.id.content);
+        View root = contentViewContainer.getChildAt(0);
+        contentViewContainer.removeAllViews();
+
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_library);
+        ViewGroup contentContainer = findViewById(R.id.library_content_container);
+        contentContainer.addView(root);
+    }
+
+    @Override
     public void onNewIntent(Intent intent) {
         if (intent.getAction() == null) {
             return;
@@ -55,6 +77,7 @@ public class LibraryActivity extends BaseLibraryActivity {
 
         if (intent.getAction().equals(ACTION_SHOW_NOW_PLAYING_PAGE)) {
             expandBottomSheet();
+            mBinding.libraryDrawerLayout.closeDrawers();
             // Don't try to process this intent again
             setIntent(new Intent(this, LibraryActivity.class));
             return;
@@ -83,10 +106,28 @@ public class LibraryActivity extends BaseLibraryActivity {
     }
 
     @Override
-    public boolean isToolbarCollapsing() {
-        // The toolbar isn't actually collapsing here. This is just to ensure that the drawer menu
-        // correctly handles drawing the window insets.
+    public boolean onSupportNavigateUp() {
+        mBinding.libraryDrawerLayout.openDrawer(Gravity.START);
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mBinding.libraryDrawerLayout.isDrawerOpen(Gravity.START)) {
+            mBinding.libraryDrawerLayout.closeDrawers();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public void setSupportActionBar(@Nullable Toolbar toolbar) {
+        super.setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_nav_menu_24dp);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     private void startPlaybackFromUri(Uri songUri) {

@@ -4,10 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -92,11 +90,6 @@ public class LibraryFragment extends BaseFragment {
         if (getActivity() instanceof AppCompatActivity) {
             AppCompatActivity activity = (AppCompatActivity) getActivity();
             activity.setSupportActionBar(toolbar);
-            ActionBar actionBar = activity.getSupportActionBar();
-            if (actionBar != null) {
-                actionBar.setHomeAsUpIndicator(R.drawable.ic_nav_menu_24dp);
-                actionBar.setDisplayHomeAsUpEnabled(true);
-            }
         }
     }
 
@@ -108,9 +101,6 @@ public class LibraryFragment extends BaseFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                mBinding.homeDrawerLayout.openDrawer(Gravity.START);
-                return true;
             case R.id.menu_library_search:
                 startActivity(SearchActivity.newIntent(getContext()));
                 return true;
@@ -121,10 +111,6 @@ public class LibraryFragment extends BaseFragment {
 
     @Override
     protected boolean onBackPressed() {
-        if (mBinding.homeDrawerLayout.isDrawerOpen(Gravity.START)) {
-            mBinding.homeDrawerLayout.closeDrawers();
-            return true;
-        }
         return super.onBackPressed();
     }
 }
