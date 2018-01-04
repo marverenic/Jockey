@@ -21,9 +21,7 @@ import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.databinding.FragmentLibraryBinding;
 import com.marverenic.music.ui.BaseFragment;
-import com.marverenic.music.ui.about.AboutActivity;
 import com.marverenic.music.ui.search.SearchActivity;
-import com.marverenic.music.ui.settings.SettingsActivity;
 
 import javax.inject.Inject;
 
@@ -103,18 +101,16 @@ public class LibraryFragment extends BaseFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_library_settings:
-                startActivity(SettingsActivity.newIntent(getContext()));
-                return true;
             case R.id.menu_library_search:
                 startActivity(SearchActivity.newIntent(getContext()));
-                return true;
-            case R.id.menu_library_about:
-                startActivity(AboutActivity.newIntent(getContext()));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    @Override
+    protected boolean onBackPressed() {
+        return super.onBackPressed();
+    }
 }

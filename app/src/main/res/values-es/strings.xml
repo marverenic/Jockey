@@ -17,6 +17,7 @@
     <string name="action_settings">Preferencias</string>
     <string name="header_settings">Preferencias</string>
     <string name="header_search">Buscar</string>
+    <string name="header_all_music">Biblioteca</string>
 
     <!-- Data types -->
     <string name="playlist">Listas reproducción</string>

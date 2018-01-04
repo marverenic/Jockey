@@ -71,4 +71,5 @@
             app:layout_behavior="com.marverenic.music.view.FABMenu$Behavior"/>
 
     </android.support.design.widget.CoordinatorLayout>
+
 </layout>
