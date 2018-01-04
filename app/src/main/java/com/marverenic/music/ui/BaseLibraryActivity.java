@@ -12,6 +12,7 @@ import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.databinding.ActivityLibraryBaseWrapperBinding;
 import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.ui.BaseLibraryActivityViewModel.OnBottomSheetStateChangeListener.BottomSheetState;
 
 import javax.inject.Inject;
 
@@ -50,6 +51,8 @@ public abstract class BaseLibraryActivity extends SingleFragmentActivity {
                 .subscribe(mViewModel::setPlaybackOngoing, throwable -> {
                     Timber.e(throwable, "Failed to set playback state");
                 });
+
+        mViewModel.setStateChangeListener(this::onBottomSheetStateChange);
 
         if (savedInstanceState != null) {
             boolean expanded = savedInstanceState.getBoolean(KEY_WAS_NOW_PLAYING_EXPANDED, false);
@@ -109,6 +112,10 @@ public abstract class BaseLibraryActivity extends SingleFragmentActivity {
     public void expandBottomSheet() {
         BottomSheetBehavior<View> bottomSheet = BottomSheetBehavior.from(mBinding.miniplayerHolder);
         bottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
+    }
+
+    protected void onBottomSheetStateChange(BottomSheetState newState) {
+
     }
 
 }

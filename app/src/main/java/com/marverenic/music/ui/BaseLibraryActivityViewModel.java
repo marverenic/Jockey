@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
@@ -17,6 +18,9 @@ import android.view.View;
 
 import com.marverenic.music.BR;
 import com.marverenic.music.R;
+import com.marverenic.music.ui.BaseLibraryActivityViewModel.OnBottomSheetStateChangeListener.BottomSheetState;
+
+import java.util.NoSuchElementException;
 
 public class BaseLibraryActivityViewModel extends BaseViewModel {
 
@@ -28,6 +32,9 @@ public class BaseLibraryActivityViewModel extends BaseViewModel {
     private final ColorDrawable mNowPlayingBackground;
 
     private int mBottomSheetState;
+
+    @Nullable
+    private OnBottomSheetStateChangeListener mStateListener;
 
     private boolean mAnimateSlideInOut;
 
@@ -62,6 +69,10 @@ public class BaseLibraryActivityViewModel extends BaseViewModel {
 
     public void onActivityEnterForeground() {
         mAnimateSlideInOut = true;
+    }
+
+    public void setStateChangeListener(@Nullable OnBottomSheetStateChangeListener listener) {
+        mStateListener = listener;
     }
 
     private void animateTranslation(boolean isPlaybackOngoing) {
@@ -174,6 +185,11 @@ public class BaseLibraryActivityViewModel extends BaseViewModel {
                     mNowPlayingToolbarAlpha.set(1.0f);
                     mMiniplayerAlpha.set(0.0f);
                 }
+
+                if (mStateListener != null) {
+                    BottomSheetState state = BottomSheetState.lookupBehaviorConstant(newState);
+                    mStateListener.onBottomSheetStateChange(state);
+                }
             }
 
             @Override
@@ -195,6 +211,36 @@ public class BaseLibraryActivityViewModel extends BaseViewModel {
             BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         };
+    }
+
+    public interface OnBottomSheetStateChangeListener {
+
+        enum BottomSheetState {
+            DRAGGING(BottomSheetBehavior.STATE_DRAGGING),
+            SETTLING(BottomSheetBehavior.STATE_SETTLING),
+            EXPANDED(BottomSheetBehavior.STATE_EXPANDED),
+            COLLAPSED(BottomSheetBehavior.STATE_COLLAPSED),
+            HIDDEN(BottomSheetBehavior.STATE_HIDDEN);
+
+            private int mBehaviorConstant;
+
+            BottomSheetState(int behaviorConstant) {
+                mBehaviorConstant = behaviorConstant;
+            }
+
+            static BottomSheetState lookupBehaviorConstant(int behaviorConstant) {
+                for (BottomSheetState state : values()) {
+                    if (state.mBehaviorConstant == behaviorConstant) {
+                        return state;
+                    }
+                }
+                throw new NoSuchElementException("No state for constant " + behaviorConstant);
+            }
+
+        }
+
+        void onBottomSheetStateChange(BottomSheetState state);
+
     }
 
 }

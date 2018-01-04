@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
@@ -20,6 +21,7 @@ import com.marverenic.music.databinding.ActivityLibraryBinding;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseLibraryActivity;
+import com.marverenic.music.ui.BaseLibraryActivityViewModel.OnBottomSheetStateChangeListener.BottomSheetState;
 import com.marverenic.music.utils.UriUtils;
 
 import java.io.File;
@@ -128,6 +130,17 @@ public class LibraryActivity extends BaseLibraryActivity {
             actionBar.setHomeAsUpIndicator(R.drawable.ic_nav_menu_24dp);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+    }
+
+    @Override
+    protected void onBottomSheetStateChange(BottomSheetState newState) {
+        boolean collapsed = (newState == BottomSheetState.COLLAPSED)
+                || (newState == BottomSheetState.HIDDEN);
+
+        mBinding.libraryDrawerLayout.setDrawerLockMode((collapsed)
+                        ? DrawerLayout.LOCK_MODE_UNLOCKED
+                        : DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
+                Gravity.START);
     }
 
     private void startPlaybackFromUri(Uri songUri) {
