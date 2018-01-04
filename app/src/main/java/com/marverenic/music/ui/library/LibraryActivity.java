@@ -11,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -22,6 +23,8 @@ import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseLibraryActivity;
 import com.marverenic.music.ui.BaseLibraryActivityViewModel.OnBottomSheetStateChangeListener.BottomSheetState;
+import com.marverenic.music.ui.about.AboutActivity;
+import com.marverenic.music.ui.settings.SettingsActivity;
 import com.marverenic.music.utils.UriUtils;
 
 import java.io.File;
@@ -57,6 +60,7 @@ public class LibraryActivity extends BaseLibraryActivity {
 
         JockeyApplication.getComponent(this).inject(this);
         onNewIntent(getIntent());
+        onNavigationItemSelected(R.id.menu_library_home);
     }
 
     @Override
@@ -69,6 +73,12 @@ public class LibraryActivity extends BaseLibraryActivity {
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_library);
         ViewGroup contentContainer = findViewById(R.id.library_content_container);
         contentContainer.addView(root);
+
+        mBinding.libraryDrawerNavigationView.setNavigationItemSelectedListener(item -> {
+            mBinding.libraryDrawerLayout.closeDrawers();
+            onNavigationItemSelected(item.getItemId());
+            return true;
+        });
     }
 
     @Override
@@ -141,6 +151,22 @@ public class LibraryActivity extends BaseLibraryActivity {
                         ? DrawerLayout.LOCK_MODE_UNLOCKED
                         : DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
                 Gravity.START);
+    }
+
+    private void onNavigationItemSelected(int itemId) {
+        switch (itemId) {
+            case R.id.menu_library_settings:
+                startActivity(SettingsActivity.newIntent(this));
+                return;
+            case R.id.menu_library_about:
+                startActivity(AboutActivity.newIntent(this));
+                return;
+        }
+
+        Menu navMenu = mBinding.libraryDrawerNavigationView.getMenu();
+        for (int i = 0; i < navMenu.size(); i++) {
+            navMenu.getItem(i).setChecked(navMenu.getItem(i).getItemId() == itemId);
+        }
     }
 
     private void startPlaybackFromUri(Uri songUri) {
