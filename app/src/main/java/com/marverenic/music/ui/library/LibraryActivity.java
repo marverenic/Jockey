@@ -182,6 +182,9 @@ public class LibraryActivity extends BaseLibraryActivity {
             case R.id.menu_library_home:
                 newContent = LibraryFragment.newInstance();
                 break;
+            case R.id.menu_library_browse:
+                newContent = MusicBrowserFragment.newInstance();
+                break;
             default:
                 throw new UnsupportedOperationException("Failed to switch to fragment with menu" +
                         " item id " + getResources().getResourceName(itemId));
