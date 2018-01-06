@@ -1,4 +1,4 @@
-package com.marverenic.music.ui.library;
+package com.marverenic.music.ui.library.browse;
 
 import com.marverenic.music.ui.BaseFragment;
 
