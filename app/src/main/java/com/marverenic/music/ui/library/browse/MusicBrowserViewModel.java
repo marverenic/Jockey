@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.ui.BaseViewModel;
+import com.marverenic.music.view.BackgroundDecoration;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -56,6 +57,12 @@ public class MusicBrowserViewModel extends BaseViewModel {
 
     public RecyclerView.LayoutManager getLayoutManager() {
         return new LinearLayoutManager(getContext());
+    }
+
+    public RecyclerView.ItemDecoration[] getItemDecorations() {
+        return new RecyclerView.ItemDecoration[] {
+                new BackgroundDecoration()
+        };
     }
 
 }
