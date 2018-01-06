@@ -36,7 +36,7 @@ import java.util.List;
  */
 public class GestureView extends FrameLayout {
 
-    private static final int MIN_RELEASE_THRESHOLD_DP = 16;
+    private static final int MIN_RELEASE_THRESHOLD_DP = 8;
     private static final int ACTIVATION_THRESHOLD_DP = 96;
     private static final int INDICATOR_SIZE_DP = 36;
     private static final int DEFAULT_COLOR = Color.BLACK;
@@ -235,11 +235,11 @@ public class GestureView extends FrameLayout {
         public void updateGesturePosition(int x, int y) {
             mOverlayEdge.set(x, y);
 
-            int dY = Math.abs(y - mOverlayOrigin.y);
-            int dX = Math.abs(x - mOverlayOrigin.x);
-
-            mConfirmedGesture = dX >= mMinReleaseThreshold && dX > dY;
             if (!mConfirmedGesture) {
+                int dY = Math.abs(y - mOverlayOrigin.y);
+                int dX = Math.abs(x - mOverlayOrigin.x);
+
+                mConfirmedGesture = dX >= mMinReleaseThreshold && dX > dY;
                 if (mConfirmedGesture) {
                     mOverlayOrigin.x = x;
                     mOverlayOrigin.y = y;
@@ -379,7 +379,7 @@ public class GestureView extends FrameLayout {
         }
 
         public void draw(Canvas canvas) {
-            if (mOverlayOrigin != null) {
+            if (mOverlayOrigin != null && (isGestureStarted() || mPreformingTap)) {
                 mOverlayPaint.setAlpha(mAlpha);
 
                 int radius = radius();
