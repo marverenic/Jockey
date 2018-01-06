@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
@@ -12,6 +13,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -55,7 +57,7 @@ public class LibraryActivity extends BaseLibraryActivity {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         JockeyApplication.getComponent(this).inject(this);
@@ -153,7 +155,7 @@ public class LibraryActivity extends BaseLibraryActivity {
                 Gravity.START);
     }
 
-    private void onNavigationItemSelected(int itemId) {
+    private void onNavigationItemSelected(@IdRes int itemId) {
         switch (itemId) {
             case R.id.menu_library_settings:
                 startActivity(SettingsActivity.newIntent(this));
@@ -165,8 +167,27 @@ public class LibraryActivity extends BaseLibraryActivity {
 
         Menu navMenu = mBinding.libraryDrawerNavigationView.getMenu();
         for (int i = 0; i < navMenu.size(); i++) {
-            navMenu.getItem(i).setChecked(navMenu.getItem(i).getItemId() == itemId);
+            MenuItem menuItem = navMenu.getItem(i);
+            if (menuItem.getItemId() == itemId && menuItem.isChecked()) {
+                // If the item id hasn't changed, then return early
+                return;
+            }
+
+            menuItem.setChecked(navMenu.getItem(i).getItemId() == itemId);
         }
+
+        Fragment newContent;
+
+        switch (itemId) {
+            case R.id.menu_library_home:
+                newContent = LibraryFragment.newInstance();
+                break;
+            default:
+                throw new UnsupportedOperationException("Failed to switch to fragment with menu" +
+                        " item id " + getResources().getResourceName(itemId));
+        }
+
+        replaceFragment(newContent);
     }
 
     private void startPlaybackFromUri(Uri songUri) {
