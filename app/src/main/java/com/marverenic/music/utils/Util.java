@@ -152,7 +152,7 @@ public final class Util {
 
     public static boolean isFileMusic(File file) {
         String fileName = file.getName();
-        if (!fileName.contains(".")) {
+        if (!fileName.contains(".") || fileName.lastIndexOf('.') <= 0) {
             return false;
         }
 
