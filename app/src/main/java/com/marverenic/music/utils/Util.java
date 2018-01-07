@@ -12,9 +12,13 @@ import android.media.audiofx.AudioEffect;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.webkit.MimeTypeMap;
 
 import com.marverenic.music.model.Song;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import timber.log.Timber;
@@ -37,6 +41,12 @@ public final class Util {
             EQUALIZER_UUID = UUID.fromString("0bed4300-ddd6-11db-8f34-0002a5d5c51b");
         }
     }
+
+    private static final List<String> AUDIO_MIMES = Arrays.asList(
+            "application/ogg",
+            "application/x-ogg",
+            "application/itunes"
+    );
 
     /**
      * This class is never instantiated
@@ -138,6 +148,20 @@ public final class Util {
         }
 
         return null;
+    }
+
+    public static boolean isFileMusic(File file) {
+        String fileName = file.getName();
+        if (!fileName.contains(".")) {
+            return false;
+        }
+
+        String extension = fileName.substring(fileName.lastIndexOf('.') + 1);
+        return isMimeTypeAudio(MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension));
+    }
+
+    private static boolean isMimeTypeAudio(String mime) {
+        return mime != null && mime.startsWith("audio") || AUDIO_MIMES.contains(mime);
     }
 
 }

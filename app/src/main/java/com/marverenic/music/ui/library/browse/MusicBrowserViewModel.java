@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.ui.BaseViewModel;
+import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.BackgroundDecoration;
 
 import java.io.File;
@@ -19,13 +20,16 @@ public class MusicBrowserViewModel extends BaseViewModel {
 
     private HeterogeneousAdapter mAdapter;
     private FolderSection mFolderSection;
+    private FileSection mFileSection;
 
     public MusicBrowserViewModel(Context context, File startingDirectory) {
         super(context);
 
         mAdapter = new HeterogeneousAdapter();
         mFolderSection = new FolderSection(Collections.emptyList());
+        mFileSection = new FileSection(Collections.emptyList());
         mAdapter.addSection(mFolderSection);
+        mAdapter.addSection(mFileSection);
 
         setDirectory(startingDirectory);
     }
@@ -35,16 +39,21 @@ public class MusicBrowserViewModel extends BaseViewModel {
 
         if (directory.canRead()) {
             List<File> folders = new ArrayList<>();
+            List<File> files = new ArrayList<>();
 
             for (File file : directory.listFiles()) {
                 if (file.isDirectory()) {
                     folders.add(file);
+                } else if (Util.isFileMusic(file)) {
+                    files.add(file);
                 }
             }
 
             Collections.sort(folders);
+            Collections.sort(files);
 
             mFolderSection.setData(folders);
+            mFileSection.setData(files);
             mAdapter.notifyDataSetChanged();
         } else {
             mFolderSection.setData(Collections.emptyList());
