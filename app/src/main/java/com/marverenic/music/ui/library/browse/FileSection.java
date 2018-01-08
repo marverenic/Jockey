@@ -24,6 +24,11 @@ public class FileSection extends HeterogeneousAdapter.ListSection<File> {
     }
 
     @Override
+    public int getId(int position) {
+        return get(position).hashCode();
+    }
+
+    @Override
     public EnhancedViewHolder<File> createViewHolder(HeterogeneousAdapter adapter, ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         return new ViewHolder(

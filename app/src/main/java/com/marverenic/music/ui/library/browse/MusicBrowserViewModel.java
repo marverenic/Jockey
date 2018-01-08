@@ -37,6 +37,7 @@ public class MusicBrowserViewModel extends BaseViewModel {
         mFileSection = new FileSection(Collections.emptyList(), this::onClickSong);
         mAdapter.addSection(mFolderSection);
         mAdapter.addSection(mFileSection);
+        mAdapter.setHasStableIds(true);
 
         setDirectory(startingDirectory);
     }
