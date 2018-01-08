@@ -41,6 +41,7 @@ import timber.log.Timber;
 public class LibraryActivity extends BaseLibraryActivity {
 
     private static final String ACTION_SHOW_NOW_PLAYING_PAGE = "LibraryActivity.ShowNowPlayingPage";
+    private static final String EXTRA_SAVED_PAGE_ID = "LibraryActivity.selectedPageId";
 
     private ActivityLibraryBinding mBinding;
 
@@ -53,8 +54,13 @@ public class LibraryActivity extends BaseLibraryActivity {
     }
 
     @Override
-    protected Fragment onCreateFragment(Bundle savedInstanceState) {
-        return LibraryFragment.newInstance();
+    protected Fragment onCreateFragment(@Nullable Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            return LibraryFragment.newInstance();
+        } else {
+            int savedPage = savedInstanceState.getInt(EXTRA_SAVED_PAGE_ID, R.id.menu_library_home);
+            return createFragmentForSelectedPage(savedPage);
+        }
     }
 
     @Override
@@ -63,7 +69,13 @@ public class LibraryActivity extends BaseLibraryActivity {
 
         JockeyApplication.getComponent(this).inject(this);
         onNewIntent(getIntent());
-        onNavigationItemSelected(R.id.menu_library_home);
+
+        if (savedInstanceState == null) {
+            setSelectedPage(R.id.menu_library_home);
+        } else {
+            int savedPage = savedInstanceState.getInt(EXTRA_SAVED_PAGE_ID, R.id.menu_library_home);
+            setSelectedPage(savedPage);
+        }
     }
 
     @Override
@@ -121,6 +133,24 @@ public class LibraryActivity extends BaseLibraryActivity {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(EXTRA_SAVED_PAGE_ID, getSelectedDrawerItem());
+    }
+
+    @IdRes
+    private int getSelectedDrawerItem() {
+        Menu menu = mBinding.libraryDrawerNavigationView.getMenu();
+        for (int i = 0; i < menu.size(); i++) {
+            MenuItem item = menu.getItem(i);
+            if (item.isChecked()) {
+                return item.getItemId();
+            }
+        }
+        return R.id.menu_library_home;
+    }
+
+    @Override
     public boolean onSupportNavigateUp() {
         mBinding.libraryDrawerLayout.openDrawer(Gravity.START);
         return true;
@@ -166,6 +196,11 @@ public class LibraryActivity extends BaseLibraryActivity {
                 return;
         }
 
+        setSelectedPage(itemId);
+        replaceFragment(createFragmentForSelectedPage(itemId));
+    }
+
+    private void setSelectedPage(@IdRes int itemId) {
         Menu navMenu = mBinding.libraryDrawerNavigationView.getMenu();
         for (int i = 0; i < navMenu.size(); i++) {
             MenuItem menuItem = navMenu.getItem(i);
@@ -176,22 +211,18 @@ public class LibraryActivity extends BaseLibraryActivity {
 
             menuItem.setChecked(navMenu.getItem(i).getItemId() == itemId);
         }
+    }
 
-        Fragment newContent;
-
+    private Fragment createFragmentForSelectedPage(@IdRes int itemId) {
         switch (itemId) {
             case R.id.menu_library_home:
-                newContent = LibraryFragment.newInstance();
-                break;
+                return LibraryFragment.newInstance();
             case R.id.menu_library_browse:
-                newContent = MusicBrowserFragment.newInstance();
-                break;
+                return MusicBrowserFragment.newInstance();
             default:
                 throw new UnsupportedOperationException("Failed to switch to fragment with menu" +
                         " item id " + getResources().getResourceName(itemId));
         }
-
-        replaceFragment(newContent);
     }
 
     private void startPlaybackFromUri(Uri songUri) {
