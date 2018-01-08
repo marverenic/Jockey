@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
@@ -12,6 +13,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -24,6 +26,7 @@ import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseLibraryActivity;
 import com.marverenic.music.ui.BaseLibraryActivityViewModel.OnBottomSheetStateChangeListener.BottomSheetState;
 import com.marverenic.music.ui.about.AboutActivity;
+import com.marverenic.music.ui.library.browse.MusicBrowserFragment;
 import com.marverenic.music.ui.settings.SettingsActivity;
 import com.marverenic.music.utils.UriUtils;
 
@@ -38,6 +41,7 @@ import timber.log.Timber;
 public class LibraryActivity extends BaseLibraryActivity {
 
     private static final String ACTION_SHOW_NOW_PLAYING_PAGE = "LibraryActivity.ShowNowPlayingPage";
+    private static final String EXTRA_SAVED_PAGE_ID = "LibraryActivity.selectedPageId";
 
     private ActivityLibraryBinding mBinding;
 
@@ -50,17 +54,28 @@ public class LibraryActivity extends BaseLibraryActivity {
     }
 
     @Override
-    protected Fragment onCreateFragment(Bundle savedInstanceState) {
-        return LibraryFragment.newInstance();
+    protected Fragment onCreateFragment(@Nullable Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            return LibraryFragment.newInstance();
+        } else {
+            int savedPage = savedInstanceState.getInt(EXTRA_SAVED_PAGE_ID, R.id.menu_library_home);
+            return createFragmentForSelectedPage(savedPage);
+        }
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         JockeyApplication.getComponent(this).inject(this);
         onNewIntent(getIntent());
-        onNavigationItemSelected(R.id.menu_library_home);
+
+        if (savedInstanceState == null) {
+            setSelectedPage(R.id.menu_library_home);
+        } else {
+            int savedPage = savedInstanceState.getInt(EXTRA_SAVED_PAGE_ID, R.id.menu_library_home);
+            setSelectedPage(savedPage);
+        }
     }
 
     @Override
@@ -118,6 +133,24 @@ public class LibraryActivity extends BaseLibraryActivity {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(EXTRA_SAVED_PAGE_ID, getSelectedDrawerItem());
+    }
+
+    @IdRes
+    private int getSelectedDrawerItem() {
+        Menu menu = mBinding.libraryDrawerNavigationView.getMenu();
+        for (int i = 0; i < menu.size(); i++) {
+            MenuItem item = menu.getItem(i);
+            if (item.isChecked()) {
+                return item.getItemId();
+            }
+        }
+        return R.id.menu_library_home;
+    }
+
+    @Override
     public boolean onSupportNavigateUp() {
         mBinding.libraryDrawerLayout.openDrawer(Gravity.START);
         return true;
@@ -153,7 +186,7 @@ public class LibraryActivity extends BaseLibraryActivity {
                 Gravity.START);
     }
 
-    private void onNavigationItemSelected(int itemId) {
+    private void onNavigationItemSelected(@IdRes int itemId) {
         switch (itemId) {
             case R.id.menu_library_settings:
                 startActivity(SettingsActivity.newIntent(this));
@@ -163,9 +196,32 @@ public class LibraryActivity extends BaseLibraryActivity {
                 return;
         }
 
+        setSelectedPage(itemId);
+        replaceFragment(createFragmentForSelectedPage(itemId));
+    }
+
+    private void setSelectedPage(@IdRes int itemId) {
         Menu navMenu = mBinding.libraryDrawerNavigationView.getMenu();
         for (int i = 0; i < navMenu.size(); i++) {
-            navMenu.getItem(i).setChecked(navMenu.getItem(i).getItemId() == itemId);
+            MenuItem menuItem = navMenu.getItem(i);
+            if (menuItem.getItemId() == itemId && menuItem.isChecked()) {
+                // If the item id hasn't changed, then return early
+                return;
+            }
+
+            menuItem.setChecked(navMenu.getItem(i).getItemId() == itemId);
+        }
+    }
+
+    private Fragment createFragmentForSelectedPage(@IdRes int itemId) {
+        switch (itemId) {
+            case R.id.menu_library_home:
+                return LibraryFragment.newInstance();
+            case R.id.menu_library_browse:
+                return MusicBrowserFragment.newInstance();
+            default:
+                throw new UnsupportedOperationException("Failed to switch to fragment with menu" +
+                        " item id " + getResources().getResourceName(itemId));
         }
     }
 

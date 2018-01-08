@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.marverenic.music.ui.library.browse.FolderViewModel"/>
+    </data>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/list_small_padding"
+        android:paddingBottom="@dimen/list_small_padding"
+        android:gravity="center"
+        android:background="?attr/selectableItemBackground"
+        android:onClick="@{() -> viewModel.onClickFolder()}">
+
+        <ImageView
+            android:layout_width="@dimen/list_thumbnail_size"
+            android:layout_height="@dimen/list_thumbnail_size"
+            android:src="@drawable/ic_folder_24dp"
+            android:scaleType="center"
+            android:background="@drawable/bg_list_circle"
+            android:layout_marginStart="@dimen/list_padding"
+            android:layout_marginLeft="@dimen/list_padding"
+            android:layout_marginEnd="@dimen/list_padding"
+            android:layout_marginRight="@dimen/list_padding"
+            android:tint="?attr/textColorSecondary"
+            android:contentDescription="@null"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_marginEnd="@dimen/list_padding"
+            android:layout_marginRight="@dimen/list_padding"
+            android:text="@{viewModel.folderName}"
+            android:maxLines="2"
+            tools:text="A really long \nfolder name"/>
+
+    </LinearLayout>
+</layout>

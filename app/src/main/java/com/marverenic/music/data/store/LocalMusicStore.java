@@ -1,6 +1,7 @@
 package com.marverenic.music.data.store;
 
 import android.content.Context;
+import android.net.Uri;
 import android.provider.MediaStore;
 
 import com.marverenic.music.model.Album;
@@ -583,5 +584,27 @@ public class LocalMusicStore implements MusicStore {
 
             return filtered;
         });
+    }
+
+    @Override
+    public Observable<List<Song>> getSongsFromFiles(List<File> files) {
+        return Observable.from(files)
+                .subscribeOn(Schedulers.io())
+                .map(Uri::fromFile)
+                .concatMapEager(this::getSongFromUri)
+                .toList();
+    }
+
+    private Observable<Song> getSongFromUri(Uri songUri) {
+        return Observable.just(songUri)
+                .subscribeOn(Schedulers.io())
+                .map(uri -> {
+                    List<Song> songs = MediaStoreUtil.getSongs(mContext, uri, null, null);
+                    if (songs.size() == 1) {
+                        return songs.get(0);
+                    } else {
+                        return Song.fromUri(mContext, uri);
+                    }
+                });
     }
 }

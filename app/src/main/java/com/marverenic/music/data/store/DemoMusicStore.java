@@ -305,4 +305,9 @@ public class DemoMusicStore implements MusicStore {
                     return filtered;
                 });
     }
+
+    @Override
+    public Observable<List<Song>> getSongsFromFiles(List<File> files) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 }
