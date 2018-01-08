@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.marverenic.adapter.HeterogeneousAdapter;
+import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.ui.BaseViewModel;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.BackgroundDecoration;
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
+
+import timber.log.Timber;
 
 public class MusicBrowserViewModel extends BaseViewModel {
 
@@ -37,9 +40,21 @@ public class MusicBrowserViewModel extends BaseViewModel {
         mFileSection = new FileSection(Collections.emptyList(), this::onClickSong);
         mAdapter.addSection(mFolderSection);
         mAdapter.addSection(mFileSection);
+        mAdapter.setEmptyState(new FileBrowserEmptyState(context, this::onRefreshFromEmptyState));
         mAdapter.setHasStableIds(true);
 
         setDirectory(startingDirectory);
+    }
+
+    private void onRefreshFromEmptyState() {
+        MediaStoreUtil.promptPermission(getContext())
+                .subscribe(granted -> {
+                    if (granted) {
+                        setDirectory(mCurrentDirectory);
+                    }
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to get storage permission to refresh folder");
+                });
     }
 
     public void setDirectory(File directory) {
