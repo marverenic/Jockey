@@ -2,6 +2,7 @@ package com.marverenic.music.ui.library.browse;
 
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -15,8 +16,13 @@ import java.util.List;
 
 public class FolderSection extends HeterogeneousAdapter.ListSection<File> {
 
-    public FolderSection(@NonNull List<File> data) {
+    @Nullable
+    private FolderViewModel.OnFolderSelectedListener mSelectionListener;
+
+    public FolderSection(@NonNull List<File> data,
+                         @Nullable FolderViewModel.OnFolderSelectedListener selectionListener) {
         super(data);
+        mSelectionListener = selectionListener;
     }
 
     @Override
@@ -35,6 +41,7 @@ public class FolderSection extends HeterogeneousAdapter.ListSection<File> {
             super(binding.getRoot());
             mBinding = binding;
             mViewModel = new FolderViewModel();
+            mViewModel.setSelectionListener(mSelectionListener);
             mBinding.setViewModel(mViewModel);
         }
 

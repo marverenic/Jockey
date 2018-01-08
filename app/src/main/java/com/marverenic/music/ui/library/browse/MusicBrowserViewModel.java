@@ -26,7 +26,7 @@ public class MusicBrowserViewModel extends BaseViewModel {
         super(context);
 
         mAdapter = new HeterogeneousAdapter();
-        mFolderSection = new FolderSection(Collections.emptyList());
+        mFolderSection = new FolderSection(Collections.emptyList(), this::onClickFolder);
         mFileSection = new FileSection(Collections.emptyList());
         mAdapter.addSection(mFolderSection);
         mAdapter.addSection(mFileSection);
@@ -72,6 +72,10 @@ public class MusicBrowserViewModel extends BaseViewModel {
         return new RecyclerView.ItemDecoration[] {
                 new BackgroundDecoration()
         };
+    }
+
+    private void onClickFolder(File folder) {
+        setDirectory(folder);
     }
 
 }

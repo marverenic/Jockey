@@ -1,6 +1,7 @@
 package com.marverenic.music.ui.library.browse;
 
 import android.databinding.Bindable;
+import android.support.annotation.Nullable;
 
 import com.marverenic.music.BR;
 import com.marverenic.music.ui.BaseViewModel;
@@ -10,9 +11,15 @@ import java.io.File;
 public class FolderViewModel extends BaseViewModel {
 
     private File mFolder;
+    @Nullable
+    private OnFolderSelectedListener mSelectionListener;
 
     public FolderViewModel() {
         super(null);
+    }
+
+    public void setSelectionListener(@Nullable OnFolderSelectedListener selectionListener) {
+        mSelectionListener = selectionListener;
     }
 
     public void setFolder(File folder) {
@@ -26,7 +33,13 @@ public class FolderViewModel extends BaseViewModel {
     }
 
     public void onClickFolder() {
-        // TODO perform navigation
+        if (mSelectionListener != null) {
+            mSelectionListener.onFolderSelected(mFolder);
+        }
+    }
+
+    interface OnFolderSelectedListener {
+        void onFolderSelected(File directory);
     }
 
 }
