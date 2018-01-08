@@ -46,6 +46,21 @@ public class MusicBrowserViewModel extends BaseViewModel {
         setDirectory(startingDirectory);
     }
 
+    public String[] getHistory() {
+        String[] history = new String[mHistory.size()];
+        for (int i = 0; i < mHistory.size(); i++) {
+            history[i] = mHistory.get(i).getAbsolutePath();
+        }
+        return history;
+    }
+
+    public void setHistory(String[] history) {
+        mHistory = new Stack<>();
+        for (String file : history) {
+            mHistory.push(new File(file));
+        }
+    }
+
     private void onRefreshFromEmptyState() {
         MediaStoreUtil.promptPermission(getContext())
                 .subscribe(granted -> {
@@ -55,6 +70,10 @@ public class MusicBrowserViewModel extends BaseViewModel {
                 }, throwable -> {
                     Timber.e(throwable, "Failed to get storage permission to refresh folder");
                 });
+    }
+
+    public File getDirectory() {
+        return mCurrentDirectory;
     }
 
     public void setDirectory(File directory) {
