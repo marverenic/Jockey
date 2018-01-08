@@ -22,7 +22,9 @@
             android:layout_width="@dimen/list_thumbnail_size"
             android:layout_height="@dimen/list_thumbnail_size"
             android:layout_marginStart="@dimen/list_padding"
+            android:layout_marginLeft="@dimen/list_padding"
             android:layout_marginEnd="@dimen/list_padding"
+            android:layout_marginRight="@dimen/list_padding"
             android:contentDescription="@null"
             tools:background="@drawable/bg_list_circle"/>
 
