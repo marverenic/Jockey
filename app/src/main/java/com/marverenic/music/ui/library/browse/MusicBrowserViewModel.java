@@ -6,10 +6,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.marverenic.adapter.HeterogeneousAdapter;
+import com.marverenic.music.R;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.ui.BaseViewModel;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.BackgroundDecoration;
+import com.marverenic.music.view.PaddingDecoration;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -112,7 +114,8 @@ public class MusicBrowserViewModel extends BaseViewModel {
 
     public RecyclerView.ItemDecoration[] getItemDecorations() {
         return new RecyclerView.ItemDecoration[] {
-                new BackgroundDecoration()
+                new BackgroundDecoration(),
+                new PaddingDecoration(getDimensionPixelSize(R.dimen.list_small_padding))
         };
     }
 
