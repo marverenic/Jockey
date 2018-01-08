@@ -27,6 +27,12 @@
                 app:title="@string/header_browser"
                 app:layout_scrollFlags="scroll|enterAlways|snap"/>
 
+            <com.marverenic.music.ui.library.browse.BreadCrumbView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:breadCrumbs="@{viewModel.breadCrumbs}"
+                app:selectedCrumb="@={viewModel.selectedBreadCrumb}"/>
+
         </android.support.design.widget.AppBarLayout>
 
         <android.support.v7.widget.RecyclerView

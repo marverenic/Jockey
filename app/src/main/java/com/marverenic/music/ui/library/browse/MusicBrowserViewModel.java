@@ -1,14 +1,17 @@
 package com.marverenic.music.ui.library.browse;
 
 import android.content.Context;
+import android.databinding.Bindable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.marverenic.adapter.HeterogeneousAdapter;
+import com.marverenic.music.BR;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.ui.BaseViewModel;
+import com.marverenic.music.ui.library.browse.BreadCrumbView.BreadCrumb;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.PaddingDecoration;
@@ -30,6 +33,9 @@ public class MusicBrowserViewModel extends BaseViewModel {
     private FolderSection mFolderSection;
     private FileSection mFileSection;
     private OnSongFileSelectedListener mSelectionListener;
+
+    private List<File> mBreadCrumbs;
+    private File mSelectedBreadCrumb;
 
     public MusicBrowserViewModel(Context context, File startingDirectory,
                                  @NonNull OnSongFileSelectedListener songSelectionListener) {
@@ -80,6 +86,7 @@ public class MusicBrowserViewModel extends BaseViewModel {
 
     public void setDirectory(File directory) {
         mCurrentDirectory = directory;
+        setSelectedBreadCrumb(directory);
 
         if (directory.canRead()) {
             List<File> folders = new ArrayList<>();
@@ -104,6 +111,47 @@ public class MusicBrowserViewModel extends BaseViewModel {
         }
     }
 
+    @Bindable
+    public List<BreadCrumb<File>> getBreadCrumbs() {
+        mBreadCrumbs = generateBreadCrumbs();
+        List<BreadCrumb<File>> breadCrumbs = new ArrayList<>();
+
+        for (File crumb : mBreadCrumbs) {
+            File parent = crumb.getParentFile();
+            boolean parentAccessible = parent != null && parent.canRead();
+            String name = (!parentAccessible) ? "/" : crumb.getName();
+            breadCrumbs.add(new BreadCrumb<>(name, crumb));
+        }
+
+        return breadCrumbs;
+    }
+
+    private List<File> generateBreadCrumbs() {
+        List<File> crumbs = new ArrayList<>();
+
+        File curr = mCurrentDirectory;
+        while (curr != null && curr.canRead()) {
+            crumbs.add(curr);
+            curr = curr.getParentFile();
+        }
+
+        Collections.reverse(crumbs);
+        return crumbs;
+    }
+
+    @Bindable
+    public File getSelectedBreadCrumb() {
+        return mSelectedBreadCrumb;
+    }
+
+    public void setSelectedBreadCrumb(File selectedBreadCrumb) {
+        if (mSelectedBreadCrumb != selectedBreadCrumb) {
+            mSelectedBreadCrumb = selectedBreadCrumb;
+            notifyPropertyChanged(BR.selectedBreadCrumb);
+            setDirectory(selectedBreadCrumb);
+        }
+    }
+
     public RecyclerView.Adapter getAdapter() {
         return mAdapter;
     }
@@ -120,6 +168,10 @@ public class MusicBrowserViewModel extends BaseViewModel {
     }
 
     private void onClickFolder(File folder) {
+        if (!mBreadCrumbs.contains(folder)) {
+            notifyPropertyChanged(BR.breadCrumbs);
+        }
+
         mHistory.add(mCurrentDirectory);
         setDirectory(folder);
     }
