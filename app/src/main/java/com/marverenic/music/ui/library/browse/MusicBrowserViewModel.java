@@ -1,6 +1,7 @@
 package com.marverenic.music.ui.library.browse;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -23,14 +24,17 @@ public class MusicBrowserViewModel extends BaseViewModel {
     private HeterogeneousAdapter mAdapter;
     private FolderSection mFolderSection;
     private FileSection mFileSection;
+    private OnSongFileSelectedListener mSelectionListener;
 
-    public MusicBrowserViewModel(Context context, File startingDirectory) {
+    public MusicBrowserViewModel(Context context, File startingDirectory,
+                                 @NonNull OnSongFileSelectedListener songSelectionListener) {
         super(context);
+        mSelectionListener = songSelectionListener;
         mHistory = new Stack<>();
 
         mAdapter = new HeterogeneousAdapter();
         mFolderSection = new FolderSection(Collections.emptyList(), this::onClickFolder);
-        mFileSection = new FileSection(Collections.emptyList());
+        mFileSection = new FileSection(Collections.emptyList(), this::onClickSong);
         mAdapter.addSection(mFolderSection);
         mAdapter.addSection(mFileSection);
 
@@ -82,12 +86,20 @@ public class MusicBrowserViewModel extends BaseViewModel {
         setDirectory(folder);
     }
 
+    private void onClickSong(File song) {
+        mSelectionListener.onSongFileSelected(song);
+    }
+
     public boolean goBack() {
         if (!mHistory.isEmpty()) {
             setDirectory(mHistory.pop());
             return true;
         }
         return false;
+    }
+
+    interface OnSongFileSelectedListener {
+        void onSongFileSelected(File song);
     }
 
 }

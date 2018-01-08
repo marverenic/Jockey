@@ -15,8 +15,12 @@ import java.util.List;
 
 public class FileSection extends HeterogeneousAdapter.ListSection<File> {
 
-    public FileSection(@NonNull List<File> data) {
+    private FileViewModel.OnFileSelectedListener mSelectionListener;
+
+    public FileSection(@NonNull List<File> data,
+                       @NonNull FileViewModel.OnFileSelectedListener selectionListener) {
         super(data);
+        mSelectionListener = selectionListener;
     }
 
     @Override
@@ -35,6 +39,7 @@ public class FileSection extends HeterogeneousAdapter.ListSection<File> {
             super(binding.getRoot());
             mBinding = binding;
             mViewModel = new FileViewModel(itemView.getContext());
+            mViewModel.setFileSelectionListener(mSelectionListener);
 
             mBinding.setViewModel(mViewModel);
         }

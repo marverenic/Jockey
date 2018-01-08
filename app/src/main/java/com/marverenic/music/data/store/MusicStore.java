@@ -5,6 +5,7 @@ import com.marverenic.music.model.Artist;
 import com.marverenic.music.model.Genre;
 import com.marverenic.music.model.Song;
 
+import java.io.File;
 import java.util.List;
 
 import rx.Observable;
@@ -46,5 +47,7 @@ public interface MusicStore {
     Observable<List<Album>> searchForAlbums(String query);
 
     Observable<List<Genre>> searchForGenres(String query);
+
+    Observable<List<Song>> getSongsFromFiles(List<File> files);
 
 }
