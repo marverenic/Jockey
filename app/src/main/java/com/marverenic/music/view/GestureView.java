@@ -36,7 +36,7 @@ import java.util.List;
  */
 public class GestureView extends FrameLayout {
 
-    private static final int MIN_RELEASE_THRESHOLD_DP = 16;
+    private static final int MIN_RELEASE_THRESHOLD_DP = 8;
     private static final int ACTIVATION_THRESHOLD_DP = 96;
     private static final int INDICATOR_SIZE_DP = 36;
     private static final int DEFAULT_COLOR = Color.BLACK;
@@ -122,11 +122,6 @@ public class GestureView extends FrameLayout {
         mColor = color;
     }
 
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        return true;
-    }
-
     private GestureOverlay allocateOverlay() {
         if (mOverlayPool.isEmpty()) {
             return new GestureOverlay();
@@ -143,8 +138,6 @@ public class GestureView extends FrameLayout {
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             if (mActiveOverlay == null) {
-                requestDisallowInterceptTouchEvent(true);
-
                 mActiveOverlay = allocateOverlay();
 
                 Point origin = new Point((int) event.getX(), (int) event.getY());
@@ -170,17 +163,10 @@ public class GestureView extends FrameLayout {
             return false;
         } else if (mActiveOverlay != null) {
             mActiveOverlay.updateGesturePosition((int) event.getX(), (int) event.getY());
-            if (mActiveOverlay.isGestureVertical()) {
-                // Abort gesture and stop intercepting touch events from parent
-                mActiveOverlay.cancelGesture();
-                mAnimatingOverlays.add(mActiveOverlay);
-                mActiveOverlay = null;
-                invalidate();
-                requestDisallowInterceptTouchEvent(false);
-                return false;
-            } else {
-                invalidate();
-                return true;
+            invalidate();
+
+            if (mActiveOverlay.isGestureStarted()) {
+                requestDisallowInterceptTouchEvent(true);
             }
         }
 
@@ -248,6 +234,17 @@ public class GestureView extends FrameLayout {
 
         public void updateGesturePosition(int x, int y) {
             mOverlayEdge.set(x, y);
+
+            if (!mConfirmedGesture) {
+                int dY = Math.abs(y - mOverlayOrigin.y);
+                int dX = Math.abs(x - mOverlayOrigin.x);
+
+                mConfirmedGesture = dX >= mMinReleaseThreshold && dX > dY;
+                if (mConfirmedGesture) {
+                    mOverlayOrigin.x = x;
+                    mOverlayOrigin.y = y;
+                }
+            }
         }
 
         public void cancelGesture() {
@@ -258,19 +255,8 @@ public class GestureView extends FrameLayout {
             return mAlpha > 0;
         }
 
-        public boolean isGestureVertical() {
-            int dY = Math.abs(mOverlayEdge.y - mOverlayOrigin.y);
-            int dX = Math.abs(mOverlayEdge.x - mOverlayOrigin.x);
-
-            if (dY < mMinReleaseThreshold && dX < mMinReleaseThreshold) {
-                mConfirmedGesture = false;
-                return false;
-            } else if (mConfirmedGesture) {
-                return false;
-            } else {
-                mConfirmedGesture = (dY > 2 * dX);
-                return mConfirmedGesture;
-            }
+        public boolean isGestureStarted() {
+            return mConfirmedGesture;
         }
 
         /**
@@ -393,7 +379,7 @@ public class GestureView extends FrameLayout {
         }
 
         public void draw(Canvas canvas) {
-            if (mOverlayOrigin != null) {
+            if (mOverlayOrigin != null && (isGestureStarted() || mPreformingTap)) {
                 mOverlayPaint.setAlpha(mAlpha);
 
                 int radius = radius();
