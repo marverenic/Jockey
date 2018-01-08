@@ -42,6 +42,7 @@ public class MusicBrowserViewModel extends BaseViewModel {
         super(context);
         mSelectionListener = songSelectionListener;
         mHistory = new Stack<>();
+        mBreadCrumbs = Collections.emptyList();
 
         mAdapter = new HeterogeneousAdapter();
         mFolderSection = new FolderSection(Collections.emptyList(), this::onClickFolder);
@@ -86,7 +87,12 @@ public class MusicBrowserViewModel extends BaseViewModel {
 
     public void setDirectory(File directory) {
         mCurrentDirectory = directory;
-        setSelectedBreadCrumb(directory);
+        mSelectedBreadCrumb = directory;
+        notifyPropertyChanged(BR.selectedBreadCrumb);
+
+        if (!mBreadCrumbs.contains(directory)) {
+            notifyPropertyChanged(BR.breadCrumbs);
+        }
 
         if (directory.canRead()) {
             List<File> folders = new ArrayList<>();
@@ -145,10 +151,8 @@ public class MusicBrowserViewModel extends BaseViewModel {
     }
 
     public void setSelectedBreadCrumb(File selectedBreadCrumb) {
-        if (mSelectedBreadCrumb != selectedBreadCrumb) {
-            mSelectedBreadCrumb = selectedBreadCrumb;
-            notifyPropertyChanged(BR.selectedBreadCrumb);
-            setDirectory(selectedBreadCrumb);
+        if (!selectedBreadCrumb.equals(mCurrentDirectory)) {
+            onClickFolder(selectedBreadCrumb);
         }
     }
 
@@ -168,10 +172,6 @@ public class MusicBrowserViewModel extends BaseViewModel {
     }
 
     private void onClickFolder(File folder) {
-        if (!mBreadCrumbs.contains(folder)) {
-            notifyPropertyChanged(BR.breadCrumbs);
-        }
-
         mHistory.add(mCurrentDirectory);
         setDirectory(folder);
     }
