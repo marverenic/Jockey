@@ -13,9 +13,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Stack;
 
 public class MusicBrowserViewModel extends BaseViewModel {
 
+    private Stack<File> mHistory;
     private File mCurrentDirectory;
 
     private HeterogeneousAdapter mAdapter;
@@ -24,6 +26,7 @@ public class MusicBrowserViewModel extends BaseViewModel {
 
     public MusicBrowserViewModel(Context context, File startingDirectory) {
         super(context);
+        mHistory = new Stack<>();
 
         mAdapter = new HeterogeneousAdapter();
         mFolderSection = new FolderSection(Collections.emptyList(), this::onClickFolder);
@@ -75,7 +78,16 @@ public class MusicBrowserViewModel extends BaseViewModel {
     }
 
     private void onClickFolder(File folder) {
+        mHistory.add(mCurrentDirectory);
         setDirectory(folder);
+    }
+
+    public boolean goBack() {
+        if (!mHistory.isEmpty()) {
+            setDirectory(mHistory.pop());
+            return true;
+        }
+        return false;
     }
 
 }

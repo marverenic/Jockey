@@ -57,4 +57,8 @@ public class MusicBrowserFragment extends BaseFragment {
         }
     }
 
+    @Override
+    protected boolean onBackPressed() {
+        return mViewModel.goBack() || super.onBackPressed();
+    }
 }
