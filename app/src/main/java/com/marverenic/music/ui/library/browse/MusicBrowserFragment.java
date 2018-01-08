@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -99,6 +100,8 @@ public class MusicBrowserFragment extends BaseFragment {
                     startPlayback(songs, startIndex);
                 }, throwable -> {
                     Timber.e(throwable, "Failed to begin playback from '" + song + "'");
+                    String errorMessage = getString(R.string.error_playback_from_files_failed, song.getName());
+                    Snackbar.make(mBinding.getRoot(), errorMessage, Snackbar.LENGTH_LONG).show();
                 });
     }
 

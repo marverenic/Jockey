@@ -125,6 +125,7 @@
     <string name="message_play_error_io_exception">&#8220;%1$s&#8221; couldn\'t be played</string>
     <string name="error_hint_duplicate_playlist">Enter a unique playlist name</string>
     <string name="error_hint_empty_playlist">Enter a playlist name</string>
+    <string name="error_playback_from_files_failed">Jockey couldn\'t play %s</string>
 
     <!-- Formatted Messages -->
     <string name="message_added_song">Added &#8220;%1$s&#8221; to &#8220;%2$s&#8221;</string>
