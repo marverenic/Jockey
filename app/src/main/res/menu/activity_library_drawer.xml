@@ -7,6 +7,10 @@
             android:title="@string/header_all_music"
             android:icon="@drawable/ic_library_music_24dp"/>
 
+        <item android:id="@+id/menu_library_browse"
+            android:title="@string/header_browser"
+            android:icon="@drawable/ic_folder_24dp"/>
+
     </group>
 
     <group android:id="@+id/menu_library_misc">

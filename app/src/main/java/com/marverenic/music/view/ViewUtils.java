@@ -11,6 +11,7 @@ import android.support.annotation.DimenRes;
 import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 
 import com.marverenic.music.R;
 
@@ -76,5 +77,21 @@ public final class ViewUtils {
             }
         }
         return null;
+    }
+
+    public static boolean viewGroupContains(ViewGroup root, View view) {
+        if (view == null || view.getParent() == null) {
+            return false;
+        }
+
+        ViewParent curr = view.getParent();
+        while (curr != null) {
+            if (curr == root) {
+                return true;
+            }
+            curr = curr.getParent();
+        }
+
+        return false;
     }
 }
