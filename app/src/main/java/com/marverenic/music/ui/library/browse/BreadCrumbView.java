@@ -19,9 +19,12 @@ import java.util.List;
 
 public class BreadCrumbView<T> extends HorizontalScrollView {
 
+    private static final int SCROLL_PADDING_DP = 32;
+
     private LinearLayout mBreadCrumbContainer;
     private BreadCrumb<T>[] mBreadCrumbs;
     private int mSelectedIndex;
+    private int mScrollPaddingPx;
 
     @Nullable
     private OnBreadCrumbClickListener<T> mListener;
@@ -63,6 +66,8 @@ public class BreadCrumbView<T> extends HorizontalScrollView {
     }
 
     private void init() {
+        mScrollPaddingPx = (int) (getResources().getDisplayMetrics().density * SCROLL_PADDING_DP);
+
         mBreadCrumbContainer = new LinearLayout(getContext());
         mBreadCrumbContainer.setOrientation(LinearLayout.HORIZONTAL);
         addView(mBreadCrumbContainer);
@@ -92,7 +97,7 @@ public class BreadCrumbView<T> extends HorizontalScrollView {
         boolean startVisible = getScrollX() <= active.getLeft();
         boolean endVisible = getScrollX() + getWidth() >= active.getRight();
         if (!startVisible || !endVisible) {
-            smoothScrollTo(active.getLeft(), 0);
+            smoothScrollTo(active.getLeft() - mScrollPaddingPx, 0);
         }
     }
 
