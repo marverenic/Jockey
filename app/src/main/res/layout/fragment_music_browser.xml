@@ -30,6 +30,12 @@
             <com.marverenic.music.ui.library.browse.BreadCrumbView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingStart="@dimen/breadcrumb_toolbar_horizontal_padding"
+                android:paddingLeft="@dimen/breadcrumb_toolbar_horizontal_padding"
+                android:paddingEnd="@dimen/breadcrumb_toolbar_horizontal_padding"
+                android:paddingRight="@dimen/breadcrumb_toolbar_horizontal_padding"
+                android:clipToPadding="false"
+                android:scrollbars="none"
                 app:breadCrumbs="@{viewModel.breadCrumbs}"
                 app:selectedCrumb="@={viewModel.selectedBreadCrumb}"/>
 
