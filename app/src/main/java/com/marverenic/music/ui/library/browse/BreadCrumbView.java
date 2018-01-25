@@ -79,8 +79,19 @@ public class BreadCrumbView<T> extends HorizontalScrollView {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
+        scrollToActiveCrumb();
+    }
+
+    private void scrollToActiveCrumb() {
+        if (mSelectedIndex < 0 || mSelectedIndex > mBreadCrumbs.length) {
+            return;
+        }
+
         View active = mBreadCrumbContainer.getChildAt(mSelectedIndex);
-        if (active != null) {
+
+        boolean startVisible = getScrollX() <= active.getLeft();
+        boolean endVisible = getScrollX() + getWidth() >= active.getRight();
+        if (!startVisible || !endVisible) {
             smoothScrollTo(active.getLeft(), 0);
         }
     }
@@ -111,7 +122,11 @@ public class BreadCrumbView<T> extends HorizontalScrollView {
     public void setSelectedBreadCrumb(int index) {
         for (int i = 0; i < mBreadCrumbs.length; i++) {
             mBreadCrumbs[i].setSelected(i == index);
-            mSelectedIndex = index;
+        }
+
+        mSelectedIndex = index;
+        if (!isLayoutRequested()) {
+            scrollToActiveCrumb();
         }
     }
 
@@ -127,6 +142,7 @@ public class BreadCrumbView<T> extends HorizontalScrollView {
     }
 
     private void onBreadCrumbClick(View view) {
+        requestLayout();
         for (int i = 0; i < mBreadCrumbs.length; i++) {
             if (mBreadCrumbs[i].getView().label == view) {
                 setSelectedBreadCrumb(i);
