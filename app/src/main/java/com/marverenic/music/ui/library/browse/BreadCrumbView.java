@@ -96,7 +96,7 @@ public class BreadCrumbView<T> extends HorizontalScrollView {
         }
     }
 
-    public void setBreadCrumbs(List<BreadCrumb> breadCrumbs) {
+    public void setBreadCrumbs(List<BreadCrumb<T>> breadCrumbs) {
         //noinspection unchecked
         mBreadCrumbs = breadCrumbs.toArray((BreadCrumb<T>[]) new BreadCrumb[breadCrumbs.size()]);
         mSelectedIndex = breadCrumbs.size() - 1;
