@@ -21,18 +21,14 @@ public class BreadCrumbView<T> extends HorizontalScrollView {
 
     private LinearLayout mBreadCrumbContainer;
     private BreadCrumb<T>[] mBreadCrumbs;
+    private int mSelectedIndex;
 
     @Nullable
     private OnBreadCrumbClickListener<T> mListener;
 
     @InverseBindingAdapter(attribute = "selectedCrumb")
     public static <T> T getSelected(BreadCrumbView<T> view) {
-        for (int i = 0; i < view.getBreadCrumbCount(); i++) {
-            if (view.getBreadCrumb(i).isSelected()) {
-                return view.getBreadCrumb(i).getData();
-            }
-        }
-        return null;
+        return view.getBreadCrumb(view.mSelectedIndex).getData();
     }
 
     @BindingAdapter("selectedCrumb")
@@ -80,9 +76,19 @@ public class BreadCrumbView<T> extends HorizontalScrollView {
         }
     }
 
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+        View active = mBreadCrumbContainer.getChildAt(mSelectedIndex);
+        if (active != null) {
+            smoothScrollTo(active.getLeft(), 0);
+        }
+    }
+
     public void setBreadCrumbs(List<BreadCrumb> breadCrumbs) {
         //noinspection unchecked
         mBreadCrumbs = breadCrumbs.toArray((BreadCrumb<T>[]) new BreadCrumb[breadCrumbs.size()]);
+        mSelectedIndex = breadCrumbs.size() - 1;
 
         mBreadCrumbContainer.removeAllViews();
 
@@ -105,6 +111,7 @@ public class BreadCrumbView<T> extends HorizontalScrollView {
     public void setSelectedBreadCrumb(int index) {
         for (int i = 0; i < mBreadCrumbs.length; i++) {
             mBreadCrumbs[i].setSelected(i == index);
+            mSelectedIndex = index;
         }
     }
 
