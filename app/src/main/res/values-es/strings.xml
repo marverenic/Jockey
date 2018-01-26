@@ -180,6 +180,7 @@
     <string name="empty_search">No se han encontrado resultados</string>
     <string name="empty_queue">Nada está jugando</string>
     <string name="empty_queue_detail">Puede reproducir música desde la página de la biblioteca</string>
+    <string name="empty_recently_added_detail">La música que hayas agregado en los últimos 30 días aparecerá aquí</string>
     <string name="empty_error_album">No se pudo cargar el álbum</string>
     <string name="empty_error_artist">No se pudo cargar al artista</string>
     <string name="empty_error_genre">No se puede cargar el género</string>

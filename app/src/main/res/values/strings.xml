@@ -185,6 +185,7 @@
     <string name="empty_search">No results found</string>
     <string name="empty_queue">Nothing is playing</string>
     <string name="empty_queue_detail">You can play music from the library page</string>
+    <string name="empty_recently_added_detail">Music you\'ve added in the last 30 days will appear here</string>
     <string name="empty_error_album">Couldn\'t load album</string>
     <string name="empty_error_artist">Couldn\'t load artist</string>
     <string name="empty_error_genre">Couldn\'t load genre</string>
