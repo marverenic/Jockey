@@ -23,6 +23,7 @@
     <dimen name="widget_button_size">36dp</dimen>
     <dimen name="now_playing_max_control_width">400dp</dimen>
     <item name="now_playing_control_end_weight" format="float" type="dimen">0.6</item>
+    <dimen name="breadcrumb_toolbar_horizontal_padding">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="alert_padding">24dp</dimen>
     <dimen name="seekbarMargin">8dp</dimen>
