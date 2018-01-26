@@ -197,21 +197,24 @@ public class LibraryActivity extends BaseLibraryActivity {
                 return;
         }
 
-        setSelectedPage(itemId);
-        replaceFragment(createFragmentForSelectedPage(itemId));
+        if (setSelectedPage(itemId)) {
+            replaceFragment(createFragmentForSelectedPage(itemId));
+        }
     }
 
-    private void setSelectedPage(@IdRes int itemId) {
+    // Returns true if this method changed the state of the menu
+    private boolean setSelectedPage(@IdRes int itemId) {
         Menu navMenu = mBinding.libraryDrawerNavigationView.getMenu();
         for (int i = 0; i < navMenu.size(); i++) {
             MenuItem menuItem = navMenu.getItem(i);
             if (menuItem.getItemId() == itemId && menuItem.isChecked()) {
                 // If the item id hasn't changed, then return early
-                return;
+                return false;
             }
 
             menuItem.setChecked(navMenu.getItem(i).getItemId() == itemId);
         }
+        return true;
     }
 
     private Fragment createFragmentForSelectedPage(@IdRes int itemId) {
