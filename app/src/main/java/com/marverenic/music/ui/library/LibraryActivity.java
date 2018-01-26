@@ -27,6 +27,7 @@ import com.marverenic.music.ui.BaseLibraryActivity;
 import com.marverenic.music.ui.BaseLibraryActivityViewModel.OnBottomSheetStateChangeListener.BottomSheetState;
 import com.marverenic.music.ui.about.AboutActivity;
 import com.marverenic.music.ui.library.browse.MusicBrowserFragment;
+import com.marverenic.music.ui.library.recentlyadded.RecentlyAddedFragment;
 import com.marverenic.music.ui.settings.SettingsActivity;
 import com.marverenic.music.utils.UriUtils;
 
@@ -196,21 +197,24 @@ public class LibraryActivity extends BaseLibraryActivity {
                 return;
         }
 
-        setSelectedPage(itemId);
-        replaceFragment(createFragmentForSelectedPage(itemId));
+        if (setSelectedPage(itemId)) {
+            replaceFragment(createFragmentForSelectedPage(itemId));
+        }
     }
 
-    private void setSelectedPage(@IdRes int itemId) {
+    // Returns true if this method changed the state of the menu
+    private boolean setSelectedPage(@IdRes int itemId) {
         Menu navMenu = mBinding.libraryDrawerNavigationView.getMenu();
         for (int i = 0; i < navMenu.size(); i++) {
             MenuItem menuItem = navMenu.getItem(i);
             if (menuItem.getItemId() == itemId && menuItem.isChecked()) {
                 // If the item id hasn't changed, then return early
-                return;
+                return false;
             }
 
             menuItem.setChecked(navMenu.getItem(i).getItemId() == itemId);
         }
+        return true;
     }
 
     private Fragment createFragmentForSelectedPage(@IdRes int itemId) {
@@ -219,6 +223,8 @@ public class LibraryActivity extends BaseLibraryActivity {
                 return LibraryFragment.newInstance();
             case R.id.menu_library_browse:
                 return MusicBrowserFragment.newInstance();
+            case R.id.menu_library_recently_added:
+                return RecentlyAddedFragment.newInstance();
             default:
                 throw new UnsupportedOperationException("Failed to switch to fragment with menu" +
                         " item id " + getResources().getResourceName(itemId));
