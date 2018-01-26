@@ -16,9 +16,12 @@ import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.databinding.FragmentRecentlyAddedBinding;
+import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseFragment;
 import com.marverenic.music.ui.common.OnSongSelectedListener;
+
+import java.util.Collections;
 
 import javax.inject.Inject;
 
@@ -27,6 +30,7 @@ import timber.log.Timber;
 
 public class RecentlyAddedFragment extends BaseFragment {
 
+    private static final long ALBUM_GROUPING_FUDGE_SEC = 24 * 60 * 60; // 1 day
     private static final long RECENT_THRESHOLD_SEC = 30 * 24 * 60 * 60; // 30 days
 
     @Inject PlayerController mPlayerController;
@@ -70,6 +74,21 @@ public class RecentlyAddedFragment extends BaseFragment {
                                 return dT < RECENT_THRESHOLD_SEC;
                             })
                             .toList();
+                })
+                .map(recentlyAdded -> {
+                    Collections.sort(recentlyAdded, (s1, s2) -> {
+                        long dT = Math.abs(s1.getDateAdded() - s2.getDateAdded());
+                        if (s1.getAlbumId() == s2.getAlbumId() && dT < ALBUM_GROUPING_FUDGE_SEC) {
+                            // If songs from the same album were added at about the same time,
+                            // sort them by album index/name instead of by time added
+                            return Song.TRACK_COMPARATOR.compare(s1, s2);
+                        } else if (dT == 0) {
+                            // If songs were added at the same time, sort them by name
+                            return s1.compareTo(s2);
+                        }
+                        return Song.DATE_ADDED_COMPARATOR.compare(s1, s2);
+                    });
+                    return recentlyAdded;
                 })
                 .subscribe(recentlyAdded -> {
                     mViewModel.setSongs(recentlyAdded);
