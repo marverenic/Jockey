@@ -27,6 +27,7 @@ import com.marverenic.music.ui.BaseLibraryActivity;
 import com.marverenic.music.ui.BaseLibraryActivityViewModel.OnBottomSheetStateChangeListener.BottomSheetState;
 import com.marverenic.music.ui.about.AboutActivity;
 import com.marverenic.music.ui.library.browse.MusicBrowserFragment;
+import com.marverenic.music.ui.library.recentlyadded.RecentlyAddedFragment;
 import com.marverenic.music.ui.settings.SettingsActivity;
 import com.marverenic.music.utils.UriUtils;
 
@@ -219,6 +220,8 @@ public class LibraryActivity extends BaseLibraryActivity {
                 return LibraryFragment.newInstance();
             case R.id.menu_library_browse:
                 return MusicBrowserFragment.newInstance();
+            case R.id.menu_library_recently_added:
+                return RecentlyAddedFragment.newInstance();
             default:
                 throw new UnsupportedOperationException("Failed to switch to fragment with menu" +
                         " item id " + getResources().getResourceName(itemId));

@@ -11,6 +11,10 @@
             android:title="@string/header_browser"
             android:icon="@drawable/ic_folder_24dp"/>
 
+        <item android:id="@+id/menu_library_recently_added"
+            android:title="@string/header_recently_added"
+            android:icon="@drawable/ic_new_24dp"/>
+
     </group>
 
     <group android:id="@+id/menu_library_misc">

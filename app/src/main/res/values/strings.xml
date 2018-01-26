@@ -20,6 +20,7 @@
     <string name="header_search">Search</string>
     <string name="header_all_music">Library</string>
     <string name="header_browser">Browse</string>
+    <string name="header_recently_added">Recently Added</string>
 
     <!-- Data types -->
     <string name="playlist">Playlist</string>

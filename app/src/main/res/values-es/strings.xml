@@ -19,6 +19,7 @@
     <string name="header_search">Buscar</string>
     <string name="header_all_music">Biblioteca</string>
     <string name="header_browser">Navegar</string>
+    <string name="header_recently_added">Recientemente Añadido</string>
 
     <!-- Data types -->
     <string name="playlist">Listas reproducción</string>
