@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
+import rx.Observable;
+import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
 
 public class MusicBrowserViewModel extends BaseViewModel {
@@ -37,12 +39,15 @@ public class MusicBrowserViewModel extends BaseViewModel {
     private List<File> mBreadCrumbs;
     private File mSelectedBreadCrumb;
 
+    private BehaviorSubject<File> mDirectoryObservable;
+
     public MusicBrowserViewModel(Context context, File startingDirectory,
                                  @NonNull OnSongFileSelectedListener songSelectionListener) {
         super(context);
         mSelectionListener = songSelectionListener;
         mHistory = new Stack<>();
         mBreadCrumbs = Collections.emptyList();
+        mDirectoryObservable = BehaviorSubject.create(startingDirectory);
 
         mAdapter = new HeterogeneousAdapter();
         mFolderSection = new FolderSection(Collections.emptyList(), this::onClickFolder);
@@ -81,12 +86,17 @@ public class MusicBrowserViewModel extends BaseViewModel {
                 });
     }
 
+    public Observable<File> getObservableDirectory() {
+        return mDirectoryObservable;
+    }
+
     public File getDirectory() {
         return mCurrentDirectory;
     }
 
     public void setDirectory(File directory) {
         mCurrentDirectory = directory;
+        mDirectoryObservable.onNext(directory);
         mSelectedBreadCrumb = directory;
         notifyPropertyChanged(BR.selectedBreadCrumb);
 

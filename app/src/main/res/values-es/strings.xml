@@ -107,6 +107,7 @@
     <string name="confirm_refresh_library">Biblioteca actualizada</string>
     <string name="confirm_clear_queue">Cola borrada</string>
     <string name="confirm_removed_rule">Regla eliminada</string>
+    <string name="confirm_application_exit">Presione nuevamente para salir</string>
 
     <!-- Dialog messages -->
     <string name="prompt_save_changes">¿Guardar cambios?</string>

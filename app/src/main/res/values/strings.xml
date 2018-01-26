@@ -113,6 +113,7 @@
     <string name="confirm_refresh_library">Library refreshed</string>
     <string name="confirm_clear_queue">Cleared queue</string>
     <string name="confirm_removed_rule">Removed rule</string>
+    <string name="confirm_application_exit">Press back again to exit</string>
 
     <!-- Dialog messages -->
     <string name="prompt_save_changes">Save changes?</string>
