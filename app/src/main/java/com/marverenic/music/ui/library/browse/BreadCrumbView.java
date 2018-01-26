@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -81,14 +82,22 @@ public class BreadCrumbView<T> extends HorizontalScrollView {
         }
     }
 
-    @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        super.onLayout(changed, l, t, r, b);
-        scrollToActiveCrumb();
+    private void scrollToActiveCrumb() {
+        if (!isLayoutRequested()) {
+            performScrollToActiveCrumb();
+        } else {
+            getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    performScrollToActiveCrumb();
+                    getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+            });
+        }
     }
 
-    private void scrollToActiveCrumb() {
-        if (mSelectedIndex < 0 || mSelectedIndex > mBreadCrumbs.length) {
+    private void performScrollToActiveCrumb() {
+        if (mSelectedIndex < 0 || mSelectedIndex >= mBreadCrumbs.length) {
             return;
         }
 
@@ -96,6 +105,7 @@ public class BreadCrumbView<T> extends HorizontalScrollView {
 
         boolean startVisible = getScrollX() <= active.getLeft();
         boolean endVisible = getScrollX() + getWidth() >= active.getRight();
+
         if (!startVisible || !endVisible) {
             smoothScrollTo(active.getLeft() - mScrollPaddingPx, 0);
         }
@@ -104,8 +114,6 @@ public class BreadCrumbView<T> extends HorizontalScrollView {
     public void setBreadCrumbs(List<BreadCrumb<T>> breadCrumbs) {
         //noinspection unchecked
         mBreadCrumbs = breadCrumbs.toArray((BreadCrumb<T>[]) new BreadCrumb[breadCrumbs.size()]);
-        mSelectedIndex = breadCrumbs.size() - 1;
-
         mBreadCrumbContainer.removeAllViews();
 
         for (int i = 0; i < mBreadCrumbs.length; i++) {
@@ -114,6 +122,9 @@ public class BreadCrumbView<T> extends HorizontalScrollView {
             breadCrumb.getView().setSelected(i == mBreadCrumbs.length - 1);
             mBreadCrumbContainer.addView(breadCrumb.getView().root);
         }
+
+        mSelectedIndex = breadCrumbs.size() - 1;
+        scrollToActiveCrumb();
     }
 
     public BreadCrumb<T> getBreadCrumb(int index) {
@@ -129,8 +140,8 @@ public class BreadCrumbView<T> extends HorizontalScrollView {
             mBreadCrumbs[i].setSelected(i == index);
         }
 
-        mSelectedIndex = index;
-        if (!isLayoutRequested()) {
+        if (mSelectedIndex != index) {
+            mSelectedIndex = index;
             scrollToActiveCrumb();
         }
     }
