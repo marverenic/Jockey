@@ -50,6 +50,16 @@ public class RecentlyAddedViewModel extends BaseViewModel {
         });
     }
 
+    public void setSongs(List<Song> songs) {
+        mSongSection.setData(songs);
+        mAdapter.notifyDataSetChanged();
+    }
+
+    public void setCurrentlyPlaying(Song nowPlaying) {
+        mSongSection.setCurrentSong(nowPlaying);
+        mAdapter.notifyDataSetChanged();
+    }
+
     public RecyclerView.Adapter<?> getAdapter() {
         return mAdapter;
     }

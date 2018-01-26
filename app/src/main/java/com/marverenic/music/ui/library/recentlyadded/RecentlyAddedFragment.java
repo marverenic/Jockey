@@ -22,7 +22,12 @@ import com.marverenic.music.ui.common.OnSongSelectedListener;
 
 import javax.inject.Inject;
 
+import rx.Observable;
+import timber.log.Timber;
+
 public class RecentlyAddedFragment extends BaseFragment {
+
+    private static final long RECENT_THRESHOLD_SEC = 30 * 24 * 60 * 60; // 30 days
 
     @Inject PlayerController mPlayerController;
     @Inject MusicStore mMusicStore;
@@ -56,6 +61,26 @@ public class RecentlyAddedFragment extends BaseFragment {
 
         mBinding.setViewModel(mViewModel);
         setupToolbar(mBinding.toolbar);
+
+        mMusicStore.getSongs()
+                .flatMap(allSongs -> {
+                    return Observable.from(allSongs)
+                            .filter(song -> {
+                                long dT = System.currentTimeMillis() / 1000 - song.getDateAdded();
+                                return dT < RECENT_THRESHOLD_SEC;
+                            })
+                            .toList();
+                })
+                .subscribe(recentlyAdded -> {
+                    mViewModel.setSongs(recentlyAdded);
+                }, throwable -> {
+                    Timber.e("Failed to update recently added items", throwable);
+                });
+
+        mPlayerController.getNowPlaying()
+                .subscribe(mViewModel::setCurrentlyPlaying, throwable -> {
+                    Timber.e("Failed to update currently playing song", throwable);
+                });
 
         return mBinding.getRoot();
     }
