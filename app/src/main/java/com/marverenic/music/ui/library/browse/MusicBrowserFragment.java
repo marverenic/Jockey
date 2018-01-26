@@ -44,6 +44,7 @@ public class MusicBrowserFragment extends BaseFragment {
 
     private FragmentMusicBrowserBinding mBinding;
     private MusicBrowserViewModel mViewModel;
+    private boolean mExitConfirmed;
 
     public static MusicBrowserFragment newInstance() {
         return new MusicBrowserFragment();
@@ -67,6 +68,13 @@ public class MusicBrowserFragment extends BaseFragment {
                 resolveStartingDirectory(), this::playFile);
         mBinding.setViewModel(mViewModel);
         setupToolbar(mBinding.toolbar);
+
+        mViewModel.getObservableDirectory()
+                .subscribe(directory -> {
+                    mExitConfirmed = false;
+                }, throwable -> {
+                    Timber.e("Failed to update exit confirmation state", throwable);
+                });
 
         if (savedInstanceState != null) {
             String[] savedHistory = savedInstanceState.getStringArray(EXTRA_SAVED_HISTORY);
@@ -108,7 +116,18 @@ public class MusicBrowserFragment extends BaseFragment {
 
     @Override
     protected boolean onBackPressed() {
-        return mViewModel.goBack() || super.onBackPressed();
+        return mViewModel.goBack() || confirmBackPressed() || super.onBackPressed();
+    }
+
+    private boolean confirmBackPressed() {
+        if (mExitConfirmed) {
+            return false;
+        }
+
+        Snackbar.make(mBinding.getRoot(), R.string.confirm_application_exit, Snackbar.LENGTH_SHORT)
+                .show();
+        mExitConfirmed = true;
+        return true;
     }
 
     private void playFile(File song) {
