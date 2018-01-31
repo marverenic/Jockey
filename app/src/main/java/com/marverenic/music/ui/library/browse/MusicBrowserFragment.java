@@ -35,6 +35,7 @@ import timber.log.Timber;
 
 public class MusicBrowserFragment extends BaseFragment {
 
+    private static final String KEY_SAVED_LIST_STATE = "RecentlyAddedFragment.RecyclerViewState";
     private static final String EXTRA_SAVED_HISTORY = "MusicBrowserFragment.History";
     private static final String EXTRA_SAVED_DIRECTORY = "MusicBrowserFragment.CurrentDirectory";
 
@@ -66,8 +67,15 @@ public class MusicBrowserFragment extends BaseFragment {
 
         mViewModel = new MusicBrowserViewModel(getContext(),
                 resolveStartingDirectory(), this::playFile);
+
         mBinding.setViewModel(mViewModel);
+        mBinding.executePendingBindings();
         setupToolbar(mBinding.toolbar);
+
+        if (savedInstanceState != null) {
+            mBinding.musicBrowserRecyclerView.getLayoutManager()
+                    .onRestoreInstanceState(savedInstanceState.getParcelable(KEY_SAVED_LIST_STATE));
+        }
 
         mViewModel.getObservableDirectory()
                 .subscribe(directory -> {
@@ -96,6 +104,9 @@ public class MusicBrowserFragment extends BaseFragment {
         super.onSaveInstanceState(outState);
         outState.putString(EXTRA_SAVED_DIRECTORY, mViewModel.getDirectory().getAbsolutePath());
         outState.putStringArray(EXTRA_SAVED_HISTORY, mViewModel.getHistory());
+
+        outState.putParcelable(KEY_SAVED_LIST_STATE,
+                mBinding.musicBrowserRecyclerView.getLayoutManager().onSaveInstanceState());
     }
 
     private File resolveStartingDirectory() {
