@@ -30,6 +30,8 @@ import timber.log.Timber;
 
 public class RecentlyAddedFragment extends BaseFragment {
 
+    private static final String KEY_SAVED_LIST_STATE = "RecentlyAddedFragment.RecyclerViewState";
+
     private static final long ALBUM_GROUPING_FUDGE_SEC = 24 * 60 * 60; // 1 day
     private static final long RECENT_THRESHOLD_SEC = 30 * 24 * 60 * 60; // 30 days
 
@@ -64,7 +66,13 @@ public class RecentlyAddedFragment extends BaseFragment {
                 OnSongSelectedListener.defaultImplementation(getActivity(), mPreferenceStore));
 
         mBinding.setViewModel(mViewModel);
+        mBinding.executePendingBindings();
         setupToolbar(mBinding.toolbar);
+
+        if (savedInstanceState != null) {
+            mBinding.recentlyAddedRecyclerView.getLayoutManager()
+                    .onRestoreInstanceState(savedInstanceState.getParcelable(KEY_SAVED_LIST_STATE));
+        }
 
         mMusicStore.getSongs()
                 .flatMap(allSongs -> {
@@ -102,6 +110,13 @@ public class RecentlyAddedFragment extends BaseFragment {
                 });
 
         return mBinding.getRoot();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(KEY_SAVED_LIST_STATE,
+                mBinding.recentlyAddedRecyclerView.getLayoutManager().onSaveInstanceState());
     }
 
     private void setupToolbar(Toolbar toolbar) {
