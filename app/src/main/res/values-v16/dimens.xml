@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="seekbarMargin">16dp</dimen>
+    <dimen name="now_playing_time_padding_bottom">@dimen/now_playing_time_padding</dimen>
+
+</resources>
