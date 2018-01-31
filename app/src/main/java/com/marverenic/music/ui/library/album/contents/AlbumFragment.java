@@ -13,9 +13,13 @@ import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.databinding.FragmentAlbumBinding;
 import com.marverenic.music.model.Album;
+import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseFragment;
 import com.marverenic.music.ui.common.OnSongSelectedListener;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.inject.Inject;
 
@@ -66,6 +70,11 @@ public class AlbumFragment extends BaseFragment {
                 });
 
         mMusicStore.getSongs(mAlbum)
+                .map(ArrayList::new)
+                .map(songs -> {
+                    Collections.sort(songs, Song.TRACK_COMPARATOR);
+                    return songs;
+                })
                 .compose(bindToLifecycle())
                 .subscribe(viewModel::setAlbumSongs, throwable -> {
                     Timber.e(throwable, "Failed to get songs in album");
