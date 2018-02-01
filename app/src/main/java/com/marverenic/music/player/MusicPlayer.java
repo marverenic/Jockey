@@ -20,6 +20,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.KeyEvent;
 
+import com.marverenic.music.BuildConfig;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MediaStoreUtil;
@@ -82,7 +83,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     /**
      * Package permission that is required to receive broadcasts
      */
-    private static final String BROADCAST_PERMISSION = "com.marverenic.music.player.BROADCAST_PERMISSION";
+    private static final String BROADCAST_PERMISSION = BuildConfig.APPLICATION_ID + ".MUSIC_BROADCAST_PERMISSION";
 
     /**
      * An {@link Intent} action broadcasted when a MusicPlayer has changed its state automatically
