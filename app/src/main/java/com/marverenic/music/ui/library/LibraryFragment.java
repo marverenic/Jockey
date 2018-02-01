@@ -1,6 +1,7 @@
 package com.marverenic.music.ui.library;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.view.ViewPager;
@@ -30,6 +31,8 @@ import timber.log.Timber;
 
 public class LibraryFragment extends BaseFragment {
 
+    private static final String KEY_SAVED_PAGE = "LibraryFragment.Page";
+
     @Inject MusicStore mMusicStore;
     @Inject PlaylistStore mPlaylistStore;
     @Inject ThemeStore mThemeStore;
@@ -56,6 +59,10 @@ public class LibraryFragment extends BaseFragment {
         mBinding = FragmentLibraryBinding.inflate(inflater, container, false);
         mViewModel = new LibraryViewModel(getContext(), getFragmentManager(), mPrefStore, mThemeStore);
         mBinding.setViewModel(mViewModel);
+
+        if (savedInstanceState != null) {
+            mViewModel.setPage(savedInstanceState.getInt(KEY_SAVED_PAGE, mViewModel.getPage()));
+        }
 
         Observable.combineLatest(mMusicStore.isLoading(), mPlaylistStore.isLoading(),
                 (musicLoading, playlistLoading) -> {
@@ -84,6 +91,12 @@ public class LibraryFragment extends BaseFragment {
         setHasOptionsMenu(true);
 
         return mBinding.getRoot();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_SAVED_PAGE, mViewModel.getPage());
     }
 
     private void setupToolbar(Toolbar toolbar) {

@@ -1,11 +1,13 @@
 package com.marverenic.music.ui.library.recentlyadded;
 
 import android.content.Context;
+import android.databinding.Bindable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.marverenic.adapter.HeterogeneousAdapter;
+import com.marverenic.music.BR;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
@@ -23,6 +25,7 @@ import java.util.List;
 
 public class RecentlyAddedViewModel extends BaseViewModel {
 
+    private boolean mAdapterSetUp = false;
     private HeterogeneousAdapter mAdapter;
     private SongSection mSongSection;
 
@@ -51,8 +54,10 @@ public class RecentlyAddedViewModel extends BaseViewModel {
     }
 
     public void setSongs(List<Song> songs) {
+        mAdapterSetUp = true;
         mSongSection.setData(songs);
         mAdapter.notifyDataSetChanged();
+        notifyPropertyChanged(BR.adapter);
     }
 
     public void setCurrentlyPlaying(Song nowPlaying) {
@@ -60,7 +65,11 @@ public class RecentlyAddedViewModel extends BaseViewModel {
         mAdapter.notifyDataSetChanged();
     }
 
+    @Bindable
     public RecyclerView.Adapter<?> getAdapter() {
+        if (!mAdapterSetUp) {
+            return null;
+        }
         return mAdapter;
     }
 

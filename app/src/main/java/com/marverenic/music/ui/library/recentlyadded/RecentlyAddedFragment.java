@@ -30,7 +30,8 @@ import timber.log.Timber;
 
 public class RecentlyAddedFragment extends BaseFragment {
 
-    private static final long ALBUM_GROUPING_FUDGE_SEC = 24 * 60 * 60; // 1 day
+    private static final String KEY_SAVED_LIST_STATE = "RecentlyAddedFragment.RecyclerViewState";
+
     private static final long RECENT_THRESHOLD_SEC = 30 * 24 * 60 * 60; // 30 days
 
     @Inject PlayerController mPlayerController;
@@ -64,7 +65,13 @@ public class RecentlyAddedFragment extends BaseFragment {
                 OnSongSelectedListener.defaultImplementation(getActivity(), mPreferenceStore));
 
         mBinding.setViewModel(mViewModel);
+        mBinding.executePendingBindings();
         setupToolbar(mBinding.toolbar);
+
+        if (savedInstanceState != null) {
+            mBinding.recentlyAddedRecyclerView.getLayoutManager()
+                    .onRestoreInstanceState(savedInstanceState.getParcelable(KEY_SAVED_LIST_STATE));
+        }
 
         mMusicStore.getSongs()
                 .flatMap(allSongs -> {
@@ -77,31 +84,30 @@ public class RecentlyAddedFragment extends BaseFragment {
                 })
                 .map(recentlyAdded -> {
                     Collections.sort(recentlyAdded, (s1, s2) -> {
-                        long dT = Math.abs(s1.getDateAdded() - s2.getDateAdded());
-                        if (s1.getAlbumId() == s2.getAlbumId() && dT < ALBUM_GROUPING_FUDGE_SEC) {
-                            // If songs from the same album were added at about the same time,
-                            // sort them by album index/name instead of by time added
-                            return Song.TRACK_COMPARATOR.compare(s1, s2);
-                        } else if (dT == 0) {
-                            // If songs were added at the same time, sort them by name
-                            return s1.compareTo(s2);
-                        }
-                        return Song.DATE_ADDED_COMPARATOR.compare(s1, s2);
+                        int dateCmp = Song.DATE_ADDED_COMPARATOR.compare(s1, s2);
+                        return dateCmp == 0 ? s1.compareTo(s2) : dateCmp;
                     });
                     return recentlyAdded;
                 })
                 .subscribe(recentlyAdded -> {
                     mViewModel.setSongs(recentlyAdded);
                 }, throwable -> {
-                    Timber.e("Failed to update recently added items", throwable);
+                    Timber.e(throwable, "Failed to update recently added items");
                 });
 
         mPlayerController.getNowPlaying()
                 .subscribe(mViewModel::setCurrentlyPlaying, throwable -> {
-                    Timber.e("Failed to update currently playing song", throwable);
+                    Timber.e(throwable, "Failed to update currently playing song");
                 });
 
         return mBinding.getRoot();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(KEY_SAVED_LIST_STATE,
+                mBinding.recentlyAddedRecyclerView.getLayoutManager().onSaveInstanceState());
     }
 
     private void setupToolbar(Toolbar toolbar) {
