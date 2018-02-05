@@ -580,12 +580,12 @@ public class ServicePlayerController implements PlayerController {
 
             getNowPlaying()
                     .observeOn(Schedulers.io())
-                    .map((Song song) -> {
+                    .flatMap((Song song) -> {
                         if (song == null) {
                             return null;
                         }
 
-                        return Util.fetchFullArt(mContext, song);
+                        return Util.fetchArtwork(mContext, song.getLocation());
                     })
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(mArtwork::onNext, throwable -> {

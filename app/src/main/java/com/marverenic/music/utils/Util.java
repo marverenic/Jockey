@@ -6,21 +6,27 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.media.audiofx.AudioEffect;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.Nullable;
+import android.util.DisplayMetrics;
 import android.webkit.MimeTypeMap;
 
-import com.marverenic.music.model.Song;
+import com.bumptech.glide.Glide;
+import com.marverenic.music.R;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
+import rx.Observable;
+import rx.exceptions.Exceptions;
 import timber.log.Timber;
 
 import static android.content.Context.CONNECTIVITY_SERVICE;
@@ -46,6 +52,11 @@ public final class Util {
             "application/ogg",
             "application/x-ogg",
             "application/itunes"
+    );
+
+    private static final List<String> COVER_IMAGE_NAMES = Arrays.asList(
+            "cover.jpg",
+            "folder.jpg"
     );
 
     /**
@@ -128,26 +139,71 @@ public final class Util {
         return false;
     }
 
-    public static Bitmap fetchFullArt(Context context, Song song) {
-        if (song == null) {
-            return null;
-        }
-
+    @Nullable
+    private static byte[] fetchEmbeddedArtwork(Context context, Uri songLocation) {
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 
         try {
-            retriever.setDataSource(context, song.getLocation());
-            byte[] stream = retriever.getEmbeddedPicture();
-            if (stream != null) {
-                return BitmapFactory.decodeByteArray(stream, 0, stream.length);
-            }
+            retriever.setDataSource(context, songLocation);
+            return retriever.getEmbeddedPicture();
         } catch (RuntimeException e) {
             Timber.e(e, "Failed to load full song artwork");
         } catch (OutOfMemoryError e) {
             Timber.e(e, "Unable to allocate space on the heap for full song artwork");
+        } finally {
+            retriever.release();
         }
 
         return null;
+    }
+
+    @Nullable
+    private static File resolveArtwork(Context context, Uri songLocation) {
+        String path = UriUtils.getPathFromUri(context, songLocation);
+        if (path == null) {
+            return null;
+        }
+
+        File directory = new File(path).getParentFile();
+        for (String cover : COVER_IMAGE_NAMES) {
+            File image = new File(directory, cover);
+            if (image.canRead()) {
+                return image;
+            }
+        }
+
+        return null;
+    }
+
+    public static Observable<Bitmap> fetchArtwork(Context context, Uri songLocation) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        int size = Math.max(displayMetrics.widthPixels, displayMetrics.heightPixels);
+        return fetchArtwork(context, songLocation, size);
+    }
+
+    public static Observable<Bitmap> fetchArtwork(Context context, Uri songLocation, int size) {
+        return Observable.fromCallable(() -> {
+            byte[] embedded = fetchEmbeddedArtwork(context, songLocation);
+            if (embedded != null){
+                return Glide.with(context).load(embedded);
+            }
+
+            File folderImage = resolveArtwork(context, songLocation);
+            if (folderImage != null) {
+                return Glide.with(context).load(folderImage);
+            }
+
+            return Glide.with(context).load(R.drawable.art_default_xl);
+        }).map(request -> {
+            try {
+                return request.asBitmap()
+                        .atMost()
+                        .into(size, size)
+                        .get();
+            } catch (InterruptedException|ExecutionException e) {
+                throw Exceptions.propagate(e);
+            }
+        });
     }
 
     public static boolean isFileMusic(File file) {

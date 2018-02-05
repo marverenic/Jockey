@@ -48,6 +48,7 @@ import java.util.Scanner;
 
 import javax.inject.Inject;
 
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static android.content.Intent.ACTION_HEADSET_PLUG;
@@ -415,7 +416,14 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             setBackingQueue(queuePosition);
             mMediaPlayer.seekTo(currentPosition);
 
-            mArtwork = Util.fetchFullArt(mContext, getNowPlaying());
+            Util.fetchArtwork(mContext, getNowPlaying().getLocation())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(artwork -> {
+                        mArtwork = artwork;
+                    }, throwable -> {
+                        Timber.e(throwable, "Failed to load artwork");
+                        mArtwork = null;
+                    });
         } catch(FileNotFoundException ignored) {
             Timber.i("State does not exist. Using empty state");
             // If there's no queue file, just restore to an empty state
@@ -1191,8 +1199,17 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     @Override
     public void onSongStart() {
         Timber.i("Started new song");
-        mArtwork = Util.fetchFullArt(mContext, getNowPlaying());
-        updateNowPlaying();
+        Util.fetchArtwork(mContext, getNowPlaying().getLocation())
+                .subscribeOn(Schedulers.io())
+                .subscribe(artwork -> {
+                    mArtwork = artwork;
+                    updateNowPlaying();
+                }, throwable -> {
+                    Timber.e(throwable, "Failed to load artwork");
+                    mArtwork = null;
+                    updateNowPlaying();
+                });
+
         updateUi();
     }
 
