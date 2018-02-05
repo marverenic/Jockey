@@ -5,6 +5,13 @@
 -dontpreverify
 -optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
 
+# Keep everything annotated with @Keep
+-keep,allowobfuscation @interface android.support.annotation.Keep
+-keep @android.support.annotation.Keep class *
+-keepclassmembers class * {
+    @android.support.annotation.Keep *;
+}
+
 # Glide rules
 -keep public class * implements com.bumptech.glide.module.GlideModule
 -keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
