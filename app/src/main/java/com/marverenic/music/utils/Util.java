@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.media.audiofx.AudioEffect;
@@ -12,6 +13,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.webkit.MimeTypeMap;
@@ -175,6 +177,43 @@ public final class Util {
         return null;
     }
 
+    @Nullable
+    private static String resolveMediaStoreArtwork(Context context, Uri songLocation) {
+        Cursor songCursor = null;
+        Cursor albumCursor = null;
+        try {
+            String[] songProjection = new String[] { MediaStore.Audio.AudioColumns.ALBUM_ID };
+
+            songCursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                    songProjection, MediaStore.Audio.AudioColumns.DATA + " = ?",
+                    new String[] { songLocation.getPath() }, null);
+
+            if (songCursor == null || !songCursor.moveToFirst()) {
+                return null;
+            }
+
+            long albumId = songCursor.getLong(0);
+
+            String[] albumProjection = new String[] { MediaStore.Audio.AlbumColumns.ALBUM_ART };
+            albumCursor = context.getContentResolver().query(
+                    MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, albumProjection,
+                    MediaStore.Audio.AudioColumns._ID + " = " + albumId, null, null);
+
+            if (albumCursor == null || !albumCursor.moveToFirst()) {
+                return null;
+            }
+
+            return albumCursor.getString(0);
+        } finally {
+            if (songCursor != null) {
+                songCursor.close();
+            }
+            if (albumCursor != null) {
+                albumCursor.close();
+            }
+        }
+    }
+
     public static Observable<Bitmap> fetchArtwork(Context context, Uri songLocation) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         int size = Math.max(displayMetrics.widthPixels, displayMetrics.heightPixels);
@@ -191,6 +230,11 @@ public final class Util {
             File folderImage = resolveArtwork(context, songLocation);
             if (folderImage != null) {
                 return Glide.with(context).load(folderImage);
+            }
+
+            String mediaStoreThumbnail = resolveMediaStoreArtwork(context, songLocation);
+            if (mediaStoreThumbnail != null) {
+                return Glide.with(context).load(mediaStoreThumbnail);
             }
 
             return Glide.with(context).load(R.drawable.art_default_xl);
