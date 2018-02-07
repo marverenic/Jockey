@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.media.audiofx.AudioEffect;
 import android.net.ConnectivityManager;
@@ -28,7 +29,6 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import rx.Observable;
-import rx.exceptions.Exceptions;
 import timber.log.Timber;
 
 import static android.content.Context.CONNECTIVITY_SERVICE;
@@ -245,7 +245,9 @@ public final class Util {
                         .into(size, size)
                         .get();
             } catch (InterruptedException|ExecutionException e) {
-                throw Exceptions.propagate(e);
+                Timber.e(e, "Failed to load artwork");
+                return BitmapFactory.decodeResource(context.getResources(),
+                        R.drawable.art_default_xl);
             }
         });
     }
