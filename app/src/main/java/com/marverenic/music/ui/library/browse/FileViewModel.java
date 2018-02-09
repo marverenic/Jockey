@@ -5,6 +5,7 @@ import android.databinding.Bindable;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
@@ -28,6 +29,7 @@ public class FileViewModel extends BaseViewModel {
     private Drawable mDefaultThumbnail;
     private int mArtworkSizePx;
 
+    private boolean mUsingDefaultArtwork;
     private Subscription mArtworkSubscription;
 
     @Nullable
@@ -53,6 +55,7 @@ public class FileViewModel extends BaseViewModel {
     public void setFile(File file) {
         mFile = file;
         mThumbnail = null;
+        mUsingDefaultArtwork = false;
 
         if (mArtworkSubscription != null) {
             mArtworkSubscription.unsubscribe();
@@ -80,7 +83,20 @@ public class FileViewModel extends BaseViewModel {
     @Bindable
     public Drawable getThumbnail() {
         if (mThumbnail == null) {
+            mUsingDefaultArtwork = true;
             return mDefaultThumbnail;
+        } else if (mUsingDefaultArtwork) {
+            // If the default artwork was shown, but a replacement image was loaded later,
+            // fade it in
+            mUsingDefaultArtwork = false;
+            TransitionDrawable crossFade = new TransitionDrawable(new Drawable[] {
+                    mDefaultThumbnail,
+                    mThumbnail
+            });
+            crossFade.setCrossFadeEnabled(true);
+            crossFade.startTransition(getResources()
+                    .getInteger(R.integer.file_thumbnail_crossfade_duration_ms));
+            return crossFade;
         } else {
             return mThumbnail;
         }
