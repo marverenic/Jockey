@@ -100,6 +100,12 @@ public class MusicBrowserFragment extends BaseFragment {
     }
 
     @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mViewModel.onLowMemory();
+    }
+
+    @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(EXTRA_SAVED_DIRECTORY, mViewModel.getDirectory().getAbsolutePath());

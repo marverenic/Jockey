@@ -31,6 +31,7 @@ public class MusicBrowserViewModel extends BaseViewModel {
     private Stack<File> mHistory;
     private File mCurrentDirectory;
 
+    private ThumbnailLoader mThumbnailLoader;
     private HeterogeneousAdapter mAdapter;
     private FolderSection mFolderSection;
     private FileSection mFileSection;
@@ -51,13 +52,18 @@ public class MusicBrowserViewModel extends BaseViewModel {
 
         mAdapter = new HeterogeneousAdapter();
         mFolderSection = new FolderSection(Collections.emptyList(), this::onClickFolder);
-        mFileSection = new FileSection(Collections.emptyList(), this::onClickSong);
+        mThumbnailLoader = new ThumbnailLoader(context);
+        mFileSection = new FileSection(Collections.emptyList(), this::onClickSong, mThumbnailLoader);
         mAdapter.addSection(mFolderSection);
         mAdapter.addSection(mFileSection);
         mAdapter.setEmptyState(new FileBrowserEmptyState(context, this::onRefreshFromEmptyState));
         mAdapter.setHasStableIds(true);
 
         setDirectory(startingDirectory);
+    }
+
+    public void onLowMemory() {
+        mThumbnailLoader.clearCache();
     }
 
     public String[] getHistory() {

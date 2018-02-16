@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
-import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
@@ -14,20 +13,19 @@ import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import com.marverenic.music.BR;
 import com.marverenic.music.R;
 import com.marverenic.music.ui.BaseViewModel;
-import com.marverenic.music.utils.Util;
 
 import java.io.File;
 
 import rx.Subscription;
-import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class FileViewModel extends BaseViewModel {
 
+    private ThumbnailLoader mThumbnailLoader;
+
     private File mFile;
     private Drawable mThumbnail;
     private Drawable mDefaultThumbnail;
-    private int mArtworkSizePx;
 
     private boolean mUsingDefaultArtwork;
     private Subscription mArtworkSubscription;
@@ -35,9 +33,10 @@ public class FileViewModel extends BaseViewModel {
     @Nullable
     private OnFileSelectedListener mSelectionListener;
 
-    public FileViewModel(Context context) {
+    public FileViewModel(Context context, ThumbnailLoader thumbnailLoader) {
         super(context);
-        mArtworkSizePx = getDimensionPixelSize(R.dimen.list_thumbnail_size);
+        mThumbnailLoader = thumbnailLoader;
+
         Bitmap defaultArt = BitmapFactory.decodeResource(getResources(), R.drawable.art_default);
         mDefaultThumbnail = makeCircular(defaultArt);
     }
@@ -61,8 +60,7 @@ public class FileViewModel extends BaseViewModel {
             mArtworkSubscription.unsubscribe();
         }
 
-        mArtworkSubscription = Util.fetchArtwork(getContext(), Uri.fromFile(file), mArtworkSizePx)
-                .subscribeOn(Schedulers.io())
+        mArtworkSubscription = mThumbnailLoader.getThumbnail(mFile)
                 .map(this::makeCircular)
                 .subscribe(artwork -> {
                     mThumbnail = artwork;
