@@ -21,6 +21,7 @@ import android.webkit.MimeTypeMap;
 
 import com.bumptech.glide.Glide;
 import com.marverenic.music.R;
+import com.marverenic.music.model.Song;
 
 import java.io.File;
 import java.util.Arrays;
@@ -214,6 +215,14 @@ public final class Util {
         }
     }
 
+    public static Observable<Bitmap> fetchArtwork(Context context, Song song) {
+        if (song == null) {
+            return fetchArtwork(context, (Uri) null);
+        } else {
+            return fetchArtwork(context, song.getLocation());
+        }
+    }
+
     public static Observable<Bitmap> fetchArtwork(Context context, Uri songLocation) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         int size = Math.max(displayMetrics.widthPixels, displayMetrics.heightPixels);
@@ -222,6 +231,10 @@ public final class Util {
 
     public static Observable<Bitmap> fetchArtwork(Context context, Uri songLocation, int size) {
         return Observable.fromCallable(() -> {
+            if (songLocation == null) {
+                return Glide.with(context).load(R.drawable.art_default_xl);
+            }
+
             byte[] embedded = fetchEmbeddedArtwork(context, songLocation);
             if (embedded != null){
                 return Glide.with(context).load(embedded);
