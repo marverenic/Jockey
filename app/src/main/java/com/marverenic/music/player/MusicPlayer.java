@@ -416,7 +416,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             setBackingQueue(queuePosition);
             mMediaPlayer.seekTo(currentPosition);
 
-            Util.fetchArtwork(mContext, getNowPlaying().getLocation())
+            Util.fetchArtwork(mContext, getNowPlaying())
                     .subscribeOn(Schedulers.io())
                     .subscribe(artwork -> {
                         mArtwork = artwork;

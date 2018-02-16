@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <integer name="file_thumbnail_crossfade_duration_ms">300</integer>
+
+</resources>

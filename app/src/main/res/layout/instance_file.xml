@@ -26,6 +26,7 @@
             android:layout_marginEnd="@dimen/list_padding"
             android:layout_marginRight="@dimen/list_padding"
             android:contentDescription="@null"
+            android:src="@{viewModel.thumbnail}"
             tools:background="@drawable/bg_list_circle"/>
 
         <TextView
