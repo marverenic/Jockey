@@ -110,29 +110,4 @@ public final class Genre implements Parcelable, Comparable<Genre> {
         return compareTitle(getGenreName(), another.getGenreName());
     }
 
-    public static class Builder {
-
-        private long genreId;
-        private String genreName;
-
-        public Builder setGenreId(long genreId) {
-            this.genreId = genreId;
-            return this;
-        }
-
-        public Builder setGenreName(String genreName) {
-            this.genreName = genreName;
-            return this;
-        }
-
-        public Genre build() {
-            Genre built = new Genre();
-
-            built.genreId = genreId;
-            built.genreName = genreName;
-
-            return built;
-        }
-
-    }
 }
