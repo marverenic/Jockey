@@ -14,8 +14,8 @@ import com.marverenic.music.data.store.MediaStoreUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.marverenic.music.model.ModelUtil.compareTitle;
 import static com.marverenic.music.model.ModelUtil.parseUnknown;
+import static com.marverenic.music.model.ModelUtil.sortableTitle;
 
 public final class Artist implements Parcelable, Comparable<Artist> {
 
@@ -32,6 +32,8 @@ public final class Artist implements Parcelable, Comparable<Artist> {
     protected int artistId;
     protected String artistName;
 
+    private String sortableName;
+
     private Artist() {
 
     }
@@ -46,11 +48,15 @@ public final class Artist implements Parcelable, Comparable<Artist> {
         artistName = parseUnknown(
                 cur.getString(cur.getColumnIndex(MediaStore.Audio.Artists.ARTIST)),
                 context.getResources().getString(R.string.unknown_artist));
+
+        sortableName = sortableTitle(artistName, context.getResources());
     }
 
     private Artist(Parcel in) {
         artistId = in.readInt();
         artistName = in.readString();
+
+        sortableName = in.readString();
     }
 
     /**
@@ -76,6 +82,8 @@ public final class Artist implements Parcelable, Comparable<Artist> {
             Artist next = new Artist();
             next.artistId = cur.getInt(idIndex);
             next.artistName = parseUnknown(cur.getString(artistIndex), unknownName);
+
+            next.sortableName = sortableTitle(next.artistName, res);
 
             artists.add(next);
         }
@@ -115,10 +123,12 @@ public final class Artist implements Parcelable, Comparable<Artist> {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(artistId);
         dest.writeString(artistName);
+
+        dest.writeString(sortableName);
     }
 
     @Override
     public int compareTo(@NonNull Artist another) {
-        return compareTitle(getArtistName(), another.getArtistName());
+        return sortableName.compareTo(another.sortableName);
     }
 }

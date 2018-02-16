@@ -1,6 +1,8 @@
 package com.marverenic.music.model;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -75,7 +77,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
     @SerializedName("sortAscending")
     private final boolean mSortAscending;
 
-    public static AutoPlaylist emptyPlaylist() {
+    public static AutoPlaylist emptyPlaylist(Context context) {
         return new AutoPlaylist.Builder()
                 .setName("")
                 .setId(AutoPlaylist.Builder.NO_ID)
@@ -85,7 +87,7 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                 .setTruncateMethod(AutoPlaylistRule.ID)
                 .setTruncateAscending(true)
                 .setRules(AutoPlaylistRule.emptyRule())
-                .build();
+                .build(context);
     }
 
     /**
@@ -106,8 +108,8 @@ public class AutoPlaylist extends Playlist implements Parcelable {
      */
     private AutoPlaylist(long playlistId, String playlistName, int maximumEntries, int sortMethod,
                          int truncateMethod, boolean truncateAscending, boolean sortAscending,
-                         boolean matchAllRules, List<AutoPlaylistRule> rules) {
-        super(playlistId, playlistName);
+                         boolean matchAllRules, List<AutoPlaylistRule> rules, Resources res) {
+        super(playlistId, playlistName, res);
         mMaximumEntries = maximumEntries;
         mMatchAllRules = matchAllRules;
         mRules = Collections.unmodifiableList(rules);
@@ -456,9 +458,10 @@ public class AutoPlaylist extends Playlist implements Parcelable {
                     && isSortAscending() == reference.isSortAscending();
         }
 
-        public AutoPlaylist build() {
+        public AutoPlaylist build(Context context) {
             return new AutoPlaylist(mId, mName, mMaximumEntries, mSortMethod, mTruncateMethod,
-                    mTruncateAscending, mSortAscending, mMatchAllRules, mRules);
+                    mTruncateAscending, mSortAscending, mMatchAllRules, mRules,
+                    context.getResources());
         }
 
         @Override

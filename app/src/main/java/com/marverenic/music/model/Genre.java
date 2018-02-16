@@ -13,9 +13,9 @@ import com.marverenic.music.data.store.MediaStoreUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.marverenic.music.model.ModelUtil.compareTitle;
 import static com.marverenic.music.model.ModelUtil.hashLong;
 import static com.marverenic.music.model.ModelUtil.parseUnknown;
+import static com.marverenic.music.model.ModelUtil.sortableTitle;
 
 public final class Genre implements Parcelable, Comparable<Genre> {
 
@@ -32,6 +32,8 @@ public final class Genre implements Parcelable, Comparable<Genre> {
     protected long genreId;
     protected String genreName;
 
+    private String sortableName;
+
     private Genre() {
 
     }
@@ -39,6 +41,7 @@ public final class Genre implements Parcelable, Comparable<Genre> {
     private Genre(Parcel in) {
         genreId = in.readLong();
         genreName = in.readString();
+        sortableName = in.readString();
     }
 
     /**
@@ -65,6 +68,8 @@ public final class Genre implements Parcelable, Comparable<Genre> {
             Genre next = new Genre();
             next.genreId = cur.getLong(idIndex);
             next.genreName = parseUnknown(cur.getString(nameIndex), unknownName);
+
+            next.sortableName = sortableTitle(next.genreName, context.getResources());
 
             genres.add(next);
         }
@@ -107,7 +112,7 @@ public final class Genre implements Parcelable, Comparable<Genre> {
 
     @Override
     public int compareTo(@NonNull Genre another) {
-        return compareTitle(getGenreName(), another.getGenreName());
+        return sortableName.compareTo(another.sortableName);
     }
 
 }

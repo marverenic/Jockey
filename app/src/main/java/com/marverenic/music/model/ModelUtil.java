@@ -1,10 +1,11 @@
 package com.marverenic.music.model;
 
+import android.content.res.Resources;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.text.Collator;
+import com.marverenic.music.R;
 
 public class ModelUtil {
 
@@ -43,32 +44,22 @@ public class ModelUtil {
         return lhs < rhs ? -1 : (lhs == rhs ? 0 : 1);
     }
 
-    public static int compareTitle(@Nullable String left, @Nullable String right) {
-        return Collator.getInstance().compare(sortableTitle(left), sortableTitle(right));
-    }
-
-    /**
-     * Creates a sortable String from a title, so that leading "the"s and "a"s can be removed. This
-     * method will also strip the title's original case.
-     * @param title The title to create a sortable String from
-     * @return A new String with the same contents of {@code title}, but with any leading articles
-     *         removed to conform to English standards.
-     */
     @NonNull
-    public static String sortableTitle(@Nullable String title) {
+    public static String sortableTitle(@Nullable String title, Resources res) {
         if (title == null) {
             return "";
         }
 
-        title = title.toLowerCase();
+        String[] ignoredPrefixes = res.getStringArray(R.array.ignored_title_prefixes);
+        String cmp = title.toLowerCase();
 
-        if (title.startsWith("the ")) {
-            return title.substring(4);
-        } else if (title.startsWith("a ")) {
-            return title.substring(2);
-        } else {
-            return title;
+        for (String prefix : ignoredPrefixes) {
+            if (cmp.startsWith(prefix.toLowerCase() + " ")) {
+                return cmp.substring(prefix.length() + 1);
+            }
         }
+
+        return cmp;
     }
 
     public static int hashLong(long value) {

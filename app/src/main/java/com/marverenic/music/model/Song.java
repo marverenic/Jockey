@@ -27,9 +27,9 @@ import static android.media.MediaMetadataRetriever.METADATA_KEY_DATE;
 import static android.media.MediaMetadataRetriever.METADATA_KEY_DURATION;
 import static android.media.MediaMetadataRetriever.METADATA_KEY_TITLE;
 import static com.marverenic.music.model.ModelUtil.compareLong;
-import static com.marverenic.music.model.ModelUtil.compareTitle;
 import static com.marverenic.music.model.ModelUtil.hashLong;
 import static com.marverenic.music.model.ModelUtil.parseUnknown;
+import static com.marverenic.music.model.ModelUtil.sortableTitle;
 import static com.marverenic.music.model.ModelUtil.stringToInt;
 import static com.marverenic.music.model.ModelUtil.stringToLong;
 
@@ -56,7 +56,11 @@ public class Song implements Parcelable, Comparable<Song> {
     protected long albumId;
     protected long artistId;
     protected int trackNumber;
+
     private boolean isInLibrary;
+    private String sortableName;
+    private String sortableArtistName;
+    private String sortableAlbumName;
 
     private Song() {
 
@@ -73,7 +77,11 @@ public class Song implements Parcelable, Comparable<Song> {
         dateAdded = in.readLong();
         albumId = in.readLong();
         artistId = in.readLong();
+
         isInLibrary = (in.readByte() != 0);
+        sortableName = in.readString();
+        sortableArtistName = in.readString();
+        sortableAlbumName = in.readString();
     }
 
     public Song(Song s) {
@@ -88,7 +96,11 @@ public class Song implements Parcelable, Comparable<Song> {
         this.albumId = s.albumId;
         this.artistId = s.artistId;
         this.trackNumber = s.trackNumber;
+
         this.isInLibrary = s.isInLibrary;
+        this.sortableName = s.sortableName;
+        this.sortableArtistName = s.sortableArtistName;
+        this.sortableAlbumName = s.sortableAlbumName;
     }
 
     /**
@@ -138,7 +150,11 @@ public class Song implements Parcelable, Comparable<Song> {
             next.albumId = cur.getLong(albumIdIndex);
             next.artistId = cur.getLong(artistIdIndex);
             next.trackNumber = cur.getInt(trackIndex);
+
             next.isInLibrary = true;
+            next.sortableName = sortableTitle(next.songName, res);
+            next.sortableArtistName = sortableTitle(next.artistName, res);
+            next.sortableAlbumName = sortableTitle(next.albumName, res);
 
             songs.add(next);
         }
@@ -165,7 +181,11 @@ public class Song implements Parcelable, Comparable<Song> {
         song.songId = -1 * Math.abs(uri.hashCode());
         song.albumId = -1;
         song.artistId = -1;
+
         song.isInLibrary = false;
+        song.sortableName = sortableTitle(song.songName, context.getResources());
+        song.sortableArtistName = sortableTitle(song.artistName, context.getResources());
+        song.sortableAlbumName = sortableTitle(song.albumName, context.getResources());
 
         if (uri.getScheme().equals("content") || uri.getScheme().equals("file")) {
             song.loadInfoFromMetadata(context);
@@ -268,19 +288,23 @@ public class Song implements Parcelable, Comparable<Song> {
         dest.writeLong(dateAdded);
         dest.writeLong(albumId);
         dest.writeLong(artistId);
+
         dest.writeByte((byte) (isInLibrary ? 1 : 0));
+        dest.writeString(sortableName);
+        dest.writeString(sortableArtistName);
+        dest.writeString(sortableAlbumName);
     }
 
     @Override
     public int compareTo(@NonNull Song another) {
-        return compareTitle(getSongName(), another.getSongName());
+        return this.sortableName.compareTo(another.sortableName);
     }
 
     public static final Comparator<Song> ARTIST_COMPARATOR = (s1, s2) ->
-            compareTitle(s1.getArtistName(), s2.getArtistName());
+            s1.sortableArtistName.compareTo(s2.sortableArtistName);
 
-    public static final Comparator<Song> ALBUM_COMPARATOR = (o1, o2) ->
-            compareTitle(o1.getAlbumName(), o2.getAlbumName());
+    public static final Comparator<Song> ALBUM_COMPARATOR = (s1, s2) ->
+            s1.sortableAlbumName.compareTo(s2.sortableAlbumName);
 
     public static Comparator<Song> playCountComparator(PlayCountStore countStore) {
         return (s1, s2) -> countStore.getPlayCount(s2) - countStore.getPlayCount(s1);
