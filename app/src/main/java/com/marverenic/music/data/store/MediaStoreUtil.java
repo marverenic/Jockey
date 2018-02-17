@@ -312,7 +312,7 @@ public final class MediaStoreUtil {
             return Collections.emptyList();
         }
 
-        List<Playlist> playlists = Playlist.buildPlaylistList(cur);
+        List<Playlist> playlists = Playlist.buildPlaylistList(cur, context.getResources());
         Collections.sort(playlists);
         cur.close();
 
@@ -460,7 +460,7 @@ public final class MediaStoreUtil {
             return null;
         }
 
-        Playlist found = (cur.moveToFirst()) ? new Playlist(cur) : null;
+        Playlist found = (cur.moveToFirst()) ? new Playlist(cur, context.getResources()) : null;
         cur.close();
 
         return found;
@@ -496,7 +496,7 @@ public final class MediaStoreUtil {
         }
 
         cursor.moveToFirst();
-        Playlist playlist = new Playlist(cursor);
+        Playlist playlist = new Playlist(cursor, context.getResources());
         cursor.close();
 
         // If we have a list of songs, associate it with the playlist
@@ -644,7 +644,7 @@ public final class MediaStoreUtil {
                 return null;
             }
 
-            List<Song> songs = getPlaylistSongs(context, new Playlist(cur));
+            List<Song> songs = getPlaylistSongs(context, new Playlist(cur, context.getResources()));
             cur.close();
             return songs;
         } else {

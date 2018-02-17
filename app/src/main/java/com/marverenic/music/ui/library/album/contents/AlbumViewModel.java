@@ -42,8 +42,8 @@ public class AlbumViewModel extends BaseViewModel {
         super(context);
         mAlbum = album;
 
-        mSongSection = new SongSection(Collections.emptyList(), playerController, musicStore,
-                fragmentManager, songSelectedListener);
+        mSongSection = new SongSection(Collections.emptyList(), getContext(),
+                playerController, musicStore, fragmentManager, songSelectedListener);
         mShuffleAllSection = new ShuffleAllSection(Collections.emptyList(), preferenceStore,
                 playerController, songSelectedListener);
 

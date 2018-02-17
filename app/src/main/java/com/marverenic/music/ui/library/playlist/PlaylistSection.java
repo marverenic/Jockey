@@ -1,5 +1,6 @@
 package com.marverenic.music.ui.library.playlist;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,12 +22,14 @@ import java.util.List;
 public class PlaylistSection extends HeterogeneousAdapter.ListSection<Playlist>
         implements SectionedAdapter, MeasurableAdapter {
 
+    private Context mContext;
     private PlaylistStore mPlaylistStore;
     private PlayerController mPlayerController;
 
-    public PlaylistSection(@NonNull List<Playlist> data, PlaylistStore playlistStore,
+    public PlaylistSection(@NonNull List<Playlist> data, Context context, PlaylistStore playlistStore,
                            PlayerController playerController) {
         super(data);
+        mContext = context;
         mPlaylistStore = playlistStore;
         mPlayerController = playerController;
     }
@@ -47,8 +50,8 @@ public class PlaylistSection extends HeterogeneousAdapter.ListSection<Playlist>
     @NonNull
     @Override
     public String getSectionName(int position) {
-        char firstChar = ModelUtil.sortableTitle(get(position).getPlaylistName()).charAt(0);
-        return Character.toString(firstChar).toUpperCase();
+        String title = ModelUtil.sortableTitle(get(position).getPlaylistName(), mContext.getResources());
+        return Character.toString(title.charAt(0)).toUpperCase();
     }
 
     @Override

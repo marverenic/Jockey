@@ -105,7 +105,8 @@ public class SongFragment extends BaseFragment {
             mAdapter.setHasStableIds(true);
             mRecyclerView.setAdapter(mAdapter);
 
-            mSongSection = new SongSection(mSongs, mPlayerController, mMusicStore, getFragmentManager(),
+            mSongSection = new SongSection(mSongs, getContext(),
+                    mPlayerController, mMusicStore, getFragmentManager(),
                     OnSongSelectedListener.defaultImplementation(getActivity(), mPreferenceStore));
             mPlayerController.getNowPlaying()
                     .compose(bindUntilEvent(FragmentEvent.DESTROY))

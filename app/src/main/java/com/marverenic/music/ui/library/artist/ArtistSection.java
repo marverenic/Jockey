@@ -1,5 +1,6 @@
 package com.marverenic.music.ui.library.artist;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,13 +23,15 @@ import java.util.List;
 public class ArtistSection extends HeterogeneousAdapter.ListSection<Artist>
         implements SectionedAdapter, MeasurableAdapter {
 
+    private Context mContext;
     private FragmentManager mFragmentManager;
     private MusicStore mMusicStore;
     private PlayerController mPlayerController;
 
-    public ArtistSection(@NonNull List<Artist> data, FragmentManager fragmentManager,
+    public ArtistSection(@NonNull List<Artist> data, Context context, FragmentManager fragmentManager,
                          MusicStore musicStore, PlayerController playerController) {
         super(data);
+        mContext = context;
         mFragmentManager = fragmentManager;
         mMusicStore = musicStore;
         mPlayerController = playerController;
@@ -51,8 +54,8 @@ public class ArtistSection extends HeterogeneousAdapter.ListSection<Artist>
     @NonNull
     @Override
     public String getSectionName(int position) {
-        char firstChar = ModelUtil.sortableTitle(get(position).getArtistName()).charAt(0);
-        return Character.toString(firstChar).toUpperCase();
+        String title = ModelUtil.sortableTitle(get(position).getArtistName(), mContext.getResources());
+        return Character.toString(title.charAt(0)).toUpperCase();
     }
 
     @Override

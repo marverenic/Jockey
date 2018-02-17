@@ -219,7 +219,7 @@ public class LocalPlaylistStore implements PlaylistStore {
 
         AutoPlaylist created = new AutoPlaylist.Builder(playlist)
                 .setId(localReference.getPlaylistId())
-                .build();
+                .build(mContext);
 
         saveAutoPlaylistConfiguration(created);
 

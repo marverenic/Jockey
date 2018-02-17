@@ -111,7 +111,8 @@ public class AlbumListFragment extends BaseFragment {
             mAdapter.setHasStableIds(true);
             mRecyclerView.setAdapter(mAdapter);
 
-            mAlbumSection = new AlbumSection(mAlbums, mMusicStore, mPlayerController, getFragmentManager());
+            mAlbumSection = new AlbumSection(mAlbums, getContext(), mMusicStore, mPlayerController,
+                    getFragmentManager());
             mAdapter.addSection(mAlbumSection);
             mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), mMusicStore, mPlaylistStore));
         }

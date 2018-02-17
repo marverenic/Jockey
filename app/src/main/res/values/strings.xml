@@ -401,4 +401,11 @@
     <!-- Notification Channels -->
     <string name="player_notification_channel_name">Music Playback</string>
 
+    <!-- Prefixes that are ignored when sorting titles -->
+    <string-array name="ignored_title_prefixes" tools:ignore="InconsistentArrays">
+        <item>The</item>
+        <item>A</item>
+        <item>An</item>
+    </string-array>
+
 </resources>

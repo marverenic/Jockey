@@ -283,7 +283,7 @@ public class PlaylistFragment extends BaseToolbarFragment {
         mPlaylist = new AutoPlaylist.Builder((AutoPlaylist) mPlaylist)
                 .setSortMethod(sortMethod)
                 .setSortAscending(ascending)
-                .build();
+                .build(getContext());
         mPlaylistStore.editPlaylist((AutoPlaylist) mPlaylist);
     }
 

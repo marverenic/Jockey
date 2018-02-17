@@ -26,7 +26,7 @@ public class AutoPlaylistEditActivity extends SingleFragmentActivity {
     @Override
     protected Fragment onCreateFragment(Bundle savedInstanceState) {
         AutoPlaylist playlist = getIntent().getParcelableExtra(PLAYLIST_EXTRA);
-        return AutoPlaylistEditFragment.newInstance(playlist);
+        return AutoPlaylistEditFragment.newInstance(this, playlist);
     }
 
 }

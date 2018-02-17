@@ -75,12 +75,16 @@ public class SearchViewModel extends BaseViewModel {
     }
 
     private void createAdapter(@Nullable OnSongSelectedListener songSelectedListener) {
-        mPlaylistSection = new PlaylistSection(Collections.emptyList(), mPlaylistStore, mPlayerController);
-        mSongSection = new SongSection(Collections.emptyList(), mPlayerController, mMusicStore,
-                mFragmentManager, songSelectedListener);
-        mAlbumSection = new AlbumSection(Collections.emptyList(), mMusicStore, mPlayerController, mFragmentManager);
-        mArtistSection = new ArtistSection(Collections.emptyList(), mFragmentManager, mMusicStore, mPlayerController);
-        mGenreSection = new GenreSection(Collections.emptyList(), mFragmentManager, mMusicStore, mPlayerController);
+        mPlaylistSection = new PlaylistSection(Collections.emptyList(), getContext(),
+                mPlaylistStore, mPlayerController);
+        mSongSection = new SongSection(Collections.emptyList(), getContext(),
+                mPlayerController, mMusicStore, mFragmentManager, songSelectedListener);
+        mAlbumSection = new AlbumSection(Collections.emptyList(), getContext(),
+                mMusicStore, mPlayerController, mFragmentManager);
+        mArtistSection = new ArtistSection(Collections.emptyList(), getContext(),
+                mFragmentManager, mMusicStore, mPlayerController);
+        mGenreSection = new GenreSection(Collections.emptyList(), getContext(),
+                mFragmentManager, mMusicStore, mPlayerController);
 
         mAdapter = new HeterogeneousAdapter()
                 .addSection(new HeaderSection(getString(R.string.header_playlists)))

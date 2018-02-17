@@ -1,5 +1,6 @@
 package com.marverenic.music.ui.library.playlist.contents.edit;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -34,11 +35,12 @@ public class AutoPlaylistEditFragment extends BaseToolbarFragment {
     private AutoPlaylist mOriginalPlaylist;
     private AutoPlaylist.Builder mBuilder;
 
-    public static AutoPlaylistEditFragment newInstance(AutoPlaylist toEdit) {
+    public static AutoPlaylistEditFragment newInstance(Context context, AutoPlaylist toEdit) {
         AutoPlaylistEditFragment fragment = new AutoPlaylistEditFragment();
 
         Bundle args = new Bundle();
-        args.putParcelable(ARG_PLAYLIST, (toEdit == null) ? AutoPlaylist.emptyPlaylist() : toEdit);
+        args.putParcelable(ARG_PLAYLIST,
+                (toEdit == null) ? AutoPlaylist.emptyPlaylist(context) : toEdit);
         fragment.setArguments(args);
 
         return fragment;
@@ -176,9 +178,9 @@ public class AutoPlaylistEditFragment extends BaseToolbarFragment {
 
     private void savePlaylist() {
         if (mOriginalPlaylist.getPlaylistId() == AutoPlaylist.Builder.NO_ID) {
-            mPlaylistStore.makePlaylist(mBuilder.build());
+            mPlaylistStore.makePlaylist(mBuilder.build(getContext()));
         } else {
-            mPlaylistStore.editPlaylist(mBuilder.build());
+            mPlaylistStore.editPlaylist(mBuilder.build(getContext()));
         }
     }
 }

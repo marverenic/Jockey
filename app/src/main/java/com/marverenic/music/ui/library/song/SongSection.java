@@ -1,5 +1,6 @@
 package com.marverenic.music.ui.library.song;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
@@ -27,6 +28,7 @@ import timber.log.Timber;
 public class SongSection extends HeterogeneousAdapter.ListSection<Song>
         implements SectionedAdapter, MeasurableAdapter {
 
+    private Context mContext;
     private PlayerController mPlayerController;
     private MusicStore mMusicStore;
     private FragmentManager mFragmentManager;
@@ -34,10 +36,11 @@ public class SongSection extends HeterogeneousAdapter.ListSection<Song>
 
     private BehaviorSubject<Song> mCurrentSong;
 
-    public SongSection(@NonNull List<Song> data, PlayerController playerController,
+    public SongSection(@NonNull List<Song> data, Context context, PlayerController playerController,
                        MusicStore musicStore, FragmentManager fragmentManager,
                        @Nullable OnSongSelectedListener songSelectedListener) {
         super(data);
+        mContext = context;
         mMusicStore = musicStore;
         mPlayerController = playerController;
         mFragmentManager = fragmentManager;
@@ -67,8 +70,8 @@ public class SongSection extends HeterogeneousAdapter.ListSection<Song>
     @NonNull
     @Override
     public String getSectionName(int position) {
-        char firstChar = ModelUtil.sortableTitle(get(position).getSongName()).charAt(0);
-        return Character.toString(firstChar).toUpperCase();
+        String title = ModelUtil.sortableTitle(get(position).getAlbumName(), mContext.getResources());
+        return Character.toString(title.charAt(0)).toUpperCase();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.marverenic.music.ui.library.album;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
@@ -19,13 +20,15 @@ import java.util.List;
 public class AlbumSection extends HeterogeneousAdapter.ListSection<Album>
         implements FastScrollRecyclerView.SectionedAdapter {
 
+    private Context mContext;
     private FragmentManager mFragmentManager;
     private MusicStore mMusicStore;
     private PlayerController mPlayerController;
 
-    public AlbumSection(@NonNull List<Album> data, MusicStore musicStore,
+    public AlbumSection(@NonNull List<Album> data, Context context, MusicStore musicStore,
                         PlayerController playerController, FragmentManager fragmentManager) {
         super(data);
+        mContext = context;
         mFragmentManager = fragmentManager;
         mMusicStore = musicStore;
         mPlayerController = playerController;
@@ -48,8 +51,8 @@ public class AlbumSection extends HeterogeneousAdapter.ListSection<Album>
     @NonNull
     @Override
     public String getSectionName(int position) {
-        char firstChar = ModelUtil.sortableTitle(get(position).getAlbumName()).charAt(0);
-        return Character.toString(firstChar).toUpperCase();
+        String title = ModelUtil.sortableTitle(get(position).getAlbumName(), mContext.getResources());
+        return Character.toString(title.charAt(0)).toUpperCase();
     }
 
     private class ViewHolder extends EnhancedViewHolder<Album> {
