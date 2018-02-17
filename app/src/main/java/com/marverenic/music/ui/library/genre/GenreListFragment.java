@@ -113,7 +113,8 @@ public class GenreListFragment extends BaseFragment {
             mAdapter.setHasStableIds(true);
             mRecyclerView.setAdapter(mAdapter);
 
-            mGenreSection = new GenreSection(mGenres, getFragmentManager(), mMusicStore, mPlayerController);
+            mGenreSection = new GenreSection(mGenres, getContext(), getFragmentManager(),
+                    mMusicStore, mPlayerController);
             mAdapter.addSection(mGenreSection);
 
             mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), mMusicStore, mPlaylistStore) {

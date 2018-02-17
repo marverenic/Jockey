@@ -101,7 +101,8 @@ public class PlaylistListFragment extends BaseFragment {
             mAdapter.setHasStableIds(true);
             mRecyclerView.setAdapter(mAdapter);
 
-            mPlaylistSection = new PlaylistSection(mPlaylists, mPlaylistStore, mPlayerController);
+            mPlaylistSection = new PlaylistSection(mPlaylists, getContext(),
+                    mPlaylistStore, mPlayerController);
             mAdapter.addSection(mPlaylistSection);
             mAdapter.addSection(new SpacerSingleton(
                     (int) getResources().getDimension(R.dimen.list_height)));
