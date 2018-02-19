@@ -7,13 +7,16 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
+import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.RenderersFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
-import com.google.android.exoplayer2.audio.AudioTrack;
+import com.google.android.exoplayer2.audio.DefaultAudioSink;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
@@ -58,7 +61,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     private int mPrevDuration;
 
     static {
-        AudioTrack.enablePreV21AudioSessionWorkaround = true;
+        DefaultAudioSink.enablePreV21AudioSessionWorkaround = true;
     }
 
     public QueuedExoPlayer(Context context) {
@@ -66,14 +69,14 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         mState = ExoPlayerState.IDLE;
         mQueue = Collections.emptyList();
 
+        RenderersFactory renderersFactory = new DefaultRenderersFactory(mContext);
         TrackSelector trackSelector = new DefaultTrackSelector(new FixedTrackSelection.Factory());
         LoadControl loadControl = new DefaultLoadControl();
-        SimpleExoPlayer baseInstance = ExoPlayerFactory.newSimpleInstance(mContext,
-                trackSelector, loadControl);
+        SimpleExoPlayer baseInstance = ExoPlayerFactory.newSimpleInstance(
+                renderersFactory, trackSelector, loadControl);
         mExoPlayer = new EqualizedExoPlayer(context, baseInstance);
 
-
-        mExoPlayer.addListener(new ExoPlayer.EventListener() {
+        mExoPlayer.addListener(new Player.EventListener() {
             @Override
             public void onLoadingChanged(boolean isLoading) {
                 Timber.i("onLoadingChanged (%b)", isLoading);
@@ -83,6 +86,16 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
             public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
                 Timber.i("onPlayerStateChanged");
                 QueuedExoPlayer.this.onPlayerStateChanged(playbackState);
+            }
+
+            @Override
+            public void onRepeatModeChanged(int repeatMode) {
+                Timber.i("onRepeatModeChanged (%d)", repeatMode);
+            }
+
+            @Override
+            public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+                Timber.i("onShuffleModeEnabledChanged (%b)", shuffleModeEnabled);
             }
 
             @Override
@@ -104,9 +117,19 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
             }
 
             @Override
-            public void onPositionDiscontinuity() {
+            public void onPositionDiscontinuity(int reason) {
                 Timber.i("onPositionDiscontinuity");
-                QueuedExoPlayer.this.onPositionDiscontinuity();
+                QueuedExoPlayer.this.onPositionDiscontinuity(reason);
+            }
+
+            @Override
+            public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+
+            }
+
+            @Override
+            public void onSeekProcessed() {
+
             }
         });
     }
@@ -116,7 +139,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         mState = ExoPlayerState.fromInt(playbackState);
         mHasError = mHasError && (mState == ExoPlayerState.IDLE);
 
-        if (stateDiff && playbackState == ExoPlayer.STATE_ENDED) {
+        if (stateDiff && playbackState == Player.STATE_ENDED) {
             onCompletion();
             pause();
             setQueueIndex(0);
@@ -159,7 +182,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         onStart();
     }
 
-    @Internal void onPositionDiscontinuity() {
+    @Internal void onPositionDiscontinuity(int reason) {
         if (mQueue.size() == 0) {
             return;
         }

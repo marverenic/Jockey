@@ -4,9 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.audiofx.AudioEffect;
 import android.media.audiofx.Equalizer;
+import android.os.Looper;
+import android.support.annotation.Nullable;
 
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.audio.AudioRendererEventListener;
@@ -30,7 +34,7 @@ public class EqualizedExoPlayer implements ExoPlayer {
     public EqualizedExoPlayer(Context context, SimpleExoPlayer delegate) {
         mContext = context;
         mExoPlayer = delegate;
-        mExoPlayer.setAudioDebugListener(new EqualizerEventListener());
+        mExoPlayer.addAudioDebugListener(new EqualizerEventListener());
     }
 
     public void setEqualizerSettings(boolean enabled, Equalizer.Settings settings) {
@@ -152,8 +156,8 @@ public class EqualizedExoPlayer implements ExoPlayer {
         }
 
         @Override
-        public void onAudioTrackUnderrun(
-                int bufferSize, long bufferSizeMs, long elapsedSinceLastFeedMs) {
+        public void onAudioSinkUnderrun(int bufferSize, long bufferSizeMs,
+                                        long elapsedSinceLastFeedMs) {
         }
     }
 
@@ -163,18 +167,23 @@ public class EqualizedExoPlayer implements ExoPlayer {
     }
 
     @Override
-    public void addListener(EventListener listener) {
+    public void addListener(Player.EventListener listener) {
         mExoPlayer.addListener(listener);
     }
 
     @Override
-    public void removeListener(EventListener listener) {
+    public void removeListener(Player.EventListener listener) {
         mExoPlayer.removeListener(listener);
     }
 
     @Override
     public int getPlaybackState() {
         return mExoPlayer.getPlaybackState();
+    }
+
+    @Override
+    public Looper getPlaybackLooper() {
+        return null;
     }
 
     @Override
@@ -195,6 +204,26 @@ public class EqualizedExoPlayer implements ExoPlayer {
     @Override
     public boolean getPlayWhenReady() {
         return mExoPlayer.getPlayWhenReady();
+    }
+
+    @Override
+    public void setRepeatMode(int repeatMode) {
+        mExoPlayer.setRepeatMode(repeatMode);
+    }
+
+    @Override
+    public int getRepeatMode() {
+        return mExoPlayer.getRepeatMode();
+    }
+
+    @Override
+    public void setShuffleModeEnabled(boolean shuffleModeEnabled) {
+        mExoPlayer.setShuffleModeEnabled(shuffleModeEnabled);
+    }
+
+    @Override
+    public boolean getShuffleModeEnabled() {
+        return mExoPlayer.getShuffleModeEnabled();
     }
 
     @Override
@@ -220,6 +249,16 @@ public class EqualizedExoPlayer implements ExoPlayer {
     @Override
     public void seekTo(int windowIndex, long windowPositionMs) {
         mExoPlayer.seekTo(windowIndex, windowPositionMs);
+    }
+
+    @Override
+    public void setPlaybackParameters(@Nullable PlaybackParameters playbackParameters) {
+        mExoPlayer.setPlaybackParameters(playbackParameters);
+    }
+
+    @Override
+    public PlaybackParameters getPlaybackParameters() {
+        return mExoPlayer.getPlaybackParameters();
     }
 
     @Override
@@ -283,6 +322,16 @@ public class EqualizedExoPlayer implements ExoPlayer {
     }
 
     @Override
+    public int getNextWindowIndex() {
+        return mExoPlayer.getNextWindowIndex();
+    }
+
+    @Override
+    public int getPreviousWindowIndex() {
+        return mExoPlayer.getPreviousWindowIndex();
+    }
+
+    @Override
     public long getDuration() {
         return mExoPlayer.getDuration();
     }
@@ -310,6 +359,26 @@ public class EqualizedExoPlayer implements ExoPlayer {
     @Override
     public boolean isCurrentWindowSeekable() {
         return mExoPlayer.isCurrentWindowSeekable();
+    }
+
+    @Override
+    public boolean isPlayingAd() {
+        return mExoPlayer.isPlayingAd();
+    }
+
+    @Override
+    public int getCurrentAdGroupIndex() {
+        return mExoPlayer.getCurrentAdGroupIndex();
+    }
+
+    @Override
+    public int getCurrentAdIndexInAdGroup() {
+        return mExoPlayer.getCurrentAdIndexInAdGroup();
+    }
+
+    @Override
+    public long getContentPosition() {
+        return mExoPlayer.getContentPosition();
     }
     // endregion DELEGATED METHODS
 }
