@@ -461,8 +461,8 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         mQueue = Collections.emptyList();
         mQueueIndex = 0;
 
-        mExoPlayerQueue = new DynamicConcatenatingMediaSource();
-        mExoPlayer.prepare(mExoPlayerQueue);
+        mExoPlayerQueue = null;
+        mExoPlayer.stop();
     }
 
     @Override
