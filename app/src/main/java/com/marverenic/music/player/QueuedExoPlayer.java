@@ -2,9 +2,10 @@ package com.marverenic.music.player;
 
 import android.content.Context;
 import android.media.audiofx.Equalizer;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.util.DiffUtil;
+import android.support.v7.util.ListUpdateCallback;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -19,9 +20,8 @@ import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.audio.DefaultAudioSink;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
-import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
+import com.google.android.exoplayer2.source.DynamicConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
-import com.google.android.exoplayer2.source.LoopingMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
@@ -54,8 +54,11 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     @Nullable
     private PlaybackEventListener mEventListener;
 
+    private DataSource.Factory mSourceFactory;
+    private ExtractorsFactory mExtractorsFactory;
+    private DynamicConcatenatingMediaSource mExoPlayerQueue;
+
     private boolean mHasError;
-    private boolean mInvalid;
     private List<Song> mQueue;
     private int mQueueIndex;
     private int mPrevDuration;
@@ -68,6 +71,9 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         mContext = context;
         mState = ExoPlayerState.IDLE;
         mQueue = Collections.emptyList();
+
+        mSourceFactory = new DefaultDataSourceFactory(mContext, USER_AGENT);
+        mExtractorsFactory = new DefaultExtractorsFactory();
 
         RenderersFactory renderersFactory = new DefaultRenderersFactory(mContext);
         TrackSelector trackSelector = new DefaultTrackSelector(new FixedTrackSelection.Factory());
@@ -101,7 +107,6 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
             @Override
             public void onTimelineChanged(Timeline timeline, Object manifest) {
                 Timber.i("onTimelineChanged");
-                QueuedExoPlayer.this.onTimelineChanged();
             }
 
             @Override
@@ -124,12 +129,12 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
             @Override
             public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
-
+                Timber.i("onPlaybackParametersChanged");
             }
 
             @Override
             public void onSeekProcessed() {
-
+                Timber.i("okSeekProcessed");
             }
         });
     }
@@ -148,26 +153,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
     private void onCompletion() {
         Song completed = getNowPlaying();
-
-        if (mInvalid) {
-            boolean ended = false;
-            if (!mRepeatOne) {
-                if (mRepeatAll && mQueueIndex == mQueue.size() - 1) {
-                    mQueueIndex = 0;
-                } else if (mQueueIndex < mQueue.size() - 1) {
-                    mQueueIndex++;
-                } else {
-                    mQueueIndex = 0;
-                    ended = true;
-                }
-            }
-
-            prepare(!ended, true);
-
-            if (!ended && mEventListener != null) {
-                mEventListener.onCompletion(completed);
-            }
-        } else if (mEventListener != null) {
+        if (mEventListener != null && completed != null) {
             mEventListener.onCompletion(completed);
         }
     }
@@ -178,30 +164,21 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         }
     }
 
-    @Internal void onTimelineChanged() {
-        onStart();
-    }
-
     @Internal void onPositionDiscontinuity(int reason) {
         if (mQueue.size() == 0) {
             return;
         }
 
-        int currentQueueIndex = mExoPlayer.getCurrentWindowIndex() % mQueue.size();
-        boolean isRepeatOne = mRepeatOne;
-
-        if (mQueueIndex != currentQueueIndex || mInvalid) {
+        if (reason == Player.DISCONTINUITY_REASON_PERIOD_TRANSITION) {
             onCompletion();
-            if (!isRepeatOne && !mInvalid) {
-                mQueueIndex = currentQueueIndex;
-                onStart();
-            }
         }
+
+        mQueueIndex = mExoPlayer.getCurrentWindowIndex() % mQueue.size();
+        onStart();
     }
 
     @Internal void onPlayerError(ExoPlaybackException error) {
         mHasError = true;
-        mInvalid = true;
 
         if (mExoPlayer.getCurrentPosition() >= mExoPlayer.getDuration()
                 && mExoPlayer.getDuration() > 0) {
@@ -237,7 +214,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     }
 
     @Override
-    public void setQueue(@NonNull List<Song> queue, int index) {
+    public void setQueue(@NonNull List<Song> queue, int index, boolean resetSeekPosition) {
         if (index < 0) {
             throw new IllegalArgumentException("index cannot be negative");
         }
@@ -249,19 +226,81 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
         if (queue.isEmpty()) {
             reset();
-        } else {
-            boolean nowPlayingDiff = !queue.get(index).equals(getNowPlaying());
-            boolean queueDiff = !queue.equals(mQueue);
-
+        } else if (mExoPlayerQueue == null || !mQueue.get(mQueueIndex).equals(queue.get(index))) {
             mQueue = Collections.unmodifiableList(new ArrayList<>(queue));
             mQueueIndex = index;
 
-            if (nowPlayingDiff) {
-                prepare(isPlaying(), true);
-            } else if ((queueDiff && !isPlaying())) {
-                prepare(false, false);
-            } else {
-                mInvalid |= queueDiff;
+            mExoPlayerQueue = new DynamicConcatenatingMediaSource();
+            List<MediaSource> mediaSources = new ArrayList<>(queue.size());
+            for (Song song : queue) {
+                mediaSources.add(buildMediaSource(song));
+            }
+
+            mExoPlayerQueue.addMediaSources(mediaSources, () -> {
+                mExoPlayer.prepare(mExoPlayerQueue);
+                mExoPlayer.seekTo(index, (resetSeekPosition) ? 0 : getCurrentPosition());
+                onStart();
+            });
+        } else {
+            WaitingCallback waiter = new WaitingCallback();
+
+            DiffUtil.calculateDiff(new DiffUtil.Callback() {
+                @Override
+                public int getOldListSize() {
+                    return mQueue.size();
+                }
+
+                @Override
+                public int getNewListSize() {
+                    return queue.size();
+                }
+
+                @Override
+                public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                    Song oldItem = mQueue.get(oldItemPosition);
+                    Song newItem = queue.get(newItemPosition);
+                    return oldItem.getLocation().equals(newItem.getLocation());
+                }
+
+                @Override
+                public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                    return areItemsTheSame(oldItemPosition, newItemPosition);
+                }
+            }, false).dispatchUpdatesTo(new ListUpdateCallback() {
+                @Override
+                public void onInserted(int position, int count) {
+                    List<MediaSource> mediaSources = new ArrayList<>(count);
+                    for (int i = position; i < position + count; i++) {
+                        mediaSources.add(buildMediaSource(queue.get(i)));
+                    }
+
+                    mExoPlayerQueue.addMediaSources(position, mediaSources, waiter.await());
+                }
+
+                @Override
+                public void onRemoved(int position, int count) {
+                    for (int i = position + count - 1; i > position; i--) {
+                        mExoPlayerQueue.removeMediaSource(i, waiter.await());
+                    }
+                }
+
+                @Override
+                public void onMoved(int fromPosition, int toPosition) {
+                    mExoPlayerQueue.moveMediaSource(fromPosition, toPosition, waiter.await());
+                }
+
+                @Override
+                public void onChanged(int position, int count, Object payload) {
+                    throw new UnsupportedOperationException("This callback should never occur");
+                }
+            });
+
+            mQueue = Collections.unmodifiableList(new ArrayList<>(queue));
+            mQueueIndex = index;
+            if (resetSeekPosition) {
+                waiter.whenComplete(() -> {
+                    mExoPlayer.seekToDefaultPosition(index);
+                });
             }
         }
     }
@@ -271,12 +310,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         if (index == mQueueIndex) {
             seekTo(0);
         } else {
-            mQueueIndex = index;
-            if (mRepeatOne || mInvalid) {
-                prepare(true, true);
-            } else {
-                mExoPlayer.seekTo(index, 0);
-            }
+            mExoPlayer.seekTo(index, 0);
         }
     }
 
@@ -285,62 +319,10 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         return mQueueIndex;
     }
 
-    private void prepare(boolean playWhenReady, boolean resetPosition) {
-        mInvalid = false;
-
-        if (mQueue == null) {
-            return;
-        }
-
-        DataSource.Factory srcFactory = new DefaultDataSourceFactory(mContext, USER_AGENT);
-        ExtractorsFactory extFactory = new DefaultExtractorsFactory();
-
-        int startingPosition = resetPosition ? 0 : getCurrentPosition();
-
-        if (mRepeatOne) {
-            mExoPlayer.prepare(buildRepeatOneMediaSource(srcFactory, extFactory));
-        } else if (mRepeatAll) {
-            mExoPlayer.prepare(buildRepeatAllMediaSource(srcFactory, extFactory));
-        } else {
-            mExoPlayer.prepare(buildNoRepeatMediaSource(srcFactory, extFactory));
-        }
-
-        mExoPlayer.seekTo(mQueueIndex, startingPosition);
-        mExoPlayer.setPlayWhenReady(playWhenReady);
-    }
-
-    private MediaSource buildRepeatOneMediaSource(DataSource.Factory srcFactory,
-                                                  ExtractorsFactory extFactory) {
-
-        if (mQueue.isEmpty()) {
-            // We need to return an empty MediaSource (can't be null), so return a
-            // ConcatenatingMediaSource with nothing to concatenate
-            return new ConcatenatingMediaSource();
-        }
-
-        Uri uri = mQueue.get(mQueueIndex).getLocation();
-        MediaSource source = new ExtractorMediaSource(uri, srcFactory, extFactory, null, null);
-        return new LoopingMediaSource(source);
-    }
-
-    private MediaSource buildNoRepeatMediaSource(DataSource.Factory srcFactory,
-                                                 ExtractorsFactory extFactory) {
-
-        MediaSource[] queue = new MediaSource[mQueue.size()];
-
-        for (int i = 0; i < queue.length; i++) {
-            Uri uri = mQueue.get(i).getLocation();
-            queue[i] = new ExtractorMediaSource(uri, srcFactory, extFactory, null, null);
-        }
-
-        return new ConcatenatingMediaSource(queue);
-    }
-
-    private MediaSource buildRepeatAllMediaSource(DataSource.Factory sourceFactory,
-                                                  ExtractorsFactory extractorsFactory) {
-
-        MediaSource queue = buildNoRepeatMediaSource(sourceFactory, extractorsFactory);
-        return new LoopingMediaSource(queue);
+    private MediaSource buildMediaSource(Song song) {
+        return new ExtractorMediaSource.Factory(mSourceFactory)
+                .setExtractorsFactory(mExtractorsFactory)
+                .createMediaSource(song.getLocation());
     }
 
     @Override
@@ -348,12 +330,8 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         mQueueIndex++;
         mQueueIndex %= mQueue.size();
 
-        if (mRepeatOne || mInvalid) {
-            prepare(true, true);
-        } else {
-            mExoPlayer.seekTo(mQueueIndex, 0);
-            mExoPlayer.setPlayWhenReady(true);
-        }
+        mExoPlayer.seekTo(mQueueIndex, 0);
+        mExoPlayer.setPlayWhenReady(true);
     }
 
     @Override
@@ -364,19 +342,12 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
             mQueueIndex += mQueue.size();
         }
 
-        if (mRepeatOne || mInvalid) {
-            prepare(true, true);
-        } else {
-            mExoPlayer.seekTo(mQueueIndex, 0);
-            mExoPlayer.setPlayWhenReady(true);
-        }
+        mExoPlayer.seekTo(mQueueIndex, 0);
+        mExoPlayer.setPlayWhenReady(true);
     }
 
     @Override
     public void seekTo(int mSec) {
-        if (mInvalid) {
-            prepare(isPlaying(), false);
-        }
         mExoPlayer.seekTo(mQueueIndex, mSec);
     }
 
@@ -394,9 +365,6 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     @Override
     public void pause() {
         mExoPlayer.setPlayWhenReady(false);
-        if (mInvalid) {
-            prepare(false, false);
-        }
     }
 
     @Override
@@ -451,7 +419,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         if (!mRepeatAll) {
             mRepeatAll = true;
             mRepeatOne = false;
-            mInvalid = true;
+            mExoPlayer.setRepeatMode(getExoPlayerRepeatMode());
         }
     }
 
@@ -460,7 +428,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         if (!mRepeatOne) {
             mRepeatOne = true;
             mRepeatAll = false;
-            mInvalid = true;
+            mExoPlayer.setRepeatMode(getExoPlayerRepeatMode());
         }
     }
 
@@ -469,7 +437,17 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         if (mRepeatAll || mRepeatOne) {
             mRepeatOne = false;
             mRepeatAll = false;
-            mInvalid = true;
+            mExoPlayer.setRepeatMode(getExoPlayerRepeatMode());
+        }
+    }
+
+    private int getExoPlayerRepeatMode() {
+        if (mRepeatAll) {
+            return Player.REPEAT_MODE_ALL;
+        } else if (mRepeatOne) {
+            return Player.REPEAT_MODE_ONE;
+        } else {
+            return Player.REPEAT_MODE_OFF;
         }
     }
 
@@ -482,7 +460,9 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     public void reset() {
         mQueue = Collections.emptyList();
         mQueueIndex = 0;
-        prepare(false, true);
+
+        mExoPlayerQueue = new DynamicConcatenatingMediaSource();
+        mExoPlayer.prepare(mExoPlayerQueue);
     }
 
     @Override
@@ -490,5 +470,33 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         mExoPlayer.release();
         mExoPlayer = null;
         mContext = null;
+    }
+
+    private static class WaitingCallback {
+
+        private int mInFlightCount = 0;
+
+        @Nullable
+        private Runnable mOnComplete;
+
+        public Runnable await() {
+            mInFlightCount++;
+            return () -> {
+                mInFlightCount--;
+                if (mOnComplete != null) {
+                    mOnComplete.run();
+                    mOnComplete = null;
+                }
+            };
+        }
+
+        public void whenComplete(Runnable action) {
+            if (mInFlightCount == 0) {
+                action.run();
+            } else {
+                mOnComplete = action;
+            }
+        }
+
     }
 }

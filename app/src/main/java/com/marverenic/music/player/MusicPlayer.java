@@ -413,7 +413,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 shuffleQueue(queuePosition);
             }
 
-            setBackingQueue(queuePosition);
+            setBackingQueue(queuePosition, false);
             mMediaPlayer.seekTo(currentPosition);
 
             Util.fetchArtwork(mContext, getNowPlaying())
@@ -887,12 +887,11 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         if (mShuffle) {
             Timber.i("Shuffling new queue and starting from beginning");
             shuffleQueue(index);
-            setBackingQueue(0);
+            setBackingQueue(0, true);
         } else {
             Timber.i("Setting new backing queue (starting at index %d)", index);
-            setBackingQueue(index);
+            setBackingQueue(index, true);
         }
-        seekTo(0);
     }
 
     /**
@@ -909,16 +908,16 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         } else {
             mQueue = Collections.unmodifiableList(queue);
         }
-        setBackingQueue(index);
+        setBackingQueue(index, false);
     }
 
     /**
      * Helper method to push changes in the queue to the backing {@link QueuedMediaPlayer}
-     * @see #setBackingQueue(int)
+     * @see #setBackingQueue(int, boolean)
      */
-    private void setBackingQueue() {
+    private void setBackingQueue(boolean resetSeekPosition) {
         Timber.i("setBackingQueue() called");
-        setBackingQueue(mMediaPlayer.getQueueIndex());
+        setBackingQueue(mMediaPlayer.getQueueIndex(), resetSeekPosition);
     }
 
     /**
@@ -927,12 +926,12 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * specified index as the replacement queue position
      * @param index The new queue index to send to the backing {@link QueuedMediaPlayer}.
      */
-    private void setBackingQueue(int index) {
+    private void setBackingQueue(int index, boolean resetSeekPosition) {
         Timber.i("setBackingQueue() called (index = %d)", index);
         if (mShuffle) {
-            mMediaPlayer.setQueue(mQueueShuffled, index);
+            mMediaPlayer.setQueue(mQueueShuffled, index, resetSeekPosition);
         } else {
-            mMediaPlayer.setQueue(mQueue, index);
+            mMediaPlayer.setQueue(mQueue, index, resetSeekPosition);
         }
     }
 
@@ -1048,12 +1047,12 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         if (shuffle) {
             Timber.i("Enabling shuffle...");
             shuffleQueue(getQueuePosition());
-            mMediaPlayer.setQueue(mQueueShuffled, 0);
+            mMediaPlayer.setQueue(mQueueShuffled, 0, false);
         } else {
             Timber.i("Disabling shuffle...");
             unshuffleQueue();
             int position = mQueue.indexOf(getNowPlaying());
-            mMediaPlayer.setQueue(mQueue, position);
+            mMediaPlayer.setQueue(mQueue, position, false);
         }
         mShuffle = shuffle;
         updateNowPlaying();
@@ -1080,7 +1079,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         mQueueShuffled = Collections.unmodifiableList(shuffledQueue);
         mQueue = Collections.unmodifiableList(queue);
 
-        setBackingQueue();
+        setBackingQueue(false);
     }
 
     /**
@@ -1104,7 +1103,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         mQueueShuffled = Collections.unmodifiableList(shuffledQueue);
         mQueue = Collections.unmodifiableList(queue);
 
-        setBackingQueue();
+        setBackingQueue(false);
     }
 
     /**
@@ -1127,7 +1126,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         mQueueShuffled = Collections.unmodifiableList(shuffledQueue);
         mQueue = Collections.unmodifiableList(queue);
 
-        setBackingQueue();
+        setBackingQueue(false);
     }
 
     /**
@@ -1150,7 +1149,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         mQueueShuffled = Collections.unmodifiableList(shuffledQueue);
         mQueue = Collections.unmodifiableList(queue);
 
-        setBackingQueue();
+        setBackingQueue(false);
     }
 
     /**
@@ -1252,7 +1251,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         mQueue = Collections.unmodifiableList(state.getQueue());
         mQueueShuffled = Collections.unmodifiableList(state.getShuffledQueue());
 
-        setBackingQueue(state.getQueuePosition());
+        setBackingQueue(state.getQueuePosition(), false);
         seekTo(state.getSeekPosition());
 
         if (state.isPlaying()) {
