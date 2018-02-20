@@ -208,7 +208,7 @@
     <string name="uses_aosp_detail">Support-v4 26.0.0, Appcompat-v7 26.0.0, RecyclerView 26.0.0,
         CardView 26.0.0, Design 26.0.0, Palette 26.0.0, Preference-v14 26.0.0; distribuido por
         Android Open Source Project bajo una Licencia Apache, Versión 2.0</string>
-    <string name="uses_exoplayer_detail">Versión 2.3.1; distribuido por Google Inc. bajo una
+    <string name="uses_exoplayer_detail">Versión 2.6.1; distribuido por Google Inc. bajo una
         Licencia Apache, Versión 2.0</string>
     <string name="uses_libflac_detail">Versión 1.3.1; distribuido por la Fundación Xiph.Org bajo una
         Licencia BSD</string>
