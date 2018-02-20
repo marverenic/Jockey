@@ -183,7 +183,7 @@ public class EqualizedExoPlayer implements ExoPlayer {
 
     @Override
     public Looper getPlaybackLooper() {
-        return null;
+        return mExoPlayer.getPlaybackLooper();
     }
 
     @Override
