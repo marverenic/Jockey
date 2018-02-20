@@ -6,7 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.RemoteException;
 import android.os.SystemClock;
 
@@ -73,15 +76,20 @@ public class ServicePlayerController implements PlayerController {
     private BehaviorSubject<Bitmap> mArtwork;
     private Subscription mCurrentPositionClock;
 
+    private Handler mMainHandler;
+    private HandlerThread mRequestThread;
     private ObservableQueue<Runnable> mRequestQueue;
     private Subscription mRequestQueueSubscription;
 
     public ServicePlayerController(Context context, PreferenceStore preferenceStore) {
         mContext = context;
+        mRequestThread = new HandlerThread("PlayerController-RequestProcessor");
         mShuffled = BehaviorSubject.create(preferenceStore.isShuffled());
         mRepeatMode = BehaviorSubject.create(preferenceStore.getRepeatMode());
         mRequestQueue = new ObservableQueue<>();
 
+        mMainHandler = new Handler(Looper.getMainLooper());
+        mRequestThread.start();
         startService();
 
         isPlaying().subscribe(
@@ -146,6 +154,7 @@ public class ServicePlayerController implements PlayerController {
 
     private void bindRequestQueue() {
         mRequestQueueSubscription = mRequestQueue.toObservable()
+                .observeOn(AndroidSchedulers.from(mRequestThread.getLooper()))
                 .subscribe(Runnable::run, throwable -> {
                     Timber.e(throwable, "Failed to process request");
                     // Make sure to restart the request queue, otherwise all future commands will
@@ -209,6 +218,11 @@ public class ServicePlayerController implements PlayerController {
     }
 
     private void invalidateAll() {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            mMainHandler.post(this::invalidateAll);
+            return;
+        }
+
         mPlaying.invalidate();
         mNowPlaying.invalidate();
         mQueue.invalidate();
