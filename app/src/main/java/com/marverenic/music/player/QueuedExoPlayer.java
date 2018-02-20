@@ -237,7 +237,8 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
         if (queue.isEmpty()) {
             reset();
-        } else if (mExoPlayerQueue == null || !mQueue.get(mQueueIndex).equals(queue.get(index))) {
+        } else if (mExoPlayerQueue == null || !mQueue.get(mQueueIndex).equals(queue.get(index))
+                || resetSeekPosition) {
             mQueue = Collections.unmodifiableList(new ArrayList<>(queue));
             mQueueIndex = index;
 
@@ -249,7 +250,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
             mExoPlayerQueue.addMediaSources(mediaSources, () -> {
                 mExoPlayer.prepare(mExoPlayerQueue);
-                mExoPlayer.seekTo(index, (resetSeekPosition) ? 0 : getCurrentPosition());
+                mExoPlayer.seekToDefaultPosition(index);
                 onStart();
             });
         } else {
@@ -308,11 +309,6 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
             mQueue = Collections.unmodifiableList(new ArrayList<>(queue));
             mQueueIndex = index;
-            if (resetSeekPosition) {
-                waiter.whenComplete(() -> {
-                    mExoPlayer.seekToDefaultPosition(index);
-                });
-            }
         }
     }
 
