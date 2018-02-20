@@ -217,20 +217,25 @@ public class ServicePlayerController implements PlayerController {
         invalidateAll();
     }
 
-    private void invalidateAll() {
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            mMainHandler.post(this::invalidateAll);
-            return;
+    private void runOnMainThread(Runnable action) {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            action.run();
+        } else {
+            mMainHandler.post(action);
         }
+    }
 
-        mPlaying.invalidate();
-        mNowPlaying.invalidate();
-        mQueue.invalidate();
-        mQueuePosition.invalidate();
-        mCurrentPosition.invalidate();
-        mDuration.invalidate();
-        mMultiRepeatCount.invalidate();
-        mSleepTimerEndTime.invalidate();
+    private void invalidateAll() {
+        runOnMainThread(() -> {
+            mPlaying.invalidate();
+            mNowPlaying.invalidate();
+            mQueue.invalidate();
+            mQueuePosition.invalidate();
+            mCurrentPosition.invalidate();
+            mDuration.invalidate();
+            mMultiRepeatCount.invalidate();
+            mSleepTimerEndTime.invalidate();
+        });
     }
 
     @Override
@@ -337,8 +342,10 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.setPreferences(new ImmutablePreferenceStore(preferenceStore));
-                mShuffled.onNext(preferenceStore.isShuffled());
-                mRepeatMode.onNext(preferenceStore.getRepeatMode());
+                runOnMainThread(() -> {
+                    mShuffled.onNext(preferenceStore.isShuffled());
+                    mRepeatMode.onNext(preferenceStore.getRepeatMode());
+                });
                 invalidateAll();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to update remote player preferences");
@@ -405,8 +412,7 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.changeSong(newPosition);
-                mNowPlaying.invalidate();
-                mQueuePosition.invalidate();
+                invalidateAll();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to change song");
             }
@@ -557,7 +563,9 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.setMultiRepeatCount(count);
-                mMultiRepeatCount.setValue(count);
+                runOnMainThread(() -> {
+                    mMultiRepeatCount.setValue(count);
+                });
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to set multi-repeat count");
             }
@@ -575,7 +583,9 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.setSleepTimerEndTime(timestampInMillis);
-                mSleepTimerEndTime.setValue(timestampInMillis);
+                runOnMainThread(() -> {
+                    mSleepTimerEndTime.setValue(timestampInMillis);
+                });
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to set sleep-timer end time");
             }
@@ -693,10 +703,6 @@ public class ServicePlayerController implements PlayerController {
 
         public void setValue(T value) {
             mSubject.onNext(Optional.ofNullable(value));
-        }
-
-        protected BehaviorSubject<Optional<T>> getSubject() {
-            return mSubject;
         }
 
         public Observable<T> getObservable() {
