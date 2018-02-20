@@ -6,7 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.RemoteException;
 import android.os.SystemClock;
 
@@ -73,15 +76,20 @@ public class ServicePlayerController implements PlayerController {
     private BehaviorSubject<Bitmap> mArtwork;
     private Subscription mCurrentPositionClock;
 
+    private Handler mMainHandler;
+    private HandlerThread mRequestThread;
     private ObservableQueue<Runnable> mRequestQueue;
     private Subscription mRequestQueueSubscription;
 
     public ServicePlayerController(Context context, PreferenceStore preferenceStore) {
         mContext = context;
+        mRequestThread = new HandlerThread("PlayerController-RequestProcessor");
         mShuffled = BehaviorSubject.create(preferenceStore.isShuffled());
         mRepeatMode = BehaviorSubject.create(preferenceStore.getRepeatMode());
         mRequestQueue = new ObservableQueue<>();
 
+        mMainHandler = new Handler(Looper.getMainLooper());
+        mRequestThread.start();
         startService();
 
         isPlaying().subscribe(
@@ -146,6 +154,7 @@ public class ServicePlayerController implements PlayerController {
 
     private void bindRequestQueue() {
         mRequestQueueSubscription = mRequestQueue.toObservable()
+                .observeOn(AndroidSchedulers.from(mRequestThread.getLooper()))
                 .subscribe(Runnable::run, throwable -> {
                     Timber.e(throwable, "Failed to process request");
                     // Make sure to restart the request queue, otherwise all future commands will
@@ -208,15 +217,25 @@ public class ServicePlayerController implements PlayerController {
         invalidateAll();
     }
 
+    private void runOnMainThread(Runnable action) {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            action.run();
+        } else {
+            mMainHandler.post(action);
+        }
+    }
+
     private void invalidateAll() {
-        mPlaying.invalidate();
-        mNowPlaying.invalidate();
-        mQueue.invalidate();
-        mQueuePosition.invalidate();
-        mCurrentPosition.invalidate();
-        mDuration.invalidate();
-        mMultiRepeatCount.invalidate();
-        mSleepTimerEndTime.invalidate();
+        runOnMainThread(() -> {
+            mPlaying.invalidate();
+            mNowPlaying.invalidate();
+            mQueue.invalidate();
+            mQueuePosition.invalidate();
+            mCurrentPosition.invalidate();
+            mDuration.invalidate();
+            mMultiRepeatCount.invalidate();
+            mSleepTimerEndTime.invalidate();
+        });
     }
 
     @Override
@@ -323,8 +342,10 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.setPreferences(new ImmutablePreferenceStore(preferenceStore));
-                mShuffled.onNext(preferenceStore.isShuffled());
-                mRepeatMode.onNext(preferenceStore.getRepeatMode());
+                runOnMainThread(() -> {
+                    mShuffled.onNext(preferenceStore.isShuffled());
+                    mRepeatMode.onNext(preferenceStore.getRepeatMode());
+                });
                 invalidateAll();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to update remote player preferences");
@@ -391,8 +412,7 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.changeSong(newPosition);
-                mNowPlaying.invalidate();
-                mQueuePosition.invalidate();
+                invalidateAll();
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to change song");
             }
@@ -543,7 +563,9 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.setMultiRepeatCount(count);
-                mMultiRepeatCount.setValue(count);
+                runOnMainThread(() -> {
+                    mMultiRepeatCount.setValue(count);
+                });
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to set multi-repeat count");
             }
@@ -561,7 +583,9 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.setSleepTimerEndTime(timestampInMillis);
-                mSleepTimerEndTime.setValue(timestampInMillis);
+                runOnMainThread(() -> {
+                    mSleepTimerEndTime.setValue(timestampInMillis);
+                });
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to set sleep-timer end time");
             }
@@ -581,11 +605,7 @@ public class ServicePlayerController implements PlayerController {
             getNowPlaying()
                     .observeOn(Schedulers.io())
                     .flatMap((Song song) -> {
-                        if (song == null) {
-                            return null;
-                        }
-
-                        return Util.fetchArtwork(mContext, song.getLocation());
+                        return Util.fetchArtwork(mContext, song);
                     })
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(mArtwork::onNext, throwable -> {
@@ -594,15 +614,7 @@ public class ServicePlayerController implements PlayerController {
                     });
         }
 
-        return mNowPlaying.getSubject()
-                .map(Optional::isPresent)
-                .switchMap(current -> {
-                    if (current) {
-                        return mArtwork;
-                    } else {
-                        return Observable.empty();
-                    }
-                });
+        return mArtwork;
     }
 
     /**
@@ -691,10 +703,6 @@ public class ServicePlayerController implements PlayerController {
 
         public void setValue(T value) {
             mSubject.onNext(Optional.ofNullable(value));
-        }
-
-        protected BehaviorSubject<Optional<T>> getSubject() {
-            return mSubject;
         }
 
         public Observable<T> getObservable() {

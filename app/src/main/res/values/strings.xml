@@ -214,7 +214,7 @@
         CardView 26.0.0, Design 26.0.0, Palette 26.0.0, Preference-v14 26.0.0; distributed by the
         Android Open Source Project under an Apache License, Version 2.0</string>
     <string name="uses_exoplayer_header" translatable="false">ExoPlayer</string>
-    <string name="uses_exoplayer_detail">Version 2.3.1; distributed by Google Inc. under an Apache
+    <string name="uses_exoplayer_detail">Version 2.6.1; distributed by Google Inc. under an Apache
         License, Version 2.0</string>
     <string name="uses_libflac_header" translatable="false">libFLAC</string>
     <string name="uses_libflac_detail">Version 1.3.1; distributed by the Xiph.Org Foundation under

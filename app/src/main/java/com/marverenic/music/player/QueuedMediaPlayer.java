@@ -48,8 +48,11 @@ public interface QueuedMediaPlayer {
      *              empty list like {@link Collections#emptyList()}.
      * @param index The starting index to play music from. Must be between {@code 0}
      *              and {@code queue.size() - 1}. This value is ignored if {@code queue} is empty.
+     * @param resetSeekPosition Whether the {@code index}-th track will be started from the
+     *                          beginning of the song, or from the current seek position.
+     *                          {@code true} will start playback from the beginning of the song
      */
-    void setQueue(@NonNull List<Song> queue, int index);
+    void setQueue(@NonNull List<Song> queue, int index, boolean resetSeekPosition);
 
     /**
      * Changes the current song to the one at {@code index} in the current queue, and begins
