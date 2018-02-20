@@ -266,7 +266,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
                 public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
                     return areItemsTheSame(oldItemPosition, newItemPosition);
                 }
-            }, false).dispatchUpdatesTo(new ListUpdateCallback() {
+            }).dispatchUpdatesTo(new ListUpdateCallback() {
                 @Override
                 public void onInserted(int position, int count) {
                     List<MediaSource> mediaSources = new ArrayList<>(count);
@@ -279,7 +279,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
                 @Override
                 public void onRemoved(int position, int count) {
-                    for (int i = position + count - 1; i > position; i--) {
+                    for (int i = position + count - 1; i >= position; i--) {
                         mExoPlayerQueue.removeMediaSource(i, waiter.await());
                     }
                 }
