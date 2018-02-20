@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.util.ListUpdateCallback;
 
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -58,6 +59,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
     private ExtractorsFactory mExtractorsFactory;
     private DynamicConcatenatingMediaSource mExoPlayerQueue;
 
+    private boolean mWaitingForDuration = false;
     private boolean mHasError;
     private List<Song> mQueue;
     private int mQueueIndex;
@@ -107,6 +109,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
             @Override
             public void onTimelineChanged(Timeline timeline, Object manifest) {
                 Timber.i("onTimelineChanged");
+                dispatchDurationUpdateIfNeeded();
             }
 
             @Override
@@ -143,6 +146,7 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
         boolean stateDiff = mState != ExoPlayerState.fromInt(playbackState);
         mState = ExoPlayerState.fromInt(playbackState);
         mHasError = mHasError && (mState == ExoPlayerState.IDLE);
+        mWaitingForDuration = mExoPlayer.getDuration() == C.TIME_UNSET;
 
         if (stateDiff && playbackState == Player.STATE_ENDED) {
             onCompletion();
@@ -187,6 +191,13 @@ public class QueuedExoPlayer implements QueuedMediaPlayer {
 
         if (mEventListener != null) {
             mEventListener.onError(error.getCause());
+        }
+    }
+
+    @Internal void dispatchDurationUpdateIfNeeded() {
+        if (mWaitingForDuration && mExoPlayer.getDuration() != C.TIME_UNSET) {
+            mWaitingForDuration = false;
+            onStart();
         }
     }
 
