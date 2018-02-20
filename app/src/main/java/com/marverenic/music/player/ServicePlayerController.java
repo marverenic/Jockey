@@ -581,11 +581,7 @@ public class ServicePlayerController implements PlayerController {
             getNowPlaying()
                     .observeOn(Schedulers.io())
                     .flatMap((Song song) -> {
-                        if (song == null) {
-                            return null;
-                        }
-
-                        return Util.fetchArtwork(mContext, song.getLocation());
+                        return Util.fetchArtwork(mContext, song);
                     })
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(mArtwork::onNext, throwable -> {
@@ -594,15 +590,7 @@ public class ServicePlayerController implements PlayerController {
                     });
         }
 
-        return mNowPlaying.getSubject()
-                .map(Optional::isPresent)
-                .switchMap(current -> {
-                    if (current) {
-                        return mArtwork;
-                    } else {
-                        return Observable.empty();
-                    }
-                });
+        return mArtwork;
     }
 
     /**
