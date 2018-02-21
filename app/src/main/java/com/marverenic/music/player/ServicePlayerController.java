@@ -267,6 +267,8 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public void stop() {
+        mPlaying.setValue(false);
+
         execute(() -> {
             try {
                 mBinding.stop();
@@ -303,6 +305,10 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public void togglePlay() {
+        if (mPlaying.hasValue()) {
+            mPlaying.setValue(!mPlaying.lastValue());
+        }
+
         execute(() -> {
             try {
                 mBinding.togglePlay();
@@ -315,6 +321,8 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public void play() {
+        mPlaying.setValue(true);
+
         execute(() -> {
             try {
                 mBinding.play();
@@ -327,6 +335,8 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public void pause() {
+        mPlaying.setValue(false);
+
         execute(() -> {
             try {
                 mBinding.pause();
@@ -355,6 +365,12 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public void setQueue(List<Song> newQueue, int newPosition) {
+        if (newPosition < newQueue.size()) {
+            mNowPlaying.setValue(newQueue.get(newPosition));
+            mQueuePosition.setValue(mShuffled.getValue() ? 0 : newPosition);
+            mCurrentPosition.setValue(0);
+        }
+
         execute(() -> {
             try {
                 if (newQueue.size() > MAXIMUM_CHUNK_ENTRIES) {
@@ -491,6 +507,8 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public void seek(int position) {
+        mCurrentPosition.setValue(position);
+
         execute(() -> {
             try {
                 mBinding.seekTo(position);
@@ -705,6 +723,14 @@ public class ServicePlayerController implements PlayerController {
 
         public void setValue(T value) {
             mSubject.onNext(Optional.ofNullable(value));
+        }
+
+        public boolean hasValue() {
+            return mSubject.getValue() != null && mSubject.getValue().isPresent();
+        }
+
+        public T lastValue() {
+            return mSubject.getValue().getValue();
         }
 
         public Observable<T> getObservable() {
