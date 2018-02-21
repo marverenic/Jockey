@@ -470,14 +470,14 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void setPreferences(ImmutablePreferenceStore preferences) throws RemoteException {
+        public void setPreferences(ImmutablePreferenceStore preferences, long seed) throws RemoteException {
             if (!isMusicPlayerReady()) {
                 Timber.i("PlayerService.setPreferences(): Service is not ready. Dropping command");
                 return;
             }
 
             try {
-                mService.musicPlayer.updatePreferences(preferences);
+                mService.musicPlayer.updatePreferences(preferences, seed);
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.setPreferences(...) failed");
                 throw exception;
@@ -485,14 +485,14 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void setQueue(List<Song> newQueue, int newPosition) throws RemoteException {
+        public void setQueue(List<Song> newQueue, int newPosition, long seed) throws RemoteException {
             if (!isMusicPlayerReady()) {
                 Timber.i("PlayerService.setQueue(): Service is not ready. Dropping command");
                 return;
             }
 
             try {
-                mService.musicPlayer.setQueue(newQueue, newPosition);
+                mService.musicPlayer.setQueue(newQueue, newPosition, seed);
                 if (newQueue.isEmpty()) {
                     mService.stop();
                 }
@@ -516,7 +516,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void endLargeQueueTransaction(boolean editQueue, int newPosition) throws RemoteException {
+        public void endLargeQueueTransaction(boolean editQueue, int newPosition, long seed) throws RemoteException {
             if (mQueueTransaction == null) {
                 throw new IllegalStateException("Transaction has not started");
             } else if (!mQueueTransaction.isTransmissionComplete()) {
@@ -526,7 +526,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
             if (editQueue) {
                 editQueue(mQueueTransaction.getData(), newPosition);
             } else {
-                setQueue(mQueueTransaction.getData(), newPosition);
+                setQueue(mQueueTransaction.getData(), newPosition, seed);
             }
             mQueueTransaction = null;
         }

@@ -28,6 +28,7 @@ import com.marverenic.music.utils.Util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -76,6 +77,7 @@ public class ServicePlayerController implements PlayerController {
     private BehaviorSubject<Bitmap> mArtwork;
     private Subscription mCurrentPositionClock;
 
+    private Random mShuffleSeedGenerator;
     private Handler mMainHandler;
     private HandlerThread mRequestThread;
     private ObservableQueue<Runnable> mRequestQueue;
@@ -88,6 +90,7 @@ public class ServicePlayerController implements PlayerController {
         mRepeatMode = BehaviorSubject.create(preferenceStore.getRepeatMode());
         mRequestQueue = new ObservableQueue<>();
 
+        mShuffleSeedGenerator = new Random();
         mMainHandler = new Handler(Looper.getMainLooper());
         mRequestThread.start();
         startService();
@@ -349,9 +352,10 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public void updatePlayerPreferences(ReadOnlyPreferenceStore preferenceStore) {
+        long seed = mShuffleSeedGenerator.nextLong();
         execute(() -> {
             try {
-                mBinding.setPreferences(new ImmutablePreferenceStore(preferenceStore));
+                mBinding.setPreferences(new ImmutablePreferenceStore(preferenceStore), seed);
                 runOnMainThread(() -> {
                     mShuffled.onNext(preferenceStore.isShuffled());
                     mRepeatMode.onNext(preferenceStore.getRepeatMode());
@@ -365,10 +369,20 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public void setQueue(List<Song> newQueue, int newPosition) {
+        long seed = mShuffleSeedGenerator.nextLong();
+
         if (newPosition < newQueue.size()) {
+            boolean shuffled = mShuffled.getValue();
+
             mNowPlaying.setValue(newQueue.get(newPosition));
-            mQueuePosition.setValue(mShuffled.getValue() ? 0 : newPosition);
+            mQueuePosition.setValue(shuffled ? 0 : newPosition);
             mCurrentPosition.setValue(0);
+
+            if (shuffled) {
+                mQueue.setValue(MusicPlayer.generateShuffledQueue(newQueue, newPosition, seed));
+            } else {
+                mQueue.setValue(newQueue);
+            }
         }
 
         execute(() -> {
@@ -378,11 +392,11 @@ public class ServicePlayerController implements PlayerController {
                             token -> mBinding.beginLargeQueueTransaction(token),
                             (header, data) -> mBinding.sendQueueChunk(header, data),
                             () -> {
-                                mBinding.endLargeQueueTransaction(false, newPosition);
+                                mBinding.endLargeQueueTransaction(false, newPosition, seed);
                                 invalidateAll();
                             });
                 } else {
-                    mBinding.setQueue(newQueue, newPosition);
+                    mBinding.setQueue(newQueue, newPosition, seed);
                     invalidateAll();
                 }
             } catch (RemoteException exception) {
@@ -444,7 +458,7 @@ public class ServicePlayerController implements PlayerController {
                             token -> mBinding.beginLargeQueueTransaction(token),
                             (header, data) -> mBinding.sendQueueChunk(header, data),
                             () -> {
-                                mBinding.endLargeQueueTransaction(true, newPosition);
+                                mBinding.endLargeQueueTransaction(true, newPosition, 0);
                                 invalidateAll();
                             });
                 } else {
