@@ -38,6 +38,7 @@ public class MusicBrowserFragment extends BaseFragment {
     private static final String KEY_SAVED_LIST_STATE = "RecentlyAddedFragment.RecyclerViewState";
     private static final String EXTRA_SAVED_HISTORY = "MusicBrowserFragment.History";
     private static final String EXTRA_SAVED_DIRECTORY = "MusicBrowserFragment.CurrentDirectory";
+    private static final String ARG_STARTING_DIRECTORY = "MusicBrowserFragment.StartingDirectory";
 
     @Inject PreferenceStore mPrefStore;
     @Inject MusicStore mMusicStore;
@@ -49,6 +50,14 @@ public class MusicBrowserFragment extends BaseFragment {
 
     public static MusicBrowserFragment newInstance() {
         return new MusicBrowserFragment();
+    }
+
+    public static MusicBrowserFragment newInstance(File startingDirectory) {
+        Bundle args = new Bundle();
+        args.putString(ARG_STARTING_DIRECTORY, startingDirectory.getAbsolutePath());
+        MusicBrowserFragment fragment = new MusicBrowserFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -65,8 +74,15 @@ public class MusicBrowserFragment extends BaseFragment {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_music_browser,
                 container, false);
 
-        mViewModel = new MusicBrowserViewModel(getContext(),
-                resolveStartingDirectory(), this::playFile);
+        File startingDirectory;
+
+        if (getArguments() != null && getArguments().containsKey(ARG_STARTING_DIRECTORY)) {
+            startingDirectory = new File(getArguments().getString(ARG_STARTING_DIRECTORY));
+        } else {
+            startingDirectory = resolveStartingDirectory();
+        }
+
+        mViewModel = new MusicBrowserViewModel(getContext(), startingDirectory, this::playFile);
 
         mBinding.setViewModel(mViewModel);
         mBinding.executePendingBindings();

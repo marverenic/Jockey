@@ -24,6 +24,7 @@ import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseViewModel;
+import com.marverenic.music.ui.browse.MusicBrowserActivity;
 import com.marverenic.music.ui.common.playlist.AppendPlaylistDialogFragment;
 import com.marverenic.music.ui.library.album.contents.AlbumActivity;
 import com.marverenic.music.ui.library.artist.contents.ArtistActivity;
@@ -233,6 +234,9 @@ public class NowPlayingControllerViewModel extends BaseViewModel {
                                 Timber.e(throwable, "Failed to find album");
                             });
 
+                    return true;
+                case R.id.menu_item_navigate_to_folder:
+                    getContext().startActivity(MusicBrowserActivity.newIntent(getContext(), song));
                     return true;
                 case R.id.menu_item_add_to_playlist:
                     new AppendPlaylistDialogFragment.Builder(getContext(), mFragmentManager)

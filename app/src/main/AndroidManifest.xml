@@ -151,6 +151,8 @@
             <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
         </activity-alias>
 
+        <activity android:name=".ui.browse.MusicBrowserActivity"/>
+
         <!-- Search Activity -->
         <activity
             android:name=".ui.search.SearchActivity"
