@@ -1,4 +1,4 @@
-package com.marverenic.music.ui.library.browse;
+package com.marverenic.music.ui.browse;
 
 import android.content.Context;
 import android.databinding.Bindable;
@@ -11,7 +11,7 @@ import com.marverenic.music.BR;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.ui.BaseViewModel;
-import com.marverenic.music.ui.library.browse.BreadCrumbView.BreadCrumb;
+import com.marverenic.music.ui.browse.BreadCrumbView.BreadCrumb;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.PaddingDecoration;

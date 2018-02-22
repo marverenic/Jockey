@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.marverenic.music.ui.library.browse.MusicBrowserViewModel"/>
+            type="com.marverenic.music.ui.browse.MusicBrowserViewModel"/>
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -27,7 +27,7 @@
                 app:title="@string/header_browser"
                 app:layout_scrollFlags="scroll|enterAlways|snap"/>
 
-            <com.marverenic.music.ui.library.browse.BreadCrumbView
+            <com.marverenic.music.ui.browse.BreadCrumbView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/breadcrumb_toolbar_horizontal_padding"

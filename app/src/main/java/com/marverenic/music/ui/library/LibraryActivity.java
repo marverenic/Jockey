@@ -26,7 +26,7 @@ import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseLibraryActivity;
 import com.marverenic.music.ui.BaseLibraryActivityViewModel.OnBottomSheetStateChangeListener.BottomSheetState;
 import com.marverenic.music.ui.about.AboutActivity;
-import com.marverenic.music.ui.library.browse.MusicBrowserFragment;
+import com.marverenic.music.ui.browse.MusicBrowserFragment;
 import com.marverenic.music.ui.library.recentlyadded.RecentlyAddedFragment;
 import com.marverenic.music.ui.settings.SettingsActivity;
 import com.marverenic.music.utils.UriUtils;

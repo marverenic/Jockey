@@ -12,7 +12,7 @@ import com.marverenic.music.ui.library.album.AlbumListFragment;
 import com.marverenic.music.ui.library.artist.ArtistListFragment;
 import com.marverenic.music.ui.library.LibraryActivity;
 import com.marverenic.music.ui.library.LibraryFragment;
-import com.marverenic.music.ui.library.browse.MusicBrowserFragment;
+import com.marverenic.music.ui.browse.MusicBrowserFragment;
 import com.marverenic.music.ui.library.playlist.PlaylistListFragment;
 import com.marverenic.music.ui.library.recentlyadded.RecentlyAddedFragment;
 import com.marverenic.music.ui.library.song.SongFragment;

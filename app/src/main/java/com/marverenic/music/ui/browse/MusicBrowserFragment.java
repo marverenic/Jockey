@@ -1,4 +1,4 @@
-package com.marverenic.music.ui.library.browse;
+package com.marverenic.music.ui.browse;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
