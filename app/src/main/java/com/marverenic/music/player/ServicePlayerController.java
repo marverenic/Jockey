@@ -392,7 +392,7 @@ public class ServicePlayerController implements PlayerController {
                             token -> mBinding.beginLargeQueueTransaction(token),
                             (header, data) -> mBinding.sendQueueChunk(header, data),
                             () -> {
-                                mBinding.endLargeQueueTransaction(false, newPosition, seed);
+                                mBinding.endLargeQueueTransaction(newPosition, seed);
                                 invalidateAll();
                             });
                 } else {
@@ -458,7 +458,7 @@ public class ServicePlayerController implements PlayerController {
                             token -> mBinding.beginLargeQueueTransaction(token),
                             (header, data) -> mBinding.sendQueueChunk(header, data),
                             () -> {
-                                mBinding.endLargeQueueTransaction(true, newPosition, 0);
+                                mBinding.endLargeQueueEdit(newPosition);
                                 invalidateAll();
                             });
                 } else {
