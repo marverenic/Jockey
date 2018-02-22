@@ -85,7 +85,7 @@ public class ServicePlayerController implements PlayerController {
 
     public ServicePlayerController(Context context, PreferenceStore preferenceStore) {
         mContext = context;
-        mRequestThread = new HandlerThread("PlayerController-RequestProcessor");
+        mRequestThread = new HandlerThread("ServiceExecutor");
         mShuffled = BehaviorSubject.create(preferenceStore.isShuffled());
         mRepeatMode = BehaviorSubject.create(preferenceStore.getRepeatMode());
         mRequestQueue = new ObservableQueue<>();
