@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -15,6 +16,7 @@ import android.os.SystemClock;
 
 import com.marverenic.music.IPlayerService;
 import com.marverenic.music.JockeyApplication;
+import com.marverenic.music.R;
 import com.marverenic.music.data.store.ImmutablePreferenceStore;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PreferenceStore;
@@ -628,7 +630,8 @@ public class ServicePlayerController implements PlayerController {
     @Override
     public Observable<Bitmap> getArtwork() {
         if (mArtwork == null) {
-            mArtwork = BehaviorSubject.create();
+            mArtwork = BehaviorSubject.create(BitmapFactory.decodeResource(
+                    mContext.getResources(), R.drawable.art_default_xl));
 
             getNowPlaying()
                     .observeOn(Schedulers.io())
