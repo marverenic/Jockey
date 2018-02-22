@@ -20,6 +20,7 @@ import android.util.DisplayMetrics;
 import android.webkit.MimeTypeMap;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DecodeFormat;
 import com.marverenic.music.R;
 import com.marverenic.music.model.Song;
 
@@ -226,10 +227,11 @@ public final class Util {
     public static Observable<Bitmap> fetchArtwork(Context context, Uri songLocation) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         int size = Math.max(displayMetrics.widthPixels, displayMetrics.heightPixels);
-        return fetchArtwork(context, songLocation, size);
+        return fetchArtwork(context, songLocation, size, true);
     }
 
-    public static Observable<Bitmap> fetchArtwork(Context context, Uri songLocation, int size) {
+    public static Observable<Bitmap> fetchArtwork(Context context, Uri songLocation,
+                                                  int size, boolean highQuality) {
         return Observable.fromCallable(() -> {
             if (songLocation == null) {
                 return Glide.with(context).load(R.drawable.art_default_xl);
@@ -254,6 +256,9 @@ public final class Util {
         }).map(request -> {
             try {
                 return request.asBitmap()
+                        .format((highQuality)
+                                ? DecodeFormat.PREFER_ARGB_8888
+                                : DecodeFormat.PREFER_RGB_565)
                         .atMost()
                         .into(size, size)
                         .get();
