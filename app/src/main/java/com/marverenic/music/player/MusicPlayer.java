@@ -44,6 +44,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.Scanner;
 
 import javax.inject.Inject;
@@ -59,7 +60,7 @@ import static android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY;
  * and provides high-level behavior definitions (for actions like {@link #skip()},
  * {@link #skipPrevious()} and {@link #togglePlay()}) as well as system integration.
  *
- * MediaPlayer provides shuffle and repeat with {@link #setShuffle(boolean)} and
+ * MediaPlayer provides shuffle and repeat with {@link #setShuffle(boolean, long)} and
  * {@link #setRepeat(int)}, respectively.
  *
  * MusicPlayer also provides play count logging and state reloading.
@@ -278,11 +279,12 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     /**
      * Updates shuffle and repeat preferences from a Preference Store
      * @param preferencesStore The preference store to read values from
+     * @param seed A seed to use if enabling shuffle
      */
-    public void updatePreferences(ReadOnlyPreferenceStore preferencesStore) {
+    public void updatePreferences(ReadOnlyPreferenceStore preferencesStore, long seed) {
         Timber.i("Updating preferences...");
         if (preferencesStore.isShuffled() != mShuffle) {
-            setShuffle(preferencesStore.isShuffled());
+            setShuffle(preferencesStore.isShuffled(), seed);
         }
 
         mResumeOnHeadphonesConnect = preferencesStore.resumeOnHeadphonesConnect();
@@ -410,7 +412,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 }
                 mQueueShuffled = MediaStoreUtil.buildSongListFromIds(shuffleQueueIDs, mContext);
             } else if (mShuffle) {
-                shuffleQueue(queuePosition);
+                shuffleQueue(queuePosition, System.currentTimeMillis());
             }
 
             setBackingQueue(queuePosition, false);
@@ -611,19 +613,24 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * {@link QueuedMediaPlayer}'s queue
      * @param currentIndex The index of the current song which will be moved to the top of the
      *                     shuffled queue
+     * @param seed The seed to use when shuffling the queue
      */
-    private void shuffleQueue(int currentIndex) {
+    private void shuffleQueue(int currentIndex, long seed) {
         Timber.i("Shuffling queue...");
-        ArrayList<Song> shuffled = new ArrayList<>(mQueue);
+        mQueueShuffled = Collections.unmodifiableList(generateShuffledQueue(mQueue, currentIndex, seed));
+    }
+
+    static List<Song> generateShuffledQueue(List<Song> queue, int startingIndex, long seed) {
+        List<Song> shuffled = new ArrayList<>(queue);
 
         if (!shuffled.isEmpty()) {
-            Song first = shuffled.remove(currentIndex);
+            Song first = shuffled.remove(startingIndex);
 
-            Collections.shuffle(shuffled);
+            Collections.shuffle(shuffled, new Random(seed));
             shuffled.add(0, first);
         }
 
-        mQueueShuffled = Collections.unmodifiableList(shuffled);
+        return shuffled;
     }
 
     /**
@@ -862,23 +869,13 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     }
 
     /**
-     * Changes the current queue and starts playback from the current index
-     * @param queue The replacement queue
-     * @see #setQueue(List, int) to change the current index simultaneously
-     * @throws IllegalArgumentException if the current index cannot be applied to the updated queue
-     */
-    public void setQueue(@NonNull List<Song> queue) {
-        Timber.i("setQueue called (%d songs)", queue.size());
-        setQueue(queue, mMediaPlayer.getQueueIndex());
-    }
-
-    /**
      * Changes the current queue and starts playback from the specified index
      * @param queue The replacement queue
      * @param index The index to start playback from
+     * @param seed A seed to use when shuffling the queue (only used if shuffle is enabled)
      * @throws IllegalArgumentException if {@code index} is not between 0 and the queue length
      */
-    public void setQueue(@NonNull List<Song> queue, int index) {
+    public void setQueue(@NonNull List<Song> queue, int index, long seed) {
         Timber.i("setQueue called (%d songs)", queue.size());
         // If you're using this method on the UI thread, consider replacing the first line in this
         // method with "mQueue = new ArrayList<>(queue);"
@@ -886,7 +883,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         mQueue = Collections.unmodifiableList(queue);
         if (mShuffle) {
             Timber.i("Shuffling new queue and starting from beginning");
-            shuffleQueue(index);
+            shuffleQueue(index, seed);
             setBackingQueue(0, true);
         } else {
             Timber.i("Setting new backing queue (starting at index %d)", index);
@@ -1042,11 +1039,12 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @param shuffle The new shuffle option. {@code true} will switch the current playback to a
      *                copy of the current queue in a randomized order. {@code false} will restore
      *                the queue to its original order.
+     * @param seed A seed to use when shuffling (only used if shuffle is {@code true})
      */
-    public void setShuffle(boolean shuffle) {
+    public void setShuffle(boolean shuffle, long seed) {
         if (shuffle) {
             Timber.i("Enabling shuffle...");
-            shuffleQueue(getQueuePosition());
+            shuffleQueue(getQueuePosition(), seed);
             mMediaPlayer.setQueue(mQueueShuffled, 0, false);
         } else {
             Timber.i("Disabling shuffle...");

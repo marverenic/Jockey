@@ -16,11 +16,12 @@ interface IPlayerService {
     void togglePlay();
     void play();
     void pause();
-    void setPreferences(in ImmutablePreferenceStore preferences);
-    void setQueue(in List<Song> newQueue, int newPosition);
+    void setPreferences(in ImmutablePreferenceStore preferences, long seed);
+    void setQueue(in List<Song> newQueue, int newPosition, long seed);
     void beginLargeQueueTransaction(in TransactionToken token);
     void sendQueueChunk(in ChunkHeader header, in List<Song> chunk);
-    void endLargeQueueTransaction(boolean editQueue, int newPosition);
+    void endLargeQueueEdit(int newPosition);
+    void endLargeQueueTransaction(int newPosition, long seed);
     void changeSong(int position);
     void editQueue(in List<Song> newQueue, int newPosition);
     void queueNext(in Song song);
