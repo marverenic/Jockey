@@ -93,7 +93,7 @@ class ThumbnailLoader {
 
     private Observable<Bitmap> loadBitmap(File file) {
         Uri fileUri = Uri.fromFile(file);
-        Observable<Bitmap> image = Util.fetchArtwork(mContext, fileUri, mThumbnailResolution)
+        Observable<Bitmap> image = Util.fetchArtwork(mContext, fileUri, mThumbnailResolution, false)
                 .subscribeOn(Schedulers.io())
                 .doOnNext(bitmap -> {
                     synchronized (mLock) {
