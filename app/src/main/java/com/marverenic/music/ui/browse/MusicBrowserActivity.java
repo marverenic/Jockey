@@ -32,7 +32,7 @@ public class MusicBrowserActivity extends SingleFragmentActivity {
     @Override
     protected Fragment onCreateFragment(Bundle savedInstanceState) {
         String startingPath = getIntent().getStringExtra(EXTRA_STARTING_DIRECTORY);
-        return MusicBrowserFragment.newInstance(new File(startingPath));
+        return MusicBrowserFragment.newInstance(new File(startingPath), false);
     }
 
     @Override
