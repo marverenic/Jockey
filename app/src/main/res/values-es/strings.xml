@@ -186,6 +186,7 @@
     <string name="empty_error_album">No se pudo cargar el álbum</string>
     <string name="empty_error_artist">No se pudo cargar al artista</string>
     <string name="empty_error_genre">No se puede cargar el género</string>
+    <string name="empty_error_folder">No se puede cargar la carpeta</string>
     <string name="empty_excluded_dirs">No se excluyen carpetas</string>
     <string name="empty_excluded_dirs_detail">
         Para restringir Jockey a no buscar música en ciertas carpetas, presione el botón
