@@ -1,4 +1,4 @@
-package com.marverenic.music.ui.library.browse;
+package com.marverenic.music.ui.browse;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -38,6 +38,8 @@ public class MusicBrowserFragment extends BaseFragment {
     private static final String KEY_SAVED_LIST_STATE = "RecentlyAddedFragment.RecyclerViewState";
     private static final String EXTRA_SAVED_HISTORY = "MusicBrowserFragment.History";
     private static final String EXTRA_SAVED_DIRECTORY = "MusicBrowserFragment.CurrentDirectory";
+    private static final String ARG_STARTING_DIRECTORY = "MusicBrowserFragment.StartingDirectory";
+    private static final String ARG_CONFIRM_EXIT = "MusicBrowserFragment.ConfirmExit";
 
     @Inject PreferenceStore mPrefStore;
     @Inject MusicStore mMusicStore;
@@ -46,9 +48,19 @@ public class MusicBrowserFragment extends BaseFragment {
     private FragmentMusicBrowserBinding mBinding;
     private MusicBrowserViewModel mViewModel;
     private boolean mExitConfirmed;
+    private boolean mDisableExitConfirmation;
 
     public static MusicBrowserFragment newInstance() {
         return new MusicBrowserFragment();
+    }
+
+    public static MusicBrowserFragment newInstance(File startingDirectory, boolean confirmExit) {
+        Bundle args = new Bundle();
+        args.putString(ARG_STARTING_DIRECTORY, startingDirectory.getAbsolutePath());
+        args.putBoolean(ARG_CONFIRM_EXIT, confirmExit);
+        MusicBrowserFragment fragment = new MusicBrowserFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -65,8 +77,23 @@ public class MusicBrowserFragment extends BaseFragment {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_music_browser,
                 container, false);
 
-        mViewModel = new MusicBrowserViewModel(getContext(),
-                resolveStartingDirectory(), this::playFile);
+        File startingDirectory;
+
+        if (getArguments() != null) {
+            String startingPath = getArguments().getString(ARG_STARTING_DIRECTORY);
+            mDisableExitConfirmation = !getArguments().getBoolean(ARG_CONFIRM_EXIT, true);
+
+            if (startingPath != null) {
+                startingDirectory = new File(startingPath);
+            } else {
+                startingDirectory = null;
+            }
+        } else {
+            startingDirectory = resolveStartingDirectory();
+            mDisableExitConfirmation = false;
+        }
+
+        mViewModel = new MusicBrowserViewModel(getContext(), startingDirectory, this::playFile);
 
         mBinding.setViewModel(mViewModel);
         mBinding.executePendingBindings();
@@ -137,7 +164,7 @@ public class MusicBrowserFragment extends BaseFragment {
     }
 
     private boolean confirmBackPressed() {
-        if (mExitConfirmed) {
+        if (mExitConfirmed || mDisableExitConfirmation) {
             return false;
         }
 

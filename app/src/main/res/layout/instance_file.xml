@@ -5,7 +5,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.marverenic.music.ui.library.browse.FileViewModel"/>
+            type="com.marverenic.music.ui.browse.FileViewModel"/>
     </data>
 
     <LinearLayout

@@ -9,6 +9,10 @@
         android:enabled="false"
         android:title="@string/action_navigate_to_album"/>
 
+    <item android:id="@+id/menu_item_navigate_to_folder"
+        android:enabled="false"
+        android:title="@string/action_navigate_to_folder"/>
+
     <item android:id="@+id/menu_item_add_to_playlist"
         android:enabled="false"
         android:title="@string/action_add_to_playlist"/>

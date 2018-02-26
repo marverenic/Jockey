@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/menu_item_navigate_to_artist"
+    <item android:id="@+id/menu_item_navigate_to"
         android:enabled="false"
-        android:title="@string/action_navigate_to_artist"/>
+        android:title="@string/action_navigate_menu">
+        <menu>
+            <item android:id="@+id/menu_item_navigate_to_artist"
+                android:enabled="false"
+                android:title="@string/action_navigate_to_artist"/>
 
-    <item android:id="@+id/menu_item_navigate_to_album"
-        android:enabled="false"
-        android:title="@string/action_navigate_to_album"/>
+            <item android:id="@+id/menu_item_navigate_to_album"
+                android:enabled="false"
+                android:title="@string/action_navigate_to_album"/>
+
+            <item android:id="@+id/menu_item_navigate_to_folder"
+                android:enabled="false"
+                android:title="@string/action_navigate_to_folder"/>
+        </menu>
+    </item>
 
     <item android:id="@+id/menu_item_add_to_playlist"
         android:enabled="false"

@@ -13,11 +13,12 @@ import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.ui.browse.MusicBrowserActivity;
 import com.marverenic.music.ui.common.OnSongSelectedListener;
 import com.marverenic.music.ui.common.playlist.AppendPlaylistDialogFragment;
-import com.marverenic.music.ui.library.song.SongItemViewModel;
 import com.marverenic.music.ui.library.album.contents.AlbumActivity;
 import com.marverenic.music.ui.library.artist.contents.ArtistActivity;
+import com.marverenic.music.ui.library.song.SongItemViewModel;
 
 import timber.log.Timber;
 
@@ -87,6 +88,9 @@ public class QueueSongItemViewModel extends SongItemViewModel {
                     return true;
                 case R.id.menu_item_navigate_to_album:
                     navigateToAlbum();
+                    return true;
+                case R.id.menu_item_navigate_to_folder:
+                    getContext().startActivity(MusicBrowserActivity.newIntent(getContext(), getReference()));
                     return true;
                 case R.id.menu_item_add_to_playlist:
                     addToPlaylist();

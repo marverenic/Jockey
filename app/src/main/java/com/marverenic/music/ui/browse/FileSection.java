@@ -1,28 +1,29 @@
-package com.marverenic.music.ui.library.browse;
+package com.marverenic.music.ui.browse;
 
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.marverenic.adapter.EnhancedViewHolder;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.R;
-import com.marverenic.music.databinding.InstanceFolderBinding;
+import com.marverenic.music.databinding.InstanceFileBinding;
 
 import java.io.File;
 import java.util.List;
 
-public class FolderSection extends HeterogeneousAdapter.ListSection<File> {
+public class FileSection extends HeterogeneousAdapter.ListSection<File> {
 
-    @Nullable
-    private FolderViewModel.OnFolderSelectedListener mSelectionListener;
+    private ThumbnailLoader mThumbnailLoader;
+    private FileViewModel.OnFileSelectedListener mSelectionListener;
 
-    public FolderSection(@NonNull List<File> data,
-                         @Nullable FolderViewModel.OnFolderSelectedListener selectionListener) {
+    public FileSection(@NonNull List<File> data,
+                       @NonNull FileViewModel.OnFileSelectedListener selectionListener,
+                       @NonNull ThumbnailLoader thumbnailLoader) {
         super(data);
         mSelectionListener = selectionListener;
+        mThumbnailLoader = thumbnailLoader;
     }
 
     @Override
@@ -34,26 +35,28 @@ public class FolderSection extends HeterogeneousAdapter.ListSection<File> {
     public EnhancedViewHolder<File> createViewHolder(HeterogeneousAdapter adapter, ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         return new ViewHolder(
-                DataBindingUtil.inflate(inflater, R.layout.instance_folder, parent, false));
+                DataBindingUtil.inflate(inflater, R.layout.instance_file, parent, false));
     }
 
     private class ViewHolder extends EnhancedViewHolder<File> {
 
-        private InstanceFolderBinding mBinding;
-        private FolderViewModel mViewModel;
+        private InstanceFileBinding mBinding;
+        private FileViewModel mViewModel;
 
-        public ViewHolder(InstanceFolderBinding binding) {
+        public ViewHolder(InstanceFileBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
-            mViewModel = new FolderViewModel();
-            mViewModel.setSelectionListener(mSelectionListener);
+            mViewModel = new FileViewModel(itemView.getContext(), mThumbnailLoader);
+            mViewModel.setFileSelectionListener(mSelectionListener);
+
             mBinding.setViewModel(mViewModel);
         }
 
         @Override
         public void onUpdate(File item, int position) {
-            mViewModel.setFolder(item);
+            mViewModel.setFile(item);
             mBinding.executePendingBindings();
         }
     }
+
 }

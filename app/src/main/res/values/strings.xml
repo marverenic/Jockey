@@ -75,8 +75,10 @@
     <!-- Item menu actions -->
     <string name="action_queue_next">Queue next</string>
     <string name="action_queue_last">Queue last</string>
+    <string name="action_navigate_menu">Navigate to&#8230;</string>
     <string name="action_navigate_to_artist">Go to artist</string>
     <string name="action_navigate_to_album">Go to album</string>
+    <string name="action_navigate_to_folder">Show in folder</string>
     <string name="action_add_to_playlist">Add to playlist&#8230;</string>
     <string name="action_delete">Delete</string>
     <string name="action_edit_smart_playlist">Edit&#8230;</string>
@@ -189,6 +191,7 @@
     <string name="empty_error_album">Couldn\'t load album</string>
     <string name="empty_error_artist">Couldn\'t load artist</string>
     <string name="empty_error_genre">Couldn\'t load genre</string>
+    <string name="empty_error_folder">Couldn\'t load folder</string>
     <string name="empty_excluded_dirs">No folders are being excluded</string>
     <string name="empty_excluded_dirs_detail">
         To restrict Jockey to not look for music in certain folders, press the
