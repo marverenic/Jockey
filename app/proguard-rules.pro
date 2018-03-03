@@ -12,6 +12,9 @@
     @android.support.annotation.Keep *;
 }
 
+# Keep fragment names for better Crashlytics logging
+-keepnames class * extends com.marverenic.music.ui.BaseFragment
+
 # Glide rules
 -keep public class * implements com.bumptech.glide.module.GlideModule
 -keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
