@@ -43,6 +43,10 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
     private Spinner presetSpinner;
     private SwitchCompat equalizerToggle;
 
+    public static EqualizerFragment newInstance() {
+        return new EqualizerFragment();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -226,6 +226,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".ui.settings.EqualizerActivity"/>
+
         <!-- Player Service -->
         <service
             android:name=".player.PlayerService"

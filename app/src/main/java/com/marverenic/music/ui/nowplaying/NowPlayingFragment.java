@@ -1,5 +1,6 @@
 package com.marverenic.music.ui.nowplaying;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -32,6 +33,7 @@ import com.marverenic.music.player.PlayerState;
 import com.marverenic.music.ui.BaseFragment;
 import com.marverenic.music.ui.common.playlist.AppendPlaylistDialogFragment;
 import com.marverenic.music.ui.common.playlist.CreatePlaylistDialogFragment;
+import com.marverenic.music.ui.settings.EqualizerActivity;
 import com.marverenic.music.view.TimeView;
 import com.trello.rxlifecycle.FragmentEvent;
 
@@ -152,6 +154,9 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
         mShuffleMenuItem = toolbar.getMenu().findItem(R.id.menu_now_playing_shuffle);
         mRepeatMenuItem = toolbar.getMenu().findItem(R.id.menu_now_playing_repeat);
 
+        toolbar.getMenu().findItem(R.id.menu_open_equalizer)
+                .setEnabled(EqualizerActivity.newIntent(getContext(), false) != null);
+
         mPlayerController.getQueue()
                 .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .map(this::queueContainsLocalSongs)
@@ -257,6 +262,12 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
                         .subscribe(this::showSleepTimerDialog, throwable -> {
                             Timber.e(throwable, "Failed to show sleep timer dialog");
                         });
+                return true;
+            case R.id.menu_open_equalizer:
+                Intent eqIntent = EqualizerActivity.newIntent(getContext(), mPrefStore.getEqualizerEnabled());
+                if (eqIntent != null) {
+                    startActivity(eqIntent);
+                }
                 return true;
             case R.id.menu_now_playing_save:
                 saveQueueAsPlaylist();
