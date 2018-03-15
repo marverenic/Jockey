@@ -37,7 +37,7 @@ public class RecentlyAddedViewModel extends BaseViewModel {
 
         mAdapter = new HeterogeneousAdapter();
         mSongSection = new SongSection(Collections.emptyList(), getContext(),
-                playerController, musicStore, fragmentManager, songSelectedListener);
+                playerController, musicStore, playlistStore, fragmentManager, songSelectedListener);
 
         mAdapter.addSection(mSongSection);
         mAdapter.setEmptyState(new LibraryEmptyState(context, musicStore, playlistStore) {

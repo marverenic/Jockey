@@ -12,6 +12,7 @@ import com.marverenic.adapter.EnhancedViewHolder;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.databinding.InstanceSongBinding;
 import com.marverenic.music.model.ModelUtil;
 import com.marverenic.music.model.Song;
@@ -31,17 +32,19 @@ public class SongSection extends HeterogeneousAdapter.ListSection<Song>
     private Context mContext;
     private PlayerController mPlayerController;
     private MusicStore mMusicStore;
+    private PlaylistStore mPlaylistStore;
     private FragmentManager mFragmentManager;
     @Nullable private OnSongSelectedListener mSongListener;
 
     private BehaviorSubject<Song> mCurrentSong;
 
     public SongSection(@NonNull List<Song> data, Context context, PlayerController playerController,
-                       MusicStore musicStore, FragmentManager fragmentManager,
+                       MusicStore musicStore, PlaylistStore playlistStore, FragmentManager fragmentManager,
                        @Nullable OnSongSelectedListener songSelectedListener) {
         super(data);
         mContext = context;
         mMusicStore = musicStore;
+        mPlaylistStore = playlistStore;
         mPlayerController = playerController;
         mFragmentManager = fragmentManager;
         mSongListener = songSelectedListener;
@@ -88,7 +91,7 @@ public class SongSection extends HeterogeneousAdapter.ListSection<Song>
             super(binding.getRoot());
             mBinding = binding;
             SongItemViewModel viewModel = new SongItemViewModel(binding.getRoot().getContext(),
-                    mFragmentManager, mMusicStore, mPlayerController, mSongListener);
+                    mFragmentManager, mMusicStore, mPlaylistStore, mPlayerController, mSongListener);
             binding.setViewModel(viewModel);
 
             mCurrentSong.subscribe(viewModel::setCurrentlyPlayingSong, throwable -> {

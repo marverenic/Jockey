@@ -11,6 +11,7 @@ import android.view.View;
 import com.marverenic.music.BR;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseViewModel;
@@ -29,6 +30,7 @@ public class SongItemViewModel extends BaseViewModel {
     private static final String TAG_PLAYLIST_DIALOG = "SongItemViewModel.PlaylistDialog";
 
     private MusicStore mMusicStore;
+    private PlaylistStore mPlaylistStore;
     private PlayerController mPlayerController;
 
     private FragmentManager mFragmentManager;
@@ -42,11 +44,13 @@ public class SongItemViewModel extends BaseViewModel {
     private OnSongSelectedListener mSongListener;
 
     public SongItemViewModel(Context context, FragmentManager fragmentManager,
-                             MusicStore musicStore, PlayerController playerController,
+                             MusicStore musicStore, PlaylistStore playlistStore,
+                             PlayerController playerController,
                              @Nullable OnSongSelectedListener songSelectedListener) {
         super(context);
         mFragmentManager = fragmentManager;
         mMusicStore = musicStore;
+        mPlaylistStore = playlistStore;
         mPlayerController = playerController;
         mSongListener = songSelectedListener;
     }
@@ -159,7 +163,7 @@ public class SongItemViewModel extends BaseViewModel {
                     new AppendPlaylistDialogFragment.Builder(getContext(), mFragmentManager)
                             .setSongs(mReference)
                             .showSnackbarIn(R.id.list)
-                            .show(TAG_PLAYLIST_DIALOG);
+                            .show(TAG_PLAYLIST_DIALOG, mPlaylistStore);
                     return true;
             }
             return false;

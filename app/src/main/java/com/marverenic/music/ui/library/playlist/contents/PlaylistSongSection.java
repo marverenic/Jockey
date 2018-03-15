@@ -76,7 +76,7 @@ public class PlaylistSongSection extends EditableSongSection {
             super(binding.getRoot());
             mBinding = binding;
             PlaylistSongItemViewModel viewModel = new PlaylistSongItemViewModel(mBinding.getRoot().getContext(),
-                    mFragmentManager, mMusicStore, mPlayerController, () -> {
+                    mFragmentManager, mMusicStore, mPlaylistStore, mPlayerController, () -> {
                 adapter.notifyDataSetChanged();
                 mPlaylistStore.editPlaylist(mReference, getData());
             }, mSongListener);

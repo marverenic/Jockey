@@ -20,6 +20,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import com.marverenic.music.BR;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
@@ -40,6 +41,7 @@ public class NowPlayingControllerViewModel extends BaseViewModel {
 
     private PlayerController mPlayerController;
     private MusicStore mMusicStore;
+    private PlaylistStore mPlaylistStore;
     private ThemeStore mThemeStore;
 
     @Nullable
@@ -54,12 +56,13 @@ public class NowPlayingControllerViewModel extends BaseViewModel {
 
     public NowPlayingControllerViewModel(Context context, FragmentManager fragmentManager,
                                          PlayerController playerController, MusicStore musicStore,
-                                         ThemeStore themeStore) {
+                                         PlaylistStore playlistStore, ThemeStore themeStore) {
         super(context);
         mFragmentManager = fragmentManager;
 
         mPlayerController = playerController;
         mMusicStore = musicStore;
+        mPlaylistStore = playlistStore;
         mThemeStore = themeStore;
 
         mCurrentPositionObservable = new ObservableInt();
@@ -242,7 +245,7 @@ public class NowPlayingControllerViewModel extends BaseViewModel {
                     new AppendPlaylistDialogFragment.Builder(getContext(), mFragmentManager)
                             .setSongs(song)
                             .showSnackbarIn(R.id.now_playing_artwork)
-                            .show(TAG_PLAYLIST_DIALOG);
+                            .show(TAG_PLAYLIST_DIALOG, mPlaylistStore);
                     return true;
             }
             return false;
