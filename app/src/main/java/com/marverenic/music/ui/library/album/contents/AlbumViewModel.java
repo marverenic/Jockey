@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.model.Album;
 import com.marverenic.music.model.Song;
@@ -37,13 +38,14 @@ public class AlbumViewModel extends BaseViewModel {
     private ShuffleAllSection mShuffleAllSection;
 
     public AlbumViewModel(Context context, Album album, PlayerController playerController,
-                          MusicStore musicStore, PreferenceStore preferenceStore,
-                          FragmentManager fragmentManager, @Nullable OnSongSelectedListener songSelectedListener) {
+                          MusicStore musicStore, PlaylistStore playlistStore,
+                          PreferenceStore preferenceStore, FragmentManager fragmentManager,
+                          @Nullable OnSongSelectedListener songSelectedListener) {
         super(context);
         mAlbum = album;
 
         mSongSection = new SongSection(Collections.emptyList(), getContext(),
-                playerController, musicStore, fragmentManager, songSelectedListener);
+                playerController, musicStore, playlistStore, fragmentManager, songSelectedListener);
         mShuffleAllSection = new ShuffleAllSection(Collections.emptyList(), preferenceStore,
                 playerController, songSelectedListener);
 

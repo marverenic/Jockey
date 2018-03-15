@@ -25,6 +25,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.model.Album;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.common.playlist.AppendPlaylistDialogFragment;
@@ -43,6 +44,7 @@ public class AlbumItemViewModel extends BaseObservable {
     private static final String TAG_PLAYLIST_DIALOG = "SongItemViewModel.PlaylistDialog";
 
     private MusicStore mMusicStore;
+    private PlaylistStore mPlaylistStore;
     private PlayerController mPlayerController;
 
     private Context mContext;
@@ -54,11 +56,13 @@ public class AlbumItemViewModel extends BaseObservable {
     private ObservableInt mArtistTextColor;
     private ObservableInt mBackgroundColor;
 
-    public AlbumItemViewModel(Context context, FragmentManager fragmentManager, MusicStore musicStore,
+    public AlbumItemViewModel(Context context, FragmentManager fragmentManager,
+                              MusicStore musicStore, PlaylistStore playlistStore,
                               PlayerController playerController) {
         mContext = context;
         mFragmentManager = fragmentManager;
         mMusicStore = musicStore;
+        mPlaylistStore = playlistStore;
         mPlayerController = playerController;
     }
 
@@ -178,7 +182,7 @@ public class AlbumItemViewModel extends BaseObservable {
                                 new AppendPlaylistDialogFragment.Builder(mContext, mFragmentManager)
                                         .setSongs(songs, mAlbum.getAlbumName())
                                         .showSnackbarIn(R.id.list)
-                                        .show(TAG_PLAYLIST_DIALOG);
+                                        .show(TAG_PLAYLIST_DIALOG, mPlaylistStore);
                             }, throwable -> {
                                 Timber.e(throwable, "Failed to get songs");
                             });

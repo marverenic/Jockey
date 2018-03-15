@@ -100,7 +100,7 @@ public class ArtistListFragment extends BaseFragment {
             mRecyclerView.setAdapter(mAdapter);
 
             mArtistSection = new ArtistSection(mArtists, getContext(),
-                    getFragmentManager(), mMusicStore, mPlayerController);
+                    getFragmentManager(), mMusicStore, mPlaylistStore, mPlayerController);
             mAdapter.addSection(mArtistSection);
             mAdapter.setEmptyState(new LibraryEmptyState(getActivity(), mMusicStore, mPlaylistStore));
         }

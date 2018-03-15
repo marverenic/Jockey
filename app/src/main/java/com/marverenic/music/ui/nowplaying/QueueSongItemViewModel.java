@@ -11,6 +11,7 @@ import android.view.View;
 import com.marverenic.music.BR;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.browse.MusicBrowserActivity;
@@ -29,6 +30,7 @@ public class QueueSongItemViewModel extends SongItemViewModel {
     private static final String TAG_PLAYLIST_DIALOG = "QueueSongItemViewModel.PlaylistDialog";
 
     private MusicStore mMusicStore;
+    private PlaylistStore mPlaylistStore;
     private PlayerController mPlayerController;
 
     private FragmentManager mFragmentManager;
@@ -37,13 +39,15 @@ public class QueueSongItemViewModel extends SongItemViewModel {
     private int mCurrentSongIndex;
 
     public QueueSongItemViewModel(Context context, FragmentManager fragmentManager,
-                                  MusicStore musicStore, PlayerController playerController,
+                                  MusicStore musicStore, PlaylistStore playlistStore,
+                                  PlayerController playerController,
                                   OnRemoveListener removeListener,
                                   @Nullable OnSongSelectedListener songSelectedListener) {
 
-        super(context, fragmentManager, musicStore, playerController, songSelectedListener);
+        super(context, fragmentManager, musicStore, playlistStore, playerController, songSelectedListener);
         mFragmentManager = fragmentManager;
         mMusicStore = musicStore;
+        mPlaylistStore = playlistStore;
         mPlayerController = playerController;
 
         mRemoveListener = removeListener;
@@ -126,7 +130,7 @@ public class QueueSongItemViewModel extends SongItemViewModel {
                 .setTitle(getString(R.string.header_add_song_name_to_playlist, getReference()))
                 .setSongs(getReference())
                 .showSnackbarIn(R.id.now_playing_artwork)
-                .show(TAG_PLAYLIST_DIALOG);
+                .show(TAG_PLAYLIST_DIALOG, mPlaylistStore);
     }
 
     private void removeFromQueue(View snackbarContainer) {

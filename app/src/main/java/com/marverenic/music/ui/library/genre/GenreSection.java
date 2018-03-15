@@ -11,6 +11,7 @@ import com.marverenic.adapter.EnhancedViewHolder;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.databinding.InstanceGenreBinding;
 import com.marverenic.music.model.Genre;
 import com.marverenic.music.model.ModelUtil;
@@ -26,14 +27,17 @@ public class GenreSection extends HeterogeneousAdapter.ListSection<Genre>
     private Context mContext;
     private FragmentManager mFragmentManager;
     private MusicStore mMusicStore;
+    private PlaylistStore mPlaylistStore;
     private PlayerController mPlayerController;
 
     public GenreSection(@NonNull List<Genre> data, Context context, FragmentManager fragmentManager,
-                        MusicStore musicStore, PlayerController playerController) {
+                        MusicStore musicStore, PlaylistStore playlistStore,
+                        PlayerController playerController) {
         super(data);
         mContext = context;
         mFragmentManager = fragmentManager;
         mMusicStore = musicStore;
+        mPlaylistStore = playlistStore;
         mPlayerController = playerController;
     }
 
@@ -72,7 +76,7 @@ public class GenreSection extends HeterogeneousAdapter.ListSection<Genre>
             super(binding.getRoot());
             mBinding = binding;
             mBinding.setViewModel(new GenreItemViewModel(itemView.getContext(), mFragmentManager,
-                    mMusicStore, mPlayerController));
+                    mMusicStore, mPlaylistStore, mPlayerController));
         }
 
         @Override

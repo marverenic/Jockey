@@ -111,11 +111,12 @@ public class ArtistViewModel extends BaseViewModel {
         mBioSection = new ArtistBioSingleton(null, false);
         mRelatedArtistSection = new RelatedArtistSection(mMusicStore, Collections.emptyList());
         mAlbumSection = new AlbumSection(Collections.emptyList(), getContext(),
-                mMusicStore, mPlayerController, fragmentManager);
+                mMusicStore, mPlaylistStore, mPlayerController, fragmentManager);
         mShuffleAllSection = new ShuffleAllSection(Collections.emptyList(), prefStore,
                 mPlayerController, songSelectedListener);
         mSongSection = new SongSection(Collections.emptyList(), getContext(),
-                mPlayerController, mMusicStore, fragmentManager, songSelectedListener);
+                mPlayerController, mMusicStore, mPlaylistStore,
+                fragmentManager, songSelectedListener);
 
         mAdapter.addSection(mBioSection)
                 .addSection(mRelatedArtistSection)

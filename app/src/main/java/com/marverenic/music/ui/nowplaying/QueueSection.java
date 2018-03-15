@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import com.marverenic.adapter.EnhancedViewHolder;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.databinding.InstanceSongQueueBinding;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
@@ -24,18 +25,21 @@ public class QueueSection extends EditableSongSection {
     private FragmentManager mFragmentManager;
 
     private MusicStore mMusicStore;
+    private PlaylistStore mPlaylistStore;
     private PlayerController mPlayerController;
     @Nullable private OnSongSelectedListener mSongListener;
 
     private BehaviorSubject<Integer> mCurrentIndex;
 
     public QueueSection(List<Song> data, FragmentManager fragmentManager,
-                        MusicStore musicStore, PlayerController playerController,
+                        MusicStore musicStore, PlaylistStore playlistStore,
+                        PlayerController playerController,
                         @Nullable OnSongSelectedListener songSelectedListener) {
         super(data);
         mFragmentManager = fragmentManager;
 
         mMusicStore = musicStore;
+        mPlaylistStore = playlistStore;
         mPlayerController = playerController;
         mSongListener = songSelectedListener;
         mCurrentIndex = BehaviorSubject.create();
@@ -87,8 +91,8 @@ public class QueueSection extends EditableSongSection {
             super(binding.getRoot());
             mBinding = binding;
             QueueSongItemViewModel viewModel = new QueueSongItemViewModel(mBinding.getRoot().getContext(),
-                    mFragmentManager, mMusicStore, mPlayerController, adapter::notifyDataSetChanged,
-                    mSongListener);
+                    mFragmentManager, mMusicStore, mPlaylistStore, mPlayerController,
+                    adapter::notifyDataSetChanged, mSongListener);
 
             mCurrentIndex.subscribe(viewModel::setCurrentlyPlayingSongIndex, throwable -> {
                 Timber.e(throwable, "Failed to update current song index in view model");

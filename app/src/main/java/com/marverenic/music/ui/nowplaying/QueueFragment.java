@@ -103,7 +103,7 @@ public class QueueFragment extends BaseFragment {
 
             mRecyclerView.setItemAnimator(new QueueAnimator());
             mQueueSection = new QueueSection(queue, getFragmentManager(), mMusicStore,
-                    mPlayerController, null);
+                    mPlaylistStore, mPlayerController, null);
             mAdapter.setDragSection(mQueueSection);
 
             // Wait for a layout pass before calculating bottom spacing since it is dependent on the

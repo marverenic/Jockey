@@ -24,6 +24,7 @@ import android.view.animation.AnimationUtils;
 import com.marverenic.music.BR;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.databinding.FragmentNowPlayingBinding;
 import com.marverenic.music.model.Song;
@@ -65,6 +66,7 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
 
     @Inject PreferenceStore mPrefStore;
     @Inject PlayerController mPlayerController;
+    @Inject PlaylistStore mPlaylistStore;
 
     private FragmentNowPlayingBinding mBinding;
     private NowPlayingArtworkViewModel mArtworkViewModel;
@@ -462,7 +464,7 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
                             .setTitle(getString(R.string.header_add_queue_to_playlist))
                             .setSongs(queue)
                             .showSnackbarIn(R.id.now_playing_artwork)
-                            .show(TAG_APPEND_PLAYLIST);
+                            .show(TAG_APPEND_PLAYLIST, mPlaylistStore);
                 }, throwable -> {
                     Timber.e(throwable, "Failed to add queue to playlist");
                 });

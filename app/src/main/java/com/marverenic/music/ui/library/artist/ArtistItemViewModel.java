@@ -9,6 +9,7 @@ import android.view.View;
 
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.model.Artist;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.common.playlist.AppendPlaylistDialogFragment;
@@ -21,6 +22,7 @@ public class ArtistItemViewModel extends BaseObservable {
     private static final String TAG_PLAYLIST_DIALOG = "AlbumItemViewModel.PlaylistDialog";
 
     private MusicStore mMusicStore;
+    private PlaylistStore mPlaylistStore;
     private PlayerController mPlayerController;
 
     private Context mContext;
@@ -28,10 +30,12 @@ public class ArtistItemViewModel extends BaseObservable {
     private Artist mArtist;
 
     public ArtistItemViewModel(Context context, FragmentManager fragmentManager,
-                               MusicStore musicStore, PlayerController playerController) {
+                               MusicStore musicStore, PlaylistStore playlistStore,
+                               PlayerController playerController) {
         mContext = context;
         mFragmentManager = fragmentManager;
         mMusicStore = musicStore;
+        mPlaylistStore = playlistStore;
         mPlayerController = playerController;
     }
 
@@ -82,7 +86,7 @@ public class ArtistItemViewModel extends BaseObservable {
                                 new AppendPlaylistDialogFragment.Builder(mContext, mFragmentManager)
                                         .setSongs(songs, mArtist.getArtistName())
                                         .showSnackbarIn(R.id.list)
-                                        .show(TAG_PLAYLIST_DIALOG);
+                                        .show(TAG_PLAYLIST_DIALOG, mPlaylistStore);
                             }, throwable -> {
                                 Timber.e(throwable, "Failed to get songs");
                             });

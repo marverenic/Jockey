@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.marverenic.adapter.EnhancedViewHolder;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.databinding.InstanceAlbumBinding;
 import com.marverenic.music.model.Album;
 import com.marverenic.music.model.ModelUtil;
@@ -23,14 +24,17 @@ public class AlbumSection extends HeterogeneousAdapter.ListSection<Album>
     private Context mContext;
     private FragmentManager mFragmentManager;
     private MusicStore mMusicStore;
+    private PlaylistStore mPlaylistStore;
     private PlayerController mPlayerController;
 
     public AlbumSection(@NonNull List<Album> data, Context context, MusicStore musicStore,
-                        PlayerController playerController, FragmentManager fragmentManager) {
+                        PlaylistStore playlistStore, PlayerController playerController,
+                        FragmentManager fragmentManager) {
         super(data);
         mContext = context;
         mFragmentManager = fragmentManager;
         mMusicStore = musicStore;
+        mPlaylistStore = playlistStore;
         mPlayerController = playerController;
     }
 
@@ -63,7 +67,7 @@ public class AlbumSection extends HeterogeneousAdapter.ListSection<Album>
             super(binding.getRoot());
             mBinding = binding;
             mBinding.setViewModel(new AlbumItemViewModel(itemView.getContext(), mFragmentManager,
-                    mMusicStore, mPlayerController));
+                    mMusicStore, mPlaylistStore, mPlayerController));
         }
 
         @Override

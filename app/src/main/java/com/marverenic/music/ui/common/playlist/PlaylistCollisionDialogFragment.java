@@ -33,10 +33,10 @@ public class PlaylistCollisionDialogFragment extends DialogFragment {
     private static final String KEY_SONG = "PlaylistCollisionDialogFragment.Song";
     private static final String KEY_SONGS = "PlaylistCollisionDialogFragment.Songs";
     private static final String KEY_SNACKBAR_VIEW = "PlaylistCollisionDialogFragment.Snackbar";
+    private static final String KEY_PLAYLIST_CONTENTS = "PlaylistCollisionDialogFragment.Contents";
 
     @Inject PlaylistStore mPlaylistStore;
 
-    private Dialog mDialog;
     private Playlist mPlaylist;
     private List<Song> mPlaylistContents;
     private Song mSong;
@@ -64,7 +64,6 @@ public class PlaylistCollisionDialogFragment extends DialogFragment {
                 .take(1)
                 .subscribe(songs -> {
                     mPlaylistContents = songs;
-                    showDialog();
                 }, throwable -> {
                     Timber.e(throwable, "Failed to get playlists");
                 });
@@ -73,32 +72,20 @@ public class PlaylistCollisionDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        if (mDialog == null) {
-            return super.onCreateDialog(savedInstanceState);
-        } else {
-            return mDialog;
-        }
-    }
-
-    private void showDialog() {
-        if (getDialog() != null) {
-            getDialog().hide();
-        }
-
         if (mSingle) {
-            showSingleSongDialog();
+            return showSingleSongDialog();
         } else {
-            showMultiSongDialog();
+            return showMultiSongDialog();
         }
     }
 
-    private void showSingleSongDialog() {
+    private Dialog showSingleSongDialog() {
         String title = getResources().getQuantityString(R.plurals.alert_confirm_duplicates, 1);
         String songName = mSong.getSongName();
         String playlistName = mPlaylist.getPlaylistName();
         String message = getString(R.string.playlist_confirm_duplicate, playlistName, songName);
 
-        mDialog = new AlertDialog.Builder(getContext())
+        return new AlertDialog.Builder(getContext())
                 .setTitle(title)
                 .setMessage(message)
                 .setPositiveButton(R.string.action_add, (dialogInterface, which) -> {
@@ -115,7 +102,7 @@ public class PlaylistCollisionDialogFragment extends DialogFragment {
         return originalEntrySet.size();
     }
 
-    private void showMultiSongDialog() {
+    private Dialog showMultiSongDialog() {
         int count = getDuplicateSongCount();
 
         Resources res = getResources();
@@ -149,7 +136,7 @@ public class PlaylistCollisionDialogFragment extends DialogFragment {
                     .setNeutralButton(R.string.action_cancel, null);
         }
 
-        mDialog = builder.show();
+        return builder.show();
     }
 
     private void addAllSongs() {
@@ -205,6 +192,7 @@ public class PlaylistCollisionDialogFragment extends DialogFragment {
     public static class Builder {
 
         private Bundle mArgs;
+        private Playlist mPlaylist;
         private FragmentManager mFragmentManager;
 
         public Builder(FragmentManager fragmentManager) {
@@ -213,6 +201,7 @@ public class PlaylistCollisionDialogFragment extends DialogFragment {
         }
 
         public Builder setPlaylist(Playlist playlist) {
+            mPlaylist = playlist;
             mArgs.putParcelable(KEY_PLAYLIST, playlist);
             return this;
         }
@@ -234,11 +223,23 @@ public class PlaylistCollisionDialogFragment extends DialogFragment {
             return this;
         }
 
-        public void show(String tag) {
-            PlaylistCollisionDialogFragment dialogFragment = new PlaylistCollisionDialogFragment();
-            dialogFragment.setArguments(mArgs);
+        public void show(String tag, PlaylistStore playlistStore) {
+            if (mPlaylist == null) {
+                throw new IllegalArgumentException("No playlist provided");
+            }
+            playlistStore.getSongs(mPlaylist).take(1)
+                    .map(songs -> {
+                        mArgs.putParcelableArrayList(KEY_PLAYLIST_CONTENTS, new ArrayList<>(songs));
+                        return mArgs;
+                    })
+                    .subscribe(args -> {
+                        PlaylistCollisionDialogFragment dialogFragment = new PlaylistCollisionDialogFragment();
+                        dialogFragment.setArguments(args);
 
-            dialogFragment.show(mFragmentManager, tag);
+                        dialogFragment.show(mFragmentManager, tag);
+                    }, throwable -> {
+                        Timber.e(throwable, "Failed to load songs");
+                    });
         }
     }
 }
