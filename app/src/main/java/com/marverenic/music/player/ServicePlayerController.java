@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.os.SystemClock;
+import android.support.v4.media.session.MediaSessionCompat;
 
 import com.marverenic.music.IPlayerService;
 import com.marverenic.music.JockeyApplication;
@@ -74,6 +75,8 @@ public class ServicePlayerController implements PlayerController {
     private final Prop<Integer> mMultiRepeatCount = new Prop<>("multi-repeat");
     private final Prop<Long> mSleepTimerEndTime = new Prop<>("sleep timer");
 
+    private BehaviorSubject<MediaSessionCompat.Token> mMediaSessionToken;
+
     private BehaviorSubject<Boolean> mShuffled;
     private BehaviorSubject<Integer> mRepeatMode;
     private BehaviorSubject<Bitmap> mArtwork;
@@ -88,6 +91,7 @@ public class ServicePlayerController implements PlayerController {
     public ServicePlayerController(Context context, PreferenceStore preferenceStore) {
         mContext = context;
         mRequestThread = new HandlerThread("ServiceExecutor");
+        mMediaSessionToken = BehaviorSubject.create();
         mShuffled = BehaviorSubject.create(preferenceStore.isShuffled());
         mRepeatMode = BehaviorSubject.create(preferenceStore.getRepeatMode());
         mRequestQueue = new ObservableQueue<>();
@@ -143,6 +147,7 @@ public class ServicePlayerController implements PlayerController {
                 releaseAllProperties();
                 mServiceStartRequestTime = 0;
                 mBinding = null;
+                mMediaSessionToken.onNext(null);
                 if (mRequestQueueSubscription != null) {
                     mRequestQueueSubscription.unsubscribe();
                     mRequestQueueSubscription = null;
@@ -240,7 +245,29 @@ public class ServicePlayerController implements PlayerController {
             mDuration.invalidate();
             mMultiRepeatCount.invalidate();
             mSleepTimerEndTime.invalidate();
+
+            fetchMediaSessionToken();
         });
+    }
+
+    private void fetchMediaSessionToken() {
+        if (mBinding == null) {
+             return;
+        }
+
+        if (!mMediaSessionToken.hasValue() || mMediaSessionToken.getValue() == null) {
+            MediaSessionCompat.Token token = null;
+
+            try {
+                token = mBinding.getMediaSessionToken();
+            } catch (RemoteException e) {
+                Timber.e(e, "Failed to get session token");
+            }
+
+            if (token != null) {
+                mMediaSessionToken.onNext(token);
+            }
+        }
     }
 
     @Override
@@ -646,6 +673,11 @@ public class ServicePlayerController implements PlayerController {
         }
 
         return mArtwork;
+    }
+
+    @Override
+    public Observable<MediaSessionCompat.Token> getMediaSessionToken() {
+        return mMediaSessionToken.filter(token -> token != null);
     }
 
     /**

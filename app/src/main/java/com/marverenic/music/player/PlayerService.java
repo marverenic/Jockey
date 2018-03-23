@@ -849,6 +849,20 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
                 Timber.e(exception, "Remote call to PlayerService.setSleepTimerEndTime() failed");
             }
         }
+
+        @Override
+        public MediaSessionCompat.Token getMediaSessionToken() throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                return null;
+            }
+
+            try {
+                return mService.musicPlayer.getMediaSession().getSessionToken();
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to getMediaSessionToken failed");
+                throw exception;
+            }
+        }
     }
 }
 

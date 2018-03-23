@@ -1,5 +1,6 @@
 package com.marverenic.music.data.inject;
 
+import com.marverenic.music.player.JockeyBrowserService;
 import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.ServicePlayerController;
 import com.marverenic.music.ui.BaseActivity;
@@ -73,5 +74,7 @@ public interface JockeyGraph {
 
     void inject(ServicePlayerController.Listener broadcastReceiver);
     void inject(MusicPlayer musicPlayer);
+
+    void inject(JockeyBrowserService browserService);
 
 }
