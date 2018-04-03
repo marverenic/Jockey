@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.support.annotation.NonNull;
@@ -300,7 +301,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         ComponentName mbrComponent = new ComponentName(mContext, MediaButtonReceiver.class.getName());
         MediaSessionCompat session = new MediaSessionCompat(mContext, TAG, mbrComponent, null);
 
-        session.setCallback(new MediaSessionCallback(this));
+        session.setCallback(new MediaSessionCallback(this, new MediaBrowserHelper(mContext)));
         session.setSessionActivity(
                 PendingIntent.getActivity(
                         mContext, 0,
@@ -1056,6 +1057,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         updateNowPlaying();
     }
 
+    public boolean isShuffled() {
+        return mShuffle;
+    }
+
     /**
      * Adds a {@link Song} to the queue to be played after the current song
      * @param song the song to enqueue
@@ -1291,11 +1296,13 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         private int mClickCount;
 
         private MusicPlayer mMusicPlayer;
+        private MediaBrowserHelper mBrowserHelper;
         private Handler mHandler;
 
-        MediaSessionCallback(MusicPlayer musicPlayer) {
+        MediaSessionCallback(MusicPlayer musicPlayer, MediaBrowserHelper mediaBrowserHelper) {
             mHandler = new Handler();
             mMusicPlayer = musicPlayer;
+            mBrowserHelper = mediaBrowserHelper;
         }
 
         private final Runnable mButtonHandler = () -> {
@@ -1373,6 +1380,25 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             mMusicPlayer.seekTo((int) pos);
             mMusicPlayer.updateUi();
         }
+
+        @Override
+        public void onPlayFromMediaId(String mediaId, Bundle extras) {
+            MediaBrowserHelper.MediaList tracks = mBrowserHelper.decode(mediaId);
+            if (tracks != null) {
+                if (!tracks.keepCurrentQueue && tracks.songs != null) {
+                    mMusicPlayer.setQueue(tracks.songs, tracks.startIndex, System.currentTimeMillis());
+                } else {
+                    mMusicPlayer.changeSong(tracks.startIndex);
+                }
+
+                if (!mMusicPlayer.isShuffled() && tracks.shuffle) {
+                    mMusicPlayer.setShuffle(true, System.currentTimeMillis());
+                }
+
+                mMusicPlayer.play();
+            }
+        }
+
     }
 
     /**
