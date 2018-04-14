@@ -47,6 +47,9 @@ interface IPlayerService {
     int getMultiRepeatCount();
     void setMultiRepeatCount(int count);
 
+    boolean getShuffleMode();
+    int getRepeatMode();
+
     long getSleepTimerEndTime();
     void setSleepTimerEndTime(long timestampInMillis);
 

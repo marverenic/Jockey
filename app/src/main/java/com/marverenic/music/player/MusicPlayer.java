@@ -319,7 +319,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                         | PlaybackStateCompat.ACTION_PAUSE
                         | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
                         | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
-                        | PlaybackStateCompat.ACTION_STOP)
+                        | PlaybackStateCompat.ACTION_STOP
+                        | PlaybackStateCompat.ACTION_SET_REPEAT_MODE
+                        | PlaybackStateCompat.ACTION_SET_SHUFFLE_MODE
+                        | PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID)
                 .setState(PlaybackStateCompat.STATE_NONE, 0, 0f);
 
         Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
@@ -481,10 +484,13 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                     PlaybackStateCompat.ACTION_PLAY
                             | PlaybackStateCompat.ACTION_PLAY_PAUSE
                             | PlaybackStateCompat.ACTION_SEEK_TO
-                            | PlaybackStateCompat.ACTION_STOP
                             | PlaybackStateCompat.ACTION_PAUSE
                             | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
-                            | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS);
+                            | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+                            | PlaybackStateCompat.ACTION_STOP
+                            | PlaybackStateCompat.ACTION_SET_REPEAT_MODE
+                            | PlaybackStateCompat.ACTION_SET_SHUFFLE_MODE
+                            | PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID);
 
             if (mMediaPlayer.isPlaying()) {
                 state.setState(PlaybackStateCompat.STATE_PLAYING, getCurrentPosition(), 1f);
@@ -495,6 +501,25 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             } else {
                 state.setState(PlaybackStateCompat.STATE_NONE, getCurrentPosition(), 1f);
             }
+
+            if (isShuffled()) {
+                mMediaSession.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
+            } else {
+                mMediaSession.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE);
+            }
+
+            switch (mRepeat) {
+                case REPEAT_ALL:
+                    mMediaSession.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
+                    break;
+                case REPEAT_ONE:
+                    mMediaSession.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
+                    break;
+                case REPEAT_NONE:
+                default:
+                    mMediaSession.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE);
+            }
+
             mMediaSession.setPlaybackState(state.build());
         }
 
@@ -952,6 +977,17 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             default:
                 mMediaPlayer.enableRepeatNone();
         }
+        updateMediaSession();
+        updateUi();
+    }
+
+    /**
+     * Gets the current repeat option.
+     * @return An integer representation of the repeat option. May be one of either
+     *         {@link #REPEAT_NONE}, {@link #REPEAT_ALL}, or {@link #REPEAT_ONE}.
+     */
+    public int getRepeatMode() {
+        return mRepeat;
     }
 
     /**
@@ -1043,6 +1079,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @param seed A seed to use when shuffling (only used if shuffle is {@code true})
      */
     public void setShuffle(boolean shuffle, long seed) {
+        if (shuffle == mShuffle) {
+            return;
+        }
+
         if (shuffle) {
             Timber.i("Enabling shuffle...");
             shuffleQueue(getQueuePosition(), seed);
@@ -1054,6 +1094,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             mMediaPlayer.setQueue(mQueue, position, false);
         }
         mShuffle = shuffle;
+        updateUi();
+        updateMediaSession();
         updateNowPlaying();
     }
 
@@ -1379,6 +1421,33 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         public void onSeekTo(long pos) {
             mMusicPlayer.seekTo((int) pos);
             mMusicPlayer.updateUi();
+        }
+
+        @Override
+        public void onSetRepeatMode(int repeatMode) {
+            switch (repeatMode) {
+                case PlaybackStateCompat.REPEAT_MODE_ALL:
+                    mMusicPlayer.setRepeat(REPEAT_ALL);
+                    break;
+                case PlaybackStateCompat.REPEAT_MODE_NONE:
+                    mMusicPlayer.setRepeat(REPEAT_NONE);
+                    break;
+                case PlaybackStateCompat.REPEAT_MODE_ONE:
+                    mMusicPlayer.setRepeat(REPEAT_ONE);
+                    break;
+            }
+        }
+
+        @Override
+        public void onSetShuffleMode(int shuffleMode) {
+            switch (shuffleMode) {
+                case PlaybackStateCompat.SHUFFLE_MODE_ALL:
+                    mMusicPlayer.setShuffle(true, System.currentTimeMillis());
+                    break;
+                case PlaybackStateCompat.SHUFFLE_MODE_NONE:
+                    mMusicPlayer.setShuffle(false, 0);
+                    break;
+            }
         }
 
         @Override

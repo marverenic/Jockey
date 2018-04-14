@@ -823,6 +823,16 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
+        public boolean getShuffleMode() {
+            return mService.musicPlayer.isShuffled();
+        }
+
+        @Override
+        public int getRepeatMode() {
+            return mService.musicPlayer.getRepeatMode();
+        }
+
+        @Override
         public long getSleepTimerEndTime() throws RemoteException {
             if (!isMusicPlayerReady()) {
                 return 0;
