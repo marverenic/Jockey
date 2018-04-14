@@ -299,41 +299,24 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     private void initMediaSession() {
         Timber.i("Initializing MediaSession");
         ComponentName mbrComponent = new ComponentName(mContext, MediaButtonReceiver.class.getName());
-        MediaSessionCompat session = new MediaSessionCompat(mContext, TAG, mbrComponent, null);
+        mMediaSession = new MediaSessionCompat(mContext, TAG, mbrComponent, null);
 
-        session.setCallback(new MediaSessionCallback(this, new MediaBrowserHelper(mContext)));
-        session.setSessionActivity(
+        mMediaSession.setCallback(new MediaSessionCallback(this, new MediaBrowserHelper(mContext)));
+        mMediaSession.setSessionActivity(
                 PendingIntent.getActivity(
                         mContext, 0,
                         LibraryActivity.newNowPlayingIntent(mContext)
                                 .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
                         PendingIntent.FLAG_CANCEL_CURRENT));
 
-        session.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS
-                | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
-
-        PlaybackStateCompat.Builder state = new PlaybackStateCompat.Builder()
-                .setActions(PlaybackStateCompat.ACTION_PLAY
-                        | PlaybackStateCompat.ACTION_PLAY_PAUSE
-                        | PlaybackStateCompat.ACTION_SEEK_TO
-                        | PlaybackStateCompat.ACTION_PAUSE
-                        | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
-                        | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
-                        | PlaybackStateCompat.ACTION_STOP
-                        | PlaybackStateCompat.ACTION_SET_REPEAT_MODE
-                        | PlaybackStateCompat.ACTION_SET_SHUFFLE_MODE
-                        | PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID)
-                .setState(PlaybackStateCompat.STATE_NONE, 0, 0f);
+        updateMediaSession();
 
         Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
         mediaButtonIntent.setClass(mContext, MediaButtonReceiver.class);
         PendingIntent mbrIntent = PendingIntent.getBroadcast(mContext, 0, mediaButtonIntent, 0);
-        session.setMediaButtonReceiver(mbrIntent);
+        mMediaSession.setMediaButtonReceiver(mbrIntent);
 
-        session.setPlaybackState(state.build());
-        session.setActive(true);
-
-        mMediaSession = session;
+        mMediaSession.setActive(true);
     }
 
     /**
@@ -459,6 +442,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * Updates the metadata in the attached {@link MediaSessionCompat}
      */
     private void updateMediaSession() {
+        if (mMediaSession == null) {
+            return;
+        }
+
         Timber.i("Updating MediaSession");
 
         if (getNowPlaying() != null) {
@@ -479,49 +466,49 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                     .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, getDuration())
                     .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, mArtwork);
             mMediaSession.setMetadata(metadataBuilder.build());
-
-            PlaybackStateCompat.Builder state = new PlaybackStateCompat.Builder().setActions(
-                    PlaybackStateCompat.ACTION_PLAY
-                            | PlaybackStateCompat.ACTION_PLAY_PAUSE
-                            | PlaybackStateCompat.ACTION_SEEK_TO
-                            | PlaybackStateCompat.ACTION_PAUSE
-                            | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
-                            | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
-                            | PlaybackStateCompat.ACTION_STOP
-                            | PlaybackStateCompat.ACTION_SET_REPEAT_MODE
-                            | PlaybackStateCompat.ACTION_SET_SHUFFLE_MODE
-                            | PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID);
-
-            if (mMediaPlayer.isPlaying()) {
-                state.setState(PlaybackStateCompat.STATE_PLAYING, getCurrentPosition(), 1f);
-            } else if (mMediaPlayer.isPaused()) {
-                state.setState(PlaybackStateCompat.STATE_PAUSED, getCurrentPosition(), 1f);
-            } else if (mMediaPlayer.isStopped()) {
-                state.setState(PlaybackStateCompat.STATE_STOPPED, getCurrentPosition(), 1f);
-            } else {
-                state.setState(PlaybackStateCompat.STATE_NONE, getCurrentPosition(), 1f);
-            }
-
-            if (isShuffled()) {
-                mMediaSession.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
-            } else {
-                mMediaSession.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE);
-            }
-
-            switch (mRepeat) {
-                case REPEAT_ALL:
-                    mMediaSession.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
-                    break;
-                case REPEAT_ONE:
-                    mMediaSession.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
-                    break;
-                case REPEAT_NONE:
-                default:
-                    mMediaSession.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE);
-            }
-
-            mMediaSession.setPlaybackState(state.build());
         }
+
+        PlaybackStateCompat.Builder state = new PlaybackStateCompat.Builder().setActions(
+                PlaybackStateCompat.ACTION_PLAY
+                        | PlaybackStateCompat.ACTION_PLAY_PAUSE
+                        | PlaybackStateCompat.ACTION_SEEK_TO
+                        | PlaybackStateCompat.ACTION_PAUSE
+                        | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+                        | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+                        | PlaybackStateCompat.ACTION_STOP
+                        | PlaybackStateCompat.ACTION_SET_REPEAT_MODE
+                        | PlaybackStateCompat.ACTION_SET_SHUFFLE_MODE
+                        | PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID);
+
+        if (mMediaPlayer.isPlaying()) {
+            state.setState(PlaybackStateCompat.STATE_PLAYING, getCurrentPosition(), 1f);
+        } else if (mMediaPlayer.isPaused()) {
+            state.setState(PlaybackStateCompat.STATE_PAUSED, getCurrentPosition(), 1f);
+        } else if (mMediaPlayer.isStopped()) {
+            state.setState(PlaybackStateCompat.STATE_STOPPED, getCurrentPosition(), 1f);
+        } else {
+            state.setState(PlaybackStateCompat.STATE_NONE, getCurrentPosition(), 1f);
+        }
+
+        if (isShuffled()) {
+            mMediaSession.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
+        } else {
+            mMediaSession.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE);
+        }
+
+        switch (mRepeat) {
+            case REPEAT_ALL:
+                mMediaSession.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
+                break;
+            case REPEAT_ONE:
+                mMediaSession.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
+                break;
+            case REPEAT_NONE:
+            default:
+                mMediaSession.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE);
+        }
+
+        mMediaSession.setPlaybackState(state.build());
 
         Timber.i("Sending minor broadcast to update UI process");
         Intent broadcast = new Intent(UPDATE_BROADCAST)
