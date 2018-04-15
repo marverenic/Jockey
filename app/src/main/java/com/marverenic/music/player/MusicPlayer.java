@@ -15,9 +15,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.support.annotation.NonNull;
+import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.MediaSessionCompat.QueueItem;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.KeyEvent;
 
@@ -176,6 +178,13 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * The volume scalar to set when {@link AudioManager} causes a MusicPlayer instance to duck
      */
     private static final float DUCK_VOLUME = 0.5f;
+
+    /**
+     * Controls the maximum number of songs in the sliding window when setting
+     * {@link MediaSessionCompat#setQueue(List)}.
+     * @see #buildQueueWindow() For the usage of this value
+     */
+    private static final int MEDIA_SESSION_QUEUE_MAX_SIZE = 250;
 
     private QueuedMediaPlayer mMediaPlayer;
     private Context mContext;
@@ -480,6 +489,13 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                         | PlaybackStateCompat.ACTION_SET_SHUFFLE_MODE
                         | PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID);
 
+        if (!mMediaPlayer.getQueue().isEmpty()) {
+            state.setActiveQueueItemId(mMediaPlayer.getQueueIndex());
+        }
+
+        mMediaSession.setQueueTitle(mContext.getString(R.string.header_now_playing));
+        mMediaSession.setQueue(buildQueueWindow());
+
         if (mMediaPlayer.isPlaying()) {
             state.setState(PlaybackStateCompat.STATE_PLAYING, getCurrentPosition(), 1f);
         } else if (mMediaPlayer.isPaused()) {
@@ -525,6 +541,29 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 .putExtra(UPDATE_EXTRA_MINOR, true);
 
         mContext.sendBroadcast(broadcast, BROADCAST_PERMISSION);
+    }
+
+    private List<QueueItem> buildQueueWindow() {
+        List<Song> queue = mMediaPlayer.getQueue();
+        int queueIndex = mMediaPlayer.getQueueIndex();
+        int windowSize = Math.min(queue.size(), MEDIA_SESSION_QUEUE_MAX_SIZE);
+
+        int prefixLength = Math.min(queueIndex, MEDIA_SESSION_QUEUE_MAX_SIZE / 2 - 1);
+        int startIndex = queueIndex - prefixLength;
+
+        List<QueueItem> window = new ArrayList<>();
+        for (int i = startIndex; i < startIndex + windowSize; i++) {
+            Song song = queue.get(i);
+
+            window.add(new QueueItem(
+                    new MediaDescriptionCompat.Builder()
+                            .setTitle(song.getSongName())
+                            .setSubtitle(song.getArtistName())
+                            .build(),
+                    i
+            ));
+        }
+        return window;
     }
 
     @Override

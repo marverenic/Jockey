@@ -50,8 +50,6 @@ public class MediaBrowserHelper {
                 return getRootContents();
             case MEDIA_ID_PLAYLIST_ROOT:
                 return getPlaylistRootContents(playlistStore);
-            case MEDIA_ID_QUEUE_ROOT:
-                return getQueueContents(playerController);
         }
 
         return Single.error(new IllegalArgumentException("Path \"" + parentId + "\" does not exist"));
@@ -59,7 +57,6 @@ public class MediaBrowserHelper {
 
     private Single<List<MediaItem>> getRootContents() {
         return Single.just(Arrays.asList(
-                generateMediaItemDirectory(R.string.header_now_playing, MEDIA_ID_QUEUE_ROOT),
                 generateMediaItemDirectory(R.string.header_playlists, MEDIA_ID_PLAYLIST_ROOT)
         ));
     }
@@ -82,13 +79,6 @@ public class MediaBrowserHelper {
 
                     return mediaItems;
                 });
-    }
-
-    private Single<List<MediaItem>> getQueueContents(PlayerController playerController) {
-        return playerController.getQueue()
-                .first()
-                .toSingle()
-                .map(songs -> convertToMediaItem(songs, (song, idx) -> QUEUE_SUBDIR_PREFIX + idx));
     }
 
     @Nullable
