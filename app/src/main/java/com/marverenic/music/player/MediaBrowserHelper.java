@@ -37,7 +37,7 @@ public class MediaBrowserHelper {
     }
 
     public BrowserRoot getRoot(boolean empty) {
-        return new BrowserRoot((empty) ? MEDIA_ID_EMPTY_ROOT : MEDIA_ID_ROOT, null);
+        return new BrowserRoot((empty) ? MEDIA_ID_EMPTY_ROOT : MEDIA_ID_PLAYLIST_ROOT, null);
     }
 
     public Single<List<MediaItem>> getContents(String parentId, PlayerController playerController,
