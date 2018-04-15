@@ -492,8 +492,18 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
         if (isShuffled()) {
             mMediaSession.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
+            state.addCustomAction(
+                    MediaSessionCallback.ACTION_TOGGLE_SHUFFLE,
+                    mContext.getString(R.string.action_disable_shuffle),
+                    R.drawable.ic_shuffle_enable_auto
+            );
         } else {
             mMediaSession.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE);
+            state.addCustomAction(
+                    MediaSessionCallback.ACTION_TOGGLE_SHUFFLE,
+                    mContext.getString(R.string.action_enable_shuffle),
+                    R.drawable.ic_shuffle_disabled_auto
+            );
         }
 
         switch (mRepeat) {
@@ -1315,6 +1325,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
     private static class MediaSessionCallback extends MediaSessionCompat.Callback {
 
+        private static final String ACTION_TOGGLE_SHUFFLE = "shuffle";
+
         /**
          * A period of time added after a remote button press to delay handling the event. This
          * delay allows the user to press the remote button multiple times to execute different
@@ -1455,6 +1467,14 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             }
         }
 
+        @Override
+        public void onCustomAction(String action, Bundle extras) {
+            switch (action) {
+                case ACTION_TOGGLE_SHUFFLE:
+                    mMusicPlayer.setShuffle(!mMusicPlayer.isShuffled(), System.currentTimeMillis());
+                    break;
+            }
+        }
     }
 
     /**
