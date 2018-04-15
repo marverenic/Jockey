@@ -28,7 +28,6 @@ public class JockeyBrowserService extends MediaBrowserServiceCompat {
     private BrowserServicePackageValidator mPackageValidator;
 
     private Subscription mMediaSessionSubscription;
-    private Subscription mQueueInvalidatorSubscription;
 
     @Override
     public void onCreate() {
@@ -41,13 +40,6 @@ public class JockeyBrowserService extends MediaBrowserServiceCompat {
                 .subscribe(this::setSessionToken, e -> {
                     Timber.e(e, "Failed to post media session token");
                 });
-
-        mQueueInvalidatorSubscription = mPlayerController.getQueue()
-                .subscribe(queue -> {
-                    notifyChildrenChanged(MediaBrowserHelper.MEDIA_ID_QUEUE_ROOT);
-                }, e -> {
-                    Timber.e(e, "Failed to notify queue change");
-                });
     }
 
     @Override
@@ -55,10 +47,6 @@ public class JockeyBrowserService extends MediaBrowserServiceCompat {
         super.onDestroy();
         if (mMediaSessionSubscription != null) {
             mMediaSessionSubscription.unsubscribe();
-        }
-
-        if (mQueueInvalidatorSubscription != null) {
-            mQueueInvalidatorSubscription.unsubscribe();
         }
     }
 

@@ -24,7 +24,6 @@ import timber.log.Timber;
 public class MediaBrowserHelper {
 
     public static final String MEDIA_ID_ROOT = "__ROOT__";
-    public static final String MEDIA_ID_QUEUE_ROOT = "__QUEUE_ROOT__";
     public static final String MEDIA_ID_PLAYLIST_ROOT = "__PLAYLIST_ROOT__";
     public static final String MEDIA_ID_EMPTY_ROOT = "__EMPTY_ROOT__";
 
