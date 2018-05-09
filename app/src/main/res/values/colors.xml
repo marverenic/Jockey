@@ -26,7 +26,7 @@
     <color name="background_elevated">#F5F5F5</color>
     <color name="background_miniplayer">#FAFAFA</color>
     <color name="progress_empty">#08000000</color>
-    <color name="divider">#D7D7D7</color>
+    <color name="divider">#E1E1E1</color>
 
     <color name="widget_background">#FFFFFF</color>
     <color name="widget_button">#424242</color>
