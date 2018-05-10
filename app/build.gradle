@@ -19,7 +19,6 @@ repositories {
 
 android {
     compileSdkVersion rootProject.targetSdkVersion
-    buildToolsVersion rootProject.buildToolsVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -43,7 +42,6 @@ android {
     defaultConfig {
         applicationId "com.marverenic.music"
         minSdkVersion 16
-        targetSdkVersion rootProject.targetSdkVersion
         versionCode 40320
         versionName "3.0 beta 2"
         resConfigs "en", "es"
