@@ -129,14 +129,17 @@ public class UriUtils {
 
         try {
             if (cur != null && cur.moveToFirst()) {
-                return cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATA));
-            } else {
-                return null;
+                int col = cur.getColumnIndex(MediaStore.Audio.Media.DATA);
+                if (col != -1) {
+                    return cur.getString(col);
+                }
             }
         } finally {
             if (cur != null) {
                 cur.close();
             }
         }
+
+        return null;
     }
 }

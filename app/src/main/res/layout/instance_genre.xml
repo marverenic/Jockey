@@ -30,7 +30,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
-        <ImageView
+        <com.marverenic.music.view.AnchoredImageView
             android:id="@+id/genre_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

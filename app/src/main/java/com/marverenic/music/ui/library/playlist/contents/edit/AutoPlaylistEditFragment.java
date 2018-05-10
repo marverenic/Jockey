@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.databinding.FragmentAutoPlaylistEditBinding;
 import com.marverenic.music.model.AutoPlaylist;
@@ -28,6 +29,7 @@ public class AutoPlaylistEditFragment extends BaseToolbarFragment {
     private static final String EXTRA_MODIFIED_PLAYLIST = "AutoPlaylistEditFragment.MODIFIED";
 
     @Inject PlaylistStore mPlaylistStore;
+    @Inject MusicStore mMusicStore;
 
     private FragmentAutoPlaylistEditBinding mBinding;
     private AutoPlaylistEditViewModel mViewModel;
@@ -64,7 +66,8 @@ public class AutoPlaylistEditFragment extends BaseToolbarFragment {
                                        @Nullable Bundle savedInstanceState) {
 
         mBinding = FragmentAutoPlaylistEditBinding.inflate(inflater, container, false);
-        mViewModel = new AutoPlaylistEditViewModel(getContext(), mOriginalPlaylist, mBuilder);
+        mViewModel = new AutoPlaylistEditViewModel(getContext(), mOriginalPlaylist, mBuilder,
+                mPlaylistStore, mMusicStore);
         mBinding.setViewModel(mViewModel);
 
         setHasOptionsMenu(true);
