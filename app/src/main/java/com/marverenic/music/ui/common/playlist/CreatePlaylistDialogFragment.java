@@ -16,6 +16,7 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 
 import com.marverenic.music.JockeyApplication;
@@ -36,6 +37,7 @@ public class CreatePlaylistDialogFragment extends DialogFragment implements Text
     private static final String KEY_TITLE = "CreatePlaylistDialogFragment.Name";
     private static final String KEY_SNACKBAR_VIEW = "CreatePlaylistDialogFragment.Snackbar";
     private static final String KEY_SONGS = "CreatePlaylistDialogFragment.Songs";
+    private static final String SAVED_INPUT_STATE = "CreatePlaylistDialogFragment.EditTextState";
 
     @Inject PlaylistStore mPlaylistStore;
     @Inject ThemeStore mThemeStore;
@@ -55,7 +57,7 @@ public class CreatePlaylistDialogFragment extends DialogFragment implements Text
 
     @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         mSnackbarView = getArguments().getInt(KEY_SNACKBAR_VIEW);
         mSongs = getArguments().getParcelableArrayList(KEY_SONGS);
         onCreateDialogLayout(getArguments().getString(KEY_TITLE));
@@ -65,7 +67,10 @@ public class CreatePlaylistDialogFragment extends DialogFragment implements Text
                 .setView(mInputLayout)
                 .setPositiveButton(R.string.action_create, (dialog, which) -> {createPlaylist();})
                 .setNegativeButton(R.string.action_cancel, null)
-                .show();
+                .create();
+
+        mDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        mDialog.show();
 
         updateDialogButtons(true);
 
@@ -76,7 +81,17 @@ public class CreatePlaylistDialogFragment extends DialogFragment implements Text
                 padding - mInputLayout.getPaddingRight(),
                 mInputLayout.getPaddingBottom());
 
+        if (savedInstanceState != null) {
+            mEditText.onRestoreInstanceState(savedInstanceState.getParcelable(SAVED_INPUT_STATE));
+        }
+
         return mDialog;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(SAVED_INPUT_STATE, mEditText.onSaveInstanceState());
     }
 
     private void onCreateDialogLayout(@Nullable String restoredName) {
