@@ -72,7 +72,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toLeftOf="@+id/album_menu"/>
 
-            <ImageView
+            <com.marverenic.music.view.AnchoredImageView
                 android:id="@+id/album_menu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
