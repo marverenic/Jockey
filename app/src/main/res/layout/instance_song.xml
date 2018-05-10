@@ -63,10 +63,9 @@
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:src="@drawable/ic_menu_24dp"
-            android:tint="?attr/textColorPrimary"
+            android:tint="@color/list_item_action_tint"
             android:background="?selectableItemBackgroundBorderless"
             android:onClick="@{viewModel.onClickMenu()}"
-            tools:tint="@android:color/black"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>

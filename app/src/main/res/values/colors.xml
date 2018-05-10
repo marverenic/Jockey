@@ -5,6 +5,7 @@
     <color name="grid_background_default">#ffb0bec5</color>
     <color name="grid_text">#77000000</color>
     <color name="grid_detail_text">#97000000</color>
+    <color name="grid_action_tint">#ffffff</color>
     <color name="about_detail_text">#B4FFFFFF</color>
 
     <color name="player_frame_bevel">#30000000</color>
@@ -27,6 +28,7 @@
     <color name="background_miniplayer">#FAFAFA</color>
     <color name="progress_empty">#08000000</color>
     <color name="divider">#E1E1E1</color>
+    <color name="list_item_action_tint">#5B5B5B</color>
 
     <color name="widget_background">#FFFFFF</color>
     <color name="widget_button">#424242</color>

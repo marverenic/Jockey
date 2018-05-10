@@ -11,5 +11,6 @@
     <color name="background_miniplayer">#212121</color>
     <color name="progress_empty">#08FFFFFF</color>
     <color name="divider">#2E2E2E</color>
+    <color name="list_item_action_tint">#A3A3A3</color>
 
 </resources>
