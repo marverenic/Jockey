@@ -37,10 +37,10 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
     private static final String KEY_SONG = "AppendPlaylistDialogFragment.Song";
     private static final String KEY_SONGS = "AppendPlaylistDialogFragment.Songs";
     private static final String KEY_SNACKBAR_VIEW = "AppendPlaylistDialogFragment.Snackbar";
+    private static final String KEY_PLAYLISTS = "AppendPlaylistDialogFragment.Playlists";
 
     @Inject PlaylistStore mPlaylistStore;
 
-    private Dialog mDialog;
     private String mTitle;
     private Playlist[] mChoices;
     private String[] mChoiceNames;
@@ -65,49 +65,31 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
             mSingle = false;
         }
 
-        mPlaylistStore.getPlaylists()
-                .take(1)
-                .subscribe(playlists -> {
-                    List<Playlist> choices = new ArrayList<>(playlists.size());
-                    List<String> choiceNames = new ArrayList<>(playlists.size());
+        List<Playlist> playlists = getArguments().getParcelableArrayList(KEY_PLAYLISTS);
 
-                    choiceNames.add(getString(R.string.action_make_new_playlist));
+        List<Playlist> choices = new ArrayList<>(playlists.size());
+        List<String> choiceNames = new ArrayList<>(playlists.size());
 
-                    for (Playlist playlist : playlists) {
-                        if (!(playlist instanceof AutoPlaylist)) {
-                            choices.add(playlist);
-                            choiceNames.add(playlist.getPlaylistName());
-                        }
-                    }
+        choiceNames.add(getString(R.string.action_make_new_playlist));
 
-                    mChoices = new Playlist[choices.size()];
-                    mChoiceNames = new String[choiceNames.size()];
+        for (Playlist playlist : playlists) {
+            if (!(playlist instanceof AutoPlaylist)) {
+                choices.add(playlist);
+                choiceNames.add(playlist.getPlaylistName());
+            }
+        }
 
-                    choices.toArray(mChoices);
-                    choiceNames.toArray(mChoiceNames);
+        mChoices = new Playlist[choices.size()];
+        mChoiceNames = new String[choiceNames.size()];
 
-                    showDialog();
-                }, throwable -> {
-                    Timber.e(throwable, "Failed to get playlists");
-                });
+        choices.toArray(mChoices);
+        choiceNames.toArray(mChoiceNames);
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        if (mDialog == null) {
-            return super.onCreateDialog(savedInstanceState);
-        } else {
-            return mDialog;
-        }
-    }
-
-    private void showDialog() {
-        if (getDialog() != null) {
-            getDialog().hide();
-        }
-
-        mDialog = new AlertDialog.Builder(getContext())
+        return new AlertDialog.Builder(getContext())
                 .setTitle(mTitle)
                 .setItems(mChoiceNames, (dialog, which) -> {onPlaylistSelected(which);})
                 .setNegativeButton(R.string.action_cancel, null)
@@ -165,13 +147,13 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
                     .setPlaylist(playlist)
                     .setSongs(mSong)
                     .showSnackbarIn(mSnackbarView)
-                    .show(TAG_DUPLICATE_CONFIRM);
+                    .show(TAG_DUPLICATE_CONFIRM, mPlaylistStore);
         } else {
             new PlaylistCollisionDialogFragment.Builder(getFragmentManager())
                     .setPlaylist(playlist)
                     .setSongs(mSongs)
                     .showSnackbarIn(mSnackbarView)
-                    .show(TAG_DUPLICATE_CONFIRM);
+                    .show(TAG_DUPLICATE_CONFIRM, mPlaylistStore);
         }
     }
 
@@ -262,11 +244,18 @@ public class AppendPlaylistDialogFragment extends DialogFragment {
             return this;
         }
 
-        public void show(String tag) {
-            AppendPlaylistDialogFragment dialogFragment = new AppendPlaylistDialogFragment();
-            dialogFragment.setArguments(mArgs);
+        public void show(String tag, PlaylistStore playlistStore) {
+            playlistStore.getPlaylists().take(1).map(playlists -> {
+                mArgs.putParcelableArrayList(KEY_PLAYLISTS, new ArrayList<>(playlists));
+                return mArgs;
+            }).subscribe(args -> {
+                AppendPlaylistDialogFragment dialogFragment = new AppendPlaylistDialogFragment();
+                dialogFragment.setArguments(args);
 
-            dialogFragment.show(mFragmentManager, tag);
+                dialogFragment.show(mFragmentManager, tag);
+            }, throwable -> {
+                Timber.e(throwable, "Failed to load playlists");
+            });
         }
 
     }

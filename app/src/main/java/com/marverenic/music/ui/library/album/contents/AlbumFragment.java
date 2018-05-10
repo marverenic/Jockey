@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.databinding.FragmentAlbumBinding;
 import com.marverenic.music.model.Album;
@@ -31,6 +32,7 @@ public class AlbumFragment extends BaseFragment {
 
     @Inject PlayerController mPlayerController;
     @Inject MusicStore mMusicStore;
+    @Inject PlaylistStore mPlaylistStore;
     @Inject PreferenceStore mPreferenceStore;
 
     private Album mAlbum;
@@ -59,7 +61,7 @@ public class AlbumFragment extends BaseFragment {
 
         FragmentAlbumBinding binding = FragmentAlbumBinding.inflate(inflater, container, false);
         AlbumViewModel viewModel = new AlbumViewModel(getContext(), mAlbum, mPlayerController,
-                mMusicStore, mPreferenceStore, getFragmentManager(),
+                mMusicStore, mPlaylistStore, mPreferenceStore, getFragmentManager(),
                 OnSongSelectedListener.defaultImplementation(getActivity(), mPreferenceStore));
         binding.setViewModel(viewModel);
 

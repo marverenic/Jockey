@@ -9,6 +9,7 @@ import android.view.View;
 
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.model.Genre;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.common.playlist.AppendPlaylistDialogFragment;
@@ -21,6 +22,7 @@ public class GenreItemViewModel extends BaseObservable {
     private static final String TAG_PLAYLIST_DIALOG = "GenreItemViewModel.PlaylistDialog";
 
     private MusicStore mMusicStore;
+    private PlaylistStore mPlaylistStore;
     private PlayerController mPlayerController;
 
     private Context mContext;
@@ -28,10 +30,12 @@ public class GenreItemViewModel extends BaseObservable {
     private Genre mGenre;
 
     public GenreItemViewModel(Context context, FragmentManager fragmentManager,
-                              MusicStore musicStore, PlayerController playerController) {
+                              MusicStore musicStore, PlaylistStore playlistStore,
+                              PlayerController playerController) {
         mContext = context;
         mFragmentManager = fragmentManager;
         mMusicStore = musicStore;
+        mPlaylistStore = playlistStore;
         mPlayerController = playerController;
     }
 
@@ -82,7 +86,7 @@ public class GenreItemViewModel extends BaseObservable {
                                 new AppendPlaylistDialogFragment.Builder(mContext, mFragmentManager)
                                         .setSongs(songs, mGenre.getGenreName())
                                         .showSnackbarIn(R.id.list)
-                                        .show(TAG_PLAYLIST_DIALOG);
+                                        .show(TAG_PLAYLIST_DIALOG, mPlaylistStore);
                             }, throwable -> {
                                 Timber.e(throwable, "Failed to get songs");
                             });

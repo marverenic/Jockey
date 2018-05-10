@@ -56,7 +56,8 @@ public class GenreViewModel extends BaseViewModel {
     private void createAdapter(@Nullable OnSongSelectedListener songSelectedListener) {
         mAdapter = new HeterogeneousAdapter();
         mSongSection = new SongSection(Collections.emptyList(), getContext(),
-                mPlayerController, mMusicStore, mFragmentManager, songSelectedListener);
+                mPlayerController, mMusicStore, mPlaylistStore,
+                mFragmentManager, songSelectedListener);
         mShuffleAllSection = new ShuffleAllSection(Collections.emptyList(), mPreferenceStore,
                 mPlayerController, songSelectedListener);
         mAdapter.addSection(mShuffleAllSection);

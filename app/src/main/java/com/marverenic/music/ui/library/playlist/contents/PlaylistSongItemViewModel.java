@@ -10,6 +10,7 @@ import android.view.View;
 
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.browse.MusicBrowserActivity;
@@ -23,17 +24,20 @@ import timber.log.Timber;
 public class PlaylistSongItemViewModel extends SongItemViewModel {
 
     private MusicStore mMusicStore;
+    private PlaylistStore mPlaylistStore;
     private PlayerController mPlayerController;
 
     private OnPlaylistEntriesChangeListener mRemoveListener;
 
     public PlaylistSongItemViewModel(Context context, FragmentManager fragmentManager,
-                                     MusicStore musicStore, PlayerController playerController,
+                                     MusicStore musicStore, PlaylistStore playlistStore,
+                                     PlayerController playerController,
                                      OnPlaylistEntriesChangeListener listener,
                                      @Nullable OnSongSelectedListener songSelectedListener) {
 
-        super(context, fragmentManager, musicStore, playerController, songSelectedListener);
+        super(context, fragmentManager, musicStore, playlistStore, playerController, songSelectedListener);
         mMusicStore = musicStore;
+        mPlaylistStore = playlistStore;
         mPlayerController = playerController;
 
         mRemoveListener = listener;

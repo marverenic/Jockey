@@ -1,5 +1,6 @@
 package com.marverenic.music.ui.nowplaying;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -23,6 +24,7 @@ import android.view.animation.AnimationUtils;
 import com.marverenic.music.BR;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.databinding.FragmentNowPlayingBinding;
 import com.marverenic.music.model.Song;
@@ -32,6 +34,7 @@ import com.marverenic.music.player.PlayerState;
 import com.marverenic.music.ui.BaseFragment;
 import com.marverenic.music.ui.common.playlist.AppendPlaylistDialogFragment;
 import com.marverenic.music.ui.common.playlist.CreatePlaylistDialogFragment;
+import com.marverenic.music.ui.settings.EqualizerActivity;
 import com.marverenic.music.view.TimeView;
 import com.trello.rxlifecycle.FragmentEvent;
 
@@ -63,6 +66,7 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
 
     @Inject PreferenceStore mPrefStore;
     @Inject PlayerController mPlayerController;
+    @Inject PlaylistStore mPlaylistStore;
 
     private FragmentNowPlayingBinding mBinding;
     private NowPlayingArtworkViewModel mArtworkViewModel;
@@ -151,6 +155,9 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
         mAppendToPlaylistMenuItem = toolbar.getMenu().findItem(R.id.menu_now_playing_append);
         mShuffleMenuItem = toolbar.getMenu().findItem(R.id.menu_now_playing_shuffle);
         mRepeatMenuItem = toolbar.getMenu().findItem(R.id.menu_now_playing_repeat);
+
+        toolbar.getMenu().findItem(R.id.menu_open_equalizer)
+                .setEnabled(EqualizerActivity.newIntent(getContext(), false) != null);
 
         mPlayerController.getQueue()
                 .compose(bindUntilEvent(FragmentEvent.DESTROY_VIEW))
@@ -257,6 +264,12 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
                         .subscribe(this::showSleepTimerDialog, throwable -> {
                             Timber.e(throwable, "Failed to show sleep timer dialog");
                         });
+                return true;
+            case R.id.menu_open_equalizer:
+                Intent eqIntent = EqualizerActivity.newIntent(getContext(), mPrefStore.getEqualizerEnabled());
+                if (eqIntent != null) {
+                    startActivity(eqIntent);
+                }
                 return true;
             case R.id.menu_now_playing_save:
                 saveQueueAsPlaylist();
@@ -451,7 +464,7 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
                             .setTitle(getString(R.string.header_add_queue_to_playlist))
                             .setSongs(queue)
                             .showSnackbarIn(R.id.now_playing_artwork)
-                            .show(TAG_APPEND_PLAYLIST);
+                            .show(TAG_APPEND_PLAYLIST, mPlaylistStore);
                 }, throwable -> {
                     Timber.e(throwable, "Failed to add queue to playlist");
                 });

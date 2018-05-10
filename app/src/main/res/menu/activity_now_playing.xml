@@ -21,6 +21,10 @@
         android:title="@string/action_set_sleep_timer"
         app:showAsAction="never"/>
 
+    <item android:id="@+id/menu_open_equalizer"
+        android:title="@string/pref_equalizer"
+        app:showAsAction="never"/>
+
     <item
         android:id="@+id/menu_now_playing_save"
         android:title="@string/action_export_playlist"

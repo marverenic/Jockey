@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.databinding.ViewNowPlayingControlPanelBinding;
 import com.marverenic.music.player.PlayerController;
@@ -25,6 +26,7 @@ public class PlayerControllerFragment extends BaseFragment {
 
     @Inject PlayerController mPlayerController;
     @Inject MusicStore mMusicStore;
+    @Inject PlaylistStore mPlaylistStore;
     @Inject ThemeStore mThemeStore;
 
     private ViewNowPlayingControlPanelBinding mBinding;
@@ -41,7 +43,7 @@ public class PlayerControllerFragment extends BaseFragment {
 
         mBinding = ViewNowPlayingControlPanelBinding.inflate(inflater, container, false);
         NowPlayingControllerViewModel viewModel = new NowPlayingControllerViewModel(getContext(),
-                getFragmentManager(), mPlayerController, mMusicStore, mThemeStore);
+                getFragmentManager(), mPlayerController, mMusicStore, mPlaylistStore, mThemeStore);
 
         mPlayerController.getCurrentPosition()
                 .compose(bindToLifecycle())
