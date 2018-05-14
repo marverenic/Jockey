@@ -675,23 +675,23 @@ public final class MediaStoreUtil {
      * @return An {@link ArrayList} of {@link Song}s with ids matching those of the
      *         songIDs parameter
      */
-    public static List<Song> buildSongListFromIds(long[] songIDs, Context context) {
+    public static List<Song> buildSongListFromUris(List<Uri> uris, Context context) {
         List<Song> contents = new ArrayList<>();
         // Split this request into batches of size SQL_MAX_VARS
-        for (int i = 0; i < songIDs.length / SQL_MAX_VARS; i++) {
-            contents.addAll(buildSongListFromIds(songIDs, context,
+        for (int i = 0; i < uris.size() / SQL_MAX_VARS; i++) {
+            contents.addAll(buildSongListFromUris(uris, context,
                     i * SQL_MAX_VARS, (i + 1) * SQL_MAX_VARS));
         }
 
         // Load the remaining songs (the last section that's not divisible by SQL_MAX_VARS)
-        contents.addAll(buildSongListFromIds(songIDs, context,
-                SQL_MAX_VARS * (songIDs.length / SQL_MAX_VARS), songIDs.length));
+        contents.addAll(buildSongListFromUris(uris, context,
+                SQL_MAX_VARS * (uris.size() / SQL_MAX_VARS), uris.size()));
 
         // Sort the contents of the list so that it matches the order of the array
         List<Song> songs = new ArrayList<>();
-        for (long i : songIDs) {
+        for (Uri uri : uris) {
             for (Song s : contents) {
-                if (s.getSongId() == i) {
+                if (s.getLocation().equals(uri)) {
                     songs.add(s);
                     break;
                 }
@@ -713,27 +713,27 @@ public final class MediaStoreUtil {
      * @return An unsorted list of {@link Song Songs} with the same IDs as the ids that were passed
      * into {@code songIDs}
      */
-    private static List<Song> buildSongListFromIds(long[] songIDs, Context context, int lowerBound,
+    private static List<Song> buildSongListFromUris(List<Uri> uris, Context context, int lowerBound,
                                                    int upperBound) {
         List<Song> contents = new ArrayList<>();
-        if (songIDs.length == 0) {
+        if (uris.size() == 0) {
             return contents;
         }
 
-        String query = MediaStore.Audio.Media._ID + " IN(?";
-        String[] ids = new String[upperBound - lowerBound];
-        ids[0] = Long.toString(songIDs[lowerBound]);
+        String query = MediaStore.Audio.Media.DATA + " IN(?";
+        String[] split = new String[upperBound - lowerBound];
+        split[0] = uris.get(0).toString();
 
-        for (int i = 1; i < ids.length; i++) {
+        for (int i = 1; i < split.length; i++) {
             query += ",?";
-            ids[i] = Long.toString(songIDs[i + lowerBound]);
+            split[i] = uris.get(i).toString();
         }
         query += ")";
 
         Cursor cur = context.getContentResolver().query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 SONG_PROJECTION,
-                query, ids,
+                query, split,
                 MediaStore.Audio.Media.TITLE + " ASC");
 
         if (cur == null) {

@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.PowerManager;
@@ -30,22 +31,17 @@ import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.data.store.RemotePreferenceStore;
 import com.marverenic.music.data.store.SharedPreferenceStore;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.player.persistence.PlaybackPersistenceManager;
 import com.marverenic.music.ui.library.LibraryActivity;
 import com.marverenic.music.utils.Internal;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.utils.compat.AudioManagerCompat;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Random;
-import java.util.Scanner;
 
 import javax.inject.Inject;
 
@@ -74,13 +70,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         QueuedMediaPlayer.PlaybackEventListener {
 
     private static final String TAG = "MusicPlayer";
-
-    /**
-     * The filename of the queue state used to load and save previous configurations.
-     * This file will be stored in the directory defined by
-     * {@link Context#getExternalFilesDir(String)}
-     */
-    private static final String QUEUE_FILE = ".queue";
 
     /**
      * Package permission that is required to receive broadcasts
@@ -209,6 +198,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     private Bitmap mArtwork;
 
     @Inject PlayCountStore mPlayCountStore;
+    @Inject PlaybackPersistenceManager mPlaybackPersistenceManager;
     private RemotePreferenceStore mRemotePreferenceStore;
 
     private final Runnable mSleepTimerRunnable = this::onSleepTimerEnd;
@@ -341,104 +331,35 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 preferencesStore.getEqualizerSettings());
     }
 
-    /**
-     * Saves the player's current state to a file with the name {@link #QUEUE_FILE} in
-     * the app's external files directory specified by {@link Context#getExternalFilesDir(String)}
-     * @throws IOException
-     * @see #loadState()
-     */
-    public void saveState() throws IOException {
+    public void saveState() {
         Timber.i("Saving player state");
-        // Anticipate the outcome of a command so that if we're killed right after it executes,
-        // we can restore to the proper state
-        int reloadSeekPosition = mMediaPlayer.getCurrentPosition();
-        int reloadQueuePosition = mMediaPlayer.getQueueIndex();
+        int seekPosition = mMediaPlayer.getCurrentPosition();
+        int queueIndex = mMediaPlayer.getQueueIndex();
 
-        final String currentPosition = Integer.toString(reloadSeekPosition);
-        final String queuePosition = Integer.toString(reloadQueuePosition);
-        final String queueLength = Integer.toString(mQueue.size());
+        List<Uri> queue = new ArrayList<>();
+        List<Uri> shuffledQueue = new ArrayList<>();
 
-        StringBuilder queue = new StringBuilder();
-        for (Song s : mQueue) {
-            queue.append(' ').append(s.getSongId());
+        for (Song song : mQueue) {
+            queue.add(song.getLocation());
         }
 
-        StringBuilder queueShuffled = new StringBuilder();
-        for (Song s : mQueueShuffled) {
-            queueShuffled.append(' ').append(s.getSongId());
+        for (Song song : mQueueShuffled) {
+            shuffledQueue.add(song.getLocation());
         }
 
-        String output = currentPosition + " " + queuePosition + " "
-                + queueLength + queue + queueShuffled;
-
-        File save = new File(mContext.getExternalFilesDir(null), QUEUE_FILE);
-        FileOutputStream stream = null;
-        try {
-            stream = new FileOutputStream(save);
-            stream.write(output.getBytes());
-        } finally {
-            if (stream != null) {
-                stream.close();
-            }
-        }
+        mPlaybackPersistenceManager.setState(new PlaybackPersistenceManager.State(
+                seekPosition, queueIndex, queue, shuffledQueue));
     }
 
-    /**
-     * Reloads a saved state
-     * @see #saveState()
-     */
     public void loadState() {
         Timber.i("Loading state...");
-        Scanner scanner = null;
-        try {
-            File save = new File(mContext.getExternalFilesDir(null), QUEUE_FILE);
-            scanner = new Scanner(save);
+        PlaybackPersistenceManager.State state = mPlaybackPersistenceManager.getStateBlocking();
 
-            int currentPosition = scanner.nextInt();
-            int queuePosition = scanner.nextInt();
+        mQueue = MediaStoreUtil.buildSongListFromUris(state.getQueue(), mContext);
+        mQueueShuffled = MediaStoreUtil.buildSongListFromUris(state.getShuffledQueue(), mContext);
 
-            int queueLength = scanner.nextInt();
-            long[] queueIDs = new long[queueLength];
-            for (int i = 0; i < queueLength; i++) {
-                queueIDs[i] = scanner.nextInt();
-            }
-            mQueue = MediaStoreUtil.buildSongListFromIds(queueIDs, mContext);
-
-            long[] shuffleQueueIDs;
-            if (scanner.hasNextInt()) {
-                shuffleQueueIDs = new long[queueLength];
-                for (int i = 0; i < queueLength; i++) {
-                    shuffleQueueIDs[i] = scanner.nextInt();
-                }
-                mQueueShuffled = MediaStoreUtil.buildSongListFromIds(shuffleQueueIDs, mContext);
-            } else if (mShuffle) {
-                shuffleQueue(queuePosition, System.currentTimeMillis());
-            }
-
-            setBackingQueue(queuePosition, false);
-            mMediaPlayer.seekTo(currentPosition);
-
-            Util.fetchArtwork(mContext, getNowPlaying())
-                    .subscribeOn(Schedulers.io())
-                    .subscribe(artwork -> {
-                        mArtwork = artwork;
-                    }, throwable -> {
-                        Timber.e(throwable, "Failed to load artwork");
-                        mArtwork = null;
-                    });
-        } catch(FileNotFoundException ignored) {
-            Timber.i("State does not exist. Using empty state");
-            // If there's no queue file, just restore to an empty state
-        } catch (IllegalArgumentException|NoSuchElementException e) {
-            Timber.i(e, "Failed to parse previous state. Resetting...");
-            mQueue.clear();
-            mQueueShuffled.clear();
-            mMediaPlayer.reset();
-        } finally {
-            if (scanner != null) {
-                scanner.close();
-            }
-        }
+        mMediaPlayer.seekTo((int) state.getSeekPosition());
+        setBackingQueue(state.getQueuePosition(), false);
     }
 
     /**

@@ -34,7 +34,6 @@ import com.marverenic.music.player.transaction.TransactionToken;
 import com.marverenic.music.utils.Internal;
 import com.marverenic.music.utils.MediaStyleHelper;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -176,11 +175,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
             it can't have a close button on L+ devices) without being recreated and requiring
             this workaround.
          */
-        try {
-            musicPlayer.saveState();
-        } catch (IOException exception) {
-            Timber.e(exception, "Failed to save music player state");
-        }
+        musicPlayer.saveState();
 
         if (mStopped || !musicPlayer.isPlaying()) {
             NotificationManager mgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -348,11 +343,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         Timber.i("finish() called");
         if (!finished) {
             if (musicPlayer != null) {
-                try {
-                    musicPlayer.saveState();
-                } catch (IOException exception) {
-                    Timber.e(exception, "Failed to save player state");
-                }
+                musicPlayer.saveState();
 
                 // If the service is being completely stopped by the user, turn off the sleep timer
                 musicPlayer.setSleepTimer(0);
