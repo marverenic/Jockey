@@ -670,7 +670,7 @@ public final class MediaStoreUtil {
     /**
      * Build an {@link ArrayList} of {@link Song}s from a list of id's. Doesn't require the
      * library to be loaded
-     * @param songIDs The list of song ids to convert to {@link Song}s
+     * @param uris The list of song uris to convert to {@link Song}s
      * @param context The {@link Context} used to open a {@link Cursor}
      * @return An {@link ArrayList} of {@link Song}s with ids matching those of the
      *         songIDs parameter
@@ -702,11 +702,11 @@ public final class MediaStoreUtil {
     }
 
     /**
-     * Implementation of {@link MediaStoreUtil#buildSongListFromIds(long[], Context)}. This method
+     * Implementation of {@link MediaStoreUtil#buildSongListFromUris(List, Context)}. This method
      * takes upper and lower bounds into account when looking at the song ids so that it can be
      * partitioned into sections of size {@link #SQL_MAX_VARS} without the overhead of making array
      * copies.
-     * @param songIDs The song ids build the list from
+     * @param uris The song uris build the list from
      * @param context A Context to open a {@link Cursor} to query the {@link MediaStore}
      * @param lowerBound The first index in the array to get IDs from
      * @param upperBound The last index in the array to get IDs from
