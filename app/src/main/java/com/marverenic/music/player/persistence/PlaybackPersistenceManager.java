@@ -3,6 +3,7 @@ package com.marverenic.music.player.persistence;
 import android.net.Uri;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
@@ -48,11 +49,24 @@ public class PlaybackPersistenceManager {
 
     public State getStateBlocking() {
         PlaybackItemDao dao = mDatabase.getPlaybackItemDao();
-        long seekPosition = dao.getMetadataItem(SEEK_POSITION).value;
-        int queuePosition = (int) dao.getMetadataItem(QUEUE_INDEX).value;
 
-        List<Uri> queue = convertDbRowsToUri(dao.getPlaybackItems(QUEUE));
-        List<Uri> shuffledQueue = convertDbRowsToUri(dao.getPlaybackItems(SHUFFLED_QUEUE));
+        long seekPosition;
+        int queuePosition;
+        List<Uri> queue;
+        List<Uri> shuffledQueue;
+
+        if (dao.getMetadataItemCount() > 0 && dao.getPlaybackItemCount() > 0) {
+            seekPosition = dao.getMetadataItem(SEEK_POSITION).value;
+            queuePosition = (int) dao.getMetadataItem(QUEUE_INDEX).value;
+
+            queue = convertDbRowsToUri(dao.getPlaybackItems(QUEUE));
+            shuffledQueue = convertDbRowsToUri(dao.getPlaybackItems(SHUFFLED_QUEUE));
+        } else {
+            seekPosition = 0;
+            queuePosition = 0;
+            queue = Collections.emptyList();
+            shuffledQueue = Collections.emptyList();
+        }
 
         return new State(seekPosition, queuePosition, queue, shuffledQueue);
     }
