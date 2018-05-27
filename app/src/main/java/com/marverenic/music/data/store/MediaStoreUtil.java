@@ -722,11 +722,11 @@ public final class MediaStoreUtil {
 
         String query = MediaStore.Audio.Media.DATA + " IN(?";
         String[] split = new String[upperBound - lowerBound];
-        split[0] = uris.get(0).toString();
+        split[0] = uris.get(0).getPath();
 
         for (int i = 1; i < split.length; i++) {
             query += ",?";
-            split[i] = uris.get(i).toString();
+            split[i] = uris.get(i).getPath();
         }
         query += ")";
 

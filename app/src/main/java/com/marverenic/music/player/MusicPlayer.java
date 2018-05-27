@@ -358,8 +358,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         mQueue = MediaStoreUtil.buildSongListFromUris(state.getQueue(), mContext);
         mQueueShuffled = MediaStoreUtil.buildSongListFromUris(state.getShuffledQueue(), mContext);
 
-        mMediaPlayer.seekTo((int) state.getSeekPosition());
         setBackingQueue(state.getQueuePosition(), false);
+        mMediaPlayer.seekTo((int) state.getSeekPosition());
     }
 
     /**
