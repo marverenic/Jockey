@@ -19,8 +19,9 @@ public class PlayerModule {
 
     @Provides
     @Singleton
-    public PlayerController providePlayerController(Context context, PreferenceStore prefs) {
-        return new ServicePlayerController(context, prefs);
+    public PlayerController providePlayerController(Context context, PreferenceStore prefs,
+                                                    PlaybackPersistenceManager persistenceManager) {
+        return new ServicePlayerController(context, prefs, persistenceManager);
     }
 
     @Provides

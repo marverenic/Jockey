@@ -745,4 +745,37 @@ public final class MediaStoreUtil {
 
         return contents;
     }
+
+    /**
+     * Instantiates a song from a corresponding URI. Doesn't require the library to be loaded.
+     * @param uri A URI for a song in the media store. If this URI is external to the media store,
+     *            this method will return {@code null}.
+     * @param context A {@link Context} used to open a {@link Cursor}
+     * @return A {@link Song} whose URI matches {@param uri}
+     */
+    public static Song buildSongFromUri(Uri uri, Context context) {
+        String selection = MediaStore.Audio.Media.DATA + " != ?";
+
+        Cursor cur = context.getContentResolver().query(
+                uri, SONG_PROJECTION, selection, new String[] { uri.getPath() }, null);
+
+        try {
+            if (cur == null) {
+                return Song.fromUri(context, uri);
+            }
+
+            List<Song> songs = Song.buildSongList(cur, context.getResources());
+
+            if (songs.isEmpty()) {
+                return null;
+            } else {
+                return songs.get(0);
+            }
+        } finally {
+            if (cur != null) {
+                cur.close();
+            }
+        }
+    }
+
 }

@@ -1,6 +1,11 @@
 package com.marverenic.music.player.persistence;
 
+import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.Nullable;
+
+import com.marverenic.music.data.store.MediaStoreUtil;
+import com.marverenic.music.model.Song;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,27 +29,81 @@ public class PlaybackPersistenceManager {
         mDatabase = database;
     }
 
-    public void setState(State state) {
-        mDatabase.beginTransaction();
-
+    public boolean hasState() {
         PlaybackItemDao dao = mDatabase.getPlaybackItemDao();
+        return dao.getMetadataItemCount() > 0 && dao.getPlaybackItemCount() > 0;
+    }
 
-        dao.clearPlaybackItems(QUEUE);
-        dao.clearPlaybackItems(SHUFFLED_QUEUE);
+    public void clearState() {
+        mDatabase.runInTransaction(() -> {
+            PlaybackItemDao dao = mDatabase.getPlaybackItemDao();
 
-        dao.setPlaybackItems(convertUrisToDbRow(QUEUE, state.getQueue()));
-        dao.setPlaybackItems(convertUrisToDbRow(SHUFFLED_QUEUE, state.getShuffledQueue()));
+            dao.clearPlaybackItems(QUEUE);
+            dao.clearPlaybackItems(SHUFFLED_QUEUE);
 
-        dao.putMetadataItem(new PlaybackMetadataItem(SEEK_POSITION, state.getSeekPosition()));
-        dao.putMetadataItem(new PlaybackMetadataItem(QUEUE_INDEX, state.getQueuePosition()));
+            dao.deleteMetadataItem(SEEK_POSITION);
+            dao.deleteMetadataItem(QUEUE_INDEX);
+        });
+    }
 
-        mDatabase.endTransaction();
+    public void setState(State state) {
+        mDatabase.runInTransaction(() -> {
+            PlaybackItemDao dao = mDatabase.getPlaybackItemDao();
+
+            dao.clearPlaybackItems(QUEUE);
+            dao.clearPlaybackItems(SHUFFLED_QUEUE);
+
+            dao.setPlaybackItems(convertUrisToDbRow(QUEUE, state.getQueue()));
+            dao.setPlaybackItems(convertUrisToDbRow(SHUFFLED_QUEUE, state.getShuffledQueue()));
+
+            dao.putMetadataItem(new PlaybackMetadataItem(SEEK_POSITION, state.getSeekPosition()));
+            dao.putMetadataItem(new PlaybackMetadataItem(QUEUE_INDEX, state.getQueuePosition()));
+        });
     }
 
     public Observable<State> getState() {
         return Observable.fromCallable(this::getStateBlocking)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public List<Song> getQueue(Context context, boolean shuffle) {
+        if (!hasState()) {
+            return Collections.emptyList();
+        }
+
+        PlaybackItemDao dao = mDatabase.getPlaybackItemDao();
+        List<PlaybackItem> items = dao.getPlaybackItems(shuffle ? SHUFFLED_QUEUE : QUEUE);
+        return MediaStoreUtil.buildSongListFromUris(convertDbRowsToUri(items), context);
+    }
+
+    public int getQueueIndex() {
+        if (!hasState()) {
+            return 0;
+        }
+        return (int) mDatabase.getPlaybackItemDao().getMetadataItem(QUEUE_INDEX).value;
+    }
+
+    @Nullable
+    public Song getNowPlaying(Context context, boolean shuffle) {
+        if (!hasState()) {
+            return null;
+        }
+
+        PlaybackItemDao dao = mDatabase.getPlaybackItemDao();
+        PlaybackItem item = dao.getPlaybackItemAtIndex(
+                (shuffle) ? SHUFFLED_QUEUE : QUEUE,
+                getQueueIndex()
+        );
+        return MediaStoreUtil.buildSongFromUri(Uri.parse(item.songUri), context);
+    }
+
+    public int getSeekPosition() {
+        if (!hasState()) {
+            return 0;
+        } else {
+            return (int) mDatabase.getPlaybackItemDao().getMetadataItem(SEEK_POSITION).value;
+        }
     }
 
     public State getStateBlocking() {
@@ -55,7 +114,7 @@ public class PlaybackPersistenceManager {
         List<Uri> queue;
         List<Uri> shuffledQueue;
 
-        if (dao.getMetadataItemCount() > 0 && dao.getPlaybackItemCount() > 0) {
+        if (hasState()) {
             seekPosition = dao.getMetadataItem(SEEK_POSITION).value;
             queuePosition = (int) dao.getMetadataItem(QUEUE_INDEX).value;
 

@@ -19,6 +19,9 @@ public interface PlaybackItemDao {
     @Query("SELECT * FROM queue_items where list_name IS :listName ORDER BY idx ASC")
     List<PlaybackItem> getPlaybackItems(String listName);
 
+    @Query("SELECT * FROM queue_items where list_name is :listName AND idx is :index LIMIT 1")
+    PlaybackItem getPlaybackItemAtIndex(String listName, int index);
+
     @Query("DELETE FROM queue_items where list_name IS :listName")
     void clearPlaybackItems(String listName);
 

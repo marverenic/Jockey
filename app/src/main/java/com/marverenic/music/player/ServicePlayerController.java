@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.os.SystemClock;
+import android.support.annotation.Nullable;
 
 import com.marverenic.music.IPlayerService;
 import com.marverenic.music.JockeyApplication;
@@ -22,6 +23,7 @@ import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.player.persistence.PlaybackPersistenceManager;
 import com.marverenic.music.player.transaction.ListTransaction;
 import com.marverenic.music.utils.ObservableQueue;
 import com.marverenic.music.utils.Optional;
@@ -60,6 +62,7 @@ public class ServicePlayerController implements PlayerController {
 
     private Context mContext;
     private IPlayerService mBinding;
+    private PlaybackPersistenceManager mPersistenceManager;
     private long mServiceStartRequestTime;
 
     private PublishSubject<String> mErrorStream = PublishSubject.create();
@@ -85,8 +88,10 @@ public class ServicePlayerController implements PlayerController {
     private ObservableQueue<Runnable> mRequestQueue;
     private Subscription mRequestQueueSubscription;
 
-    public ServicePlayerController(Context context, PreferenceStore preferenceStore) {
+    public ServicePlayerController(Context context, PreferenceStore preferenceStore,
+                                   PlaybackPersistenceManager persistenceManager) {
         mContext = context;
+        mPersistenceManager = persistenceManager;
         mRequestThread = new HandlerThread("ServiceExecutor");
         mShuffled = BehaviorSubject.create(preferenceStore.isShuffled());
         mRepeatMode = BehaviorSubject.create(preferenceStore.getRepeatMode());
@@ -123,6 +128,7 @@ public class ServicePlayerController implements PlayerController {
         }
 
         Intent serviceIntent = PlayerService.newIntent(mContext, true);
+        initAllPropertyFallbacks();
 
         // Manually start the service to ensure that it is associated with this task and can
         // appropriately set its dismiss behavior
@@ -149,6 +155,28 @@ public class ServicePlayerController implements PlayerController {
                 }
             }
         }, Context.BIND_WAIVE_PRIORITY);
+    }
+
+    private void initAllPropertyFallbacks() {
+        mPlaying.setFallbackFunction(() -> false);
+
+        mNowPlaying.setFallbackFunction(() ->
+                mPersistenceManager.getNowPlaying(mContext, mShuffled.getValue()));
+
+        mQueue.setFallbackFunction(() ->
+                mPersistenceManager.getQueue(mContext, mShuffled.getValue()));
+
+        mQueuePosition.setFallbackFunction(mPersistenceManager::getQueueIndex);
+        mCurrentPosition.setFallbackFunction(mPersistenceManager::getSeekPosition);
+
+        mDuration.setFallbackFunction(() -> {
+            Song nowPlaying = mPersistenceManager.getNowPlaying(mContext, mShuffled.getValue());
+            if (nowPlaying != null) {
+                return (int) nowPlaying.getSongDuration();
+            } else {
+                return 0;
+            }
+        });
     }
 
     private void ensureServiceStarted() {
@@ -695,6 +723,10 @@ public class ServicePlayerController implements PlayerController {
         private final BehaviorSubject<Optional<T>> mSubject;
         private final Observable<T> mObservable;
 
+        @Nullable
+        private Retriever<T> mFallbackRetriever;
+
+        @Nullable
         private Retriever<T> mRetriever;
 
         public Prop(String propertyName) {
@@ -715,19 +747,29 @@ public class ServicePlayerController implements PlayerController {
             mRetriever = retriever;
         }
 
+        public void setFallbackFunction(@Nullable Retriever<T> retriever) {
+            mFallbackRetriever = retriever;
+        }
+
         public void invalidate() {
             mSubject.onNext(Optional.empty());
+            Observable<T> retriever;
 
             if (mRetriever != null) {
-                Observable.fromCallable(mRetriever::retrieve)
-                        .subscribeOn(Schedulers.computation())
-                        .map(data -> (data == null) ? mNullValue : data)
-                        .map(Optional::ofNullable)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(mSubject::onNext, throwable -> {
-                            Timber.e(throwable, "Failed to fetch " + mName + " property.");
-                        });
+                retriever = Observable.fromCallable(mRetriever::retrieve);
+            } else if (mFallbackRetriever != null) {
+                retriever = Observable.fromCallable(mFallbackRetriever::retrieve);
+            } else {
+                return;
             }
+
+            retriever.subscribeOn(Schedulers.computation())
+                    .map(data -> (data == null) ? mNullValue : data)
+                    .map(Optional::ofNullable)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(mSubject::onNext, throwable -> {
+                        Timber.e(throwable, "Failed to fetch " + mName + " property.");
+                    });
         }
 
         public boolean isSubscribedTo() {
