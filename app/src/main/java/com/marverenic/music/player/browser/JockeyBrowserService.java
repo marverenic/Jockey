@@ -1,4 +1,4 @@
-package com.marverenic.music.player;
+package com.marverenic.music.player.browser;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,6 +9,7 @@ import android.support.v4.media.MediaBrowserServiceCompat;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
+import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.utils.BrowserServicePackageValidator;
 
 import java.util.List;

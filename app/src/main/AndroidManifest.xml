@@ -239,7 +239,7 @@
         </service>
 
         <!-- Media Browser service (for Android Auto) -->
-        <service android:name=".player.JockeyBrowserService"
+        <service android:name=".player.browser.JockeyBrowserService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>

@@ -1,4 +1,4 @@
-package com.marverenic.music.player;
+package com.marverenic.music.player.browser;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -13,6 +13,7 @@ import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.model.Playlist;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.player.PlayerController;
 
 import java.util.ArrayList;
 import java.util.Arrays;
