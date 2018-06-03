@@ -1,6 +1,5 @@
 package com.marverenic.music.ui.library.playlist.contents.edit;
 
-import android.content.Context;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.text.Editable;
@@ -13,8 +12,6 @@ import com.marverenic.music.BR;
 import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.model.AutoPlaylist;
 import com.marverenic.music.model.playlistrules.AutoPlaylistRule;
-
-import javax.inject.Inject;
 
 public class RuleHeaderViewModel extends BaseObservable {
 
@@ -44,14 +41,15 @@ public class RuleHeaderViewModel extends BaseObservable {
             true
     };
 
-    @Inject PlaylistStore mPlaylistStore;
+    private PlaylistStore mPlaylistStore;
 
     private AutoPlaylist mOriginalReference;
     private AutoPlaylist.Builder mBuilder;
 
     private boolean mIgnoreFirstNameError;
 
-    public RuleHeaderViewModel(Context context) {
+    public RuleHeaderViewModel(PlaylistStore playlistStore) {
+        mPlaylistStore = playlistStore;
     }
 
     public void setOriginalReference(AutoPlaylist playlist) {
