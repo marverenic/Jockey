@@ -1,6 +1,7 @@
 package com.marverenic.music.player.browser;
 
 import android.content.Context;
+import android.support.annotation.StringRes;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 
@@ -20,6 +21,11 @@ abstract class AbstractSongDirectory extends MediaBrowserDirectory {
     private Context mContext;
 
     public AbstractSongDirectory(Context context, String id, String name) {
+        super(id, name);
+        mContext = context;
+    }
+
+    public AbstractSongDirectory(Context context, String id, @StringRes int name) {
         super(id, name);
         mContext = context;
     }

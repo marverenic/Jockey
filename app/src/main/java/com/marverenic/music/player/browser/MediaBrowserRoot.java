@@ -24,6 +24,7 @@ public class MediaBrowserRoot extends MediaBrowserDirectory {
     public MediaBrowserRoot(Context context) {
         super(ID, R.string.app_name);
         mChildren = Collections.unmodifiableList(Arrays.asList(
+                new AllSongsDirectory(context),
                 new PlaylistRootDirectory(context)
         ));
     }
