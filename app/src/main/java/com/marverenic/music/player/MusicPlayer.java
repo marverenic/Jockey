@@ -33,7 +33,8 @@ import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.data.store.RemotePreferenceStore;
 import com.marverenic.music.data.store.SharedPreferenceStore;
 import com.marverenic.music.model.Song;
-import com.marverenic.music.player.browser.MediaBrowserHelper;
+import com.marverenic.music.player.browser.MediaBrowserRoot;
+import com.marverenic.music.player.browser.MediaList;
 import com.marverenic.music.ui.library.LibraryActivity;
 import com.marverenic.music.utils.Internal;
 import com.marverenic.music.utils.Util;
@@ -220,6 +221,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     private Bitmap mArtwork;
 
     @Inject PlayCountStore mPlayCountStore;
+    @Inject MediaBrowserRoot mMediaBrowserRoot;
     private RemotePreferenceStore mRemotePreferenceStore;
 
     private final Runnable mSleepTimerRunnable = this::onSleepTimerEnd;
@@ -311,7 +313,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         ComponentName mbrComponent = new ComponentName(mContext, MediaButtonReceiver.class.getName());
         mMediaSession = new MediaSessionCompat(mContext, TAG, mbrComponent, null);
 
-        mMediaSession.setCallback(new MediaSessionCallback(this, new MediaBrowserHelper(mContext)));
+        mMediaSession.setCallback(new MediaSessionCallback(this, mMediaBrowserRoot));
         mMediaSession.setSessionActivity(
                 PendingIntent.getActivity(
                         mContext, 0,
@@ -1377,13 +1379,13 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         private int mClickCount;
 
         private MusicPlayer mMusicPlayer;
-        private MediaBrowserHelper mBrowserHelper;
+        private MediaBrowserRoot mBrowserRoot;
         private Handler mHandler;
 
-        MediaSessionCallback(MusicPlayer musicPlayer, MediaBrowserHelper mediaBrowserHelper) {
+        MediaSessionCallback(MusicPlayer musicPlayer, MediaBrowserRoot browserRoot) {
             mHandler = new Handler();
             mMusicPlayer = musicPlayer;
-            mBrowserHelper = mediaBrowserHelper;
+            mBrowserRoot = browserRoot;
         }
 
         private final Runnable mButtonHandler = () -> {
@@ -1491,7 +1493,13 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
         @Override
         public void onPlayFromMediaId(String mediaId, Bundle extras) {
-            MediaBrowserHelper.MediaList tracks = mBrowserHelper.decode(mediaId);
+            mBrowserRoot.getQueue(mediaId)
+                    .subscribe(
+                            this::applyMediaList,
+                            e -> Timber.e(e, "Failed to play media from ID %s", mediaId));
+        }
+
+        private void applyMediaList(MediaList tracks) {
             if (tracks != null) {
                 if (!tracks.keepCurrentQueue && tracks.songs != null) {
                     mMusicPlayer.setQueue(tracks.songs, tracks.startIndex, System.currentTimeMillis());
@@ -1499,7 +1507,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                     mMusicPlayer.changeSong(tracks.startIndex);
                 }
 
-                if (!mMusicPlayer.isShuffled() && tracks.shuffle) {
+                if (!mMusicPlayer.isShuffled() && tracks.enableShuffle) {
                     mMusicPlayer.setShuffle(true, System.currentTimeMillis());
                 }
 
