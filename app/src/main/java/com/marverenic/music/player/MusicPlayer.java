@@ -11,12 +11,15 @@ import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.support.annotation.NonNull;
+import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.MediaSessionCompat.QueueItem;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.KeyEvent;
 
@@ -30,6 +33,8 @@ import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.data.store.RemotePreferenceStore;
 import com.marverenic.music.data.store.SharedPreferenceStore;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.player.browser.MediaBrowserRoot;
+import com.marverenic.music.player.browser.MediaList;
 import com.marverenic.music.ui.library.LibraryActivity;
 import com.marverenic.music.utils.Internal;
 import com.marverenic.music.utils.Util;
@@ -176,6 +181,13 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     private static final float DUCK_VOLUME = 0.5f;
 
+    /**
+     * Controls the maximum number of songs in the sliding window when setting
+     * {@link MediaSessionCompat#setQueue(List)}.
+     * @see #buildQueueWindow() For the usage of this value
+     */
+    private static final int MEDIA_SESSION_QUEUE_MAX_SIZE = 250;
+
     private QueuedMediaPlayer mMediaPlayer;
     private Context mContext;
     private Handler mHandler;
@@ -209,6 +221,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     private Bitmap mArtwork;
 
     @Inject PlayCountStore mPlayCountStore;
+    @Inject MediaBrowserRoot mMediaBrowserRoot;
     private RemotePreferenceStore mRemotePreferenceStore;
 
     private final Runnable mSleepTimerRunnable = this::onSleepTimerEnd;
@@ -298,38 +311,24 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     private void initMediaSession() {
         Timber.i("Initializing MediaSession");
         ComponentName mbrComponent = new ComponentName(mContext, MediaButtonReceiver.class.getName());
-        MediaSessionCompat session = new MediaSessionCompat(mContext, TAG, mbrComponent, null);
+        mMediaSession = new MediaSessionCompat(mContext, TAG, mbrComponent, null);
 
-        session.setCallback(new MediaSessionCallback(this));
-        session.setSessionActivity(
+        mMediaSession.setCallback(new MediaSessionCallback(this, mMediaBrowserRoot));
+        mMediaSession.setSessionActivity(
                 PendingIntent.getActivity(
                         mContext, 0,
                         LibraryActivity.newNowPlayingIntent(mContext)
                                 .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
                         PendingIntent.FLAG_CANCEL_CURRENT));
 
-        session.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS
-                | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
-
-        PlaybackStateCompat.Builder state = new PlaybackStateCompat.Builder()
-                .setActions(PlaybackStateCompat.ACTION_PLAY
-                        | PlaybackStateCompat.ACTION_PLAY_PAUSE
-                        | PlaybackStateCompat.ACTION_SEEK_TO
-                        | PlaybackStateCompat.ACTION_PAUSE
-                        | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
-                        | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
-                        | PlaybackStateCompat.ACTION_STOP)
-                .setState(PlaybackStateCompat.STATE_NONE, 0, 0f);
+        updateMediaSession();
 
         Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
         mediaButtonIntent.setClass(mContext, MediaButtonReceiver.class);
         PendingIntent mbrIntent = PendingIntent.getBroadcast(mContext, 0, mediaButtonIntent, 0);
-        session.setMediaButtonReceiver(mbrIntent);
+        mMediaSession.setMediaButtonReceiver(mbrIntent);
 
-        session.setPlaybackState(state.build());
-        session.setActive(true);
-
-        mMediaSession = session;
+        mMediaSession.setActive(true);
     }
 
     /**
@@ -455,6 +454,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * Updates the metadata in the attached {@link MediaSessionCompat}
      */
     private void updateMediaSession() {
+        if (mMediaSession == null) {
+            return;
+        }
+
         Timber.i("Updating MediaSession");
 
         if (getNowPlaying() != null) {
@@ -475,33 +478,95 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                     .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, getDuration())
                     .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, mArtwork);
             mMediaSession.setMetadata(metadataBuilder.build());
-
-            PlaybackStateCompat.Builder state = new PlaybackStateCompat.Builder().setActions(
-                    PlaybackStateCompat.ACTION_PLAY
-                            | PlaybackStateCompat.ACTION_PLAY_PAUSE
-                            | PlaybackStateCompat.ACTION_SEEK_TO
-                            | PlaybackStateCompat.ACTION_STOP
-                            | PlaybackStateCompat.ACTION_PAUSE
-                            | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
-                            | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS);
-
-            if (mMediaPlayer.isPlaying()) {
-                state.setState(PlaybackStateCompat.STATE_PLAYING, getCurrentPosition(), 1f);
-            } else if (mMediaPlayer.isPaused()) {
-                state.setState(PlaybackStateCompat.STATE_PAUSED, getCurrentPosition(), 1f);
-            } else if (mMediaPlayer.isStopped()) {
-                state.setState(PlaybackStateCompat.STATE_STOPPED, getCurrentPosition(), 1f);
-            } else {
-                state.setState(PlaybackStateCompat.STATE_NONE, getCurrentPosition(), 1f);
-            }
-            mMediaSession.setPlaybackState(state.build());
         }
+
+        PlaybackStateCompat.Builder state = new PlaybackStateCompat.Builder().setActions(
+                PlaybackStateCompat.ACTION_PLAY
+                        | PlaybackStateCompat.ACTION_PLAY_PAUSE
+                        | PlaybackStateCompat.ACTION_SEEK_TO
+                        | PlaybackStateCompat.ACTION_PAUSE
+                        | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+                        | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+                        | PlaybackStateCompat.ACTION_STOP
+                        | PlaybackStateCompat.ACTION_SET_REPEAT_MODE
+                        | PlaybackStateCompat.ACTION_SET_SHUFFLE_MODE
+                        | PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID);
+
+        if (!mMediaPlayer.getQueue().isEmpty()) {
+            state.setActiveQueueItemId(mMediaPlayer.getQueueIndex());
+        }
+
+        mMediaSession.setQueueTitle(mContext.getString(R.string.header_now_playing));
+        mMediaSession.setQueue(buildQueueWindow());
+
+        if (mMediaPlayer.isPlaying()) {
+            state.setState(PlaybackStateCompat.STATE_PLAYING, getCurrentPosition(), 1f);
+        } else if (mMediaPlayer.isPaused()) {
+            state.setState(PlaybackStateCompat.STATE_PAUSED, getCurrentPosition(), 1f);
+        } else if (mMediaPlayer.isStopped()) {
+            state.setState(PlaybackStateCompat.STATE_STOPPED, getCurrentPosition(), 1f);
+        } else {
+            state.setState(PlaybackStateCompat.STATE_NONE, getCurrentPosition(), 1f);
+        }
+
+        if (isShuffled()) {
+            mMediaSession.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
+            state.addCustomAction(
+                    MediaSessionCallback.ACTION_TOGGLE_SHUFFLE,
+                    mContext.getString(R.string.action_disable_shuffle),
+                    R.drawable.ic_shuffle_enable_auto
+            );
+        } else {
+            mMediaSession.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE);
+            state.addCustomAction(
+                    MediaSessionCallback.ACTION_TOGGLE_SHUFFLE,
+                    mContext.getString(R.string.action_enable_shuffle),
+                    R.drawable.ic_shuffle_disabled_auto
+            );
+        }
+
+        switch (mRepeat) {
+            case REPEAT_ALL:
+                mMediaSession.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
+                break;
+            case REPEAT_ONE:
+                mMediaSession.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
+                break;
+            case REPEAT_NONE:
+            default:
+                mMediaSession.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE);
+        }
+
+        mMediaSession.setPlaybackState(state.build());
 
         Timber.i("Sending minor broadcast to update UI process");
         Intent broadcast = new Intent(UPDATE_BROADCAST)
                 .putExtra(UPDATE_EXTRA_MINOR, true);
 
         mContext.sendBroadcast(broadcast, BROADCAST_PERMISSION);
+    }
+
+    private List<QueueItem> buildQueueWindow() {
+        List<Song> queue = mMediaPlayer.getQueue();
+        int queueIndex = mMediaPlayer.getQueueIndex();
+        int windowSize = Math.min(queue.size(), MEDIA_SESSION_QUEUE_MAX_SIZE);
+
+        int prefixLength = Math.min(queueIndex, MEDIA_SESSION_QUEUE_MAX_SIZE / 2 - 1);
+        int startIndex = queueIndex - prefixLength;
+
+        List<QueueItem> window = new ArrayList<>();
+        for (int i = startIndex; i < startIndex + windowSize; i++) {
+            Song song = queue.get(i);
+
+            window.add(new QueueItem(
+                    new MediaDescriptionCompat.Builder()
+                            .setTitle(song.getSongName())
+                            .setSubtitle(song.getArtistName())
+                            .build(),
+                    i
+            ));
+        }
+        return window;
     }
 
     @Override
@@ -951,6 +1016,17 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             default:
                 mMediaPlayer.enableRepeatNone();
         }
+        updateMediaSession();
+        updateUi();
+    }
+
+    /**
+     * Gets the current repeat option.
+     * @return An integer representation of the repeat option. May be one of either
+     *         {@link #REPEAT_NONE}, {@link #REPEAT_ALL}, or {@link #REPEAT_ONE}.
+     */
+    public int getRepeatMode() {
+        return mRepeat;
     }
 
     /**
@@ -1042,6 +1118,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @param seed A seed to use when shuffling (only used if shuffle is {@code true})
      */
     public void setShuffle(boolean shuffle, long seed) {
+        if (shuffle == mShuffle) {
+            return;
+        }
+
         if (shuffle) {
             Timber.i("Enabling shuffle...");
             shuffleQueue(getQueuePosition(), seed);
@@ -1053,7 +1133,13 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             mMediaPlayer.setQueue(mQueue, position, false);
         }
         mShuffle = shuffle;
+        updateUi();
+        updateMediaSession();
         updateNowPlaying();
+    }
+
+    public boolean isShuffled() {
+        return mShuffle;
     }
 
     /**
@@ -1281,6 +1367,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
     private static class MediaSessionCallback extends MediaSessionCompat.Callback {
 
+        private static final String ACTION_TOGGLE_SHUFFLE = "shuffle";
+
         /**
          * A period of time added after a remote button press to delay handling the event. This
          * delay allows the user to press the remote button multiple times to execute different
@@ -1291,11 +1379,13 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         private int mClickCount;
 
         private MusicPlayer mMusicPlayer;
+        private MediaBrowserRoot mBrowserRoot;
         private Handler mHandler;
 
-        MediaSessionCallback(MusicPlayer musicPlayer) {
+        MediaSessionCallback(MusicPlayer musicPlayer, MediaBrowserRoot browserRoot) {
             mHandler = new Handler();
             mMusicPlayer = musicPlayer;
+            mBrowserRoot = browserRoot;
         }
 
         private final Runnable mButtonHandler = () -> {
@@ -1372,6 +1462,66 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         public void onSeekTo(long pos) {
             mMusicPlayer.seekTo((int) pos);
             mMusicPlayer.updateUi();
+        }
+
+        @Override
+        public void onSetRepeatMode(int repeatMode) {
+            switch (repeatMode) {
+                case PlaybackStateCompat.REPEAT_MODE_ALL:
+                    mMusicPlayer.setRepeat(REPEAT_ALL);
+                    break;
+                case PlaybackStateCompat.REPEAT_MODE_NONE:
+                    mMusicPlayer.setRepeat(REPEAT_NONE);
+                    break;
+                case PlaybackStateCompat.REPEAT_MODE_ONE:
+                    mMusicPlayer.setRepeat(REPEAT_ONE);
+                    break;
+            }
+        }
+
+        @Override
+        public void onSetShuffleMode(int shuffleMode) {
+            switch (shuffleMode) {
+                case PlaybackStateCompat.SHUFFLE_MODE_ALL:
+                    mMusicPlayer.setShuffle(true, System.currentTimeMillis());
+                    break;
+                case PlaybackStateCompat.SHUFFLE_MODE_NONE:
+                    mMusicPlayer.setShuffle(false, 0);
+                    break;
+            }
+        }
+
+        @Override
+        public void onPlayFromMediaId(String mediaId, Bundle extras) {
+            mBrowserRoot.getQueue(mediaId)
+                    .subscribe(
+                            this::applyMediaList,
+                            e -> Timber.e(e, "Failed to play media from ID %s", mediaId));
+        }
+
+        private void applyMediaList(MediaList tracks) {
+            if (tracks != null) {
+                if (!tracks.keepCurrentQueue && tracks.songs != null) {
+                    mMusicPlayer.setQueue(tracks.songs, tracks.startIndex, System.currentTimeMillis());
+                } else {
+                    mMusicPlayer.changeSong(tracks.startIndex);
+                }
+
+                if (!mMusicPlayer.isShuffled() && tracks.enableShuffle) {
+                    mMusicPlayer.setShuffle(true, System.currentTimeMillis());
+                }
+
+                mMusicPlayer.play();
+            }
+        }
+
+        @Override
+        public void onCustomAction(String action, Bundle extras) {
+            switch (action) {
+                case ACTION_TOGGLE_SHUFFLE:
+                    mMusicPlayer.setShuffle(!mMusicPlayer.isShuffled(), System.currentTimeMillis());
+                    break;
+            }
         }
     }
 

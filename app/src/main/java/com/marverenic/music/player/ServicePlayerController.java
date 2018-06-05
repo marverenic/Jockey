@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.os.SystemClock;
+import android.support.v4.media.session.MediaSessionCompat;
 
 import com.marverenic.music.IPlayerService;
 import com.marverenic.music.JockeyApplication;
@@ -73,9 +74,11 @@ public class ServicePlayerController implements PlayerController {
     private final Prop<Integer> mDuration = new Prop<>("duration");
     private final Prop<Integer> mMultiRepeatCount = new Prop<>("multi-repeat");
     private final Prop<Long> mSleepTimerEndTime = new Prop<>("sleep timer");
+    private final Prop<Boolean> mShuffleMode = new Prop<>("shuffle-mode");
+    private final Prop<Integer> mRepeatMode = new Prop<>("repeat-mode");
 
-    private BehaviorSubject<Boolean> mShuffled;
-    private BehaviorSubject<Integer> mRepeatMode;
+    private BehaviorSubject<MediaSessionCompat.Token> mMediaSessionToken;
+
     private BehaviorSubject<Bitmap> mArtwork;
     private Subscription mCurrentPositionClock;
 
@@ -88,9 +91,11 @@ public class ServicePlayerController implements PlayerController {
     public ServicePlayerController(Context context, PreferenceStore preferenceStore) {
         mContext = context;
         mRequestThread = new HandlerThread("ServiceExecutor");
-        mShuffled = BehaviorSubject.create(preferenceStore.isShuffled());
-        mRepeatMode = BehaviorSubject.create(preferenceStore.getRepeatMode());
+        mMediaSessionToken = BehaviorSubject.create();
         mRequestQueue = new ObservableQueue<>();
+
+        mShuffleMode.setValue(preferenceStore.isShuffled());
+        mRepeatMode.setValue(preferenceStore.getRepeatMode());
 
         mShuffleSeedGenerator = new Random();
         mMainHandler = new Handler(Looper.getMainLooper());
@@ -143,6 +148,7 @@ public class ServicePlayerController implements PlayerController {
                 releaseAllProperties();
                 mServiceStartRequestTime = 0;
                 mBinding = null;
+                mMediaSessionToken.onNext(null);
                 if (mRequestQueueSubscription != null) {
                     mRequestQueueSubscription.unsubscribe();
                     mRequestQueueSubscription = null;
@@ -207,6 +213,8 @@ public class ServicePlayerController implements PlayerController {
         mDuration.setFunction(null);
         mMultiRepeatCount.setFunction(null);
         mSleepTimerEndTime.setFunction(null);
+        mShuffleMode.setFunction(null);
+        mRepeatMode.setFunction(null);
     }
 
     private void initAllProperties() {
@@ -218,6 +226,8 @@ public class ServicePlayerController implements PlayerController {
         mDuration.setFunction(mBinding::getDuration);
         mMultiRepeatCount.setFunction(mBinding::getMultiRepeatCount);
         mSleepTimerEndTime.setFunction(mBinding::getSleepTimerEndTime);
+        mShuffleMode.setFunction(mBinding::getShuffleMode);
+        mRepeatMode.setFunction(mBinding::getRepeatMode);
 
         invalidateAll();
     }
@@ -240,7 +250,31 @@ public class ServicePlayerController implements PlayerController {
             mDuration.invalidate();
             mMultiRepeatCount.invalidate();
             mSleepTimerEndTime.invalidate();
+            mShuffleMode.invalidate();
+            mRepeatMode.invalidate();
+
+            fetchMediaSessionToken();
         });
+    }
+
+    private void fetchMediaSessionToken() {
+        if (mBinding == null) {
+            return;
+        }
+
+        if (!mMediaSessionToken.hasValue() || mMediaSessionToken.getValue() == null) {
+            MediaSessionCompat.Token token = null;
+
+            try {
+                token = mBinding.getMediaSessionToken();
+            } catch (RemoteException e) {
+                Timber.e(e, "Failed to get session token");
+            }
+
+            if (token != null) {
+                mMediaSessionToken.onNext(token);
+            }
+        }
     }
 
     @Override
@@ -355,13 +389,12 @@ public class ServicePlayerController implements PlayerController {
     @Override
     public void updatePlayerPreferences(ReadOnlyPreferenceStore preferenceStore) {
         long seed = mShuffleSeedGenerator.nextLong();
+        mShuffleMode.setValue(preferenceStore.isShuffled());
+        mRepeatMode.setValue(preferenceStore.getRepeatMode());
+
         execute(() -> {
             try {
                 mBinding.setPreferences(new ImmutablePreferenceStore(preferenceStore), seed);
-                runOnMainThread(() -> {
-                    mShuffled.onNext(preferenceStore.isShuffled());
-                    mRepeatMode.onNext(preferenceStore.getRepeatMode());
-                });
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to update remote player preferences");
             }
@@ -374,7 +407,7 @@ public class ServicePlayerController implements PlayerController {
         long seed = mShuffleSeedGenerator.nextLong();
 
         if (newPosition < newQueue.size()) {
-            boolean shuffled = mShuffled.getValue();
+            boolean shuffled = mShuffleMode.lastValue();
 
             mNowPlaying.setValue(newQueue.get(newPosition));
             mQueuePosition.setValue(shuffled ? 0 : newPosition);
@@ -569,7 +602,7 @@ public class ServicePlayerController implements PlayerController {
     @Override
     public Observable<Boolean> isShuffleEnabled() {
         ensureServiceStarted();
-        return mShuffled.asObservable().distinctUntilChanged();
+        return mShuffleMode.getObservable().distinctUntilChanged();
     }
 
     @Override
@@ -580,7 +613,7 @@ public class ServicePlayerController implements PlayerController {
                     if (multiRepeatCount > 1) {
                         return Observable.just(multiRepeatCount);
                     } else {
-                        return mRepeatMode.asObservable();
+                        return mRepeatMode.getObservable();
                     }
                 })
                 .distinctUntilChanged();
@@ -646,6 +679,11 @@ public class ServicePlayerController implements PlayerController {
         }
 
         return mArtwork;
+    }
+
+    @Override
+    public Observable<MediaSessionCompat.Token> getMediaSessionToken() {
+        return mMediaSessionToken.filter(token -> token != null);
     }
 
     /**

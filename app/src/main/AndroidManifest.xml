@@ -238,6 +238,15 @@
             </intent-filter>
         </service>
 
+        <!-- Media Browser service (for Android Auto) -->
+        <service android:name=".player.browser.JockeyBrowserService"
+            android:exported="true"
+            tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
+
         <!-- Widgets -->
         <receiver android:name=".widget.SquareWidget"
             android:label="@string/widget_square_name">
@@ -286,5 +295,17 @@
                 <action android:name="marverenic.jockey.player.ERROR"/>
             </intent-filter>
         </receiver>
+
+        <!-- Android Auto metadata -->
+        <meta-data android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc"/>
+
+        <meta-data android:name="com.google.android.gms.car.notification.SmallIcon"
+            android:resource="@drawable/ic_play_arrow_24dp" />
+
+        <meta-data
+            android:name="com.google.android.gms.car.application.theme"
+            android:resource="@style/CarTheme" />
+
     </application>
 </manifest>
