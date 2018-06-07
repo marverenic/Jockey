@@ -20,6 +20,7 @@
     <string name="header_all_music">Biblioteca</string>
     <string name="header_browser">Navegar</string>
     <string name="header_recently_added">Recientemente Añadido</string>
+    <string name="header_all_songs">Todas Canciones</string>
 
     <!-- Data types -->
     <string name="playlist">Listas reproducción</string>

@@ -814,6 +814,16 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
+        public boolean getShuffleMode() {
+            return mService.musicPlayer.isShuffled();
+        }
+
+        @Override
+        public int getRepeatMode() {
+            return mService.musicPlayer.getRepeatMode();
+        }
+
+        @Override
         public long getSleepTimerEndTime() throws RemoteException {
             if (!isMusicPlayerReady()) {
                 return 0;
@@ -838,6 +848,20 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
                 mService.musicPlayer.setSleepTimer(timestampInMillis);
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.setSleepTimerEndTime() failed");
+            }
+        }
+
+        @Override
+        public MediaSessionCompat.Token getMediaSessionToken() throws RemoteException {
+            if (!isMusicPlayerReady()) {
+                return null;
+            }
+
+            try {
+                return mService.musicPlayer.getMediaSession().getSessionToken();
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to getMediaSessionToken failed");
+                throw exception;
             }
         }
     }

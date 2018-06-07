@@ -1,6 +1,7 @@
 package com.marverenic.music.player;
 
 import android.graphics.Bitmap;
+import android.support.v4.media.session.MediaSessionCompat;
 
 import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.model.Song;
@@ -279,4 +280,5 @@ public interface PlayerController {
      */
     Observable<Bitmap> getArtwork();
 
+    Observable<MediaSessionCompat.Token> getMediaSessionToken();
 }
