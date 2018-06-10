@@ -1,6 +1,8 @@
 // IPlayerService.aidl
 package com.marverenic.music;
 
+import android.support.v4.media.session.MediaSessionCompat;
+
 import com.marverenic.music.data.store.ImmutablePreferenceStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerState;
@@ -45,7 +47,12 @@ interface IPlayerService {
     int getMultiRepeatCount();
     void setMultiRepeatCount(int count);
 
+    boolean getShuffleMode();
+    int getRepeatMode();
+
     long getSleepTimerEndTime();
     void setSleepTimerEndTime(long timestampInMillis);
+
+    MediaSessionCompat.Token getMediaSessionToken();
 
 }

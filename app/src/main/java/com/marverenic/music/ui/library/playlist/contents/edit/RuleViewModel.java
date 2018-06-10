@@ -60,8 +60,10 @@ public class RuleViewModel extends BaseObservable {
     private List<AutoPlaylistRule> mRules;
     private int mIndex;
 
-    public RuleViewModel(Context context) {
+    public RuleViewModel(Context context, MusicStore musicStore, PlaylistStore playlistStore) {
         mContext = context;
+        mMusicStore = musicStore;
+        mPlaylistStore = playlistStore;
         mEnumeratedRule = RuleEnumeration.IS;
     }
 

@@ -12,6 +12,11 @@
         <item name="seekArcStyle">@style/SeekArcLight</item>
     </style>
 
+    <style name="CarTheme" parent="AppTheme">
+        <item name="colorPrimaryDark">@color/primary</item>
+        <item name="colorAccent">@color/accent</item>
+    </style>
+
     <style name="PopupMenu" parent="@style/Widget.AppCompat.Light.PopupMenu">
         <item name="overlapAnchor">true</item>
     </style>

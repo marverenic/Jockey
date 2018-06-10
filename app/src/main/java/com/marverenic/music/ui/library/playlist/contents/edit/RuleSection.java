@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import com.marverenic.adapter.EnhancedViewHolder;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.databinding.InstanceRuleBinding;
 import com.marverenic.music.model.playlistrules.AutoPlaylistRule;
 
@@ -15,8 +17,14 @@ import java.util.List;
 
 public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRule> {
 
-    public RuleSection(@NonNull List<AutoPlaylistRule> data) {
+    private MusicStore mMusicStore;
+    private PlaylistStore mPlaylistStore;
+
+    public RuleSection(@NonNull List<AutoPlaylistRule> data, MusicStore musicStore,
+                       PlaylistStore playlistStore) {
         super(data);
+        mMusicStore = musicStore;
+        mPlaylistStore = playlistStore;
     }
 
     @Override
@@ -41,7 +49,7 @@ public class RuleSection extends HeterogeneousAdapter.ListSection<AutoPlaylistRu
             super(binding.getRoot());
             mBinding = binding;
 
-            RuleViewModel viewModel = new RuleViewModel(itemView.getContext());
+            RuleViewModel viewModel = new RuleViewModel(itemView.getContext(), mMusicStore, mPlaylistStore);
             viewModel.setOnRemovalListener(index -> {
                 AutoPlaylistRule removed = getData().remove(index);
                 adapter.notifyDataSetChanged();

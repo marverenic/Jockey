@@ -7,6 +7,8 @@ import android.support.v7.widget.RecyclerView;
 
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.BR;
+import com.marverenic.music.data.store.MusicStore;
+import com.marverenic.music.data.store.PlaylistStore;
 import com.marverenic.music.model.AutoPlaylist;
 import com.marverenic.music.model.playlistrules.AutoPlaylistRule;
 import com.marverenic.music.ui.BaseViewModel;
@@ -15,6 +17,9 @@ import com.marverenic.music.view.DividerDecoration;
 
 public class AutoPlaylistEditViewModel extends BaseViewModel {
 
+    private PlaylistStore mPlaylistStore;
+    private MusicStore mMusicStore;
+
     private AutoPlaylist mOriginalPlaylist;
     private AutoPlaylist.Builder mEditedPlaylist;
     private int mScrollPosition;
@@ -22,10 +27,13 @@ public class AutoPlaylistEditViewModel extends BaseViewModel {
     private HeterogeneousAdapter mAdapter;
 
     public AutoPlaylistEditViewModel(Context context, AutoPlaylist originalPlaylist,
-                                     AutoPlaylist.Builder editedPlaylist) {
+                                     AutoPlaylist.Builder editedPlaylist,
+                                     PlaylistStore playlistStore, MusicStore musicStore) {
         super(context);
         mOriginalPlaylist = originalPlaylist;
         mEditedPlaylist = editedPlaylist;
+        mPlaylistStore = playlistStore;
+        mMusicStore = musicStore;
 
         createAdapter();
     }
@@ -33,8 +41,8 @@ public class AutoPlaylistEditViewModel extends BaseViewModel {
     private void createAdapter() {
         mAdapter = new HeterogeneousAdapter();
 
-        mAdapter.addSection(new RuleHeaderSingleton(mOriginalPlaylist, mEditedPlaylist));
-        mAdapter.addSection(new RuleSection(mEditedPlaylist.getRules()));
+        mAdapter.addSection(new RuleHeaderSingleton(mOriginalPlaylist, mEditedPlaylist, mPlaylistStore));
+        mAdapter.addSection(new RuleSection(mEditedPlaylist.getRules(), mMusicStore, mPlaylistStore));
     }
 
     @Bindable
