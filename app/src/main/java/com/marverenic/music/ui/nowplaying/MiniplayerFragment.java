@@ -29,6 +29,10 @@ public class MiniplayerFragment extends BaseFragment {
     @Inject PlayerController mPlayerController;
     @Inject ThemeStore mThemeStore;
 
+    public static MiniplayerFragment newInstance() {
+        return new MiniplayerFragment();
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

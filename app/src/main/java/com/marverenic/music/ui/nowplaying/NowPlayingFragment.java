@@ -78,6 +78,10 @@ public class NowPlayingFragment extends BaseFragment implements Toolbar.OnMenuIt
 
     private Subscription mSleepTimerSubscription;
 
+    public static NowPlayingFragment newInstance() {
+        return new NowPlayingFragment();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
