@@ -26,6 +26,7 @@
     <color name="screen_overlay">#CCFFFFFF</color>
     <color name="background_elevated">#F5F5F5</color>
     <color name="background_miniplayer">#FAFAFA</color>
+    <color name="miniplayer_artwork_frame">#30000000</color>
     <color name="progress_empty">#1F000000</color>
     <color name="divider">#E1E1E1</color>
     <color name="list_item_action_tint">#5B5B5B</color>
