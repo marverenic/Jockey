@@ -136,4 +136,12 @@ public class BindingAdapters {
         }
     }
 
+    @BindingAdapter("android:translationYPercent")
+    public static void bindTranslationYPercent(View view, float percent) {
+        View parent = (View) view.getParent();
+        MarginLayoutParams layoutParams = (MarginLayoutParams) view.getLayoutParams();
+        int remainingHeight = parent.getMeasuredHeight() - layoutParams.bottomMargin;
+        view.setTranslationY(-1 * percent * remainingHeight);
+    }
+
 }

@@ -29,6 +29,15 @@
             android:layout_marginBottom="@{viewModel.miniplayerHeight}"
             android:visibility="@{viewModel.mainContentVisibillity}"/>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:layout_marginBottom="@{viewModel.miniplayerHeight}"
+            android:layout_gravity="bottom"
+            android:background="@drawable/inset_miniplayer_shadow"
+            android:translationYPercent="@{viewModel.miniplayerShadowOffset}"
+            android:alpha="@{viewModel.miniplayerShadowAlpha}"/>
+
         <FrameLayout
             android:id="@+id/miniplayer_holder"
             android:layout_width="match_parent"
