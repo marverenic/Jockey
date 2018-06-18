@@ -27,6 +27,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.data.store.ImmutablePreferenceStore;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.player.extensions.scrobbler.ScrobblerExtension;
 import com.marverenic.music.player.transaction.ChunkHeader;
 import com.marverenic.music.player.transaction.IncomingTransaction;
 import com.marverenic.music.player.transaction.ListTransaction;
@@ -111,6 +112,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         musicPlayer = new MusicPlayer(this);
         musicPlayer.setPlaybackChangeListener(this);
+        musicPlayer.addExtension(new ScrobblerExtension(this));
         musicPlayer.loadState();
     }
 
