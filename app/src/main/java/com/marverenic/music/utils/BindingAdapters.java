@@ -7,6 +7,8 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.Toolbar;
 import android.text.TextWatcher;
 import android.view.View;
@@ -17,6 +19,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.marverenic.music.view.ViewUtils;
+
+import timber.log.Timber;
 
 public class BindingAdapters {
 
@@ -30,6 +34,25 @@ public class BindingAdapters {
     @BindingAdapter("bitmap")
     public static void bindBitmap(ImageView imageView, Bitmap bitmap) {
         imageView.setImageBitmap(bitmap);
+    }
+
+    @BindingAdapter(value = { "bitmap", "cornerRadius" })
+    public static void bindRoundedBitmap(ImageView imageView, Bitmap bitmap, float cornerRadius) {
+        ViewUtils.whenLaidOut(imageView, () -> {
+            if (imageView.getWidth() == 0 || imageView.getHeight() == 0) {
+                Timber.e("ImageView has a dimension of 0", new RuntimeException());
+                imageView.setImageBitmap(bitmap);
+            } else {
+                RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory
+                        .create(imageView.getResources(), bitmap);
+
+                float scaleX = bitmap.getWidth() / imageView.getWidth();
+                float scaleY = bitmap.getHeight() / imageView.getHeight();
+                drawable.setCornerRadius(Math.min(scaleX, scaleY) * cornerRadius);
+
+                imageView.setImageDrawable(drawable);
+            }
+        });
     }
 
     @BindingAdapter("tint")
@@ -111,6 +134,14 @@ public class BindingAdapters {
             AppBarLayout appBarLayout = ViewUtils.findViewByClass(container, AppBarLayout.class);
             appBarLayout.setExpanded(true);
         }
+    }
+
+    @BindingAdapter("android:translationYPercent")
+    public static void bindTranslationYPercent(View view, float percent) {
+        View parent = (View) view.getParent();
+        MarginLayoutParams layoutParams = (MarginLayoutParams) view.getLayoutParams();
+        int remainingHeight = parent.getMeasuredHeight() - layoutParams.bottomMargin;
+        view.setTranslationY(-1 * percent * remainingHeight);
     }
 
 }

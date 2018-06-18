@@ -31,6 +31,7 @@ public class BaseLibraryActivityViewModel extends BaseViewModel {
     private final ObservableFloat mNowPlayingToolbarAlpha;
     private final ColorDrawable mNowPlayingBackground;
 
+    private float mSlideOffset;
     private int mBottomSheetState;
 
     @Nullable
@@ -53,6 +54,13 @@ public class BaseLibraryActivityViewModel extends BaseViewModel {
         mNowPlayingBackground = new ColorDrawable(backgroundColor);
 
         setPlaybackOngoing(false);
+
+        mMiniplayerHeight.addOnPropertyChangedCallback(new OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(android.databinding.Observable sender, int propertyId) {
+                notifyPropertyChanged(BR.miniplayerShadowAlpha);
+            }
+        });
     }
 
     public void setPlaybackOngoing(boolean isPlaybackOngoing) {
@@ -200,6 +208,8 @@ public class BaseLibraryActivityViewModel extends BaseViewModel {
                 }
                 mMiniplayerAlpha.set(1.0f - 2 * slideOffset);
                 mNowPlayingToolbarAlpha.set(2 * slideOffset - 1.0f);
+                mSlideOffset = slideOffset;
+                notifyPropertyChanged(BR.miniplayerShadowOffset);
             }
         };
     }
@@ -211,6 +221,16 @@ public class BaseLibraryActivityViewModel extends BaseViewModel {
             BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         };
+    }
+
+    @Bindable
+    public float getMiniplayerShadowOffset() {
+        return mSlideOffset;
+    }
+
+    @Bindable
+    public float getMiniplayerShadowAlpha() {
+        return mMiniplayerHeight.get() / (float) mExpandedHeight;
     }
 
     public interface OnBottomSheetStateChangeListener {
