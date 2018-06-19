@@ -25,7 +25,7 @@ import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.transaction.ListTransaction;
 import com.marverenic.music.utils.ObservableQueue;
-import com.marverenic.music.utils.Optional;
+import com.marverenic.music.utils.RxProperty;
 import com.marverenic.music.utils.Util;
 
 import java.util.ArrayList;
@@ -66,16 +66,16 @@ public class ServicePlayerController implements PlayerController {
     private PublishSubject<String> mErrorStream = PublishSubject.create();
     private PublishSubject<String> mInfoStream = PublishSubject.create();
 
-    private final Prop<Boolean> mPlaying = new Prop<>("playing");
-    private final Prop<Song> mNowPlaying = new Prop<>("now playing");
-    private final Prop<List<Song>> mQueue = new Prop<>("queue", Collections.emptyList());
-    private final Prop<Integer> mQueuePosition = new Prop<>("queue index");
-    private final Prop<Integer> mCurrentPosition = new Prop<>("seek position");
-    private final Prop<Integer> mDuration = new Prop<>("duration");
-    private final Prop<Integer> mMultiRepeatCount = new Prop<>("multi-repeat");
-    private final Prop<Long> mSleepTimerEndTime = new Prop<>("sleep timer");
-    private final Prop<Boolean> mShuffleMode = new Prop<>("shuffle-mode");
-    private final Prop<Integer> mRepeatMode = new Prop<>("repeat-mode");
+    private final RxProperty<Boolean> mPlaying = new RxProperty<>("playing");
+    private final RxProperty<Song> mNowPlaying = new RxProperty<>("now playing");
+    private final RxProperty<List<Song>> mQueue = new RxProperty<>("queue", Collections.emptyList());
+    private final RxProperty<Integer> mQueuePosition = new RxProperty<>("queue index");
+    private final RxProperty<Integer> mCurrentPosition = new RxProperty<>("seek position");
+    private final RxProperty<Integer> mDuration = new RxProperty<>("duration");
+    private final RxProperty<Integer> mMultiRepeatCount = new RxProperty<>("multi-repeat");
+    private final RxProperty<Long> mSleepTimerEndTime = new RxProperty<>("sleep timer");
+    private final RxProperty<Boolean> mShuffleMode = new RxProperty<>("shuffle-mode");
+    private final RxProperty<Integer> mRepeatMode = new RxProperty<>("repeat-mode");
 
     private BehaviorSubject<MediaSessionCompat.Token> mMediaSessionToken;
 
@@ -726,71 +726,4 @@ public class ServicePlayerController implements PlayerController {
 
     }
 
-    private static final class Prop<T> {
-
-        private final String mName;
-        private final T mNullValue;
-        private final BehaviorSubject<Optional<T>> mSubject;
-        private final Observable<T> mObservable;
-
-        private Retriever<T> mRetriever;
-
-        public Prop(String propertyName) {
-            this(propertyName, null);
-        }
-
-        public Prop(String propertyName, T nullValue) {
-            mName = propertyName;
-            mNullValue = nullValue;
-            mSubject = BehaviorSubject.create();
-
-            mObservable = mSubject.filter(Optional::isPresent)
-                    .map(Optional::getValue)
-                    .distinctUntilChanged();
-        }
-
-        public void setFunction(Retriever<T> retriever) {
-            mRetriever = retriever;
-        }
-
-        public void invalidate() {
-            mSubject.onNext(Optional.empty());
-
-            if (mRetriever != null) {
-                Observable.fromCallable(mRetriever::retrieve)
-                        .subscribeOn(Schedulers.computation())
-                        .map(data -> (data == null) ? mNullValue : data)
-                        .map(Optional::ofNullable)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(mSubject::onNext, throwable -> {
-                            Timber.e(throwable, "Failed to fetch " + mName + " property.");
-                        });
-            }
-        }
-
-        public boolean isSubscribedTo() {
-            return mSubject.hasObservers();
-        }
-
-        public void setValue(T value) {
-            mSubject.onNext(Optional.ofNullable(value));
-        }
-
-        public boolean hasValue() {
-            return mSubject.getValue() != null && mSubject.getValue().isPresent();
-        }
-
-        public T lastValue() {
-            return mSubject.getValue().getValue();
-        }
-
-        public Observable<T> getObservable() {
-            return mObservable;
-        }
-
-        interface Retriever<T> {
-            T retrieve() throws Exception;
-        }
-
-    }
 }
