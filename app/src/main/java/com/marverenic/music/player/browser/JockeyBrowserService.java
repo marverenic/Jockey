@@ -24,6 +24,7 @@ public class JockeyBrowserService extends MediaBrowserServiceCompat {
     @Inject MediaBrowserRoot mRoot;
     @Inject EmptyBrowserRoot mEmptyRoot;
 
+    private PlayerController.Binding mPlayerControllerBinding;
     private BrowserServicePackageValidator mPackageValidator;
     private Subscription mMediaSessionSubscription;
 
@@ -33,6 +34,7 @@ public class JockeyBrowserService extends MediaBrowserServiceCompat {
         JockeyApplication.getComponent(this).inject(this);
 
         mPackageValidator = new BrowserServicePackageValidator(this);
+        mPlayerControllerBinding = mPlayerController.bind();
         mMediaSessionSubscription = mPlayerController.getMediaSessionToken()
                 .subscribe(this::setSessionToken, e -> {
                     Timber.e(e, "Failed to post media session token");
@@ -42,9 +44,8 @@ public class JockeyBrowserService extends MediaBrowserServiceCompat {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mMediaSessionSubscription != null) {
-            mMediaSessionSubscription.unsubscribe();
-        }
+        mPlayerController.unbind(mPlayerControllerBinding);
+        mMediaSessionSubscription.unsubscribe();
     }
 
     @Nullable

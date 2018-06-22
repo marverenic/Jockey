@@ -47,6 +47,8 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     @Inject ThemeStore _mThemeStore;
     @Inject PlayerController _mPlayerController;
 
+    private PlayerController.Binding mPlayerControllerBinding;
+
     /**
      * @inheritDoc
      */
@@ -104,6 +106,12 @@ public abstract class BaseActivity extends RxAppCompatActivity {
                 .show();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mPlayerControllerBinding = _mPlayerController.bind();
+    }
+
     /**
      * @inheritDoc
      */
@@ -125,6 +133,13 @@ public abstract class BaseActivity extends RxAppCompatActivity {
                 || (mBackgroundColor == AppCompatDelegate.MODE_NIGHT_AUTO && nightDiff)) {
             recreate();
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        _mPlayerController.unbind(mPlayerControllerBinding);
+        mPlayerControllerBinding = null;
     }
 
     @Override

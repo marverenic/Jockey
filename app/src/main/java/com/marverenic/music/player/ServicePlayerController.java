@@ -30,8 +30,11 @@ import com.marverenic.music.utils.Util;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -61,6 +64,7 @@ public class ServicePlayerController implements PlayerController {
 
     private Context mContext;
     private IPlayerService mBinding;
+    private PlayerServiceConnection mConnection;
     private long mServiceStartRequestTime;
 
     private PublishSubject<String> mErrorStream = PublishSubject.create();
@@ -88,11 +92,15 @@ public class ServicePlayerController implements PlayerController {
     private ObservableQueue<Runnable> mRequestQueue;
     private Subscription mRequestQueueSubscription;
 
+    private Set<ServiceBinding> mActiveBindings;
+
     public ServicePlayerController(Context context, PreferenceStore preferenceStore) {
         mContext = context;
+        mConnection = new PlayerServiceConnection();
         mRequestThread = new HandlerThread("ServiceExecutor");
         mMediaSessionToken = BehaviorSubject.create();
         mRequestQueue = new ObservableQueue<>();
+        mActiveBindings = new HashSet<>();
 
         mShuffleMode.setValue(preferenceStore.isShuffled());
         mRepeatMode.setValue(preferenceStore.getRepeatMode());
@@ -100,7 +108,6 @@ public class ServicePlayerController implements PlayerController {
         mShuffleSeedGenerator = new Random();
         mMainHandler = new Handler(Looper.getMainLooper());
         mRequestThread.start();
-        startService();
 
         isPlaying().subscribe(
                 isPlaying -> {
@@ -112,6 +119,27 @@ public class ServicePlayerController implements PlayerController {
                 }, throwable -> {
                     Timber.e(throwable, "Failed to update current position clock");
                 });
+    }
+
+    @Override
+    public Binding bind() {
+        ServiceBinding binding = new ServiceBinding();
+        mActiveBindings.add(binding);
+        startService();
+        return binding;
+    }
+
+    @Override
+    public void unbind(Binding binding) {
+        if (!(binding instanceof ServiceBinding)) {
+            throw new IllegalArgumentException(binding + " is not a valid binding");
+        }
+
+        if (!mActiveBindings.remove(binding)) {
+            Timber.w("Binding with UID %s was already unbound", ((ServiceBinding) binding).uid);
+        } else if (mActiveBindings.isEmpty()) {
+            unbindService();
+        }
     }
 
     private void startService() {
@@ -127,39 +155,26 @@ public class ServicePlayerController implements PlayerController {
             return;
         }
 
-        Intent serviceIntent = PlayerService.newIntent(mContext, true);
-
-        // Manually start the service to ensure that it is associated with this task and can
-        // appropriately set its dismiss behavior
-        mContext.startService(serviceIntent);
         mServiceStartRequestTime = SystemClock.uptimeMillis();
+        Timber.i("Starting service at time %dl", mServiceStartRequestTime);
 
-        mContext.bindService(serviceIntent, new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                mBinding = IPlayerService.Stub.asInterface(service);
-                initAllProperties();
-                bindRequestQueue();
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                mContext.unbindService(this);
-                releaseAllProperties();
-                mServiceStartRequestTime = 0;
-                mBinding = null;
-                mMediaSessionToken.onNext(null);
-                if (mRequestQueueSubscription != null) {
-                    mRequestQueueSubscription.unsubscribe();
-                    mRequestQueueSubscription = null;
-                }
-            }
-        }, Context.BIND_WAIVE_PRIORITY);
+        Intent serviceIntent = PlayerService.newIntent(mContext, true);
+        int bindFlags = Context.BIND_WAIVE_PRIORITY | Context.BIND_AUTO_CREATE;
+        mContext.bindService(serviceIntent, mConnection, bindFlags);
     }
 
-    private void ensureServiceStarted() {
-        if (mBinding == null) {
-            startService();
+    private void unbindService() {
+        disconnectService();
+        mContext.unbindService(mConnection);
+    }
+
+    private void disconnectService() {
+        releaseAllProperties();
+        mBinding = null;
+        mServiceStartRequestTime = 0;
+        if (mRequestQueueSubscription != null) {
+            mRequestQueueSubscription.unsubscribe();
+            mRequestQueueSubscription = null;
         }
     }
 
@@ -174,8 +189,9 @@ public class ServicePlayerController implements PlayerController {
                 });
     }
 
+    // region RxProperty management
+
     private void execute(Runnable command) {
-        ensureServiceStarted();
         mRequestQueue.enqueue(command);
     }
 
@@ -257,6 +273,20 @@ public class ServicePlayerController implements PlayerController {
         });
     }
 
+    @Override
+    public Observable<String> getError() {
+        return mErrorStream.asObservable();
+    }
+
+    @Override
+    public Observable<String> getInfo() {
+        return mInfoStream.asObservable();
+    }
+
+    // endregion RxProperty management
+
+    // region Binder delegates
+
     private void fetchMediaSessionToken() {
         if (mBinding == null) {
             return;
@@ -275,16 +305,6 @@ public class ServicePlayerController implements PlayerController {
                 mMediaSessionToken.onNext(token);
             }
         }
-    }
-
-    @Override
-    public Observable<String> getError() {
-        return mErrorStream.asObservable();
-    }
-
-    @Override
-    public Observable<String> getInfo() {
-        return mInfoStream.asObservable();
     }
 
     @Override
@@ -564,50 +584,42 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public Observable<Boolean> isPlaying() {
-        ensureServiceStarted();
         return mPlaying.getObservable();
     }
 
     @Override
     public Observable<Song> getNowPlaying() {
-        ensureServiceStarted();
         return mNowPlaying.getObservable();
     }
 
     @Override
     public Observable<List<Song>> getQueue() {
-        ensureServiceStarted();
         return mQueue.getObservable();
     }
 
     @Override
     public Observable<Integer> getQueuePosition() {
-        ensureServiceStarted();
         return mQueuePosition.getObservable();
     }
 
     @Override
     public Observable<Integer> getCurrentPosition() {
-        ensureServiceStarted();
         startCurrentPositionClock();
         return mCurrentPosition.getObservable();
     }
 
     @Override
     public Observable<Integer> getDuration() {
-        ensureServiceStarted();
         return mDuration.getObservable();
     }
 
     @Override
     public Observable<Boolean> isShuffleEnabled() {
-        ensureServiceStarted();
         return mShuffleMode.getObservable().distinctUntilChanged();
     }
 
     @Override
     public Observable<Integer> getRepeatMode() {
-        ensureServiceStarted();
         return mMultiRepeatCount.getObservable()
                 .flatMap(multiRepeatCount -> {
                     if (multiRepeatCount > 1) {
@@ -636,7 +648,6 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public Observable<Long> getSleepTimerEndTime() {
-        ensureServiceStarted();
         return mSleepTimerEndTime.getObservable();
     }
 
@@ -686,6 +697,43 @@ public class ServicePlayerController implements PlayerController {
         return mMediaSessionToken.filter(token -> token != null);
     }
 
+    // endregion Binder delegates
+
+    private class PlayerServiceConnection implements ServiceConnection {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Timber.i("Service connected");
+            mBinding = IPlayerService.Stub.asInterface(service);
+            initAllProperties();
+            bindRequestQueue();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Timber.i("Service disconnected");
+            disconnectService();
+        }
+    }
+
+    private class ServiceBinding implements Binding {
+        private final UUID uid = UUID.randomUUID();
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            ServiceBinding that = (ServiceBinding) o;
+            return uid.equals(that.uid);
+        }
+
+        @Override
+        public int hashCode() {
+            return uid.hashCode();
+        }
+    }
+
     /**
      * A {@link BroadcastReceiver} class listening for intents with an
      * {@link MusicPlayer#UPDATE_BROADCAST} action. This broadcast must be sent ordered with this
@@ -723,7 +771,6 @@ public class ServicePlayerController implements PlayerController {
                 }
             }
         }
-
     }
 
 }
