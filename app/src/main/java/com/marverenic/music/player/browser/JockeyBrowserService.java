@@ -30,6 +30,7 @@ public class JockeyBrowserService extends MediaBrowserServiceCompat {
 
     @Override
     public void onCreate() {
+        Timber.i("Browser service created");
         super.onCreate();
         JockeyApplication.getComponent(this).inject(this);
 
@@ -43,6 +44,7 @@ public class JockeyBrowserService extends MediaBrowserServiceCompat {
 
     @Override
     public void onDestroy() {
+        Timber.i("Browser service destroyed");
         super.onDestroy();
         mPlayerController.unbind(mPlayerControllerBinding);
         mMediaSessionSubscription.unsubscribe();
