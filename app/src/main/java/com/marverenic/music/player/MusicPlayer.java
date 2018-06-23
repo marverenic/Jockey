@@ -1355,7 +1355,9 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 }, throwable -> {
                     Timber.e(throwable, "Failed to load artwork");
                     mArtwork = null;
-                    updateNowPlaying();
+                    if (!isReleased()) {
+                        updateNowPlaying();
+                    }
                 });
 
         updateUi();
@@ -1454,6 +1456,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         }
 
         private final Runnable mButtonHandler = () -> {
+            if (mMusicPlayer.isReleased()) return;
+
             if (mClickCount == 1) {
                 mMusicPlayer.togglePlay();
                 mMusicPlayer.updateUi();
@@ -1486,36 +1490,48 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
         @Override
         public void onPlay() {
+            if (mMusicPlayer.isReleased()) return;
+
             mMusicPlayer.play();
             mMusicPlayer.updateUi();
         }
 
         @Override
         public void onSkipToQueueItem(long id) {
+            if (mMusicPlayer.isReleased()) return;
+
             mMusicPlayer.changeSong((int) id);
             mMusicPlayer.updateUi();
         }
 
         @Override
         public void onPause() {
+            if (mMusicPlayer.isReleased()) return;
+
             mMusicPlayer.pause();
             mMusicPlayer.updateUi();
         }
 
         @Override
         public void onSkipToNext() {
+            if (mMusicPlayer.isReleased()) return;
+
             mMusicPlayer.skip();
             mMusicPlayer.updateUi();
         }
 
         @Override
         public void onSkipToPrevious() {
+            if (mMusicPlayer.isReleased()) return;
+
             mMusicPlayer.skipPrevious();
             mMusicPlayer.updateUi();
         }
 
         @Override
         public void onStop() {
+            if (mMusicPlayer.isReleased()) return;
+
             mMusicPlayer.stop();
             // Don't update the UI if this object has been released
             if (mMusicPlayer.mContext != null) {
@@ -1525,12 +1541,16 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
         @Override
         public void onSeekTo(long pos) {
+            if (mMusicPlayer.isReleased()) return;
+
             mMusicPlayer.seekTo((int) pos);
             mMusicPlayer.updateUi();
         }
 
         @Override
         public void onSetRepeatMode(int repeatMode) {
+            if (mMusicPlayer.isReleased()) return;
+
             switch (repeatMode) {
                 case PlaybackStateCompat.REPEAT_MODE_ALL:
                     mMusicPlayer.setRepeat(REPEAT_ALL);
@@ -1546,6 +1566,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
         @Override
         public void onSetShuffleMode(int shuffleMode) {
+            if (mMusicPlayer.isReleased()) return;
+
             switch (shuffleMode) {
                 case PlaybackStateCompat.SHUFFLE_MODE_ALL:
                     mMusicPlayer.setShuffle(true, System.currentTimeMillis());
