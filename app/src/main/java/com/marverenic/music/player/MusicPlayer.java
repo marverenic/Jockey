@@ -1038,6 +1038,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     public void setRepeat(int repeat) {
         requireNotReleased();
+        if (repeat == mRepeat) {
+            return;
+        }
+
         Timber.i("Changing repeat setting to %d", repeat);
         mRepeat = repeat;
         switch (repeat) {
