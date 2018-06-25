@@ -2,7 +2,6 @@ package com.marverenic.music;
 
 import android.app.Application;
 import android.content.Context;
-import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
@@ -22,7 +21,6 @@ public class JockeyApplication extends Application {
 
     @Override
     public void onCreate() {
-        setupStrictMode();
         super.onCreate();
 
         setupCrashlytics();
@@ -35,22 +33,6 @@ public class JockeyApplication extends Application {
     @NonNull
     protected JockeyGraph createDaggerComponent() {
         return JockeyComponentFactory.create(this);
-    }
-
-    private void setupStrictMode() {
-        if (BuildConfig.DEBUG) {
-            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                    .detectDiskReads()
-                    .detectDiskWrites()
-                    .detectAll()
-                    .penaltyLog()
-                    .build());
-            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                    .detectLeakedSqlLiteObjects()
-                    .detectLeakedClosableObjects()
-                    .penaltyLog()
-                    .build());
-        }
     }
 
     private void setupCrashlytics() {
