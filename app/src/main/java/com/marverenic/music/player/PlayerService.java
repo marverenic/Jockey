@@ -826,11 +826,19 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public boolean getShuffleMode() {
+            if (!isMusicPlayerReady()) {
+                return false;
+            }
+
             return mService.musicPlayer.isShuffled();
         }
 
         @Override
         public int getRepeatMode() {
+            if (!isMusicPlayerReady()) {
+                return MusicPlayer.REPEAT_NONE;
+            }
+
             return mService.musicPlayer.getRepeatMode();
         }
 
