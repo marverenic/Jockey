@@ -231,6 +231,7 @@ public class ServicePlayerController implements PlayerController {
         mSleepTimerEndTime.setFunction(null);
         mShuffleMode.setFunction(null);
         mRepeatMode.setFunction(null);
+        mMediaSessionToken.onNext(null);
     }
 
     private void initAllProperties() {
