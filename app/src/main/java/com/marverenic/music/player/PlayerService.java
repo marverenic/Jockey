@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
-import android.os.Process;
 import android.os.RemoteException;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
@@ -53,7 +52,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     /**
      * Used in binding and unbinding this service to the UI process
      */
-    private static IBinder binder;
+    private IBinder mBinder;
 
     // Instance variables
     /**
@@ -86,10 +85,10 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     public IBinder onBind(Intent intent) {
         Timber.i("onBind called");
 
-        if (binder == null) {
-            binder = new Stub(this);
+        if (mBinder == null) {
+            mBinder = new Stub(this);
         }
-        return binder;
+        return mBinder;
     }
 
     /**
@@ -138,17 +137,6 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     public void onDestroy() {
         Timber.i("Called onDestroy");
         finish();
-
-        /*
-            By default, when this service stops, Android will keep a cached version of it so it can
-            be restarted easily. When this happens, the service enters a state where the main app
-            can no longer bind to it when it is started the next time. We therefore prevent this
-            entirely by not allowing Android to keep the service process cached.
-
-            This is a VERY bad idea, so make sure that this service always has its own process, and
-            make sure to be very careful about cleaning up all resources before this method returns.
-         */
-        Process.killProcess(Process.myPid());
     }
 
     @Override
