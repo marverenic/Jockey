@@ -49,11 +49,6 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     private static final String NOTIFICATION_CHANNEL_ID = "music-service";
     private static final int NOTIFICATION_ID = 1;
 
-    /**
-     * Used in binding and unbinding this service to the UI process
-     */
-    private IBinder mBinder;
-
     // Instance variables
     /**
      * The media player for the service instance
@@ -84,11 +79,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     @Override
     public IBinder onBind(Intent intent) {
         Timber.i("onBind called");
-
-        if (mBinder == null) {
-            mBinder = new Stub(this);
-        }
-        return mBinder;
+        return new Stub(this);
     }
 
     /**
