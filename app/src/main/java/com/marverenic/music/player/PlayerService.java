@@ -282,14 +282,31 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
             Timber.i("Removing service from foreground");
 
             /*
-               The following call to startService is a workaround for API 21 and 22 devices. If the
+               The following call to startService is a workaround for API 21+ devices. If the
                main UI process is not running, then calling stopForeground() here will end the
                service completely. We therefore have the service start itself. If the service does
                then get killed, it will be restarted automatically. If the service doesn't get
                killed (regardless of API level), then this call does nothing since Android won't
                start a second instance of a service.
             */
-            startService(new Intent(this, PlayerService.class));
+            try {
+                startService(new Intent(this, PlayerService.class));
+            } catch (IllegalStateException e) {
+                /*
+                   This is kind of a hack on top of a workaround for API 26+ devices. On Oreo+
+                   devices, attempting to call startService while the service isn't in the
+                   background will trigger an IllegalStateException because the service isn't in
+                   the foreground. However, in this case the service is already in the background,
+                   there isn't a transition between these states, so the original workaround
+                   is unnecessary. Because there isn't a recommended way of telling whether a
+                   service is in the foreground, let's always try this workaround. If we are
+                   transitioning from foreground to background, then this will keep the service
+                   alive. If we're not transitioning on an O+ device, we can safely eat this
+                   exception.
+                */
+                Timber.i(e, "Failed to apply workaround while transitioning into background %s",
+                        "(is the service already in the background?)");
+            }
 
             stopForeground(false);
             Timber.i("Bringing service into background");
