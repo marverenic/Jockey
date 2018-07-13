@@ -37,6 +37,7 @@ public class JockeyBrowserService extends MediaBrowserServiceCompat {
         mPackageValidator = new BrowserServicePackageValidator(this);
         mPlayerControllerBinding = mPlayerController.bind();
         mMediaSessionSubscription = mPlayerController.getMediaSessionToken()
+                .first()
                 .subscribe(this::setSessionToken, e -> {
                     Timber.e(e, "Failed to post media session token");
                 });
