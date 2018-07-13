@@ -79,7 +79,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     @Override
     public IBinder onBind(Intent intent) {
         Timber.i("onBind called");
-        return new Stub(this);
+        return new PlayerServiceBinder(this);
     }
 
     /**
@@ -369,12 +369,12 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         notifyNowPlaying();
     }
 
-    public static class Stub extends IPlayerService.Stub {
+    public static class PlayerServiceBinder extends IPlayerService.Stub {
 
         private PlayerService mService;
         private IncomingTransaction<List<Song>> mQueueTransaction;
 
-        public Stub(PlayerService service) {
+        PlayerServiceBinder(PlayerService service) {
             mService = service;
         }
 
