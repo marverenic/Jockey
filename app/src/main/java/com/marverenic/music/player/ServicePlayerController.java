@@ -25,13 +25,16 @@ import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.transaction.ListTransaction;
 import com.marverenic.music.utils.ObservableQueue;
-import com.marverenic.music.utils.Optional;
+import com.marverenic.music.utils.RxProperty;
 import com.marverenic.music.utils.Util;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -61,21 +64,22 @@ public class ServicePlayerController implements PlayerController {
 
     private Context mContext;
     private IPlayerService mBinding;
+    private PlayerServiceConnection mConnection;
     private long mServiceStartRequestTime;
 
     private PublishSubject<String> mErrorStream = PublishSubject.create();
     private PublishSubject<String> mInfoStream = PublishSubject.create();
 
-    private final Prop<Boolean> mPlaying = new Prop<>("playing");
-    private final Prop<Song> mNowPlaying = new Prop<>("now playing");
-    private final Prop<List<Song>> mQueue = new Prop<>("queue", Collections.emptyList());
-    private final Prop<Integer> mQueuePosition = new Prop<>("queue index");
-    private final Prop<Integer> mCurrentPosition = new Prop<>("seek position");
-    private final Prop<Integer> mDuration = new Prop<>("duration");
-    private final Prop<Integer> mMultiRepeatCount = new Prop<>("multi-repeat");
-    private final Prop<Long> mSleepTimerEndTime = new Prop<>("sleep timer");
-    private final Prop<Boolean> mShuffleMode = new Prop<>("shuffle-mode");
-    private final Prop<Integer> mRepeatMode = new Prop<>("repeat-mode");
+    private final RxProperty<Boolean> mPlaying = new RxProperty<>("playing");
+    private final RxProperty<Song> mNowPlaying = new RxProperty<>("now playing");
+    private final RxProperty<List<Song>> mQueue = new RxProperty<>("queue", Collections.emptyList());
+    private final RxProperty<Integer> mQueuePosition = new RxProperty<>("queue index");
+    private final RxProperty<Integer> mCurrentPosition = new RxProperty<>("seek position");
+    private final RxProperty<Integer> mDuration = new RxProperty<>("duration");
+    private final RxProperty<Integer> mMultiRepeatCount = new RxProperty<>("multi-repeat");
+    private final RxProperty<Long> mSleepTimerEndTime = new RxProperty<>("sleep timer");
+    private final RxProperty<Boolean> mShuffleMode = new RxProperty<>("shuffle-mode");
+    private final RxProperty<Integer> mRepeatMode = new RxProperty<>("repeat-mode");
 
     private BehaviorSubject<MediaSessionCompat.Token> mMediaSessionToken;
 
@@ -88,11 +92,15 @@ public class ServicePlayerController implements PlayerController {
     private ObservableQueue<Runnable> mRequestQueue;
     private Subscription mRequestQueueSubscription;
 
+    private Set<ServiceBinding> mActiveBindings;
+
     public ServicePlayerController(Context context, PreferenceStore preferenceStore) {
         mContext = context;
+        mConnection = new PlayerServiceConnection();
         mRequestThread = new HandlerThread("ServiceExecutor");
         mMediaSessionToken = BehaviorSubject.create();
         mRequestQueue = new ObservableQueue<>();
+        mActiveBindings = new HashSet<>();
 
         mShuffleMode.setValue(preferenceStore.isShuffled());
         mRepeatMode.setValue(preferenceStore.getRepeatMode());
@@ -100,7 +108,6 @@ public class ServicePlayerController implements PlayerController {
         mShuffleSeedGenerator = new Random();
         mMainHandler = new Handler(Looper.getMainLooper());
         mRequestThread.start();
-        startService();
 
         isPlaying().subscribe(
                 isPlaying -> {
@@ -112,6 +119,27 @@ public class ServicePlayerController implements PlayerController {
                 }, throwable -> {
                     Timber.e(throwable, "Failed to update current position clock");
                 });
+    }
+
+    @Override
+    public Binding bind() {
+        ServiceBinding binding = new ServiceBinding();
+        mActiveBindings.add(binding);
+        startService();
+        return binding;
+    }
+
+    @Override
+    public void unbind(Binding binding) {
+        if (!(binding instanceof ServiceBinding)) {
+            throw new IllegalArgumentException(binding + " is not a valid binding");
+        }
+
+        if (!mActiveBindings.remove(binding)) {
+            Timber.w("Binding with UID %s was already unbound", ((ServiceBinding) binding).uid);
+        } else if (mActiveBindings.isEmpty()) {
+            unbindService();
+        }
     }
 
     private void startService() {
@@ -127,39 +155,26 @@ public class ServicePlayerController implements PlayerController {
             return;
         }
 
-        Intent serviceIntent = PlayerService.newIntent(mContext, true);
-
-        // Manually start the service to ensure that it is associated with this task and can
-        // appropriately set its dismiss behavior
-        mContext.startService(serviceIntent);
         mServiceStartRequestTime = SystemClock.uptimeMillis();
+        Timber.i("Starting service at time %dl", mServiceStartRequestTime);
 
-        mContext.bindService(serviceIntent, new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                mBinding = IPlayerService.Stub.asInterface(service);
-                initAllProperties();
-                bindRequestQueue();
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                mContext.unbindService(this);
-                releaseAllProperties();
-                mServiceStartRequestTime = 0;
-                mBinding = null;
-                mMediaSessionToken.onNext(null);
-                if (mRequestQueueSubscription != null) {
-                    mRequestQueueSubscription.unsubscribe();
-                    mRequestQueueSubscription = null;
-                }
-            }
-        }, Context.BIND_WAIVE_PRIORITY);
+        Intent serviceIntent = PlayerService.newIntent(mContext, true);
+        int bindFlags = Context.BIND_WAIVE_PRIORITY | Context.BIND_AUTO_CREATE;
+        mContext.bindService(serviceIntent, mConnection, bindFlags);
     }
 
-    private void ensureServiceStarted() {
-        if (mBinding == null) {
-            startService();
+    private void unbindService() {
+        disconnectService();
+        mContext.unbindService(mConnection);
+    }
+
+    private void disconnectService() {
+        releaseAllProperties();
+        mBinding = null;
+        mServiceStartRequestTime = 0;
+        if (mRequestQueueSubscription != null) {
+            mRequestQueueSubscription.unsubscribe();
+            mRequestQueueSubscription = null;
         }
     }
 
@@ -174,8 +189,9 @@ public class ServicePlayerController implements PlayerController {
                 });
     }
 
+    // region RxProperty management
+
     private void execute(Runnable command) {
-        ensureServiceStarted();
         mRequestQueue.enqueue(command);
     }
 
@@ -215,6 +231,7 @@ public class ServicePlayerController implements PlayerController {
         mSleepTimerEndTime.setFunction(null);
         mShuffleMode.setFunction(null);
         mRepeatMode.setFunction(null);
+        mMediaSessionToken.onNext(null);
     }
 
     private void initAllProperties() {
@@ -257,6 +274,20 @@ public class ServicePlayerController implements PlayerController {
         });
     }
 
+    @Override
+    public Observable<String> getError() {
+        return mErrorStream.asObservable();
+    }
+
+    @Override
+    public Observable<String> getInfo() {
+        return mInfoStream.asObservable();
+    }
+
+    // endregion RxProperty management
+
+    // region Binder delegates
+
     private void fetchMediaSessionToken() {
         if (mBinding == null) {
             return;
@@ -275,16 +306,6 @@ public class ServicePlayerController implements PlayerController {
                 mMediaSessionToken.onNext(token);
             }
         }
-    }
-
-    @Override
-    public Observable<String> getError() {
-        return mErrorStream.asObservable();
-    }
-
-    @Override
-    public Observable<String> getInfo() {
-        return mInfoStream.asObservable();
     }
 
     @Override
@@ -564,50 +585,42 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public Observable<Boolean> isPlaying() {
-        ensureServiceStarted();
         return mPlaying.getObservable();
     }
 
     @Override
     public Observable<Song> getNowPlaying() {
-        ensureServiceStarted();
         return mNowPlaying.getObservable();
     }
 
     @Override
     public Observable<List<Song>> getQueue() {
-        ensureServiceStarted();
         return mQueue.getObservable();
     }
 
     @Override
     public Observable<Integer> getQueuePosition() {
-        ensureServiceStarted();
         return mQueuePosition.getObservable();
     }
 
     @Override
     public Observable<Integer> getCurrentPosition() {
-        ensureServiceStarted();
         startCurrentPositionClock();
         return mCurrentPosition.getObservable();
     }
 
     @Override
     public Observable<Integer> getDuration() {
-        ensureServiceStarted();
         return mDuration.getObservable();
     }
 
     @Override
     public Observable<Boolean> isShuffleEnabled() {
-        ensureServiceStarted();
         return mShuffleMode.getObservable().distinctUntilChanged();
     }
 
     @Override
     public Observable<Integer> getRepeatMode() {
-        ensureServiceStarted();
         return mMultiRepeatCount.getObservable()
                 .flatMap(multiRepeatCount -> {
                     if (multiRepeatCount > 1) {
@@ -636,7 +649,6 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public Observable<Long> getSleepTimerEndTime() {
-        ensureServiceStarted();
         return mSleepTimerEndTime.getObservable();
     }
 
@@ -686,6 +698,43 @@ public class ServicePlayerController implements PlayerController {
         return mMediaSessionToken.filter(token -> token != null);
     }
 
+    // endregion Binder delegates
+
+    private class PlayerServiceConnection implements ServiceConnection {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Timber.i("Service connected");
+            mBinding = IPlayerService.Stub.asInterface(service);
+            initAllProperties();
+            bindRequestQueue();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Timber.i("Service disconnected");
+            disconnectService();
+        }
+    }
+
+    private class ServiceBinding implements Binding {
+        private final UUID uid = UUID.randomUUID();
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            ServiceBinding that = (ServiceBinding) o;
+            return uid.equals(that.uid);
+        }
+
+        @Override
+        public int hashCode() {
+            return uid.hashCode();
+        }
+    }
+
     /**
      * A {@link BroadcastReceiver} class listening for intents with an
      * {@link MusicPlayer#UPDATE_BROADCAST} action. This broadcast must be sent ordered with this
@@ -723,74 +772,6 @@ public class ServicePlayerController implements PlayerController {
                 }
             }
         }
-
     }
 
-    private static final class Prop<T> {
-
-        private final String mName;
-        private final T mNullValue;
-        private final BehaviorSubject<Optional<T>> mSubject;
-        private final Observable<T> mObservable;
-
-        private Retriever<T> mRetriever;
-
-        public Prop(String propertyName) {
-            this(propertyName, null);
-        }
-
-        public Prop(String propertyName, T nullValue) {
-            mName = propertyName;
-            mNullValue = nullValue;
-            mSubject = BehaviorSubject.create();
-
-            mObservable = mSubject.filter(Optional::isPresent)
-                    .map(Optional::getValue)
-                    .distinctUntilChanged();
-        }
-
-        public void setFunction(Retriever<T> retriever) {
-            mRetriever = retriever;
-        }
-
-        public void invalidate() {
-            mSubject.onNext(Optional.empty());
-
-            if (mRetriever != null) {
-                Observable.fromCallable(mRetriever::retrieve)
-                        .subscribeOn(Schedulers.computation())
-                        .map(data -> (data == null) ? mNullValue : data)
-                        .map(Optional::ofNullable)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(mSubject::onNext, throwable -> {
-                            Timber.e(throwable, "Failed to fetch " + mName + " property.");
-                        });
-            }
-        }
-
-        public boolean isSubscribedTo() {
-            return mSubject.hasObservers();
-        }
-
-        public void setValue(T value) {
-            mSubject.onNext(Optional.ofNullable(value));
-        }
-
-        public boolean hasValue() {
-            return mSubject.getValue() != null && mSubject.getValue().isPresent();
-        }
-
-        public T lastValue() {
-            return mSubject.getValue().getValue();
-        }
-
-        public Observable<T> getObservable() {
-            return mObservable;
-        }
-
-        interface Retriever<T> {
-            T retrieve() throws Exception;
-        }
-
-    }
 }

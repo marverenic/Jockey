@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
-import android.os.Process;
 import android.os.RemoteException;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
@@ -50,11 +49,6 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     private static final String NOTIFICATION_CHANNEL_ID = "music-service";
     private static final int NOTIFICATION_ID = 1;
 
-    /**
-     * Used in binding and unbinding this service to the UI process
-     */
-    private static IBinder binder;
-
     // Instance variables
     /**
      * The media player for the service instance
@@ -85,11 +79,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     @Override
     public IBinder onBind(Intent intent) {
         Timber.i("onBind called");
-
-        if (binder == null) {
-            binder = new Stub(this);
-        }
-        return binder;
+        return new PlayerServiceBinder(this);
     }
 
     /**
@@ -138,17 +128,6 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     public void onDestroy() {
         Timber.i("Called onDestroy");
         finish();
-
-        /*
-            By default, when this service stops, Android will keep a cached version of it so it can
-            be restarted easily. When this happens, the service enters a state where the main app
-            can no longer bind to it when it is started the next time. We therefore prevent this
-            entirely by not allowing Android to keep the service process cached.
-
-            This is a VERY bad idea, so make sure that this service always has its own process, and
-            make sure to be very careful about cleaning up all resources before this method returns.
-         */
-        Process.killProcess(Process.myPid());
     }
 
     @Override
@@ -294,14 +273,31 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
             Timber.i("Removing service from foreground");
 
             /*
-               The following call to startService is a workaround for API 21 and 22 devices. If the
+               The following call to startService is a workaround for API 21+ devices. If the
                main UI process is not running, then calling stopForeground() here will end the
                service completely. We therefore have the service start itself. If the service does
                then get killed, it will be restarted automatically. If the service doesn't get
                killed (regardless of API level), then this call does nothing since Android won't
                start a second instance of a service.
             */
-            startService(new Intent(this, PlayerService.class));
+            try {
+                startService(new Intent(this, PlayerService.class));
+            } catch (IllegalStateException e) {
+                /*
+                   This is kind of a hack on top of a workaround for API 26+ devices. On Oreo+
+                   devices, attempting to call startService while the service isn't in the
+                   background will trigger an IllegalStateException because the service isn't in
+                   the foreground. However, in this case the service is already in the background,
+                   there isn't a transition between these states, so the original workaround
+                   is unnecessary. Because there isn't a recommended way of telling whether a
+                   service is in the foreground, let's always try this workaround. If we are
+                   transitioning from foreground to background, then this will keep the service
+                   alive. If we're not transitioning on an O+ device, we can safely eat this
+                   exception.
+                */
+                Timber.i(e, "Failed to apply workaround while transitioning into background %s",
+                        "(is the service already in the background?)");
+            }
 
             stopForeground(false);
             Timber.i("Bringing service into background");
@@ -373,12 +369,12 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         notifyNowPlaying();
     }
 
-    public static class Stub extends IPlayerService.Stub {
+    public static class PlayerServiceBinder extends IPlayerService.Stub {
 
         private PlayerService mService;
         private IncomingTransaction<List<Song>> mQueueTransaction;
 
-        public Stub(PlayerService service) {
+        PlayerServiceBinder(PlayerService service) {
             mService = service;
         }
 
@@ -387,7 +383,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void stop() throws RemoteException {
+        public void stop() {
             try {
                 mService.stop();
             } catch (RuntimeException exception) {
@@ -397,7 +393,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void skip() throws RemoteException {
+        public void skip() {
             if (!isMusicPlayerReady()) {
                 Timber.i("PlayerService.skip(): Service is not ready. Dropping command");
                 return;
@@ -412,7 +408,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void previous() throws RemoteException {
+        public void previous() {
             if (!isMusicPlayerReady()) {
                 Timber.i("PlayerService.skip(): Service is not ready. Dropping command");
                 return;
@@ -427,7 +423,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void togglePlay() throws RemoteException {
+        public void togglePlay() {
             if (!isMusicPlayerReady()) {
                 Timber.i("PlayerService.togglePlay(): Service is not ready. Dropping command");
                 return;
@@ -442,7 +438,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void play() throws RemoteException {
+        public void play() {
             if (!isMusicPlayerReady()) {
                 Timber.i("PlayerService.play(): Service is not ready. Dropping command");
                 return;
@@ -457,7 +453,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void pause() throws RemoteException {
+        public void pause() {
             if (!isMusicPlayerReady()) {
                 Timber.i("PlayerService.pause(): Service is not ready. Dropping command");
                 return;
@@ -472,7 +468,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void setPreferences(ImmutablePreferenceStore preferences, long seed) throws RemoteException {
+        public void setPreferences(ImmutablePreferenceStore preferences, long seed) {
             if (!isMusicPlayerReady()) {
                 Timber.i("PlayerService.setPreferences(): Service is not ready. Dropping command");
                 return;
@@ -487,7 +483,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void setQueue(List<Song> newQueue, int newPosition, long seed) throws RemoteException {
+        public void setQueue(List<Song> newQueue, int newPosition, long seed) {
             if (!isMusicPlayerReady()) {
                 Timber.i("PlayerService.setQueue(): Service is not ready. Dropping command");
                 return;
@@ -505,7 +501,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void beginLargeQueueTransaction(TransactionToken token) throws RemoteException {
+        public void beginLargeQueueTransaction(TransactionToken token) {
             if (mQueueTransaction != null) {
                 Timber.i("LargeQueueTransaction is already open. Dropping previous transaction.");
             }
@@ -513,7 +509,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void sendQueueChunk(ChunkHeader header, List<Song> chunk) throws RemoteException {
+        public void sendQueueChunk(ChunkHeader header, List<Song> chunk) {
             mQueueTransaction.receive(header, chunk);
         }
 
@@ -544,7 +540,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void changeSong(int position) throws RemoteException {
+        public void changeSong(int position) {
             if (!isMusicPlayerReady()) {
                 Timber.i("PlayerService.changeSong(): Service is not ready. Dropping command");
                 return;
@@ -559,7 +555,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void editQueue(List<Song> newQueue, int newPosition) throws RemoteException {
+        public void editQueue(List<Song> newQueue, int newPosition) {
             if (!isMusicPlayerReady()) {
                 Timber.i("PlayerService.editQueue(): Service is not ready. Dropping command");
                 return;
@@ -574,7 +570,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void queueNext(Song song) throws RemoteException {
+        public void queueNext(Song song) {
             if (!isMusicPlayerReady()) {
                 Timber.i("PlayerService.queueNext(): Service is not ready. Dropping command");
                 return;
@@ -589,7 +585,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void queueNextList(List<Song> songs) throws RemoteException {
+        public void queueNextList(List<Song> songs) {
             if (!isMusicPlayerReady()) {
                 Timber.i("PlayerService.queueNextList(): Service is not ready. Dropping command");
                 return;
@@ -604,7 +600,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void queueLast(Song song) throws RemoteException {
+        public void queueLast(Song song) {
             if (!isMusicPlayerReady()) {
                 Timber.i("PlayerService.queueLast(): Service is not ready. Dropping command");
                 return;
@@ -619,7 +615,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void queueLastList(List<Song> songs) throws RemoteException {
+        public void queueLastList(List<Song> songs) {
             if (!isMusicPlayerReady()) {
                 Timber.i("PlayerService.queueLastList(): Service is not ready. Dropping command");
                 return;
@@ -634,7 +630,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void seekTo(int position) throws RemoteException {
+        public void seekTo(int position) {
             if (!isMusicPlayerReady()) {
                 Timber.i("PlayerService.seekTo(): Service is not ready. Dropping command");
                 return;
@@ -649,7 +645,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public boolean isPlaying() throws RemoteException {
+        public boolean isPlaying() {
             if (!isMusicPlayerReady()) {
                 return false;
             }
@@ -663,7 +659,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public Song getNowPlaying() throws RemoteException {
+        public Song getNowPlaying() {
             if (!isMusicPlayerReady()) {
                 return null;
             }
@@ -677,7 +673,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public List<Song> getQueue() throws RemoteException {
+        public List<Song> getQueue() {
             if (!isMusicPlayerReady()) {
                 return Collections.emptyList();
             }
@@ -691,7 +687,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public int getQueuePosition() throws RemoteException {
+        public int getQueuePosition() {
             if (!isMusicPlayerReady()) {
                 return 0;
             }
@@ -705,7 +701,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public int getQueueSize() throws RemoteException {
+        public int getQueueSize() {
             if (!isMusicPlayerReady()) {
                 return 0;
             }
@@ -739,7 +735,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public int getCurrentPosition() throws RemoteException {
+        public int getCurrentPosition() {
             if (!isMusicPlayerReady()) {
                 return 0;
             }
@@ -753,7 +749,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public int getDuration() throws RemoteException {
+        public int getDuration() {
             if (!isMusicPlayerReady()) {
                 return 0;
             }
@@ -767,7 +763,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public PlayerState getPlayerState() throws RemoteException {
+        public PlayerState getPlayerState() {
             if (!isMusicPlayerReady()) {
                 return null;
             }
@@ -781,7 +777,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void restorePlayerState(PlayerState state) throws RemoteException {
+        public void restorePlayerState(PlayerState state) {
             if (!isMusicPlayerReady()) {
                 Timber.i("restorePlayerState(): Service is not ready. Dropping command");
                 return;
@@ -796,7 +792,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public int getMultiRepeatCount() throws RemoteException {
+        public int getMultiRepeatCount() {
             if (!isMusicPlayerReady()) {
                 return 0;
             }
@@ -810,7 +806,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void setMultiRepeatCount(int count) throws RemoteException {
+        public void setMultiRepeatCount(int count) {
             if (!isMusicPlayerReady()) {
                 Timber.i("PlayerService.setMultiRepeat(): Service is not ready. Dropping command");
                 return;
@@ -826,16 +822,24 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         @Override
         public boolean getShuffleMode() {
+            if (!isMusicPlayerReady()) {
+                return false;
+            }
+
             return mService.musicPlayer.isShuffled();
         }
 
         @Override
         public int getRepeatMode() {
+            if (!isMusicPlayerReady()) {
+                return MusicPlayer.REPEAT_NONE;
+            }
+
             return mService.musicPlayer.getRepeatMode();
         }
 
         @Override
-        public long getSleepTimerEndTime() throws RemoteException {
+        public long getSleepTimerEndTime() {
             if (!isMusicPlayerReady()) {
                 return 0;
             }
@@ -849,7 +853,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void setSleepTimerEndTime(long timestampInMillis) throws RemoteException {
+        public void setSleepTimerEndTime(long timestampInMillis) {
             if (!isMusicPlayerReady()) {
                 Timber.i("PlayerService.setSleepTimer(): Service is not ready. Dropping command");
                 return;
@@ -863,7 +867,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public MediaSessionCompat.Token getMediaSessionToken() throws RemoteException {
+        public MediaSessionCompat.Token getMediaSessionToken() {
             if (!isMusicPlayerReady()) {
                 return null;
             }
