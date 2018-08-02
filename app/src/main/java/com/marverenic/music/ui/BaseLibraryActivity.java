@@ -13,6 +13,8 @@ import com.marverenic.music.R;
 import com.marverenic.music.databinding.ActivityLibraryBaseWrapperBinding;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseLibraryActivityViewModel.OnBottomSheetStateChangeListener.BottomSheetState;
+import com.marverenic.music.ui.nowplaying.MiniplayerFragment;
+import com.marverenic.music.ui.nowplaying.NowPlayingFragment;
 
 import javax.inject.Inject;
 
@@ -28,7 +30,7 @@ public abstract class BaseLibraryActivity extends SingleFragmentActivity {
     private BaseLibraryActivityViewModel mViewModel;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         JockeyApplication.getComponent(this).injectBaseLibraryActivity(this);
         super.onCreate(savedInstanceState);
 
@@ -36,6 +38,16 @@ public abstract class BaseLibraryActivity extends SingleFragmentActivity {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
+
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.miniplayer_container, MiniplayerFragment.newInstance())
+                    .commit();
+
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.now_playing_container, NowPlayingFragment.newInstance())
+                    .commit();
         }
     }
 

@@ -25,6 +25,16 @@ public class MockPlayerController implements PlayerController {
     }
 
     @Override
+    public Binding bind() {
+        throw new UnsupportedOperationException("Stub!");
+    }
+
+    @Override
+    public void unbind(Binding binding) {
+        throw new UnsupportedOperationException("Stub!");
+    }
+
+    @Override
     public Observable<String> getError() {
         return Observable.never();
     }

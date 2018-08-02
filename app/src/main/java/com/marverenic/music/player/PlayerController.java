@@ -17,10 +17,51 @@ import rx.Single;
  * basic commands and information sent and received from the player. Any data received from the
  * player can be obtained through various get methods in this interface as observable streams. Any
  * observable stream should always be kept up-to-date unless it is infeasible to do so.
+ *
+ * Note that PlayerController will only fetch data when one or more {@link #bind() Bindings} are
+ * active.
  */
 public interface PlayerController {
 
     int MAXIMUM_CHUNK_ENTRIES = ChunkHeader.MAX_ENTRIES;
+
+    /**
+     * PlayerController bindings are used to ensure that resources and connections are managed
+     * correctly with respect to lifecycles throughout the app (specifically the management of
+     * service connections).
+     *
+     * In order for PlayerController to be able to perform any useful actions, there must be at
+     * least one active {@link Binding} (i.e. a binding returned by this method that has not been
+     * released through {@link #unbind(Binding)}). If no bindings are active, then actions
+     * performed (such as {@link #play()} or {@link #skip()}) will silently be queued to run
+     * once a binding is opened. In this case, the order of commands is preserved, but the
+     * timing is indeterminate. For properties (such as {@link #isPlaying()} or
+     * {@link #getNowPlaying()}), the returned Observable will not receive any updates until
+     * there is an active binding. The Observable may contain the last value if there was a
+     * previous binding, but will otherwise not emit any values unless a binding becomes active.
+     *
+     * Any component (usually an Activity) that needs to access PlayerController should call this
+     * method when it is created. When that component is being destroyed or will otherwise no longer
+     * access this class, you MUST call {@link #unbind(Binding)} to ensure that the playback service
+     * can be stopped correctly.
+     *
+     * @return A token representing the binding. Users MUST store this value and later
+     * call {@link #unbind(Binding)} with this value.
+     */
+    Binding bind();
+
+    /**
+     * Closes an active binding. If the binding has already been closed, then this method will
+     * do nothing.
+     *
+     * If there is at least one other binding when this method is called, then this class can
+     * still interact with playback and receive updates on the playback state. If the last binding
+     * is being released, then no actions can be performed as described in {@link #bind()}.
+     *
+     * @param binding The binding to release
+     * @see #bind() for details on opening and maintaining a binding
+     */
+    void unbind(Binding binding);
 
     /**
      * Gets error messages from the service that can be displayed on the UI
@@ -281,4 +322,14 @@ public interface PlayerController {
     Observable<Bitmap> getArtwork();
 
     Observable<MediaSessionCompat.Token> getMediaSessionToken();
+
+    /**
+     * Represents an active connection from an application component to a {@code PlayerController}.
+     * @see #bind() for details on opening a binding
+     * @see #unbind(Binding) to close an open binding
+     */
+    interface Binding {
+        // No exposed methods – implementors may add methods for internal use.
+    }
+
 }

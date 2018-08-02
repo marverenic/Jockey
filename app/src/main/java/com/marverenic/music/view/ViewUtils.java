@@ -12,6 +12,7 @@ import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.ViewTreeObserver;
 
 import com.marverenic.music.R;
 
@@ -93,5 +94,19 @@ public final class ViewUtils {
         }
 
         return false;
+    }
+
+    public static void whenLaidOut(View view, Runnable action) {
+        if (ViewCompat.isLaidOut(view)) {
+            action.run();
+        } else {
+            view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    action.run();
+                }
+            });
+        }
     }
 }
