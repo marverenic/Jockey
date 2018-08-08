@@ -99,9 +99,10 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
             createNotificationChannel();
         }
 
-        musicPlayer = new MusicPlayer(this);
+        musicPlayer = new MusicPlayer(this, Arrays.asList(
+                new ScrobblerExtension(this)
+        ));
         musicPlayer.setPlaybackChangeListener(this);
-        musicPlayer.addExtension(new ScrobblerExtension(this));
         musicPlayer.loadState();
     }
 

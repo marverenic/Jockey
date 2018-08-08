@@ -184,9 +184,11 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     private MediaSessionCompat mMediaSession;
     private HeadsetListener mHeadphoneListener;
     private OnPlaybackChangeListener mCallback;
-    private List<MusicPlayerExtension> mExtensions;
+    private final List<MusicPlayerExtension> mExtensions;
 
+    @NonNull
     private List<Song> mQueue;
+    @NonNull
     private List<Song> mQueueShuffled;
 
     private boolean mShuffle;
@@ -212,7 +214,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     private Bitmap mArtwork;
 
     @Inject PlayCountStore mPlayCountStore;
-    @Inject PlaybackPersistenceManager mPlaybackPersistenceManager;
     @Inject MediaBrowserRoot mMediaBrowserRoot;
     private RemotePreferenceStore mRemotePreferenceStore;
 
@@ -224,8 +225,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * system integration will be initialized
      * @param context A Context used to interact with other components of the OS and used to
      *                load songs. This Context will be kept for the lifetime of this Object.
+     * @param extensions Additional extensions that can be used to augment behavior in MusicPlayer.
+     *                   Pass an empty list if no additional behavior is required.
      */
-    public MusicPlayer(Context context) {
+    public MusicPlayer(Context context, List<MusicPlayerExtension> extensions) {
         mContext = context;
         mHandler = new Handler();
         JockeyApplication.getComponent(mContext).inject(this);
@@ -246,8 +249,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         mQueue = new ArrayList<>();
         mQueueShuffled = new ArrayList<>();
 
-        mExtensions = new ArrayList<>();
-
         // Attach a HeadsetListener to respond to headphone events
         mHeadphoneListener = new HeadsetListener(this);
         IntentFilter filter = new IntentFilter();
@@ -257,10 +258,11 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
         loadPrefs();
         initMediaSession();
-    }
 
-    public void addExtension(MusicPlayerExtension extension) {
-        mExtensions.add(extension);
+        mExtensions = Collections.unmodifiableList(new ArrayList<>(extensions));
+        for (MusicPlayerExtension ext : mExtensions) {
+            ext.onCreateMusicPlayer(this);
+        }
     }
 
     /**
@@ -680,7 +682,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             mMediaPlayer.pause();
             updateNowPlaying();
             for (MusicPlayerExtension ext : mExtensions) {
-                ext.onSongPaused(getNowPlaying());
+                ext.onSongPaused(this);
             }
         }
         mResumeOnFocusGain = false;
@@ -696,7 +698,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             mMediaPlayer.play();
             updateNowPlaying();
             for (MusicPlayerExtension ext : mExtensions) {
-                ext.onSongResumed(getNowPlaying());
+                ext.onSongResumed(this);
             }
         }
     }
@@ -809,6 +811,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public void seekTo(int mSec) {
         Timber.i("Seeking to %d", mSec);
         mMediaPlayer.seekTo(mSec);
+
+        for (MusicPlayerExtension ext : mExtensions) {
+            ext.onSeekPositionChanged(this);
+        }
     }
 
     /**
@@ -949,6 +955,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             mMediaPlayer.setQueue(mQueueShuffled, index, resetSeekPosition);
         } else {
             mMediaPlayer.setQueue(mQueue, index, resetSeekPosition);
+        }
+
+        for (MusicPlayerExtension ext : mExtensions) {
+            ext.onQueueChanged(this);
         }
     }
 
@@ -1246,7 +1256,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         Timber.i("onCompletion called");
         logPlayCount(completed, false);
         for (MusicPlayerExtension ext : mExtensions) {
-            ext.onSongCompleted(completed);
+            ext.onSongCompleted(this, completed);
         }
 
         if (mMultiRepeat > 1) {
@@ -1266,7 +1276,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public void onSongStart() {
         Timber.i("Started new song");
         for (MusicPlayerExtension ext : mExtensions) {
-            ext.onSongStarted(getNowPlaying());
+            ext.onSongStarted(this);
         }
         Util.fetchArtwork(mContext, getNowPlaying().getLocation())
                 .subscribeOn(Schedulers.io())
