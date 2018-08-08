@@ -10,7 +10,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,7 +26,6 @@ import android.view.KeyEvent;
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
@@ -36,7 +34,6 @@ import com.marverenic.music.data.store.SharedPreferenceStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.browser.MediaBrowserRoot;
 import com.marverenic.music.player.browser.MediaList;
-import com.marverenic.music.player.persistence.PlaybackPersistenceManager;
 import com.marverenic.music.player.extensions.MusicPlayerExtension;
 import com.marverenic.music.ui.library.LibraryActivity;
 import com.marverenic.music.utils.Internal;
@@ -64,9 +61,6 @@ import static android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY;
  *
  * MediaPlayer provides shuffle and repeat with {@link #setShuffle(boolean, long)} and
  * {@link #setRepeat(int)}, respectively.
- *
- * MusicPlayer also provides play count logging and state reloading.
- * See {@link #logPlayCount(Song, boolean)}, {@link #loadState()} and {@link #saveState()}
  *
  * System integration is implemented by handling Audio Focus through {@link AudioManager}, attaching
  * a {@link MediaSessionCompat}, and with a {@link HeadsetListener} -- an implementation of
@@ -339,39 +333,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         Timber.i("Initializing equalizer");
         mMediaPlayer.setEqualizer(preferencesStore.getEqualizerEnabled(),
                 preferencesStore.getEqualizerSettings());
-    }
-
-    public void saveState() {
-        requireNotReleased();
-        Timber.i("Saving player state");
-        int seekPosition = mMediaPlayer.getCurrentPosition();
-        int queueIndex = mMediaPlayer.getQueueIndex();
-
-        List<Uri> queue = new ArrayList<>();
-        List<Uri> shuffledQueue = new ArrayList<>();
-
-        for (Song song : mQueue) {
-            queue.add(song.getLocation());
-        }
-
-        for (Song song : mQueueShuffled) {
-            shuffledQueue.add(song.getLocation());
-        }
-
-        mPlaybackPersistenceManager.setState(new PlaybackPersistenceManager.State(
-                seekPosition, queueIndex, queue, shuffledQueue));
-    }
-
-    public void loadState() {
-        requireNotReleased();
-        Timber.i("Loading state...");
-        PlaybackPersistenceManager.State state = mPlaybackPersistenceManager.getStateBlocking();
-
-        mQueue = MediaStoreUtil.buildSongListFromUris(state.getQueue(), mContext);
-        mQueueShuffled = MediaStoreUtil.buildSongListFromUris(state.getShuffledQueue(), mContext);
-
-        setBackingQueue(state.getQueuePosition(), false);
-        mMediaPlayer.seekTo((int) state.getSeekPosition());
     }
 
     /**

@@ -34,18 +34,6 @@ public class PlaybackPersistenceManager {
         return dao.getMetadataItemCount() > 0 && dao.getPlaybackItemCount() > 0;
     }
 
-    public void clearState() {
-        mDatabase.runInTransaction(() -> {
-            PlaybackItemDao dao = mDatabase.getPlaybackItemDao();
-
-            dao.clearPlaybackItems(QUEUE);
-            dao.clearPlaybackItems(SHUFFLED_QUEUE);
-
-            dao.deleteMetadataItem(SEEK_POSITION);
-            dao.deleteMetadataItem(QUEUE_INDEX);
-        });
-    }
-
     public void setState(State state) {
         mDatabase.runInTransaction(() -> {
             PlaybackItemDao dao = mDatabase.getPlaybackItemDao();
@@ -58,6 +46,14 @@ public class PlaybackPersistenceManager {
 
             dao.putMetadataItem(new PlaybackMetadataItem(SEEK_POSITION, state.getSeekPosition()));
             dao.putMetadataItem(new PlaybackMetadataItem(QUEUE_INDEX, state.getQueuePosition()));
+        });
+    }
+
+    public void setPosition(int seekPosition, int queueIndex) {
+        mDatabase.runInTransaction(() -> {
+            PlaybackItemDao dao = mDatabase.getPlaybackItemDao();
+            dao.putMetadataItem(new PlaybackMetadataItem(SEEK_POSITION, seekPosition));
+            dao.putMetadataItem(new PlaybackMetadataItem(QUEUE_INDEX, queueIndex));
         });
     }
 

@@ -22,11 +22,14 @@ import android.view.KeyEvent;
 
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.IPlayerService;
+import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.ImmutablePreferenceStore;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.player.extensions.persistence.PersistenceExtension;
 import com.marverenic.music.player.extensions.scrobbler.ScrobblerExtension;
+import com.marverenic.music.player.persistence.PlaybackPersistenceManager;
 import com.marverenic.music.player.transaction.ChunkHeader;
 import com.marverenic.music.player.transaction.IncomingTransaction;
 import com.marverenic.music.player.transaction.ListTransaction;
@@ -34,8 +37,11 @@ import com.marverenic.music.player.transaction.TransactionToken;
 import com.marverenic.music.utils.Internal;
 import com.marverenic.music.utils.MediaStyleHelper;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import timber.log.Timber;
 
@@ -53,6 +59,8 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
      * The media player for the service instance
      */
     @Internal MusicPlayer musicPlayer;
+
+    @Inject PlaybackPersistenceManager mPlaybackPersistenceManager;
 
     /**
      * Used to to prevent errors caused by freeing resources twice
@@ -88,6 +96,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     public void onCreate() {
         super.onCreate();
         Timber.i("onCreate() called");
+        JockeyApplication.getComponent(this).inject(this);
 
         if (!MediaStoreUtil.hasPermission(this)) {
             Timber.w("Attempted to start service without Storage permission. Aborting.");
@@ -100,10 +109,10 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         musicPlayer = new MusicPlayer(this, Arrays.asList(
+                new PersistenceExtension(mPlaybackPersistenceManager, this),
                 new ScrobblerExtension(this)
         ));
         musicPlayer.setPlaybackChangeListener(this);
-        musicPlayer.loadState();
     }
 
     @Override
@@ -138,26 +147,6 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
             finish();
             return;
         }
-
-        /*
-            When the application is removed from the overview page, we make the notification
-            dismissible on Lollipop and higher devices if music is paused. To do this, we have to
-            move the service out of the foreground state. As soon as this happens, ActivityManager
-            will kill the service because it isn't in the foreground. Because the service is
-            sticky, it will get queued to be restarted.
-
-            Because our service has a chance of getting recreated as a result of this event in
-            the lifecycle, we have to save the state of the media player under the assumption that
-            we're about to be killed. If we are killed, this state will just be reloaded when the
-            service is recreated, and all the user sees is their notification temporarily
-            disappearing when they pause music and swipe Jockey out of their recent apps.
-
-            There is no other way I'm aware of to implement a remote service that transitions
-            between the foreground and background (as required by the platform's media style since
-            it can't have a close button on L+ devices) without being recreated and requiring
-            this workaround.
-         */
-        musicPlayer.saveState();
 
         if (mStopped || !musicPlayer.isPlaying()) {
             NotificationManager mgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -342,8 +331,6 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         Timber.i("finish() called");
         if (!finished) {
             if (musicPlayer != null) {
-                musicPlayer.saveState();
-
                 // If the service is being completely stopped by the user, turn off the sleep timer
                 musicPlayer.setSleepTimer(0);
 
