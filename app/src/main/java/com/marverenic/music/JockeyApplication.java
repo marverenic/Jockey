@@ -11,6 +11,7 @@ import com.marverenic.music.data.inject.JockeyComponentFactory;
 import com.marverenic.music.data.inject.JockeyGraph;
 import com.marverenic.music.utils.CrashlyticsTree;
 import com.marverenic.music.utils.compat.JockeyPreferencesCompat;
+import com.marverenic.music.utils.compat.PlayerQueueMigration;
 
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
@@ -28,6 +29,7 @@ public class JockeyApplication extends Application {
 
         mComponent = createDaggerComponent();
         JockeyPreferencesCompat.upgradeSharedPreferences(this);
+        new PlayerQueueMigration(this).migrateLegacyQueueFile();
     }
 
     @NonNull
