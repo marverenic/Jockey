@@ -1059,17 +1059,16 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             return;
         }
 
+        mShuffle = shuffle;
         if (shuffle) {
             Timber.i("Enabling shuffle...");
             shuffleQueue(getQueuePosition(), seed);
-            mMediaPlayer.setQueue(mQueueShuffled, 0, false);
+            setBackingQueue(0, false);
         } else {
             Timber.i("Disabling shuffle...");
             unshuffleQueue();
-            int position = mQueue.indexOf(getNowPlaying());
-            mMediaPlayer.setQueue(mQueue, position, false);
+            setBackingQueue(mQueue.indexOf(getNowPlaying()), false);
         }
-        mShuffle = shuffle;
         updateUi();
         updateMediaSession();
         updateNowPlaying();
