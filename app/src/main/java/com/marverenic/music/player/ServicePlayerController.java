@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.os.SystemClock;
+import android.support.annotation.Nullable;
 import android.support.v4.media.session.MediaSessionCompat;
 
 import com.marverenic.music.IPlayerService;
@@ -23,6 +24,7 @@ import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.player.persistence.PlaybackPersistenceManager;
 import com.marverenic.music.player.transaction.ListTransaction;
 import com.marverenic.music.utils.ObservableQueue;
 import com.marverenic.music.utils.RxProperty;
@@ -64,6 +66,7 @@ public class ServicePlayerController implements PlayerController {
 
     private Context mContext;
     private IPlayerService mBinding;
+    private PlaybackPersistenceManager mPersistenceManager;
     private PlayerServiceConnection mConnection;
     private long mServiceStartRequestTime;
 
@@ -94,8 +97,10 @@ public class ServicePlayerController implements PlayerController {
 
     private Set<ServiceBinding> mActiveBindings;
 
-    public ServicePlayerController(Context context, PreferenceStore preferenceStore) {
+    public ServicePlayerController(Context context, PreferenceStore preferenceStore,
+                PlaybackPersistenceManager persistenceManager) {
         mContext = context;
+        mPersistenceManager = persistenceManager;
         mConnection = new PlayerServiceConnection();
         mRequestThread = new HandlerThread("ServiceExecutor");
         mMediaSessionToken = BehaviorSubject.create();
@@ -155,6 +160,7 @@ public class ServicePlayerController implements PlayerController {
             return;
         }
 
+        initAllPropertyFallbacks();
         mServiceStartRequestTime = SystemClock.uptimeMillis();
         Timber.i("Starting service at time %dl", mServiceStartRequestTime);
 
@@ -166,6 +172,28 @@ public class ServicePlayerController implements PlayerController {
     private void unbindService() {
         disconnectService();
         mContext.unbindService(mConnection);
+    }
+
+    private void initAllPropertyFallbacks() {
+        mPlaying.setFallbackFunction(() -> false);
+
+        mNowPlaying.setFallbackFunction(() ->
+                mPersistenceManager.getNowPlaying(mContext, mShuffleMode.lastValue()));
+
+        mQueue.setFallbackFunction(() ->
+                mPersistenceManager.getQueue(mContext, mShuffleMode.lastValue()));
+
+        mQueuePosition.setFallbackFunction(mPersistenceManager::getQueueIndex);
+        mCurrentPosition.setFallbackFunction(mPersistenceManager::getSeekPosition);
+
+        mDuration.setFallbackFunction(() -> {
+            Song nowPlaying = mPersistenceManager.getNowPlaying(mContext, mShuffleMode.lastValue());
+            if (nowPlaying != null) {
+                return (int) nowPlaying.getSongDuration();
+            } else {
+                return 0;
+            }
+        });
     }
 
     private void disconnectService() {

@@ -1,6 +1,7 @@
 package com.marverenic.music.data.inject;
 
 import com.marverenic.music.player.MusicPlayer;
+import com.marverenic.music.player.PlayerService;
 import com.marverenic.music.player.ServicePlayerController;
 import com.marverenic.music.player.browser.JockeyBrowserService;
 import com.marverenic.music.ui.BaseActivity;
@@ -32,6 +33,7 @@ import com.marverenic.music.ui.search.SearchFragment;
 import com.marverenic.music.ui.settings.DirectoryListFragment;
 import com.marverenic.music.ui.settings.EqualizerFragment;
 import com.marverenic.music.ui.settings.PreferenceFragment;
+import com.marverenic.music.utils.compat.PlayerQueueMigration;
 import com.marverenic.music.widget.BaseWidget;
 
 public interface JockeyGraph {
@@ -76,5 +78,8 @@ public interface JockeyGraph {
     void inject(MusicPlayer musicPlayer);
 
     void inject(JockeyBrowserService browserService);
+    void inject(PlayerService playerService);
+
+    void inject(PlayerQueueMigration migration);
 
 }

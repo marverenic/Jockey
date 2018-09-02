@@ -745,4 +745,116 @@ public final class MediaStoreUtil {
 
         return contents;
     }
+
+    /**
+     * Build an {@link ArrayList} of {@link Song}s from a list of URIs. Doesn't require the
+     * library to be loaded
+     * @param uris The list of song uris to convert to {@link Song}s
+     * @param context The {@link Context} used to open a {@link Cursor}
+     * @return An {@link ArrayList} of {@link Song}s with ids matching those of the
+     *         songIDs parameter
+     */
+    public static List<Song> buildSongListFromUris(List<Uri> uris, Context context) {
+        List<Song> contents = new ArrayList<>();
+        // Split this request into batches of size SQL_MAX_VARS
+        for (int i = 0; i < uris.size() / SQL_MAX_VARS; i++) {
+            contents.addAll(buildSongListFromUris(uris, context,
+                    i * SQL_MAX_VARS, (i + 1) * SQL_MAX_VARS));
+        }
+
+        // Load the remaining songs (the last section that's not divisible by SQL_MAX_VARS)
+        contents.addAll(buildSongListFromUris(uris, context,
+                SQL_MAX_VARS * (uris.size() / SQL_MAX_VARS), uris.size()));
+
+        // Sort the contents of the list so that it matches the order of the array
+        List<Song> songs = new ArrayList<>();
+        for (Uri uri : uris) {
+            for (Song s : contents) {
+                if (s.getLocation().equals(uri)) {
+                    songs.add(s);
+                    break;
+                }
+            }
+        }
+
+        return songs;
+    }
+
+    /**
+     * Implementation of {@link MediaStoreUtil#buildSongListFromUris(List, Context)}. This method
+     * takes upper and lower bounds into account when looking at the song ids so that it can be
+     * partitioned into sections of size {@link #SQL_MAX_VARS} without the overhead of making array
+     * copies.
+     * @param uris The song uris build the list from
+     * @param context A Context to open a {@link Cursor} to query the {@link MediaStore}
+     * @param lowerBound The first index in the array to get IDs from
+     * @param upperBound The last index in the array to get IDs from
+     * @return An unsorted list of {@link Song Songs} with the same IDs as the ids that were passed
+     * into {@code songIDs}
+     */
+    private static List<Song> buildSongListFromUris(List<Uri> uris, Context context, int lowerBound,
+                                                   int upperBound) {
+        List<Song> contents = new ArrayList<>();
+        if (uris.size() == 0) {
+            return contents;
+        }
+
+        String query = MediaStore.Audio.Media.DATA + " IN(?";
+        String[] split = new String[upperBound - lowerBound];
+        split[0] = uris.get(0).getPath();
+
+        for (int i = 1; i < split.length; i++) {
+            query += ",?";
+            split[i] = uris.get(i).getPath();
+        }
+        query += ")";
+
+        Cursor cur = context.getContentResolver().query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                SONG_PROJECTION,
+                query, split,
+                MediaStore.Audio.Media.TITLE + " ASC");
+
+        if (cur == null) {
+            return contents;
+        }
+
+        contents = Song.buildSongList(cur, context.getResources());
+        cur.close();
+
+        return contents;
+    }
+
+    /**
+     * Instantiates a song from a corresponding URI. Doesn't require the library to be loaded.
+     * @param uri A URI for a song in the media store. If this URI is external to the media store,
+     *            this method will return {@code null}.
+     * @param context A {@link Context} used to open a {@link Cursor}
+     * @return A {@link Song} whose URI matches {@param uri}
+     */
+    public static Song buildSongFromUri(Uri uri, Context context) {
+        String selection = MediaStore.Audio.Media.DATA + " != ?";
+
+        Cursor cur = context.getContentResolver().query(
+                uri, SONG_PROJECTION, selection, new String[] { uri.getPath() }, null);
+
+        try {
+            if (cur == null) {
+                return Song.fromUri(context, uri);
+            }
+
+            List<Song> songs = Song.buildSongList(cur, context.getResources());
+
+            if (songs.isEmpty()) {
+                return null;
+            } else {
+                return songs.get(0);
+            }
+        } finally {
+            if (cur != null) {
+                cur.close();
+            }
+        }
+    }
+
 }

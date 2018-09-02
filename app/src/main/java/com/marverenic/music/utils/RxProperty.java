@@ -1,5 +1,7 @@
 package com.marverenic.music.utils;
 
+import android.support.annotation.Nullable;
+
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -13,6 +15,10 @@ public final class RxProperty<T> {
     private final BehaviorSubject<Optional<T>> mSubject;
     private final Observable<T> mObservable;
 
+    @Nullable
+    private Retriever<T> mFallbackRetriever;
+
+    @Nullable
     private Retriever<T> mRetriever;
 
     public RxProperty(String propertyName) {
@@ -33,19 +39,29 @@ public final class RxProperty<T> {
         mRetriever = retriever;
     }
 
+    public void setFallbackFunction(@Nullable Retriever<T> retriever) {
+        mFallbackRetriever = retriever;
+    }
+
     public void invalidate() {
         mSubject.onNext(Optional.empty());
+        Observable<T> retriever;
 
         if (mRetriever != null) {
-            Observable.fromCallable(mRetriever::retrieve)
-                    .subscribeOn(Schedulers.computation())
-                    .map(data -> (data == null) ? mNullValue : data)
-                    .map(Optional::ofNullable)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(mSubject::onNext, throwable -> {
-                        Timber.e(throwable, "Failed to fetch " + mName + " property.");
-                    });
+            retriever = Observable.fromCallable(mRetriever::retrieve);
+        } else if (mFallbackRetriever != null) {
+            retriever = Observable.fromCallable(mFallbackRetriever::retrieve);
+        } else {
+            return;
         }
+
+        retriever.subscribeOn(Schedulers.computation())
+                .map(data -> (data == null) ? mNullValue : data)
+                .map(Optional::ofNullable)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(mSubject::onNext, throwable -> {
+                    Timber.e(throwable, "Failed to fetch " + mName + " property.");
+                });
     }
 
     public boolean isSubscribedTo() {

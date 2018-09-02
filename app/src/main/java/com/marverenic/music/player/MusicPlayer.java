@@ -26,7 +26,6 @@ import android.view.KeyEvent;
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
@@ -41,17 +40,11 @@ import com.marverenic.music.utils.Internal;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.utils.compat.AudioManagerCompat;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Random;
-import java.util.Scanner;
 
 import javax.inject.Inject;
 
@@ -69,9 +62,6 @@ import static android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY;
  * MediaPlayer provides shuffle and repeat with {@link #setShuffle(boolean, long)} and
  * {@link #setRepeat(int)}, respectively.
  *
- * MusicPlayer also provides play count logging and state reloading.
- * See {@link #logPlayCount(Song, boolean)}, {@link #loadState()} and {@link #saveState()}
- *
  * System integration is implemented by handling Audio Focus through {@link AudioManager}, attaching
  * a {@link MediaSessionCompat}, and with a {@link HeadsetListener} -- an implementation of
  * {@link BroadcastReceiver} that pauses playback when headphones are disconnected.
@@ -80,13 +70,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         QueuedMediaPlayer.PlaybackEventListener {
 
     private static final String TAG = "MusicPlayer";
-
-    /**
-     * The filename of the queue state used to load and save previous configurations.
-     * This file will be stored in the directory defined by
-     * {@link Context#getExternalFilesDir(String)}
-     */
-    private static final String QUEUE_FILE = ".queue";
 
     /**
      * Package permission that is required to receive broadcasts
@@ -195,9 +178,11 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     private MediaSessionCompat mMediaSession;
     private HeadsetListener mHeadphoneListener;
     private OnPlaybackChangeListener mCallback;
-    private List<MusicPlayerExtension> mExtensions;
+    private final List<MusicPlayerExtension> mExtensions;
 
+    @NonNull
     private List<Song> mQueue;
+    @NonNull
     private List<Song> mQueueShuffled;
 
     private boolean mShuffle;
@@ -234,8 +219,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * system integration will be initialized
      * @param context A Context used to interact with other components of the OS and used to
      *                load songs. This Context will be kept for the lifetime of this Object.
+     * @param extensions Additional extensions that can be used to augment behavior in MusicPlayer.
+     *                   Pass an empty list if no additional behavior is required.
      */
-    public MusicPlayer(Context context) {
+    public MusicPlayer(Context context, List<MusicPlayerExtension> extensions) {
         mContext = context;
         mHandler = new Handler();
         JockeyApplication.getComponent(mContext).inject(this);
@@ -256,8 +243,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         mQueue = new ArrayList<>();
         mQueueShuffled = new ArrayList<>();
 
-        mExtensions = new ArrayList<>();
-
         // Attach a HeadsetListener to respond to headphone events
         mHeadphoneListener = new HeadsetListener(this);
         IntentFilter filter = new IntentFilter();
@@ -267,10 +252,11 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
         loadPrefs();
         initMediaSession();
-    }
 
-    public void addExtension(MusicPlayerExtension extension) {
-        mExtensions.add(extension);
+        mExtensions = Collections.unmodifiableList(new ArrayList<>(extensions));
+        for (MusicPlayerExtension ext : mExtensions) {
+            ext.onCreateMusicPlayer(this);
+        }
     }
 
     /**
@@ -347,108 +333,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         Timber.i("Initializing equalizer");
         mMediaPlayer.setEqualizer(preferencesStore.getEqualizerEnabled(),
                 preferencesStore.getEqualizerSettings());
-    }
-
-    /**
-     * Saves the player's current state to a file with the name {@link #QUEUE_FILE} in
-     * the app's external files directory specified by {@link Context#getExternalFilesDir(String)}
-     * @throws IOException
-     * @see #loadState()
-     */
-    public void saveState() throws IOException {
-        requireNotReleased();
-        Timber.i("Saving player state");
-        // Anticipate the outcome of a command so that if we're killed right after it executes,
-        // we can restore to the proper state
-        int reloadSeekPosition = mMediaPlayer.getCurrentPosition();
-        int reloadQueuePosition = mMediaPlayer.getQueueIndex();
-
-        final String currentPosition = Integer.toString(reloadSeekPosition);
-        final String queuePosition = Integer.toString(reloadQueuePosition);
-        final String queueLength = Integer.toString(mQueue.size());
-
-        StringBuilder queue = new StringBuilder();
-        for (Song s : mQueue) {
-            queue.append(' ').append(s.getSongId());
-        }
-
-        StringBuilder queueShuffled = new StringBuilder();
-        for (Song s : mQueueShuffled) {
-            queueShuffled.append(' ').append(s.getSongId());
-        }
-
-        String output = currentPosition + " " + queuePosition + " "
-                + queueLength + queue + queueShuffled;
-
-        File save = new File(mContext.getExternalFilesDir(null), QUEUE_FILE);
-        FileOutputStream stream = null;
-        try {
-            stream = new FileOutputStream(save);
-            stream.write(output.getBytes());
-        } finally {
-            if (stream != null) {
-                stream.close();
-            }
-        }
-    }
-
-    /**
-     * Reloads a saved state
-     * @see #saveState()
-     */
-    public void loadState() {
-        requireNotReleased();
-        Timber.i("Loading state...");
-        Scanner scanner = null;
-        try {
-            File save = new File(mContext.getExternalFilesDir(null), QUEUE_FILE);
-            scanner = new Scanner(save);
-
-            int currentPosition = scanner.nextInt();
-            int queuePosition = scanner.nextInt();
-
-            int queueLength = scanner.nextInt();
-            long[] queueIDs = new long[queueLength];
-            for (int i = 0; i < queueLength; i++) {
-                queueIDs[i] = scanner.nextInt();
-            }
-            mQueue = MediaStoreUtil.buildSongListFromIds(queueIDs, mContext);
-
-            long[] shuffleQueueIDs;
-            if (scanner.hasNextInt()) {
-                shuffleQueueIDs = new long[queueLength];
-                for (int i = 0; i < queueLength; i++) {
-                    shuffleQueueIDs[i] = scanner.nextInt();
-                }
-                mQueueShuffled = MediaStoreUtil.buildSongListFromIds(shuffleQueueIDs, mContext);
-            } else if (mShuffle) {
-                shuffleQueue(queuePosition, System.currentTimeMillis());
-            }
-
-            setBackingQueue(queuePosition, false);
-            mMediaPlayer.seekTo(currentPosition);
-
-            Util.fetchArtwork(mContext, getNowPlaying())
-                    .subscribeOn(Schedulers.io())
-                    .subscribe(artwork -> {
-                        mArtwork = artwork;
-                    }, throwable -> {
-                        Timber.e(throwable, "Failed to load artwork");
-                        mArtwork = null;
-                    });
-        } catch(FileNotFoundException ignored) {
-            Timber.i("State does not exist. Using empty state");
-            // If there's no queue file, just restore to an empty state
-        } catch (IllegalArgumentException|NoSuchElementException e) {
-            Timber.i(e, "Failed to parse previous state. Resetting...");
-            mQueue.clear();
-            mQueueShuffled.clear();
-            mMediaPlayer.reset();
-        } finally {
-            if (scanner != null) {
-                scanner.close();
-            }
-        }
     }
 
     /**
@@ -759,7 +643,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             mMediaPlayer.pause();
             updateNowPlaying();
             for (MusicPlayerExtension ext : mExtensions) {
-                ext.onSongPaused(getNowPlaying());
+                ext.onSongPaused(this);
             }
         }
         mResumeOnFocusGain = false;
@@ -775,7 +659,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             mMediaPlayer.play();
             updateNowPlaying();
             for (MusicPlayerExtension ext : mExtensions) {
-                ext.onSongResumed(getNowPlaying());
+                ext.onSongResumed(this);
             }
         }
     }
@@ -888,6 +772,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public void seekTo(int mSec) {
         Timber.i("Seeking to %d", mSec);
         mMediaPlayer.seekTo(mSec);
+
+        for (MusicPlayerExtension ext : mExtensions) {
+            ext.onSeekPositionChanged(this);
+        }
     }
 
     /**
@@ -1029,6 +917,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         } else {
             mMediaPlayer.setQueue(mQueue, index, resetSeekPosition);
         }
+
+        for (MusicPlayerExtension ext : mExtensions) {
+            ext.onQueueChanged(this);
+        }
     }
 
     /**
@@ -1167,17 +1059,16 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             return;
         }
 
+        mShuffle = shuffle;
         if (shuffle) {
             Timber.i("Enabling shuffle...");
             shuffleQueue(getQueuePosition(), seed);
-            mMediaPlayer.setQueue(mQueueShuffled, 0, false);
+            setBackingQueue(0, false);
         } else {
             Timber.i("Disabling shuffle...");
             unshuffleQueue();
-            int position = mQueue.indexOf(getNowPlaying());
-            mMediaPlayer.setQueue(mQueue, position, false);
+            setBackingQueue(mQueue.indexOf(getNowPlaying()), false);
         }
-        mShuffle = shuffle;
         updateUi();
         updateMediaSession();
         updateNowPlaying();
@@ -1325,7 +1216,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         Timber.i("onCompletion called");
         logPlayCount(completed, false);
         for (MusicPlayerExtension ext : mExtensions) {
-            ext.onSongCompleted(completed);
+            ext.onSongCompleted(this, completed);
         }
 
         if (mMultiRepeat > 1) {
@@ -1345,7 +1236,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public void onSongStart() {
         Timber.i("Started new song");
         for (MusicPlayerExtension ext : mExtensions) {
-            ext.onSongStarted(getNowPlaying());
+            ext.onSongStarted(this);
         }
         Util.fetchArtwork(mContext, getNowPlaying().getLocation())
                 .subscribeOn(Schedulers.io())
