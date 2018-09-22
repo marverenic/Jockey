@@ -31,11 +31,8 @@
 
     <!-- First start Strings -->
     <string name="first_launch_title">Welcome to Jockey</string>
-    <string name="first_launch_detail"><![CDATA[By using this application, you agree to send
-        anonymous crash reports.
-        <br /><br />All data collected is purely anonymous and helps greatly to improve Jockey.
-        This information will kept confidential with Marverenic and is subject to the
-        <a href="http://try.crashlytics.com/terms/">Crashlytics privacy policy</a>]]>.
+    <string name="first_launch_detail"><![CDATA[By using this application, you agree to Jockey\'s
+        <a href="https://www.marverenic.com/Jockey/privacy-policy.html">privacy policy</a>.]]>
     </string>
 
     <!-- Formatted Strings -->

@@ -30,12 +30,9 @@
 
     <!-- First start Strings -->
     <string name="first_launch_title">Bienvenido a Jockey</string>
-    <string name="first_launch_detail"><![CDATA[Al utilizar esta aplicación, acepta enviar informes
-        de error anónimos.
-
-        <br /><br />Todos los datos recopilados son puramente anónimos y ayudan en gran medida a
-        mejorar Jockey. Esta información se mantendrá confidencial con Marverenic y está sujeta a la
-        <a href="http://try.crashlytics.com/terms/">política de privacidad de Crashlytics</a>]]>.
+    <string name="first_launch_detail"><![CDATA[Al usar esta aplicación, acepta
+        <a href="https://www.marverenic.com/Jockey/privacy-policy.html">la política de privacidad</a>
+        de Jockey.]]>
     </string>
 
     <!-- Menu actions -->
