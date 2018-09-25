@@ -14,6 +14,27 @@ import rx.Observable;
 import rx.exceptions.Exceptions;
 import timber.log.Timber;
 
+/**
+ * This class is responsible for checking for changes to the privacy policy. It does this by
+ * reaching out to a website and looking at the timestamp of the latest policy. If it is newer
+ * than the one accepted on-record, then a notification will be requested.
+ *
+ * The polling logic is as follows
+ *  - Only poll once per session
+ *  - Only poll once per interval (currently 3 days -- see {@link #POLL_INTERVAL_MILLIS})
+ *
+ * The notification logic is as follows
+ *  - Only show the notification once per session (by calling {@link #onPrivacyPolicyUpdateNotified()})
+ *  - Mark the latest policy as seen when {@link #onLatestPrivacyPolicyConfirmed()} is called
+ *  - The same method should be used on first app start to ensure the latest policy is accepted
+ *  - If the user does not explicitly accept the policy, nag them on the next app start
+ *      - Regardless of whether or not they explicitly accept, mark the privacy policy as read
+ *        the next time the alert is shown
+ *
+ * The accepted privacy policy version is stored in shared preferences as the timestamp that the
+ * policy was written. If the policy revision timestamp can't be fetched, then
+ * {@link System#currentTimeMillis()} is used as a fallback.
+ */
 public class PrivacyPolicyManager {
 
     private static final String PREF_AGREED_REVISION = "PrivacyPolicy.agreedRevision";
