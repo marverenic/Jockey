@@ -34,6 +34,9 @@
         <a href="https://www.marverenic.com/Jockey/privacy-policy.html">la política de privacidad</a>
         de Jockey.]]>
     </string>
+    <string name="alert_privacy_policy_updated">La política de privacidad de Jockey ha cambiado</string>
+    <string name="action_read_privacy_policy">Leer</string>
+    <string name="url_privacy_policy">https://www.marverenic.com/Jockey/privacy-policy.html</string>
 
     <!-- Menu actions -->
     <string name="action_refresh">Refrescar Biblioteca</string>
