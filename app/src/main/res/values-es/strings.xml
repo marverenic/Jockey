@@ -190,6 +190,7 @@
     <string name="about_description">Jockey es un reproductor de música para Android 4.1 y superior
         centrado en la simplicidad, el rendimiento y el diseño distribuido bajo una licencia
         de Apache 2.0.</string>
+    <string name="about_open_privacy_policy">Política de privacidad</string>
     <string name="lastfm_header">La información del artista es proporcionada por</string>
     <string name="uses_header">Jockey también utiliza las siguientes bibliotecas de código abierto:</string>
     <string name="uses_aosp_header">Bibliotecas de Soporte de Android</string>
