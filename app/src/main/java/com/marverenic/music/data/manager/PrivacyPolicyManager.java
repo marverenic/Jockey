@@ -1,9 +1,11 @@
 package com.marverenic.music.data.manager;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.marverenic.music.data.api.JockeyStatusService;
 import com.marverenic.music.data.api.PrivacyPolicyMetadata;
+import com.marverenic.music.utils.Util;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -19,12 +21,16 @@ public class PrivacyPolicyManager {
     private static final String PREF_REVISION_NAG = "PrivacyPolicy.nagRevision";
     private static final long POLL_INTERVAL_MILLIS = TimeUnit.DAYS.toMillis(3);
 
+    private Context context;
     private JockeyStatusService service;
     private Observable<PrivacyPolicyMetadata> privacyPolicyMetadata;
     private SharedPreferences sharedPreferences;
     private boolean updateShownInThisSession = false;
 
-    public PrivacyPolicyManager(JockeyStatusService service, SharedPreferences sharedPreferences) {
+    public PrivacyPolicyManager(Context context,
+                                JockeyStatusService service,
+                                SharedPreferences sharedPreferences) {
+        this.context = context;
         this.service = service;
         this.sharedPreferences = sharedPreferences;
     }
@@ -104,7 +110,7 @@ public class PrivacyPolicyManager {
     private boolean shouldCheckForPrivacyPolicyUpdate() {
         long lastCheck = sharedPreferences.getLong(PREF_LAST_UNREVISED_PRIVACY_CHECK, 0);
         return lastCheck + POLL_INTERVAL_MILLIS < System.currentTimeMillis()
-                && !updateShownInThisSession;
+                && !updateShownInThisSession && Util.canAccessInternet(context, true);
     }
 
     private boolean shouldNagPrivacyPolicyUpdate() {

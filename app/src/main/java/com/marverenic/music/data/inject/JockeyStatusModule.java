@@ -1,5 +1,6 @@
 package com.marverenic.music.data.inject;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.marverenic.music.data.api.JockeyStatusApi;
@@ -22,9 +23,10 @@ public class JockeyStatusModule {
 
     @Provides
     @Singleton
-    public PrivacyPolicyManager getPrivacyPolicyManager(JockeyStatusService statusService,
+    public PrivacyPolicyManager getPrivacyPolicyManager(Context context,
+                                                        JockeyStatusService statusService,
                                                         SharedPreferences sharedPreferences) {
-        return new PrivacyPolicyManager(statusService, sharedPreferences);
+        return new PrivacyPolicyManager(context, statusService, sharedPreferences);
     }
 
 }
