@@ -70,18 +70,6 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         if (_mPreferenceStore.showFirstStart()) {
             showFirstRunDialog();
         }
-
-        _mPlayerController.getInfo()
-                .compose(bindToLifecycle())
-                .subscribe(this::showSnackbar, throwable -> {
-                    Timber.e(throwable, "Failed to show info message");
-                });
-
-        _mPlayerController.getError()
-                .compose(bindToLifecycle())
-                .subscribe(this::showSnackbar, throwable -> {
-                    Timber.e(throwable, "Failed to show error message");
-                });
     }
 
     private void showFirstRunDialog() {
@@ -151,6 +139,18 @@ public abstract class BaseActivity extends RxAppCompatActivity {
             recreate();
             return;
         }
+
+        _mPlayerController.getInfo()
+                .compose(bindToLifecycle())
+                .subscribe(this::showSnackbar, throwable -> {
+                    Timber.e(throwable, "Failed to show info message");
+                });
+
+        _mPlayerController.getError()
+                .compose(bindToLifecycle())
+                .subscribe(this::showSnackbar, throwable -> {
+                    Timber.e(throwable, "Failed to show error message");
+                });
 
         _mPrivacyPolicyManager.isPrivacyPolicyUpdated()
                 .compose(bindToLifecycle())
