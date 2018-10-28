@@ -27,8 +27,12 @@ public class SharedPreferenceStore implements PreferenceStore {
     private SharedPreferences mPrefs;
 
     public SharedPreferenceStore(Context context) {
+        this(context, PreferenceManager.getDefaultSharedPreferences(context));
+    }
+
+    public SharedPreferenceStore(Context context, SharedPreferences sharedPreferences) {
         mContext = context;
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        mPrefs = sharedPreferences;
     }
 
     private boolean contains(@StringRes int keyRes) {

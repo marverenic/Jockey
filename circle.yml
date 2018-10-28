@@ -1,0 +1,18 @@
+machine:
+  java:
+    version: openjdk8
+
+dependencies:
+  pre:
+    - echo y | android -s update sdk -u -a -t "tools"
+    - echo y | $ANDROID_HOME/tools/bin/sdkmanager "platform-tools"
+  override:
+    - ./gradlew app:dependencies
+
+compile:
+  override:
+    - ./gradlew clean assembleStandardRelease -PdisablePreDex
+
+test:
+  override:
+    - ./gradlew testStandardRelease -PdisablePreDex

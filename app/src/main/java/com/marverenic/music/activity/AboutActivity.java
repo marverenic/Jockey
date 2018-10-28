@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,7 +14,7 @@ import com.marverenic.music.data.store.ThemeStore;
 
 import javax.inject.Inject;
 
-public class AboutActivity extends BaseActivity implements View.OnClickListener {
+public class AboutActivity extends BaseActivity {
 
     @Inject ThemeStore mThemeStore;
 
@@ -33,14 +32,16 @@ public class AboutActivity extends BaseActivity implements View.OnClickListener 
         ((TextView) findViewById(R.id.aboutVersion)).setText(BuildConfig.VERSION_NAME);
 
         ((ImageView) findViewById(R.id.aboutAppIcon)).setImageBitmap(mThemeStore.getLargeAppIcon());
-        findViewById(R.id.aboutMarverenicLogo).setOnClickListener(this);
-    }
+        findViewById(R.id.aboutMarverenicLogo).setOnClickListener(v -> {
+            Intent webIntent = new Intent(Intent.ACTION_VIEW);
+            webIntent.setData(Uri.parse("http://marverenic.github.io/Jockey/"));
+            startActivity(webIntent);
+        });
 
-
-    @Override
-    public void onClick(View v) {
-        Intent webIntent = new Intent(Intent.ACTION_VIEW);
-        webIntent.setData(Uri.parse("http://marverenic.github.io/Jockey/"));
-        startActivity(webIntent);
+        findViewById(R.id.aboutPrivacyPolicy).setOnClickListener(v -> {
+            Intent webIntent = new Intent(Intent.ACTION_VIEW);
+            webIntent.setData(Uri.parse(getString(R.string.url_privacy_policy)));
+            startActivity(webIntent);
+        });
     }
 }
