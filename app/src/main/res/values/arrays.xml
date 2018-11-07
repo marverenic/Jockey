@@ -10,6 +10,8 @@
         <item>@string/header_artists</item>
         <item>@string/header_albums</item>
         <item>@string/header_genres</item>
+        <item>@string/pref_header_browser_page</item>
+        <item>@string/header_recently_added</item>
     </string-array>
     <string-array name="page_values">
         <item>0</item>
@@ -17,6 +19,8 @@
         <item>2</item>
         <item>3</item>
         <item>4</item>
+        <item>5</item>
+        <item>6</item>
     </string-array>
     <string-array name="colors">
         <item>@string/color_grey</item>
