@@ -19,7 +19,9 @@ import android.view.ViewGroup;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
+import com.marverenic.music.data.annotations.StartPage;
 import com.marverenic.music.data.store.MediaStoreUtil;
+import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.databinding.ActivityLibraryBinding;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
@@ -46,6 +48,7 @@ public class LibraryActivity extends BaseLibraryActivity {
 
     private ActivityLibraryBinding mBinding;
 
+    @Inject PreferenceStore mPrefStore;
     @Inject PlayerController mPlayerController;
 
     public static Intent newNowPlayingIntent(Context context) {
@@ -57,7 +60,8 @@ public class LibraryActivity extends BaseLibraryActivity {
     @Override
     protected Fragment onCreateFragment(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState == null) {
-            return LibraryFragment.newInstance();
+            int startingPage = mPrefStore.getDefaultPage();
+            return createFragmentForInitialPage(startingPage);
         } else {
             int savedPage = savedInstanceState.getInt(EXTRA_SAVED_PAGE_ID, R.id.menu_library_home);
             return createFragmentForSelectedPage(savedPage);
@@ -66,9 +70,9 @@ public class LibraryActivity extends BaseLibraryActivity {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        JockeyApplication.getComponent(this).inject(this);
         super.onCreate(savedInstanceState);
 
-        JockeyApplication.getComponent(this).inject(this);
         onNewIntent(getIntent());
 
         if (savedInstanceState == null) {
@@ -215,6 +219,25 @@ public class LibraryActivity extends BaseLibraryActivity {
             menuItem.setChecked(navMenu.getItem(i).getItemId() == itemId);
         }
         return true;
+    }
+
+    private Fragment createFragmentForInitialPage(@StartPage int startingPage) {
+        switch (startingPage) {
+            case StartPage.PLAYLISTS:
+            case StartPage.SONGS:
+            case StartPage.ARTISTS:
+            case StartPage.ALBUMS:
+            case StartPage.GENRES:
+                return LibraryFragment.newInstance();
+            case StartPage.BROWSER:
+                return MusicBrowserFragment.newInstance();
+            case StartPage.RECENTLY_ADDED:
+                return RecentlyAddedFragment.newInstance();
+            default:
+                Timber.w("Attempted to start on illegal page %d. Defaulting to LibraryFragment",
+                        startingPage);
+                return LibraryFragment.newInstance();
+        }
     }
 
     private Fragment createFragmentForSelectedPage(@IdRes int itemId) {
