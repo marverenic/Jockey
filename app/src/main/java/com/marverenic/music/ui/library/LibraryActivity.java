@@ -75,11 +75,13 @@ public class LibraryActivity extends BaseLibraryActivity {
 
         onNewIntent(getIntent());
 
-        if (savedInstanceState == null) {
-            setSelectedPage(R.id.menu_library_home);
+        Fragment fragment = getContentFragment();
+        if (fragment instanceof MusicBrowserFragment) {
+            setSelectedPage(R.id.menu_library_browse);
+        } else if (fragment instanceof RecentlyAddedFragment) {
+            setSelectedPage(R.id.menu_library_recently_added);
         } else {
-            int savedPage = savedInstanceState.getInt(EXTRA_SAVED_PAGE_ID, R.id.menu_library_home);
-            setSelectedPage(savedPage);
+            setSelectedPage(R.id.menu_library_home);
         }
     }
 
