@@ -54,6 +54,16 @@
                 android:textColor="@color/about_detail_text"
                 android:textSize="@dimen/list_text_header_size" />
 
+            <Button
+                android:id="@+id/aboutPrivacyPolicy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="16dp"
+                android:layout_gravity="end"
+                android:text="@string/about_open_privacy_policy"/>
+
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"

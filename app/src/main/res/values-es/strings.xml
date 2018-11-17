@@ -34,13 +34,13 @@
 
     <!-- First start Strings -->
     <string name="first_launch_title">Bienvenido a Jockey</string>
-    <string name="first_launch_detail"><![CDATA[Al utilizar esta aplicación, acepta enviar informes
-        de error anónimos.
-
-        <br /><br />Todos los datos recopilados son puramente anónimos y ayudan en gran medida a
-        mejorar Jockey. Esta información se mantendrá confidencial con Marverenic y está sujeta a la
-        <a href="http://try.crashlytics.com/terms/">política de privacidad de Crashlytics</a>]]>.
+    <string name="first_launch_detail"><![CDATA[Al usar esta aplicación, acepta
+        <a href="https://www.marverenic.com/Jockey/privacy-policy.html">la política de privacidad</a>
+        de Jockey.]]>
     </string>
+    <string name="alert_privacy_policy_updated">La política de privacidad de Jockey ha cambiado</string>
+    <string name="action_read_privacy_policy">Leer</string>
+    <string name="url_privacy_policy">https://www.marverenic.com/Jockey/privacy-policy.html</string>
 
     <!-- Menu actions -->
     <string name="action_refresh">Refrescar Biblioteca</string>
@@ -206,6 +206,7 @@
     <string name="about_description">Jockey es un reproductor de música para Android 4.1 y superior
         centrado en la simplicidad, el rendimiento y el diseño distribuido bajo una licencia
         de Apache 2.0.</string>
+    <string name="about_open_privacy_policy">Política de privacidad</string>
     <string name="lastfm_header">La información del artista es proporcionada por</string>
     <string name="uses_header">Jockey también utiliza las siguientes bibliotecas de código abierto:</string>
     <string name="uses_aosp_header">Bibliotecas de Soporte de Android</string>
