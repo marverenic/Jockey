@@ -8,6 +8,6 @@ import dagger.Component;
 
 @Singleton
 @Component(modules = {ContextModule.class, TestPlayerModule.class, DemoModule.class,
-        DemoLastFmModule.class})
+        DemoLastFmModule.class, JockeyStatusModule.class})
 public interface TestComponent extends JockeyGraph {
 }

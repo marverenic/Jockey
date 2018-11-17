@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import com.marverenic.music.BR;
 import com.marverenic.music.R;
+import com.marverenic.music.data.annotations.StartPage;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.ui.BaseViewModel;
@@ -33,7 +34,12 @@ public class LibraryViewModel extends BaseViewModel {
         mFragmentManager = fragmentManager;
         mThemeStore = themeStore;
 
-        setPage(preferenceStore.getDefaultPage());
+        int startingPage = preferenceStore.getDefaultPage();
+        if (startingPage < StartPage.PLAYLISTS || startingPage > StartPage.GENRES) {
+            startingPage = StartPage.SONGS;
+        }
+
+        setPage(startingPage);
         mPagerAdapter = new LibraryPagerAdapter(getContext(), fragmentManager);
     }
 
