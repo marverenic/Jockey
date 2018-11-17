@@ -34,9 +34,7 @@ public abstract class BaseWidget extends AppWidgetProvider {
     @Override
     public final void onUpdate(Context context, AppWidgetManager widgetManager, int[] widgetIds) {
         if (isEnabled(context)) {
-            PlayerController.Binding binding = mPlayerController.bind();
             onUpdate(context);
-            mPlayerController.unbind(binding);
         }
     }
 

@@ -9,8 +9,9 @@ import android.support.v4.content.ContextCompat;
 import android.widget.RemoteViews;
 
 import com.marverenic.music.R;
-import com.marverenic.music.ui.library.LibraryActivity;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.ui.library.LibraryActivity;
 import com.marverenic.music.utils.MediaStyleHelper;
 
 import rx.Observable;
@@ -24,13 +25,15 @@ public class CompactWidget extends BaseWidget {
 
     @Override
     protected void onUpdate(Context context) {
+        PlayerController.Binding binding = mPlayerController.bind();
         Observable.just(createBaseView(context))
                 .flatMap(views -> mPlayerController.getNowPlaying().take(1)
                         .map(song -> setSong(context, views, song)))
                 .flatMap(views -> mPlayerController.isPlaying().take(1)
                         .map(isPlaying -> setPlaying(views, isPlaying)))
                 .subscribe(views -> updateAllInstances(context, views),
-                        throwable -> Timber.e(throwable, "Failed to update widget"));
+                        throwable -> Timber.e(throwable, "Failed to update widget"),
+                        () -> mPlayerController.unbind(binding));
     }
 
     private RemoteViews createBaseView(Context context) {
