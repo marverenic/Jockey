@@ -65,6 +65,7 @@ public abstract class SingleFragmentActivity extends BaseActivity {
      * to this activity.
      */
     protected Fragment getContentFragment() {
+        getSupportFragmentManager().executePendingTransactions();
         return getSupportFragmentManager().findFragmentByTag(CONTENT_FRAGMENT_TAG);
     }
 
