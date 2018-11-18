@@ -307,6 +307,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         Timber.i("Initializing MediaSession");
         ComponentName mbrComponent = new ComponentName(mContext, MediaButtonReceiver.class.getName());
         mMediaSession = new MediaSessionCompat(mContext, TAG, mbrComponent, null);
+        mMediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS
+                | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
 
         mMediaSession.setCallback(new MediaSessionCallback(this, mMediaBrowserRoot));
         mMediaSession.setSessionActivity(
