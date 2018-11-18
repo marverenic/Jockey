@@ -7,13 +7,13 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.os.SystemClock;
-import android.support.annotation.Nullable;
 import android.support.v4.media.session.MediaSessionCompat;
 
 import com.marverenic.music.IPlayerService;
@@ -165,8 +165,21 @@ public class ServicePlayerController implements PlayerController {
         Timber.i("Starting service at time %dl", mServiceStartRequestTime);
 
         Intent serviceIntent = PlayerService.newIntent(mContext, true);
-        int bindFlags = Context.BIND_WAIVE_PRIORITY | Context.BIND_AUTO_CREATE;
-        mContext.bindService(serviceIntent, mConnection, bindFlags);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            int bindFlags = Context.BIND_WAIVE_PRIORITY | Context.BIND_AUTO_CREATE;
+            mContext.bindService(serviceIntent, mConnection, bindFlags);
+        } else {
+            /*
+                On Pre-Lollipop devices, directly calling bindService will couple the life of
+                the service to the lifetime of the binding. So if the binding is released, the
+                service will immediately be killed. To compensate, start the service manually and
+                THEN bind to it.
+             */
+            int bindFlags = Context.BIND_WAIVE_PRIORITY;
+            mContext.startService(serviceIntent);
+            mContext.bindService(serviceIntent, mConnection, bindFlags);
+        }
     }
 
     private void unbindService() {
