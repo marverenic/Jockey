@@ -1,10 +1,12 @@
 package com.marverenic.music.widget;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.media.session.MediaButtonReceiver;
 import android.widget.RemoteViews;
 
 import com.marverenic.music.JockeyApplication;
@@ -12,6 +14,10 @@ import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.PlayerController;
 
 import javax.inject.Inject;
+
+import static android.support.v4.media.session.PlaybackStateCompat.ACTION_PLAY_PAUSE;
+import static android.support.v4.media.session.PlaybackStateCompat.ACTION_SKIP_TO_NEXT;
+import static android.support.v4.media.session.PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS;
 
 public abstract class BaseWidget extends AppWidgetProvider {
 
@@ -60,5 +66,17 @@ public abstract class BaseWidget extends AppWidgetProvider {
     protected void updateAllInstances(Context context, RemoteViews delta) {
         AppWidgetManager wm = AppWidgetManager.getInstance(context);
         wm.updateAppWidget(getComponentName(context), delta);
+    }
+
+    protected PendingIntent getSkipNextIntent(Context context) {
+        return MediaButtonReceiver.buildMediaButtonPendingIntent(context, ACTION_SKIP_TO_NEXT);
+    }
+
+    protected PendingIntent getSkipPreviousIntent(Context context) {
+        return MediaButtonReceiver.buildMediaButtonPendingIntent(context, ACTION_SKIP_TO_PREVIOUS);
+    }
+
+    protected PendingIntent getPlayPauseIntent(Context context) {
+        return MediaButtonReceiver.buildMediaButtonPendingIntent(context, ACTION_PLAY_PAUSE);
     }
 }

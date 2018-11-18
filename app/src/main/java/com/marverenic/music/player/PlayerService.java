@@ -18,7 +18,8 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.app.NotificationCompat.MediaStyle;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.view.KeyEvent;
+import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v4.media.session.PlaybackStateCompat.MediaKeyAction;
 
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.IPlayerService;
@@ -215,25 +216,25 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
     private void setupNotificationActions(NotificationCompat.Builder builder) {
         addNotificationAction(builder, R.drawable.ic_skip_previous_36dp,
-                R.string.action_previous, KeyEvent.KEYCODE_MEDIA_PREVIOUS);
+                R.string.action_previous, PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS);
 
         if (musicPlayer.isPlaying()) {
             addNotificationAction(builder, R.drawable.ic_pause_36dp,
-                    R.string.action_pause, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
+                    R.string.action_pause, PlaybackStateCompat.ACTION_PLAY_PAUSE);
         } else {
             addNotificationAction(builder, R.drawable.ic_play_arrow_36dp,
-                    R.string.action_play, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
+                    R.string.action_play, PlaybackStateCompat.ACTION_PLAY_PAUSE);
         }
 
         addNotificationAction(builder, R.drawable.ic_skip_next_36dp,
-                R.string.action_skip, KeyEvent.KEYCODE_MEDIA_NEXT);
+                R.string.action_skip, PlaybackStateCompat.ACTION_SKIP_TO_NEXT);
     }
 
     private void addNotificationAction(NotificationCompat.Builder builder,
                                        @DrawableRes int icon, @StringRes int string,
-                                       int keyEvent) {
+                                       @MediaKeyAction long action) {
 
-        PendingIntent intent = MediaStyleHelper.getActionIntent(this, keyEvent);
+        PendingIntent intent = MediaButtonReceiver.buildMediaButtonPendingIntent(this, action);
         builder.addAction(new NotificationCompat.Action(icon, getString(string), intent));
     }
 

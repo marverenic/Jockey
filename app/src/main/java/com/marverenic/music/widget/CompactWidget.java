@@ -12,14 +12,9 @@ import com.marverenic.music.R;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.library.LibraryActivity;
-import com.marverenic.music.utils.MediaStyleHelper;
 
 import rx.Observable;
 import timber.log.Timber;
-
-import static android.view.KeyEvent.KEYCODE_MEDIA_NEXT;
-import static android.view.KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE;
-import static android.view.KeyEvent.KEYCODE_MEDIA_PREVIOUS;
 
 public class CompactWidget extends BaseWidget {
 
@@ -43,14 +38,9 @@ public class CompactWidget extends BaseWidget {
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, launcherIntent, 0);
         views.setOnClickPendingIntent(R.id.widget_compact_container, pendingIntent);
 
-        views.setOnClickPendingIntent(R.id.widget_next,
-                MediaStyleHelper.getActionIntent(context, KEYCODE_MEDIA_NEXT));
-
-        views.setOnClickPendingIntent(R.id.widget_play_pause,
-                MediaStyleHelper.getActionIntent(context, KEYCODE_MEDIA_PLAY_PAUSE));
-
-        views.setOnClickPendingIntent(R.id.widget_previous,
-                MediaStyleHelper.getActionIntent(context, KEYCODE_MEDIA_PREVIOUS));
+        views.setOnClickPendingIntent(R.id.widget_next, getSkipNextIntent(context));
+        views.setOnClickPendingIntent(R.id.widget_play_pause, getPlayPauseIntent(context));
+        views.setOnClickPendingIntent(R.id.widget_previous, getSkipPreviousIntent(context));
 
         @ColorInt int buttonColor = ContextCompat.getColor(context, R.color.widget_button);
 
