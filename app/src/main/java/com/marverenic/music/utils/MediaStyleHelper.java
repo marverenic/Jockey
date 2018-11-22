@@ -1,15 +1,12 @@
 package com.marverenic.music.utils;
 
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.support.v4.app.NotificationCompat;
-import android.view.KeyEvent;
 
 import com.marverenic.music.R;
 
@@ -53,21 +50,5 @@ public class MediaStyleHelper {
         }
 
         return builder;
-    }
-
-    /**
-     * Create a {@link PendingIntent} appropriate for a MediaStyle notification's action. Assumes
-     * you are using a media button receiver.
-     * @param context Context used to construct the pending intent.
-     * @param mediaKeyEvent KeyEvent code to send to your media button receiver.
-     * @return An appropriate pending intent for sending a media button to your media button
-     *      receiver.
-     */
-    public static PendingIntent getActionIntent(Context context, int mediaKeyEvent) {
-        Intent intent = new Intent(Intent.ACTION_MEDIA_BUTTON);
-        intent.setPackage(context.getPackageName());
-        intent.putExtra(Intent.EXTRA_KEY_EVENT,
-                new KeyEvent(KeyEvent.ACTION_DOWN, mediaKeyEvent));
-        return PendingIntent.getBroadcast(context, mediaKeyEvent, intent, 0);
     }
 }

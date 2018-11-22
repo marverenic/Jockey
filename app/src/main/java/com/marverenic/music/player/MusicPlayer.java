@@ -307,6 +307,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         Timber.i("Initializing MediaSession");
         ComponentName mbrComponent = new ComponentName(mContext, MediaButtonReceiver.class.getName());
         mMediaSession = new MediaSessionCompat(mContext, TAG, mbrComponent, null);
+        mMediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS
+                | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
 
         mMediaSession.setCallback(new MediaSessionCallback(this, mMediaBrowserRoot));
         mMediaSession.setSessionActivity(
@@ -761,7 +763,9 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         requireNotReleased();
         Timber.i("stop() called");
         pause();
-        seekTo(0);
+        if (mCallback != null) {
+            mCallback.onPlaybackStop();
+        }
     }
 
     /**
@@ -1321,6 +1325,14 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
          * {@link MediaPlayer} changes states.
          */
         void onPlaybackChange();
+
+        /**
+         * Called when a MusicPlayer stops playback. This method will always be called, even if the
+         * event was caused by an external source. This method should be implemented to handle
+         * any side effects of a MusicPlayer being stopped, which may happen due to user interaction
+         * from other components of the system.
+         */
+        void onPlaybackStop();
     }
 
     private static class MediaSessionCallback extends MediaSessionCompat.Callback {

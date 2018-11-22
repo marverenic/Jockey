@@ -18,7 +18,8 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.app.NotificationCompat.MediaStyle;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.view.KeyEvent;
+import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v4.media.session.PlaybackStateCompat.MediaKeyAction;
 
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.IPlayerService;
@@ -46,8 +47,6 @@ import javax.inject.Inject;
 import timber.log.Timber;
 
 public class PlayerService extends Service implements MusicPlayer.OnPlaybackChangeListener {
-
-    public static final String ACTION_STOP = "PlayerService.stop";
 
     private static final String EXTRA_START_SILENT = "PlayerService.SILENT_START";
 
@@ -126,8 +125,6 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
             if (intent.hasExtra(Intent.EXTRA_KEY_EVENT)) {
                 MediaButtonReceiver.handleIntent(musicPlayer.getMediaSession(), intent);
                 Timber.i(intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT).toString());
-            } else if (ACTION_STOP.equals(intent.getAction())) {
-                stop();
             }
         }
         return START_STICKY;
@@ -192,13 +189,16 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         setupNotificationActions(builder);
 
+        PendingIntent stopIntent = MediaButtonReceiver.buildMediaButtonPendingIntent(this,
+                PlaybackStateCompat.ACTION_STOP);
+
         builder.setSmallIcon(getNotificationIcon())
-                .setDeleteIntent(getStopIntent())
+                .setDeleteIntent(stopIntent)
                 .setStyle(
                         new MediaStyle()
                                 .setShowActionsInCompactView(0, 1, 2)
                                 .setShowCancelButton(true)
-                                .setCancelButtonIntent(getStopIntent())
+                                .setCancelButtonIntent(stopIntent)
                                 .setMediaSession(musicPlayer.getMediaSession().getSessionToken()));
 
         showNotification(builder.build());
@@ -215,33 +215,26 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
     private void setupNotificationActions(NotificationCompat.Builder builder) {
         addNotificationAction(builder, R.drawable.ic_skip_previous_36dp,
-                R.string.action_previous, KeyEvent.KEYCODE_MEDIA_PREVIOUS);
+                R.string.action_previous, PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS);
 
         if (musicPlayer.isPlaying()) {
             addNotificationAction(builder, R.drawable.ic_pause_36dp,
-                    R.string.action_pause, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
+                    R.string.action_pause, PlaybackStateCompat.ACTION_PLAY_PAUSE);
         } else {
             addNotificationAction(builder, R.drawable.ic_play_arrow_36dp,
-                    R.string.action_play, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
+                    R.string.action_play, PlaybackStateCompat.ACTION_PLAY_PAUSE);
         }
 
         addNotificationAction(builder, R.drawable.ic_skip_next_36dp,
-                R.string.action_skip, KeyEvent.KEYCODE_MEDIA_NEXT);
+                R.string.action_skip, PlaybackStateCompat.ACTION_SKIP_TO_NEXT);
     }
 
     private void addNotificationAction(NotificationCompat.Builder builder,
                                        @DrawableRes int icon, @StringRes int string,
-                                       int keyEvent) {
+                                       @MediaKeyAction long action) {
 
-        PendingIntent intent = MediaStyleHelper.getActionIntent(this, keyEvent);
+        PendingIntent intent = MediaButtonReceiver.buildMediaButtonPendingIntent(this, action);
         builder.addAction(new NotificationCompat.Action(icon, getString(string), intent));
-    }
-
-    private PendingIntent getStopIntent() {
-        Intent intent = new Intent(this, PlayerService.class);
-        intent.setAction(ACTION_STOP);
-
-        return PendingIntent.getService(this, 0, intent, 0);
     }
 
     private void showNotification(Notification notification) {
@@ -346,6 +339,11 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     @Override
     public void onPlaybackChange() {
         notifyNowPlaying();
+    }
+
+    @Override
+    public void onPlaybackStop() {
+        stop();
     }
 
     public static class PlayerServiceBinder extends IPlayerService.Stub {
