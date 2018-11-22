@@ -166,20 +166,9 @@ public class ServicePlayerController implements PlayerController {
 
         Intent serviceIntent = PlayerService.newIntent(mContext, true);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int bindFlags = Context.BIND_WAIVE_PRIORITY | Context.BIND_AUTO_CREATE;
-            mContext.bindService(serviceIntent, mConnection, bindFlags);
-        } else {
-            /*
-                On Pre-Lollipop devices, directly calling bindService will couple the life of
-                the service to the lifetime of the binding. So if the binding is released, the
-                service will immediately be killed. To compensate, start the service manually and
-                THEN bind to it.
-             */
-            int bindFlags = Context.BIND_WAIVE_PRIORITY;
-            mContext.startService(serviceIntent);
-            mContext.bindService(serviceIntent, mConnection, bindFlags);
-        }
+        int bindFlags = Context.BIND_WAIVE_PRIORITY | Context.BIND_AUTO_CREATE;
+        mContext.bindService(serviceIntent, mConnection, bindFlags);
+        mContext.startService(serviceIntent);
     }
 
     private void unbindService() {
