@@ -34,10 +34,11 @@ apiSecret="yourApiSecret"
 apiKey="yourApiKey"
 ```
 
-If you want to remove the crashlytics dependency instead, simply delete the `com.marverenic.music.utils.CrashlyticsTree` class, and remove references to `CrashlyticsTree` from `com.marverenic.music.JockeyApplication#setupTimber()`.
+If you want to remove the Crashlytics dependency instead, simply delete the `com.marverenic.music.utils.CrashlyticsTree` class, and remove references to `CrashlyticsTree` from `com.marverenic.music.JockeyApplication#setupTimber()`.
 
 ### Bugs & contributing
-Feel free to post suggestions, bugs, comments on code in the project, or just anything that isn't as smooth as it should be as an issue on Github. You don't need to submit crashes unless you're running a version of Jockey you've built yourself – crashes are automatically reported through Crashlytics. If you're feeling adventerous, you're more than welcome to fork Jockey and submit a pull request either to implement a new feature, fix a bug, or clean up the code.
+Feel free to post suggestions, bugs, comments on code in the project, or just anything that isn't as smooth as it should be as an issue on Github. You don't need to submit crashes unless you're running a version of Jockey you've built yourself – crashes are automatically reported through Crashlytics.
+If you're feeling adventurous, you're more than welcome to fork Jockey and submit a pull request either to implement a new feature, fix a bug, or clean up the code.
 
 #### Submitting Feature Requests
 Feature requests should be submitted through the Github issue tracker. Before submitting a feature request, make sure that it hasn't been requested before. If it's already been requested, but is in a closed issue that hasn't been marked as "wontfix", feel free to resubmit it in case it's gotten lost.
@@ -47,9 +48,11 @@ When submitting a feature request, please make a single issue for each feature r
 #### Pivotal Tracker
 Jockey has a [Pivotal Tracker page](https://www.pivotaltracker.com/n/projects/1594253) which contains the most up-to-date information about planned work. This dashboard is public, but is not open for modification. The best way to add new stories to the dashboard is through Github issues.
 
-Jockey's Pivotal Tracker page includes stories for upcomming features, chores for developer-oriented tasks, bugs, and release markers. Stories are assigned point values using the fibonacci scale to determine roughly how long it will take to implement (1 point is a couple of hours, 2 points is several hours, 3 points is roughly a full day or part of a weekend, 5 points is most of a week, and 8 points is more than a week). These point values are only estimates and shouldn't be treated as guarantees of how long it will take to implement a feature. The time associated with a story's point value can also vary greatly depending on how much time I can devote to the project during the week.
+Jockey's Pivotal Tracker page includes stories for upcoming features, chores for developer-oriented tasks, bugs, and release markers.
+Stories are assigned point values using the fibonacci scale to determine roughly how long it will take to implement (1 point is a couple of hours, 2 points is several hours, 3 points is roughly a full day or part of a weekend, 5 points is most of a week, and 8 points is more than a week).
+These point values are only estimates and shouldn't be treated as guarantees of how long it will take to implement a feature. The time associated with a story's point value can also vary greatly depending on how much time I can devote to the project during the week.
 
 Similarly, release markers, release dates, and prioritizations are very flexible and can change at any time.
 
 ### License
-Jockey is licensed under an Apache 2.0 license
+Jockey is licensed under an Apache 2.0 license.

@@ -1,26 +1,74 @@
 buildscript {
     repositories {
-        maven { url 'https://maven.fabric.io/public' }
+        maven { url "https://maven.fabric.io/public" }
     }
 
     dependencies {
         //noinspection GradleDynamicVersion
-        classpath 'io.fabric.tools:gradle:1.+'
+        classpath 'io.fabric.tools:gradle:1.27.0'
     }
+}
+
+repositories {
+    maven { url "https://maven.fabric.io/public" }
 }
 
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
-repositories {
-    maven { url 'https://maven.fabric.io/public' }
-}
-
-
 android {
-    compileSdkVersion rootProject.targetSdkVersion
+    compileSdkVersion rootProject.ext.targetSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        applicationId "com.marverenic.music"
+        minSdkVersion 16
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 40323
+        versionName "3.0 beta 5"
+        resConfigs "en", "es"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            // Setting the "NO_CRASHLYTICS" environment variable to "true" prevents crashlytics from
+            // being processed on release builds. This is allows Travis CI builds to succeed without
+            // checking API keys into version control
+            boolean disableCrashlytics = "true".equalsIgnoreCase("$System.env.NO_CRASHLYTICS")
+            ext.enableCrashlytics = !disableCrashlytics
+        }
+        debug {
+            applicationIdSuffix ".debug"
+            versionNameSuffix ".debug"
+            ext.enableCrashlytics = false
+        }
+    }
+
+    flavorDimensions "implementation"
+    productFlavors {
+        hathor {
+            dimension "implementation"
+        }
+        marketing {
+            dimension "implementation"
+            applicationIdSuffix ".demo"
+            versionNameSuffix ".demo"
+            ext.enableCrashlytics = false
+        }
+    }
+
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
 
     compileOptions {
+        encoding = 'UTF-8'
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -38,104 +86,98 @@ android {
             includeAndroidResources = true
         }
     }
-
-    defaultConfig {
-        applicationId "com.marverenic.music"
-        minSdkVersion 16
-        targetSdkVersion rootProject.targetSdkVersion
-        versionCode 40323
-        versionName "3.0 beta 5"
-        resConfigs "en", "es"
-    }
-
-    buildTypes {
-        release {
-            shrinkResources true
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            zipAlignEnabled true
-
-            // Setting the "NO_CRASHLYTICS" environment variable to "true" prevents crashlytics from
-            // being processed on release builds. This is allows Travis CI builds to succeed without
-            // checking API keys into version control
-            boolean disableCrashlytics = "true".equalsIgnoreCase("$System.env.NO_CRASHLYTICS")
-            ext.enableCrashlytics = !disableCrashlytics
-        }
-        debug {
-            applicationIdSuffix ".debug"
-            versionNameSuffix '.debug'
-            ext.enableCrashlytics = false
-        }
-    }
-
-    flavorDimensions "implementation"
-    productFlavors {
-        hathor {
-            dimension "implementation"
-        }
-
-        marketing {
-            dimension "implementation"
-            applicationIdSuffix ".demo"
-            versionNameSuffix ".demo"
-            ext.enableCrashlytics = false
-        }
-    }
-
-    bundle {
-        language {
-            enableSplit = false
-        }
-    }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation project(':seekarc')
     implementation project(':exoplayer-flac')
+    implementation project(':seekarc')
 
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.robolectric:robolectric:3.5.1'
-    testImplementation 'org.robolectric:shadows-support-v4:3.3.2'
+    // Support libraries
+    implementation "com.android.support:design:${rootProject.ext.supportLibVersion}"
+    implementation "com.android.support:support-v4:${rootProject.ext.supportLibVersion}"
+    implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
+    implementation "com.android.support:cardview-v7:${rootProject.ext.supportLibVersion}"
+    implementation "com.android.support:palette-v7:${rootProject.ext.supportLibVersion}"
+    implementation "com.android.support:recyclerview-v7:${rootProject.ext.supportLibVersion}"
+    implementation "com.android.support:preference-v14:${rootProject.ext.supportLibVersion}"
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
 
+    implementation "android.arch.persistence.room:runtime:${rootProject.ext.roomVersion}"
+    annotationProcessor "android.arch.persistence.room:compiler:${rootProject.ext.roomVersion}"
+    testImplementation "android.arch.persistence.room:testing:${rootProject.ext.roomVersion}"
+
+    /** Dagger */
+    // TODO: Update to latest version (https://github.com/google/dagger/releases)
+    implementation 'com.google.dagger:dagger:2.6.1' //2.20
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.6.1' //2.20
+
+    /** ReactiveX */
+    // TODO: Migrate to RxJava2 (https://github.com/ReactiveX/RxJava) (https://github.com/ReactiveX/RxAndroid)
+    implementation 'io.reactivex:rxjava:1.1.10' //1.3.8 //(https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md)
+    //implementation 'io.reactivex.rxjava2:rxjava:2.2.4' //(https://github.com/ReactiveX/RxJava/blob/2.x/CHANGES.md)
+    implementation 'io.reactivex:rxandroid:1.2.1' //(https://github.com/ReactiveX/RxAndroid/blob/1.x/CHANGES.md)
+    //implementation 'io.reactivex.rxjava2:rxandroid:2.1.0' //(https://github.com/ReactiveX/RxAndroid/blob/2.x/CHANGES.md)
+
+    /** RxLifecycle */
+    /* TODO: Update RxLifecycle to latest version, migrate to RxLifecycle2, then migrate to RxLifecycle3
+     TODO: (https://github.com/trello/RxLifecycle/blob/master/CHANGELOG.md) */
+    implementation 'com.trello:rxlifecycle:0.6.1' //1.0
+    //implementation 'com.trello.rxlifecycle2:rxlifecycle:2.2.2'
+    //implementation 'com.trello.rxlifecycle3:rxlifecycle:3.0.0'
+    implementation 'com.trello:rxlifecycle-components:0.6.1' //1.0
+    //implementation 'com.trello.rxlifecycle2:rxlifecycle-components:2.2.2'
+    //implementation 'com.trello.rxlifecycle3:rxlifecycle-components:3.0.0'
+
+    /** RxPermissions */
+    // TODO: Update to latest version (https://github.com/tbruyelle/RxPermissions)
+    implementation 'com.tbruyelle.rxpermissions:rxpermissions:0.7.1@aar' //0.9.4
+    //implementation 'com.github.tbruyelle:rxpermissions:0.10.2'
+
+    /** RxLint */
+    implementation 'nl.littlerobots.rxlint:rxlint:1.7.1'
+
+    /** Retrofit */
+    // TODO: Update to latest version (https://github.com/square/retrofit/blob/master/CHANGELOG.md)
+    implementation 'com.squareup.retrofit2:retrofit:2.0.2' //2.5.0
+    implementation 'com.squareup.retrofit2:converter-gson:2.0.2' //2.5.0
+    implementation 'com.squareup.retrofit2:adapter-rxjava:2.0.2' //2.5.0
+
+    /** ExoPlayer */
+    // TODO: Update to latest version (https://github.com/google/ExoPlayer/blob/release-v2/RELEASENOTES.md)
+    implementation 'com.google.android.exoplayer:exoplayer:2.6.1' //2.9.2
+
+    /** Timber */
+    // TODO: Update to latest version (https://github.com/JakeWharton/timber/blob/master/CHANGELOG.md)
+    implementation 'com.jakewharton.timber:timber:4.1.2' //4.7.1
+
+    /** Glide */
+    // TODO: Migrate Glide 3.x -> 4.x for decent performance improvements (https://bumptech.github.io/glide/doc/migrating.html)
+    implementation 'com.github.bumptech.glide:glide:3.7.0' //3.8.0, 4.0.0, 4.8.0
+
+    /** Gson */
+    // TODO: Update to latest version (https://github.com/google/gson/blob/master/CHANGELOG.md)
+    implementation 'com.google.code.gson:gson:2.7' //2.8.5
+
+    /** Heterogeneous Adapter */
     implementation 'com.marverenic.heterogeneousadapter:heterogeneousadapter:1.1'
 
-    implementation "com.android.support:appcompat-v7:$rootProject.supportLibVersion"
-    implementation "com.android.support:design:$rootProject.supportLibVersion"
-    implementation "com.android.support:palette-v7:$rootProject.supportLibVersion"
-    implementation "com.android.support:recyclerview-v7:$rootProject.supportLibVersion"
-    implementation "com.android.support:cardview-v7:$rootProject.supportLibVersion"
-    implementation "com.android.support:preference-v14:$rootProject.supportLibVersion"
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    implementation 'com.google.android.exoplayer:exoplayer:2.6.1'
+    /** RecyclerView-FastScroll */
+    // TODO: Update to latest version (https://github.com/timusus/RecyclerView-FastScroll)
+    implementation 'com.simplecityapps:recyclerview-fastscroll:1.0.16' //1.0.20
 
-    implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion"
-    annotationProcessor "android.arch.persistence.room:compiler:$rootProject.roomVersion"
-    testImplementation "android.arch.persistence.room:testing:$rootProject.roomVersion"
+    /** Vertical SeekBar */
+    // TODO: Update to latest version (https://github.com/h6ah4i/android-verticalseekbar/blob/master/RELEASE-NOTES.md)
+    implementation 'com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:0.5.2' //1.0.0
 
-    implementation 'com.github.bumptech.glide:glide:3.7.0'
-    implementation 'com.google.code.gson:gson:2.7'
-
-    implementation 'com.simplecityapps:recyclerview-fastscroll:1.0.16'
-    implementation 'com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:0.5.2'
-
-    implementation 'com.google.dagger:dagger:2.6'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.6'
-
-    implementation 'io.reactivex:rxjava:1.1.6'
-    implementation 'io.reactivex:rxandroid:1.2.1'
-    implementation 'com.trello:rxlifecycle:0.6.1'
-    implementation 'com.trello:rxlifecycle-components:0.6.1'
-    implementation 'com.tbruyelle.rxpermissions:rxpermissions:0.7.0@aar'
-    implementation 'nl.littlerobots.rxlint:rxlint:1.0'
-
-    implementation 'com.squareup.retrofit2:retrofit:2.0.2'
-    implementation 'com.squareup.retrofit2:converter-gson:2.0.2'
-    implementation 'com.squareup.retrofit2:adapter-rxjava:2.0.2'
-
-    implementation 'com.jakewharton.timber:timber:4.1.2'
-
-    implementation('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
+    /** Crashlytics */
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar', {
         transitive = true
-    }
+    })
+
+    /** Test libraries */
+    testImplementation 'junit:junit:4.13-beta-1'
+    // TODO: Update to Robolectric 4.x (https://github.com/robolectric/robolectric/releases)
+    testImplementation 'org.robolectric:robolectric:3.5.1' //4.1
+    testImplementation 'org.robolectric:shadows-supportv4:3.5.1' //4.1
 }
