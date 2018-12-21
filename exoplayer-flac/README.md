@@ -13,7 +13,7 @@ more external libraries as described below. These are licensed separately.
 
 ## Build instructions ##
 
-To use this extension you need to clone the ExoPlayer repository and depend on
+To use this extension, you need to clone the ExoPlayer repository and depend on
 its modules locally. Instructions for doing this can be found in ExoPlayer's
 [top level README][].
 
@@ -34,19 +34,19 @@ FLAC_EXT_PATH="${EXOPLAYER_ROOT}/extensions/flac/src/main"
 NDK_PATH="<path to Android NDK>"
 ```
 
-* Download and extract flac-1.3.1 as "${FLAC_EXT_PATH}/jni/flac" folder:
+* Download and extract flac-1.3.2 as "${FLAC_EXT_PATH}/jni/flac" folder:
 
 ```
 cd "${FLAC_EXT_PATH}/jni" && \
-curl https://ftp.osuosl.org/pub/xiph/releases/flac/flac-1.3.1.tar.xz | tar xJ && \
-mv flac-1.3.1 flac
+curl https://ftp.osuosl.org/pub/xiph/releases/flac/flac-1.3.2.tar.xz | tar xJ && \
+mv flac-1.3.2 flac
 ```
 
 * Build the JNI native libraries from the command line:
 
 ```
 cd "${FLAC_EXT_PATH}"/jni && \
-${NDK_PATH}/ndk-build APP_ABI=all -j4
+${NDK_PATH}/ndk-build.cmd APP_ABI=all -j4
 ```
 
 [top level README]: https://github.com/google/ExoPlayer/blob/release-v2/README.md
@@ -54,7 +54,7 @@ ${NDK_PATH}/ndk-build APP_ABI=all -j4
 
 ## Using the extension ##
 
-Once you've followed the instructions above to check out, build and depend on
+Once you've followed the instructions above to check out, build, and depend on
 the extension, the next step is to tell ExoPlayer to use the extractor and/or
 renderer.
 

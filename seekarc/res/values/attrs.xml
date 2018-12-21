@@ -40,9 +40,9 @@
         <attr name="clockwise" format="boolean" />
         <attr name="enabled" format="boolean" />
     </declare-styleable>
-    
+
     <declare-styleable name="SeekArcTheme">
-        <attr name="seekArcStyle" format="reference"></attr>        
+        <attr name="seekArcStyle" format="reference"></attr>
     </declare-styleable>
 
 </resources>

@@ -1,13 +1,15 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion rootProject.targetSdkVersion
+    compileSdkVersion rootProject.ext.targetSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion 14
         versionCode 2
         versionName "1.1"
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -26,8 +28,14 @@ android {
             assets.srcDirs = ['assets']
         }
     }
+
+    compileOptions {
+        encoding = 'UTF-8'
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
-    implementation "com.android.support:appcompat-v7:$rootProject.supportLibVersion"
+    implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
 }
