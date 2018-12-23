@@ -8,6 +8,9 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.media.audiofx.AudioEffect;
 import android.net.ConnectivityManager;
@@ -282,6 +285,24 @@ public final class Util {
 
     private static boolean isMimeTypeAudio(String mime) {
         return mime != null && mime.startsWith("audio") || AUDIO_MIMES.contains(mime);
+    }
+
+    public static Bitmap drawableToBitmap(Drawable drawable) {
+        if (drawable instanceof BitmapDrawable) {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+            if (bitmapDrawable.getBitmap() != null) {
+                return bitmapDrawable.getBitmap();
+            }
+        }
+
+        int width = Math.max(drawable.getIntrinsicWidth(), 1);
+        int height = Math.max(drawable.getIntrinsicHeight(), 1);
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
     }
 
 }
