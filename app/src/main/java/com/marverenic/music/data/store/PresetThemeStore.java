@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -29,6 +28,7 @@ import com.marverenic.music.data.annotations.AccentTheme;
 import com.marverenic.music.data.annotations.PrimaryTheme;
 import com.marverenic.music.player.PlayerService;
 import com.marverenic.music.ui.library.LibraryActivity;
+import com.marverenic.music.utils.Util;
 
 import static android.util.DisplayMetrics.DENSITY_HIGH;
 import static android.util.DisplayMetrics.DENSITY_LOW;
@@ -205,7 +205,7 @@ public class PresetThemeStore implements ThemeStore {
     }
 
     private Bitmap getAppIcon() {
-        return BitmapFactory.decodeResource(mContext.getResources(), getIconId());
+        return Util.drawableToBitmap(mContext.getResources().getDrawable(getIconId()));
     }
 
     @Override
