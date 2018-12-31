@@ -19,14 +19,14 @@ public interface ReadOnlyPreferenceStore {
     boolean enableNowPlayingGestures();
     @StartPage int getDefaultPage();
     @PrimaryTheme int getPrimaryColor();
-    @AccentTheme
-    int getAccentColor();
+    @AccentTheme int getAccentColor();
     @BaseTheme int getBaseColor();
     @PrimaryTheme int getIconColor();
 
     boolean resumeOnHeadphonesConnect();
     boolean isShuffled();
     int getRepeatMode();
+    boolean isSlsBroadcastingEnabled();
 
     long getLastSleepTimerDuration();
 

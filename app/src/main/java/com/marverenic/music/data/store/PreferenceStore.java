@@ -28,6 +28,7 @@ public interface PreferenceStore extends ReadOnlyPreferenceStore {
     void toggleShuffle();
     void setShuffle(boolean shuffle);
     void setRepeatMode(int repeatMode);
+    void setSlsBroadcastingEnabled(boolean enabled);
 
     void setLastSleepTimerDuration(long timeInMillis);
 

@@ -23,6 +23,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcel
     private final boolean mResumeOnHeadphonesConnect;
     private final boolean mShuffled;
     private final int mRepeatMode;
+    private final boolean mSlsEnabled;
     private final long mPreviousSleepTimerDurationMillis;
     private final int mEqualizerPresetId;
     private final boolean mEqualizerEnabled;
@@ -43,6 +44,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcel
         mShuffled = preferencesStore.isShuffled();
         mPreviousSleepTimerDurationMillis = preferencesStore.getLastSleepTimerDuration();
         mRepeatMode = preferencesStore.getRepeatMode();
+        mSlsEnabled = preferencesStore.isSlsBroadcastingEnabled();
         mEqualizerPresetId = preferencesStore.getEqualizerPresetId();
         mEqualizerEnabled = preferencesStore.getEqualizerEnabled();
 
@@ -69,6 +71,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcel
         mShuffled = in.readByte() != 0;
         mPreviousSleepTimerDurationMillis = in.readLong();
         mRepeatMode = in.readInt();
+        mSlsEnabled = in.readByte() != 0;
         mEqualizerPresetId = in.readInt();
         mEqualizerEnabled = in.readByte() != 0;
         mEqualizerSettings = in.readString();
@@ -90,6 +93,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcel
         dest.writeByte((byte) (mShuffled ? 1 : 0));
         dest.writeLong(mPreviousSleepTimerDurationMillis);
         dest.writeInt(mRepeatMode);
+        dest.writeByte((byte) (mSlsEnabled ? 1 : 0));
         dest.writeInt(mEqualizerPresetId);
         dest.writeByte((byte) (mEqualizerEnabled ? 1 : 0));
         dest.writeString(mEqualizerSettings);
@@ -175,6 +179,11 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcel
     @Override
     public int getRepeatMode() {
         return mRepeatMode;
+    }
+
+    @Override
+    public boolean isSlsBroadcastingEnabled() {
+        return mSlsEnabled;
     }
 
     @Override
