@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.marverenic.music.ui.settings.sls.SlsPreferenceViewModel"/>
+    </data>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="?android:actionBarSize"
+            android:background="@color/background_elevated"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:paddingStart="@dimen/global_padding"
+            android:paddingEnd="@dimen/global_padding"
+            android:elevation="2dp"
+            android:onClick="@{() -> viewModel.toggleSlsBroadcastsEnabled()}"
+            android:clickable="@{viewModel.slsToggleEnabled}"
+            tools:targetApi="lollipop">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/list_padding"
+                android:layout_marginLeft="@dimen/list_padding"
+                android:layout_weight="1"
+                android:text="@string/pref_sls_scrobble"
+                android:enabled="@{viewModel.slsToggleEnabled}"
+                style="@style/TextAppearance.AppCompat.Subhead"/>
+
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/list_padding"
+                android:layout_marginEnd="@dimen/list_padding"
+                android:enabled="@{viewModel.slsToggleEnabled}"
+                android:checked="@={viewModel.slsBroadcastsEnabled}"/>
+
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/global_padding"
+                android:layout_marginEnd="@dimen/global_padding">
+
+                <TextView
+                    android:id="@+id/sls_preference_action"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/list_padding"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:background="?attr/selectableItemBackground"
+                    android:text="@{viewModel.actionLabel}"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:onClick="@{() -> viewModel.onClickActionItem()}"
+                    tools:text="@string/pref_sls_action_open"/>
+
+                <View
+                    android:id="@+id/sls_preference_action_separator"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/divider_height"
+                    android:background="@color/divider"
+                    app:layout_constraintTop_toBottomOf="@id/sls_preference_action"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <TextView
+                    android:id="@+id/readme_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.slsDescription}"
+                    android:padding="@dimen/list_padding"
+                    android:linksClickable="true"
+                    app:layout_constraintTop_toBottomOf="@id/sls_preference_action_separator"
+                    tools:text="@string/pref_sls_description"/>
+
+            </android.support.constraint.ConstraintLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
+</layout>

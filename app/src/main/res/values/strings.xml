@@ -284,6 +284,22 @@
     <string name="pref_directory_include">Include folders</string>
     <string name="pref_directory_exclude">Exclude folders</string>
     <string name="pref_equalizer">Equalizer</string>
+    <string name="pref_sls_scrobble">Scrobble with Simple Last.fm Scrobbler</string>
+    <string name="pref_sls_action_install">Install Simple Last.fm Scrobbler</string>
+    <string name="pref_sls_action_open">Open Simple Last.fm Scrobbler settings</string>
+    <string name="pref_sls_description">
+        Jockey can integrate with Simple Last.fm Scrobbler to post your music listening history
+        online. After enabling this setting in Jockey, make sure you have set up Simple Last.fm
+        Scrobbler. The next time you play a song, it will be scrobbled your account.
+    </string>
+    <string name="pref_sls_description_not_installed"><![CDATA[
+        Jockey can post your music listening history to online services like Last.fm by integrating
+        with a third-party application. To get started, download Simple Last.fm Scrobbler from the
+        Google Play Store.
+        <br/><br/>
+        You can find more information about Simple Last.fm Scrobbler
+        <a href="https://github.com/tgwizard/sls/">on its website</a>.]]>
+    </string>
     <string name="pref_resume_on_connect">Play when plugging in headphones</string>
     <string name="pref_resume_on_connect_detail_on">Plugging in headphones will resume playback if Jockey is running</string>
     <string name="pref_resume_on_connect_detail_off">Plugging in headphones will never resume playback</string>
@@ -322,6 +338,7 @@
     <string name="pref_key_create_launcher_icon" translatable="false">Action.newShortcut</string>
     <string name="pref_key_shuffle" translatable="false">Player.shuffle</string>
     <string name="pref_key_repeat" translatable="false">Player.repeat</string>
+    <string name="pref_key_send_sls_broadcasts" translatable="false">Player.enableSlsBroadcasts</string>
     <string name="pref_key_multi_repeat" translatable="false">Player.multiRepeat</string>
     <string name="pref_key_sleep_timer" translatable="false">Player.sleepTimer</string>
     <string name="pref_key_last_sleep_timer" translatable="false">Player.defaultSleepTimer</string>
