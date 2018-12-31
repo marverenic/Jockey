@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 
 import com.marverenic.music.data.store.MediaStoreUtil;
+import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.PlayerState;
@@ -25,7 +26,7 @@ public class PersistenceExtension extends MusicPlayerExtension {
     }
 
     @Override
-    public void onCreateMusicPlayer(MusicPlayer musicPlayer) {
+    public void onCreateMusicPlayer(MusicPlayer musicPlayer, ReadOnlyPreferenceStore preferences) {
         PlaybackPersistenceManager.State state = mPlaybackPersistenceManager.getStateBlocking();
 
         musicPlayer.restorePlayerState(new PlayerState.Builder()
