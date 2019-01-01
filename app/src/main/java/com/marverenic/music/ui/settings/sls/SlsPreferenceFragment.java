@@ -1,5 +1,9 @@
 package com.marverenic.music.ui.settings.sls;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -26,10 +30,13 @@ public class SlsPreferenceFragment extends BaseFragment {
     private FragmentSlsPreferenceBinding binding;
     private SlsPreferenceViewModel viewModel;
 
+    private SlsInstallReceiver installReceiver;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         JockeyApplication.getComponent(this).inject(this);
+        installReceiver = new SlsInstallReceiver();
     }
 
     @Nullable
@@ -52,6 +59,25 @@ public class SlsPreferenceFragment extends BaseFragment {
         super.onResume();
         viewModel.updatesSlsInstallationState();
         binding.executePendingBindings();
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        filter.addDataScheme("package");
+        requireContext().registerReceiver(installReceiver, filter);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        requireContext().unregisterReceiver(installReceiver);
+    }
+
+    private class SlsInstallReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            viewModel.updatesSlsInstallationState();
+        }
     }
 
 }

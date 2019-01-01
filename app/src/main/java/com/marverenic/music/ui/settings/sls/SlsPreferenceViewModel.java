@@ -87,5 +87,6 @@ public class SlsPreferenceViewModel extends BaseViewModel {
         mSlsInstalled = SlsMessenger.isSlsInstalled(getContext());
         notifyPropertyChanged(BR.slsToggleEnabled);
         notifyPropertyChanged(BR.slsDescription);
+        notifyPropertyChanged(BR.actionLabel);
     }
 }
