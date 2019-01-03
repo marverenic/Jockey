@@ -300,6 +300,18 @@
         You can find more information about Simple Last.fm Scrobbler
         <a href="https://github.com/tgwizard/sls/">on its website</a>.]]>
     </string>
+    <string name="pref_sls_description_enabled_but_uninstalled"><![CDATA[
+        To continue scrobbling to Last.fm, Simple Last.fm Scrobbler must stay installed. Your
+        listening history is not being saved currently. If you no longer want to scrobble your
+        music, you can disable this setting.
+        <br/><br/>
+        Jockey can post your music listening history to online services like Last.fm by integrating
+        with a third-party application. To get started, download Simple Last.fm Scrobbler from the
+        Google Play Store.
+        <br/><br/>
+        You can find more information about Simple Last.fm Scrobbler
+        <a href="https://github.com/tgwizard/sls/">on its website</a>.]]>
+    </string>
     <string name="pref_resume_on_connect">Play when plugging in headphones</string>
     <string name="pref_resume_on_connect_detail_on">Plugging in headphones will resume playback if Jockey is running</string>
     <string name="pref_resume_on_connect_detail_off">Plugging in headphones will never resume playback</string>

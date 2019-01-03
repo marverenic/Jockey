@@ -44,12 +44,16 @@ public class SlsPreferenceViewModel extends BaseViewModel {
         mPreferences.setSlsBroadcastingEnabled(enabled);
         mPlayerController.updatePlayerPreferences(mPreferences);
         notifyPropertyChanged(BR.slsBroadcastsEnabled);
+        notifyPropertyChanged(BR.slsDescription);
+        notifyPropertyChanged(BR.slsToggleEnabled);
     }
 
     @Bindable
     public CharSequence getSlsDescription() {
         if (mSlsInstalled) {
             return getString(R.string.pref_sls_description);
+        } else if (isSlsBroadcastsEnabled()) {
+            return Html.fromHtml(getString(R.string.pref_sls_description_enabled_but_uninstalled));
         } else {
             return Html.fromHtml(getString(R.string.pref_sls_description_not_installed));
         }
@@ -57,7 +61,7 @@ public class SlsPreferenceViewModel extends BaseViewModel {
 
     @Bindable
     public boolean isSlsToggleEnabled() {
-        return mSlsInstalled;
+        return mSlsInstalled || isSlsBroadcastsEnabled();
     }
 
     @Bindable
