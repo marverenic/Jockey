@@ -290,7 +290,7 @@
     <string name="pref_sls_description">
         Jockey can integrate with Simple Last.fm Scrobbler to post your music listening history
         online. After enabling this setting in Jockey, make sure you have set up Simple Last.fm
-        Scrobbler. The next time you play a song, it will be scrobbled your account.
+        Scrobbler. The next time you play a song, it will be scrobbled to your account.
     </string>
     <string name="pref_sls_description_not_installed"><![CDATA[
         Jockey can post your music listening history to online services like Last.fm by integrating
