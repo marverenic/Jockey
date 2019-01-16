@@ -176,10 +176,6 @@ public class MusicBrowserViewModel extends BaseViewModel {
         return mAdapter;
     }
 
-    public RecyclerView.LayoutManager getLayoutManager() {
-        return new LinearLayoutManager(getContext());
-    }
-
     public RecyclerView.ItemDecoration[] getItemDecorations() {
         return new RecyclerView.ItemDecoration[] {
                 new BackgroundDecoration(),

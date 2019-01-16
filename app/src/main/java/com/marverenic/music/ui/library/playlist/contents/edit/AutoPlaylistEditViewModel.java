@@ -2,7 +2,6 @@ package com.marverenic.music.ui.library.playlist.contents.edit;
 
 import android.content.Context;
 import android.databinding.Bindable;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.marverenic.adapter.HeterogeneousAdapter;
@@ -48,11 +47,6 @@ public class AutoPlaylistEditViewModel extends BaseViewModel {
     @Bindable
     public RecyclerView.Adapter getAdapter() {
         return mAdapter;
-    }
-
-    @Bindable
-    public RecyclerView.LayoutManager getLayoutManager() {
-        return new LinearLayoutManager(getContext());
     }
 
     @Bindable

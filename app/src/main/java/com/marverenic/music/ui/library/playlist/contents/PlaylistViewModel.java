@@ -7,9 +7,7 @@ import android.graphics.drawable.NinePatchDrawable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView.ItemDecoration;
-import android.support.v7.widget.RecyclerView.LayoutManager;
 import android.view.View;
 
 import com.marverenic.adapter.DragDropAdapter;
@@ -127,11 +125,6 @@ public class PlaylistViewModel extends BaseViewModel {
     @Bindable
     public DragDropAdapter getAdapter() {
         return mAdapter;
-    }
-
-    @Bindable
-    public LayoutManager getLayoutManager() {
-        return new LinearLayoutManager(getContext());
     }
 
     @Bindable

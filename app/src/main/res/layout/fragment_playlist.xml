@@ -17,7 +17,7 @@
             android:layout_height="match_parent"
             android:scrollbars="vertical"
             app:dragDropAdapter="@{viewModel.adapter}"
-            app:layoutManager="@{viewModel.layoutManager}"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             app:itemDecorations="@{viewModel.itemDecorations}"/>
 
     </android.support.design.widget.CoordinatorLayout>

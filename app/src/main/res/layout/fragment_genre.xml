@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:adapter="@{viewModel.adapter}"
-        app:layoutManager="@{viewModel.layoutManager}"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
         app:itemDecorations="@{viewModel.itemDecorations}"/>
 
 </layout>
