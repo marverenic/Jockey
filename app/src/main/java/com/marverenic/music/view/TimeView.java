@@ -52,9 +52,10 @@ public class TimeView extends TextView {
         int hours = (int) TimeUnit.HOURS.convert(time, TimeUnit.MILLISECONDS);
 
         if (hours == 0) {
-            return context.getString(R.string.format_time, min, DIGIT_FORMAT.format(sec));
+            return context.getString(R.string.format_time, Integer.toString(min),
+                    DIGIT_FORMAT.format(sec));
         } else {
-            return context.getString(R.string.format_time_hours, hours,
+            return context.getString(R.string.format_time_hours, Integer.toString(hours),
                     DIGIT_FORMAT.format(min), DIGIT_FORMAT.format(sec));
         }
     }
