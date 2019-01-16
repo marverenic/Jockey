@@ -64,7 +64,7 @@ public class DemoMusicStore implements MusicStore {
         if (mSongs == null) {
             BehaviorSubject<List<Song>> subject = BehaviorSubject.create();
 
-            Observable.fromCallable(() -> this.<Song>parseJson(SONGS_FILENAME, Song[].class))
+            Observable.fromCallable(() -> parseJson(SONGS_FILENAME, Song[].class))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(subject::onNext, subject::onError);
@@ -80,7 +80,7 @@ public class DemoMusicStore implements MusicStore {
         if (mAlbums == null) {
             BehaviorSubject<List<Album>> subject = BehaviorSubject.create();
 
-            Observable.fromCallable(() -> this.<Album>parseJson(ALBUMS_FILENAME, Album[].class))
+            Observable.fromCallable(() -> parseJson(ALBUMS_FILENAME, Album[].class))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(subject::onNext, subject::onError);
@@ -96,7 +96,7 @@ public class DemoMusicStore implements MusicStore {
         if (mArtists == null) {
             BehaviorSubject<List<Artist>> subject = BehaviorSubject.create();
 
-            Observable.fromCallable(() -> this.<Artist>parseJson(ARTISTS_FILENAME, Artist[].class))
+            Observable.fromCallable(() -> parseJson(ARTISTS_FILENAME, Artist[].class))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(subject::onNext, subject::onError);
@@ -112,7 +112,7 @@ public class DemoMusicStore implements MusicStore {
         if (mGenres == null) {
             BehaviorSubject<List<Genre>> subject = BehaviorSubject.create();
 
-            Observable.fromCallable(() -> this.<Genre>parseJson(GENRES_FILENAME, Genre[].class))
+            Observable.fromCallable(() -> parseJson(GENRES_FILENAME, Genre[].class))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(subject::onNext, subject::onError);
