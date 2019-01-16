@@ -110,12 +110,9 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
         button.setTag("fab-" + label);
         button.setImageResource(icon);
         button.setVisibility(GONE);
-        button.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClickListener.onClick(v);
-                hideChildren();
-            }
+        button.setOnClickListener(v -> {
+            onClickListener.onClick(v);
+            hideChildren();
         });
 
         if (getParent() instanceof CoordinatorLayout) {
@@ -287,20 +284,17 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
         }
 
         //Delay the label animation
-        delayedRunnable = new Runnable() {
-            @Override
-            public void run() {
-                final AlphaAnimation fadeAnim = new AlphaAnimation(0, 1);
-                fadeAnim.setDuration(400);
-                fadeAnim.setInterpolator(getContext(), android.R.interpolator.decelerate_quint);
+        delayedRunnable = () -> {
+            final AlphaAnimation fadeAnim = new AlphaAnimation(0, 1);
+            fadeAnim.setDuration(400);
+            fadeAnim.setInterpolator(getContext(), android.R.interpolator.decelerate_quint);
 
-                for (TextView l : labels) {
-                    ((ViewGroup) getParent()).addView(l);
-                    l.setVisibility(VISIBLE);
-                    l.startAnimation(fadeAnim);
-                }
-                delayedRunnable = null;
+            for (TextView l : labels) {
+                ((ViewGroup) getParent()).addView(l);
+                l.setVisibility(VISIBLE);
+                l.startAnimation(fadeAnim);
             }
+            delayedRunnable = null;
         };
 
         postDelayed(delayedRunnable, 300);
@@ -348,22 +342,19 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
         }
 
         // Make sure to hide the FABs and screen after the animation finishes
-        delayedRunnable = new Runnable() {
-            @Override
-            public void run() {
-                for (FloatingActionButton c : children) {
-                    c.setVisibility(GONE);
-                    ((ViewGroup) c.getParent()).removeView(c);
-                }
-                for (TextView l : labels) {
-                    l.setVisibility(GONE);
-                    ((ViewGroup) l.getParent()).removeView(l);
-                }
-
-                ((ViewGroup) screen.getParent()).removeView(screen);
-
-                delayedRunnable = null;
+        delayedRunnable = () -> {
+            for (FloatingActionButton c : children) {
+                c.setVisibility(GONE);
+                ((ViewGroup) c.getParent()).removeView(c);
             }
+            for (TextView l : labels) {
+                l.setVisibility(GONE);
+                ((ViewGroup) l.getParent()).removeView(l);
+            }
+
+            ((ViewGroup) screen.getParent()).removeView(screen);
+
+            delayedRunnable = null;
         };
         postDelayed(delayedRunnable, 300);
 
