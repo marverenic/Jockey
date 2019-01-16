@@ -26,12 +26,7 @@ import rx.Observable;
 public class AutoPlaylist extends Playlist implements Parcelable {
 
     /**
-     * Value representing an unlimited amount of song entries
-     */
-    public static final int UNLIMITED_ENTRIES = -1;
-
-    /**
-     * How many items can be stored in this playlist. Default is unlimited
+     * How many items can be stored in this playlist. A negative value represents no limit.
      */
     @SerializedName("maximumEntries")
     private final int mMaximumEntries;

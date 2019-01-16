@@ -108,11 +108,6 @@ public class DemoPlaylistStore implements PlaylistStore {
     }
 
     @Override
-    public Playlist makePlaylist(String name) {
-        throw new UnsupportedOperationException("Cannot create playlists in a demo library");
-    }
-
-    @Override
     public AutoPlaylist makePlaylist(AutoPlaylist model) {
         throw new UnsupportedOperationException("Cannot create playlists in a demo library");
     }

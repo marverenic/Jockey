@@ -55,10 +55,6 @@ public class SongItemViewModel extends BaseViewModel {
         mSongListener = songSelectedListener;
     }
 
-    public void setIndex(int index) {
-        setSong(mSongList, index);
-    }
-
     protected int getIndex() {
         return mIndex;
     }

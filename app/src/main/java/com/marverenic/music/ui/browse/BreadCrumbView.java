@@ -183,15 +183,10 @@ public class BreadCrumbView<T> extends HorizontalScrollView {
         private T mData;
 
         private BreadCrumbViewHolder mView;
-        private boolean mIsSelected;
 
         public BreadCrumb(String name, T data) {
             mName = name;
             mData = data;
-        }
-
-        public String getName() {
-            return mName;
         }
 
         public T getData() {
@@ -207,12 +202,7 @@ public class BreadCrumbView<T> extends HorizontalScrollView {
             mView.label.setText(mName);
         }
 
-        final boolean isSelected() {
-            return mIsSelected;
-        }
-
         final void setSelected(boolean isSelected) {
-            mIsSelected = isSelected;
             mView.setSelected(isSelected);
         }
 

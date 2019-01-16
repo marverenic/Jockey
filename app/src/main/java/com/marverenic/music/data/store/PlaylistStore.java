@@ -26,8 +26,6 @@ public interface PlaylistStore {
 
     String verifyPlaylistName(String playlistName);
 
-    Playlist makePlaylist(String name);
-
     AutoPlaylist makePlaylist(AutoPlaylist model);
 
     Playlist makePlaylist(String name, @Nullable List<Song> songs);

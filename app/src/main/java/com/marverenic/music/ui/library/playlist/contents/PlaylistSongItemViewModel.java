@@ -24,7 +24,6 @@ import timber.log.Timber;
 public class PlaylistSongItemViewModel extends SongItemViewModel {
 
     private MusicStore mMusicStore;
-    private PlaylistStore mPlaylistStore;
     private PlayerController mPlayerController;
 
     private OnPlaylistEntriesChangeListener mRemoveListener;
@@ -37,7 +36,6 @@ public class PlaylistSongItemViewModel extends SongItemViewModel {
 
         super(context, fragmentManager, musicStore, playlistStore, playerController, songSelectedListener);
         mMusicStore = musicStore;
-        mPlaylistStore = playlistStore;
         mPlayerController = playerController;
 
         mRemoveListener = listener;

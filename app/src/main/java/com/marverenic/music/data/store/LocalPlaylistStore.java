@@ -208,11 +208,6 @@ public class LocalPlaylistStore implements PlaylistStore {
     }
 
     @Override
-    public Playlist makePlaylist(String name) {
-        return makePlaylist(name, null);
-    }
-
-    @Override
     public AutoPlaylist makePlaylist(AutoPlaylist playlist) {
         Playlist localReference = MediaStoreUtil.createPlaylist(mContext,
                 playlist.getPlaylistName(), Collections.emptyList());
