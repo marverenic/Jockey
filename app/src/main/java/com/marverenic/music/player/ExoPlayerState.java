@@ -1,6 +1,6 @@
 package com.marverenic.music.player;
 
-import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.Player;
 
 public enum ExoPlayerState {
 
@@ -8,13 +8,13 @@ public enum ExoPlayerState {
 
     public static ExoPlayerState fromInt(int exoPlayerState) {
         switch (exoPlayerState) {
-            case ExoPlayer.STATE_IDLE:
+            case Player.STATE_IDLE:
                 return IDLE;
-            case ExoPlayer.STATE_BUFFERING:
+            case Player.STATE_BUFFERING:
                 return BUFFERING;
-            case ExoPlayer.STATE_READY:
+            case Player.STATE_READY:
                 return READY;
-            case ExoPlayer.STATE_ENDED:
+            case Player.STATE_ENDED:
                 return ENDED;
             default:
                 throw new IllegalArgumentException(exoPlayerState + " is not a valid state");
