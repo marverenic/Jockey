@@ -73,7 +73,7 @@ public class GenreListFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_library_page, container, false);
-        mRecyclerView = (FastScrollRecyclerView) view.findViewById(R.id.library_page_list);
+        mRecyclerView = view.findViewById(R.id.library_page_list);
         mRecyclerView.addItemDecoration(new BackgroundDecoration());
         mRecyclerView.addItemDecoration(new DividerDecoration(getContext(), R.id.empty_layout));
 

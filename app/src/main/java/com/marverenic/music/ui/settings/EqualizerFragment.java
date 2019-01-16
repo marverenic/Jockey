@@ -61,10 +61,10 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View layout = inflater.inflate(R.layout.fragment_equalizer, container, false);
-        presetSpinnerPrefix = (TextView) layout.findViewById(R.id.eq_preset_prefix);
-        presetSpinner = (Spinner) layout.findViewById(R.id.eq_preset_spinner);
+        presetSpinnerPrefix = layout.findViewById(R.id.eq_preset_prefix);
+        presetSpinner = layout.findViewById(R.id.eq_preset_spinner);
 
-        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
         if (toolbar != null) {
             equalizerToggle = new SwitchCompat(getActivity());
             equalizerToggle.setOnCheckedChangeListener(this);
@@ -84,7 +84,7 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
             equalizerToggle.startAnimation(anim);
         }
 
-        LinearLayout equalizerPanel = (LinearLayout) layout.findViewById(R.id.equalizer_panel);
+        LinearLayout equalizerPanel = layout.findViewById(R.id.equalizer_panel);
 
         equalizer = generateEqualizerConfig();
         int bandCount = (equalizer != null) ? equalizer.getNumberOfBands() : 0;
@@ -141,7 +141,7 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
     @Override
     public void onResume() {
         super.onResume();
-        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
         if (toolbar != null) {
             toolbar.setTitle(R.string.header_equalizer);
         }
@@ -169,7 +169,7 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
     @Override
     public void onBackStackChanged() {
         if (isRemoving()) {
-            final Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+            final Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
 
             if (toolbar != null) {
                 final int duration = getResources().getInteger(android.R.integer.config_mediumAnimTime);
@@ -226,7 +226,7 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
                         .inflate(android.R.layout.simple_spinner_item, parent, false);
             }
 
-            TextView textView = (TextView) convertView.findViewById(android.R.id.text1);
+            TextView textView = convertView.findViewById(android.R.id.text1);
             textView.setText(presets[position]);
 
             return convertView;
@@ -275,8 +275,8 @@ public class EqualizerFragment extends Fragment implements CompoundButton.OnChec
             this.bandNumber = bandNumber;
             this.presetSpinner = presetSpinner;
 
-            bandSlider = (SeekBar) root.findViewById(R.id.eq_slider);
-            bandLabel = (TextView) root.findViewById(R.id.eq_band_name);
+            bandSlider = root.findViewById(R.id.eq_slider);
+            bandLabel = root.findViewById(R.id.eq_band_name);
 
             int frequency = eq.getCenterFreq(bandNumber) / 1000;
 

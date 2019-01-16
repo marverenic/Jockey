@@ -62,8 +62,8 @@ public class DurationPickerDialogFragment extends DialogFragment
         View contentView = LayoutInflater.from(getContext())
                 .inflate(R.layout.dialog_duration_picker, null);
 
-        mSlider = (SeekArc) contentView.findViewById(R.id.duration_picker_slider);
-        mLabel = (TextView) contentView.findViewById(R.id.duration_picker_time);
+        mSlider = contentView.findViewById(R.id.duration_picker_slider);
+        mLabel = contentView.findViewById(R.id.duration_picker_time);
 
         String title = getArguments().getString(KEY_TITLE);
         String disableButton = getArguments().getString(KEY_DISABLE_BUTTON);

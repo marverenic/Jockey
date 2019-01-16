@@ -43,8 +43,8 @@ public class NumberPickerDialogFragment extends DialogFragment {
         View contentView = LayoutInflater.from(getContext())
                 .inflate(R.layout.dialog_number_picker, null);
 
-        TextView messageText = (TextView) contentView.findViewById(R.id.dialog_number_message);
-        mNumberPicker = (NumberPicker) contentView.findViewById(R.id.dialog_number_picker);
+        TextView messageText = contentView.findViewById(R.id.dialog_number_message);
+        mNumberPicker = contentView.findViewById(R.id.dialog_number_picker);
 
         String title = getArguments().getString(KEY_TITlE);
         String message = getArguments().getString(KEY_MESSAGE);

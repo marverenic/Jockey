@@ -124,7 +124,7 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
 
         mAdapter.addSection(new DirectorySection(mDirectories));
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
+        RecyclerView recyclerView = view.findViewById(R.id.list);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(mAdapter);
 
@@ -136,7 +136,7 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
     @Override
     public void onResume() {
         super.onResume();
-        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
         if (toolbar != null) {
             toolbar.setTitle((mExclude)
                     ? R.string.pref_directory_exclude
@@ -295,8 +295,8 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
         public DirectoryViewHolder(View itemView) {
             super(itemView);
 
-            directoryName = (TextView) itemView.findViewById(R.id.directory_name);
-            directoryPath = (TextView) itemView.findViewById(R.id.directory_detail);
+            directoryName = itemView.findViewById(R.id.directory_name);
+            directoryPath = itemView.findViewById(R.id.directory_detail);
 
             itemView.findViewById(R.id.directory_menu).setOnClickListener(this);
         }

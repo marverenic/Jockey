@@ -61,7 +61,7 @@ public class AlbumListFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_library_page, container, false);
-        mRecyclerView = (FastScrollRecyclerView) view.findViewById(R.id.library_page_list);
+        mRecyclerView = view.findViewById(R.id.library_page_list);
 
         int numColumns = ViewUtils.getNumberOfGridColumns(getActivity(), R.dimen.grid_width);
 

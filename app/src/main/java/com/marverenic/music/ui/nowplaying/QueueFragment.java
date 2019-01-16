@@ -66,7 +66,7 @@ public class QueueFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.list, container, false);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.list);
+        mRecyclerView = view.findViewById(R.id.list);
 
         boolean isLandscape = getContext().getResources().getConfiguration().orientation
                 == ORIENTATION_LANDSCAPE;

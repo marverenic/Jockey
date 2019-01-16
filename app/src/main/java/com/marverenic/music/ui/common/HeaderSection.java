@@ -34,7 +34,7 @@ public class HeaderSection extends HeterogeneousAdapter.SingletonSection<String>
 
         public ViewHolder(View itemView) {
             super(itemView);
-            subheaderText = (TextView) itemView.findViewById(R.id.subheader);
+            subheaderText = itemView.findViewById(R.id.subheader);
         }
 
         @Override

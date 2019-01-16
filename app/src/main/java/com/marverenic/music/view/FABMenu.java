@@ -102,10 +102,9 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
 
     private FloatingActionButton buildChild(@DrawableRes int icon,
                                             final OnClickListener onClickListener, String label) {
-        FloatingActionButton button = (FloatingActionButton)
-                LayoutInflater.from(getContext())
-                        .inflate(R.layout.mini_fab, (ViewGroup) getParent(), true)
-                        .findViewWithTag("fab-null");
+        FloatingActionButton button = LayoutInflater.from(getContext())
+                .inflate(R.layout.mini_fab, (ViewGroup) getParent(), true)
+                .findViewWithTag("fab-null");
 
         button.setTag("fab-" + label);
         button.setImageResource(icon);
@@ -164,10 +163,9 @@ public class FABMenu extends FloatingActionButton implements View.OnClickListene
     }
 
     private TextView buildChildLabel(String name) {
-        TextView label = (TextView)
-                LayoutInflater.from(getContext())
-                        .inflate(R.layout.mini_fab_label, (ViewGroup) getParent(), true)
-                        .findViewWithTag("fab-label-null");
+        TextView label = LayoutInflater.from(getContext())
+                .inflate(R.layout.mini_fab_label, (ViewGroup) getParent(), true)
+                .findViewWithTag("fab-label-null");
 
         label.setTag("fab-label-" + label);
         label.setText(name);

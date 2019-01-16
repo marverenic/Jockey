@@ -60,7 +60,7 @@ public class PlaylistListFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_library_page, container, false);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.library_page_list);
+        mRecyclerView = view.findViewById(R.id.library_page_list);
         mRecyclerView.addItemDecoration(new BackgroundDecoration());
         mRecyclerView.addItemDecoration(
                 new DividerDecoration(getActivity(), R.id.instance_blank, R.id.empty_layout));
