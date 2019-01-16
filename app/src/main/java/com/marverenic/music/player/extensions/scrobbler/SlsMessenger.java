@@ -2,6 +2,7 @@ package com.marverenic.music.player.extensions.scrobbler;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 
 import com.marverenic.music.R;
 import com.marverenic.music.model.Song;
@@ -19,6 +20,7 @@ public class SlsMessenger {
     private static final int STATE_PAUSE = 2;
     private static final int STATE_COMPLETE = 3;
 
+    private static final String SLS_PACKAGE = "com.adam.aslfms";
     private static final String SLS_ACTION = "com.adam.aslfms.notify.playstatechanged";
 
     private static final String KEY_APP_NAME = "app-name";
@@ -34,6 +36,15 @@ public class SlsMessenger {
 
     public SlsMessenger(Context context) {
         mContext = context;
+    }
+
+    public static boolean isSlsInstalled(Context context) {
+        try {
+            context.getPackageManager().getPackageInfo(SLS_PACKAGE, 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+        return true;
     }
 
     private Intent base() {

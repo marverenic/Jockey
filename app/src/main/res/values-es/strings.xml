@@ -266,6 +266,35 @@
     <string name="pref_directory_include">Incluir carpetas</string>
     <string name="pref_directory_exclude">Excluir carpetas</string>
     <string name="pref_equalizer">Ecualizador</string>
+    <string name="pref_sls_scrobble">Scrobble con Simple Last.fm Scrobbler</string>
+    <string name="pref_sls_action_install">Instala Simple Last.fm Scrobbler</string>
+    <string name="pref_sls_action_open">Abrir la configuración de Simple Last.fm Scrobbler</string>
+    <string name="pref_sls_description">
+        Jockey puede integrarse con Simple Last.fm Scrobbler para publicar en línea tu historial de
+        escucha de música. Después de habilitar esta configuración en Jockey, asegúrate de haber
+        configurado Simple Last.fm Scrobbler. La próxima vez que reproduzca una canción, será
+        scrobbled su cuenta.
+    </string>
+    <string name="pref_sls_description_not_installed"><![CDATA[
+        Jockey puede publicar su historial de escucha de música en servicios en línea como Last.fm
+        mediante una aplicación de terceros. Para comenzar, descargue Simple Last.fm Scrobbler desde
+        Google Play Store.
+        <br/><br/>
+        Puede encontrar más información sobre Simple Last.fm Scrobbler
+        <a href="https://github.com/tgwizard/sls/">en su sitio web.</a>]]>
+    </string>
+    <string name="pref_sls_description_enabled_but_uninstalled"><![CDATA[
+        Para continuar scrobbling a Last.fm, Simple Last.fm Scrobbler debe permanecer instalado. Tu
+        historial de escucha no se está guardando actualmente. Si ya no desea scrobble su música,
+        puede desactivar esta opción.
+        <br/><br/>
+        Jockey puede publicar su historial de escucha de música en servicios en línea como Last.fm
+        mediante una aplicación de terceros. Para comenzar, descargue Simple Last.fm Scrobbler desde
+        Google Play Store.
+        <br/><br/>
+        Puede encontrar más información sobre Simple Last.fm Scrobbler
+        <a href="https://github.com/tgwizard/sls/">en su sitio web</a>.]]>
+    </string>
     <string name="pref_resume_on_connect">Reproducir al conectar auriculares</string>
     <string name="pref_resume_on_connect_detail_on">Al conectar los auriculares se reanudará la reproducción si se está ejecutando Jockey</string>
     <string name="pref_resume_on_connect_detail_off">Al conectar los auriculares no se reanudará la reproducción</string>

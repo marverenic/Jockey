@@ -27,7 +27,6 @@ import com.marverenic.music.BuildConfig;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.PlayCountStore;
-import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.data.store.RemotePreferenceStore;
 import com.marverenic.music.data.store.SharedPreferenceStore;
@@ -250,28 +249,31 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         filter.addAction(ACTION_AUDIO_BECOMING_NOISY);
         context.registerReceiver(mHeadphoneListener, filter);
 
-        loadPrefs();
+        /*
+            SharedPreferenceStore is backed by an instance of SharedPreferences. Because
+            SharedPreferences isn't safe to use across processes, the only time we can get valid
+            data is right after we open the SharedPreferences for the first time in this process.
+
+            We're going to take advantage of that here so that we can load the latest preferences
+            as soon as the MusicPlayer is started (which should be the same time that this process
+            is started). To update these preferences, see updatePreferences(preferenceStore)
+        */
+        ReadOnlyPreferenceStore preferenceStore = new SharedPreferenceStore(mContext);
+
+        loadPrefs(preferenceStore);
         initMediaSession();
 
         mExtensions = Collections.unmodifiableList(new ArrayList<>(extensions));
         for (MusicPlayerExtension ext : mExtensions) {
-            ext.onCreateMusicPlayer(this);
+            ext.onCreateMusicPlayer(this, preferenceStore);
         }
     }
 
     /**
      * Reloads shuffle and repeat preferences from {@link SharedPreferences}
      */
-    private void loadPrefs() {
+    private void loadPrefs(ReadOnlyPreferenceStore preferenceStore) {
         Timber.i("Loading SharedPreferences...");
-        // SharedPreferenceStore is backed by an instance of SharedPreferences. Because
-        // SharedPreferences isn't safe to use across processes, the only time we can get valid
-        // data is right after we open the SharedPreferences for the first time in this process.
-        //
-        // We're going to take advantage of that here so that we can load the latest preferences
-        // as soon as the MusicPlayer is started (which should be the same time that this process
-        // is started). To update these preferences, see updatePreferences(preferenceStore)
-        PreferenceStore preferenceStore = new SharedPreferenceStore(mContext);
 
         mShuffle = preferenceStore.isShuffled();
         setRepeat(preferenceStore.getRepeatMode());
@@ -298,6 +300,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         mResumeOnHeadphonesConnect = preferencesStore.resumeOnHeadphonesConnect();
         setRepeat(preferencesStore.getRepeatMode());
         initEqualizer(preferencesStore);
+
+        for (MusicPlayerExtension ext : mExtensions) {
+            ext.onSettingsChanged(preferencesStore);
+        }
     }
 
     /**

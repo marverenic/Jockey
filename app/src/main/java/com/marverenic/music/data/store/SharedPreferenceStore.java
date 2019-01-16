@@ -160,6 +160,11 @@ public class SharedPreferenceStore implements PreferenceStore {
     }
 
     @Override
+    public boolean isSlsBroadcastingEnabled() {
+        return getBoolean(R.string.pref_key_send_sls_broadcasts, false);
+    }
+
+    @Override
     public long getLastSleepTimerDuration() {
         return getLong(R.string.pref_key_last_sleep_timer, TimeUnit.MINUTES.toMillis(15));
     }
@@ -264,6 +269,11 @@ public class SharedPreferenceStore implements PreferenceStore {
     @Override
     public void setRepeatMode(int repeatMode) {
         putInt(R.string.pref_key_repeat, repeatMode);
+    }
+
+    @Override
+    public void setSlsBroadcastingEnabled(boolean enabled) {
+        putBoolean(R.string.pref_key_send_sls_broadcasts, enabled);
     }
 
     @Override

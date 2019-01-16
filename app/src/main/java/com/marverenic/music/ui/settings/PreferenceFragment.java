@@ -26,6 +26,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ThemeStore;
 import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.ui.settings.sls.SlsPreferenceFragment;
 import com.marverenic.music.utils.Util;
 import com.marverenic.music.view.BackgroundDecoration;
 import com.marverenic.music.view.DividerDecoration;
@@ -39,6 +40,8 @@ public class PreferenceFragment extends PreferenceFragmentCompat
             "com.marverenic.music.ui.settings.DirectoryListFragment";
     private static final String EQUALIZER_FRAGMENT =
             "com.marverenic.music.ui.settings.EqualizerFragment";
+    private static final String SLS_BROADCAST_FRAGMENT =
+            "com.marverenic.music.ui.settings.sls.SlsPreferenceFragment";
 
     @Inject PreferenceStore mPrefStore;
     @Inject ThemeStore mThemeStore;
@@ -165,6 +168,9 @@ public class PreferenceFragment extends PreferenceFragmentCompat
             boolean exclude = getString(R.string.pref_key_excluded_dirs).equals(prefKey);
 
             showDirectoryInclusionExclusionFragment(exclude);
+            return true;
+        } else if (SLS_BROADCAST_FRAGMENT.equals(preference.getFragment())) {
+            replaceFragment(new SlsPreferenceFragment());
             return true;
         } else if (getString(R.string.pref_key_create_launcher_icon).equals(preference.getKey())) {
             if (mPrefStore.getIconColor() != mPrefStore.getPrimaryColor()) {
