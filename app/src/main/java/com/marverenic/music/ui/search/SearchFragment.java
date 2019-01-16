@@ -1,6 +1,7 @@
 package com.marverenic.music.ui.search;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
@@ -105,7 +106,7 @@ public class SearchFragment extends BaseToolbarFragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(KEY_SAVED_QUERY, mViewModel.getSearchQuery());
     }

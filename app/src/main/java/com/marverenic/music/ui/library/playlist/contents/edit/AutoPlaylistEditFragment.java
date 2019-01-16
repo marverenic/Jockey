@@ -3,6 +3,7 @@ package com.marverenic.music.ui.library.playlist.contents.edit;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -80,7 +81,7 @@ public class AutoPlaylistEditFragment extends BaseToolbarFragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(EXTRA_MODIFIED_PLAYLIST, mBuilder);
     }
