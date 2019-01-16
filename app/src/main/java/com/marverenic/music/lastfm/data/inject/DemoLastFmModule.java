@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.marverenic.music.lastfm.data.store.DemoLastFmStore;
 import com.marverenic.music.lastfm.data.store.LastFmStore;
-import com.marverenic.music.lastfm.data.store.NetworkLastFmStore;
 
 import javax.inject.Singleton;
 
