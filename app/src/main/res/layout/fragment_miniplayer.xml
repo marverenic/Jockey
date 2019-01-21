@@ -13,25 +13,32 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/miniplayer_height">
 
-        <ImageView
-            android:id="@+id/miniplayer_artwork"
+        <FrameLayout
+            android:id="@+id/miniplayer_artwork_container"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="4dp"
             android:layout_marginLeft="4dp"
             android:layout_marginStart="4dp"
             android:layout_marginBottom="6dp"
-            android:contentDescription="@string/description_album_art"
-            android:scaleType="centerInside"
             android:foreground="@drawable/frame_miniplayer_artwork"
             android:background="@drawable/background_miniplayer_artwork"
-            app:bitmap="@{viewModel.artwork}"
-            app:cornerRadius="@{@dimen/miniplayer_artwork_corner_radius}"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:src="@mipmap/ic_launcher_black"/>
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/miniplayer_artwork"
+                android:contentDescription="@string/description_album_art"
+                android:scaleType="centerInside"
+                app:bitmap="@{viewModel.artwork}"
+                app:cornerRadius="@{@dimen/miniplayer_artwork_corner_radius}"
+                tools:src="@mipmap/ic_launcher_black"/>
+
+        </FrameLayout>
 
         <TextView
             android:id="@+id/miniplayer_song_title"
@@ -49,7 +56,7 @@
             android:textSize="14sp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/miniplayer_artwork"
+            app:layout_constraintStart_toEndOf="@+id/miniplayer_artwork_container"
             app:layout_constraintEnd_toStartOf="@+id/miniplayer_song_detail"
             tools:text="Limitless "/>
 
