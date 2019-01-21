@@ -3,7 +3,9 @@ package android.support.v7.preference;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Build;
+import android.support.v4.view.GravityCompat;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.widget.TextView;
 
 /**
@@ -17,6 +19,7 @@ import android.widget.TextView;
  * Copied from https://github.com/Gericop/Android-Support-Preference-V7-Fix
  */
 public class PreferenceCategoryCompat extends PreferenceCategory {
+    private static final int PADDING_DP = 14;
     private static final int[] COLOR_ACCENT_ID = new int[]{android.support.v7.appcompat.R.attr.colorAccent};
 
     public PreferenceCategoryCompat(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
@@ -49,14 +52,24 @@ public class PreferenceCategoryCompat extends PreferenceCategory {
         final TextView titleView = (TextView) holder.findViewById(android.R.id.title);
 
         if (titleView != null) {
+            titleView.setGravity(GravityCompat.START | Gravity.CENTER_VERTICAL);
             final TypedArray typedArray = getContext().obtainStyledAttributes(COLOR_ACCENT_ID);
 
-            if (typedArray.length() > 0) {
-                final int accentColor = typedArray.getColor(0, 0xff4081); // defaults to pink
-                titleView.setTextColor(accentColor);
+            try {
+                if (typedArray.length() > 0) {
+                    final int accentColor = typedArray.getColor(0, 0xff4081); // defaults to pink
+                    titleView.setTextColor(accentColor);
+                }
+            } finally {
+                typedArray.recycle();
             }
 
-            typedArray.recycle();
+            float density = getContext().getResources().getDisplayMetrics().density;
+            int paddingPx = (int) (density * PADDING_DP);
+
+            // View already includes bottom margin. Add padding to all other sides for consistency
+            // across Android versions.
+            titleView.setPadding(paddingPx, paddingPx, paddingPx, 0);
         }
     }
 }
