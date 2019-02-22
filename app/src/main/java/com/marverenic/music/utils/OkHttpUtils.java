@@ -1,6 +1,7 @@
 package com.marverenic.music.utils;
 
 import android.os.Build;
+import android.support.annotation.Keep;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -57,6 +58,7 @@ public class OkHttpUtils {
     private static class Tls12SocketFactory extends SSLSocketFactory {
         private static final String[] TLS_V12_ONLY = {"TLSv1.2"};
 
+        @Keep
         final SSLSocketFactory delegate;
 
         public Tls12SocketFactory(SSLSocketFactory base) {
