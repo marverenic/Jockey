@@ -4,5 +4,6 @@
 
     <stroke android:color="@color/miniplayer_artwork_frame" android:width="0.5dp"/>
     <corners android:radius="@dimen/miniplayer_artwork_corner_radius"/>
+    <solid android:color="@android:color/transparent"/>
 
 </shape>

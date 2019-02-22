@@ -98,8 +98,8 @@ public class PreferenceFragment extends PreferenceFragmentCompat
                 if ("com.marverenic.music.ui.settings.EqualizerFragment".equals(fragment)) {
 
                     ViewGroup itemView = (ViewGroup) holder.itemView;
-                    TextView title = (TextView) itemView.findViewById(android.R.id.title);
-                    TextView detail = (TextView) itemView.findViewById(android.R.id.summary);
+                    TextView title = itemView.findViewById(android.R.id.title);
+                    TextView detail = itemView.findViewById(android.R.id.summary);
 
                     boolean hasSystemEq = Util.getSystemEqIntent(getContext()) != null;
 
@@ -128,7 +128,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat
         getPreferenceManager().getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);
 
-        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
         if (toolbar != null) {
             toolbar.setTitle(R.string.header_settings);
         }

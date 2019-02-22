@@ -4,10 +4,8 @@ import android.content.Context;
 import android.databinding.Bindable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ItemDecoration;
-import android.support.v7.widget.RecyclerView.LayoutManager;
 
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.R;
@@ -84,11 +82,6 @@ public class GenreViewModel extends BaseViewModel {
     @Bindable
     public RecyclerView.Adapter getAdapter() {
         return mAdapter;
-    }
-
-    @Bindable
-    public LayoutManager getLayoutManager() {
-        return new LinearLayoutManager(getContext());
     }
 
     @Bindable

@@ -102,7 +102,7 @@ public class DirectoryDialogFragment extends DialogFragment {
         }
 
         // Ellipsize the header at the beginning to show a more informative file path
-        TextView header = (TextView) dialog.findViewById(R.id.alertTitle);
+        TextView header = dialog.findViewById(R.id.alertTitle);
         if (header != null) {
             header.setEllipsize(TextUtils.TruncateAt.START);
         }

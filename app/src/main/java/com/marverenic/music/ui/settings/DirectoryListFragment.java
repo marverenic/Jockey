@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -26,9 +28,9 @@ import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.ui.common.BasicEmptyState;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PreferenceStore;
+import com.marverenic.music.ui.common.BasicEmptyState;
 import com.marverenic.music.view.DividerDecoration;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
@@ -93,8 +95,8 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         ViewGroup view =
                 (ViewGroup) inflater.inflate(R.layout.fragment_directory_list, container, false);
         view.findViewById(R.id.fab).setOnClickListener(this);
@@ -122,7 +124,7 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
 
         mAdapter.addSection(new DirectorySection(mDirectories));
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
+        RecyclerView recyclerView = view.findViewById(R.id.list);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(mAdapter);
 
@@ -134,7 +136,7 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
     @Override
     public void onResume() {
         super.onResume();
-        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
         if (toolbar != null) {
             toolbar.setTitle((mExclude)
                     ? R.string.pref_directory_exclude
@@ -293,8 +295,8 @@ public class DirectoryListFragment extends Fragment implements View.OnClickListe
         public DirectoryViewHolder(View itemView) {
             super(itemView);
 
-            directoryName = (TextView) itemView.findViewById(R.id.directory_name);
-            directoryPath = (TextView) itemView.findViewById(R.id.directory_detail);
+            directoryName = itemView.findViewById(R.id.directory_name);
+            directoryPath = itemView.findViewById(R.id.directory_detail);
 
             itemView.findViewById(R.id.directory_menu).setOnClickListener(this);
         }

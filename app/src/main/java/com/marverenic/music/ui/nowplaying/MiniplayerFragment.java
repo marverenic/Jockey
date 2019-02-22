@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -41,8 +42,8 @@ public class MiniplayerFragment extends BaseFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
 
         FragmentMiniplayerBinding mBinding = FragmentMiniplayerBinding.inflate(inflater, container, false);
         MiniplayerViewModel viewModel = new MiniplayerViewModel(getContext(), mPlayerController);

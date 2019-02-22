@@ -31,11 +31,6 @@ public class BindingAdapters {
         view.setLayoutParams(params);
     }
 
-    @BindingAdapter("bitmap")
-    public static void bindBitmap(ImageView imageView, Bitmap bitmap) {
-        imageView.setImageBitmap(bitmap);
-    }
-
     @BindingAdapter(value = { "bitmap", "cornerRadius" })
     public static void bindRoundedBitmap(ImageView imageView, Bitmap bitmap, float cornerRadius) {
         ViewUtils.whenLaidOut(imageView, () -> {
@@ -53,11 +48,6 @@ public class BindingAdapters {
                 imageView.setImageDrawable(drawable);
             }
         });
-    }
-
-    @BindingAdapter("tint")
-    public static void bindImageViewTint(ImageView imageView, @ColorInt int color) {
-        imageView.setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
 
     @BindingAdapter("backgroundTint")

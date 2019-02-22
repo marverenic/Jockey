@@ -584,7 +584,7 @@ public class RuleViewModel extends BaseObservable {
                         android.R.layout.simple_spinner_item, parent, false);
             }
 
-            TextView textView = (TextView) convertView.findViewById(android.R.id.text1);
+            TextView textView = convertView.findViewById(android.R.id.text1);
             textView.setText(mFilters.get(pos).getNameRes());
 
             return convertView;
@@ -597,7 +597,7 @@ public class RuleViewModel extends BaseObservable {
                         android.R.layout.simple_spinner_dropdown_item, parent, false);
             }
 
-            TextView textView = (TextView) convertView.findViewById(android.R.id.text1);
+            TextView textView = convertView.findViewById(android.R.id.text1);
             textView.setText(mFilters.get(pos).getNameRes());
 
             return convertView;
@@ -638,7 +638,7 @@ public class RuleViewModel extends BaseObservable {
                         android.R.layout.simple_spinner_dropdown_item, parent, false);
             }
 
-            TextView textView = (TextView) convertView.findViewById(android.R.id.text1);
+            TextView textView = convertView.findViewById(android.R.id.text1);
             textView.setText(getItemName(mValues.get(pos)));
 
             return convertView;

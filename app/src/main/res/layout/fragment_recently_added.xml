@@ -35,7 +35,7 @@
             android:layout_height="match_parent"
             android:scrollbars="vertical"
             app:adapter="@{viewModel.adapter}"
-            app:layoutManager="@{viewModel.layoutManager}"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             app:itemDecorations="@{viewModel.itemDecorations}"/>
 
     </LinearLayout>

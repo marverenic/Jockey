@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.support.v4.app.NotificationCompat;
@@ -491,7 +490,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void endLargeQueueTransaction(int newPosition, long seed) throws RemoteException {
+        public void endLargeQueueTransaction(int newPosition, long seed) {
             IncomingTransaction<List<Song>> transaction = mQueueTransaction;
             if (transaction == null) {
                 throw new IllegalStateException("Transaction has not started");
@@ -504,7 +503,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void endLargeQueueEdit(int newPosition) throws RemoteException {
+        public void endLargeQueueEdit(int newPosition) {
             IncomingTransaction<List<Song>> transaction = mQueueTransaction;
             if (transaction == null) {
                 throw new IllegalStateException("Transaction has not started");
@@ -692,7 +691,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public List<Song> getQueueChunk(int offset, int length) throws RemoteException {
+        public List<Song> getQueueChunk(int offset, int length) {
             List<Song> currentQueue = getQueue();
             try {
                 return currentQueue.subList(offset, offset + length);

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.databinding.Bindable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 
@@ -90,10 +89,6 @@ public class AlbumViewModel extends BaseViewModel {
     @Bindable
     public RecyclerView.Adapter getAdapter() {
         return mAdapter;
-    }
-
-    public RecyclerView.LayoutManager getLayoutManager() {
-        return new LinearLayoutManager(getContext());
     }
 
     @Bindable

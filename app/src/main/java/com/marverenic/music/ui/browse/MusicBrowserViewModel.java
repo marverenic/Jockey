@@ -3,7 +3,6 @@ package com.marverenic.music.ui.browse;
 import android.content.Context;
 import android.databinding.Bindable;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.marverenic.adapter.HeterogeneousAdapter;
@@ -174,10 +173,6 @@ public class MusicBrowserViewModel extends BaseViewModel {
 
     public RecyclerView.Adapter getAdapter() {
         return mAdapter;
-    }
-
-    public RecyclerView.LayoutManager getLayoutManager() {
-        return new LinearLayoutManager(getContext());
     }
 
     public RecyclerView.ItemDecoration[] getItemDecorations() {

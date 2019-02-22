@@ -2,8 +2,8 @@ package com.marverenic.music.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
 import com.marverenic.music.R;
 
@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  * An extension of TextView used to display times
  * @see #setTime(int)
  */
-public class TimeView extends TextView {
+public class TimeView extends AppCompatTextView {
 
     private static final DecimalFormat DIGIT_FORMAT = new DecimalFormat("00");
 
@@ -52,9 +52,10 @@ public class TimeView extends TextView {
         int hours = (int) TimeUnit.HOURS.convert(time, TimeUnit.MILLISECONDS);
 
         if (hours == 0) {
-            return context.getString(R.string.format_time, min, DIGIT_FORMAT.format(sec));
+            return context.getString(R.string.format_time, Integer.toString(min),
+                    DIGIT_FORMAT.format(sec));
         } else {
-            return context.getString(R.string.format_time_hours, hours,
+            return context.getString(R.string.format_time_hours, Integer.toString(hours),
                     DIGIT_FORMAT.format(min), DIGIT_FORMAT.format(sec));
         }
     }

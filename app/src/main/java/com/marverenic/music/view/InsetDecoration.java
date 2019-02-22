@@ -11,15 +11,6 @@ public class InsetDecoration extends RecyclerView.ItemDecoration {
     private int mHeight;
     private int mGravity;
 
-    /**
-     * @param inset The drawable to overlay at the top of the RecyclerView this decoration is bound
-     *              to
-     * @param height The height of the inset
-     */
-    public InsetDecoration(Drawable inset, int height) {
-        this(inset, height, Gravity.TOP);
-    }
-
     public InsetDecoration(Drawable inset, int height, int gravity) {
         mInset = inset;
         mHeight = height;

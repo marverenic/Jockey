@@ -63,7 +63,7 @@
             android:paddingLeft="@dimen/global_padding"
             android:paddingRight="@dimen/global_padding"
             app:adapter="@{viewModel.adapter}"
-            app:layoutManager="@{viewModel.layoutManager}"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             app:itemDecorations="@{viewModel.itemDecorations}"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 

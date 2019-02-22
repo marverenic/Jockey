@@ -78,8 +78,8 @@ public abstract class BaseActivity extends RxAppCompatActivity {
 
     private void showFirstRunDialog() {
         View messageView = getLayoutInflater().inflate(R.layout.alert_pref, null);
-        TextView message = (TextView) messageView.findViewById(R.id.pref_alert_content);
-        CheckBox pref = (CheckBox) messageView.findViewById(R.id.pref_alert_option);
+        TextView message = messageView.findViewById(R.id.pref_alert_content);
+        CheckBox pref = messageView.findViewById(R.id.pref_alert_option);
 
         message.setText(Html.fromHtml(getString(R.string.first_launch_detail)));
         message.setMovementMethod(LinkMovementMethod.getInstance());
