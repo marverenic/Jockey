@@ -9,7 +9,7 @@ import com.marverenic.music.data.annotations.StartPage;
 
 import java.util.Set;
 
-public interface ReadOnlyPreferenceStore {
+public interface ReadOnlyPreferenceStore extends DirectoryFilter {
 
     boolean showFirstStart();
     boolean allowLogging();

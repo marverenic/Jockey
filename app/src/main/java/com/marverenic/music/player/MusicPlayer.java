@@ -35,8 +35,8 @@ import com.marverenic.music.player.browser.MediaBrowserRoot;
 import com.marverenic.music.player.browser.MediaList;
 import com.marverenic.music.player.extensions.MusicPlayerExtension;
 import com.marverenic.music.ui.library.LibraryActivity;
+import com.marverenic.music.utils.ArtworkUtils;
 import com.marverenic.music.utils.Internal;
-import com.marverenic.music.utils.Util;
 import com.marverenic.music.utils.compat.AudioManagerCompat;
 
 import java.util.ArrayList;
@@ -1248,7 +1248,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         for (MusicPlayerExtension ext : mExtensions) {
             ext.onSongStarted(this);
         }
-        Util.fetchArtwork(mContext, getNowPlaying().getLocation())
+        ArtworkUtils.fetchArtwork(mContext, getNowPlaying().getLocation())
                 .subscribeOn(Schedulers.io())
                 .subscribe(artwork -> {
                     mArtwork = artwork;

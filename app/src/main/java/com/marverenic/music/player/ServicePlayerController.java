@@ -25,9 +25,9 @@ import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.persistence.PlaybackPersistenceManager;
 import com.marverenic.music.player.transaction.ListTransaction;
+import com.marverenic.music.utils.ArtworkUtils;
 import com.marverenic.music.utils.ObservableQueue;
 import com.marverenic.music.utils.RxProperty;
-import com.marverenic.music.utils.Util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -710,7 +710,7 @@ public class ServicePlayerController implements PlayerController {
             getNowPlaying()
                     .observeOn(Schedulers.io())
                     .flatMap((Song song) -> {
-                        return Util.fetchArtwork(mContext, song);
+                        return ArtworkUtils.fetchArtwork(mContext, song);
                     })
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(mArtwork::onNext, throwable -> {

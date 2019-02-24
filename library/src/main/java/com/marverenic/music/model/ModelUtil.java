@@ -5,7 +5,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.marverenic.music.R;
+import com.marverenic.music.library.R;
 
 public class ModelUtil {
 

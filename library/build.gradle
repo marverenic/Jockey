@@ -29,11 +29,18 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    // TODO remove Fragment support library after removing Glide.
+    implementation "com.android.support:support-fragment:$rootProject.supportLibVersion"
     implementation "com.android.support:support-annotations:$rootProject.supportLibVersion"
     implementation "com.android.support:support-core-utils:$rootProject.supportLibVersion"
 
     implementation 'io.reactivex:rxjava:1.1.6'
     implementation 'io.reactivex:rxandroid:1.2.1'
+    implementation 'com.tbruyelle.rxpermissions:rxpermissions:0.7.0@aar'
+
+    implementation 'com.github.bumptech.glide:glide:3.7.0'
+    implementation 'com.google.code.gson:gson:2.7'
+
     implementation 'com.jakewharton.timber:timber:4.1.2'
 
     testImplementation 'junit:junit:4.12'

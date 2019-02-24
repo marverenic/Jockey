@@ -21,7 +21,6 @@ import com.marverenic.music.model.Genre;
 import com.marverenic.music.model.Playlist;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.model.playlistrules.AutoPlaylistRule;
-import com.marverenic.music.utils.Util;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.io.File;
@@ -38,6 +37,7 @@ import timber.log.Timber;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static com.marverenic.music.utils.PermissionUtils.hasPermissions;
 
 public final class MediaStoreUtil {
 
@@ -119,8 +119,8 @@ public final class MediaStoreUtil {
 
     @TargetApi(Build.VERSION_CODES.M)
     public static boolean hasPermission(Context context) {
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Util.hasPermissions(context,
-                READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE);
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
+                hasPermissions(context, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE);
     }
 
     private static Observable<Boolean> getPermissionObservable() {

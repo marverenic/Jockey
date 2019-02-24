@@ -8,8 +8,8 @@ import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 
-import com.marverenic.music.R;
 import com.marverenic.music.data.store.MediaStoreUtil;
+import com.marverenic.music.library.R;
 
 import java.util.ArrayList;
 import java.util.Comparator;

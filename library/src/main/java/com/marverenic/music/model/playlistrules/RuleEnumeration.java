@@ -3,7 +3,7 @@ package com.marverenic.music.model.playlistrules;
 import android.support.annotation.StringRes;
 import android.text.InputType;
 
-import com.marverenic.music.R;
+import com.marverenic.music.library.R;
 import com.marverenic.music.model.playlistrules.AutoPlaylistRule.Field;
 import com.marverenic.music.model.playlistrules.AutoPlaylistRule.Match;
 
