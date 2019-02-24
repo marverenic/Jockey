@@ -91,6 +91,8 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation project(':library')
+    implementation project(':player')
     implementation project(':seekarc')
     implementation project(':exoplayer-flac')
 
