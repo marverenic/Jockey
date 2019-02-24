@@ -126,8 +126,6 @@
     <!-- Error messages -->
     <string name="message_play_error_not_found">Jockey couldn\'t find &#8220;%1$s&#8221;</string>
     <string name="message_play_error_io_exception">&#8220;%1$s&#8221; couldn\'t be played</string>
-    <string name="error_hint_duplicate_playlist">Enter a unique playlist name</string>
-    <string name="error_hint_empty_playlist">Enter a playlist name</string>
     <string name="error_playback_from_files_failed">Jockey couldn\'t play %s</string>
 
     <!-- Formatted Messages -->
@@ -166,10 +164,6 @@
     <string name="message_removed_directory">Removed folder &#8220;%1$s&#8221;</string>
 
     <!-- Empty state & unknown strings -->
-    <string name="nothing_playing">Nothing is playing</string>
-    <string name="unknown_artist">Unknown Artist</string>
-    <string name="unknown_album">Unknown Album</string>
-    <string name="unknown">Unknown</string>
     <string name="empty_no_permission">Jockey needs permission to read your music library</string>
     <string name="empty_no_permission_detail">To show your music, grant Jockey access to storage</string>
     <string name="error_no_permission_dirs">To exclude folders, grant Jockey access to storage</string>
@@ -397,25 +391,6 @@
         <item>Genre</item>
     </string-array>
 
-    <string name="rule_is">Is</string>
-    <string name="rule_isnt">Isn\'t</string>
-    <string name="rule_name_is">Name is</string>
-    <string name="rule_name_isnt">Name isn\'t</string>
-    <string name="rule_name_contains">Name contains</string>
-    <string name="rule_name_doesnt_contain">Name doesn\'t contain</string>
-    <string name="rule_play_count_lt">Has play count less than</string>
-    <string name="rule_play_count_eq">Has play count equal to</string>
-    <string name="rule_play_count_gt">Has play count greater than</string>
-    <string name="rule_skip_count_lt">Has skip count less than</string>
-    <string name="rule_skip_count_eq">Has skip count equal to</string>
-    <string name="rule_skip_count_gt">Has skip count greater than</string>
-    <string name="rule_added_before">Was added before</string>
-    <string name="rule_added_on">Was added on</string>
-    <string name="rule_added_after">Was added after</string>
-    <string name="rule_played_before">Was last played before</string>
-    <string name="rule_played_on">Was last played on</string>
-    <string name="rule_played_after">Has been played since</string>
-
     <string name="enable_multi_repeat_title">Enable Multi-Repeat</string>
     <string name="multi_repeat_description">Multi-Repeat will play the current song back-to-back a certain number of times. When the next song starts, Multi-Repeat will be disabled.</string>
     <string name="enable_sleep_timer">Sleep Timer</string>
@@ -433,12 +408,5 @@
 
     <!-- Notification Channels -->
     <string name="player_notification_channel_name">Music Playback</string>
-
-    <!-- Prefixes that are ignored when sorting titles -->
-    <string-array name="ignored_title_prefixes" tools:ignore="InconsistentArrays">
-        <item>The</item>
-        <item>A</item>
-        <item>An</item>
-    </string-array>
 
 </resources>

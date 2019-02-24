@@ -1,3 +1,39 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">library</string>
+
+    <string name="nothing_playing">Nothing is playing</string>
+    <string name="unknown_artist">Unknown Artist</string>
+    <string name="unknown_album">Unknown Album</string>
+    <string name="unknown">Unknown</string>
+
+    <string name="error_hint_duplicate_playlist">Enter a unique playlist name</string>
+    <string name="error_hint_empty_playlist">Enter a playlist name</string>
+
+    <!-- AutoPlaylist rule headers -->
+    <string name="rule_is">Is</string>
+    <string name="rule_isnt">Isn\'t</string>
+    <string name="rule_name_is">Name is</string>
+    <string name="rule_name_isnt">Name isn\'t</string>
+    <string name="rule_name_contains">Name contains</string>
+    <string name="rule_name_doesnt_contain">Name doesn\'t contain</string>
+    <string name="rule_play_count_lt">Has play count less than</string>
+    <string name="rule_play_count_eq">Has play count equal to</string>
+    <string name="rule_play_count_gt">Has play count greater than</string>
+    <string name="rule_skip_count_lt">Has skip count less than</string>
+    <string name="rule_skip_count_eq">Has skip count equal to</string>
+    <string name="rule_skip_count_gt">Has skip count greater than</string>
+    <string name="rule_added_before">Was added before</string>
+    <string name="rule_added_on">Was added on</string>
+    <string name="rule_added_after">Was added after</string>
+    <string name="rule_played_before">Was last played before</string>
+    <string name="rule_played_on">Was last played on</string>
+    <string name="rule_played_after">Has been played since</string>
+
+    <!-- Prefixes that are ignored when sorting titles -->
+    <string-array name="ignored_title_prefixes" tools:ignore="InconsistentArrays">
+        <item>The</item>
+        <item>A</item>
+        <item>An</item>
+    </string-array>
+
 </resources>

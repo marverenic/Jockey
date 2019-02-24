@@ -120,8 +120,6 @@
     <!-- Error messages -->
     <string name="message_play_error_not_found">Jockey no pudo encontrar &#8220;%1$s&#8221;</string>
     <string name="message_play_error_io_exception">&#8220;%1$s&#8221; no se pudo reproducir</string>
-    <string name="error_hint_duplicate_playlist">Escriba un nombre de lista reproducción único</string>
-    <string name="error_hint_empty_playlist">Escriba un nombre de lista reproducción</string>
     <string name="error_playback_from_files_failed">Jockey no pudo reproducir %s</string>
 
     <!-- Formatted Messages -->
@@ -161,10 +159,6 @@
     <string name="message_removed_directory">Retirada la carpeta &#8220;%1$s&#8221;</string>
 
     <!-- Empty state & unknown strings -->
-    <string name="nothing_playing">Nada está jugando</string>
-    <string name="unknown_artist">Artista desconocido</string>
-    <string name="unknown_album">Álbum desconocido</string>
-    <string name="unknown">Desconocido</string>
     <string name="empty_no_permission">Jockey necesita permiso para leer su biblioteca de música</string>
     <string name="empty_no_permission_detail">To show your music, grant Jockey access to storage</string>
     <string name="error_no_permission_dirs">Para mostrar su música, conceda a Jockey acceso a almacenamiento</string>
@@ -356,25 +350,6 @@
         <item>Género</item>
     </string-array>
 
-    <string name="rule_is">Es</string>
-    <string name="rule_isnt">No es</string>
-    <string name="rule_name_is">Nombre es</string>
-    <string name="rule_name_isnt">Nombre no es</string>
-    <string name="rule_name_contains">Nombre contiene</string>
-    <string name="rule_name_doesnt_contain">Nombre no contiene</string>
-    <string name="rule_play_count_lt">Tiene conteo de juego inferior a</string>
-    <string name="rule_play_count_eq">Tiene conteo de juego igual a</string>
-    <string name="rule_play_count_gt">Tiene conteo de juego mayor que</string>
-    <string name="rule_skip_count_lt">Tiene conteo de salto inferior a</string>
-    <string name="rule_skip_count_eq">Tiene conteo de salto igual a</string>
-    <string name="rule_skip_count_gt">Tiene conteo de salto mayor que</string>
-    <string name="rule_added_before">Fue añadido antes</string>
-    <string name="rule_added_on">Fue añadido en</string>
-    <string name="rule_added_after">Fue añadido después de</string>
-    <string name="rule_played_before">Fue jugado por última vez antes</string>
-    <string name="rule_played_on">Fue jugado por última vez en</string>
-    <string name="rule_played_after">Se ha jugado desde</string>
-
     <string name="enable_multi_repeat_title">Activar Multi-Repetir</string>
     <string name="multi_repeat_description">Multi-Repetir reproducirá la canción actual una tras otra
         varias veces. Cuando se inicia la siguiente canción, Multi-Repetir se desactivará.</string>
@@ -393,13 +368,5 @@
 
     <!-- Notification Channels -->
     <string name="player_notification_channel_name">Reproducción de música</string>
-
-    <!-- Prefixes that are ignored when sorting titles -->
-    <string-array name="ignored_title_prefixes" tools:ignore="InconsistentArrays">
-        <item>El</item>
-        <item>La</item>
-        <item>Los</item>
-        <item>Las</item>
-    </string-array>
 
 </resources>
