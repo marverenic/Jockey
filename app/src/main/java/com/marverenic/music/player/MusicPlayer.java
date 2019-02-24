@@ -146,20 +146,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     private static final int SKIP_PREVIOUS_THRESHOLD = 5000;
 
     /**
-     * Defines the minimum duration that must be passed for a song to be considered "played" when
-     * logging play counts
-     * This value is measured in milliseconds and is currently set to 24 seconds
-     */
-    private static final int PLAY_COUNT_THRESHOLD = 24000;
-
-    /**
-     * Defines the maximum duration that a song can reach to be considered "skipped" when logging
-     * play counts
-     * This value is measured in milliseconds and is currently set to 20 seconds
-     */
-    private static final int SKIP_COUNT_THRESHOLD = 20000;
-
-    /**
      * The volume scalar to set when {@link AudioManager} causes a MusicPlayer instance to duck
      */
     private static final float DUCK_VOLUME = 0.5f;
@@ -206,7 +192,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     private Bitmap mArtwork;
 
-    @Inject PlayCountStore mPlayCountStore;
     @Inject MediaBrowserRoot mMediaBrowserRoot;
     private RemotePreferenceStore mRemotePreferenceStore;
 
@@ -226,14 +211,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         mHandler = new Handler();
         JockeyApplication.getComponent(mContext).inject(this);
         mRemotePreferenceStore = new RemotePreferenceStore(mContext);
-
-        // Initialize play count store
-        mPlayCountStore.refresh()
-                .subscribe(complete -> {
-                    Timber.i("init: Initialized play count store values");
-                }, throwable -> {
-                    Timber.e(throwable, "init: Failed to read play count store values");
-                });
 
         // Initialize the media player
         mMediaPlayer = new QueuedExoPlayer(context);
@@ -682,8 +659,9 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public void skip() {
         requireNotReleased();
         Timber.i("Skipping song");
-        if (!mMediaPlayer.isComplete() && !mMediaPlayer.hasError()) {
-            logPlay();
+        boolean skippedByUser = !mMediaPlayer.isComplete() && !mMediaPlayer.hasError();
+        for (MusicPlayerExtension ext : mExtensions) {
+            ext.onSongSkipped(this, skippedByUser);
         }
 
         setMultiRepeat(0);
@@ -696,46 +674,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
             mMediaPlayer.setQueueIndex(0);
             mMediaPlayer.pause();
         }
-    }
-
-    /**
-     * Records a play or skip for the current song based on the current time of the backing
-     * {@link MediaPlayer} as returned by {@link #getCurrentPosition()}
-     */
-    private void logPlay() {
-        Timber.i("Logging play count...");
-        if (getNowPlaying() != null) {
-            if (getCurrentPosition() > PLAY_COUNT_THRESHOLD
-                    || getCurrentPosition() > getDuration() / 2) {
-                // Log a play if we're passed a certain threshold or more than 50% in a song
-                // (whichever is smaller)
-                Timber.i("Marking song as played");
-                logPlayCount(getNowPlaying(), false);
-            } else if (getCurrentPosition() < SKIP_COUNT_THRESHOLD) {
-                // If we're not very far into this song, log a skip
-                Timber.i("Marking song as skipped");
-                logPlayCount(getNowPlaying(), true);
-            } else {
-                Timber.i("Not writing play count. Song was neither played nor skipped.");
-            }
-        }
-    }
-
-    /**
-     * Record a play or skip for a certain song
-     * @param song the song to change the play count of
-     * @param skip Whether the song was skipped (true if skipped, false if played)
-     */
-    private void logPlayCount(Song song, boolean skip) {
-        Timber.i("Logging %s count to PlayCountStore for %s...", (skip) ? "skip" : "play", song.toString());
-        if (skip) {
-            mPlayCountStore.incrementSkipCount(song);
-        } else {
-            mPlayCountStore.incrementPlayCount(song);
-            mPlayCountStore.setPlayDateToNow(song);
-        }
-        Timber.i("Writing PlayCountStore to disk...");
-        mPlayCountStore.save();
     }
 
     /**
@@ -1224,7 +1162,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     @Override
     public void onCompletion(Song completed) {
         Timber.i("onCompletion called");
-        logPlayCount(completed, false);
         for (MusicPlayerExtension ext : mExtensions) {
             ext.onSongCompleted(this, completed);
         }

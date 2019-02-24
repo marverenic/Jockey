@@ -26,8 +26,10 @@ import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.ImmutablePreferenceStore;
 import com.marverenic.music.data.store.MediaStoreUtil;
+import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.extensions.persistence.PersistenceExtension;
+import com.marverenic.music.player.extensions.playcount.PlayCountExtension;
 import com.marverenic.music.player.extensions.scrobbler.ScrobblerExtension;
 import com.marverenic.music.player.persistence.PlaybackPersistenceManager;
 import com.marverenic.music.player.transaction.ChunkHeader;
@@ -59,6 +61,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     @Internal MusicPlayer musicPlayer;
 
     @Inject PlaybackPersistenceManager mPlaybackPersistenceManager;
+    @Inject PlayCountStore mPlayCountStore;
 
     /**
      * Used to to prevent errors caused by freeing resources twice
@@ -108,7 +111,8 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         musicPlayer = new MusicPlayer(this, Arrays.asList(
                 new PersistenceExtension(mPlaybackPersistenceManager, this),
-                new ScrobblerExtension(this)
+                new ScrobblerExtension(this),
+                new PlayCountExtension(mPlayCountStore)
         ));
         musicPlayer.setPlaybackChangeListener(this);
     }

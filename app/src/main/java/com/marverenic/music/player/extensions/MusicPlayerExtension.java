@@ -11,6 +11,7 @@ public abstract class MusicPlayerExtension {
     public void onSongCompleted(MusicPlayer musicPlayer, Song completed) {}
     public void onSongPaused(MusicPlayer musicPlayer) {}
     public void onSongResumed(MusicPlayer musicPlayer) {}
+    public void onSongSkipped(MusicPlayer musicPlayer, boolean byUser) {}
     public void onSeekPositionChanged(MusicPlayer musicPlayer) {}
     public void onQueueChanged(MusicPlayer musicPlayer) {}
 }
