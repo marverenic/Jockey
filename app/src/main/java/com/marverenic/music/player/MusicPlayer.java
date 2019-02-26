@@ -205,7 +205,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public MusicPlayer(Context context, PlayerOptions options, List<MusicPlayerExtension> extensions) {
         mContext = context;
         mHandler = new Handler();
-        JockeyApplication.getComponent(mContext).inject(this);
         mRemotePreferenceStore = new RemotePreferenceStore(mContext);
 
         // Initialize the media player

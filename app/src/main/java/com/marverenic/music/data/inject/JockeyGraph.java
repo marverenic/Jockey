@@ -1,6 +1,5 @@
 package com.marverenic.music.data.inject;
 
-import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.PlayerService;
 import com.marverenic.music.player.ServicePlayerController;
 import com.marverenic.music.player.browser.JockeyBrowserService;
@@ -77,7 +76,6 @@ public interface JockeyGraph {
     void inject(PlaylistCollisionDialogFragment dialogFragment);
 
     void inject(ServicePlayerController.Listener broadcastReceiver);
-    void inject(MusicPlayer musicPlayer);
 
     void inject(JockeyBrowserService browserService);
     void inject(PlayerService playerService);
