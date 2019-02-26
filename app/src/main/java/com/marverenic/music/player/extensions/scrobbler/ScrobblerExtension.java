@@ -16,6 +16,8 @@ public class ScrobblerExtension extends MusicPlayerExtension {
         mMessenger = new SlsMessenger(context);
     }
 
+    // TODO add extension-targeted preferences
+/*
     @Override
     public void onCreateMusicPlayer(MusicPlayer musicPlayer, ReadOnlyPreferenceStore preferences) {
         onSettingsChanged(preferences);
@@ -25,6 +27,7 @@ public class ScrobblerExtension extends MusicPlayerExtension {
     public void onSettingsChanged(ReadOnlyPreferenceStore preferences) {
         mEnabled = preferences.getEqualizerEnabled();
     }
+*/
 
     @Override
     public void onSongStarted(MusicPlayer musicPlayer) {

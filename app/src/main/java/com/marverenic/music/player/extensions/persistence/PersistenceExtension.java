@@ -7,6 +7,7 @@ import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.MusicPlayer;
+import com.marverenic.music.player.PlayerOptions;
 import com.marverenic.music.player.PlayerState;
 import com.marverenic.music.player.extensions.MusicPlayerExtension;
 import com.marverenic.music.player.persistence.PlaybackPersistenceManager;
@@ -26,7 +27,7 @@ public class PersistenceExtension extends MusicPlayerExtension {
     }
 
     @Override
-    public void onCreateMusicPlayer(MusicPlayer musicPlayer, ReadOnlyPreferenceStore preferences) {
+    public void onCreateMusicPlayer(MusicPlayer musicPlayer) {
         PlaybackPersistenceManager.State state = mPlaybackPersistenceManager.getStateBlocking();
 
         musicPlayer.restorePlayerState(new PlayerState.Builder()

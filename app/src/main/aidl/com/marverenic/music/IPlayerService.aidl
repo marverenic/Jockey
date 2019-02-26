@@ -3,9 +3,9 @@ package com.marverenic.music;
 
 import android.support.v4.media.session.MediaSessionCompat;
 
-import com.marverenic.music.data.store.ImmutablePreferenceStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerState;
+import com.marverenic.music.player.PlayerOptions;
 import com.marverenic.music.player.RemoteEqualizer;
 import com.marverenic.music.player.transaction.ChunkHeader;
 import com.marverenic.music.player.transaction.TransactionToken;
@@ -18,7 +18,7 @@ interface IPlayerService {
     void togglePlay();
     void play();
     void pause();
-    void setPreferences(in ImmutablePreferenceStore preferences, long seed);
+    void setPreferences(in PlayerOptions options, long seed);
     void setQueue(in List<Song> newQueue, int newPosition, long seed);
     void beginLargeQueueTransaction(in TransactionToken token);
     void sendQueueChunk(in ChunkHeader header, in List<Song> chunk);

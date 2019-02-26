@@ -24,12 +24,8 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.KeyEvent;
 
 import com.marverenic.music.BuildConfig;
-import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.data.store.PlayCountStore;
-import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.data.store.RemotePreferenceStore;
-import com.marverenic.music.data.store.SharedPreferenceStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.browser.MediaBrowserRoot;
 import com.marverenic.music.player.browser.MediaList;
@@ -206,7 +202,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @param extensions Additional extensions that can be used to augment behavior in MusicPlayer.
      *                   Pass an empty list if no additional behavior is required.
      */
-    public MusicPlayer(Context context, List<MusicPlayerExtension> extensions) {
+    public MusicPlayer(Context context, PlayerOptions options, List<MusicPlayerExtension> extensions) {
         mContext = context;
         mHandler = new Handler();
         JockeyApplication.getComponent(mContext).inject(this);
@@ -226,61 +222,45 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         filter.addAction(ACTION_AUDIO_BECOMING_NOISY);
         context.registerReceiver(mHeadphoneListener, filter);
 
-        /*
-            SharedPreferenceStore is backed by an instance of SharedPreferences. Because
-            SharedPreferences isn't safe to use across processes, the only time we can get valid
-            data is right after we open the SharedPreferences for the first time in this process.
-
-            We're going to take advantage of that here so that we can load the latest preferences
-            as soon as the MusicPlayer is started (which should be the same time that this process
-            is started). To update these preferences, see updatePreferences(preferenceStore)
-        */
-        ReadOnlyPreferenceStore preferenceStore = new SharedPreferenceStore(mContext);
-
-        loadPrefs(preferenceStore);
+        loadPrefs(options);
         initMediaSession();
 
         mExtensions = Collections.unmodifiableList(new ArrayList<>(extensions));
         for (MusicPlayerExtension ext : mExtensions) {
-            ext.onCreateMusicPlayer(this, preferenceStore);
+            ext.onCreateMusicPlayer(this);
         }
     }
 
     /**
      * Reloads shuffle and repeat preferences from {@link SharedPreferences}
      */
-    private void loadPrefs(ReadOnlyPreferenceStore preferenceStore) {
+    private void loadPrefs(PlayerOptions playerOptions) {
         Timber.i("Loading SharedPreferences...");
 
-        mShuffle = preferenceStore.isShuffled();
-        setRepeat(preferenceStore.getRepeatMode());
+        mShuffle = playerOptions.isShuffleEnabled();
+        setRepeat(playerOptions.getRepeatMode());
         setMultiRepeat(mRemotePreferenceStore.getMultiRepeatCount());
 
-        initEqualizer(preferenceStore);
+        initEqualizer(playerOptions);
         startSleepTimer(mRemotePreferenceStore.getSleepTimerEndTime());
 
-        mResumeOnHeadphonesConnect = preferenceStore.resumeOnHeadphonesConnect();
+        mResumeOnHeadphonesConnect = playerOptions.shouldResumeOnHeadphonesConnected();
     }
 
     /**
      * Updates shuffle and repeat preferences from a Preference Store
-     * @param preferencesStore The preference store to read values from
-     * @param seed A seed to use if enabling shuffle
+     * @param options The preference store to read values from
      */
-    public void updatePreferences(ReadOnlyPreferenceStore preferencesStore, long seed) {
+    public void updatePreferences(PlayerOptions options, long seed) {
         requireNotReleased();
         Timber.i("Updating preferences...");
-        if (preferencesStore.isShuffled() != mShuffle) {
-            setShuffle(preferencesStore.isShuffled(), seed);
+        if (options.isShuffleEnabled() != mShuffle) {
+            setShuffle(options.isShuffleEnabled(), seed);
         }
 
-        mResumeOnHeadphonesConnect = preferencesStore.resumeOnHeadphonesConnect();
-        setRepeat(preferencesStore.getRepeatMode());
-        initEqualizer(preferencesStore);
-
-        for (MusicPlayerExtension ext : mExtensions) {
-            ext.onSettingsChanged(preferencesStore);
-        }
+        mResumeOnHeadphonesConnect = options.shouldResumeOnHeadphonesConnected();
+        setRepeat(options.getRepeatMode());
+        initEqualizer(options);
     }
 
     /**
@@ -314,10 +294,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     /**
      * Reload all equalizer settings from SharedPreferences
      */
-    private void initEqualizer(ReadOnlyPreferenceStore preferencesStore) {
+    private void initEqualizer(PlayerOptions playerOptions) {
         Timber.i("Initializing equalizer");
-        mMediaPlayer.setEqualizer(preferencesStore.getEqualizerEnabled(),
-                preferencesStore.getEqualizerSettings());
+        mMediaPlayer.setEqualizer(playerOptions.isEqualizerEnabled(),
+            playerOptions.getEqualizerSettings());
     }
 
     /**
@@ -992,6 +972,14 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public long getSleepTimerEndTime() {
         requireNotReleased();
         return mRemotePreferenceStore.getSleepTimerEndTime();
+    }
+
+    /**
+     * Overload for {@link #setShuffle(boolean, long)} that uses a default seed generator if
+     * enabling shuffle.
+     */
+    public void setShuffle(boolean shuffle) {
+        setShuffle(shuffle, System.currentTimeMillis());
     }
 
     /**

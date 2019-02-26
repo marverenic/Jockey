@@ -18,7 +18,6 @@ import android.support.v4.media.session.MediaSessionCompat;
 import com.marverenic.music.IPlayerService;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.data.store.ImmutablePreferenceStore;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
@@ -65,6 +64,7 @@ public class ServicePlayerController implements PlayerController {
 
     private Context mContext;
     private IPlayerService mBinding;
+    private ReadOnlyPreferenceStore mPreferenceStore;
     private PlaybackPersistenceManager mPersistenceManager;
     private PlayerServiceConnection mConnection;
     private long mServiceStartRequestTime;
@@ -99,6 +99,7 @@ public class ServicePlayerController implements PlayerController {
     public ServicePlayerController(Context context, PreferenceStore preferenceStore,
                 PlaybackPersistenceManager persistenceManager) {
         mContext = context;
+        mPreferenceStore = preferenceStore;
         mPersistenceManager = persistenceManager;
         mConnection = new PlayerServiceConnection();
         mRequestThread = new HandlerThread("ServiceExecutor");
@@ -148,7 +149,17 @@ public class ServicePlayerController implements PlayerController {
 
     private void startService() {
         MediaStoreUtil.getPermission(mContext)
-                .subscribe(this::bindService, t -> Timber.i(t, "Failed to get Storage permission"));
+            .subscribe(this::bindService, t -> Timber.i(t, "Failed to get Storage permission"));
+    }
+
+    private PlayerOptions getPlayerOptions() {
+        return new PlayerOptions(
+            mPreferenceStore.isShuffled(),
+            mPreferenceStore.getRepeatMode(),
+            mPreferenceStore.getEqualizerEnabled(),
+            mPreferenceStore.getEqualizerSettings(),
+            mPreferenceStore.resumeOnHeadphonesConnect()
+        );
     }
 
     private void bindService(boolean hasMediaStorePermission) {
@@ -163,7 +174,7 @@ public class ServicePlayerController implements PlayerController {
         mServiceStartRequestTime = SystemClock.uptimeMillis();
         Timber.i("Starting service at time %dl", mServiceStartRequestTime);
 
-        Intent serviceIntent = PlayerService.newIntent(mContext, true);
+        Intent serviceIntent = PlayerService.newIntent(mContext, getPlayerOptions(), true);
 
         int bindFlags = Context.BIND_WAIVE_PRIORITY | Context.BIND_AUTO_CREATE;
         mContext.bindService(serviceIntent, mConnection, bindFlags);
@@ -438,13 +449,14 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public void updatePlayerPreferences(ReadOnlyPreferenceStore preferenceStore) {
+        mPreferenceStore = preferenceStore;
         long seed = mShuffleSeedGenerator.nextLong();
         mShuffleMode.setValue(preferenceStore.isShuffled());
         mRepeatMode.setValue(preferenceStore.getRepeatMode());
 
         execute(() -> {
             try {
-                mBinding.setPreferences(new ImmutablePreferenceStore(preferenceStore), seed);
+                mBinding.setPreferences(getPlayerOptions(), seed);
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to update remote player preferences");
             }

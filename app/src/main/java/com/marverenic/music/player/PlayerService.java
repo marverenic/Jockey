@@ -24,7 +24,6 @@ import com.marverenic.music.BuildConfig;
 import com.marverenic.music.IPlayerService;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
-import com.marverenic.music.data.store.ImmutablePreferenceStore;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.model.Song;
@@ -50,6 +49,7 @@ import timber.log.Timber;
 public class PlayerService extends Service implements MusicPlayer.OnPlaybackChangeListener {
 
     private static final String EXTRA_START_SILENT = "PlayerService.SILENT_START";
+    private static final String EXTRA_PLAYER_OPTIONS = "PlayerService.PLAYER_OPTIONS";
 
     private static final String NOTIFICATION_CHANNEL_ID = "music-service";
     private static final int NOTIFICATION_ID = 1;
@@ -77,9 +77,10 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
      */
     private boolean mBeQuiet;
 
-    public static Intent newIntent(Context context, boolean silent) {
+    public static Intent newIntent(Context context, PlayerOptions options, boolean silent) {
         Intent intent = new Intent(context, PlayerService.class);
         intent.putExtra(EXTRA_START_SILENT, silent);
+        intent.putExtra(EXTRA_PLAYER_OPTIONS, options);
 
         return intent;
     }
@@ -108,19 +109,16 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel();
         }
-
-        musicPlayer = new MusicPlayer(this, Arrays.asList(
-                new PersistenceExtension(mPlaybackPersistenceManager, this),
-                new ScrobblerExtension(this),
-                new PlayCountExtension(mPlayCountStore)
-        ));
-        musicPlayer.setPlaybackChangeListener(this);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Timber.i("onStartCommand called");
         super.onStartCommand(intent, flags, startId);
+
+        if (musicPlayer == null) {
+            onCreateMusicPlayer(intent);
+        }
 
         if (intent != null && MediaStoreUtil.hasPermission(this)) {
             mBeQuiet = intent.getBooleanExtra(EXTRA_START_SILENT, false);
@@ -131,6 +129,17 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
             }
         }
         return START_STICKY;
+    }
+
+    private void onCreateMusicPlayer(Intent intent) {
+        PlayerOptions options = intent.getParcelableExtra(EXTRA_PLAYER_OPTIONS);
+
+        musicPlayer = new MusicPlayer(this, options, Arrays.asList(
+            new PersistenceExtension(mPlaybackPersistenceManager, this),
+            new ScrobblerExtension(this),
+            new PlayCountExtension(mPlayCountStore)
+        ));
+        musicPlayer.setPlaybackChangeListener(this);
     }
 
     @Override
@@ -448,16 +457,16 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         @Override
-        public void setPreferences(ImmutablePreferenceStore preferences, long seed) {
+        public void setPreferences(PlayerOptions options, long seed) {
             if (!isMusicPlayerReady()) {
                 Timber.i("PlayerService.setPreferences(): Service is not ready. Dropping command");
                 return;
             }
 
             try {
-                mService.musicPlayer.updatePreferences(preferences, seed);
+                mService.musicPlayer.updatePreferences(options, seed);
             } catch (RuntimeException exception) {
-                Timber.e(exception, "Remote call to PlayerService.setPreferences(...) failed");
+                Timber.e(exception, "Remote call to PlayerService.updatePreferences(...) failed");
                 throw exception;
             }
         }

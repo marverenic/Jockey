@@ -3,7 +3,6 @@ package com.marverenic.music.player.extensions.playcount;
 import android.support.annotation.Nullable;
 
 import com.marverenic.music.data.store.PlayCountStore;
-import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.extensions.MusicPlayerExtension;
@@ -30,11 +29,6 @@ public class PlayCountExtension extends MusicPlayerExtension {
 
     public PlayCountExtension(PlayCountStore playCountStore) {
         mPlayCountStore = playCountStore;
-    }
-
-    @Override
-    public void onCreateMusicPlayer(MusicPlayer musicPlayer, ReadOnlyPreferenceStore preferences) {
-        // Initialize play count store
         mPlayCountStore.refresh()
             .subscribe(complete -> {
                 Timber.i("init: Initialized play count store values");
