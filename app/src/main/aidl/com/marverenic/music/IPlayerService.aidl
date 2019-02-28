@@ -1,6 +1,8 @@
 // IPlayerService.aidl
 package com.marverenic.music;
 
+import android.os.Bundle;
+
 import android.support.v4.media.session.MediaSessionCompat;
 
 import com.marverenic.music.model.Song;
@@ -52,6 +54,8 @@ interface IPlayerService {
 
     long getSleepTimerEndTime();
     void setSleepTimerEndTime(long timestampInMillis);
+
+    void updateExtensionOptions(in Bundle options);
 
     MediaSessionCompat.Token getMediaSessionToken();
 

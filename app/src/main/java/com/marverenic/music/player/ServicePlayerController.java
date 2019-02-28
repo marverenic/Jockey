@@ -22,6 +22,7 @@ import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.player.extensions.scrobbler.ScrobblerExtension;
 import com.marverenic.music.player.persistence.PlaybackPersistenceManager;
 import com.marverenic.music.player.transaction.ListTransaction;
 import com.marverenic.music.utils.ArtworkUtils;
@@ -457,6 +458,8 @@ public class ServicePlayerController implements PlayerController {
         execute(() -> {
             try {
                 mBinding.setPreferences(getPlayerOptions(), seed);
+                mBinding.updateExtensionOptions(ScrobblerExtension.createOptionsBundle(
+                        preferenceStore.isSlsBroadcastingEnabled()));
             } catch (RemoteException exception) {
                 Timber.e(exception, "Failed to update remote player preferences");
             }

@@ -1146,6 +1146,17 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         return mMediaSession;
     }
 
+    /**
+     * Updates the options for all connected {@link MusicPlayerExtension MusicPlayerExtensions}.
+     * Every extension will receive this bundle.
+     * @param options The new options to be sent to each player extension.
+     */
+    public void updateExtensionOptions(Bundle options) {
+        for (MusicPlayerExtension ext : mExtensions) {
+            ext.onOptionsChange(options);
+        }
+    }
+
     @Override
     public void onCompletion(Song completed) {
         Timber.i("onCompletion called");

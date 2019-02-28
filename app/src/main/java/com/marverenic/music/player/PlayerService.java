@@ -10,6 +10,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
@@ -852,6 +853,21 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
                 mService.musicPlayer.setSleepTimer(timestampInMillis);
             } catch (RuntimeException exception) {
                 Timber.e(exception, "Remote call to PlayerService.setSleepTimerEndTime() failed");
+            }
+        }
+
+        @Override
+        public void updateExtensionOptions(Bundle options) {
+            if (!isMusicPlayerReady()) {
+                Timber.i("PlayerService.updateExtensionOptions(): " +
+                        "Service is not ready. Dropping command");
+                return;
+            }
+
+            try {
+                mService.musicPlayer.updateExtensionOptions(options);
+            } catch (RuntimeException exception) {
+                Timber.e(exception, "Remote call to PlayerService.updateExtensionOptions() failed");
             }
         }
 

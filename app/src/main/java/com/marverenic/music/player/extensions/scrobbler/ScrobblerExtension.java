@@ -1,13 +1,15 @@
 package com.marverenic.music.player.extensions.scrobbler;
 
 import android.content.Context;
+import android.os.Bundle;
 
-import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.extensions.MusicPlayerExtension;
 
 public class ScrobblerExtension extends MusicPlayerExtension {
+
+    private static final String OPTION_ENABLED = "SLS_ENABLED";
 
     private boolean mEnabled;
     private SlsMessenger mMessenger;
@@ -16,18 +18,16 @@ public class ScrobblerExtension extends MusicPlayerExtension {
         mMessenger = new SlsMessenger(context);
     }
 
-    // TODO add extension-targeted preferences
-/*
-    @Override
-    public void onCreateMusicPlayer(MusicPlayer musicPlayer, ReadOnlyPreferenceStore preferences) {
-        onSettingsChanged(preferences);
+    public static Bundle createOptionsBundle(boolean enabled) {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(OPTION_ENABLED, enabled);
+        return bundle;
     }
 
     @Override
-    public void onSettingsChanged(ReadOnlyPreferenceStore preferences) {
-        mEnabled = preferences.getEqualizerEnabled();
+    public void onOptionsChange(Bundle options) {
+        mEnabled = options.getBoolean(OPTION_ENABLED, mEnabled);
     }
-*/
 
     @Override
     public void onSongStarted(MusicPlayer musicPlayer) {
