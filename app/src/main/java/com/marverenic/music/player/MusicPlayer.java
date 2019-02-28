@@ -33,13 +33,13 @@ import com.marverenic.music.player.extensions.MusicPlayerExtension;
 import com.marverenic.music.ui.library.LibraryActivity;
 import com.marverenic.music.utils.ArtworkUtils;
 import com.marverenic.music.utils.Internal;
+import com.marverenic.music.utils.MusicUtils;
 import com.marverenic.music.utils.compat.AudioManagerCompat;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -542,20 +542,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     private void shuffleQueue(int currentIndex, long seed) {
         Timber.i("Shuffling queue...");
-        mQueueShuffled = Collections.unmodifiableList(generateShuffledQueue(mQueue, currentIndex, seed));
-    }
-
-    static List<Song> generateShuffledQueue(List<Song> queue, int startingIndex, long seed) {
-        List<Song> shuffled = new ArrayList<>(queue);
-
-        if (!shuffled.isEmpty()) {
-            Song first = shuffled.remove(startingIndex);
-
-            Collections.shuffle(shuffled, new Random(seed));
-            shuffled.add(0, first);
-        }
-
-        return shuffled;
+        List<Song> shuffled = MusicUtils.generateShuffledQueue(mQueue, currentIndex, seed);
+        mQueueShuffled = Collections.unmodifiableList(shuffled);
     }
 
     /**

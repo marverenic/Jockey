@@ -26,6 +26,7 @@ import com.marverenic.music.player.extensions.scrobbler.ScrobblerExtension;
 import com.marverenic.music.player.persistence.PlaybackPersistenceManager;
 import com.marverenic.music.player.transaction.ListTransaction;
 import com.marverenic.music.utils.ArtworkUtils;
+import com.marverenic.music.utils.MusicUtils;
 import com.marverenic.music.utils.ObservableQueue;
 import com.marverenic.music.utils.RxProperty;
 
@@ -479,7 +480,7 @@ public class ServicePlayerController implements PlayerController {
             mCurrentPosition.setValue(0);
 
             if (shuffled) {
-                mQueue.setValue(MusicPlayer.generateShuffledQueue(newQueue, newPosition, seed));
+                mQueue.setValue(MusicUtils.generateShuffledQueue(newQueue, newPosition, seed));
             } else {
                 mQueue.setValue(newQueue);
             }
