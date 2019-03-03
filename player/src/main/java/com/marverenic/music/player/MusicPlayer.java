@@ -23,7 +23,6 @@ import android.support.v4.media.session.MediaSessionCompat.QueueItem;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.KeyEvent;
 
-import com.marverenic.music.R;
 import com.marverenic.music.data.store.RemotePreferenceStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.browser.MediaBrowserDirectory;
