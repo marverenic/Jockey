@@ -12,7 +12,6 @@
     <string name="header_artists">Artistas</string>
     <string name="header_albums">Álbumes</string>
     <string name="header_genres">Géneros</string>
-    <string name="header_now_playing">Jugando Ahora</string>
     <string name="header_about">Sobre</string>
     <string name="action_settings">Preferencias</string>
     <string name="header_settings">Preferencias</string>
@@ -55,8 +54,6 @@
     <string name="action_sort_skip">Ordenar por número de saltos</string>
     <string name="action_sort_date_added">Ordenar por fecha añadida</string>
     <string name="action_sort_date_played">Ordenar por fecha jugada</string>
-    <string name="action_disable_shuffle">Desactivar aleatorio</string>
-    <string name="action_enable_shuffle">Encender aleatorio</string>
     <string name="action_enable_repeat">Encender repetición</string>
     <string name="action_disable_sleep_timer">Desactivar el Temporizador de Apagado</string>
     <string name="action_add_queue_to_playlist">Añadir cola a la lista reproducción&#8230;</string>
@@ -119,7 +116,6 @@
 
     <!-- Error messages -->
     <string name="message_play_error_not_found">Jockey no pudo encontrar &#8220;%1$s&#8221;</string>
-    <string name="message_play_error_io_exception">&#8220;%1$s&#8221; no se pudo reproducir</string>
     <string name="error_playback_from_files_failed">Jockey no pudo reproducir %s</string>
 
     <!-- Formatted Messages -->
@@ -354,7 +350,6 @@
     <string name="multi_repeat_description">Multi-Repetir reproducirá la canción actual una tras otra
         varias veces. Cuando se inicia la siguiente canción, Multi-Repetir se desactivará.</string>
     <string name="enable_sleep_timer">Temporizador de Apagado</string>
-    <string name="confirm_sleep_timer_end">Temporizador de Apagado ha terminado</string>
     <string name="time_in_min_format">%1$d min</string>
 
     <!-- Hints -->

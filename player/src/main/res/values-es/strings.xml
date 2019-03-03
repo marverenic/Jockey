@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="header_now_playing">Jugando Ahora</string>
+
+    <string name="action_disable_shuffle">Desactivar aleatorio</string>
+    <string name="action_enable_shuffle">Encender aleatorio</string>
+
+    <string name="confirm_sleep_timer_end">Temporizador de Apagado ha terminado</string>
+    <string name="message_play_error_io_exception">&#8220;%1$s&#8221; no se pudo reproducir</string>
+</resources>

@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Player</string>
+
+    <string name="header_now_playing">Now Playing</string>
+
+    <string name="action_disable_shuffle">Disable shuffle</string>
+    <string name="action_enable_shuffle">Enable shuffle</string>
+
+    <string name="confirm_sleep_timer_end">Sleep Timer ended</string>
+    <string name="message_play_error_io_exception">&#8220;%1$s&#8221; couldn\'t be played</string>
 </resources>
