@@ -285,7 +285,7 @@
 
         <receiver android:name=".player.ServicePlayerController$Listener"
             android:exported="false">
-            <intent-filter android:priority="999">
+            <intent-filter>
                 <action android:name="marverenic.jockey.player.REFRESH"/>
                 <action android:name="marverenic.jockey.player.INFO"/>
                 <action android:name="marverenic.jockey.player.ERROR"/>
