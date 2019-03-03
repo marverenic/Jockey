@@ -31,7 +31,6 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.marverenic.music.BuildConfig;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.utils.Internal;
 

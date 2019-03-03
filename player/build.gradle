@@ -28,12 +28,19 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':exoplayer-flac')
     implementation project(':library')
 
     implementation "com.android.support:support-annotations:$rootProject.supportLibVersion"
     implementation "com.android.support:support-media-compat:$rootProject.supportLibVersion"
 
+    // Used for DiffUtil
+    implementation "com.android.support:recyclerview-v7:$rootProject.supportLibVersion"
+
     implementation 'com.google.android.exoplayer:exoplayer:2.6.1'
+
+    implementation 'io.reactivex:rxjava:1.1.6'
+    implementation 'io.reactivex:rxandroid:1.2.1'
 
     implementation 'com.jakewharton.timber:timber:4.1.2'
 

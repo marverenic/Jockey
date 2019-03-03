@@ -343,8 +343,6 @@
     <string name="pref_key_shuffle" translatable="false">Player.shuffle</string>
     <string name="pref_key_repeat" translatable="false">Player.repeat</string>
     <string name="pref_key_send_sls_broadcasts" translatable="false">Player.enableSlsBroadcasts</string>
-    <string name="pref_key_multi_repeat" translatable="false">Player.multiRepeat</string>
-    <string name="pref_key_sleep_timer" translatable="false">Player.sleepTimer</string>
     <string name="pref_key_last_sleep_timer" translatable="false">Player.defaultSleepTimer</string>
     <string name="pref_key_included_dirs" translatable="false">Library.includedDirs</string>
     <string name="pref_key_excluded_dirs" translatable="false">Library.excludedDirs</string>
