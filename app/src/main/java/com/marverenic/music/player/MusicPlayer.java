@@ -30,7 +30,6 @@ import com.marverenic.music.model.Song;
 import com.marverenic.music.player.browser.MediaBrowserDirectory;
 import com.marverenic.music.player.browser.MediaList;
 import com.marverenic.music.player.extensions.MusicPlayerExtension;
-import com.marverenic.music.ui.library.LibraryActivity;
 import com.marverenic.music.utils.ArtworkUtils;
 import com.marverenic.music.utils.Internal;
 import com.marverenic.music.utils.MusicUtils;
@@ -154,6 +153,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     private QueuedMediaPlayer mMediaPlayer;
     private Context mContext;
     private Handler mHandler;
+    private PendingIntent mLibraryIntent;
     private MediaSessionCompat mMediaSession;
     private HeadsetListener mHeadphoneListener;
     private OnPlaybackChangeListener mCallback;
@@ -200,11 +200,14 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @param extensions Additional extensions that can be used to augment behavior in MusicPlayer.
      *                   Pass an empty list if no additional behavior is required.
      */
-    public MusicPlayer(Context context, PlayerOptions options,
+    public MusicPlayer(Context context,
+                       PlayerOptions options,
+                       PendingIntent libraryIntent,
                        MediaBrowserDirectory mediaBrowserRoot,
                        List<MusicPlayerExtension> extensions) {
         mContext = context;
         mHandler = new Handler();
+        mLibraryIntent = libraryIntent;
         mMediaBrowserRoot = mediaBrowserRoot;
         mRemotePreferenceStore = new RemotePreferenceStore(mContext);
 
@@ -274,12 +277,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                 | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
 
         mMediaSession.setCallback(new MediaSessionCallback(this, mMediaBrowserRoot));
-        mMediaSession.setSessionActivity(
-                PendingIntent.getActivity(
-                        mContext, 0,
-                        LibraryActivity.newNowPlayingIntent(mContext)
-                                .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
-                        PendingIntent.FLAG_CANCEL_CURRENT));
+        mMediaSession.setSessionActivity(mLibraryIntent);
 
         updateMediaSession();
 

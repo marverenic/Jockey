@@ -37,6 +37,7 @@ import com.marverenic.music.player.transaction.ChunkHeader;
 import com.marverenic.music.player.transaction.IncomingTransaction;
 import com.marverenic.music.player.transaction.ListTransaction;
 import com.marverenic.music.player.transaction.TransactionToken;
+import com.marverenic.music.ui.library.LibraryActivity;
 import com.marverenic.music.utils.Internal;
 import com.marverenic.music.utils.MediaStyleHelper;
 
@@ -138,6 +139,11 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         PlayerOptions options = intent.getParcelableExtra(EXTRA_PLAYER_OPTIONS);
 
         musicPlayer = new MusicPlayer(this, options,
+                PendingIntent.getActivity(
+                        this, 0,
+                        LibraryActivity.newNowPlayingIntent(this)
+                                .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
+                        PendingIntent.FLAG_CANCEL_CURRENT),
                 mMediaBrowserRoot,
                 Arrays.asList(
                         new PersistenceExtension(mPlaybackPersistenceManager, this),
