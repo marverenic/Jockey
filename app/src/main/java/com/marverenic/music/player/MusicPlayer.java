@@ -23,7 +23,6 @@ import android.support.v4.media.session.MediaSessionCompat.QueueItem;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.KeyEvent;
 
-import com.marverenic.music.BuildConfig;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.RemotePreferenceStore;
 import com.marverenic.music.model.Song;
@@ -31,6 +30,7 @@ import com.marverenic.music.player.browser.MediaBrowserDirectory;
 import com.marverenic.music.player.browser.MediaList;
 import com.marverenic.music.player.extensions.MusicPlayerExtension;
 import com.marverenic.music.utils.ArtworkUtils;
+import com.marverenic.music.utils.BroadcastUtils;
 import com.marverenic.music.utils.Internal;
 import com.marverenic.music.utils.MusicUtils;
 import com.marverenic.music.utils.compat.AudioManagerCompat;
@@ -62,49 +62,6 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         QueuedMediaPlayer.PlaybackEventListener {
 
     private static final String TAG = "MusicPlayer";
-
-    /**
-     * Package permission that is required to receive broadcasts
-     */
-    private static final String BROADCAST_PERMISSION = BuildConfig.APPLICATION_ID + ".MUSIC_BROADCAST_PERMISSION";
-
-    /**
-     * An {@link Intent} action broadcasted when a MusicPlayer has changed its state automatically
-     */
-    public static final String UPDATE_BROADCAST = "marverenic.jockey.player.REFRESH";
-
-    /**
-     * An {@link Intent} extra sent with {@link #UPDATE_BROADCAST} intents which maps to a boolean
-     * representing whether or not the update is a minor update (i.e. an update that was triggered
-     * by the user).
-     */
-    public static final String UPDATE_EXTRA_MINOR = "marverenic.jockey.player.REFRESH:minor";
-
-    /**
-     * An {@link Intent} action broadcasted when a MusicPlayer has information that should be
-     * presented to the user
-     * @see #INFO_EXTRA_MESSAGE
-     */
-    public static final String INFO_BROADCAST = "marverenic.jockey.player.INFO";
-
-    /**
-     * An {@link Intent} extra sent with {@link #INFO_BROADCAST} intents which maps to a
-     * user-friendly information message
-     */
-    public static final String INFO_EXTRA_MESSAGE = "marverenic.jockey.player.INFO:MSG";
-
-    /**
-     * An {@link Intent} action broadcasted when a MusicPlayer has encountered an error when
-     * setting the current playback source
-     * @see #ERROR_EXTRA_MSG
-     */
-    public static final String ERROR_BROADCAST = "marverenic.jockey.player.ERROR";
-
-    /**
-     * An {@link Intent} extra sent with {@link #ERROR_BROADCAST} intents which maps to a
-     * user-friendly error message
-     */
-    public static final String ERROR_EXTRA_MSG = "marverenic.jockey.player.ERROR:MSG";
 
     /**
      * Repeat value that corresponds to repeat none. Playback will continue as normal until and will
@@ -399,10 +356,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         mMediaSession.setPlaybackState(state.build());
 
         Timber.i("Sending minor broadcast to update UI process");
-        Intent broadcast = new Intent(UPDATE_BROADCAST)
-                .putExtra(UPDATE_EXTRA_MINOR, true);
+        Intent broadcast = new Intent(BroadcastUtils.getUpdateBroadcast(mContext))
+                .putExtra(BroadcastUtils.UPDATE_EXTRA_MINOR, true);
 
-        mContext.sendBroadcast(broadcast, BROADCAST_PERMISSION);
+        mContext.sendBroadcast(broadcast, BroadcastUtils.getBroadcastPermission(mContext));
     }
 
     private List<QueueItem> buildQueueWindow() {
@@ -491,10 +448,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     protected void updateUi() {
         Timber.i("Sending broadcast to update UI process");
-        Intent broadcast = new Intent(UPDATE_BROADCAST)
-                .putExtra(UPDATE_EXTRA_MINOR, false);
+        Intent broadcast = new Intent(BroadcastUtils.getUpdateBroadcast(mContext))
+                .putExtra(BroadcastUtils.UPDATE_EXTRA_MINOR, false);
 
-        mContext.sendBroadcast(broadcast, BROADCAST_PERMISSION);
+        mContext.sendBroadcast(broadcast, BroadcastUtils.getBroadcastPermission(mContext));
     }
 
     /**
@@ -504,8 +461,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     protected void postError(String message) {
         Timber.i("Posting error to UI process: %s", message);
-        mContext.sendBroadcast(new Intent(ERROR_BROADCAST).putExtra(ERROR_EXTRA_MSG, message),
-                BROADCAST_PERMISSION);
+        Intent broadcast = new Intent(BroadcastUtils.getErrorBroadcast(mContext))
+                .putExtra(BroadcastUtils.ERROR_EXTRA_MSG, message);
+
+        mContext.sendBroadcast(broadcast, BroadcastUtils.getBroadcastPermission(mContext));
     }
 
     /**
@@ -515,8 +474,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     protected void postInfo(String message) {
         Timber.i("Posting info to UI process: %s", message);
-        mContext.sendBroadcast(new Intent(INFO_BROADCAST).putExtra(INFO_EXTRA_MESSAGE, message),
-                BROADCAST_PERMISSION);
+        Intent broadcast = new Intent(BroadcastUtils.getInfoBroadcast(mContext))
+                .putExtra(BroadcastUtils.INFO_EXTRA_MESSAGE, message);
+
+        mContext.sendBroadcast(broadcast, BroadcastUtils.getBroadcastPermission(mContext));
     }
 
     /**

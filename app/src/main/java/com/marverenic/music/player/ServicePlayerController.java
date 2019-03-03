@@ -26,6 +26,7 @@ import com.marverenic.music.player.extensions.scrobbler.ScrobblerExtension;
 import com.marverenic.music.player.persistence.PlaybackPersistenceManager;
 import com.marverenic.music.player.transaction.ListTransaction;
 import com.marverenic.music.utils.ArtworkUtils;
+import com.marverenic.music.utils.BroadcastUtils;
 import com.marverenic.music.utils.MusicUtils;
 import com.marverenic.music.utils.ObservableQueue;
 import com.marverenic.music.utils.RxProperty;
@@ -782,9 +783,7 @@ public class ServicePlayerController implements PlayerController {
 
     /**
      * A {@link BroadcastReceiver} class listening for intents with an
-     * {@link MusicPlayer#UPDATE_BROADCAST} action. This broadcast must be sent ordered with this
-     * receiver being the highest priority so that the UI can access this class for accurate
-     * information from the player service
+     * {@link BroadcastUtils#getUpdateBroadcast(Context) Update} action.
      */
     public static class Listener extends BroadcastReceiver {
 
@@ -793,7 +792,7 @@ public class ServicePlayerController implements PlayerController {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getBooleanExtra(MusicPlayer.UPDATE_EXTRA_MINOR, false)) {
+            if (intent.getBooleanExtra(BroadcastUtils.UPDATE_EXTRA_MINOR, false)) {
                 // Ignore minor updates – we already handle them without being notified
                 return;
             }
@@ -805,14 +804,14 @@ public class ServicePlayerController implements PlayerController {
             if (mController instanceof ServicePlayerController) {
                 ServicePlayerController playerController = (ServicePlayerController) mController;
 
-                if (intent.getAction().equals(MusicPlayer.UPDATE_BROADCAST)) {
+                if (BroadcastUtils.getUpdateBroadcast(context).equals(intent.getAction())) {
                     playerController.invalidateAll();
-                } else if (intent.getAction().equals(MusicPlayer.INFO_BROADCAST)) {
-                    String error = intent.getExtras().getString(MusicPlayer.INFO_EXTRA_MESSAGE);
+                } else if (BroadcastUtils.getInfoBroadcast(context).equals(intent.getAction())) {
+                    String error = intent.getExtras().getString(BroadcastUtils.INFO_EXTRA_MESSAGE);
                     playerController.mInfoStream.onNext(error);
 
-                } else if (intent.getAction().equals(MusicPlayer.ERROR_BROADCAST)) {
-                    String info = intent.getExtras().getString(MusicPlayer.ERROR_EXTRA_MSG);
+                } else if (BroadcastUtils.getErrorBroadcast(context).equals(intent.getAction())) {
+                    String info = intent.getExtras().getString(BroadcastUtils.ERROR_EXTRA_MSG);
                     playerController.mErrorStream.onNext(info);
                 }
             }

@@ -10,8 +10,8 @@ import android.support.v4.media.session.MediaButtonReceiver;
 import android.widget.RemoteViews;
 
 import com.marverenic.music.JockeyApplication;
-import com.marverenic.music.player.MusicPlayer;
 import com.marverenic.music.player.PlayerController;
+import com.marverenic.music.utils.BroadcastUtils;
 
 import javax.inject.Inject;
 
@@ -28,7 +28,7 @@ public abstract class BaseWidget extends AppWidgetProvider {
         JockeyApplication.getComponent(context).inject(this);
 
         String action = intent.getAction();
-        if (MusicPlayer.UPDATE_BROADCAST.equals(action)) {
+        if (BroadcastUtils.getUpdateBroadcast(context).equals(action)) {
             if (isEnabled(context)) {
                 onUpdate(context);
             }
