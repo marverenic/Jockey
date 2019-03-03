@@ -27,7 +27,7 @@ import com.marverenic.music.BuildConfig;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.RemotePreferenceStore;
 import com.marverenic.music.model.Song;
-import com.marverenic.music.player.browser.MediaBrowserRoot;
+import com.marverenic.music.player.browser.MediaBrowserDirectory;
 import com.marverenic.music.player.browser.MediaList;
 import com.marverenic.music.player.extensions.MusicPlayerExtension;
 import com.marverenic.music.ui.library.LibraryActivity;
@@ -40,8 +40,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -188,7 +186,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      */
     private Bitmap mArtwork;
 
-    @Inject MediaBrowserRoot mMediaBrowserRoot;
+    private MediaBrowserDirectory mMediaBrowserRoot;
     private RemotePreferenceStore mRemotePreferenceStore;
 
     private final Runnable mSleepTimerRunnable = this::onSleepTimerEnd;
@@ -202,9 +200,12 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
      * @param extensions Additional extensions that can be used to augment behavior in MusicPlayer.
      *                   Pass an empty list if no additional behavior is required.
      */
-    public MusicPlayer(Context context, PlayerOptions options, List<MusicPlayerExtension> extensions) {
+    public MusicPlayer(Context context, PlayerOptions options,
+                       MediaBrowserDirectory mediaBrowserRoot,
+                       List<MusicPlayerExtension> extensions) {
         mContext = context;
         mHandler = new Handler();
+        mMediaBrowserRoot = mediaBrowserRoot;
         mRemotePreferenceStore = new RemotePreferenceStore(mContext);
 
         // Initialize the media player
@@ -1278,10 +1279,10 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         private int mClickCount;
 
         private MusicPlayer mMusicPlayer;
-        private MediaBrowserRoot mBrowserRoot;
+        private MediaBrowserDirectory mBrowserRoot;
         private Handler mHandler;
 
-        MediaSessionCallback(MusicPlayer musicPlayer, MediaBrowserRoot browserRoot) {
+        MediaSessionCallback(MusicPlayer musicPlayer, MediaBrowserDirectory browserRoot) {
             mHandler = new Handler();
             mMusicPlayer = musicPlayer;
             mBrowserRoot = browserRoot;

@@ -28,6 +28,7 @@ import com.marverenic.music.R;
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.PlayCountStore;
 import com.marverenic.music.model.Song;
+import com.marverenic.music.player.browser.MediaBrowserRoot;
 import com.marverenic.music.player.extensions.persistence.PersistenceExtension;
 import com.marverenic.music.player.extensions.playcount.PlayCountExtension;
 import com.marverenic.music.player.extensions.scrobbler.ScrobblerExtension;
@@ -62,6 +63,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     @Internal MusicPlayer musicPlayer;
 
     @Inject PlaybackPersistenceManager mPlaybackPersistenceManager;
+    @Inject MediaBrowserRoot mMediaBrowserRoot;
     @Inject PlayCountStore mPlayCountStore;
 
     /**
@@ -135,11 +137,13 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     private void onCreateMusicPlayer(Intent intent) {
         PlayerOptions options = intent.getParcelableExtra(EXTRA_PLAYER_OPTIONS);
 
-        musicPlayer = new MusicPlayer(this, options, Arrays.asList(
-            new PersistenceExtension(mPlaybackPersistenceManager, this),
-            new ScrobblerExtension(this),
-            new PlayCountExtension(mPlayCountStore)
-        ));
+        musicPlayer = new MusicPlayer(this, options,
+                mMediaBrowserRoot,
+                Arrays.asList(
+                        new PersistenceExtension(mPlaybackPersistenceManager, this),
+                        new ScrobblerExtension(this),
+                        new PlayCountExtension(mPlayCountStore)
+                ));
         musicPlayer.setPlaybackChangeListener(this);
     }
 
