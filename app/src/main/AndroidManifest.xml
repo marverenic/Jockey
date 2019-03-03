@@ -248,7 +248,7 @@
             android:label="@string/widget_square_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-                <action android:name="marverenic.jockey.player.REFRESH"/>
+                <action android:name="com.marverenic.music:player.REFRESH"/>
             </intent-filter>
             <meta-data android:name="android.appwidget.provider"
                 android:resource="@xml/square_widget_info" />
@@ -258,7 +258,7 @@
             android:label="@string/widget_wide_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-                <action android:name="marverenic.jockey.player.REFRESH"/>
+                <action android:name="com.marverenic.music:player.REFRESH"/>
             </intent-filter>
             <meta-data android:name="android.appwidget.provider"
                 android:resource="@xml/wide_widget_info" />
@@ -270,7 +270,7 @@
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
             <intent-filter>
-                <action android:name="marverenic.jockey.player.REFRESH"/>
+                <action android:name="com.marverenic.music:player.REFRESH"/>
             </intent-filter>
             <meta-data android:name="android.appwidget.provider"
                 android:resource="@xml/compact_widget_info" />
