@@ -74,6 +74,10 @@ android {
 
     flavorDimensions "implementation"
     productFlavors {
+        foss {
+            dimension "implementation"
+        }
+
         hathor {
             dimension "implementation"
         }
