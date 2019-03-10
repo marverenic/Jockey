@@ -20,9 +20,13 @@ jobs:
             key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
 
         - run:
-            name: Assemble
+            name: Assemble (Hathor)
             command: ./gradlew clean assembleHathorRelease -PdisablePreDex
 
         - run:
-            name: Test
+            name: Assemble (FOSS)
+            command: ./gradlew assembleFossRelease -PdisablePreDex -PdisableCrashlytics
+
+        - run:
+            name: Test Hathor Release
             command: ./gradlew testHathorRelease -PdisablePreDex
