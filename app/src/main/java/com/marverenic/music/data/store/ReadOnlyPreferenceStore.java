@@ -12,7 +12,6 @@ import java.util.Set;
 public interface ReadOnlyPreferenceStore {
 
     boolean showFirstStart();
-    boolean allowLogging();
     boolean useMobileNetwork();
 
     boolean openNowPlayingOnNewQueue();

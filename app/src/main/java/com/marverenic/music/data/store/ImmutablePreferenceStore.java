@@ -11,7 +11,6 @@ import timber.log.Timber;
 public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcelable {
 
     private final boolean mShowFirstStart;
-    private final boolean mAllowLogging;
     private final boolean mUseMobileNetwork;
     private final boolean mOpenNowPlayingOnNewQueue;
     private final boolean mEnableNowPlayingGestures;
@@ -31,7 +30,6 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcel
 
     public ImmutablePreferenceStore(ReadOnlyPreferenceStore preferencesStore) {
         mShowFirstStart = preferencesStore.showFirstStart();
-        mAllowLogging = preferencesStore.allowLogging();
         mUseMobileNetwork = preferencesStore.useMobileNetwork();
         mOpenNowPlayingOnNewQueue = preferencesStore.openNowPlayingOnNewQueue();
         mEnableNowPlayingGestures = preferencesStore.enableNowPlayingGestures();
@@ -58,7 +56,6 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcel
 
     protected ImmutablePreferenceStore(Parcel in) {
         mShowFirstStart = in.readByte() != 0;
-        mAllowLogging = in.readByte() != 0;
         mUseMobileNetwork = in.readByte() != 0;
         mOpenNowPlayingOnNewQueue = in.readByte() != 0;
         mEnableNowPlayingGestures = in.readByte() != 0;
@@ -80,7 +77,6 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcel
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeByte((byte) (mShowFirstStart ? 1 : 0));
-        dest.writeByte((byte) (mAllowLogging ? 1 : 0));
         dest.writeByte((byte) (mUseMobileNetwork ? 1 : 0));
         dest.writeByte((byte) (mOpenNowPlayingOnNewQueue ? 1 : 0));
         dest.writeByte((byte) (mEnableNowPlayingGestures ? 1 : 0));
@@ -119,11 +115,6 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcel
     @Override
     public boolean showFirstStart() {
         return mShowFirstStart;
-    }
-
-    @Override
-    public boolean allowLogging() {
-        return mAllowLogging;
     }
 
     @Override

@@ -89,7 +89,7 @@
     <string name="action_cancel">Cancelar</string>
     <string name="action_add">Añadir</string>
     <string name="action_add_new">Añadir nuevo</string>
-    <string name="action_agree">Acordar</string>
+    <string name="action_lets_go">Vamonos</string>
     <string name="action_try_again">Inténtalo de nuevo</string>
     <string name="action_open_settings">Abrir Configuración</string>
     <string name="action_make_new_playlist">Crear nueva lista reproducción&#8230;</string>
@@ -238,7 +238,6 @@
         Apache, Versión 2.0</string>
 
     <!-- Preference Strings -->
-    <string name="settings_category_general">General</string>
     <string name="appearance_header">Apariencia</string>
     <string name="pref_category_library">Biblioteca</string>
     <string name="playback_header">Reproducción</string>
@@ -257,7 +256,6 @@
     <string name="use_mobile">Utilizar datos móviles</string>
     <string name="use_mobile_description_on">Las ilustraciones del álbum y otros datos siempre se descargarán</string>
     <string name="use_mobile_description_off">Las ilustraciones del álbum y otros datos sólo se descargarán en Wi-Fi</string>
-    <string name="enable_additional_logging_detailed">Ayuda a mejorar Jockey enviando datos de uso anónimos</string>
     <string name="logging_on">Los datos de uso e información de error anónimos se enviarán a Marverenic</string>
     <string name="logging_off">Sólo se enviará información de error anónima a Marverenic</string>
     <string name="logging_description">Ayuda a mejorar Jockey</string>

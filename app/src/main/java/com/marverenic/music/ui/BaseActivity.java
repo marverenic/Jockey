@@ -14,7 +14,6 @@ import android.support.v7.app.NightMode;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.marverenic.music.JockeyApplication;
@@ -76,27 +75,19 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     }
 
     private void showFirstRunDialog() {
-        View messageView = getLayoutInflater().inflate(R.layout.alert_pref, null);
-        TextView message = messageView.findViewById(R.id.pref_alert_content);
-        CheckBox pref = messageView.findViewById(R.id.pref_alert_option);
-
-        message.setText(Html.fromHtml(getString(R.string.first_launch_detail)));
-        message.setMovementMethod(LinkMovementMethod.getInstance());
-
-        pref.setChecked(true);
-        pref.setText(R.string.enable_additional_logging_detailed);
-
-        new AlertDialog.Builder(this)
+        AlertDialog firstRunDialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.first_launch_title)
-                .setView(messageView)
-                .setPositiveButton(R.string.action_agree,
+                .setMessage(Html.fromHtml(getString(R.string.first_launch_detail)))
+                .setPositiveButton(R.string.action_lets_go,
                         (dialog, which) -> {
-                            _mPreferenceStore.setAllowLogging(pref.isChecked());
                             _mPreferenceStore.setShowFirstStart(false);
                             _mPrivacyPolicyManager.onLatestPrivacyPolicyConfirmed();
                         })
                 .setCancelable(false)
                 .show();
+
+        TextView message = firstRunDialog.findViewById(android.R.id.message);
+        message.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     @Override
