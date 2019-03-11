@@ -8,13 +8,9 @@ import android.support.annotation.IdRes;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.app.NightMode;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.view.View;
-import android.widget.TextView;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
@@ -69,25 +65,10 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-        if (_mPreferenceStore.showFirstStart()) {
-            showFirstRunDialog();
+        if (_mPreferenceStore.isFirstStart()) {
+            _mPreferenceStore.setIsFirstStart(false);
+            _mPrivacyPolicyManager.onLatestPrivacyPolicyConfirmed();
         }
-    }
-
-    private void showFirstRunDialog() {
-        AlertDialog firstRunDialog = new AlertDialog.Builder(this)
-                .setTitle(R.string.first_launch_title)
-                .setMessage(Html.fromHtml(getString(R.string.first_launch_detail)))
-                .setPositiveButton(R.string.action_lets_go,
-                        (dialog, which) -> {
-                            _mPreferenceStore.setShowFirstStart(false);
-                            _mPrivacyPolicyManager.onLatestPrivacyPolicyConfirmed();
-                        })
-                .setCancelable(false)
-                .show();
-
-        TextView message = firstRunDialog.findViewById(android.R.id.message);
-        message.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     @Override
@@ -188,7 +169,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     }
 
     private void showPrivacyPolicySnackbar() {
-        if (_mPreferenceStore.showFirstStart()) {
+        if (_mPreferenceStore.isFirstStart()) {
             return;
         }
 

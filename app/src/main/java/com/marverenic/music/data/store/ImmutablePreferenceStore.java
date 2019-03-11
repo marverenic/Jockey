@@ -29,7 +29,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcel
     private final String mEqualizerSettings;
 
     public ImmutablePreferenceStore(ReadOnlyPreferenceStore preferencesStore) {
-        mShowFirstStart = preferencesStore.showFirstStart();
+        mShowFirstStart = preferencesStore.isFirstStart();
         mUseMobileNetwork = preferencesStore.useMobileNetwork();
         mOpenNowPlayingOnNewQueue = preferencesStore.openNowPlayingOnNewQueue();
         mEnableNowPlayingGestures = preferencesStore.enableNowPlayingGestures();
@@ -113,7 +113,7 @@ public class ImmutablePreferenceStore implements ReadOnlyPreferenceStore, Parcel
     };
 
     @Override
-    public boolean showFirstStart() {
+    public boolean isFirstStart() {
         return mShowFirstStart;
     }
 

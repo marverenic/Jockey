@@ -61,7 +61,7 @@ public class JockeyPreferencesCompat {
         prefs.edit().clear().apply();
         PreferenceStore preferenceStore = new SharedPreferenceStore(context);
 
-        preferenceStore.setShowFirstStart(showFirstStart);
+        preferenceStore.setIsFirstStart(showFirstStart);
         preferenceStore.setDefaultPage(convertStartPage1_2(firstPage));
         preferenceStore.setPrimaryColor(convertPrimaryColor1_2(primaryColor));
         preferenceStore.setBaseColor(convertBaseTheme1_2(baseTheme));
