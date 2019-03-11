@@ -33,11 +33,7 @@
     <string name="playlist_auto_new">New Smart Playlist</string>
     <string name="playlist_auto_choose_by">Choose songs by</string>
 
-    <!-- First start Strings -->
-    <string name="first_launch_title">Welcome to Jockey</string>
-    <string name="first_launch_detail"><![CDATA[By using this application, you agree to Jockey\'s
-        <a href="https://www.marverenic.com/Jockey/privacy-policy.html">privacy policy</a>.]]>
-    </string>
+    <!-- Privacy policy Strings -->
     <string name="alert_privacy_policy_updated">Jockey\'s privacy policy has changed</string>
     <string name="action_read_privacy_policy">Open</string>
     <string name="url_privacy_policy">https://www.marverenic.com/Jockey/privacy-policy.html</string>
@@ -94,7 +90,6 @@
     <string name="action_cancel">Cancel</string>
     <string name="action_add">Add</string>
     <string name="action_add_new">Add new</string>
-    <string name="action_lets_go">Let\'s go</string>
     <string name="action_try_again">Try again</string>
     <string name="action_open_settings">Open settings</string>
     <string name="action_make_new_playlist">Make new playlist&#8230;</string>

@@ -90,7 +90,7 @@ public class SharedPreferenceStore implements PreferenceStore {
     }
 
     @Override
-    public boolean showFirstStart() {
+    public boolean isFirstStart() {
         return getBoolean(R.string.pref_key_show_first_start, true);
     }
 
@@ -202,7 +202,7 @@ public class SharedPreferenceStore implements PreferenceStore {
     }
 
     @Override
-    public void setShowFirstStart(boolean showFirstStart) {
+    public void setIsFirstStart(boolean showFirstStart) {
         putBoolean(R.string.pref_key_show_first_start, showFirstStart);
     }
 

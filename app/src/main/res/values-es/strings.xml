@@ -32,12 +32,7 @@
     <string name="playlist_auto_new">Crear Lista Inteligente</string>
     <string name="playlist_auto_choose_by">Elija canciones por</string>
 
-    <!-- First start Strings -->
-    <string name="first_launch_title">Bienvenido a Jockey</string>
-    <string name="first_launch_detail"><![CDATA[Al usar esta aplicación, acepta
-        <a href="https://www.marverenic.com/Jockey/privacy-policy.html">la política de privacidad</a>
-        de Jockey.]]>
-    </string>
+    <!-- Privacy policy Strings -->
     <string name="alert_privacy_policy_updated">La política de privacidad de Jockey ha cambiado</string>
     <string name="action_read_privacy_policy">Leer</string>
     <string name="url_privacy_policy">https://www.marverenic.com/Jockey/privacy-policy.html</string>
@@ -89,7 +84,6 @@
     <string name="action_cancel">Cancelar</string>
     <string name="action_add">Añadir</string>
     <string name="action_add_new">Añadir nuevo</string>
-    <string name="action_lets_go">Vamonos</string>
     <string name="action_try_again">Inténtalo de nuevo</string>
     <string name="action_open_settings">Abrir Configuración</string>
     <string name="action_make_new_playlist">Crear nueva lista reproducción&#8230;</string>
