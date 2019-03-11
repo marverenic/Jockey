@@ -95,11 +95,6 @@ public class SharedPreferenceStore implements PreferenceStore {
     }
 
     @Override
-    public boolean allowLogging() {
-        return getBoolean(R.string.pref_key_allow_logging, false);
-    }
-
-    @Override
     public boolean useMobileNetwork() {
         return getBoolean(R.string.pref_key_use_mobile_net, true);
     }
@@ -209,11 +204,6 @@ public class SharedPreferenceStore implements PreferenceStore {
     @Override
     public void setShowFirstStart(boolean showFirstStart) {
         putBoolean(R.string.pref_key_show_first_start, showFirstStart);
-    }
-
-    @Override
-    public void setAllowLogging(boolean allowLogging) {
-        putBoolean(R.string.pref_key_allow_logging, allowLogging);
     }
 
     @Override

@@ -240,14 +240,12 @@
     <string name="theme_base">Achtergrondskleur</string>
     <string name="default_page_pref">Standaardpagina</string>
     <string name="playback_header">Afspelen</string>
-    <string name="settings_category_general">Algemeen</string>
     <string name="appearance_header">Uiterlijk</string>
     <string name="pref_category_library">Bibliotheek</string>
     <string name="pref_header_browser_page">Muziekbrowser</string>
     <string name="use_mobile">Gebruik mobiele data</string>
     <string name="logging_off">Alleen anonieme crashgegevens zal verstuurd worden naar Marverenic</string>
     <string name="logging_on">Anonieme gebruikersdata en crashgegevens zullen verstuurd worden naar Marverenic</string>
-    <string name="enable_additional_logging_detailed">Help om Jockey beter te maken door anonieme statistieken te verzenden</string>
     <string name="use_mobile_description_off">Album illustraties en andere data zullen alleen over Wi-Fi gedownload worden</string>
     <string name="use_mobile_description_on">Album illustraties en andere data zullen altijd gedownload worden</string>
     <string name="switch_to_now_playing_detail_off">Als het nummer verandert zal je niet navigeren naar een andere pagina</string>
