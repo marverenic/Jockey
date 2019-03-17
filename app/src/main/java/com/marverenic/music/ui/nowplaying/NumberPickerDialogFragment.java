@@ -33,7 +33,6 @@ public class NumberPickerDialogFragment extends DialogFragment {
     private static final String KEY_DEFAULT_VAL = "NumberPickerDialogFragment.DEFAULT_VALUE";
     private static final String KEY_SAVED_VAL = "NumberPickerDialogFragment.SAVED_VALUE";
     private static final String KEY_WRAP_SELECTOR = "NumberPickerDialogFragment.WRAP_SELECTOR";
-    private static final String KEY_RESULT_FRAGMENT = "NumberPickerDialogFragment.RESULT_FRAGMENT";
 
     private NumberPicker mNumberPicker;
 
@@ -96,22 +95,25 @@ public class NumberPickerDialogFragment extends DialogFragment {
 
     private void onValueSelected() {
         int value = mNumberPicker.getValue();
-        Activity parent = getActivity();
+        Fragment resultFragment = getTargetFragment();
 
-        String resultFragmentTag = getArguments().getString(KEY_RESULT_FRAGMENT);
-        Fragment resultFragment = getFragmentManager().findFragmentByTag(resultFragmentTag);
-
-        if (resultFragmentTag != null && resultFragment instanceof OnNumberPickedListener) {
-            ((OnNumberPickedListener) resultFragment).onNumberPicked(value);
-        } else if (parent instanceof OnNumberPickedListener) {
-            ((OnNumberPickedListener) parent).onNumberPicked(value);
+        if (resultFragment != null) {
+            if (resultFragment instanceof OnNumberPickedListener) {
+                ((OnNumberPickedListener) resultFragment).onNumberPicked(value);
+            } else {
+                String targetClassName = resultFragment.getClass().getSimpleName();
+                Timber.w("%s does not implement OnNumberPickedListener. Ignoring chosen value.",
+                        targetClassName);
+            }
         } else {
-            String targetClassName = (resultFragmentTag == null)
-                    ? parent.getClass().getSimpleName()
-                    : resultFragmentTag.getClass().getSimpleName();
-
-            Timber.w("%s does not implement OnNumberPickedListener. Ignoring chosen value.",
-                    targetClassName);
+            Activity hostActivity = requireActivity();
+            if (hostActivity instanceof OnNumberPickedListener) {
+                ((OnNumberPickedListener) hostActivity).onNumberPicked(value);
+            } else {
+                String targetClassName = hostActivity.getClass().getSimpleName();
+                Timber.w("%s does not implement OnNumberPickedListener. Ignoring chosen value.",
+                        targetClassName);
+            }
         }
     }
 
@@ -125,7 +127,7 @@ public class NumberPickerDialogFragment extends DialogFragment {
 
         private String mTitle;
         private String mMessage;
-        private String mResultFragment;
+        private Fragment mTargetFragment;
         private int mMin;
         private int mMax;
         private int mDefault;
@@ -133,12 +135,12 @@ public class NumberPickerDialogFragment extends DialogFragment {
 
         public Builder(AppCompatActivity activity) {
             mFragmentManager = activity.getSupportFragmentManager();
-            mResultFragment = null;
+            mTargetFragment = null;
         }
 
         public Builder(Fragment fragment) {
             mFragmentManager = fragment.getFragmentManager();
-            mResultFragment = fragment.getTag();
+            mTargetFragment = fragment;
         }
 
         public Builder setTitle(String title) {
@@ -175,7 +177,6 @@ public class NumberPickerDialogFragment extends DialogFragment {
             Bundle args = new Bundle();
             args.putString(KEY_TITlE, mTitle);
             args.putString(KEY_MESSAGE, mMessage);
-            args.putString(KEY_RESULT_FRAGMENT, mResultFragment);
             args.putInt(KEY_MIN_VAL, mMin);
             args.putInt(KEY_MAX_VAL, mMax);
             args.putInt(KEY_DEFAULT_VAL, mDefault);
@@ -184,6 +185,7 @@ public class NumberPickerDialogFragment extends DialogFragment {
             NumberPickerDialogFragment dialogFragment = new NumberPickerDialogFragment();
             dialogFragment.setArguments(args);
 
+            dialogFragment.setTargetFragment(mTargetFragment, 0);
             dialogFragment.show(mFragmentManager, tag);
         }
     }

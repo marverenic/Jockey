@@ -28,7 +28,6 @@ public class DurationPickerDialogFragment extends DialogFragment
     private static final String KEY_DEFAULT_VAL = "DurationPickerDialogFragment.DEFAULT_VALUE";
     private static final String KEY_DISABLE_BUTTON = "DurationPickerDialogFragment.DISABLE_BUTTON";
     private static final String KEY_SAVED_VAL = "DurationPickerDialogFragment.SAVED_VALUE";
-    private static final String KEY_RESULT_FRAGMENT = "DurationPickerDialogFragment.RESULT_FRAG";
 
     public static final int NO_VALUE = Integer.MIN_VALUE;
 
@@ -91,18 +90,25 @@ public class DurationPickerDialogFragment extends DialogFragment
     }
 
     private void onValueSelected(int value) {
-        Activity parent = getActivity();
+        Fragment resultFragment = getTargetFragment();
 
-        String resultFragmentTag = getArguments().getString(KEY_RESULT_FRAGMENT);
-        Fragment resultFragment = getFragmentManager().findFragmentByTag(resultFragmentTag);
-
-        if (resultFragmentTag != null && resultFragment instanceof OnDurationPickedListener) {
-            ((OnDurationPickedListener) resultFragment).onDurationPicked(value);
-        } else if (parent instanceof OnDurationPickedListener) {
-            ((OnDurationPickedListener) parent).onDurationPicked(value);
+        if (resultFragment != null) {
+            if (resultFragment instanceof OnDurationPickedListener) {
+                ((OnDurationPickedListener) resultFragment).onDurationPicked(value);
+            } else {
+                String targetClassName = resultFragment.getClass().getSimpleName();
+                Timber.w("%s does not implement OnDurationPickedListener. Ignoring chosen value.",
+                        targetClassName);
+            }
         } else {
-            Timber.w("%s does not implement OnDurationPickedListener. Ignoring chosen value.",
-                    parent.getClass().getSimpleName());
+            Activity hostActivity = requireActivity();
+            if (hostActivity instanceof OnDurationPickedListener) {
+                ((OnDurationPickedListener) hostActivity).onDurationPicked(value);
+            } else {
+                String targetClassName = hostActivity.getClass().getSimpleName();
+                Timber.w("%s does not implement OnDurationPickedListener. Ignoring chosen value.",
+                        targetClassName);
+            }
         }
     }
 
@@ -131,7 +137,7 @@ public class DurationPickerDialogFragment extends DialogFragment
         private FragmentManager mFragmentManager;
 
         private String mTitle;
-        private String mResultFragment;
+        private Fragment mTargetFragment;
         private int mMin;
         private int mMax;
         private int mDefault;
@@ -139,12 +145,12 @@ public class DurationPickerDialogFragment extends DialogFragment
 
         public Builder(AppCompatActivity activity) {
             mFragmentManager = activity.getSupportFragmentManager();
-            mResultFragment = null;
+            mTargetFragment = null;
         }
 
         public Builder(Fragment fragment) {
             mFragmentManager = fragment.getFragmentManager();
-            mResultFragment = fragment.getTag();
+            mTargetFragment = fragment;
         }
 
         public Builder setTitle(String title) {
@@ -175,7 +181,6 @@ public class DurationPickerDialogFragment extends DialogFragment
         public void show(String tag) {
             Bundle args = new Bundle();
             args.putString(KEY_TITLE, mTitle);
-            args.putString(KEY_RESULT_FRAGMENT, mResultFragment);
             args.putInt(KEY_MIN_VAL, mMin);
             args.putInt(KEY_MAX_VAL, mMax);
             args.putString(KEY_DISABLE_BUTTON, mDisableButton);
@@ -184,6 +189,7 @@ public class DurationPickerDialogFragment extends DialogFragment
             DurationPickerDialogFragment dialogFragment = new DurationPickerDialogFragment();
             dialogFragment.setArguments(args);
 
+            dialogFragment.setTargetFragment(mTargetFragment, 0);
             dialogFragment.show(mFragmentManager, tag);
         }
     }
