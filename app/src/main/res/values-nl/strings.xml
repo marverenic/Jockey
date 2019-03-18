@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
     <string name="header_playlists">Afspeellijsten</string>
     <string name="header_songs">Nummers</string>
     <string name="header_artists">Artiesten</string>
@@ -263,10 +264,10 @@
         <item>Het</item>
         <item>Een</item>
         <item>Ten</item>
-        <item>d'</item>
-        <item>'t</item>
-        <item>'s</item>
-        <item>d' n</item>
+        <item>d\'</item>
+        <item>\'t</item>
+        <item>\'s</item>
+        <item>d\' n</item>
     </string-array>
 
 </resources>
