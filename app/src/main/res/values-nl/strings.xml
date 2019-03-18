@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-
     <string name="header_playlists">Afspeellijsten</string>
     <string name="header_songs">Nummers</string>
     <string name="header_artists">Artiesten</string>
