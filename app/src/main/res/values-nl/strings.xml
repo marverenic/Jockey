@@ -133,7 +133,7 @@
     <string name="empty_search">Geen resultaten</string>
     <string name="empty_auto_playlist_detail">Geen nummers die je filter volgden</string>
     <string name="empty_playlist_detail">Je kan muziek toevoegen in de bibliotheek pagina</string>
-    <string name="empty_playlists_detail">Je kan een nieuwe maken door op de “+” knop te drukken</string>
+    <string name="empty_playlists_detail">Je kan een nieuwe maken door op de &#8220;+&#8221; knop te drukken</string>
     <string name="empty_genres_detail">Zorg ervoor dat je muziek correct is getagd</string>
     <string name="empty_queue">Er wordt niets afgespeeld</string>
     <string name="empty_error_album">Kan het album niet laden</string>
@@ -240,8 +240,8 @@
     <string name="uses_seek_arc_detail">Versie 1.1; gedistributeerd door Triggertrap Ltd (Neil Davies) onder een MIT License</string>
     <string name="uses_timber_detail">Versie 1.1; gedistributeerd door Triggertrap Ltd (Neil Davies) onder een MIT License</string>
     <string name="about_description">Jockey is een muziekspeler voor Android 4.1 en hoger, gefocused op simpliciteit, snelheid en design gedistributeerd onder een Apache 2.0 licentie.</string>
-    <string name="empty_included_dirs_detail">Jockey kan beperkt worden om in alleen specifieke mappen te doorzoeken, druk op de “+” knop om een map in te sluiten.</string>
-    <string name="empty_excluded_dirs_detail">Jockey kan beperkt worden om sommige mappen over te slaan, druk op de “+” knop om een map uit te sluiten.</string>
+    <string name="empty_included_dirs_detail">Jockey kan beperkt worden om in alleen specifieke mappen te doorzoeken, druk op de &#8220;+&#8221; knop om een map in te sluiten.</string>
+    <string name="empty_excluded_dirs_detail">Jockey kan beperkt worden om sommige mappen over te slaan, druk op de &#8220;+&#8221; knop om een map uit te sluiten.</string>
     <string name="url_privacy_policy">https://www.marverenic.com/Jockey/privacy-policy.html</string>
     <string name="first_launch_detail">"<![CDATA[Door deze applicatie te gebruiken ga je akkoord met Jockey\'s         <a href="https://www.marverenic.com/Jockey/privacy-policy.html">privacybeleid</a>.]]>     "</string>
     <string name="pref_resume_on_connect">Afspelen als headset verbonden</string>
@@ -256,4 +256,17 @@
     <string name="pref_sls_description_not_installed">"<![CDATA[         Jockey kan je afspeelhistorie online plaatsen naar services zoals Last.fm door te integreren met         een onafhankelijke applicatie. Download Simple Last.fm Scrobbler van de         Google Play Store.         <br/><br/>         Je kan meer informatie vinden over Simple Last.fm Scrobbler vinden        <a href="https://github.com/tgwizard/sls/">op zijn website</a>.]]>     "</string>
     <string name="pref_sls_description_enabled_but_uninstalled">"<![CDATA[        Om verder te gaan met scrobbelen naar Last.fm, Simple Last.fm Scrobbler moet geinstalleerd blijven. Je         afspeelhistorie zal dan niet worden gedeeld. Als je niet langer wil scrobbelen kan je dit uitzetten.         <br/><br/>         Jockey kan je afspeelhistorie online plaatsen naar services zoals Last.fm door te integreren met         een onafhankelijke applicatie. Download Simple Last.fm Scrobbler van de         Google Play Store.         <br/><br/>         Je kan meer informatie vinden over Simple Last.fm Scrobbler vinden        <a href="https://github.com/tgwizard/sls/">op zijn website</a>.]]>     "</string>
     <string name="equalizer_conflict_note">Er is een andere equalizer app geinstalleerd op dit apparaat. Dit kan problemen veroorzaken met Jockey\'s equalizer. Schakel Jockey\'s equalizer uit om de systeem-wijde equalizer te gebruiken.</string>
+
+    <!-- Prefixes that are ignored when sorting titles -->
+    <string-array name="ignored_title_prefixes" tools:ignore="InconsistentArrays">
+        <item>De</item>
+        <item>Het</item>
+        <item>Een</item>
+        <item>Ten</item>
+        <item>d'</item>
+        <item>'t</item>
+        <item>'s</item>
+        <item>d' n</item>
+    </string-array>
+
 </resources>
