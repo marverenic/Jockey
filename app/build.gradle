@@ -45,7 +45,7 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         versionCode 40324
         versionName "3.0 beta 6"
-        resConfigs "en", "es"
+        resConfigs "en", "es", "nl"
     }
 
     buildTypes {
