@@ -72,7 +72,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     /**
      * When set to true, notifications will not be displayed until the service enters the foreground
      */
-    private boolean mBeQuiet;
+    private boolean mBeQuiet = true;
 
     public static Intent newIntent(Context context, boolean silent) {
         Intent intent = new Intent(context, PlayerService.class);
@@ -119,7 +119,9 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         super.onStartCommand(intent, flags, startId);
 
         if (intent != null && MediaStoreUtil.hasPermission(this)) {
-            mBeQuiet = intent.getBooleanExtra(EXTRA_START_SILENT, false);
+            if (mBeQuiet) {
+                mBeQuiet = intent.getBooleanExtra(EXTRA_START_SILENT, true);
+            }
 
             if (intent.hasExtra(Intent.EXTRA_KEY_EVENT)) {
                 MediaButtonReceiver.handleIntent(musicPlayer.getMediaSession(), intent);
