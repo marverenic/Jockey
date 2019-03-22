@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.app.NotificationCompat.MediaStyle;
@@ -56,7 +57,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     /**
      * The media player for the service instance
      */
-    @Internal MusicPlayer musicPlayer;
+    @Internal @Nullable MusicPlayer musicPlayer;
 
     @Inject PlaybackPersistenceManager mPlaybackPersistenceManager;
 
@@ -169,7 +170,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     }
 
     private void notifyNowPlaying() {
-        if (musicPlayer.getNowPlaying() == null) {
+        if (musicPlayer == null || musicPlayer.getNowPlaying() == null) {
             Timber.i("Not showing notification -- nothing is playing");
             return;
         }
@@ -184,14 +185,20 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
     private void notifyNowPlaying(boolean foreground) {
         Timber.i("notifyNowPlaying called");
 
-        MediaSessionCompat mediaSession = musicPlayer.getMediaSession();
-        if (mediaSession == null) {
+        if (musicPlayer == null || musicPlayer.getMediaSession() == null) {
             Timber.i("Not showing notification. Media session is uninitialized");
             return;
         }
 
-        NotificationCompat.Builder builder =
-                MediaStyleHelper.from(this, mediaSession, NOTIFICATION_CHANNEL_ID);
+        if (mBeQuiet) {
+            mBeQuiet = !musicPlayer.isPlaying();
+        }
+
+        NotificationCompat.Builder builder = MediaStyleHelper.from(
+                this,
+                musicPlayer.getMediaSession(),
+                NOTIFICATION_CHANNEL_ID
+        );
 
         setupNotificationActions(builder);
 
@@ -212,7 +219,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
     @DrawableRes
     private int getNotificationIcon() {
-        if (musicPlayer.isPlaying()) {
+        if (musicPlayer != null && musicPlayer.isPlaying()) {
             return R.drawable.ic_play_arrow_24dp;
         } else {
             return R.drawable.ic_pause_24dp;
@@ -223,7 +230,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         addNotificationAction(builder, R.drawable.ic_skip_previous_36dp,
                 R.string.action_previous, PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS);
 
-        if (musicPlayer.isPlaying()) {
+        if (musicPlayer != null && musicPlayer.isPlaying()) {
             addNotificationAction(builder, R.drawable.ic_pause_36dp,
                     R.string.action_pause, PlaybackStateCompat.ACTION_PLAY_PAUSE);
         } else {
@@ -249,7 +256,6 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         }
 
         mStopped = false;
-        mBeQuiet &= !musicPlayer.isPlaying();
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             startForeground(NOTIFICATION_ID, notification);
@@ -316,7 +322,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         mStopped = true;
 
         // If the UI process is still running, don't kill the process, only remove its notification
-        if (isUiProcessRunning()) {
+        if (isUiProcessRunning() && musicPlayer != null) {
             musicPlayer.pause();
             stopForeground(true);
             return;

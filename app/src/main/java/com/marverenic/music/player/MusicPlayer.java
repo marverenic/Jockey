@@ -1200,11 +1200,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         startSleepTimer(0);
 
         mFocused = false;
-        mCallback = null;
         mMediaPlayer.release();
         mMediaSession.release();
-        mMediaPlayer = null;
-        mContext = null;
     }
 
     public boolean isReleased() {

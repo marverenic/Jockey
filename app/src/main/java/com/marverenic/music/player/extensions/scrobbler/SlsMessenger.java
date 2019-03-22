@@ -3,6 +3,7 @@ package com.marverenic.music.player.extensions.scrobbler;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.support.annotation.Nullable;
 
 import com.marverenic.music.R;
 import com.marverenic.music.model.Song;
@@ -66,31 +67,39 @@ public class SlsMessenger {
      * Should be called when new song began to play
      * @param song the new song
      */
-    public void sendStart(Song song) {
-        mContext.sendBroadcast(withSong(song).putExtra(KEY_STATE, STATE_START));
+    public void sendStart(@Nullable Song song) {
+        if (song != null) {
+            mContext.sendBroadcast(withSong(song).putExtra(KEY_STATE, STATE_START));
+        }
     }
 
     /**
      * Should be called when a song was resumed after pause
      * @param song the resumed song
      */
-    public void sendResume(Song song) {
-        mContext.sendBroadcast(withSong(song).putExtra(KEY_STATE, STATE_RESUME));
+    public void sendResume(@Nullable Song song) {
+        if (song != null) {
+            mContext.sendBroadcast(withSong(song).putExtra(KEY_STATE, STATE_RESUME));
+        }
     }
 
     /**
      * Should be called when song is paused
      * @param song the paused song
      */
-    public void sendPause(Song song) {
-        mContext.sendBroadcast(withSong(song).putExtra(KEY_STATE, STATE_PAUSE));
+    public void sendPause(@Nullable Song song) {
+        if (song != null) {
+            mContext.sendBroadcast(withSong(song).putExtra(KEY_STATE, STATE_PAUSE));
+        }
     }
 
     /**
      * Should be called when a song is just completed
      * @param song the completed song
      */
-    public void sendComplete(Song song) {
-        mContext.sendBroadcast(withSong(song).putExtra(KEY_STATE, STATE_COMPLETE));
+    public void sendComplete(@Nullable Song song) {
+        if (song != null) {
+            mContext.sendBroadcast(withSong(song).putExtra(KEY_STATE, STATE_COMPLETE));
+        }
     }
 }
