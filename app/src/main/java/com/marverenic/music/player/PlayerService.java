@@ -124,6 +124,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
             }
 
             if (intent.hasExtra(Intent.EXTRA_KEY_EVENT)) {
+                notifyNowPlaying(true);
                 MediaButtonReceiver.handleIntent(musicPlayer.getMediaSession(), intent);
                 Timber.i(intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT).toString());
             }
@@ -167,17 +168,21 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         mgr.createNotificationChannel(channel);
     }
 
-    /**
-     * Generate and post a notification for the current player status
-     * Posts the notification by starting the service in the foreground
-     */
     private void notifyNowPlaying() {
-        Timber.i("notifyNowPlaying called");
-
         if (musicPlayer.getNowPlaying() == null) {
             Timber.i("Not showing notification -- nothing is playing");
             return;
         }
+
+        notifyNowPlaying(musicPlayer.isPlaying());
+    }
+
+    /**
+     * Generate and post a notification for the current player status
+     * Posts the notification by starting the service in the foreground
+     */
+    private void notifyNowPlaying(boolean foreground) {
+        Timber.i("notifyNowPlaying called");
 
         MediaSessionCompat mediaSession = musicPlayer.getMediaSession();
         if (mediaSession == null) {
@@ -202,7 +207,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
                                 .setCancelButtonIntent(stopIntent)
                                 .setMediaSession(musicPlayer.getMediaSession().getSessionToken()));
 
-        showNotification(builder.build());
+        showNotification(builder.build(), foreground);
     }
 
     @DrawableRes
@@ -238,8 +243,8 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
         builder.addAction(new NotificationCompat.Action(icon, getString(string), intent));
     }
 
-    private void showNotification(Notification notification) {
-        if ((mBeQuiet || mStopped) && !musicPlayer.isPlaying()) {
+    private void showNotification(Notification notification, boolean foreground) {
+        if ((mBeQuiet || mStopped) && !foreground) {
             return;
         }
 
@@ -248,7 +253,7 @@ public class PlayerService extends Service implements MusicPlayer.OnPlaybackChan
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             startForeground(NOTIFICATION_ID, notification);
-        } else if (!musicPlayer.isPlaying()) {
+        } else if (!foreground) {
             Timber.i("Removing service from foreground");
 
             /*
