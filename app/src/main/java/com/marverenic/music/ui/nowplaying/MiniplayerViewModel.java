@@ -2,8 +2,6 @@ package com.marverenic.music.ui.nowplaying;
 
 import android.content.Context;
 import android.databinding.Bindable;
-import android.databinding.ObservableField;
-import android.databinding.ObservableInt;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
@@ -15,6 +13,8 @@ import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseViewModel;
 
+import timber.log.Timber;
+
 public class MiniplayerViewModel extends BaseViewModel {
 
     private PlayerController mPlayerController;
@@ -23,17 +23,13 @@ public class MiniplayerViewModel extends BaseViewModel {
     private Song mSong;
     private boolean mPlaying;
 
-    private final ObservableField<Bitmap> mArtwork;
-    private final ObservableInt mDuration;
-    private final ObservableInt mProgress;
+    private Bitmap mArtwork;
+    private int mDuration;
+    private int mProgress;
 
     public MiniplayerViewModel(Context context, PlayerController playerController) {
         super(context);
         mPlayerController = playerController;
-
-        mArtwork = new ObservableField<>();
-        mProgress = new ObservableInt();
-        mDuration = new ObservableInt();
 
         setSong(null);
     }
@@ -50,15 +46,20 @@ public class MiniplayerViewModel extends BaseViewModel {
     }
 
     public void setCurrentPosition(int position) {
-        mProgress.set(position);
+        mProgress = position;
+        notifyPropertyChanged(BR.songDuration);
+        notifyPropertyChanged(BR.progress);
     }
 
     public void setDuration(int duration) {
-        mDuration.set(duration);
+        mDuration = duration;
+        notifyPropertyChanged(BR.songDuration);
+        notifyPropertyChanged(BR.progress);
     }
 
     public void setArtwork(Bitmap artwork) {
-        mArtwork.set(artwork);
+        mArtwork = artwork;
+        notifyPropertyChanged(BR.artwork);
     }
 
     @Bindable
@@ -79,15 +80,18 @@ public class MiniplayerViewModel extends BaseViewModel {
         }
     }
 
-    public ObservableInt getSongDuration() {
+    @Bindable
+    public int getSongDuration() {
         return mDuration;
     }
 
-    public ObservableField<Bitmap> getArtwork() {
+    @Bindable
+    public Bitmap getArtwork() {
         return mArtwork;
     }
 
-    public ObservableInt getProgress() {
+    @Bindable
+    public int getProgress() {
         return mProgress;
     }
 
