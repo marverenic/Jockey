@@ -60,7 +60,8 @@ public class SearchViewModel extends BaseViewModel {
     public SearchViewModel(Context context, FragmentManager fragmentManager,
                            PlayerController playerController, MusicStore musicStore,
                            PlaylistStore playlistStore,
-                           @Nullable OnSongSelectedListener songSelectedListener) {
+                           @Nullable OnSongSelectedListener songSelectedListener,
+                           String initialQuery) {
 
         super(context);
         mFragmentManager = fragmentManager;
@@ -68,7 +69,7 @@ public class SearchViewModel extends BaseViewModel {
         mMusicStore = musicStore;
         mPlaylistStore = playlistStore;
 
-        mQuerySubject = BehaviorSubject.create("");
+        mQuerySubject = BehaviorSubject.create(initialQuery);
 
         createAdapter(songSelectedListener);
         observeSearchQuery();
