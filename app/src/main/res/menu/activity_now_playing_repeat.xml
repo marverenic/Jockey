@@ -2,15 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/menu_item_repeat_none"
-        android:title="Repeat none"/>
+        android:title="@string/action_repeat_none"/>
 
     <item android:id="@+id/menu_item_repeat_all"
-        android:title="Repeat all"/>
+        android:title="@string/action_repeat_all"/>
 
     <item android:id="@+id/menu_item_repeat_one"
-        android:title="Repeat one"/>
+        android:title="@string/action_repeat_one"/>
 
     <item android:id="@+id/menu_item_repeat_multi"
-        android:title="Multi-Repeat..."/>
+        android:title="@string/action_repeat_multi"/>
 
 </menu>

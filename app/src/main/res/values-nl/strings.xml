@@ -83,6 +83,10 @@
     <string name="action_discard_changes">Wijzigingen ongedaan maken</string>
     <string name="action_edit_playlist_rules">Bewerk filters</string>
     <string name="action_shuffle_all">Shuffle alles</string>
+    <string name="action_repeat_none">Niets herhalen</string>
+    <string name="action_repeat_one">Één lied herhalen</string>
+    <string name="action_repeat_all">Alles herhalen</string>
+    <string name="action_repeat_multi">Multi-herhalen&#8230;</string>
 
     <!-- Confirmation messages -->
     <string name="confirm_disable_shuffle">Shuffle uitgeschakeld</string>
@@ -90,7 +94,7 @@
     <string name="confirm_disable_repeat">Herhalen uitgeschakeld</string>
     <string name="confirm_enable_repeat">Herhalen ingeschakeld</string>
     <string name="confirm_enable_multi_repeat">Multi-herhalen (%d) ingeschakeld</string>
-    <string name="confirm_enable_repeat_one">Één keer herhalen ingeschakeld</string>
+    <string name="confirm_enable_repeat_one">Één lied herhalen ingeschakeld</string>
     <string name="confirm_disable_sleep_timer">Slaaptimer uitgeschakeld</string>
     <string name="confirm_refresh_library">Bibliotheek herladen gelukt</string>
     <string name="confirm_clear_queue">Wachtrij gewist</string>

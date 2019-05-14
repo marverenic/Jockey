@@ -99,13 +99,17 @@
     <string name="action_discard_changes">Descartar los cambios</string>
     <string name="action_edit_playlist_rules">Editar filtros</string>
     <string name="action_shuffle_all">Baraja todos</string>
+    <string name="action_repeat_none">Repetir ninguna</string>
+    <string name="action_repeat_one">Repetir uno</string>
+    <string name="action_repeat_all">Repetir todos</string>
+    <string name="action_repeat_multi">Múlti-Repetir&#8230;</string>
 
     <!-- Confirmation messages -->
     <string name="confirm_disable_shuffle">Aleatorio desactivado</string>
     <string name="confirm_enable_shuffle">Aleatorio activado</string>
     <string name="confirm_disable_repeat">Repetir desactivado</string>
     <string name="confirm_enable_repeat">Repetir activado</string>
-    <string name="confirm_enable_multi_repeat">Repetición múltiple (%d) activada</string>
+    <string name="confirm_enable_multi_repeat">Múlti-Repetir (%d) activada</string>
     <string name="confirm_enable_repeat_one">Repetir uno activado</string>
     <string name="confirm_disable_sleep_timer">Desactivado el Temporizador de Apagado</string>
     <string name="confirm_refresh_library">Biblioteca actualizada</string>
