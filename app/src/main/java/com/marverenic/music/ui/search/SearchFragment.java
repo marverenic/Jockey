@@ -38,6 +38,8 @@ public class SearchFragment extends BaseToolbarFragment {
     private FragmentSearchBinding mBinding;
     private SearchViewModel mViewModel;
 
+    private String initialQuery = "";
+
     public static SearchFragment newInstance() {
         return new SearchFragment();
     }
@@ -48,30 +50,29 @@ public class SearchFragment extends BaseToolbarFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         JockeyApplication.getComponent(this).inject(this);
+
+        if (savedInstanceState != null) {
+            initialQuery = savedInstanceState.getString(KEY_SAVED_QUERY, initialQuery);
+        }
     }
 
     @Override
     protected View onCreateContentView(LayoutInflater inflater, @Nullable ViewGroup container,
                                        @Nullable Bundle savedInstanceState) {
-
         mBinding = FragmentSearchBinding.inflate(inflater, container, false);
         mViewModel = new SearchViewModel(getContext(), getFragmentManager(), mPlayerController,
                 mMusicStore, mPlaylistStore,
-                OnSongSelectedListener.defaultImplementation(getActivity(), mPreferenceStore));
+                OnSongSelectedListener.defaultImplementation(getActivity(), mPreferenceStore),
+                initialQuery);
 
         mPlayerController.getNowPlaying()
                 .compose(bindToLifecycle())
                 .subscribe(mViewModel::setCurrentSong, throwable -> {
                     Timber.e(throwable, "Failed to update current song");
                 });
-
-        if (savedInstanceState != null) {
-            String lastQuery = savedInstanceState.getString(KEY_SAVED_QUERY, "");
-            mViewModel.setSearchQuery(lastQuery);
-        }
 
         mBinding.setViewModel(mViewModel);
         setHasOptionsMenu(true);
@@ -117,6 +118,10 @@ public class SearchFragment extends BaseToolbarFragment {
     }
 
     public void setSearchQuery(String query) {
-        mViewModel.setSearchQuery(query);
+        if (mViewModel != null) {
+            mViewModel.setSearchQuery(query);
+        } else {
+            initialQuery = query;
+        }
     }
 }

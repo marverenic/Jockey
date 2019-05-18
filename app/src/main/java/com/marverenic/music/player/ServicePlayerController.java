@@ -65,6 +65,7 @@ public class ServicePlayerController implements PlayerController {
 
     private Context mContext;
     private IPlayerService mBinding;
+    private PreferenceStore mPreferenceStore;
     private PlaybackPersistenceManager mPersistenceManager;
     private PlayerServiceConnection mConnection;
     private long mServiceStartRequestTime;
@@ -99,6 +100,7 @@ public class ServicePlayerController implements PlayerController {
     public ServicePlayerController(Context context, PreferenceStore preferenceStore,
                 PlaybackPersistenceManager persistenceManager) {
         mContext = context;
+        mPreferenceStore = preferenceStore;
         mPersistenceManager = persistenceManager;
         mConnection = new PlayerServiceConnection();
         mRequestThread = new HandlerThread("ServiceExecutor");
@@ -179,16 +181,16 @@ public class ServicePlayerController implements PlayerController {
         mPlaying.setFallbackFunction(() -> false);
 
         mNowPlaying.setFallbackFunction(() ->
-                mPersistenceManager.getNowPlaying(mContext, mShuffleMode.lastValue()));
+                mPersistenceManager.getNowPlaying(mContext, getCurrentShuffleMode()));
 
         mQueue.setFallbackFunction(() ->
-                mPersistenceManager.getQueue(mContext, mShuffleMode.lastValue()));
+                mPersistenceManager.getQueue(mContext, getCurrentShuffleMode()));
 
         mQueuePosition.setFallbackFunction(mPersistenceManager::getQueueIndex);
         mCurrentPosition.setFallbackFunction(mPersistenceManager::getSeekPosition);
 
         mDuration.setFallbackFunction(() -> {
-            Song nowPlaying = mPersistenceManager.getNowPlaying(mContext, mShuffleMode.lastValue());
+            Song nowPlaying = mPersistenceManager.getNowPlaying(mContext, getCurrentShuffleMode());
             if (nowPlaying != null) {
                 return (int) nowPlaying.getSongDuration();
             } else {
@@ -301,6 +303,14 @@ public class ServicePlayerController implements PlayerController {
 
             fetchMediaSessionToken();
         });
+    }
+
+    private boolean getCurrentShuffleMode() {
+        if (!mShuffleMode.hasValue()) {
+            return mPreferenceStore.isShuffled();
+        } else {
+            return mShuffleMode.lastValue();
+        }
     }
 
     @Override
@@ -457,7 +467,7 @@ public class ServicePlayerController implements PlayerController {
         long seed = mShuffleSeedGenerator.nextLong();
 
         if (newPosition < newQueue.size()) {
-            boolean shuffled = mShuffleMode.lastValue();
+            boolean shuffled = getCurrentShuffleMode();
 
             mNowPlaying.setValue(newQueue.get(newPosition));
             mQueuePosition.setValue(shuffled ? 0 : newPosition);
