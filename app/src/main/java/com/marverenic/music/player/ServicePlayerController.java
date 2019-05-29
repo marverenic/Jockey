@@ -634,7 +634,8 @@ public class ServicePlayerController implements PlayerController {
 
     @Override
     public Observable<List<Song>> getQueue() {
-        return mQueue.getObservable();
+        return mQueue.getObservable()
+                .map(ArrayList::new);
     }
 
     @Override
