@@ -453,10 +453,30 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     private List<QueueItem> buildQueueWindow() {
         List<Song> queue = mMediaPlayer.getQueue();
         int queueIndex = mMediaPlayer.getQueueIndex();
+
+        int startIndex;
         int windowSize = Math.min(queue.size(), MEDIA_SESSION_QUEUE_MAX_SIZE);
 
-        int prefixLength = Math.min(queueIndex, MEDIA_SESSION_QUEUE_MAX_SIZE / 2 - 1);
-        int startIndex = queueIndex - prefixLength;
+        // Attempt to center the window around the current track
+        if (queue.size() <= MEDIA_SESSION_QUEUE_MAX_SIZE) {
+            // We can fit the whole queue in the window
+            startIndex = 0;
+        } else if (queueIndex >= queue.size() / 2) {
+            // Current song is beyond the halfway point in the queue.
+            // Take up to half of the window on the right half of the queue, and add any leftover
+            // capacity to the other half of the window.
+
+            int suffixLength = Math.min(queue.size() - queueIndex - 1, MEDIA_SESSION_QUEUE_MAX_SIZE / 2);
+            int prefixLength = MEDIA_SESSION_QUEUE_MAX_SIZE - suffixLength;
+            startIndex = queueIndex - prefixLength;
+        } else {
+            // Current song is before the halfway point in the queue.
+            // This is the opposite of the previous case -- we'll add any leftover capacity to the
+            // right half of the window.
+
+            int prefixLength = Math.min(queueIndex, MEDIA_SESSION_QUEUE_MAX_SIZE / 2);
+            startIndex = queueIndex - prefixLength;
+        }
 
         List<QueueItem> window = new ArrayList<>();
         for (int i = startIndex; i < startIndex + windowSize; i++) {
