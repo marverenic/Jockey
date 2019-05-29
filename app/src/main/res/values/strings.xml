@@ -105,6 +105,10 @@
     <string name="action_edit_playlist_rules">Edit filters</string>
     <string name="action_open_in_last_fm" translatable="false">Last.fm</string>
     <string name="action_shuffle_all">Shuffle all</string>
+    <string name="action_repeat_none">Repeat none</string>
+    <string name="action_repeat_one">Repeat one</string>
+    <string name="action_repeat_all">Repeat all</string>
+    <string name="action_repeat_multi">Multi-Repeat&#8230;</string>
 
     <!-- Confirmation messages -->
     <string name="confirm_disable_shuffle">Disabled shuffle</string>
