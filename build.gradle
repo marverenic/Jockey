@@ -24,6 +24,7 @@ allprojects {
 ext {
     targetSdkVersion = 27
     supportLibVersion = '27.1.0'
+    exoplayerVersion = '2.6.1'
     roomVersion = '1.1.0'
 }
 

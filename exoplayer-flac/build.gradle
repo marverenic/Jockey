@@ -28,6 +28,6 @@ android {
 }
 
 dependencies {
-    implementation 'com.google.android.exoplayer:exoplayer:2.6.1'
+    implementation "com.google.android.exoplayer:exoplayer-core:$rootProject.exoplayerVersion"
 }
 
