@@ -3,7 +3,6 @@ package com.marverenic.music.player.extensions.persistence;
 import android.content.Context;
 import android.net.Uri;
 
-import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.data.store.ReadOnlyPreferenceStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.MusicPlayer;
@@ -14,6 +13,10 @@ import com.marverenic.music.player.persistence.PlaybackPersistenceManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import timber.log.Timber;
+
+import static com.marverenic.music.data.store.MediaStoreUtil.buildSongListFromUris;
 
 public class PersistenceExtension extends MusicPlayerExtension {
 
@@ -28,14 +31,35 @@ public class PersistenceExtension extends MusicPlayerExtension {
     @Override
     public void onCreateMusicPlayer(MusicPlayer musicPlayer, ReadOnlyPreferenceStore preferences) {
         PlaybackPersistenceManager.State state = mPlaybackPersistenceManager.getStateBlocking();
+        List<Song> queue = buildSongListFromUris(state.getQueue(), mContext);
+        List<Song> shuffledQueue = buildSongListFromUris(state.getShuffledQueue(), mContext);
 
-        musicPlayer.restorePlayerState(new PlayerState.Builder()
-                .setPlaying(false)
-                .setQueue(MediaStoreUtil.buildSongListFromUris(state.getQueue(), mContext))
-                .setShuffledQueue(MediaStoreUtil.buildSongListFromUris(state.getShuffledQueue(), mContext))
-                .setQueuePosition(state.getQueuePosition())
-                .setSeekPosition((int) state.getSeekPosition())
-                .build());
+        int queuePosition;
+        if (musicPlayer.isShuffled()) {
+            queuePosition = Math.min(state.getQueuePosition(), shuffledQueue.size() - 1);
+        } else {
+            queuePosition = Math.min(state.getQueuePosition(), queue.size() - 1);
+        }
+
+        long seekPosition;
+        if (queuePosition != state.getQueuePosition()) {
+            seekPosition = 0;
+        } else {
+            seekPosition = state.getSeekPosition();
+        }
+
+        try {
+            musicPlayer.restorePlayerState(new PlayerState.Builder()
+                    .setPlaying(false)
+                    .setQueue(queue)
+                    .setShuffledQueue(shuffledQueue)
+                    .setQueuePosition(queuePosition)
+                    .setSeekPosition((int) seekPosition)
+                    .build());
+        } catch (RuntimeException e) {
+            Timber.e(e, "Failed to restore queue. The player will be reset.");
+            musicPlayer.setQueue(Collections.emptyList(), 0, 0);
+        }
     }
 
     @Override
