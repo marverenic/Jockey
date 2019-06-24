@@ -102,6 +102,8 @@ dependencies {
 
     implementation "com.android.support:appcompat-v7:$rootProject.supportLibVersion"
     implementation "com.android.support:design:$rootProject.supportLibVersion"
+    implementation "com.android.support:support-media-compat:$rootProject.supportLibVersion"
+    implementation "com.android.support:support-annotations:$rootProject.supportLibVersion"
     implementation "com.android.support:palette-v7:$rootProject.supportLibVersion"
     implementation "com.android.support:recyclerview-v7:$rootProject.supportLibVersion"
     implementation "com.android.support:cardview-v7:$rootProject.supportLibVersion"
@@ -117,7 +119,11 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.7'
 
     implementation 'com.simplecityapps:recyclerview-fastscroll:1.0.16'
-    implementation 'com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:0.5.2'
+    implementation ('com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:0.5.2') {
+        exclude group: 'com.android.support'
+        exclude module: 'appcompat-v7'
+        exclude module: 'support-v4'
+    }
 
     implementation 'com.google.dagger:dagger:2.6'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.6'
