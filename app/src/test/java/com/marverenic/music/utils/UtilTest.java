@@ -2,14 +2,11 @@ package com.marverenic.music.utils;
 
 import android.webkit.MimeTypeMap;
 
-import com.marverenic.music.BuildConfig;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import java.io.File;
 
@@ -18,7 +15,6 @@ import static org.junit.Assert.assertTrue;
 import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class)
 public class UtilTest {
 
     @Before
