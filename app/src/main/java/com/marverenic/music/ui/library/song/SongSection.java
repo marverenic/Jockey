@@ -18,7 +18,7 @@ import com.marverenic.music.model.ModelUtil;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.common.OnSongSelectedListener;
-import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.MeasurableAdapter;
+import com.marverenic.music.view.MeasurableSection;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.SectionedAdapter;
 
 import java.util.List;
@@ -27,7 +27,7 @@ import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
 
 public class SongSection extends HeterogeneousAdapter.ListSection<Song>
-        implements SectionedAdapter, MeasurableAdapter {
+        implements SectionedAdapter, MeasurableSection {
 
     private Context mContext;
     private PlayerController mPlayerController;
@@ -73,12 +73,12 @@ public class SongSection extends HeterogeneousAdapter.ListSection<Song>
     @NonNull
     @Override
     public String getSectionName(int position) {
-        String title = ModelUtil.sortableTitle(get(position).getAlbumName(), mContext.getResources());
+        String title = ModelUtil.sortableTitle(get(position).getSongName(), mContext.getResources());
         return Character.toString(title.charAt(0)).toUpperCase();
     }
 
     @Override
-    public int getViewTypeHeight(RecyclerView recyclerView, int viewType) {
+    public int getViewTypeHeight(RecyclerView recyclerView) {
         return recyclerView.getResources().getDimensionPixelSize(R.dimen.list_height)
                 + recyclerView.getResources().getDimensionPixelSize(R.dimen.divider_height);
     }
