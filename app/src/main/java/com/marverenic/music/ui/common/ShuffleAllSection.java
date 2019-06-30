@@ -12,12 +12,12 @@ import com.marverenic.music.R;
 import com.marverenic.music.data.store.PreferenceStore;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
-import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.MeasurableAdapter;
+import com.marverenic.music.view.MeasurableSection;
 
 import java.util.List;
 
 public class ShuffleAllSection extends HeterogeneousAdapter.SingletonSection<List<Song>>
-        implements MeasurableAdapter {
+        implements MeasurableSection {
 
     private PlayerController mPlayerController;
     private PreferenceStore mPrefStore;
@@ -52,7 +52,7 @@ public class ShuffleAllSection extends HeterogeneousAdapter.SingletonSection<Lis
     }
 
     @Override
-    public int getViewTypeHeight(RecyclerView recyclerView, int viewType) {
+    public int getViewTypeHeight(RecyclerView recyclerView) {
         return recyclerView.getResources().getDimensionPixelSize(R.dimen.list_height_small)
                 + recyclerView.getResources().getDimensionPixelSize(R.dimen.divider_height);
     }

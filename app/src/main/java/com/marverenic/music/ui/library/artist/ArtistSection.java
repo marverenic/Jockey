@@ -16,13 +16,13 @@ import com.marverenic.music.databinding.InstanceArtistBinding;
 import com.marverenic.music.model.Artist;
 import com.marverenic.music.model.ModelUtil;
 import com.marverenic.music.player.PlayerController;
-import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.MeasurableAdapter;
+import com.marverenic.music.view.MeasurableSection;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.SectionedAdapter;
 
 import java.util.List;
 
 public class ArtistSection extends HeterogeneousAdapter.ListSection<Artist>
-        implements SectionedAdapter, MeasurableAdapter {
+        implements SectionedAdapter, MeasurableSection {
 
     private Context mContext;
     private FragmentManager mFragmentManager;
@@ -63,7 +63,7 @@ public class ArtistSection extends HeterogeneousAdapter.ListSection<Artist>
     }
 
     @Override
-    public int getViewTypeHeight(RecyclerView recyclerView, int viewType) {
+    public int getViewTypeHeight(RecyclerView recyclerView) {
         return recyclerView.getResources().getDimensionPixelSize(R.dimen.list_height)
                 + recyclerView.getResources().getDimensionPixelSize(R.dimen.divider_height);
     }
