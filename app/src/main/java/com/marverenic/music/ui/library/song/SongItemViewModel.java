@@ -1,10 +1,10 @@
 package com.marverenic.music.ui.library.song;
 
 import android.content.Context;
-import android.databinding.Bindable;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.PopupMenu;
+import androidx.databinding.Bindable;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
+import androidx.appcompat.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.View;
 

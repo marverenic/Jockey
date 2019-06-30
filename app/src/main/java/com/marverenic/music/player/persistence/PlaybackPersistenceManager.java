@@ -2,7 +2,7 @@ package com.marverenic.music.player.persistence;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.model.Song;

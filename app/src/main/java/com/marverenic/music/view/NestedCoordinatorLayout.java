@@ -2,7 +2,7 @@ package com.marverenic.music.view;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.support.design.widget.CoordinatorLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import android.util.AttributeSet;
 import android.view.WindowInsets;
 

@@ -1,10 +1,10 @@
 package com.marverenic.music.ui.nowplaying;
 
 import android.content.Context;
-import android.databinding.Bindable;
+import androidx.databinding.Bindable;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.View;
 
 import com.marverenic.music.BR;
@@ -12,8 +12,6 @@ import com.marverenic.music.R;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.BaseViewModel;
-
-import timber.log.Timber;
 
 public class MiniplayerViewModel extends BaseViewModel {
 

@@ -1,9 +1,9 @@
 package com.marverenic.music.ui.library;
 
 import android.content.Context;
-import android.databinding.Bindable;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import androidx.databinding.Bindable;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.marverenic.music.BR;
 import com.marverenic.music.R;

@@ -1,12 +1,16 @@
 package android.support.design.widget;
 
 import android.content.Context;
-import android.support.annotation.Keep;
-import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
-import static android.support.v4.view.ViewCompat.TYPE_TOUCH;
+import com.google.android.material.appbar.AppBarLayout;
+
+import androidx.annotation.Keep;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.view.ViewCompat;
+
+import static androidx.core.view.ViewCompat.TYPE_TOUCH;
 
 @Keep
 public class FixedSnappingAppBarLayoutBehavior extends AppBarLayout.Behavior {

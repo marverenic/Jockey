@@ -2,9 +2,9 @@ package com.marverenic.music.ui.library.playlist;
 
 import android.content.Context;
 import android.content.Intent;
-import android.databinding.BaseObservable;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.PopupMenu;
+import androidx.databinding.BaseObservable;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.appcompat.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.View;
 
@@ -19,7 +19,7 @@ import com.marverenic.music.ui.library.playlist.contents.edit.AutoPlaylistEditAc
 
 import timber.log.Timber;
 
-import static android.support.design.widget.Snackbar.LENGTH_LONG;
+import static com.google.android.material.snackbar.Snackbar.LENGTH_LONG;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 

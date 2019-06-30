@@ -1,6 +1,6 @@
 package com.marverenic.music.view;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.marverenic.adapter.Coordinate;
 import com.marverenic.adapter.HeterogeneousAdapter;

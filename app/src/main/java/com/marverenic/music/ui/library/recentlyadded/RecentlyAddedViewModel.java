@@ -1,9 +1,9 @@
 package com.marverenic.music.ui.library.recentlyadded;
 
 import android.content.Context;
-import android.databinding.Bindable;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.databinding.Bindable;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.BR;

@@ -3,7 +3,7 @@ package com.marverenic.music.player.extensions.scrobbler;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.marverenic.music.R;
 import com.marverenic.music.model.Song;

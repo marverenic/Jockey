@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:gravity="center">
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/playlist_name_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
             app:error="@{viewModel.playlistNameError}"
             app:errorEnabled="true">
 
-            <android.support.v7.widget.AppCompatEditText
+            <androidx.appcompat.widget.AppCompatEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textCapWords"
@@ -33,7 +33,7 @@
                 app:textChangedListener="@{viewModel.onPlaylistNameChanged()}"
                 tools:text="Playlist name"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
             android:id="@+id/playlist_match_all_container"

@@ -1,9 +1,9 @@
 package com.marverenic.music.ui.browse;
 
 import android.content.Context;
-import android.databinding.Bindable;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.databinding.Bindable;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.BR;

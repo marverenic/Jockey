@@ -3,7 +3,7 @@ package com.marverenic.music.ui.library.album.contents;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 import com.marverenic.music.model.Album;
 import com.marverenic.music.ui.BaseLibraryActivity;

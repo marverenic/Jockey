@@ -9,7 +9,7 @@
             type="com.marverenic.music.ui.library.playlist.contents.PlaylistSongItemViewModel"/>
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/song_drag_root"
         android:layout_width="match_parent"
         android:layout_height="@dimen/list_height"
@@ -90,6 +90,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

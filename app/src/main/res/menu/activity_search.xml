@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/menu_library_search"
-        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
         android:icon="@drawable/ic_search_24dp"
         android:title="@string/header_search"
         app:showAsAction="always" />

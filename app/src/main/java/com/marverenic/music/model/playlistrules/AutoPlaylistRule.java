@@ -3,7 +3,7 @@ package com.marverenic.music.model.playlistrules;
 import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;

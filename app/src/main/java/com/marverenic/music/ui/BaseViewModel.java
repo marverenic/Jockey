@@ -3,14 +3,14 @@ package com.marverenic.music.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.databinding.BaseObservable;
+import androidx.databinding.BaseObservable;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DimenRes;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.StringRes;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
+import androidx.core.content.ContextCompat;
 
 public abstract class BaseViewModel extends BaseObservable {
 

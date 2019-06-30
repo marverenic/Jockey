@@ -1,8 +1,8 @@
 package com.marverenic.music.ui.library.playlist.contents.edit;
 
 import android.content.Context;
-import android.databinding.Bindable;
-import android.support.v7.widget.RecyclerView;
+import androidx.databinding.Bindable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.BR;

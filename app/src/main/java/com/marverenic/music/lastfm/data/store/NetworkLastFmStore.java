@@ -1,6 +1,6 @@
 package com.marverenic.music.lastfm.data.store;
 
-import android.support.v4.util.SimpleArrayMap;
+import androidx.collection.SimpleArrayMap;
 
 import com.marverenic.music.lastfm.api.LastFmService;
 import com.marverenic.music.lastfm.model.LfmArtist;

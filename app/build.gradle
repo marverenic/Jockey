@@ -99,20 +99,20 @@ dependencies {
 
     implementation 'com.marverenic.heterogeneousadapter:heterogeneousadapter:1.1'
 
-    implementation "com.android.support:appcompat-v7:$rootProject.supportLibVersion"
-    implementation "com.android.support:design:$rootProject.supportLibVersion"
-    implementation "com.android.support:support-media-compat:$rootProject.supportLibVersion"
-    implementation "com.android.support:support-annotations:$rootProject.supportLibVersion"
-    implementation "com.android.support:palette-v7:$rootProject.supportLibVersion"
-    implementation "com.android.support:recyclerview-v7:$rootProject.supportLibVersion"
-    implementation "com.android.support:cardview-v7:$rootProject.supportLibVersion"
-    implementation "com.android.support:preference-v14:$rootProject.supportLibVersion"
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.media:media:1.0.0'
+    implementation 'androidx.annotation:annotation:1.0.0'
+    implementation 'androidx.palette:palette:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.legacy:legacy-preference-v14:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation "com.google.android.exoplayer:exoplayer-core:$rootProject.exoplayerVersion"
 
-    implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion"
-    annotationProcessor "android.arch.persistence.room:compiler:$rootProject.roomVersion"
-    testImplementation "android.arch.persistence.room:testing:$rootProject.roomVersion"
+    implementation 'androidx.room:room-runtime:2.0.0'
+    annotationProcessor 'androidx.room:room-compiler:2.0.0'
+    testImplementation 'androidx.room:room-testing:2.0.0'
 
     implementation 'com.github.bumptech.glide:glide:3.7.0'
     implementation 'com.google.code.gson:gson:2.7'

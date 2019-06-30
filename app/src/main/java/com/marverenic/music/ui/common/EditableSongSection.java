@@ -1,6 +1,6 @@
 package com.marverenic.music.ui.common;
 
-import android.support.v4.util.ArrayMap;
+import androidx.collection.ArrayMap;
 import android.view.ViewGroup;
 
 import com.marverenic.adapter.DragDropAdapter;

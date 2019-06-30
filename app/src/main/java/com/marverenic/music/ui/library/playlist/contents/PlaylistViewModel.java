@@ -2,12 +2,12 @@ package com.marverenic.music.ui.library.playlist.contents;
 
 import android.content.Context;
 import android.content.Intent;
-import android.databinding.Bindable;
+import androidx.databinding.Bindable;
 import android.graphics.drawable.NinePatchDrawable;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView.ItemDecoration;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import android.view.View;
 
 import com.marverenic.adapter.DragDropAdapter;

@@ -1,7 +1,7 @@
 package com.marverenic.music.data.store;
 
 import android.content.Context;
-import android.support.v4.util.LongSparseArray;
+import androidx.collection.LongSparseArray;
 
 import com.marverenic.music.model.Song;
 

@@ -1,11 +1,11 @@
 package com.marverenic.music.ui.library.genre.contents;
 
 import android.content.Context;
-import android.databinding.Bindable;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.ItemDecoration;
+import androidx.databinding.Bindable;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.R;

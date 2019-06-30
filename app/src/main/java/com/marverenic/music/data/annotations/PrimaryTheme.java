@@ -1,6 +1,6 @@
 package com.marverenic.music.data.annotations;
 
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 
 @IntDef(value = {PrimaryTheme.GRAY, PrimaryTheme.RED, PrimaryTheme.ORANGE, PrimaryTheme.YELLOW,
         PrimaryTheme.GREEN, PrimaryTheme.CYAN, PrimaryTheme.PURPLE, PrimaryTheme.BLACK,

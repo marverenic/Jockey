@@ -9,7 +9,7 @@
             type="com.marverenic.music.ui.nowplaying.NowPlayingControllerViewModel"/>
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/songInfo"
         android:layout_width="match_parent"
         android:layout_height="@dimen/player_frame_info_height"
@@ -95,5 +95,5 @@
             tools:layout_constraintTop_creator="1"
             tools:tint="@android:color/black"/>
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -1,9 +1,9 @@
 package com.marverenic.music.ui.library.artist;
 
 import android.content.Context;
-import android.databinding.BaseObservable;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.PopupMenu;
+import androidx.databinding.BaseObservable;
+import androidx.fragment.app.FragmentManager;
+import androidx.appcompat.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.View;
 

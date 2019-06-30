@@ -1,9 +1,9 @@
 package com.marverenic.music.data.store;
 
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorInt;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.NightMode;
+import androidx.annotation.ColorInt;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.NightMode;
 
 public interface ThemeStore {
 

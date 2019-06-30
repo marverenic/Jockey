@@ -3,17 +3,17 @@ package com.marverenic.music.ui;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.content.Context;
-import android.databinding.Bindable;
-import android.databinding.ObservableFloat;
-import android.databinding.ObservableInt;
+import androidx.databinding.Bindable;
+import androidx.databinding.ObservableFloat;
+import androidx.databinding.ObservableInt;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.v4.view.animation.FastOutLinearInInterpolator;
-import android.support.v4.view.animation.LinearOutSlowInInterpolator;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import androidx.interpolator.view.animation.FastOutLinearInInterpolator;
+import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
 import android.view.View;
 
 import com.marverenic.music.BR;
@@ -57,7 +57,7 @@ public class BaseLibraryActivityViewModel extends BaseViewModel {
 
         mMiniplayerHeight.addOnPropertyChangedCallback(new OnPropertyChangedCallback() {
             @Override
-            public void onPropertyChanged(android.databinding.Observable sender, int propertyId) {
+            public void onPropertyChanged(androidx.databinding.Observable sender, int propertyId) {
                 notifyPropertyChanged(BR.miniplayerShadowAlpha);
             }
         });

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.Settings;
-import android.support.design.widget.Snackbar;
+import com.google.android.material.snackbar.Snackbar;
 import android.view.View;
 
 import com.marverenic.music.BuildConfig;
@@ -16,7 +16,7 @@ import com.marverenic.music.data.store.PlaylistStore;
 import rx.Observable;
 import timber.log.Timber;
 
-import static android.support.design.widget.Snackbar.LENGTH_SHORT;
+import static com.google.android.material.snackbar.Snackbar.LENGTH_SHORT;
 
 public class LibraryEmptyState extends BasicEmptyState {
 
