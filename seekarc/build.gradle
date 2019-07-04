@@ -31,5 +31,5 @@ android {
 }
 
 dependencies {
-    implementation config.deps.androidx.appCompat
+    implementation config.deps.androidx.core
 }

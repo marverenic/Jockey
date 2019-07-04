@@ -94,8 +94,9 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     // Androidx
-    implementation config.deps.androidx.appCompat
+    implementation config.deps.androidx.core
     implementation config.deps.androidx.annotation
+    implementation config.deps.androidx.fragment
     implementation config.deps.androidx.material
     implementation config.deps.androidx.media
     implementation config.deps.androidx.palette
@@ -103,6 +104,9 @@ dependencies {
     implementation config.deps.androidx.recyclerView
     implementation config.deps.androidx.cardView
     implementation config.deps.androidx.constraintLayout
+    implementation config.deps.androidx.coordinatorLayout
+    implementation config.deps.androidx.drawerLayout
+    implementation config.deps.androidx.swipeRefreshLayout
 
     // Dagger
     implementation config.deps.dagger.runtime
