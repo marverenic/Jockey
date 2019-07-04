@@ -16,9 +16,10 @@ repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
 
+def config = rootProject.extensions.getByName("ext")
 
 android {
-    compileSdkVersion rootProject.targetSdkVersion
+    compileSdkVersion config.compileSdkVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -42,7 +43,7 @@ android {
     defaultConfig {
         applicationId "com.marverenic.music"
         minSdkVersion 16
-        targetSdkVersion rootProject.targetSdkVersion
+        targetSdkVersion config.targetSdkVersion
         versionCode 40325
         versionName "3.0 RC 1"
         resConfigs "en", "es", "nl"
@@ -91,56 +92,67 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation project(':seekarc')
+
+    // Androidx
+    implementation config.deps.androidx.appCompat
+    implementation config.deps.androidx.annotation
+    implementation config.deps.androidx.material
+    implementation config.deps.androidx.media
+    implementation config.deps.androidx.palette
+    implementation config.deps.androidx.preference
+    implementation config.deps.androidx.recyclerView
+    implementation config.deps.androidx.cardView
+    implementation config.deps.androidx.constraintLayout
+
+    // Dagger
+    implementation config.deps.dagger.runtime
+    annotationProcessor config.deps.dagger.compiler
+
+    // RxJava
+    implementation config.deps.rxJava.core
+    implementation config.deps.rxJava.android
+    implementation config.deps.rxJava.lifecycle
+    implementation config.deps.rxJava.lifecycleExtras
+    implementation config.deps.rxJava.permissions
+    implementation config.deps.rxJava.lint
+
+    // Retrofit
+    implementation config.deps.retrofit.core
+    implementation config.deps.retrofit.gson
+    implementation config.deps.retrofit.rxJava
+
+    // Room
+    implementation config.deps.room.runtime
+    annotationProcessor config.deps.room.compiler
+    testImplementation config.deps.room.test
+
+    // ExoPlayer
+    implementation config.deps.exoplayer.core
     implementation project(':exoplayer-flac')
 
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.robolectric:robolectric:4.2.1'
+    // Glide
+    implementation config.deps.glide.core
 
-    implementation 'com.marverenic.heterogeneousadapter:heterogeneousadapter:1.1'
+    // GSON
+    implementation config.deps.gson.core
 
-    implementation 'androidx.appcompat:appcompat:1.0.0'
-    implementation 'com.google.android.material:material:1.0.0'
-    implementation 'androidx.media:media:1.0.0'
-    implementation 'androidx.annotation:annotation:1.0.0'
-    implementation 'androidx.palette:palette:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.0.0'
-    implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.legacy:legacy-preference-v14:1.0.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation "com.google.android.exoplayer:exoplayer-core:$rootProject.exoplayerVersion"
-
-    implementation 'androidx.room:room-runtime:2.0.0'
-    annotationProcessor 'androidx.room:room-compiler:2.0.0'
-    testImplementation 'androidx.room:room-testing:2.0.0'
-
-    implementation 'com.github.bumptech.glide:glide:3.7.0'
-    implementation 'com.google.code.gson:gson:2.7'
-
-    implementation 'com.simplecityapps:recyclerview-fastscroll:1.0.20'
-    implementation ('com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:0.5.2') {
+    // Additional Views
+    implementation config.deps.views.heterogeneousadapter
+    implementation config.deps.views.recyclerviewFastscroll
+    implementation project(':seekarc')
+    implementation (config.deps.views.verticalseekbar) {
         exclude group: 'com.android.support'
         exclude module: 'appcompat-v7'
         exclude module: 'support-v4'
     }
 
-    implementation 'com.google.dagger:dagger:2.6'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.6'
-
-    implementation 'io.reactivex:rxjava:1.1.6'
-    implementation 'io.reactivex:rxandroid:1.2.1'
-    implementation 'com.trello:rxlifecycle:0.6.1'
-    implementation 'com.trello:rxlifecycle-components:0.6.1'
-    implementation 'com.tbruyelle.rxpermissions:rxpermissions:0.7.0@aar'
-    implementation 'nl.littlerobots.rxlint:rxlint:1.0'
-
-    implementation 'com.squareup.retrofit2:retrofit:2.0.2'
-    implementation 'com.squareup.retrofit2:converter-gson:2.0.2'
-    implementation 'com.squareup.retrofit2:adapter-rxjava:2.0.2'
-
-    implementation 'com.jakewharton.timber:timber:4.1.2'
-
+    // Logging
+    implementation config.deps.timber.core
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
         transitive = true
     }
+
+    // Testing
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.robolectric:robolectric:4.2.1'
 }
