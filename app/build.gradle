@@ -139,12 +139,8 @@ dependencies {
     // Additional Views
     implementation config.deps.views.heterogeneousadapter
     implementation config.deps.views.recyclerviewFastscroll
+    implementation config.deps.views.verticalseekbar
     implementation project(':seekarc')
-    implementation (config.deps.views.verticalseekbar) {
-        exclude group: 'com.android.support'
-        exclude module: 'appcompat-v7'
-        exclude module: 'support-v4'
-    }
 
     // Logging
     implementation config.deps.timber.core

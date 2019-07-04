@@ -55,7 +55,7 @@ ext {
         views : [
             heterogeneousadapter : '1.1',
             recyclerviewFastscroll : '1.0.20',
-            verticalseekbar : '0.5.2'
+            verticalseekbar : '1.0.0'
         ]
     ]
 
