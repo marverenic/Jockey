@@ -6,14 +6,11 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
 import com.bumptech.glide.Glide;
-import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.data.inject.JockeyComponentFactory;
 import com.marverenic.music.data.inject.JockeyGraph;
-import com.marverenic.music.utils.CrashlyticsTree;
 import com.marverenic.music.utils.compat.JockeyPreferencesCompat;
 import com.marverenic.music.utils.compat.PlayerQueueMigration;
 
-import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
 public class JockeyApplication extends Application {
@@ -23,9 +20,8 @@ public class JockeyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        setupCrashlytics();
         setupTimber();
+        AppInitializer.initialize(this);
 
         mComponent = createDaggerComponent();
         JockeyPreferencesCompat.upgradeSharedPreferences(this);
@@ -37,15 +33,9 @@ public class JockeyApplication extends Application {
         return JockeyComponentFactory.create(this);
     }
 
-    private void setupCrashlytics() {
-        Fabric.with(this, new Crashlytics());
-    }
-
     private void setupTimber() {
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
-        } else {
-            Timber.plant(new CrashlyticsTree());
         }
     }
 

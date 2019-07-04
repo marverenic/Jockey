@@ -8,16 +8,10 @@ import android.support.annotation.IdRes;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.app.NightMode;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.TextView;
 
-import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.annotations.AccentTheme;
@@ -71,33 +65,10 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-        if (_mPreferenceStore.showFirstStart()) {
-            showFirstRunDialog();
+        if (_mPreferenceStore.isFirstStart()) {
+            _mPreferenceStore.setIsFirstStart(false);
+            _mPrivacyPolicyManager.onLatestPrivacyPolicyConfirmed();
         }
-    }
-
-    private void showFirstRunDialog() {
-        View messageView = getLayoutInflater().inflate(R.layout.alert_pref, null);
-        TextView message = messageView.findViewById(R.id.pref_alert_content);
-        CheckBox pref = messageView.findViewById(R.id.pref_alert_option);
-
-        message.setText(Html.fromHtml(getString(R.string.first_launch_detail)));
-        message.setMovementMethod(LinkMovementMethod.getInstance());
-
-        pref.setChecked(true);
-        pref.setText(R.string.enable_additional_logging_detailed);
-
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.first_launch_title)
-                .setView(messageView)
-                .setPositiveButton(R.string.action_agree,
-                        (dialog, which) -> {
-                            _mPreferenceStore.setAllowLogging(pref.isChecked());
-                            _mPreferenceStore.setShowFirstStart(false);
-                            _mPrivacyPolicyManager.onLatestPrivacyPolicyConfirmed();
-                        })
-                .setCancelable(false)
-                .show();
     }
 
     @Override
@@ -112,8 +83,6 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        Crashlytics.setString("last_foreground_activity", getClass().getName());
-
         // If the theme was changed since this Activity was created, or the automatic day/night
         // theme has changed state, recreate this activity
         _mThemeStore.setTheme(this);
@@ -200,7 +169,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     }
 
     private void showPrivacyPolicySnackbar() {
-        if (_mPreferenceStore.showFirstStart()) {
+        if (_mPreferenceStore.isFirstStart()) {
             return;
         }
 
