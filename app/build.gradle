@@ -10,6 +10,9 @@ buildscript {
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'io.fabric'
 
 repositories {
@@ -90,11 +93,20 @@ android {
     }
 }
 
+androidExtensions {
+    // Disable Kotlin synthetic views
+    features = ["parcelize"]
+}
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
+    // Kotlin
+    implementation config.deps.kotlin.stdlib
+
     // Androidx
     implementation config.deps.androidx.core
+    implementation config.deps.androidx.ktx
     implementation config.deps.androidx.annotation
     implementation config.deps.androidx.fragment
     implementation config.deps.androidx.material
@@ -110,7 +122,7 @@ dependencies {
 
     // Dagger
     implementation config.deps.dagger.runtime
-    annotationProcessor config.deps.dagger.compiler
+    kapt config.deps.dagger.compiler
 
     // RxJava
     implementation config.deps.rxJava.core
@@ -127,7 +139,7 @@ dependencies {
 
     // Room
     implementation config.deps.room.runtime
-    annotationProcessor config.deps.room.compiler
+    kapt config.deps.room.compiler
     testImplementation config.deps.room.test
 
     // ExoPlayer

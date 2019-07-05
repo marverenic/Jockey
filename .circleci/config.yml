@@ -26,3 +26,7 @@ jobs:
         - run:
             name: Test
             command: ./gradlew testHathorRelease -PdisablePreDex
+        
+        - run:
+            name: Lint
+            command: ./gradlew ktlintCheck
