@@ -5,15 +5,14 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
+import com.bugsnag.android.Bugsnag;
 import com.bumptech.glide.Glide;
-import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.data.inject.JockeyComponentFactory;
 import com.marverenic.music.data.inject.JockeyGraph;
-import com.marverenic.music.utils.CrashlyticsTree;
+import com.marverenic.music.utils.BugsnagTree;
 import com.marverenic.music.utils.compat.JockeyPreferencesCompat;
 import com.marverenic.music.utils.compat.PlayerQueueMigration;
 
-import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
 public class JockeyApplication extends Application {
@@ -24,7 +23,7 @@ public class JockeyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        setupCrashlytics();
+        setupBugsnag();
         setupTimber();
 
         mComponent = createDaggerComponent();
@@ -37,15 +36,20 @@ public class JockeyApplication extends Application {
         return JockeyComponentFactory.create(this);
     }
 
-    private void setupCrashlytics() {
-        Fabric.with(this, new Crashlytics());
+    private void setupBugsnag() {
+        if (BuildConfig.BUGSNAG_ENABLED) {
+            Bugsnag.init(this, BuildConfig.BUGSNAG_API_KEY);
+            Bugsnag.getClient().getConfig().setDetectAnrs(true);
+        }
     }
 
     private void setupTimber() {
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
-        } else {
-            Timber.plant(new CrashlyticsTree());
+        }
+
+        if (BuildConfig.BUGSNAG_ENABLED) {
+            Timber.plant(new BugsnagTree(this));
         }
     }
 

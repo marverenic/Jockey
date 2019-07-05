@@ -17,7 +17,6 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.crashlytics.android.Crashlytics;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.annotations.AccentTheme;
@@ -112,8 +111,6 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        Crashlytics.setString("last_foreground_activity", getClass().getName());
-
         // If the theme was changed since this Activity was created, or the automatic day/night
         // theme has changed state, recreate this activity
         _mThemeStore.setTheme(this);

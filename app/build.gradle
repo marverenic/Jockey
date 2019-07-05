@@ -1,21 +1,5 @@
-buildscript {
-    repositories {
-        maven { url 'https://maven.fabric.io/public' }
-    }
-
-    dependencies {
-        //noinspection GradleDynamicVersion
-        classpath 'io.fabric.tools:gradle:1.+'
-    }
-}
-
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
-
-repositories {
-    maven { url 'https://maven.fabric.io/public' }
-}
-
+apply plugin: 'com.bugsnag.android.gradle'
 
 android {
     compileSdkVersion rootProject.targetSdkVersion
@@ -39,6 +23,16 @@ android {
         }
     }
 
+    def secretsFiles = rootProject.file("secrets.properties")
+    def secrets = new Properties()
+    if (secretsFiles.exists()) secrets.load(new FileInputStream(secretsFiles))
+
+    bugsnag {
+        apiKey secrets.getProperty('bugsnagKey', null)
+        autoUpload !rootProject.isCiBuild
+        autoReportBuilds !rootProject.isCiBuild
+    }
+
     defaultConfig {
         applicationId "com.marverenic.music"
         minSdkVersion 16
@@ -46,6 +40,8 @@ android {
         versionCode 40325
         versionName "3.0 RC 1"
         resConfigs "en", "es", "nl"
+
+        buildConfigField 'String', 'BUGSNAG_API_KEY', "\"${secrets.getProperty('bugsnagKey', 'null')}\""
     }
 
     buildTypes {
@@ -55,16 +51,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             zipAlignEnabled true
 
-            // Setting the "NO_CRASHLYTICS" environment variable to "true" prevents crashlytics from
-            // being processed on release builds. This is allows Travis CI builds to succeed without
-            // checking API keys into version control
-            boolean disableCrashlytics = "true".equalsIgnoreCase("$System.env.NO_CRASHLYTICS")
-            ext.enableCrashlytics = !disableCrashlytics
+            buildConfigField 'Boolean', 'BUGSNAG_ENABLED', 'true'
         }
+
         debug {
             applicationIdSuffix ".debug"
             versionNameSuffix '.debug'
-            ext.enableCrashlytics = false
+
+            buildConfigField 'Boolean', 'BUGSNAG_ENABLED', 'false'
         }
     }
 
@@ -78,7 +72,6 @@ android {
             dimension "implementation"
             applicationIdSuffix ".demo"
             versionNameSuffix ".demo"
-            ext.enableCrashlytics = false
         }
     }
 
@@ -133,9 +126,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.0.2'
     implementation 'com.squareup.retrofit2:adapter-rxjava:2.0.2'
 
-    implementation 'com.jakewharton.timber:timber:4.1.2'
+    implementation 'com.jakewharton.timber:timber:4.7.1'
 
-    implementation('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
-        transitive = true
-    }
+    implementation 'com.bugsnag:bugsnag-android:4.15.0'
 }

@@ -6,9 +6,11 @@ Jockey is a music player for Android based on Google's Material Design standards
 
 <img align="left" height="480px" src="https://github.com/marverenic/Jockey/raw/master/screenshots/Library5_framed.png">
 <img align="left" height="480px" src="https://github.com/marverenic/Jockey/raw/master/screenshots/NowPlaying5_framed.png">
-<img align="left" height="480px" src="https://github.com/marverenic/Jockey/raw/master/screenshots/Artist5_framed.png">
-<img height="320px" src="https://github.com/marverenic/Jockey/raw/master/screenshots/Albums9_framed.png">
-<img height="320px" src="https://github.com/marverenic/Jockey/raw/master/screenshots/NowPlaying9_framed.png">
+<img height="480px" src="https://github.com/marverenic/Jockey/raw/master/screenshots/Artist5_framed.png">
+
+
+<img height="300px" src="https://github.com/marverenic/Jockey/raw/master/screenshots/Albums9_framed.png">
+<img height="300px" src="https://github.com/marverenic/Jockey/raw/master/screenshots/NowPlaying9_framed.png">
 
 ### Downloads
 You can get Jockey on [Google Play](https://play.google.com/store/apps/details?id=com.marverenic.music), and [opt-in to Beta testing](https://play.google.com/apps/testing/com.marverenic.music) if you want to try new features before they're released.
@@ -21,23 +23,26 @@ Jockey needs permission to Storage so that it can scan for music and play songs.
 **Read and write to external storage**  
 Used to save local data; primarily used for Last.fm cache, library storage, and other small miscellaneous files.  
 **Internet**  
-Used to retrieve information and thumbnails for artists from Last.fm and upload anonymous usage and crash data with Crashlytics  
+Used to retrieve information and thumbnails for artists from Last.fm and upload anonymous usage and crash data with Bugsnag  
 **Network State**  
 Used to prevent Jockey from using mobile data (if this preference is enabled)  
 **Keep awake**  
 Used to play music while the device's screen is off
 
-### Building Jockey from Source
-To build a release APK of Jockey, you'll need to either setup Crashlytics using your own API key, or remove the dependency and all logging calls. You can specify your own API key by making a new file in `app/fabric.properties` and add the following lines:  
+### Build Secrets
+API keys shouldn't be kept in source control, which may cause reduced functionality when you build the project. You can specify build secrets for your builds by creating a file called `secrets.properties` in the root directory of the project with the following contents:
+
 ```
-apiSecret="yourApiSecret"
-apiKey="yourApiKey"
+bugsnagKey=yourBugsnagKeyGoesHere
 ```
 
-If you want to remove the crashlytics dependency instead, simply delete the `com.marverenic.music.utils.CrashlyticsTree` class, and remove references to `CrashlyticsTree` from `com.marverenic.music.JockeyApplication#setupTimber()`.
+#### Bugsnag
+Bugsnag is enabled in release builds, and must be set up for the project to compile successfully. Everything is already configured except for the API key, which must be placed in `secrets.properties`.
+
+If you need to create a release build but do not wish to log crashes to Bugsnag, you should remove the Bugsnag Gradle plugin and its dependency from `app/build.gradle`. This will cause a few compiler errors that should be straightforward to fix, and then you will be left with a version of the app that has no references to Bugsnag.
 
 ### Bugs & contributing
-Feel free to post suggestions, bugs, comments on code in the project, or just anything that isn't as smooth as it should be as an issue on Github. You don't need to submit crashes unless you're running a version of Jockey you've built yourself – crashes are automatically reported through Crashlytics. If you're feeling adventerous, you're more than welcome to fork Jockey and submit a pull request either to implement a new feature, fix a bug, or clean up the code.
+Feel free to post suggestions, bugs, comments on code in the project, or just anything that isn't as smooth as it should be as an issue on Github. You don't need to submit crashes unless you're running a version of Jockey you've built yourself – crashes are automatically reported through Bugsnag. If you're feeling adventerous, you're more than welcome to fork Jockey and submit a pull request either to implement a new feature, fix a bug, or clean up the code.
 
 #### Submitting Feature Requests
 Feature requests should be submitted through the Github issue tracker. Before submitting a feature request, make sure that it hasn't been requested before. If it's already been requested, but is in a closed issue that hasn't been marked as "wontfix", feel free to resubmit it in case it's gotten lost.
