@@ -106,6 +106,7 @@ dependencies {
 
     // Androidx
     implementation config.deps.androidx.core
+    implementation config.deps.androidx.ktx
     implementation config.deps.androidx.annotation
     implementation config.deps.androidx.fragment
     implementation config.deps.androidx.material

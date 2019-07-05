@@ -75,6 +75,7 @@ ext {
         ],
         androidx : [
             core : "androidx.core:core:${versions.androidx.core}",
+            ktx : "androidx.core:core-ktx:${versions.androidx.core}",
             annotation : "androidx.annotation:annotation:${versions.androidx.annotation}",
             fragment : "androidx.fragment:fragment:${versions.androidx.fragment}",
             material : "com.google.android.material:material:${versions.androidx.material}",
