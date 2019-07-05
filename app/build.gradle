@@ -1,21 +1,4 @@
-buildscript {
-    repositories {
-        maven { url 'https://maven.fabric.io/public' }
-    }
-
-    dependencies {
-        //noinspection GradleDynamicVersion
-        classpath 'io.fabric.tools:gradle:1.+'
-    }
-}
-
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
-
-repositories {
-    maven { url 'https://maven.fabric.io/public' }
-}
-
 
 android {
     compileSdkVersion rootProject.targetSdkVersion
@@ -54,17 +37,10 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             zipAlignEnabled true
-
-            // Setting the "NO_CRASHLYTICS" environment variable to "true" prevents crashlytics from
-            // being processed on release builds. This is allows Travis CI builds to succeed without
-            // checking API keys into version control
-            boolean disableCrashlytics = "true".equalsIgnoreCase("$System.env.NO_CRASHLYTICS")
-            ext.enableCrashlytics = !disableCrashlytics
         }
         debug {
             applicationIdSuffix ".debug"
             versionNameSuffix '.debug'
-            ext.enableCrashlytics = false
         }
     }
 
@@ -78,7 +54,6 @@ android {
             dimension "implementation"
             applicationIdSuffix ".demo"
             versionNameSuffix ".demo"
-            ext.enableCrashlytics = false
         }
     }
 
@@ -134,8 +109,4 @@ dependencies {
     implementation 'com.squareup.retrofit2:adapter-rxjava:2.0.2'
 
     implementation 'com.jakewharton.timber:timber:4.1.2'
-
-    implementation('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
-        transitive = true
-    }
 }
