@@ -73,7 +73,7 @@ public class SongSection extends HeterogeneousAdapter.ListSection<Song>
     @NonNull
     @Override
     public String getSectionName(int position) {
-        String title = ModelUtil.sortableTitle(get(position).getAlbumName(), mContext.getResources());
+        String title = ModelUtil.sortableTitle(get(position).getSongName(), mContext.getResources());
         return Character.toString(title.charAt(0)).toUpperCase();
     }
 
