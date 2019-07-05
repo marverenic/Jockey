@@ -3,7 +3,7 @@ package com.marverenic.music.ui.browse;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.support.v4.util.ArrayMap;
+import androidx.collection.ArrayMap;
 
 import com.marverenic.music.R;
 import com.marverenic.music.utils.Util;

@@ -1,12 +1,12 @@
 package com.marverenic.music.ui.nowplaying;
 
 import android.content.Context;
-import android.databinding.BaseObservable;
-import android.databinding.Bindable;
+import androidx.databinding.BaseObservable;
+import androidx.databinding.Bindable;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 
 import com.marverenic.music.BR;
 import com.marverenic.music.R;

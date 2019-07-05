@@ -2,7 +2,7 @@ package com.marverenic.music.utils;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;

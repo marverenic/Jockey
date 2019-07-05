@@ -1,11 +1,11 @@
 package com.marverenic.music.ui.search;
 
 import android.content.Context;
-import android.databinding.Bindable;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.databinding.Bindable;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.R;

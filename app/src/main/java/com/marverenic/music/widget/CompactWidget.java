@@ -3,9 +3,9 @@ package com.marverenic.music.widget;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.ColorInt;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import android.widget.RemoteViews;
 
 import com.marverenic.music.R;

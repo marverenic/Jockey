@@ -3,7 +3,7 @@ package com.marverenic.music.ui.library.artist.contents;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v7.widget.GridLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

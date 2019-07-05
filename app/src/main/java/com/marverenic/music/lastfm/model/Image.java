@@ -1,7 +1,7 @@
 package com.marverenic.music.lastfm.model;
 
-import android.support.annotation.Nullable;
-import android.support.annotation.StringDef;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringDef;
 
 import com.google.gson.annotations.SerializedName;
 

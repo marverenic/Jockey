@@ -1,7 +1,7 @@
 package com.marverenic.music.view;
 
 import android.content.Context;
-import android.support.v7.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.LinearSmoothScroller;
 import android.util.DisplayMetrics;
 import android.view.View;
 

@@ -4,11 +4,6 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
-import android.databinding.BaseObservable;
-import android.databinding.Bindable;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.AppCompatEditText;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -21,7 +16,8 @@ import android.widget.BaseAdapter;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
-import com.android.databinding.library.baseAdapters.BR;
+import com.google.android.material.textfield.TextInputLayout;
+import com.marverenic.music.BR;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
@@ -37,6 +33,10 @@ import java.util.Calendar;
 import java.util.Formatter;
 import java.util.List;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatEditText;
+import androidx.databinding.BaseObservable;
+import androidx.databinding.Bindable;
 import rx.Subscription;
 import timber.log.Timber;
 

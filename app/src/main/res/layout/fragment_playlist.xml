@@ -8,18 +8,18 @@
             type="com.marverenic.music.ui.library.playlist.contents.PlaylistViewModel"/>
     </data>
 
-    <android.support.design.widget.CoordinatorLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical"
             app:dragDropAdapter="@{viewModel.adapter}"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:itemDecorations="@{viewModel.itemDecorations}"/>
 
-    </android.support.design.widget.CoordinatorLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </layout>

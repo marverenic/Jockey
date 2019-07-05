@@ -1,20 +1,13 @@
 package com.marverenic.music.ui.library.artist.contents;
 
 import android.content.Context;
-import android.databinding.Bindable;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.ItemDecoration;
-import android.support.v7.widget.RecyclerView.LayoutManager;
 import android.util.DisplayMetrics;
 
-import com.android.databinding.library.baseAdapters.BR;
 import com.bumptech.glide.GenericRequestBuilder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.marverenic.adapter.HeterogeneousAdapter;
+import com.marverenic.music.BR;
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MusicStore;
 import com.marverenic.music.data.store.PlaylistStore;
@@ -41,6 +34,13 @@ import com.marverenic.music.view.ViewUtils;
 import java.util.Collections;
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.databinding.Bindable;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
+import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import rx.Observable;
 import timber.log.Timber;
 

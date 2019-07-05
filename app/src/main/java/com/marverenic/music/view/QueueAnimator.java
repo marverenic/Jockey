@@ -1,7 +1,7 @@
 package com.marverenic.music.view;
 
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.RecyclerView.ViewHolder;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import com.marverenic.music.ui.nowplaying.QueueSection;
 import com.marverenic.music.ui.common.SpacerSingleton;

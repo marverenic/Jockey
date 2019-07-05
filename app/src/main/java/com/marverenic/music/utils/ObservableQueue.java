@@ -1,6 +1,6 @@
 package com.marverenic.music.utils;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.util.ArrayDeque;
 import java.util.Queue;

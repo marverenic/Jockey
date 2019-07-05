@@ -7,17 +7,16 @@
             type="com.marverenic.music.ui.nowplaying.NowPlayingArtworkViewModel"/>
     </data>
 
-    <android.support.design.widget.CoordinatorLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.design.widget.AppBarLayout
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_behavior="android.support.design.widget.FixedSnappingAppBarLayoutBehavior"
             android:fitsSystemWindows="true">
 
             <com.marverenic.music.view.FixedCollapsingToolbarLayout
@@ -75,7 +74,7 @@
                     android:layout_gravity="bottom"
                     android:background="@drawable/inset_bottom_shadow"/>
 
-                <android.support.v7.widget.Toolbar
+                <androidx.appcompat.widget.Toolbar
                     android:id="@+id/now_playing_toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
@@ -85,9 +84,9 @@
 
             </com.marverenic.music.view.FixedCollapsingToolbarLayout>
 
-        </android.support.design.widget.AppBarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
 
-        <android.support.v4.widget.NestedScrollView
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -99,7 +98,7 @@
                 android:name="com.marverenic.music.ui.nowplaying.PlayerControllerFragment"
                 tools:layout="@layout/view_now_playing_control_panel" />
 
-        </android.support.v4.widget.NestedScrollView>
+        </androidx.core.widget.NestedScrollView>
 
         <fragment
             android:id="@+id/now_playing_queue_fragment"
@@ -110,6 +109,6 @@
             tools:layout="@layout/list"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-    </android.support.design.widget.CoordinatorLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </layout>

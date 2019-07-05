@@ -1,10 +1,10 @@
 package com.marverenic.music.ui;
 
 import android.app.Activity;
-import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.crashlytics.android.Crashlytics;
 import com.trello.rxlifecycle.components.support.RxFragment;

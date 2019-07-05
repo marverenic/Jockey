@@ -1,9 +1,9 @@
-package android.support.v7.app;
-
-import android.support.annotation.IntDef;
+package androidx.appcompat.app;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import androidx.annotation.IntDef;
 
 @IntDef({AppCompatDelegate.MODE_NIGHT_NO, AppCompatDelegate.MODE_NIGHT_YES,
         AppCompatDelegate.MODE_NIGHT_AUTO, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM})

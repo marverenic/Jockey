@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.media.audiofx.AudioEffect;
 import android.media.audiofx.Equalizer;
 import android.os.Looper;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Format;

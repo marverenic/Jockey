@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.audiofx.Equalizer;
 import android.preference.PreferenceManager;
-import android.support.annotation.StringRes;
+import androidx.annotation.StringRes;
 
 import com.marverenic.music.R;
 import com.marverenic.music.data.annotations.AccentTheme;

@@ -1,7 +1,7 @@
 package com.marverenic.music.player.browser;
 
 import android.content.Context;
-import android.support.annotation.StringRes;
+import androidx.annotation.StringRes;
 import android.support.v4.media.MediaBrowserCompat.MediaItem;
 import android.support.v4.media.MediaDescriptionCompat;
 

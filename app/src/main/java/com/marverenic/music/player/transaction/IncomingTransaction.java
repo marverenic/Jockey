@@ -1,6 +1,6 @@
 package com.marverenic.music.player.transaction;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 public final class IncomingTransaction<T> {
 

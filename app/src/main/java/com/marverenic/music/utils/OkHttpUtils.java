@@ -1,7 +1,7 @@
 package com.marverenic.music.utils;
 
 import android.os.Build;
-import android.support.annotation.Keep;
+import androidx.annotation.Keep;
 
 import java.io.IOException;
 import java.net.InetAddress;

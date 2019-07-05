@@ -8,7 +8,7 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.marverenic.music.R;
 import com.marverenic.music.data.store.MediaStoreUtil;

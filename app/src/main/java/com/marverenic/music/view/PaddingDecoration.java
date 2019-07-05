@@ -1,8 +1,8 @@
 package com.marverenic.music.view;
 
 import android.graphics.Rect;
-import android.support.annotation.Dimension;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.Dimension;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
 public class PaddingDecoration extends RecyclerView.ItemDecoration {

@@ -5,7 +5,7 @@ import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 import com.marverenic.music.data.store.MediaStoreUtil;

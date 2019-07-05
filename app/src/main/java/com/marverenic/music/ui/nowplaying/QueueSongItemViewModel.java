@@ -1,10 +1,10 @@
 package com.marverenic.music.ui.nowplaying;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.PopupMenu;
+import androidx.annotation.Nullable;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.fragment.app.FragmentManager;
+import androidx.appcompat.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.View;
 
@@ -23,7 +23,7 @@ import com.marverenic.music.ui.library.song.SongItemViewModel;
 
 import timber.log.Timber;
 
-import static android.support.design.widget.Snackbar.LENGTH_LONG;
+import static com.google.android.material.snackbar.Snackbar.LENGTH_LONG;
 
 public class QueueSongItemViewModel extends SongItemViewModel {
 

@@ -1,10 +1,10 @@
 package com.marverenic.music.player.browser;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.MediaBrowserServiceCompat;
+import androidx.media.MediaBrowserServiceCompat;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.player.PlayerController;

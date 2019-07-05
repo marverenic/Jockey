@@ -9,7 +9,7 @@
             type="com.marverenic.music.ui.nowplaying.NowPlayingControllerViewModel"/>
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/now_playing_button_size"
         android:layout_gravity="center"
@@ -61,6 +61,6 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

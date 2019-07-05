@@ -1,10 +1,10 @@
 package com.marverenic.music.view.bindingadapters;
 
-import android.databinding.BindingAdapter;
-import android.databinding.InverseBindingAdapter;
-import android.databinding.InverseBindingListener;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.ItemDecoration;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.InverseBindingAdapter;
+import androidx.databinding.InverseBindingListener;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 
 import com.marverenic.adapter.DragDropAdapter;
 

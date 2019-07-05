@@ -8,7 +8,7 @@
             type="com.marverenic.music.ui.library.playlist.PlaylistItemViewModel" />
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/list_height"
         android:background="?selectableItemBackground"
@@ -64,7 +64,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </layout>
