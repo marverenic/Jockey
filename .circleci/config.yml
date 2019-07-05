@@ -21,7 +21,7 @@ jobs:
 
         - run:
             name: Assemble
-            command: ./gradlew clean assembleHathorRelease -PdisablePreDex
+            command: ./gradlew clean assembleHathorRelease -PdisablePreDex -PciBuild
 
         - run:
             name: Test

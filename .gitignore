@@ -6,6 +6,9 @@
 /build
 *.iml
 
+# Secret keys that shouldn't be checked into source control
+secrets.properties
+
 # Built application files
 *.apk
 *.ap_

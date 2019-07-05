@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.bugsnag.android.gradle'
 
 android {
     compileSdkVersion rootProject.targetSdkVersion
@@ -22,6 +23,16 @@ android {
         }
     }
 
+    def secretsFiles = rootProject.file("secrets.properties")
+    def secrets = new Properties()
+    if (secretsFiles.exists()) secrets.load(new FileInputStream(secretsFiles))
+
+    bugsnag {
+        apiKey secrets.getProperty('bugsnagKey', null)
+        autoUpload !rootProject.isCiBuild
+        autoReportBuilds !rootProject.isCiBuild
+    }
+
     defaultConfig {
         applicationId "com.marverenic.music"
         minSdkVersion 16
@@ -29,6 +40,8 @@ android {
         versionCode 40325
         versionName "3.0 RC 1"
         resConfigs "en", "es", "nl"
+
+        buildConfigField 'String', 'BUGSNAG_API_KEY', "\"${secrets.getProperty('bugsnagKey', 'null')}\""
     }
 
     buildTypes {
@@ -37,10 +50,15 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             zipAlignEnabled true
+
+            buildConfigField 'Boolean', 'BUGSNAG_ENABLED', 'true'
         }
+
         debug {
             applicationIdSuffix ".debug"
             versionNameSuffix '.debug'
+
+            buildConfigField 'Boolean', 'BUGSNAG_ENABLED', 'false'
         }
     }
 
@@ -108,5 +126,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.0.2'
     implementation 'com.squareup.retrofit2:adapter-rxjava:2.0.2'
 
-    implementation 'com.jakewharton.timber:timber:4.1.2'
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+
+    implementation 'com.bugsnag:bugsnag-android:4.15.0'
 }
