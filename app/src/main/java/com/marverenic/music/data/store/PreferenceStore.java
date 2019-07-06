@@ -13,8 +13,7 @@ public interface PreferenceStore extends ReadOnlyPreferenceStore {
 
     boolean commit();
 
-    void setShowFirstStart(boolean showFirstStart);
-    void setAllowLogging(boolean allowLogging);
+    void setIsFirstStart(boolean showFirstStart);
     void setUseMobileNetwork(boolean useMobileNetwork);
 
     void setOpenNowPlayingOnNewQueue(boolean openNowPlayingOnNewQueue);

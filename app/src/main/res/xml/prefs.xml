@@ -47,20 +47,12 @@
             android:title="@string/pref_directory_exclude"
             android:key="@string/pref_key_excluded_dirs"
             android:fragment="com.marverenic.music.ui.settings.DirectoryListFragment"/>
-    </PreferenceCategoryCompat>
-    <PreferenceCategoryCompat android:title="@string/settings_category_general">
         <SwitchPreferenceCompat
             android:defaultValue="true"
             android:key="@string/pref_key_use_mobile_net"
             android:summaryOn="@string/use_mobile_description_on"
             android:summaryOff="@string/use_mobile_description_off"
             android:title="@string/use_mobile"/>
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/pref_key_allow_logging"
-            android:summaryOn="@string/logging_on"
-            android:summaryOff="@string/logging_off"
-            android:title="@string/logging_description"/>
     </PreferenceCategoryCompat>
     <PreferenceCategoryCompat android:title="@string/playback_header">
         <Preference

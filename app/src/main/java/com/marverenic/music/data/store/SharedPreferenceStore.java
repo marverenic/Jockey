@@ -90,13 +90,8 @@ public class SharedPreferenceStore implements PreferenceStore {
     }
 
     @Override
-    public boolean showFirstStart() {
+    public boolean isFirstStart() {
         return getBoolean(R.string.pref_key_show_first_start, true);
-    }
-
-    @Override
-    public boolean allowLogging() {
-        return getBoolean(R.string.pref_key_allow_logging, false);
     }
 
     @Override
@@ -207,13 +202,8 @@ public class SharedPreferenceStore implements PreferenceStore {
     }
 
     @Override
-    public void setShowFirstStart(boolean showFirstStart) {
+    public void setIsFirstStart(boolean showFirstStart) {
         putBoolean(R.string.pref_key_show_first_start, showFirstStart);
-    }
-
-    @Override
-    public void setAllowLogging(boolean allowLogging) {
-        putBoolean(R.string.pref_key_allow_logging, allowLogging);
     }
 
     @Override

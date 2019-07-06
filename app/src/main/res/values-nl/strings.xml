@@ -28,7 +28,6 @@
     <string name="playlist_auto_choose_by">Kies nummers met</string>
 
     <!-- First start Strings -->
-    <string name="first_launch_title">Welkom bij Jockey</string>
     <string name="action_read_privacy_policy">Open</string>
     <string name="alert_privacy_policy_updated">Jockey\'s privacybeleid is gewijzigd</string>
 
@@ -73,7 +72,6 @@
     <string name="action_cancel">Annuleren</string>
     <string name="action_add">Toevoegen</string>
     <string name="action_add_new">Voeg een nieuwe toe</string>
-    <string name="action_agree">Overeenkomen</string>
     <string name="action_try_again">Probeer opnieuw</string>
     <string name="action_open_settings">Open instellingen</string>
     <string name="action_make_new_playlist">Maak een nieuwe afspeellijst</string>
@@ -240,14 +238,12 @@
     <string name="theme_base">Achtergrondskleur</string>
     <string name="default_page_pref">Standaardpagina</string>
     <string name="playback_header">Afspelen</string>
-    <string name="settings_category_general">Algemeen</string>
     <string name="appearance_header">Uiterlijk</string>
     <string name="pref_category_library">Bibliotheek</string>
     <string name="pref_header_browser_page">Muziekbrowser</string>
     <string name="use_mobile">Gebruik mobiele data</string>
     <string name="logging_off">Alleen anonieme crashgegevens zal verstuurd worden naar Marverenic</string>
     <string name="logging_on">Anonieme gebruikersdata en crashgegevens zullen verstuurd worden naar Marverenic</string>
-    <string name="enable_additional_logging_detailed">Help om Jockey beter te maken door anonieme statistieken te verzenden</string>
     <string name="use_mobile_description_off">Album illustraties en andere data zullen alleen over Wi-Fi gedownload worden</string>
     <string name="use_mobile_description_on">Album illustraties en andere data zullen altijd gedownload worden</string>
     <string name="switch_to_now_playing_detail_off">Als het nummer verandert zal je niet navigeren naar een andere pagina</string>
@@ -277,7 +273,6 @@
     <string name="empty_included_dirs_detail">Jockey kan beperkt worden om in alleen specifieke mappen te doorzoeken, druk op de &#8220;+&#8221; knop om een map in te sluiten.</string>
     <string name="empty_excluded_dirs_detail">Jockey kan beperkt worden om sommige mappen over te slaan, druk op de &#8220;+&#8221; knop om een map uit te sluiten.</string>
     <string name="url_privacy_policy">https://www.marverenic.com/Jockey/privacy-policy.html</string>
-    <string name="first_launch_detail">"<![CDATA[Door deze applicatie te gebruiken ga je akkoord met Jockey\'s         <a href="https://www.marverenic.com/Jockey/privacy-policy.html">privacybeleid</a>.]]>     "</string>
     <string name="pref_resume_on_connect">Afspelen als headset verbonden</string>
     <string name="pref_resume_on_connect_detail_on">Muziek zal spelen als een hoofdtelefoon verbonden wordt en Jockey aan staat.</string>
     <string name="pref_resume_on_connect_detail_off">Muziek zal nooit automatisch spelen bij het verbinden van de hoofdtelefoon</string>
