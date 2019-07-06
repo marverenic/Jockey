@@ -45,6 +45,7 @@ android {
         versionCode 40325
         versionName "3.0 RC 1"
         resConfigs "en", "es", "nl"
+        multiDexEnabled true
 
         buildConfigField 'String', 'BUGSNAG_API_KEY', "\"${secrets.getProperty('bugsnagKey', 'null')}\""
     }
@@ -101,6 +102,7 @@ dependencies {
     // Androidx
     implementation config.deps.androidx.core
     implementation config.deps.androidx.ktx
+    implementation config.deps.androidx.multidex
     implementation config.deps.androidx.annotation
     implementation config.deps.androidx.fragment
     implementation config.deps.androidx.material
