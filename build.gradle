@@ -13,6 +13,7 @@ buildscript {
         classpath 'com.android.tools.build:gradle:3.3.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath "org.jlleitschuh.gradle:ktlint-gradle:8.1.0"
+        classpath 'com.bugsnag:bugsnag-android-gradle-plugin:4.4.1'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -27,6 +28,8 @@ allprojects {
 }
 
 ext {
+    isCiBuild = project.hasProperty('ciBuild')
+
     targetSdkVersion = 28
     compileSdkVersion = 28
 
@@ -61,7 +64,7 @@ ext {
         exoplayer : '2.6.1',
         glide : '3.7.0',
         gson : '2.7',
-        timber : '4.1.2',
+        timber : '4.7.1',
         views : [
             heterogeneousadapter : '1.1',
             recyclerviewFastscroll : '1.0.20',

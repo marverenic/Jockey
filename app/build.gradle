@@ -1,23 +1,8 @@
-buildscript {
-    repositories {
-        maven { url 'https://maven.fabric.io/public' }
-    }
-
-    dependencies {
-        //noinspection GradleDynamicVersion
-        classpath 'io.fabric.tools:gradle:1.+'
-    }
-}
-
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'io.fabric'
-
-repositories {
-    maven { url 'https://maven.fabric.io/public' }
-}
+apply plugin: 'com.bugsnag.android.gradle'
 
 def config = rootProject.extensions.getByName("ext")
 
@@ -43,6 +28,16 @@ android {
         }
     }
 
+    def secretsFiles = rootProject.file("secrets.properties")
+    def secrets = new Properties()
+    if (secretsFiles.exists()) secrets.load(new FileInputStream(secretsFiles))
+
+    bugsnag {
+        apiKey secrets.getProperty('bugsnagKey', null)
+        autoUpload !rootProject.isCiBuild
+        autoReportBuilds !rootProject.isCiBuild
+    }
+
     defaultConfig {
         applicationId "com.marverenic.music"
         minSdkVersion 16
@@ -50,6 +45,8 @@ android {
         versionCode 40325
         versionName "3.0 RC 1"
         resConfigs "en", "es", "nl"
+
+        buildConfigField 'String', 'BUGSNAG_API_KEY', "\"${secrets.getProperty('bugsnagKey', 'null')}\""
     }
 
     buildTypes {
@@ -59,16 +56,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             zipAlignEnabled true
 
-            // Setting the "NO_CRASHLYTICS" environment variable to "true" prevents crashlytics from
-            // being processed on release builds. This is allows Travis CI builds to succeed without
-            // checking API keys into version control
-            boolean disableCrashlytics = "true".equalsIgnoreCase("$System.env.NO_CRASHLYTICS")
-            ext.enableCrashlytics = !disableCrashlytics
+            buildConfigField 'Boolean', 'BUGSNAG_ENABLED', 'true'
         }
+
         debug {
             applicationIdSuffix ".debug"
             versionNameSuffix '.debug'
-            ext.enableCrashlytics = false
+
+            buildConfigField 'Boolean', 'BUGSNAG_ENABLED', 'false'
         }
     }
 
@@ -82,7 +77,6 @@ android {
             dimension "implementation"
             applicationIdSuffix ".demo"
             versionNameSuffix ".demo"
-            ext.enableCrashlytics = false
         }
     }
 
@@ -167,4 +161,6 @@ dependencies {
     // Testing
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.robolectric:robolectric:4.2.1'
+
+    implementation 'com.bugsnag:bugsnag-android:4.15.0'
 }

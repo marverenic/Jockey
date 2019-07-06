@@ -46,7 +46,6 @@ public class JockeyPreferencesCompat {
 
     private static void updateFromJockey1_2(Context context, SharedPreferences prefs) {
         boolean showFirstStart = prefs.getBoolean("prefShowFirstStart", true);
-        boolean allowLogging = prefs.getBoolean("prefAllowLogging", false);
         String firstPage = prefs.getString("prefDefaultPage", Integer.toString(SONGS));
         String primaryColor = prefs.getString("prefColorPrimary", Integer.toString(CYAN));
         String baseTheme = prefs.getString("prefBaseTheme", Integer.toString(LIGHT));
@@ -62,8 +61,7 @@ public class JockeyPreferencesCompat {
         prefs.edit().clear().apply();
         PreferenceStore preferenceStore = new SharedPreferenceStore(context);
 
-        preferenceStore.setShowFirstStart(showFirstStart);
-        preferenceStore.setAllowLogging(allowLogging);
+        preferenceStore.setIsFirstStart(showFirstStart);
         preferenceStore.setDefaultPage(convertStartPage1_2(firstPage));
         preferenceStore.setPrimaryColor(convertPrimaryColor1_2(primaryColor));
         preferenceStore.setBaseColor(convertBaseTheme1_2(baseTheme));

@@ -3,14 +3,13 @@ package com.marverenic.music
 import android.app.Application
 import android.content.Context
 import androidx.fragment.app.Fragment
+import com.bugsnag.android.Bugsnag
 import com.bumptech.glide.Glide
-import com.crashlytics.android.Crashlytics
 import com.marverenic.music.data.inject.JockeyComponentFactory
 import com.marverenic.music.data.inject.JockeyGraph
-import com.marverenic.music.utils.CrashlyticsTree
+import com.marverenic.music.utils.BugsnagTree
 import com.marverenic.music.utils.compat.JockeyPreferencesCompat
 import com.marverenic.music.utils.compat.PlayerQueueMigration
-import io.fabric.sdk.android.Fabric
 import timber.log.Timber
 
 class JockeyApplication : Application() {
@@ -22,18 +21,27 @@ class JockeyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        Fabric.with(this, Crashlytics())
+        setupBugsnag()
         setupTimber()
 
         JockeyPreferencesCompat.upgradeSharedPreferences(this)
         PlayerQueueMigration(this).migrateLegacyQueueFile()
     }
 
+    private fun setupBugsnag() {
+        if (BuildConfig.BUGSNAG_ENABLED) {
+            Bugsnag.init(this, BuildConfig.BUGSNAG_API_KEY)
+            Bugsnag.getClient().config.detectAnrs = true
+        }
+    }
+
     private fun setupTimber() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
-        } else {
-            Timber.plant(CrashlyticsTree())
+        }
+
+        if (BuildConfig.BUGSNAG_ENABLED) {
+            Timber.plant(BugsnagTree(this))
         }
     }
 
