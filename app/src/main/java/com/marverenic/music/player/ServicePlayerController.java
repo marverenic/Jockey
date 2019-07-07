@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.os.SystemClock;
+import android.support.annotation.NonNull;
 import android.support.v4.media.session.MediaSessionCompat;
 
 import com.marverenic.music.IPlayerService;
@@ -47,6 +48,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.Subscriptions;
 import timber.log.Timber;
 
 /**
@@ -96,6 +98,8 @@ public class ServicePlayerController implements PlayerController {
     private Subscription mRequestQueueSubscription;
 
     private Set<ServiceBinding> mActiveBindings;
+    @NonNull
+    private Subscription mServiceInitializationSubscription = Subscriptions.unsubscribed();
 
     public ServicePlayerController(Context context, PreferenceStore preferenceStore,
                 PlaybackPersistenceManager persistenceManager) {
@@ -130,8 +134,15 @@ public class ServicePlayerController implements PlayerController {
     @Override
     public Binding bind() {
         ServiceBinding binding = new ServiceBinding();
+        if (mActiveBindings.isEmpty()) {
+            // Start service if we have storage permission
+            mServiceInitializationSubscription = MediaStoreUtil.getPermission(mContext)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(this::bindService, t -> Timber.i(t, "Failed to get Storage permission"));
+        }
+
         mActiveBindings.add(binding);
-        startService();
+
         return binding;
     }
 
@@ -144,13 +155,16 @@ public class ServicePlayerController implements PlayerController {
         if (!mActiveBindings.remove(binding)) {
             Timber.w("Binding with UID %s was already unbound", ((ServiceBinding) binding).uid);
         } else if (mActiveBindings.isEmpty()) {
-            unbindService();
+            if (!mServiceInitializationSubscription.isUnsubscribed()) {
+                // We're still waiting for permission before starting the service. Cancel the
+                // initialization and do not attempt to stop the service.
+                mServiceInitializationSubscription.unsubscribe();
+                mServiceInitializationSubscription = Subscriptions.unsubscribed();
+            } else {
+                // The service has been started before. We can safely unbind from it.
+                unbindService();
+            }
         }
-    }
-
-    private void startService() {
-        MediaStoreUtil.getPermission(mContext)
-                .subscribe(this::bindService, t -> Timber.i(t, "Failed to get Storage permission"));
     }
 
     private void bindService(boolean hasMediaStorePermission) {
@@ -161,6 +175,8 @@ public class ServicePlayerController implements PlayerController {
             return;
         }
 
+        mServiceInitializationSubscription.unsubscribe();
+        mServiceInitializationSubscription = Subscriptions.unsubscribed();
         initAllPropertyFallbacks();
         mServiceStartRequestTime = SystemClock.uptimeMillis();
         Timber.i("Starting service at time %dl", mServiceStartRequestTime);
