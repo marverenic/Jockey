@@ -37,8 +37,8 @@ android {
         applicationId "com.marverenic.music"
         minSdkVersion 16
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 40325
-        versionName "3.0 RC 1"
+        versionCode 40326
+        versionName "3.0 RC 2"
         resConfigs "en", "es", "nl"
 
         buildConfigField 'String', 'BUGSNAG_API_KEY', "\"${secrets.getProperty('bugsnagKey', 'null')}\""
