@@ -13,8 +13,9 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.os.SystemClock;
-import android.support.annotation.NonNull;
 import android.support.v4.media.session.MediaSessionCompat;
+
+import androidx.annotation.NonNull;
 
 import com.marverenic.music.IPlayerService;
 import com.marverenic.music.JockeyApplication;
