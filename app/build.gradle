@@ -48,6 +48,7 @@ android {
         multiDexEnabled true
 
         buildConfigField 'String', 'BUGSNAG_API_KEY', "\"${secrets.getProperty('bugsnagKey', 'null')}\""
+        manifestPlaceholders = [bugsnagKey:secrets.getProperty('bugsnagKey', "")]
     }
 
     buildTypes {

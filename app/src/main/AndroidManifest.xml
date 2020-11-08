@@ -309,5 +309,8 @@
             android:name="com.google.android.gms.car.application.theme"
             android:resource="@style/CarTheme" />
 
+        <meta-data android:name="com.bugsnag.android.API_KEY"
+            android:value="${bugsnagKey}"/>
+
     </application>
 </manifest>
