@@ -6,10 +6,10 @@
 -optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
 
 # Keep everything annotated with @Keep
--keep,allowobfuscation @interface android.support.annotation.Keep
--keep @android.support.annotation.Keep class *
+-keep,allowobfuscation @interface androidx.annotation.Keep
+-keep @androidx.annotation.Keep class *
 -keepclassmembers class * {
-    @android.support.annotation.Keep *;
+    @androidx.annotation.Keep *;
 }
 
 # Glide rules
@@ -23,18 +23,18 @@
 -keepattributes SourceFile,LineNumberTable
 
 # Don't break support libraries
--keep class android.support.v7.widget.SearchView { *; }
--keep class android.support.design.widget.** { *; }
--keep interface android.support.design.widget.** { *; }
+-keep class androidx.appcompat.widget.SearchView { *; }
+-keep class com.google.android.material.** { *; }
+-keep interface com.google.android.material.** { *; }
 -dontwarn android.support.design.**
--keep class android.support.v7.preference.PreferenceCategoryCompat { *; }
--keep class android.support.v7.preference.ColorPreference { *; }
--keep class android.support.v7.preference.IntListPreference { *; }
--keep class android.support.v7.preference.IntDropDownPreference { *; }
+-keep class androidx.preference.PreferenceCategoryCompat { *; }
+-keep class androidx.preference.ColorPreference { *; }
+-keep class androidx.preference.IntListPreference { *; }
+-keep class androidx.preference.IntDropDownPreference { *; }
 
 # Used to animate values of an Observable with an ObjectAnimator
 # (since it calls setters by name using reflection)
--keepnames class * extends android.databinding.BaseObservable { *; }
+-keepnames class * extends androidx.databinding.BaseObservable { *; }
 
 # GSON rules
 # Don't obfuscate instance field names for GSON
