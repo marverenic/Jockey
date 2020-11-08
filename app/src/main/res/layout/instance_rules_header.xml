@@ -127,7 +127,7 @@
                 android:layout_centerInParent="true"
                 android:layout_marginTop="@dimen/list_padding"
                 android:layout_marginBottom="@dimen/list_padding"
-                app:onCheckedChangeListener="@{viewModel.onTruncateToggle}"/>
+                app:setOnCheckedChangeListener="@{viewModel.onTruncateToggle}"/>
 
             <TextView
                 android:id="@+id/playlist_chosen_by_prefix"

@@ -37,7 +37,7 @@
                 android:clipToPadding="false"
                 android:scrollbars="none"
                 app:breadCrumbs="@{viewModel.breadCrumbs}"
-                app:selectedCrumb="@={viewModel.selectedBreadCrumb}"/>
+                app:selectedCrumb="@{viewModel.selectedBreadCrumb}"/>
 
         </com.google.android.material.appbar.AppBarLayout>
 

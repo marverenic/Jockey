@@ -11,7 +11,7 @@
         android:id="@+id/album_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@{viewModel.backgroundColor}"
+        app:backgroundColor="@{viewModel.backgroundColor}"
         android:foreground="?android:attr/selectableItemBackground"
         android:onClick="@{viewModel.onClickAlbum()}"
         tools:background="@color/grid_background_default">
