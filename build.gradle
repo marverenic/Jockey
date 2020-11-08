@@ -51,7 +51,7 @@ ext {
             drawerLayout : '1.0.0',
             swipeRefreshLayout : '1.0.0'
         ],
-        dagger : '2.6',
+        dagger : '2.29.1',
         rxJava : [
             core : '1.1.6',
             android : '1.2.1',
