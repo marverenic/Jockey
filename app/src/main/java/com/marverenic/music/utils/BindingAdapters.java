@@ -1,15 +1,7 @@
 package com.marverenic.music.utils;
 
-import androidx.databinding.BindingAdapter;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
-import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import androidx.core.graphics.drawable.RoundedBitmapDrawable;
-import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
-import androidx.appcompat.widget.Toolbar;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +10,15 @@ import android.view.animation.Animation;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
+import androidx.databinding.BindingAdapter;
+
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.marverenic.music.view.ViewUtils;
 
 import timber.log.Timber;
@@ -35,7 +36,7 @@ public class BindingAdapters {
     public static void bindRoundedBitmap(ImageView imageView, Bitmap bitmap, float cornerRadius) {
         ViewUtils.whenLaidOut(imageView, () -> {
             if (imageView.getWidth() == 0 || imageView.getHeight() == 0) {
-                Timber.e("ImageView has a dimension of 0", new RuntimeException());
+                Timber.e(new RuntimeException(), "ImageView has a dimension of 0");
                 imageView.setImageBitmap(bitmap);
             } else {
                 RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory

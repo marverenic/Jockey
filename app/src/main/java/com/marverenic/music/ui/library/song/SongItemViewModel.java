@@ -1,12 +1,13 @@
 package com.marverenic.music.ui.library.song;
 
 import android.content.Context;
-import androidx.databinding.Bindable;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
-import androidx.appcompat.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.View;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.databinding.Bindable;
+import androidx.fragment.app.FragmentManager;
 
 import com.marverenic.music.BR;
 import com.marverenic.music.R;
@@ -149,7 +150,7 @@ public class SongItemViewModel extends BaseViewModel {
                             album -> {
                                 startActivity(AlbumActivity.newIntent(getContext(), album));
                             }, throwable -> {
-                                Timber.e(throwable, "Failed to find album", throwable);
+                                Timber.e(throwable, "Failed to find album");
                             });
                     return true;
                 case R.id.menu_item_navigate_to_folder:

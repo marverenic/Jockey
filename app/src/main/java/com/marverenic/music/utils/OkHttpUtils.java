@@ -40,7 +40,7 @@ public class OkHttpUtils {
 
                 client.connectionSpecs(specs);
             } catch (Exception exc) {
-                Timber.e("Error while setting TLS 1.2", exc);
+                Timber.e(exc, "Error while setting TLS 1.2");
             }
         }
 

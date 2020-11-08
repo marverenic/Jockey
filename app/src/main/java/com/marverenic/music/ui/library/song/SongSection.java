@@ -1,12 +1,13 @@
 package com.marverenic.music.ui.library.song;
 
 import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
 
 import com.marverenic.adapter.EnhancedViewHolder;
 import com.marverenic.adapter.HeterogeneousAdapter;
@@ -95,7 +96,7 @@ public class SongSection extends HeterogeneousAdapter.ListSection<Song>
             binding.setViewModel(viewModel);
 
             mCurrentSong.subscribe(viewModel::setCurrentlyPlayingSong, throwable -> {
-                Timber.e("Failed to set current song", throwable);
+                Timber.e(throwable, "Failed to set current song");
             });
         }
 
