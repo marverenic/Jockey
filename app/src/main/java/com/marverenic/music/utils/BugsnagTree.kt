@@ -50,15 +50,15 @@ class BugsnagTree(
         }
 
         Bugsnag.notify(throwable) { report ->
-            val error = report.error ?: return@notify
-
-            error.severity = severity
-            error.addToTab("App", "processName", processName)
+            report.severity = severity
+            report.addMetadata("App", "processName", processName)
             synchronized(logs) {
                 logs.forEachIndexed { index, log ->
-                    error.addToTab("Log", String.format(US, "%03d", index), log)
+                    report.addMetadata("Log", String.format(US, "%03d", index), log)
                 }
             }
+
+            return@notify true
         }
     }
 

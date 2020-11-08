@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.fragment.app.Fragment
 import com.bugsnag.android.Bugsnag
+import com.bugsnag.android.Configuration
 import com.bumptech.glide.Glide
 import com.marverenic.music.data.inject.JockeyComponentFactory
 import com.marverenic.music.data.inject.JockeyGraph
@@ -30,8 +31,10 @@ class JockeyApplication : Application() {
 
     private fun setupBugsnag() {
         if (BuildConfig.BUGSNAG_ENABLED) {
-            Bugsnag.init(this, BuildConfig.BUGSNAG_API_KEY)
-            Bugsnag.getClient().config.detectAnrs = true
+            Bugsnag.start(this, Configuration.load(this).apply {
+                apiKey = BuildConfig.BUGSNAG_API_KEY
+                autoDetectErrors = true
+            })
         }
     }
 
