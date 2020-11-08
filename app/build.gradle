@@ -33,9 +33,9 @@ android {
     if (secretsFiles.exists()) secrets.load(new FileInputStream(secretsFiles))
 
     bugsnag {
-        apiKey secrets.getProperty('bugsnagKey', null)
-        autoUpload !rootProject.isCiBuild
-        autoReportBuilds !rootProject.isCiBuild
+        enabled = !rootProject.isCiBuild
+        uploadJvmMappings = !rootProject.isCiBuild
+        reportBuilds = !rootProject.isCiBuild
     }
 
     defaultConfig {
