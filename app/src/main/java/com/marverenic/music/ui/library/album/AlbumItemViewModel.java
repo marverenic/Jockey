@@ -2,20 +2,25 @@ package com.marverenic.music.ui.library.album;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
+import android.net.Uri;
+import android.os.Build;
+import android.provider.MediaStore;
+import android.view.Gravity;
+import android.view.View;
+
+import androidx.annotation.ColorInt;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.BaseObservable;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ObservableInt;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.TransitionDrawable;
-import androidx.annotation.ColorInt;
 import androidx.fragment.app.FragmentManager;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.palette.graphics.Palette;
-import androidx.appcompat.widget.PopupMenu;
-import android.view.Gravity;
-import android.view.View;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -31,6 +36,7 @@ import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.common.playlist.AppendPlaylistDialogFragment;
 import com.marverenic.music.ui.library.album.contents.AlbumActivity;
 import com.marverenic.music.ui.library.artist.contents.ArtistActivity;
+import com.marverenic.music.utils.MediaStoreThumbnailLoader;
 import com.marverenic.music.view.ViewUtils;
 
 import java.io.File;
@@ -76,8 +82,23 @@ public class AlbumItemViewModel extends BaseObservable {
 
         defaultColors();
 
-        if (mAlbum.getArtUri() != null) {
-            int imageSize = mContext.getResources().getDimensionPixelSize(R.dimen.grid_width);
+        int imageSize = mContext.getResources().getDimensionPixelSize(R.dimen.grid_width);
+        if (Build.VERSION.SDK_INT >= 29) {
+            Uri thumbnailUri = ContentUris.withAppendedId(
+                    MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                    mAlbum.getAlbumId()
+            );
+
+            Glide.with(mContext)
+                    .using(new MediaStoreThumbnailLoader(mContext))
+                    .load(thumbnailUri)
+                    .decoder(new MediaStoreThumbnailLoader.Decoder(mContext))
+                    .placeholder(R.drawable.art_default)
+                    .error(R.drawable.art_default)
+                    .listener(new PaletteListener(mTitleTextColor, mArtistTextColor,
+                            mBackgroundColor))
+                    .into(new ObservableTarget(imageSize, mArtistImage));
+        } else if (mAlbum.getArtUri() != null) {
 
             Glide.with(mContext)
                     .load(new File(mAlbum.getArtUri()))
@@ -239,9 +260,9 @@ public class AlbumItemViewModel extends BaseObservable {
         }
     }
 
-    private static class PaletteListener implements RequestListener<File, GlideDrawable> {
+    private static class PaletteListener implements RequestListener<Object, GlideDrawable> {
 
-        private static Map<File, Palette.Swatch> sColorMap;
+        private static Map<Object, Palette.Swatch> sColorMap;
 
         private ObservableInt mTitleTextColor;
         private ObservableInt mArtistTextColor;
@@ -259,13 +280,13 @@ public class AlbumItemViewModel extends BaseObservable {
         }
 
         @Override
-        public boolean onException(Exception e, File model, Target<GlideDrawable> target,
+        public boolean onException(Exception e, Object model, Target<GlideDrawable> target,
                                    boolean isFirstResource) {
             return false;
         }
 
         @Override
-        public boolean onResourceReady(GlideDrawable resource, File model,
+        public boolean onResourceReady(GlideDrawable resource, Object model,
                                        Target<GlideDrawable> target, boolean isFromMemoryCache,
                                        boolean isFirstResource) {
 
@@ -283,7 +304,7 @@ public class AlbumItemViewModel extends BaseObservable {
             return false;
         }
 
-        private void generateSwatch(File source, Drawable image) {
+        private void generateSwatch(Object source, Drawable image) {
             Palette.from(ViewUtils.drawableToBitmap(image)).generate(palette -> {
                 Palette.Swatch swatch = pickSwatch(palette);
 
