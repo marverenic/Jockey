@@ -55,6 +55,24 @@ class MediaStoreThumbnailLoader(
         override fun getId() = ""
     }
 
+    class BitmapDecoder private constructor(
+        private val bitmapPool: BitmapPool
+    ) : ResourceDecoder<ImageVideoWrapper, Bitmap> {
+
+        constructor(context: Context): this(Glide.get(context).bitmapPool)
+
+        override fun decode(source: ImageVideoWrapper?, width: Int, height: Int): Resource<Bitmap> {
+            val inputStream = source?.stream
+            require(inputStream is MediaStoreThumbnailInputStream) {
+                "This decoder can only be used with MediaStoreThumbnailLoader."
+            }
+
+            return BitmapResource(inputStream.bitmap, bitmapPool)
+        }
+
+        override fun getId() = ""
+    }
+
 }
 
 @TargetApi(29)

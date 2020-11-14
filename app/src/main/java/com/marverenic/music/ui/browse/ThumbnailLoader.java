@@ -2,7 +2,7 @@ package com.marverenic.music.ui.browse;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.net.Uri;
+
 import androidx.collection.ArrayMap;
 
 import com.marverenic.music.R;
@@ -18,7 +18,7 @@ import rx.schedulers.Schedulers;
 /**
  * A utility class that is shared among a list of file views in a recycler view, and is responsible
  * for caching and managing requests to load song thumbnails. Ideally, we'd just use Glide's
- * implementation, but we use {@link com.marverenic.music.utils.Util#fetchArtwork(Context, Uri)},
+ * implementation, but we use {@link Util#fetchThumbnailFromFile(Context, File, int)}.
  * There's no way for Glide to skip the read step – the metadata is used as the primary source,
  * which can't be read from Glide.
  *
@@ -92,8 +92,7 @@ class ThumbnailLoader {
     }
 
     private Observable<Bitmap> loadBitmap(File file) {
-        Uri fileUri = Uri.fromFile(file);
-        Observable<Bitmap> image = Util.fetchArtwork(mContext, fileUri, mThumbnailResolution, false)
+        Observable<Bitmap> image = Util.fetchThumbnailFromFile(mContext, file, mThumbnailResolution)
                 .subscribeOn(Schedulers.io())
                 .doOnNext(bitmap -> {
                     synchronized (mLock) {
