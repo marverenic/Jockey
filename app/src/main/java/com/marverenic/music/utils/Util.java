@@ -1,6 +1,7 @@
 package com.marverenic.music.utils;
 
 import android.annotation.TargetApi;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -18,13 +19,15 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
-import androidx.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.webkit.MimeTypeMap;
+
+import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DecodeFormat;
 import com.marverenic.music.R;
+import com.marverenic.music.data.store.MediaStoreUtil;
 import com.marverenic.music.model.Song;
 
 import java.io.File;
@@ -220,45 +223,69 @@ public final class Util {
     }
 
     public static Observable<Bitmap> fetchArtwork(Context context, Song song) {
-        if (song == null) {
-            return fetchArtwork(context, (Uri) null);
-        } else {
-            return fetchArtwork(context, song.getLocation());
-        }
-    }
-
-    public static Observable<Bitmap> fetchArtwork(Context context, Uri songLocation) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         int size = Math.max(displayMetrics.widthPixels, displayMetrics.heightPixels);
-        return fetchArtwork(context, songLocation, size, true);
+
+        return fetchArtwork(context, song, size, true);
     }
 
-    public static Observable<Bitmap> fetchArtwork(Context context, Uri songLocation,
+    public static Observable<Bitmap> fetchThumbnailFromFile(Context context, File file, int sizePx) {
+        return Observable.fromCallable(() -> {
+            Uri uri = Uri.fromFile(file);
+            try {
+                return MediaStoreUtil.buildSongFromUri(uri, context);
+            } catch (Exception exception) {
+                Timber.i(exception, "Failed to resolve Song from URI. %s",
+                        "(The file likely isn't in the MediaStore)");
+                return null;
+            }
+        }).flatMap((song) -> fetchArtwork(context, song, sizePx, false));
+    }
+
+    public static Observable<Bitmap> fetchArtwork(Context context, Song song,
                                                   int size, boolean highQuality) {
         return Observable.fromCallable(() -> {
+            if (song == null) {
+                return Glide.with(context).load(R.drawable.art_default_xl).asBitmap();
+            }
+
+            Uri songLocation = song.getLocation();
             if (songLocation == null) {
-                return Glide.with(context).load(R.drawable.art_default_xl);
+                return Glide.with(context).load(R.drawable.art_default_xl).asBitmap();
             }
 
             byte[] embedded = fetchEmbeddedArtwork(context, songLocation);
             if (embedded != null){
-                return Glide.with(context).load(embedded);
+                return Glide.with(context).load(embedded).asBitmap();
             }
 
             File folderImage = resolveArtwork(context, songLocation);
             if (folderImage != null) {
-                return Glide.with(context).load(folderImage);
+                return Glide.with(context).load(folderImage).asBitmap();
+            }
+
+            if (Build.VERSION.SDK_INT >= 29) {
+                Uri thumbnailUri = ContentUris.withAppendedId(
+                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                        song.getSongId()
+                );
+
+                return Glide.with(context)
+                        .using(new MediaStoreThumbnailLoader(context))
+                        .load(thumbnailUri)
+                        .asBitmap()
+                        .decoder(new MediaStoreThumbnailLoader.BitmapDecoder(context));
             }
 
             String mediaStoreThumbnail = resolveMediaStoreArtwork(context, songLocation);
             if (mediaStoreThumbnail != null) {
-                return Glide.with(context).load(mediaStoreThumbnail);
+                return Glide.with(context).load(mediaStoreThumbnail).asBitmap();
             }
 
-            return Glide.with(context).load(R.drawable.art_default_xl);
+            return Glide.with(context).load(R.drawable.art_default_xl).asBitmap();
         }).map(request -> {
             try {
-                return request.asBitmap()
+                return request
                         .format((highQuality)
                                 ? DecodeFormat.PREFER_ARGB_8888
                                 : DecodeFormat.PREFER_RGB_565)

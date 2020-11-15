@@ -30,8 +30,8 @@ allprojects {
 ext {
     isCiBuild = project.hasProperty('ciBuild')
 
-    targetSdkVersion = 28
-    compileSdkVersion = 28
+    targetSdkVersion = 29
+    compileSdkVersion = targetSdkVersion
 
     versions = [
         kotlin : kotlinVersion,
