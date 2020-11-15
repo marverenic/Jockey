@@ -11,4 +11,5 @@
     app:fastScrollPopupBgColor="?attr/colorAccent"
     app:fastScrollPopupTextColor="?android:attr/textColorPrimaryInverse"
     app:fastScrollThumbColor="?attr/colorAccent"
+    app:fastScrollThumbInactiveColor="?attr/colorAccent"                                                                
     app:layout_behavior="@string/appbar_scrolling_view_behavior"/>

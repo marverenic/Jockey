@@ -1,6 +1,6 @@
 package com.marverenic.music.ui.library.artist.contents;
 
-import android.support.annotation.ColorInt;
+import androidx.annotation.ColorInt;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

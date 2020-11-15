@@ -1,11 +1,11 @@
-package android.support.v7.preference;
+package androidx.preference;
 
 import android.content.Context;
 import android.util.AttributeSet;
 
-public class IntDropDownPreference extends DropDownPreference {
+public class IntListPreference extends ListPreference {
 
-    public IntDropDownPreference(Context context, AttributeSet attrs) {
+    public IntListPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 

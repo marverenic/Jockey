@@ -1,7 +1,7 @@
 package com.marverenic.music.utils;
 
 import android.os.Build;
-import android.support.annotation.Keep;
+import androidx.annotation.Keep;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -40,7 +40,7 @@ public class OkHttpUtils {
 
                 client.connectionSpecs(specs);
             } catch (Exception exc) {
-                Timber.e("Error while setting TLS 1.2", exc);
+                Timber.e(exc, "Error while setting TLS 1.2");
             }
         }
 

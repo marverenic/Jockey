@@ -9,17 +9,17 @@
             type="com.marverenic.music.ui.browse.MusicBrowserViewModel"/>
     </data>
 
-    <android.support.design.widget.CoordinatorLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.design.widget.AppBarLayout
+        <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/library_app_bar_layout"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary">
 
-            <android.support.v7.widget.Toolbar
+            <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
@@ -37,20 +37,20 @@
                 android:clipToPadding="false"
                 android:scrollbars="none"
                 app:breadCrumbs="@{viewModel.breadCrumbs}"
-                app:selectedCrumb="@={viewModel.selectedBreadCrumb}"/>
+                app:selectedCrumb="@{viewModel.selectedBreadCrumb}"/>
 
-        </android.support.design.widget.AppBarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/music_browser_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical"
             app:adapter="@{viewModel.adapter}"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:itemDecorations="@{viewModel.itemDecorations}"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-    </android.support.design.widget.CoordinatorLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </layout>

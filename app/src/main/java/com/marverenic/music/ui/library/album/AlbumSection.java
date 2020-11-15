@@ -1,8 +1,8 @@
 package com.marverenic.music.ui.library.album;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentManager;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 

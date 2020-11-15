@@ -253,7 +253,7 @@
     <string name="add_shortcut_description">Wil je dat de kleur van Jockey\'s snelkoppling-icoon hetzelfde is als je huidige thema? Jockey zal herstarten en alle icoontjes zullen verwijderd worden.</string>
     <string name="uses_aosp_header">Android Support Libraries</string>
     <string name="uses_header">Jockey gebruikt de volgende open-source onderdelen:</string>
-    <string name="uses_aosp_detail">Support-v4 27.1.0, Appcompat-v7 27.1.0, RecyclerView 27.1.0, CardView 27.1.0, Design 27.1.0, Palette 27.1.0, Preference-v14 27.1.0, Room 1.1.0; gedistributeerd door het Android Open Source Project onder de Apache License, versie 2.0</string>
+    <string name="uses_aosp_detail">Support-v4 28.0.0, Appcompat-v7 28.0.0, RecyclerView 28.0.0, CardView 28.0.0, Design 28.0.0, Palette 28.0.0, Preference-v14 28.0.0, Room 1.1.0; gedistributeerd door het Android Open Source Project onder de Apache License, versie 2.0</string>
     <string name="uses_exoplayer_detail">Versie 2.6.1; gedistributeerd door Google Inc. onder een Apache License, versie 2.0</string>
     <string name="uses_libflac_detail">Version 1.3.1; gedistributeerd door Xiph.Org Foundation onder een BSD licentie</string>
     <string name="uses_dagger_detail">Versie 2.6; gedistributeerd door Google Inc. en Square Inc. onder een Apache License, versie 2.0</string>
@@ -264,7 +264,7 @@
     <string name="uses_gson_detail">Versie 2.7; gedistributeerd door Google, Inc. onder een Apache License, versie 2.0</string>
     <string name="uses_glide_detail">Versie 3.7.0; gedistributeerd door Google, Inc. onder een BSD licensie</string>
     <string name="uses_vert_slider_detail">Versie 0.5.2; gedistributeerd door Haruki Hasegawa onder een Apache License, versie 2.0</string>
-    <string name="uses_fastscroll_detail">Versie 1.0.16; gedistributeerd door Tim Malseed onder een Apache License, versie 2.0</string>
+    <string name="uses_fastscroll_detail">Versie 1.0.20; gedistributeerd door Tim Malseed onder een Apache License, versie 2.0</string>
     <string name="uses_seek_arc_detail">Versie 1.1; gedistributeerd door Triggertrap Ltd (Neil Davies) onder een MIT License</string>
     <string name="uses_timber_detail">Versie 1.1; gedistributeerd door Triggertrap Ltd (Neil Davies) onder een MIT License</string>
 

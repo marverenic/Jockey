@@ -1,6 +1,6 @@
 package com.marverenic.music.data.annotations;
 
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 
 @IntDef(value = {BaseTheme.DARK, BaseTheme.LIGHT, BaseTheme.AUTO})
 public @interface BaseTheme {

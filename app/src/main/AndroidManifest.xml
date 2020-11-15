@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.marverenic.music">
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> <!-- Used to play music -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- Used to read music -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- Used to save playlists -->
     <uses-permission android:name="android.permission.INTERNET" /> <!-- Used to fetch data from Last.fm and send bug reports -->
@@ -282,7 +283,7 @@
         </receiver>
 
         <!-- Broadcast Receivers -->
-        <receiver android:name="android.support.v4.media.session.MediaButtonReceiver" >
+        <receiver android:name="androidx.media.session.MediaButtonReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
@@ -307,6 +308,9 @@
         <meta-data
             android:name="com.google.android.gms.car.application.theme"
             android:resource="@style/CarTheme" />
+
+        <meta-data android:name="com.bugsnag.android.API_KEY"
+            android:value="${bugsnagKey}"/>
 
     </application>
 </manifest>

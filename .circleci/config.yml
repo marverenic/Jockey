@@ -3,21 +3,13 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/android:api-27-alpha
+      - image: circleci/android:api-28
 
     steps:
         - checkout
-        - restore_cache:
-            key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
-
         - run:
             name: Resolve dependencies
             command: ./gradlew app:dependencies
-
-        - save_cache:
-            paths:
-              - ~/.gradle
-            key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
 
         - run:
             name: Assemble
@@ -26,3 +18,7 @@ jobs:
         - run:
             name: Test
             command: ./gradlew testHathorRelease -PdisablePreDex
+        
+        - run:
+            name: Lint
+            command: ./gradlew ktlintCheck

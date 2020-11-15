@@ -4,14 +4,15 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
-import android.support.design.widget.BaseTransientBottomBar;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatDelegate;
-import android.support.v7.app.NightMode;
 import android.view.View;
 
+import androidx.annotation.IdRes;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.app.NightMode;
+import androidx.fragment.app.Fragment;
+
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.R;
 import com.marverenic.music.data.annotations.AccentTheme;

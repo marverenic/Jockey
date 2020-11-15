@@ -8,11 +8,11 @@
             type="com.marverenic.music.ui.library.playlist.contents.edit.AutoPlaylistEditViewModel"/>
     </data>
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:adapter="@{viewModel.adapter}"
-        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:itemDecorations="@{viewModel.itemDecorations}"
         app:scrollPosition="@={viewModel.scrollPosition}"/>
 

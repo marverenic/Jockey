@@ -1,6 +1,6 @@
 package com.marverenic.music.data.annotations;
 
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 
 @IntDef(value = {StartPage.PLAYLISTS, StartPage.SONGS, StartPage.ARTISTS, StartPage.ALBUMS,
         StartPage.GENRES, StartPage.BROWSER, StartPage.RECENTLY_ADDED})

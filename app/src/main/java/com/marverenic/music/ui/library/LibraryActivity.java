@@ -2,15 +2,17 @@ package com.marverenic.music.ui.library;
 
 import android.content.Context;
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
+
+import androidx.core.view.GravityCompat;
+import androidx.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.IdRes;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -159,13 +161,13 @@ public class LibraryActivity extends BaseLibraryActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-        mBinding.libraryDrawerLayout.openDrawer(Gravity.START);
+        mBinding.libraryDrawerLayout.openDrawer(GravityCompat.START);
         return true;
     }
 
     @Override
     public void onBackPressed() {
-        if (mBinding.libraryDrawerLayout.isDrawerOpen(Gravity.START)) {
+        if (mBinding.libraryDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mBinding.libraryDrawerLayout.closeDrawers();
         } else {
             super.onBackPressed();
@@ -190,7 +192,7 @@ public class LibraryActivity extends BaseLibraryActivity {
         mBinding.libraryDrawerLayout.setDrawerLockMode((collapsed)
                         ? DrawerLayout.LOCK_MODE_UNLOCKED
                         : DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
-                Gravity.START);
+                GravityCompat.START);
     }
 
     private void onNavigationItemSelected(@IdRes int itemId) {

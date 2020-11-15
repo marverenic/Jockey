@@ -3,7 +3,7 @@ package com.marverenic.music.ui.settings.sls;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.databinding.Bindable;
+import androidx.databinding.Bindable;
 import android.net.Uri;
 import android.text.Html;
 

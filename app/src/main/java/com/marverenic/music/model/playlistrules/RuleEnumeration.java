@@ -1,6 +1,6 @@
 package com.marverenic.music.model.playlistrules;
 
-import android.support.annotation.StringRes;
+import androidx.annotation.StringRes;
 import android.text.InputType;
 
 import com.marverenic.music.R;

@@ -13,8 +13,10 @@
 // limitations under the License.
 apply plugin: 'com.android.library'
 
+def config = rootProject.extensions.getByName("ext")
+
 android {
-    compileSdkVersion rootProject.targetSdkVersion
+    compileSdkVersion config.compileSdkVersion
 
     defaultConfig {
         minSdkVersion 16
@@ -28,6 +30,5 @@ android {
 }
 
 dependencies {
-    implementation "com.google.android.exoplayer:exoplayer-core:$rootProject.exoplayerVersion"
+    implementation config.deps.exoplayer.core
 }
-

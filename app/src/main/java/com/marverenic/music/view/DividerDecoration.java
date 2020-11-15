@@ -5,14 +5,14 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.IdRes;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.IdRes;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
 import com.marverenic.music.R;
 
 /**
- * An {@link android.support.v7.widget.RecyclerView.ItemDecoration} that draws horizontal dividers
+ * An {@link RecyclerView.ItemDecoration} that draws horizontal dividers
  * between entries in a {@link RecyclerView}
  */
 public class DividerDecoration extends RecyclerView.ItemDecoration {

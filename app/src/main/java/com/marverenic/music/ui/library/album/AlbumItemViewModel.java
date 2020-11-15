@@ -4,16 +4,16 @@ import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Resources;
-import android.databinding.BaseObservable;
-import android.databinding.ObservableField;
-import android.databinding.ObservableInt;
+import androidx.databinding.BaseObservable;
+import androidx.databinding.ObservableField;
+import androidx.databinding.ObservableInt;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
-import android.support.annotation.ColorInt;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.graphics.Palette;
-import android.support.v7.widget.PopupMenu;
+import androidx.annotation.ColorInt;
+import androidx.fragment.app.FragmentManager;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.palette.graphics.Palette;
+import androidx.appcompat.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.View;
 
@@ -141,7 +141,7 @@ public class AlbumItemViewModel extends BaseObservable {
 
     public View.OnClickListener onClickMenu() {
         return v -> {
-            PopupMenu menu = new android.support.v7.widget.PopupMenu(mContext, v, Gravity.END);
+            PopupMenu menu = new androidx.appcompat.widget.PopupMenu(mContext, v, Gravity.END);
             menu.inflate(R.menu.instance_album);
             menu.setOnMenuItemClickListener(onMenuItemClick());
             menu.show();

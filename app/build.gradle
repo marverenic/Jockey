@@ -1,8 +1,13 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'com.bugsnag.android.gradle'
 
+def config = rootProject.extensions.getByName("ext")
+
 android {
-    compileSdkVersion rootProject.targetSdkVersion
+    compileSdkVersion config.compileSdkVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -28,20 +33,22 @@ android {
     if (secretsFiles.exists()) secrets.load(new FileInputStream(secretsFiles))
 
     bugsnag {
-        apiKey secrets.getProperty('bugsnagKey', null)
-        autoUpload !rootProject.isCiBuild
-        autoReportBuilds !rootProject.isCiBuild
+        enabled = !rootProject.isCiBuild
+        uploadJvmMappings = !rootProject.isCiBuild
+        reportBuilds = !rootProject.isCiBuild
     }
 
     defaultConfig {
         applicationId "com.marverenic.music"
         minSdkVersion 16
-        targetSdkVersion rootProject.targetSdkVersion
+        targetSdkVersion config.targetSdkVersion
         versionCode 40326
         versionName "3.0 RC 2"
         resConfigs "en", "es", "nl"
+        multiDexEnabled true
 
         buildConfigField 'String', 'BUGSNAG_API_KEY', "\"${secrets.getProperty('bugsnagKey', 'null')}\""
+        manifestPlaceholders = [bugsnagKey:secrets.getProperty('bugsnagKey', "")]
     }
 
     buildTypes {
@@ -82,51 +89,78 @@ android {
     }
 }
 
+androidExtensions {
+    // Disable Kotlin synthetic views
+    features = ["parcelize"]
+}
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation project(':seekarc')
+
+    // Kotlin
+    implementation config.deps.kotlin.stdlib
+
+    // Androidx
+    implementation config.deps.androidx.core
+    implementation config.deps.androidx.ktx
+    implementation config.deps.androidx.multidex
+    implementation config.deps.androidx.annotation
+    implementation config.deps.androidx.fragment
+    implementation config.deps.androidx.material
+    implementation config.deps.androidx.media
+    implementation config.deps.androidx.palette
+    implementation config.deps.androidx.preference
+    implementation config.deps.androidx.recyclerView
+    implementation config.deps.androidx.cardView
+    implementation config.deps.androidx.constraintLayout
+    implementation config.deps.androidx.coordinatorLayout
+    implementation config.deps.androidx.drawerLayout
+    implementation config.deps.androidx.swipeRefreshLayout
+
+    // Dagger
+    implementation config.deps.dagger.runtime
+    kapt config.deps.dagger.compiler
+
+    // RxJava
+    implementation config.deps.rxJava.core
+    implementation config.deps.rxJava.android
+    implementation config.deps.rxJava.lifecycle
+    implementation config.deps.rxJava.lifecycleExtras
+    implementation config.deps.rxJava.permissions
+    implementation config.deps.rxJava.lint
+
+    // Retrofit
+    implementation config.deps.retrofit.core
+    implementation config.deps.retrofit.gson
+    implementation config.deps.retrofit.rxJava
+
+    // Room
+    implementation config.deps.room.runtime
+    kapt config.deps.room.compiler
+    testImplementation config.deps.room.test
+
+    // ExoPlayer
+    implementation config.deps.exoplayer.core
     implementation project(':exoplayer-flac')
 
+    // Glide
+    implementation config.deps.glide.core
+
+    // GSON
+    implementation config.deps.gson.core
+
+    // Additional Views
+    implementation config.deps.views.heterogeneousadapter
+    implementation config.deps.views.recyclerviewFastscroll
+    implementation config.deps.views.verticalseekbar
+    implementation project(':seekarc')
+
+    // Logging
+    implementation config.deps.timber.core
+
+    // Testing
     testImplementation 'junit:junit:4.12'
-    testImplementation 'org.robolectric:robolectric:3.5.1'
-    testImplementation 'org.robolectric:shadows-support-v4:3.3.2'
+    testImplementation 'org.robolectric:robolectric:4.2.1'
 
-    implementation 'com.marverenic.heterogeneousadapter:heterogeneousadapter:1.1'
-
-    implementation "com.android.support:appcompat-v7:$rootProject.supportLibVersion"
-    implementation "com.android.support:design:$rootProject.supportLibVersion"
-    implementation "com.android.support:palette-v7:$rootProject.supportLibVersion"
-    implementation "com.android.support:recyclerview-v7:$rootProject.supportLibVersion"
-    implementation "com.android.support:cardview-v7:$rootProject.supportLibVersion"
-    implementation "com.android.support:preference-v14:$rootProject.supportLibVersion"
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    implementation "com.google.android.exoplayer:exoplayer-core:$rootProject.exoplayerVersion"
-
-    implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion"
-    annotationProcessor "android.arch.persistence.room:compiler:$rootProject.roomVersion"
-    testImplementation "android.arch.persistence.room:testing:$rootProject.roomVersion"
-
-    implementation 'com.github.bumptech.glide:glide:3.7.0'
-    implementation 'com.google.code.gson:gson:2.7'
-
-    implementation 'com.simplecityapps:recyclerview-fastscroll:1.0.16'
-    implementation 'com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:0.5.2'
-
-    implementation 'com.google.dagger:dagger:2.6'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.6'
-
-    implementation 'io.reactivex:rxjava:1.1.6'
-    implementation 'io.reactivex:rxandroid:1.2.1'
-    implementation 'com.trello:rxlifecycle:0.6.1'
-    implementation 'com.trello:rxlifecycle-components:0.6.1'
-    implementation 'com.tbruyelle.rxpermissions:rxpermissions:0.7.0@aar'
-    implementation 'nl.littlerobots.rxlint:rxlint:1.0'
-
-    implementation 'com.squareup.retrofit2:retrofit:2.0.2'
-    implementation 'com.squareup.retrofit2:converter-gson:2.0.2'
-    implementation 'com.squareup.retrofit2:adapter-rxjava:2.0.2'
-
-    implementation 'com.jakewharton.timber:timber:4.7.1'
-
-    implementation 'com.bugsnag:bugsnag-android:4.15.0'
+    implementation 'com.bugsnag:bugsnag-android:5.2.3'
 }

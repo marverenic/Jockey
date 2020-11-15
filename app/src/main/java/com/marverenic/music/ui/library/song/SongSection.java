@@ -1,12 +1,13 @@
 package com.marverenic.music.ui.library.song;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.marverenic.adapter.EnhancedViewHolder;
 import com.marverenic.adapter.HeterogeneousAdapter;
@@ -18,7 +19,7 @@ import com.marverenic.music.model.ModelUtil;
 import com.marverenic.music.model.Song;
 import com.marverenic.music.player.PlayerController;
 import com.marverenic.music.ui.common.OnSongSelectedListener;
-import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.MeasurableAdapter;
+import com.marverenic.music.view.MeasurableSection;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.SectionedAdapter;
 
 import java.util.List;
@@ -27,7 +28,7 @@ import rx.subjects.BehaviorSubject;
 import timber.log.Timber;
 
 public class SongSection extends HeterogeneousAdapter.ListSection<Song>
-        implements SectionedAdapter, MeasurableAdapter {
+        implements SectionedAdapter, MeasurableSection {
 
     private Context mContext;
     private PlayerController mPlayerController;
@@ -78,7 +79,7 @@ public class SongSection extends HeterogeneousAdapter.ListSection<Song>
     }
 
     @Override
-    public int getViewTypeHeight(RecyclerView recyclerView, int viewType) {
+    public int getViewTypeHeight(RecyclerView recyclerView) {
         return recyclerView.getResources().getDimensionPixelSize(R.dimen.list_height)
                 + recyclerView.getResources().getDimensionPixelSize(R.dimen.divider_height);
     }
@@ -95,7 +96,7 @@ public class SongSection extends HeterogeneousAdapter.ListSection<Song>
             binding.setViewModel(viewModel);
 
             mCurrentSong.subscribe(viewModel::setCurrentlyPlayingSong, throwable -> {
-                Timber.e("Failed to set current song", throwable);
+                Timber.e(throwable, "Failed to set current song");
             });
         }
 

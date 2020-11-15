@@ -9,7 +9,7 @@
             type="com.marverenic.music.ui.nowplaying.MiniplayerViewModel"/>
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/miniplayer_height">
 
@@ -130,6 +130,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             tools:progressDrawable="@color/accent"/>
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

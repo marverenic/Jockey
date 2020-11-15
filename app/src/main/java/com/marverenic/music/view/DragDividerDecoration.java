@@ -1,15 +1,17 @@
 package com.marverenic.music.view;
 
 import android.content.Context;
-import android.support.annotation.IdRes;
+import androidx.annotation.IdRes;
 import android.view.View;
 
 import com.marverenic.adapter.DragDropAdapter;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 /**
  * An extension of {@link DividerDecoration} designed for use with a
- * {@link android.support.v7.widget.RecyclerView} with a {@link DragDropAdapter} attached. This
- * class acts as an {@link android.support.v7.widget.RecyclerView.ItemDecoration} that draws
+ * {@link RecyclerView} with a {@link DragDropAdapter} attached. This
+ * class acts as an {@link RecyclerView.ItemDecoration} that draws
  * dividers between views, excluding any view that's currently being dragged by the user.
  */
 public class DragDividerDecoration extends DividerDecoration {

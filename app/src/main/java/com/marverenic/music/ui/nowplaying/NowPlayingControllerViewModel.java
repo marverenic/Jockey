@@ -1,15 +1,15 @@
 package com.marverenic.music.ui.nowplaying;
 
 import android.content.Context;
-import android.databinding.Bindable;
-import android.databinding.BindingAdapter;
-import android.databinding.ObservableInt;
+import androidx.databinding.Bindable;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.ObservableInt;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.support.annotation.ColorInt;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.PopupMenu;
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
+import androidx.appcompat.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.View;
 import android.view.animation.Animation;

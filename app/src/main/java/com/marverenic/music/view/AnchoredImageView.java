@@ -2,7 +2,7 @@ package com.marverenic.music.view;
 
 import android.content.Context;
 import android.graphics.Rect;
-import android.support.v7.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatImageView;
 import android.util.AttributeSet;
 
 /**

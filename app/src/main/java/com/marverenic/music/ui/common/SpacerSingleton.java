@@ -1,6 +1,6 @@
 package com.marverenic.music.ui.common;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,10 +8,10 @@ import android.view.ViewGroup;
 import com.marverenic.adapter.EnhancedViewHolder;
 import com.marverenic.adapter.HeterogeneousAdapter;
 import com.marverenic.music.R;
-import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView.MeasurableAdapter;
+import com.marverenic.music.view.MeasurableSection;
 
 public class SpacerSingleton extends HeterogeneousAdapter.SingletonSection<Void>
-        implements MeasurableAdapter {
+        implements MeasurableSection {
 
     private final int mHeight;
     private boolean mVisible;
@@ -52,7 +52,7 @@ public class SpacerSingleton extends HeterogeneousAdapter.SingletonSection<Void>
     }
 
     @Override
-    public int getViewTypeHeight(RecyclerView recyclerView, int viewType) {
+    public int getViewTypeHeight(RecyclerView recyclerView) {
         return mHeight;
     }
 

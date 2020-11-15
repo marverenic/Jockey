@@ -1,7 +1,7 @@
 package com.marverenic.music.ui.browse;
 
-import android.databinding.Bindable;
-import android.support.annotation.Nullable;
+import androidx.databinding.Bindable;
+import androidx.annotation.Nullable;
 
 import com.marverenic.music.BR;
 import com.marverenic.music.ui.BaseViewModel;

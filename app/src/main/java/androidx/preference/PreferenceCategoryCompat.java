@@ -1,12 +1,13 @@
-package android.support.v7.preference;
+package androidx.preference;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Build;
-import android.support.v4.view.GravityCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.widget.TextView;
+
+import androidx.core.view.GravityCompat;
 
 /**
  * PreferenceCategory fix which allows one to use multiple themes. The original
@@ -20,7 +21,7 @@ import android.widget.TextView;
  */
 public class PreferenceCategoryCompat extends PreferenceCategory {
     private static final int PADDING_DP = 14;
-    private static final int[] COLOR_ACCENT_ID = new int[]{android.support.v7.appcompat.R.attr.colorAccent};
+    private static final int[] COLOR_ACCENT_ID = new int[]{androidx.appcompat.R.attr.colorAccent};
 
     public PreferenceCategoryCompat(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);

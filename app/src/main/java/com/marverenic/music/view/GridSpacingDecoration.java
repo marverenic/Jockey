@@ -1,7 +1,9 @@
 package com.marverenic.music.view;
 
 import android.graphics.Rect;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
 public class GridSpacingDecoration extends RecyclerView.ItemDecoration {
@@ -16,7 +18,7 @@ public class GridSpacingDecoration extends RecyclerView.ItemDecoration {
      * Create a new ItemDecorator for use with a RecyclerView
      * @param spacing The padding around elements in a grid
      * @param numColumns The number of columns in this grid. Use the same value as set by
-     *                   {@link android.support.v7.widget.GridLayoutManager#setSpanCount(int)}
+     *                   {@link GridLayoutManager#setSpanCount(int)}
      */
     public GridSpacingDecoration(int spacing, int numColumns) {
         this(spacing, numColumns, ANY_VIEW);
@@ -26,9 +28,9 @@ public class GridSpacingDecoration extends RecyclerView.ItemDecoration {
      * Create a new ItemDecorator for use with a RecyclerView
      * @param spacing The padding around elements in a grid
      * @param numColumns The number of columns in this grid. Use the same value as set by
-     *                   {@link android.support.v7.widget.GridLayoutManager#setSpanCount(int)}
+     *                   {@link GridLayoutManager#setSpanCount(int)}
      * @param viewType The type of view that should be padded in a grid. Use the same value as
-     *                 {@link android.support.v7.widget.RecyclerView.Adapter#getItemViewType(int)}
+     *                 {@link RecyclerView.Adapter#getItemViewType(int)}
      */
     public GridSpacingDecoration(int spacing, int numColumns, int viewType) {
         this.spacing = spacing;
