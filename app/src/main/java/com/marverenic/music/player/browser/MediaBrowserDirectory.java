@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import rx.Observable;
 import rx.Single;
 
 public abstract class MediaBrowserDirectory {
@@ -127,6 +128,42 @@ public abstract class MediaBrowserDirectory {
 
             return getQueueForMediaItem(childPath);
         });
+    }
+
+    public final Single<MediaList> getQueueForSearch(String query) {
+        return searchForMediaItem(query)
+                .flatMap(mediaItemId -> {
+                    if (mediaItemId != null) {
+                        return getQueueForMediaItem(mediaItemId);
+                    } else {
+                        return getSubdirectories()
+                                .flatMapObservable(Observable::from)
+                                .flatMap(subdir -> subdir.getQueueForSearch(query).toObservable())
+                                .filter(result -> result != null)
+                                .firstOrDefault(null)
+                                .toSingle();
+                    }
+                });
+    }
+
+    private Single<String> searchForMediaItem(String query) {
+        return getMedia().map(media -> {
+            for (MediaItem m : media) {
+                MediaDescriptionCompat description = m.getDescription();
+                if (matchesQuery(description.getTitle(), query)) {
+                    return m.getMediaId();
+                }
+
+                if (matchesQuery(description.getSubtitle(), query)) {
+                    return m.getMediaId();
+                }
+            }
+            return null;
+        });
+    }
+
+    private boolean matchesQuery(CharSequence field, String query) {
+        return field != null && field.toString().toLowerCase().contains(query.toLowerCase());
     }
 
     protected abstract Single<List<MediaBrowserDirectory>> getSubdirectories();

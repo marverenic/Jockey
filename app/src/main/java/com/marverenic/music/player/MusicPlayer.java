@@ -394,6 +394,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                         | PlaybackStateCompat.ACTION_STOP
                         | PlaybackStateCompat.ACTION_SET_REPEAT_MODE
                         | PlaybackStateCompat.ACTION_SET_SHUFFLE_MODE
+                        | PlaybackStateCompat.ACTION_PREPARE_FROM_SEARCH
+                        | PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH
                         | PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID);
 
         if (!mMediaPlayer.getQueue().isEmpty()) {
@@ -1510,6 +1512,15 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
                     .subscribe(
                             this::applyMediaList,
                             e -> Timber.e(e, "Failed to play media from ID %s", mediaId));
+        }
+
+        @Override
+        public void onPlayFromSearch(String query, Bundle extras) {
+            mBrowserRoot.getQueueForSearch(query)
+                    .subscribe(
+                            this::applyMediaList,
+                            e -> Timber.e(e, "Failed to play media from query %s", query)
+                    );
         }
 
         private void applyMediaList(MediaList tracks) {
