@@ -25,7 +25,11 @@ class MediaStoreThumbnailLoader(
     private val context: Context
 ) : StreamModelLoader<Uri> {
 
-    override fun getResourceFetcher(model: Uri?, width: Int, height: Int): DataFetcher<InputStream>? {
+    override fun getResourceFetcher(
+        model: Uri?,
+        width: Int,
+        height: Int
+    ): DataFetcher<InputStream>? {
         return model?.let {
             MediaStoreThumbnailDataFetcher(
                 contentResolver = context.contentResolver,
@@ -40,9 +44,13 @@ class MediaStoreThumbnailLoader(
         private val bitmapPool: BitmapPool
     ) : ResourceDecoder<ImageVideoWrapper, GifBitmapWrapper> {
 
-        constructor(context: Context): this(Glide.get(context).bitmapPool)
+        constructor(context: Context) : this(Glide.get(context).bitmapPool)
 
-        override fun decode(source: ImageVideoWrapper?, width: Int, height: Int): Resource<GifBitmapWrapper> {
+        override fun decode(
+            source: ImageVideoWrapper?,
+            width: Int,
+            height: Int
+        ): Resource<GifBitmapWrapper> {
             val inputStream = source?.stream
             require(inputStream is MediaStoreThumbnailInputStream) {
                 "This decoder can only be used with MediaStoreThumbnailLoader."
@@ -59,7 +67,7 @@ class MediaStoreThumbnailLoader(
         private val bitmapPool: BitmapPool
     ) : ResourceDecoder<ImageVideoWrapper, Bitmap> {
 
-        constructor(context: Context): this(Glide.get(context).bitmapPool)
+        constructor(context: Context) : this(Glide.get(context).bitmapPool)
 
         override fun decode(source: ImageVideoWrapper?, width: Int, height: Int): Resource<Bitmap> {
             val inputStream = source?.stream
@@ -72,7 +80,6 @@ class MediaStoreThumbnailLoader(
 
         override fun getId() = ""
     }
-
 }
 
 @TargetApi(29)
@@ -91,7 +98,6 @@ private class MediaStoreThumbnailDataFetcher(
     }
 
     override fun cleanup() {
-
     }
 
     override fun getId(): String {
@@ -101,7 +107,6 @@ private class MediaStoreThumbnailDataFetcher(
     override fun cancel() {
         cancellationSignal.cancel()
     }
-
 }
 
 // This is a complete hack to make Glide play nicely with what I'm trying to get it to do.
@@ -112,5 +117,4 @@ private class MediaStoreThumbnailInputStream(
     // Not actually used. The reader will cast the IS to this class and read the bitmap directly
     // to avoid a pointless in-memory copy.
     override fun read() = -1
-
 }
