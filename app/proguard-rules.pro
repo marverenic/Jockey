@@ -36,6 +36,8 @@
 # (since it calls setters by name using reflection)
 -keepnames class * extends androidx.databinding.BaseObservable { *; }
 
+-keep class com.marverenic.** { *; }
+
 # GSON rules
 # Don't obfuscate instance field names for GSON
 -keepnames class com.marverenic.music.model.** { *; }
