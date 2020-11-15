@@ -18,6 +18,8 @@ import com.bumptech.glide.load.model.stream.StreamModelLoader
 import com.bumptech.glide.load.resource.bitmap.BitmapResource
 import com.bumptech.glide.load.resource.gifbitmap.GifBitmapWrapper
 import com.bumptech.glide.load.resource.gifbitmap.GifBitmapWrapperResource
+import java.io.ByteArrayInputStream
+import java.io.FileNotFoundException
 import java.io.InputStream
 
 @TargetApi(29)
@@ -50,13 +52,14 @@ class MediaStoreThumbnailLoader(
             source: ImageVideoWrapper?,
             width: Int,
             height: Int
-        ): Resource<GifBitmapWrapper> {
+        ): Resource<GifBitmapWrapper>? {
             val inputStream = source?.stream
             require(inputStream is MediaStoreThumbnailInputStream) {
                 "This decoder can only be used with MediaStoreThumbnailLoader."
             }
 
-            val bitmapResource = BitmapResource(inputStream.bitmap, bitmapPool)
+            val bitmap = inputStream.bitmap ?: return null
+            val bitmapResource = BitmapResource(bitmap, bitmapPool)
             return GifBitmapWrapperResource(GifBitmapWrapper(bitmapResource, null))
         }
 
@@ -69,13 +72,18 @@ class MediaStoreThumbnailLoader(
 
         constructor(context: Context) : this(Glide.get(context).bitmapPool)
 
-        override fun decode(source: ImageVideoWrapper?, width: Int, height: Int): Resource<Bitmap> {
+        override fun decode(
+            source: ImageVideoWrapper?,
+            width: Int,
+            height: Int
+        ): Resource<Bitmap>? {
             val inputStream = source?.stream
             require(inputStream is MediaStoreThumbnailInputStream) {
                 "This decoder can only be used with MediaStoreThumbnailLoader."
             }
 
-            return BitmapResource(inputStream.bitmap, bitmapPool)
+            val bitmap = inputStream.bitmap ?: return null
+            return BitmapResource(bitmap, bitmapPool)
         }
 
         override fun getId() = ""
@@ -93,8 +101,12 @@ private class MediaStoreThumbnailDataFetcher(
     private val cancellationSignal = CancellationSignal()
 
     override fun loadData(priority: Priority?): InputStream {
-        val image = contentResolver.loadThumbnail(uri, Size(width, height), cancellationSignal)
-        return MediaStoreThumbnailInputStream(image)
+        return try {
+            val image = contentResolver.loadThumbnail(uri, Size(width, height), cancellationSignal)
+            MediaStoreThumbnailInputStream(image)
+        } catch (e: FileNotFoundException) {
+            MediaStoreThumbnailInputStream(null)
+        }
     }
 
     override fun cleanup() {
@@ -111,7 +123,7 @@ private class MediaStoreThumbnailDataFetcher(
 
 // This is a complete hack to make Glide play nicely with what I'm trying to get it to do.
 private class MediaStoreThumbnailInputStream(
-    val bitmap: Bitmap
+    val bitmap: Bitmap?
 ) : InputStream() {
 
     // Not actually used. The reader will cast the IS to this class and read the bitmap directly
