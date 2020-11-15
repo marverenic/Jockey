@@ -293,7 +293,6 @@ public final class Util {
                         .into(size, size)
                         .get();
             } catch (InterruptedException|ExecutionException e) {
-                Timber.e(e, "Failed to load artwork");
                 return BitmapFactory.decodeResource(context.getResources(),
                         R.drawable.art_default_xl);
             }

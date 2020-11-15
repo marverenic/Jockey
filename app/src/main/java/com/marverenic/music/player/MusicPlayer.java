@@ -48,7 +48,9 @@ import java.util.Random;
 
 import javax.inject.Inject;
 
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 import static android.content.Intent.ACTION_HEADSET_PLUG;
@@ -189,6 +191,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     private int mRepeat;
     private int mMultiRepeat;
 
+    private CompositeSubscription mSubscriptions = new CompositeSubscription();
+
     /**
      * Whether this MusicPlayer has focus from {@link AudioManager} to play audio
      * @see #getFocus()
@@ -229,12 +233,14 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         mRemotePreferenceStore = new RemotePreferenceStore(mContext);
 
         // Initialize play count store
-        mPlayCountStore.refresh()
-                .subscribe(complete -> {
-                    Timber.i("init: Initialized play count store values");
-                }, throwable -> {
-                    Timber.e(throwable, "init: Failed to read play count store values");
-                });
+        mSubscriptions.add(
+                mPlayCountStore.refresh()
+                        .subscribe(complete -> {
+                            Timber.i("init: Initialized play count store values");
+                        }, throwable -> {
+                            Timber.e(throwable, "init: Failed to read play count store values");
+                        })
+        );
 
         // Initialize the media player
         mMediaPlayer = new QueuedExoPlayer(context);
@@ -1216,6 +1222,8 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
     public void release() {
         requireNotReleased();
         Timber.i("release() called");
+        mSubscriptions.unsubscribe();
+
         AudioManagerCompat.getInstance(mContext).abandonAudioFocus(this);
         mContext.unregisterReceiver(mHeadphoneListener);
 
@@ -1225,6 +1233,9 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         mFocused = false;
         mMediaPlayer.release();
         mMediaSession.release();
+
+        mMediaPlayer = null;
+        mMediaSession = null;
     }
 
     public boolean isReleased() {
@@ -1268,18 +1279,22 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         for (MusicPlayerExtension ext : mExtensions) {
             ext.onSongStarted(this);
         }
-        Util.fetchArtwork(mContext, getNowPlaying())
-                .subscribeOn(Schedulers.io())
-                .subscribe(artwork -> {
-                    mArtwork = artwork;
-                    updateNowPlaying();
-                }, throwable -> {
-                    Timber.e(throwable, "Failed to load artwork");
-                    mArtwork = null;
-                    if (!isReleased()) {
-                        updateNowPlaying();
-                    }
-                });
+
+        mSubscriptions.add(
+                Util.fetchArtwork(mContext, getNowPlaying())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(artwork -> {
+                            mArtwork = artwork;
+                            updateNowPlaying();
+                        }, throwable -> {
+                            mArtwork = null;
+                            if (!isReleased()) {
+                                Timber.e(throwable, "Failed to load artwork");
+                                updateNowPlaying();
+                            }
+                        })
+        );
 
         updateUi();
     }
@@ -1509,19 +1524,23 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
 
         @Override
         public void onPlayFromMediaId(String mediaId, Bundle extras) {
-            mBrowserRoot.getQueue(mediaId)
-                    .subscribe(
-                            this::applyMediaList,
-                            e -> Timber.e(e, "Failed to play media from ID %s", mediaId));
+            mMusicPlayer.mSubscriptions.add(
+                    mBrowserRoot.getQueue(mediaId)
+                            .subscribe(
+                                    this::applyMediaList,
+                                    e -> Timber.e(e, "Failed to play media from ID %s", mediaId))
+            );
         }
 
         @Override
         public void onPlayFromSearch(String query, Bundle extras) {
-            mBrowserRoot.getQueueForSearch(query)
-                    .subscribe(
-                            this::applyMediaList,
-                            e -> Timber.e(e, "Failed to play media from query %s", query)
-                    );
+            mMusicPlayer.mSubscriptions.add(
+                    mBrowserRoot.getQueueForSearch(query)
+                            .subscribe(
+                                    this::applyMediaList,
+                                    e -> Timber.e(e, "Failed to play media from query %s", query)
+                            )
+            );
         }
 
         private void applyMediaList(MediaList tracks) {
