@@ -39,6 +39,7 @@
                         android:layout_height="wrap_content"
                         app:height="@{viewModel.heroImageHeight}"
                         android:src="@{viewModel.heroImage}"
+                        android:scaleType="centerCrop"
                         android:fitsSystemWindows="true"
                         android:contentDescription="@null"/>
 

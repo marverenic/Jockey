@@ -14,14 +14,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
-import androidx.annotation.NonNull;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
-import androidx.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.MediaSessionCompat.QueueItem;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.KeyEvent;
+
+import androidx.annotation.NonNull;
+import androidx.media.session.MediaButtonReceiver;
 
 import com.marverenic.music.BuildConfig;
 import com.marverenic.music.JockeyApplication;
@@ -1267,7 +1268,7 @@ public class MusicPlayer implements AudioManager.OnAudioFocusChangeListener,
         for (MusicPlayerExtension ext : mExtensions) {
             ext.onSongStarted(this);
         }
-        Util.fetchArtwork(mContext, getNowPlaying().getLocation())
+        Util.fetchArtwork(mContext, getNowPlaying())
                 .subscribeOn(Schedulers.io())
                 .subscribe(artwork -> {
                     mArtwork = artwork;

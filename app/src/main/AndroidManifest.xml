@@ -29,6 +29,7 @@
         android:name=".JockeyApplication"
         android:resizeableActivity="true"
         android:supportsRtl="true"
+        android:requestLegacyExternalStorage="true"
         tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
 
         <!-- Library Activity -->
