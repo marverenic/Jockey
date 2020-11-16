@@ -42,8 +42,8 @@ android {
         applicationId "com.marverenic.music"
         minSdkVersion 16
         targetSdkVersion config.targetSdkVersion
-        versionCode 40326
-        versionName "3.0 RC 2"
+        versionCode 40328
+        versionName "3.0 RC 3"
         resConfigs "en", "es", "nl"
         multiDexEnabled true
 

@@ -6,8 +6,10 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import androidx.media.session.MediaButtonReceiver;
+import android.content.SharedPreferences;
 import android.widget.RemoteViews;
+
+import androidx.media.session.MediaButtonReceiver;
 
 import com.marverenic.music.JockeyApplication;
 import com.marverenic.music.player.MusicPlayer;
@@ -21,7 +23,10 @@ import static android.support.v4.media.session.PlaybackStateCompat.ACTION_SKIP_T
 
 public abstract class BaseWidget extends AppWidgetProvider {
 
+    private static final long WIDGET_UPDATE_MIN_DELAY_MS = 5000;
+
     @Inject PlayerController mPlayerController;
+    @Inject SharedPreferences mSharedPreferences;
 
     @Override
     public final void onReceive(Context context, Intent intent) {
@@ -29,7 +34,18 @@ public abstract class BaseWidget extends AppWidgetProvider {
 
         String action = intent.getAction();
         if (MusicPlayer.UPDATE_BROADCAST.equals(action)) {
-            if (isEnabled(context)) {
+            // Prevent updating too frequently. This can cause an infinite loop on newer versions of
+            // Android where the widget triggers the player service to restart immediately after it
+            // finishes updating.
+            String updateKey = "lastWidgetUpdate-" + getClass().getName();
+            long now = System.currentTimeMillis();
+            long lastUpdate = mSharedPreferences.getLong(updateKey, 0);
+            long dT = Math.abs(now - lastUpdate);
+            if (isEnabled(context) && dT > WIDGET_UPDATE_MIN_DELAY_MS) {
+                mSharedPreferences.edit()
+                        .putLong(updateKey, now)
+                        .apply();
+
                 onUpdate(context);
             }
         } else {

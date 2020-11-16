@@ -186,7 +186,12 @@ public class ServicePlayerController implements PlayerController {
 
         int bindFlags = Context.BIND_WAIVE_PRIORITY | Context.BIND_AUTO_CREATE;
         mContext.bindService(serviceIntent, mConnection, bindFlags);
-        mContext.startService(serviceIntent);
+        try {
+            mContext.startService(serviceIntent);
+        } catch (IllegalStateException e) {
+            // Do nothing.
+            // The service couldn't start because the application isn't in the foreground.
+        }
     }
 
     private void unbindService() {
