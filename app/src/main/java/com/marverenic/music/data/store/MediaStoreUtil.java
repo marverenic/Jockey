@@ -795,13 +795,13 @@ public final class MediaStoreUtil {
     private static List<Song> buildSongListFromUris(List<Uri> uris, Context context, int lowerBound,
                                                    int upperBound) {
         List<Song> contents = new ArrayList<>();
-        if (uris.size() == 0) {
+        if (uris.size() == 0 || upperBound == lowerBound) {
             return contents;
         }
 
         String query = MediaStore.Audio.Media.DATA + " IN(?";
         String[] split = new String[upperBound - lowerBound];
-        split[0] = uris.get(0).getPath();
+        split[0] = uris.get(lowerBound).getPath();
 
         for (int i = 1; i < split.length; i++) {
             query += ",?";

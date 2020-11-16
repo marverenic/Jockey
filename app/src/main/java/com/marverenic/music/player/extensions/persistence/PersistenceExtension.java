@@ -48,17 +48,20 @@ public class PersistenceExtension extends MusicPlayerExtension {
             seekPosition = state.getSeekPosition();
         }
 
-        try {
-            musicPlayer.restorePlayerState(new PlayerState.Builder()
-                    .setPlaying(false)
-                    .setQueue(queue)
-                    .setShuffledQueue(shuffledQueue)
-                    .setQueuePosition(queuePosition)
-                    .setSeekPosition((int) seekPosition)
-                    .build());
-        } catch (RuntimeException e) {
-            Timber.e(e, "Failed to restore queue. The player will be reset.");
-            musicPlayer.setQueue(Collections.emptyList(), 0, 0);
+        if (!queue.isEmpty() && (!musicPlayer.isShuffled() || !shuffledQueue.isEmpty())
+                && seekPosition >= 0) {
+            try {
+                musicPlayer.restorePlayerState(new PlayerState.Builder()
+                        .setPlaying(false)
+                        .setQueue(queue)
+                        .setShuffledQueue(shuffledQueue)
+                        .setQueuePosition(queuePosition)
+                        .setSeekPosition((int) seekPosition)
+                        .build());
+            } catch (RuntimeException e) {
+                Timber.e(e, "Failed to restore queue. The player will be reset.");
+                musicPlayer.setQueue(Collections.emptyList(), 0, 0);
+            }
         }
     }
 
